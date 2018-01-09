@@ -5,6 +5,11 @@
     "packages-client/*",
     "packages-utils/*"
   ],
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
@@ -25,7 +30,6 @@
     "yargs": "^10.0.3"
   },
   "scripts": {
-    "test": "echo \"Error: I SHOULD FAIL LOLOLOLOLOL \" && exit 1",
     "build": "lerna exec -- babel src -d lib --source-maps",
     "test:all": "mocha --require source-map-support/register --require babel-core/register \"packages-*/**/tests/**/*.test.js\"",
     "test:api": "mocha --require source-map-support/register --require babel-core/register \"packages-api/**/tests/**/*.test.js\"",
@@ -35,7 +39,6 @@
     "test:travis": "nyc yarn test:all && nyc report --reporter=text-lcov | coveralls"
   },
   "pre-commit": [
-    "test",
     "test:all"
   ],
   "nyc": {
