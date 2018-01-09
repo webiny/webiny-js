@@ -1,0 +1,92 @@
+.wrapper {
+	height: auto;
+	padding: 5px 0;
+	margin-bottom: 0;
+	background-color: transparent;
+	box-shadow: none;
+	width: 100%;
+}
+
+.bar {
+	position: relative;
+
+	height: 4px;
+	border-radius: 2px;
+	overflow: hidden;
+
+	background-color: #e4e4e4;
+}
+
+.barInner {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	background-color: #41bfaf;
+	transition: width 2s;
+	width: 0;
+}
+
+/* sven: this is probably file-manager code, not needed now
+.progress__files {
+	display: block;
+	text-align: center;
+}
+
+.progress--inline {
+.progress__title {
+	display: inline-block;
+	vertical-align: middle;
+	width: 150px;
+}
+
+.progress__bar {
+	display: inline-block;
+	width: calc(100% - 250px);
+	margin-left: 20px;
+	vertical-align: middle;
+}
+
+.progress__percentage {
+	display: inline-block;
+	width: 50px;
+	margin-left: 20px;
+	vertical-align: middle;
+}
+}
+
+.progress--total {
+.progress__title {
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+.progress__bar-inner {
+	background-color: #FA541D;
+}
+}
+
+.progress--free-space {
+	padding-bottom: 50px;
+.progress__title {
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+.progress__bar {
+	display: block;
+	width: 100%;
+	margin: 10px 0;
+}
+
+.progress__percentage {
+	width: auto;
+	margin: 0;
+}
+
+.progress__files {
+	display: inline-block;
+	float: right;
+}
+}
+*/

@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "cli": "node ./../node_modules/.bin/webiny-cli"
+  }
+}

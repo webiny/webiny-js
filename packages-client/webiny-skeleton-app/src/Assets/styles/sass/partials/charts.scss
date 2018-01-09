@@ -1,0 +1,52 @@
+.line-chart {
+  height: 265px;
+  margin: 0 0 20px 0;
+  padding: 0;
+
+  .c3-ygrid {
+    stroke-dasharray: 0 0;
+  }
+
+  svg{
+    width: 100%;
+  }
+  path.domain {
+    stroke: #d5d5d5;
+  }
+  .tick {
+    line {
+      stroke: white;
+    }
+  }
+  text {
+    font-size: 11px;
+    color: red;
+  }
+  .c3 path, .c3 line {
+    display: none;
+  }
+  .c3-tooltip td {
+    color: #313131;
+  }
+
+  .c3-line {
+    stroke-width: 2px;
+  }
+
+  @media (max-width: 486px){
+    margin: 5px 0 0 0;
+  }
+}
+
+
+.pie-chart {
+  height: 265px;
+  text {
+    font-size: 11px;
+    color: red;
+  }
+  .c3-tooltip td {
+    color: #313131;
+  }
+}
+

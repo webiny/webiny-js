@@ -1,0 +1,17 @@
+{
+    "name": "webiny-backend-app",
+    "version": "1.0.0",
+    "main": "lib/index.js",
+    "contributors": [
+        "Pavel Denisjuk <pavel@webiny.com>",
+        "Sven Al Hamad <sven@webiny.com>",
+        "Adrian Smijulj <adrian.1358@gmail.com>"
+    ],
+    "license": "MIT",
+    "dependencies": {
+        "webiny-skeleton-app": "^1"
+    },
+    "devDependencies": {
+        "babel-cli": "^6.26.0"
+    }
+}

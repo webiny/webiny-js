@@ -1,0 +1,148 @@
+.growl {
+	z-index: 9999;
+	color: #ffffff;
+	position: fixed;
+}
+
+.growl.topLeft {
+	left: 0;
+	top: 55px;
+}
+
+.growl.topRight {
+	right: 0;
+	top: 55px;
+}
+
+.growl.bottomLeft {
+	left: 0;
+	bottom: 55px;
+}
+
+.growl.bottomRight {
+	right: 0;
+	bottom: 55px;
+}
+
+.growl.center {
+	top: 0;
+	width: 50%;
+	left: 25%;
+}
+
+.growl .notification {
+	background: #3F89BF;
+	border: none;
+	font-size: 15px;
+	color: #fff;
+	line-height: 125%;
+	font-weight: 300;
+	border-radius: 0;
+	zoom: 1;
+	width: 250px;
+	padding: 10px;
+	margin: 10px;
+	text-align: left;
+	display: none;
+	word-break: normal;
+	min-height: 40px;
+}
+
+.growl .message {
+
+}
+
+
+.growl.topRight .notification,
+.growl.topLeft .notification {
+	animation: bounceInDown 800ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.growl.bottomRight .notification,
+.growl.bottomLeft .notification {
+	animation: bounceInUp 800ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.growl .notification.danger {
+	background: #CC3300;
+}
+
+.growl .notification.success {
+	background: #3FBFB0;
+}
+
+.growl .notification.warning {
+	background: #FAA32E;
+}
+
+.growl .notification .header {
+	font-weight: 600;
+	font-size: .85em;
+}
+
+.growl .notification .close {
+	background-color: transparent;
+	color: inherit;
+	border: none;
+	z-index: 99;
+	float: right;
+	font-weight: bold;
+	font-size: 1.5em;
+	cursor: pointer;
+}
+
+@keyframes bounceInDown {
+	from, 60%, 75%, 90%, to {
+		animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+	}
+
+	0% {
+		opacity: 0;
+		transform: translate3d(0, -3000px, 0);
+	}
+
+	60% {
+		opacity: 1;
+		transform: translate3d(0, 25px, 0);
+	}
+
+	75% {
+		transform: translate3d(0, -10px, 0);
+	}
+
+	90% {
+		transform: translate3d(0, 5px, 0);
+	}
+
+	to {
+		transform: none;
+	}
+}
+
+@keyframes bounceInUp {
+	from, 60%, 75%, 90%, to {
+		animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+	}
+
+	from {
+		opacity: 0;
+		transform: translate3d(0, 3000px, 0);
+	}
+
+	60% {
+		opacity: 1;
+		transform: translate3d(0, -20px, 0);
+	}
+
+	75% {
+		transform: translate3d(0, 10px, 0);
+	}
+
+	90% {
+		transform: translate3d(0, -5px, 0);
+	}
+
+	to {
+		transform: translate3d(0, 0, 0);
+	}
+}

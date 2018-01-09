@@ -1,0 +1,13 @@
+{
+    "name": "webiny-skeleton-app",
+    "version": "1.0.0",
+    "main": "lib/index.js",
+    "author": "Pavel Denisjuk",
+    "license": "MIT",
+    "dependencies": {
+        "webiny-ui": "^1"
+    },
+    "devDependencies": {
+        "babel-cli": "^6.26.0"
+    }
+}

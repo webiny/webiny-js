@@ -1,0 +1,19 @@
+{
+    "presets": [
+        "babel-preset-react",
+        ["babel-preset-env", {
+            "targets": {
+                "browsers": ["last 2 versions", "safari >= 7"]
+            }
+        }]
+    ],
+    "plugins": [
+        ["babel-plugin-transform-object-rest-spread", {"useBuiltIns": true}],
+        ["babel-plugin-syntax-dynamic-import"],
+        ["babel-plugin-transform-builtin-extend", {"globals": ["Error"]}],
+        ["babel-plugin-transform-runtime", {
+            "polyfill": false,
+            "regenerator": true
+        }]
+    ]
+}

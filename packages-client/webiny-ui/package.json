@@ -1,0 +1,37 @@
+{
+    "name": "webiny-ui",
+    "version": "1.0.0",
+    "main": "lib/index.js",
+    "contributors": [
+        "Pavel Denisjuk <pavel@webiny.com>",
+        "Sven Al Hamad <sven@webiny.com>",
+        "Adrian Smijulj <adrian.1358@gmail.com>"
+    ],
+    "license": "MIT",
+    "dependencies": {
+        "animate.css": "^3.5.2",
+        "bootstrap-daterangepicker": "^2.1.25",
+        "bootstrap-sass": "^3.3.7",
+        "c3": "^0.4.11",
+        "clipboard": "^1.5.16",
+        "codemirror": "^5.23.0",
+        "codemirror-formatting": "^1.0.0",
+        "cropperjs": "^1.0.0-beta.1",
+        "draft-js": "^0.10.0",
+        "dynamics.js": "1.1.0",
+        "eonasdan-bootstrap-datetimepicker": "^4.17.45",
+        "filesize": "^3.4.3",
+        "font-awesome": "^4.7.0",
+        "highlight.js": "^9.9.0",
+        "owl.carousel": "^2.2.0",
+        "pluralize": "^4.0.0",
+        "quill": "^1.2.0",
+        "react-transition-group": "^1.2.0",
+        "select2": "^4.0.3",
+        "simplemde": "^1.11.2",
+        "webiny-client": "^1"
+    },
+    "devDependencies": {
+        "babel-cli": "^6.26.0"
+    }
+}

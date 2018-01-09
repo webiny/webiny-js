@@ -1,0 +1,19 @@
+{
+    "name": "webiny-entity-mysql",
+    "version": "1.0.0",
+    "main": "src/index.js",
+    "contributors": [
+        "Pavel Denisjuk <pavel@webiny.com>",
+        "Sven Al Hamad <sven@webiny.com>",
+        "Adrian Smijulj <adrian.1358@gmail.com>"
+    ],
+    "license": "MIT",
+    "dependencies": {
+        "babel-runtime": "^6.26.0",
+        "fecha": "^2.3.2",
+        "lodash": "^4.17.4",
+        "mysql": "^2.15.0",
+        "sinon": "^4.1.3",
+        "webiny-entity": "^1"
+    }
+}

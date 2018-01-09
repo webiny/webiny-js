@@ -1,0 +1,10 @@
+@import '~owl.carousel/dist/assets/owl.carousel.css';
+@import '~owl.carousel/dist/assets/owl.theme.default.css';
+
+.owl-theme .owl-nav {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  display: flex;
+  justify-content: space-between;
+}

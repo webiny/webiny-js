@@ -1,0 +1,105 @@
+.innerContent {
+	width: 100%;
+	vertical-align: baseline;
+	background-color: #3daf8f;
+	color: white;
+	font-size: 12px;
+	padding: 5px;
+	white-space: nowrap;
+	max-width: 350px;
+}
+
+.content {
+	background-color: transparent;
+	position: absolute;
+	display: block;
+	z-index: 1070;
+	padding: 3px;
+	letter-spacing: normal;
+	line-break: auto;
+	line-height: 1.42857;
+	text-align: start;
+	text-decoration: none;
+	text-shadow: none;
+	text-transform: none;
+	white-space: normal;
+	word-break: normal;
+	word-spacing: normal;
+	word-wrap: normal;
+}
+
+/* A bunch of arrows - different positioning depending on received 'placement' prop. */
+.content:before {
+	width: 0;
+	height: 0;
+	content: "";
+	position: absolute;
+}
+
+.contentTop:before {
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 5px solid #3daf8f;
+	bottom: -2px;
+	margin-left: auto;
+	margin-right: auto;
+	left: 0;
+	right: 0;
+}
+
+.contentTopLeft:before {
+	border-top: 5px solid transparent;
+	border-left: 5px solid #3daf8f;
+	bottom: 3px;
+	right: -2px;
+}
+
+.contentLeft:before {
+	border-top: 5px solid transparent;
+	border-bottom: 5px solid transparent;
+	border-left: 5px solid #3daf8f;
+	top: 50%;
+	right: -2px;
+	transform: translateY(-50%);
+}
+
+.contentBottomLeft:before {
+	border-bottom: 5px solid transparent;
+	border-left: 5px solid #3daf8f;
+	top: 3px;
+	right: -2px;
+}
+
+.contentBottom:before {
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-bottom: 5px solid #3daf8f;
+	top: -2px;
+	margin-left: auto;
+	margin-right: auto;
+	left: 0;
+	right: 0;
+}
+
+.contentBottomRight:before {
+	border-right: 5px solid transparent;
+	border-bottom: 5px solid #3daf8f;
+	top: -2px;
+	left: 3px;
+}
+
+.contentRight:before {
+	border-top: 5px solid transparent;
+	border-bottom: 5px solid transparent;
+	border-right: 5px solid #3daf8f;
+	left: -2px;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.contentTopRight:before {
+	border-top: 5px solid transparent;
+	border-right: 5px solid #3daf8f;
+	left: -2px;
+	bottom: 3px;
+}

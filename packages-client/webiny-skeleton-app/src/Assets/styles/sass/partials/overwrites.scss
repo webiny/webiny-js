@@ -1,0 +1,93 @@
+@media (min-width: 768px) {
+  .pull-right-lg {
+    float: right;
+  }
+  .text-right-lg {
+    text-align: right;
+  }
+  .no-padding {
+    padding: 0px !important;
+  }
+  .vertical-align {
+    position: relative;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+  }
+}
+
+@media (min-width: 1200px) {
+  /* new menu -> applied only on general template */
+  .master-navigation #left-sidebar.navbar-collapse {
+    position: fixed;
+    .left-menu ul li a {
+      text-align: left;
+      padding-left: 5px;
+      height: 75px;
+      width: 200px;
+      overflow: hidden;
+      span {
+        &.app-title {
+          height: 35px;
+          width: 135px;
+          line-height: 120%;
+          padding: 12px 0 0 5px;
+        }
+        &.app-icon, &.app-title {
+          float: left;
+          display: block;
+          -webkit-font-smoothing: subpixel-antialiased;
+        }
+      }
+    }
+    width: 60px;
+    -webkit-transition: width ease-in-out 0.28s;
+    -moz-transition: width ease-in-out 0.28s;
+    -o-transition: width ease-in-out 0.28s;
+    transition: width ease-in-out 0.28s;
+    .shield {
+      width: 60px;
+      -webkit-transition: width ease-in-out 0.28s;
+      -moz-transition: width ease-in-out 0.28s;
+      -o-transition: width ease-in-out 0.28s;
+      transition: width ease-in-out 0.28s;
+    }
+    .left-menu {
+      width: 60px;
+      -webkit-transition: width ease-in-out 0.28s;
+      -moz-transition: width ease-in-out 0.28s;
+      -o-transition: width ease-in-out 0.28s;
+      transition: width ease-in-out 0.28s;
+      ul li a span.app-title {
+        opacity: 0;
+        -webkit-transition: opacity ease-in-out 0.28s;
+        -moz-transition: opacity ease-in-out 0.28s;
+        -o-transition: opacity ease-in-out 0.28s;
+        transition: opacity ease-in-out 0.28s;
+      }
+    }
+    &:hover {
+      .shield {
+        width: 200px;
+      }
+      .left-menu {
+        width: 200px;
+        ul li a {
+          width: 200px;
+          span.app-title {
+            opacity: 1;
+            -webkit-transition: opacity ease-in-out 0.28s;
+            -moz-transition: opacity ease-in-out 0.28s;
+            -o-transition: opacity ease-in-out 0.28s;
+            transition: opacity ease-in-out 0.28s;
+          }
+        }
+      }
+      .left-menu-submenu {
+        opacity: 1;
+        left: 145px;
+      }
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "private": true,
+  "workspaces": [
+    "packages-api/*",
+    "packages-client/*",
+    "packages-utils/*"
+  ],
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-plugin-syntax-dynamic-import": "^6.18.0",
+    "babel-plugin-transform-builtin-extend": "^1.1.2",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-flow": "^6.23.0",
+    "babel-preset-react": "^6.24.1",
+    "chai": "^4.1.2",
+    "coveralls": "^3.0.0",
+    "lerna": "^2.5.1",
+    "mocha": "^4.0.1",
+    "nyc": "^11.3.0",
+    "pre-commit": "^1.2.2",
+    "source-map-support": "^0.5.0",
+    "yargs": "^10.0.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: I SHOULD FAIL LOLOLOLOLOL \" && exit 1",
+    "build": "lerna exec -- babel src -d lib --source-maps",
+    "test:all": "mocha --require source-map-support/register --require babel-core/register \"packages-*/**/tests/**/*.test.js\"",
+    "test:api": "mocha --require source-map-support/register --require babel-core/register \"packages-api/**/tests/**/*.test.js\"",
+    "test:utils": "mocha --require source-map-support/register --require babel-core/register \"packages-utils/**/tests/**/*.test.js\"",
+    "test:webiny-api": "mocha --require source-map-support/register --require babel-core/register \"packages-api/webiny-api/tests/**/*.test.js\"",
+    "test:coverage": "nyc --reporter=text yarn test:all",
+    "test:travis": "nyc yarn test:all && nyc report --reporter=text-lcov | coveralls"
+  },
+  "pre-commit": [
+    "test",
+    "test:all"
+  ],
+  "nyc": {
+    "include": [
+      "packages-api/**/src",
+      "packages-utils/**/src"
+    ]
+  }
+}

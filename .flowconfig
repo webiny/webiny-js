@@ -1,0 +1,12 @@
+[ignore]
+./packages-api/**/tests/**/*.js
+./packages-api/**/lib/**/*.js
+[include]
+./packages-api/**/src/**/*.js
+[libs]
+packages-api/webiny-api/flow-typed
+[lints]
+
+[options]
+
+[strict]

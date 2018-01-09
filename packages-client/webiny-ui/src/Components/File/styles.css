@@ -1,0 +1,64 @@
+.wrapper {
+	position: relative;
+}
+
+.input {
+	color: #393939;
+	background-color: #fbfbfb;
+	display: block;
+	width: 100%;
+	border: 1px solid #cdcdcd;
+	border-radius: 0;
+	transition: border-color ease-in-out .15s;
+	padding: 10px 15px;
+	height: 45px;
+	font-size: 13px;
+	line-height: 1.5;
+	opacity: 1;
+}
+
+.fileBtn {
+	height: 38px;
+	position: absolute;
+	z-index: 1;
+	top: 3px;
+	right: -5px;
+	bottom: 3px;
+	cursor: pointer;
+	padding: 12px 15px;
+	color: #393939;
+	font-size: 12px;
+	border-radius: 0;
+	background: none;
+	display: inline-block;
+	margin-right: 8px;
+	text-align: center;
+	vertical-align: top;
+	text-transform: uppercase;
+	will-change: opacity;
+	transition: all 0.2s;
+	font-weight: 600;
+	font-style: normal;
+}
+
+.uploadBtn:before {
+	content: "\e83c";
+	margin-right: 5px;
+	color: #fa541d;
+	font-family: 'fontello';
+	font-weight: normal;
+	line-height: 1em;
+}
+
+.clearBtn {
+	right: 65px;
+}
+
+.clearBtnIcon:before {
+	content: "\e82b";
+	margin-right: 5px;
+	color: #fa541d;
+	font-family: 'fontello';
+	font-weight: normal;
+	line-height: 1em;
+}

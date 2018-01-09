@@ -1,0 +1,17 @@
+{
+  "name": "webiny-model",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian.1358@gmail.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "babel-runtime": "^6.26.0",
+    "lodash": "^4.17.4",
+    "webiny-validation": "^1",
+    "webiny-data-extractor": "^1"
+  }
+}

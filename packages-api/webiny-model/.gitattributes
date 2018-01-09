@@ -1,0 +1,39 @@
+# Auto detect text files and perform LF normalization
+
+*        text=auto
+
+*.html   text diff=html
+*.css    text
+*.js     text
+*.sql    text
+*.php    text
+*.md     text
+*.txt    text
+*.tpl    text diff=html
+*.json   text
+*.pdf	 diff=astextplain
+*.h      text
+*.sh     text
+*.less   text
+*.svg    text
+*.yml    text
+*.xml    text
+Makefile text
+Procfile text
+*.c      text
+*.cfg    text
+*.coffee text
+*.ini    text
+
+*.png    binary
+*.jpg    binary
+*.gif    binary
+*.bmp    binary
+*.bz2    binary
+*.jar    binary
+*.jpe    binary
+*.tar.gz binary
+*.zip    binary
+
+*.gitattributes text
+*.gitignore text

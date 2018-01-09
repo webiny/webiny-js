@@ -1,0 +1,227 @@
+div.box {
+	border: 1px solid #e7e5e5;
+	color: #333;
+	display: inline-block;
+	background-color: #F3F3F3;
+	padding: 20px;
+	width: 100%;
+	margin-bottom: 20px;
+}
+
+h1.title {
+	text-align: left;
+	border-bottom: 2px solid #fa5a28;
+	margin: 0 0 15px;
+	font-size: 17px;
+	padding-bottom: 10px;
+	padding-right: 20px;
+	display: block;
+	font-weight: 500;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+h2.customMethodsTitle {
+	font-size: 16px;
+	border-bottom: 1px solid #e2e2e2;
+	margin-bottom: 10px;
+	margin-top: 25px;
+}
+
+span.removeButton {
+	font-size: 25px;
+	opacity: 0.4;
+	cursor: pointer;
+	position: absolute;
+	top: 20px;
+	right: 40px;
+}
+
+span.removeButton:hover {
+	opacity: 1;
+}
+
+.toggleAccessButtonWrapper {
+	display: inline-block;
+}
+
+.toggleAccessButtonWrapper button.toggleAccessButton {
+	border-radius: 2px;
+	width: 40px;
+	height: 40px;
+	margin: 0 5px 5px 0;
+	background-color: #d8d8d8;
+	color: #333;
+	border: 1px solid #b7b7b7;
+	padding: 10px;
+	display: inline-block;
+}
+
+.toggleAccessButtonWrapper button.toggleAccessButton:hover:not(:disabled) {
+	box-shadow: 0 0 0 0 #FA5723;
+}
+
+.toggleAccessButtonWrapper button.toggleAccessButtonExposed {
+	color: white;
+	background-color: #FA5723;
+	border: 1px solid #ED4005;
+}
+
+.toggleAccessButtonWrapper button.toggleAccessButtonPublic {
+	background-color: #26AFA6;
+	color: white;
+	border: none;
+	pointer-events: none;
+}
+
+ul.customMethodsList {
+	margin: 0;
+	padding: 5px 0 0 0;
+	list-style: none;
+	height: 200px;
+	overflow: hidden;
+	overflow-y: auto;
+}
+
+li.customMethodListItem {
+	font-size: 12px;
+	margin-bottom: 7px;
+	list-style: none;
+	padding-left: 0;
+}
+
+ul.customMethodsList .toggleAccessButtonWrapper {
+	float: left;
+}
+
+ul.customMethodsList .toggleAccessButtonWrapper button.toggleAccessButton {
+	margin: 0;
+}
+
+ul.customMethodsList .methodDetails {
+	float: left;
+	margin-left: 5px;
+	max-width: 75%;
+}
+
+@media (max-width: 383px) {
+	ul.customMethodsList .methodDetails {
+		max-width: 60%;
+	}
+}
+
+ul.customMethodsList .methodTypeLabel {
+	font-size: 14px;
+}
+
+ul.customMethodsList .methodPathLabel {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+div.noCustomMethods {
+	text-align: center;
+	width: 100%;
+	display: block;
+	padding: 50px;
+	color: #c1c0c0;
+	font-weight: 300;
+}
+
+/* Method Details Tooltip */
+
+div.box :global(.Webiny_Ui_Tooltip_content) {
+	padding: 10px 10px;
+	width: 350px;
+	max-width: initial;
+}
+
+div.box :global(.Webiny_Ui_Tooltip_innerContent) {
+	border-radius: 2px;
+	text-align: left;
+	white-space: initial;
+	color: #393939;
+	background-color: white;
+	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
+	font-family: 'Source Sans Pro', sans-serif;
+	font-size: 14px;
+	font-weight: 100;
+	padding: 10px;
+}
+
+div.box :global(.Webiny_Ui_Tooltip_contentTop:before) {
+	border-left: 7px solid transparent;
+	border-right: 7px solid transparent;
+	border-top: 7px solid white;
+	bottom: 3px;
+	margin-left: auto;
+	margin-right: auto;
+	left: 0;
+	right: 0;
+}
+
+div.box :global(.Webiny_Ui_Tooltip_contentRight:before) {
+	border-top: 7px solid transparent;
+	border-bottom: 7px solid transparent;
+	border-right: 7px solid white;
+	left: 3px;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+div.box :global(.Webiny_Ui_Tooltip_content strong) {
+	width: 200px;
+	border-radius: 2px;
+}
+
+.detailsTooltip h3 {
+	text-align: left;
+	font-size: 18px;
+	padding: 0 20px 2px 0;
+	font-weight: 500;
+	margin: 0 0 5px;
+}
+
+.detailsTooltip .publicMethod {
+	color: #26afa6;
+}
+
+.detailsTooltip .methodBox {
+	background-color: #fa5723;
+	color: white;
+	display: inline-block;
+	padding: 2px 4px;
+	border-radius: 2px;
+	font-size: 11px;
+	margin-right: 5px;
+}
+
+/* Parameters tables */
+.detailsTooltip table.parametersTable tr td {
+	padding: 2px 8px 2px 0;
+	vertical-align: top;
+}
+
+.detailsTooltip table.usagesTable {
+	width: 100%;
+}
+
+.detailsTooltip table.usagesTable tr td {
+	border-bottom: 1px solid #e2e2e2;
+	padding: 5px 0;
+	vertical-align: top;
+}
+
+.detailsTooltip table.usagesTable tr:last-child td {
+	border-bottom: none;
+}
+
+.detailsTooltip table.usagesTable tr td:first-child {
+	width: 60%;
+}
+
+.detailsTooltip table.usagesTable .moreRoles a {
+	display: block;
+}

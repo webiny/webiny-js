@@ -1,0 +1,55 @@
+.radio {
+	display: block;
+	background-color: transparent;
+	color: inherit;
+	margin-bottom: 7px;
+}
+
+/* hide default input */
+.radio input {
+	display: none;
+}
+
+.radio label:empty {
+	padding-left: 10px;
+}
+
+.radio label {
+	cursor: pointer;
+	position: relative;
+	padding-left: 32px;
+	margin-right: 15px;
+	font-weight: normal;
+	font-size: 16px;
+	margin-bottom: 0;
+}
+
+.radio.disabled label {
+	color: #CCC;
+}
+
+/* radio border */
+.radio label:before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	border-radius: 64px;
+	width: 20px;
+	height: 20px;
+	border: 1px solid #373737;
+}
+
+/* check radio icon */
+.radio input[type=radio]:checked + label:after,
+.radio input[type=checkbox]:checked + label:after {
+	content: "";
+	position: absolute;
+	top: 6px;
+	left: 6px;
+	border-radius: 64px;
+	width: 8px;
+	height: 8px;
+	color: #8BDBED;
+	background-color: #373737;
+}

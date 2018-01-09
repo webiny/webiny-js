@@ -1,0 +1,15 @@
+language: node_js
+sudo: false
+node_js:
+  - "node"
+  - "8"
+install:
+  - yarn install
+script:
+  - yarn test:travis
+notifications:
+  slack:
+    on_success: change
+    on_failure: always
+    rooms:
+      - webiny:rw9auyqJpDRRGcVmFCektrH5
