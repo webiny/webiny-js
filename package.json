@@ -39,7 +39,7 @@
     "test:utils": "mocha --require source-map-support/register --require babel-core/register \"packages-utils/**/tests/**/*.test.js\"",
     "test:webiny-api": "mocha --require source-map-support/register --require babel-core/register \"packages-api/webiny-api/tests/**/*.test.js\"",
     "test:coverage": "nyc --reporter=text yarn test:all",
-    "test:travis": "yarn build && nyc yarn test:all && nyc report --reporter=text-lcov | coveralls"
+    "test:travis": "nyc yarn test:all && nyc report --reporter=text-lcov | coveralls"
   },
   "pre-commit": [
     "test:all"

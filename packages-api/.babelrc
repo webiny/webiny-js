@@ -10,9 +10,6 @@
     "plugins": [
         ["babel-plugin-transform-object-rest-spread", {"useBuiltIns": true}],
         ["babel-plugin-transform-builtin-extend", {"globals": ["Error"]}],
-        ["babel-plugin-transform-runtime", {
-            "polyfill": false,
-            "regenerator": true
-        }]
+        ["babel-plugin-transform-runtime"]
     ]
 }
