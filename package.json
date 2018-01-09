@@ -21,7 +21,9 @@
     "babel-preset-flow": "^6.23.0",
     "babel-preset-react": "^6.24.1",
     "chai": "^4.1.2",
+    "commitizen": "^2.9.6",
     "coveralls": "^3.0.0",
+    "cz-conventional-changelog": "^2.1.0",
     "lerna": "^2.5.1",
     "mocha": "^4.0.1",
     "nyc": "^11.3.0",
@@ -30,6 +32,7 @@
     "yargs": "^10.0.3"
   },
   "scripts": {
+    "commit": "git-cz",
     "build": "lerna exec -- babel src -d lib --source-maps",
     "test:all": "mocha --require source-map-support/register --require babel-core/register \"packages-*/**/tests/**/*.test.js\"",
     "test:api": "mocha --require source-map-support/register --require babel-core/register \"packages-api/**/tests/**/*.test.js\"",
@@ -46,5 +49,10 @@
       "packages-api/**/src",
       "packages-utils/**/src"
     ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
