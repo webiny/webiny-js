@@ -1,4 +1,4 @@
-Webiny JS 
+Webiny JS  [![Build Status](https://travis-ci.org/Webiny/webiny-js.svg?branch=master)](https://travis-ci.org/Webiny/webiny-js) [![Coverage Status](https://coveralls.io/repos/github/Webiny/webiny-js/badge.svg?branch=master)](https://coveralls.io/github/Webiny/webiny-js?branch=master)
 ===
 Our goal is a single web app development platform to develop APIs as well as React apps.
 
