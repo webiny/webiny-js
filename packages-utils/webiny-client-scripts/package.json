@@ -1,0 +1,7 @@
+{
+  "name": "webiny-client-scripts",
+  "bin": "bin/webiny-client-scripts.js",
+  "description": "A collection of utility scripts to use with client apps",
+  "version": "1.0.0",
+  "license": "MIT"
+}

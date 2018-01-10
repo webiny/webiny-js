@@ -1,0 +1,7 @@
+{
+  "scripts": {
+    "develop": "./../../node_modules/.bin/webiny-client-scripts develop-app Client",
+    "build": "./../../node_modules/.bin/webiny-client-scripts build-app Client",
+    "develop-theme": "./../../node_modules/.bin/webiny-client-scripts develop-theme Theme"
+  }
+}
