@@ -19,7 +19,7 @@ program.command('develop-app <appRoot>', 'Start development server', (cmd) => {
 
     const env = process.env.NODE_ENV;
     const browserSync = require(path.join(appRoot, 'dev.server.js'));
-    const baseWebpack = require('./../spa/webpack.config')({ projectRoot, appRoot, env });
+    const baseWebpack = require('./../lib/spa/webpack.config')({ projectRoot, appRoot, env });
     const appWebpack = require(path.join(appRoot, 'webpack.config.js'))({ config: baseWebpack, env });
 
     browserSync({ config: appWebpack, projectRoot, appRoot });
@@ -40,7 +40,7 @@ program.command('develop-theme <themeRoot>', 'Develop theme', (cmd) => {
     const themeRoot = path.join(projectRoot, argv.themeRoot);
 
     const env = process.env.NODE_ENV;
-    let webpackConfig = require('./../theme/webpack.config')({ projectRoot, themeRoot, env });
+    let webpackConfig = require('./../lib/theme/webpack.config')({ projectRoot, themeRoot, env });
     const themeConfig = path.join(themeRoot, 'webpack.config.js');
     if (fs.existsSync(themeConfig)) {
         webpackConfig = require(themeConfig)({ config: webpackConfig, themeRoot, env });

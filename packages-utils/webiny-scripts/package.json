@@ -1,16 +1,9 @@
 {
-  "author": "Pavel Denisjuk <pavel@webiny.com>",
-  "name": "webiny-cli",
-  "description": "A plugginable CLI tool to setup, develop and manage a Webiny project",
-  "version": "1.2.9",
+  "name": "webiny-scripts",
+  "bin": "bin/webiny-scripts.js",
+  "description": "A collection of utility scripts to use with client apps",
+  "version": "1.0.0",
   "license": "MIT",
-  "keywords": [
-    "webiny",
-    "platform",
-    "cli"
-  ],
-  "main": "lib/index.js",
-  "bin": "bin/webiny-cli.js",
   "dependencies": {
     "autodll-webpack-plugin": "^0.3.6",
     "babel-core": "^6.26.0",
@@ -51,7 +44,8 @@
     "webpack-dev-server": "^2.5.0",
     "webpack-hot-middleware": "^2.18.0",
     "webpack-visualizer-plugin": "^0.1.11",
-    "write-file-webpack-plugin": "^3.4.2"
+    "write-file-webpack-plugin": "^3.4.2",
+    "yargs": "^10.0.3"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0"

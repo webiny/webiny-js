@@ -1,6 +1,6 @@
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { appEntry, SpaConfigPlugin } = require('webiny-client-scripts/spa');
+const { appEntry, SpaConfigPlugin } = require('webiny-scripts/lib/spa');
 
 module.exports = ({ config }) => {
     config.entry['admin'] = appEntry(__dirname + '/Admin/index.js');

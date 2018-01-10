@@ -29,8 +29,7 @@
     "mocha": "^4.0.1",
     "nyc": "^11.3.0",
     "pre-commit": "^1.2.2",
-    "source-map-support": "^0.5.0",
-    "yargs": "^10.0.3"
+    "source-map-support": "^0.5.0"
   },
   "scripts": {
     "commit": "git-cz",

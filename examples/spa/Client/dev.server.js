@@ -1,4 +1,4 @@
-const devServer = require('webiny-client-scripts/dev-server');
+const devServer = require('webiny-scripts/lib/dev-server');
 
 module.exports = devServer({
     domain: 'http://localhost',
