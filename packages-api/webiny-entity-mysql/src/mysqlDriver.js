@@ -7,11 +7,14 @@ class MySQLDriver extends Driver {
 	constructor(options) {
 		super();
 		this.connection = options.connection;
+		this.model = options.model || MySQLModel;
 
-		// If true, driver will automatically generate hash IDs, instead of using MySQLs auto-increment integer IDs.
 		this.idGenerator = options.idGenerator || null;
 
-		this.model = options.model || MySQLModel;
+		this.tables = _.merge({
+			prefix: '',
+			naming: null
+		}, options.tables);
 	}
 
 	onEntityConstruct(entity) {
@@ -34,7 +37,7 @@ class MySQLDriver extends Driver {
 				const data = await entity.toStorage();
 				const sql = queryBuilder.build({
 					operation: 'update',
-					table: entity.classId,
+					table: this.getTableName(entity),
 					data,
 					where: {id: data.id},
 					limit: 1
@@ -49,7 +52,7 @@ class MySQLDriver extends Driver {
 
 		return new Promise(async (resolve, reject) => {
 			const data = await entity.toStorage();
-			const sql = queryBuilder.build({operation: 'insert', data, table: entity.classId});
+			const sql = queryBuilder.build({operation: 'insert', data, table: this.getTableName(entity)});
 			this.getConnection().query(sql, (error, results) => {
 				this.workingWithSingleConnection() && this.getConnection().end();
 				if (error) {
@@ -70,7 +73,7 @@ class MySQLDriver extends Driver {
 			const id = await entity.getAttribute('id').getStorageValue();
 			const sql = queryBuilder.build({
 				operation: 'delete',
-				table: entity.classId,
+				table: this.getTableName(entity),
 				where: {id},
 				limit: 1
 			});
@@ -83,10 +86,10 @@ class MySQLDriver extends Driver {
 	}
 
 	async findOne(entity, options) {
-	 	return new Promise(async (resolve, reject) => {
+		return new Promise(async (resolve, reject) => {
 			const sql = queryBuilder.build({
 				operation: 'select',
-				table: entity.classId,
+				table: this.getTableName(entity),
 				where: options.where,
 				limit: 1
 			});
@@ -99,12 +102,12 @@ class MySQLDriver extends Driver {
 	}
 
 	async findById(entity, id, options) {
-		return this.findOne(entity, {table: entity.classId, where: {id}});
+		return this.findOne(entity, {table: this.getTableName(entity), where: {id}});
 	}
 
 	async find(entity, options) {
 		return new Promise(async (resolve, reject) => {
-			const sql = queryBuilder.build(_.merge({}, options, {table: entity.classId, operation: 'select'}));
+			const sql = queryBuilder.build(_.merge({}, options, {table: this.getTableName(entity), operation: 'select'}));
 
 			if (this.workingWithConnectionPool()) {
 				this.getConnection().getConnection((error, connection) => {
@@ -153,7 +156,7 @@ class MySQLDriver extends Driver {
 
 	async count(entity, options) {
 		return new Promise(async (resolve, reject) => {
-			const sql = queryBuilder.build(_.merge({}, options, {table: entity.classId, operation: 'count'}));
+			const sql = queryBuilder.build(_.merge({}, options, {table: this.getTableName(entity), operation: 'count'}));
 			this.getConnection().query(sql, (error, results) => {
 				this.workingWithSingleConnection() && this.getConnection().end();
 				error ? reject(error) : resolve(new QueryResult(results[0].count));
@@ -180,6 +183,42 @@ class MySQLDriver extends Driver {
 
 	getIdGenerator() {
 		return this.idGenerator;
+	}
+
+	setTablePrefix(tablePrefix) {
+		this.tables.prefix = tablePrefix;
+		return this;
+	}
+
+	getTablePrefix() {
+		return this.tables.prefix;
+	}
+
+	setTableNaming(tableNameGenerator) {
+		this.tables.naming = tableNameGenerator;
+		return this;
+	}
+
+	getTableNaming() {
+		return this.tables.naming;
+	}
+
+	getTableName(entity) {
+		const isClass = typeof entity === 'function';
+		const params = {
+			classId: isClass ? entity.classId : entity.constructor.classId,
+			tableName: isClass ? entity.tableName : entity.constructor.tableName
+		};
+
+		if (_.isFunction(this.getTableNaming())) {
+			return this.getTableNaming()({entity, ...params, driver: this});
+		}
+
+		if (params.tableName) {
+			return this.tables.prefix + params.tableName;
+		}
+
+		return this.tables.prefix + params.classId;
 	}
 }
 
