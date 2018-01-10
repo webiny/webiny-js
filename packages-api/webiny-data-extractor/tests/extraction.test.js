@@ -1,4 +1,5 @@
 import {assert} from 'chai';
+
 const extractor = require('./../src');
 
 const data = {
@@ -27,15 +28,14 @@ const data = {
 		{type: 'sphere', size: 'medium', weight: 'medium-heavy'},
 		{type: 'pyramid', size: 'small', weight: 'light'}
 	],
-    promised: new Promise(resolve => {
-	    setTimeout(() => {
-	        resolve(100);
-	    }, 5);
-    })
+	promised: new Promise(resolve => {
+		setTimeout(() => {
+			resolve(100);
+		}, 5);
+	})
 };
 
-describe('extracting values test', () =>
-{
+describe('extracting values test', () => {
 	it('should return regular root keys', async () => {
 		const extracted = await extractor.get(data, 'firstName,lastName,enabled');
 		assert.equal(extracted.firstName, 'John');
@@ -106,5 +106,28 @@ describe('extracting values test', () =>
 
 		assert.hasAllKeys(extracted, ['promised']);
 		assert.equal(extracted.promised, 100);
+	});
+
+	it('should not include fields that do not exist', async () => {
+		const extracted = await extractor.get(data, `
+			firstName,middleName,lastName,
+			company.name,company.name1,company.image.size.something,
+			subscription[basicName,name,commitment[something]],
+		`);
+
+		assert.deepEqual(extracted, {
+			firstName: 'John',
+			lastName: 'Doe',
+			company: {
+				name: 'Webiny LTD',
+				image: {
+					size: {},
+				}
+			},
+			subscription: {
+				commitment: {},
+				name: 'Free'
+			}
+		});
 	});
 });

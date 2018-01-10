@@ -20,10 +20,12 @@ class DataExtractor {
 				case current === ',':
                 case current === undefined:
                     path && _.set(output, path, await _.get(data, path));
+					typeof(_.get(output, path)) === 'undefined' && _.unset(output, path);
 					path = '';
 					break;
 				case current === ']':
 					_.set(output, path, await _.get(data, path));
+					typeof(_.get(output, path)) === 'undefined' && _.unset(output, path);
 					break outerLoop;
 				case current === '[':
 					const nested = await this.process(await _.get(data, path), paths.substr(i + 1), await _.get(output, path, {}));
