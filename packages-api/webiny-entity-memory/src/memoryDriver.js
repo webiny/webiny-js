@@ -46,6 +46,12 @@ class MemoryDriver extends Driver {
 		return new QueryResult(_.find(this.data[entity.classId], {id}));
 	}
 
+	async findByIds(entity, ids, options) {
+		const cloned = _.cloneDeep(options);
+		cloned.where = {id: ids};
+		return this.find(entity, cloned);
+	}
+
 	async findOne(entity, options) {
 		return new QueryResult(_.find(this.data[entity.classId], options.query));
 	}
@@ -65,7 +71,11 @@ class MemoryDriver extends Driver {
 
 		this.data[entity.classId].forEach(record => {
 			for (const [key, value] of Object.entries(where)) {
-				if (record[key] !== value) {
+				if (_.isArray(value)) {
+					if (!value.includes(record[key])) {
+						return true;
+					}
+				} else if (record[key] !== value) {
 					return true;
 				}
 			}
@@ -76,8 +86,8 @@ class MemoryDriver extends Driver {
 	}
 
 	flush(classId) {
-		if (classId && _.has(this.data, classId)) {
-			delete this.data[classId];
+		if (classId) {
+			_.has(this.data, classId) && delete this.data[classId];
 		} else {
 			this.data = {};
 		}

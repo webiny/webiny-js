@@ -1,14 +1,21 @@
 import {assert} from 'chai';
 
+const {EntityCollection} = require('webiny-entity');
+
 const {ComplexEntity, SimpleEntity} = require('./../entities/complexEntity');
 const sinon = require('sinon');
 
 describe('entity attribute test', function () {
 	it('it must populate the attribute correctly', async () => {
 		const entity = new ComplexEntity();
+		assert.deepEqual(entity.getAttribute('simpleEntitiesLoadedFromTable').value.status, {loading: false, loaded: false});
+
 		entity.simpleEntitiesLoadedFromTable = [{name: 'Test-1'}, {name: 'Test-2'}, {name: 'Test-3'}];
+		assert.deepEqual(entity.getAttribute('simpleEntitiesLoadedFromTable').value.status, {loading: true, loaded: false});
 
 		let simpleEntities = await entity.simpleEntitiesLoadedFromTable;
+		assert.deepEqual(entity.getAttribute('simpleEntitiesLoadedFromTable').value.status, {loading: false, loaded: true});
+
 		assert.lengthOf(simpleEntities, 3);
 		assert.instanceOf(simpleEntities[0], SimpleEntity);
 		assert.instanceOf(simpleEntities[1], SimpleEntity);
@@ -30,8 +37,10 @@ describe('entity attribute test', function () {
 		simpleEntity3.name = 'Test-3';
 
 		entity.simpleEntitiesLoadedFromTable = [simpleEntity1, simpleEntity2, simpleEntity3];
+		assert.deepEqual(entity.getAttribute('simpleEntitiesLoadedFromTable').value.status, {loading: false, loaded: true});
 
 		simpleEntities = await entity.simpleEntitiesLoadedFromTable;
+		assert.deepEqual(entity.getAttribute('simpleEntitiesLoadedFromTable').value.status, {loading: false, loaded: true});
 
 		assert.lengthOf(simpleEntities, 3);
 		assert.instanceOf(simpleEntities[0], SimpleEntity);
@@ -44,15 +53,24 @@ describe('entity attribute test', function () {
 		assert.equal(simpleEntities[1].name, 'Test-2');
 		assert.equal(simpleEntities[2].name, 'Test-3');
 
+		assert.deepEqual(entity.getAttribute('simpleEntitiesLoadedFromTable').value.status, {loading: false, loaded: true});
 		entity.simpleEntitiesLoadedFromTable = null;
+
 		assert.isNull(await entity.simpleEntitiesLoadedFromTable);
+		assert.deepEqual(entity.getAttribute('simpleEntitiesLoadedFromTable').value.status, {loading: false, loaded: true});
+
 	});
 
 	it('it null is set, it should accept it', async () => {
 		const entity = new ComplexEntity();
+
 		entity.simpleEntitiesLoadedFromTable = [{name: 'Test-1'}, {name: 'Test-2'}, {name: 'Test-3'}];
 		entity.simpleEntitiesLoadedFromTable = null;
+		assert.deepEqual(entity.getAttribute('simpleEntitiesLoadedFromTable').value.status, {loading: true, loaded: false});
+		assert.lengthOf(entity.getAttribute('simpleEntitiesLoadedFromTable').value.queue, 1);
+
 		assert.isNull(await entity.simpleEntitiesLoadedFromTable);
+		assert.deepEqual(entity.getAttribute('simpleEntitiesLoadedFromTable').value.status, {loading: false, loaded: true});
 	});
 
 	it('it should return correct toStorage data', async () => {
@@ -85,9 +103,9 @@ describe('entity attribute test', function () {
 		assert.deepEqual(actual, expected);
 	});
 
-	it('should return null because no data was assigned', async () => {
+	it('should return EntityCollection which is the default value of the attribute', async () => {
 		const entity = new ComplexEntity();
-		assert.isNull(await entity.simpleEntitiesLoadedFromTable);
+		assert.instanceOf(await entity.simpleEntitiesLoadedFromTable, EntityCollection);
 	});
 
 	it('should load entities from another table - only when the attribute is actually accessed', async () => {
@@ -103,46 +121,42 @@ describe('entity attribute test', function () {
 			})
 			.onCall(1)
 			.callsFake((query, callback) => {
-				callback(null, [{id: 'B'}, {id: 'C'}, {id: 'D'}]);
+				callback(null, [
+					{
+						"id": 'B',
+						"name": "This is a test B",
+						"slug": "thisIsATestB",
+						"enabled": 1
+					},
+					{
+						"id": 'C',
+						"name": "This is a test C",
+						"slug": "thisIsATestC",
+						"enabled": 1
+					},
+					{
+						"id": 'D',
+						"name": "This is a test D",
+						"slug": "thisIsATestD",
+						"enabled": 1
+					}
+				]);
 			})
 			.onCall(2)
 			.callsFake((query, callback) => {
 				callback(null, [{count: 3}]);
-			})
-			.onCall(3)
-			.callsFake((query, callback) => {
-				callback(null, [{
-					"id": 'B',
-					"name": "This is a test B",
-					"slug": "thisIsATestB",
-					"enabled": 1
-				}]);
-			})
-			.onCall(4)
-			.callsFake((query, callback) => {
-				callback(null, [{
-					"id": 'C',
-					"name": "This is a test C",
-					"slug": "thisIsATestC",
-					"enabled": 1
-				}]);
-			})
-			.onCall(5)
-			.callsFake((query, callback) => {
-				callback(null, [{
-					"id": 'D',
-					"name": "This is a test D",
-					"slug": "thisIsATestD",
-					"enabled": 1
-				}]);
 			});
 
-
 		const entity = await ComplexEntity.findOne();
-		assert.deepEqual(entity.getAttribute('simpleEntitiesLoadedFromTable').value.current, ['B', 'C', 'D']);
+		assert.equal(entity.id, 'A');
+
+		assert.deepEqual(entity.getAttribute('simpleEntitiesLoadedFromTable').value.status, {loading: false, loaded: false});
+		assert.instanceOf(entity.getAttribute('simpleEntitiesLoadedFromTable').value.current, EntityCollection);
+		assert.deepEqual(entity.getAttribute('simpleEntitiesLoadedFromTable').value.status, {loading: false, loaded: false});
 
 		// After getting the attribute, let's check if everything was loaded correctly.
 		const simpleEntities = await entity.simpleEntitiesLoadedFromTable;
+		assert.deepEqual(entity.getAttribute('simpleEntitiesLoadedFromTable').value.status, {loading: false, loaded: true});
 
 		assert.lengthOf(simpleEntities, 3);
 		assert.instanceOf(simpleEntities[0], SimpleEntity);
@@ -159,7 +173,7 @@ describe('entity attribute test', function () {
 	});
 
 	it('when saving main entity, it should save linked entities only if auto save is enabled', async () => {
-		const entity =  new ComplexEntity();
+		const entity = new ComplexEntity();
 		entity.populate({
 			name: "This is a test",
 			slug: "thisIsATest",

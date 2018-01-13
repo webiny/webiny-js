@@ -10,7 +10,7 @@ class EntitiesAttribute extends attributes.entities {
 	}
 
 	setStorageValue(value) {
-		this.setValue(JSON.parse(value));
+		super.setStorageValue(JSON.parse(value));
 		return this;
 	}
 

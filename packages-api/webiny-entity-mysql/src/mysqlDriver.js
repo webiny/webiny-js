@@ -105,6 +105,12 @@ class MySQLDriver extends Driver {
 		return this.findOne(entity, {table: this.getTableName(entity), where: {id}});
 	}
 
+	async findByIds(entity, ids, options) {
+		const cloned = _.cloneDeep(options);
+		cloned.where = {id: ids};
+		return this.find(entity, cloned);
+	}
+
 	async find(entity, options) {
 		return new Promise(async (resolve, reject) => {
 			const sql = queryBuilder.build(_.merge({}, options, {table: this.getTableName(entity), operation: 'select'}));
@@ -162,6 +168,10 @@ class MySQLDriver extends Driver {
 				error ? reject(error) : resolve(new QueryResult(results[0].count));
 			});
 		});
+	}
+
+	isId(value) {
+		return _.isFunction(this.idGenerator) ? _.isString(value) : _.isNumber(value) && value > 0;
 	}
 
 	getConnection() {

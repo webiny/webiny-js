@@ -24,6 +24,10 @@ class Driver {
 		return new QueryResult();
 	}
 
+	async findByIds(entity, ids, params) {
+		return new QueryResult();
+	}
+
 	async findOne(entity, params) {
 		return new QueryResult();
 	}
@@ -34,6 +38,10 @@ class Driver {
 
 	async count(entity, params) {
 		return new QueryResult(0);
+	}
+
+	async isId(entity, params) {
+		return true;
 	}
 }
 

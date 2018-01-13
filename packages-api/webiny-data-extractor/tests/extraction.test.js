@@ -77,16 +77,6 @@ describe('extracting values test', () => {
 		assert.lengthOf(extracted.objects, 3);
 	});
 
-	it('TODO - if a key is an array and nested keys are set with dot notation, array should be returned - with objects that contain only defined keys', async () => {
-		// TODO
-		const extracted = await extractor.get(data, `age,objects.type,objects.weight`);
-	});
-
-	it('TODO - if a key is an array and nested keys are set inside square brackets notation, array should be returned - with objects that contain only defined keys', async () => {
-		// TODO
-		const extracted = await extractor.get(data, `age,objects[type,weight]`);
-	});
-
 	it('should support listing paths in multiple lines and return complete data with all nested keys', async () => {
 		const extracted = await extractor.get(data, `
 			 firstName,lastName,enabled,

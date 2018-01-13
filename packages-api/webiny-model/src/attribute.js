@@ -185,17 +185,16 @@ class Attribute {
 	 * @returns {boolean}
 	 */
 	canSetValue() {
-		return !(this.getOnce() && this.value.isSet());
+		return !(this.getOnce() && this.isSet());
 	}
 
 	/**
 	 * Sets attribute's value.
 	 * @param value
-	 * @returns {Attribute}
 	 */
 	setValue(value) {
 		if (!this.canSetValue()) {
-			return this;
+			return;
 		}
 
 		if (_.isFunction(this.onSetCallback)) {
@@ -203,12 +202,11 @@ class Attribute {
 		} else {
 			this.value.current = value;
 		}
-
-		return this;
 	}
 
 	/**
 	 * Returns attribute's value.
+	 * @returns {*}
 	 */
 	getValue() {
 		if (this.isEmpty()) {

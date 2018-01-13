@@ -6,8 +6,10 @@ class OperatorsProcessor {
         this.processors = [
             operators.query.logical.and,
             operators.query.logical.or,
+
             operators.query.comparison.eq,
-            operators.query.comparison.ne
+            operators.query.comparison.in,
+            operators.query.comparison.ne,
         ];
     }
 

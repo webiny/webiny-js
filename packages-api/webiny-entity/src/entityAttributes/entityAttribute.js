@@ -13,7 +13,7 @@ class EntityAttribute extends Attribute {
 		this.value = new EntityAttributeValue();
 
 		this.entityClass = entity;
-		this.autoSave = false;
+		this.autoSave = true;
 
 
 		this.getParentModel().getParentEntity().on('afterSave', async () => {

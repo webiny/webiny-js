@@ -157,6 +157,21 @@ class Entity {
 		return null;
 	}
 
+	static async findByIds(ids, params = {}) {
+		const paramsClone = _.cloneDeep(params);
+		await this.emit('query', {type: 'findByIds', params: paramsClone});
+
+		const queryResult = await this.getDriver().findByIds(this, ids, paramsClone);
+		const entityCollection = new EntityCollection().setParams(paramsClone).setMeta(queryResult.getMeta());
+		if (queryResult.getResult()) {
+			for (let i = 0; i < queryResult.getResult().length; i++) {
+				entityCollection.push(await new this().setExisting().populateFromStorage(queryResult.getResult()[i]).emit('loaded'));
+			}
+		}
+
+		return entityCollection;
+	}
+
 	static async findOne(params = {}) {
 		const paramsClone = _.cloneDeep(params);
 		await this.emit('query', {type: 'findOne', params: paramsClone});

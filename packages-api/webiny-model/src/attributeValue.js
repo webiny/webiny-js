@@ -1,5 +1,6 @@
 class AttributeValue {
-	constructor() {
+	constructor(attribute) {
+		this.attribute = attribute;
 		this.current = null;
 		this.dirty = false;
 		this.set = false;
@@ -7,15 +8,30 @@ class AttributeValue {
 		return new Proxy(this, {
 			set: (instance, key, value) => {
 				if (key === 'current') {
-					this.set = true;
-					if (instance.current !== value) {
-						this.dirty = true;
+					instance.set = true;
+					if (instance.isDifferentFrom(value)) {
+						instance.dirty = true;
 					}
+					instance.current = value;
+
 				}
 				instance[key] = value;
 				return true;
 			}
 		});
+	}
+
+	setCurrent(value) {
+		this.current = value;
+		return this;
+	}
+
+	getCurrent() {
+		return this.current;
+	}
+
+	isDifferentFrom(value) {
+		return this.current !== value;
 	}
 
 	isDirty() {

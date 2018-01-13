@@ -7,19 +7,31 @@ class EntitiesAttribute extends Attribute {
 	constructor(name, attributesContainer, entity, attributeName = null) {
 		super(name, attributesContainer);
 
+		this.classes = {
+			parent: this.getParentModel().getParentEntity().constructor.name,
+			entities: {class: entity, attribute: attributeName},
+			using: {class: null, attribute: null}
+		};
+
+		// By default, we will be using a camel case version of parent entity's class name.
+		this.classes.using.attribute = _.camelCase(this.classes.parent);
+
+		// We will use the same value here to (when loading entities without a middle aggregation entity).
+		if (!this.classes.entities.attribute) {
+			this.classes.entities.attribute = this.classes.using.attribute;
+		}
+
 		/**
 		 * Attribute's current value.
 		 * @type {undefined}
 		 */
-		this.value = new EntitiesAttributeValue();
+		this.value = new EntitiesAttributeValue(this);
 
-		const defaultAttribute = _.camelCase(this.getParentModel().getParentEntity().classId);
-		this.classes = {
-			entity: {class: entity, attribute: attributeName || defaultAttribute},
-			using: {class: null, attribute: defaultAttribute}
-		};
-
-		this.autoSave = false;
+		/**
+		 * TODO: maybe add the ability to set this flag globally on all entities, but also override specifically where needed.
+		 * @type {boolean}
+		 */
+		this.autoSave = true;
 
 		/**
 		 * By default, we don't want to have links stored in entity attribute directly.
@@ -27,31 +39,12 @@ class EntitiesAttribute extends Attribute {
 		 */
 		this.toStorage = false;
 
-		const parent = this.getParentModel().getParentEntity();
-		parent.on('load', async () => {
-			if (this.getToStorage()) {
-				return;
-			}
-
-			let ids = null;
-			const id = await this.getParentModel().getAttribute('id').getStorageValue();
-			if (this.classes.using.class) {
-				ids = await this.classes.using.class.getDriver().findIds(parent, {where: {[this.classes.using.attribute]: id}});
-			} else {
-				ids = await this.classes.entity.class.getDriver().findIds(parent, {where: {[this.classes.entity.attribute]: id}});
-			}
-
-			this.value.current = ids.getResult();
-			// We don't want to mark value as dirty.
-			this.value.clean();
-		}).setOnce();
-
-		parent.on('afterSave', async () => {
-			if (this.getAutoSave()) {
+		this.getParentModel().getParentEntity().on('afterSave', async () => {
+			if (this.getAutoSave() && (this.value.isLoading() || this.value.isSet())) {
 				const entities = await this.getValue();
 				for (let i = 0; i < entities.length; i++) {
 					// Let's only save loaded item.
-					if (entities[i] instanceof this.getEntityClass()) {
+					if (entities[i] instanceof this.getEntitiesClass()) {
 						await entities[i].save();
 					}
 				}
@@ -59,8 +52,8 @@ class EntitiesAttribute extends Attribute {
 		});
 	}
 
-	getEntityClass() {
-		return this.classes.entity.class;
+	getEntitiesClass() {
+		return this.classes.entities.class;
 	}
 
 	getUsingClass() {
@@ -86,58 +79,52 @@ class EntitiesAttribute extends Attribute {
 		return this.autoSave;
 	}
 
-	setValue(values) {
-		if (!this.canSetValue()) {
-			return this;
-		}
-
-		// Even if the value is invalid (eg. a string), we allow it here, but calling validate() will fail.
-		if (!_.isArray(values)) {
-			this.value.current = values;
-			return this;
-		}
-
-		const newValues = [];
-		for (let i = 0; i < values.length; i++) {
-			const value = values[i];
-
-			const {Entity} = require('./..');
-
-			switch (true) {
-				case value instanceof Entity:
-					newValues.push(value);
-					break;
-				case _.isObject(value):
-					const newValue = new this.classes.entity.class();
-					newValue.populate(value);
-					newValues.push(newValue);
-					break;
-				default:
-					newValues.push(value);
-			}
-		}
-		this.value.current = newValues;
-
-		return this;
+	async getValue() {
+		return this.value.load();
 	}
 
-	async getValue() {
-		// This is equivalent to "super.getValue()" method call, which does not work with async methods.
-		const value = Attribute.prototype.getValue.call(this);
+	/**
+	 * Only allowing EntityCollection or plain arrays
+	 * @param value
+	 * @returns {Promise<void>}
+	 */
+	setValue(value) {
+		this.value.load(() => {
+			if (!this.canSetValue()) {
+				return;
+			}
 
-		if (_.isArray(value)) {
-			for (let i = 0; i < value.length; i++) {
-				if (value[i] instanceof this.getEntityClass()) {
-					// Do nothing.
-				} else {
-					if (value[i]) {
-						value[i] = await this.getEntityClass().findById(value[i]);
+			// Even if the value is invalid (eg. a string), we allow it here, but calling validate() will fail.
+			if (value instanceof EntityCollection) {
+				this.value.current = value;
+				return;
+			}
+
+			if (_.isArray(value)) {
+				const collection = new EntityCollection();
+				for (let i = 0; i < value.length; i++) {
+					const current = value[i];
+
+					const {Entity} = require('./..');
+
+					switch (true) {
+						case current instanceof Entity:
+							collection.push(current);
+							break;
+						case _.isObject(current):
+							collection.push(new this.classes.entities.class().populate(current));
+							break;
+						default:
+							collection.push(current);
 					}
 				}
-			}
-		}
 
-		return this.value.current;
+				this.value.current = collection;
+				return;
+			}
+
+			this.value.current = value;
+		});
 	}
 
 	/**
@@ -150,11 +137,12 @@ class EntitiesAttribute extends Attribute {
 			const storageValue = [];
 			for (let i = 0; i < this.value.current.length; i++) {
 				const value = this.value.current[i];
-				if (value instanceof this.getEntityClass()) {
+				if (value instanceof this.getEntitiesClass()) {
 					storageValue.push(value.id);
-				} else {
-					storageValue.push(value);
+					continue;
 				}
+
+				this.getParentModel().getParentEntity().getDriver().isId(value) && storageValue.push(value);
 			}
 
 			return storageValue;
@@ -163,11 +151,8 @@ class EntitiesAttribute extends Attribute {
 		return [];
 	}
 
-	/**
-	 * Will not get triggered if setToStorage is set to false, that's why we don't have to do any additional checks here.
-	 */
-	setStorageValue(value) {
-		return super.setStorageValue(new EntityCollection(value));
+	hasValue() {
+		return !_.isEmpty(this.value.current);
 	}
 
 	async validate() {
@@ -187,7 +172,7 @@ class EntitiesAttribute extends Attribute {
 				continue;
 			}
 
-			if (!(this.value.current[i] instanceof this.getEntityClass())) {
+			if (!(this.value.current[i] instanceof this.getEntitiesClass())) {
 				errors.push({
 					type: ModelError.INVALID_ATTRIBUTE,
 					data: {

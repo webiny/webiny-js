@@ -1,4 +1,5 @@
 module.exports = {
     eq: require('./eq'),
-    ne: require('./ne')
+    in: require('./in'),
+    ne: require('./ne'),
 };

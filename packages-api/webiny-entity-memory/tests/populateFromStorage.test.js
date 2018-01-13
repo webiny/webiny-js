@@ -1,73 +1,82 @@
 import {assert} from 'chai';
+
 const {ComplexEntity, SimpleEntity} = require('./entities/complexEntity');
 
 describe('populateFromStorage test', function () {
 	it('should populate entity correctly with data received from memory', async () => {
-		const user = new ComplexEntity();
-		user.populateFromStorage({
-			firstName: 'test',
-			lastName: 'tester',
-			verification: {"verified": true, "documentType": "driversLicense"},
-			tags: [{"slug": "no-name", "label": "No Name"}, {"slug": "adult-user", "label": "Adult User"}],
-			simpleEntity: 1,
-			simpleEntities: [2, 3, 4]
-		});
-
-		assert.equal(user.firstName, 'test');
-		assert.equal(user.lastName, 'tester');
-		assert.isTrue(user.verification.verified);
-		assert.equal(user.verification.documentType, 'driversLicense');
-		assert.equal(user.tags[0].slug, 'no-name');
-		assert.equal(user.tags[0].label, 'No Name');
-		assert.equal(user.tags[1].slug, 'adult-user');
-		assert.equal(user.tags[1].label, 'Adult User');
-		assert.lengthOf(user.tags, 2);
-
-		SimpleEntity.getDriver().flush('SimpleEntity').import('SimpleEntity', [
-			{
-				"id": 1,
-				"name": "Test-1"
-			}
-		]);
-
-		const simpleEntity = await user.simpleEntity;
-
-		assert.equal(user.getAttribute('simpleEntity').value.current, 1);
-		assert.equal(user.getAttribute('simpleEntities').value.current[0], 2);
-		assert.equal(user.getAttribute('simpleEntities').value.current[1], 3);
-		assert.equal(user.getAttribute('simpleEntities').value.current[2], 4);
+		SimpleEntity.getDriver()
+			.flush('ComplexEntity')
+			.import('ComplexEntity', [
+				{
+					id: 'A',
+					firstName: 'test',
+					lastName: 'tester',
+					verification: {"verified": true, "documentType": "driversLicense"},
+					tags: [{"slug": "no-name", "label": "No Name"}, {"slug": "adult-user", "label": "Adult User"}],
+					simpleEntity: 'A',
+					simpleEntities: ['B', 'C', 'D']
+				}
+			])
+			.flush('SimpleEntity')
+			.import('SimpleEntity', [
+				{
+					"id": 'A',
+					"name": "Test-A"
+				},
+				{
+					"id": 'B',
+					"name": "Test-B"
+				},
+				{
+					"id": 'C',
+					"name": "Test-C"
+				}, {
+					"id": 'D',
+					"name": "Test-D"
+				}
+			]);
 
 
-		SimpleEntity.getDriver().import('SimpleEntity', [
-			{
-				"id": 2,
-				"name": "Test-2"
-			},
-			{
-				"id": 3,
-				"name": "Test-3"
-			}, {
-				"id": 4,
-				"name": "Test-4"
-			}
-		]);
+		const complexEntity = await ComplexEntity.findById('A');
 
-		assert.equal(simpleEntity.id, 1);
-		assert.equal(simpleEntity.name, 'Test-1');
-		assert.lengthOf(await user.simpleEntities, 3);
+		assert.deepEqual(complexEntity.getAttribute('simpleEntities').value.status, {loading: false, loaded: false});
 
-		const simpleEntities = await user.simpleEntities;
+		assert.equal(complexEntity.firstName, 'test');
+		assert.equal(complexEntity.lastName, 'tester');
+		assert.isTrue(complexEntity.verification.verified);
+		assert.equal(complexEntity.verification.documentType, 'driversLicense');
+		assert.equal(complexEntity.tags[0].slug, 'no-name');
+		assert.equal(complexEntity.tags[0].label, 'No Name');
+		assert.equal(complexEntity.tags[1].slug, 'adult-user');
+		assert.equal(complexEntity.tags[1].label, 'Adult User');
+		assert.lengthOf(complexEntity.tags, 2);
+
+		const simpleEntity = await complexEntity.simpleEntity;
+		assert.deepEqual(complexEntity.getAttribute('simpleEntities').value.status, {loading: false, loaded: false});
+
+		assert.equal(complexEntity.getAttribute('simpleEntity').value.current, 'A');
+		assert.equal(complexEntity.getAttribute('simpleEntities').value.current[0], 'B');
+		assert.equal(complexEntity.getAttribute('simpleEntities').value.current[1], 'C');
+		assert.equal(complexEntity.getAttribute('simpleEntities').value.current[2], 'D');
+
+		assert.equal(simpleEntity.id, 'A');
+		assert.equal(simpleEntity.name, 'Test-A');
+
+		const simpleEntities = await complexEntity.simpleEntities;
+		assert.deepEqual(complexEntity.getAttribute('simpleEntities').value.status, {loading: false, loaded: true});
+
+		assert.lengthOf(simpleEntities, 3);
+
 		assert.instanceOf(simpleEntities[0], SimpleEntity);
-		assert.equal(simpleEntities[0].id, 2);
-		assert.equal(simpleEntities[0].name, 'Test-2');
+		assert.equal(simpleEntities[0].id, 'B');
+		assert.equal(simpleEntities[0].name, 'Test-B');
 
 		assert.instanceOf(simpleEntities[1], SimpleEntity);
-		assert.equal(simpleEntities[1].id, 3);
-		assert.equal(simpleEntities[1].name, 'Test-3');
+		assert.equal(simpleEntities[1].id, 'C');
+		assert.equal(simpleEntities[1].name, 'Test-C');
 
 		assert.instanceOf(simpleEntities[2], SimpleEntity);
-		assert.equal(simpleEntities[2].id, 4);
-		assert.equal(simpleEntities[2].name, 'Test-4');
+		assert.equal(simpleEntities[2].id, 'D');
+		assert.equal(simpleEntities[2].name, 'Test-D');
 	});
 });
-

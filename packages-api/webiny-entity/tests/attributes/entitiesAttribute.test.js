@@ -119,10 +119,15 @@ describe('attribute entities test', function () {
 		mainSetOnceEntity.attribute1 = [{name: 'Enlai', type: 'dog'}, {name: 'Rocky', type: 'dog'}, {name: 'Lina', type: 'bird'}];
 		mainSetOnceEntity.attribute2 = [{firstName: 'John', lastName: 'Doe'}, {firstName: 'Jane', lastName: 'Doe'}];
 
+		let attribute1 = await mainSetOnceEntity.attribute1;
+		assert.equal(attribute1[0].name, 'Enlai');
+		assert.equal(attribute1[1].name, 'Rocky');
+		assert.equal(attribute1[2].name, 'Lina');
+
 		mainSetOnceEntity.attribute1 = [];
 		mainSetOnceEntity.attribute2 = [];
 
-		const attribute1 = await await mainSetOnceEntity.attribute1; 
+		attribute1 = await mainSetOnceEntity.attribute1;
 		assert.notEmpty(attribute1);
 		assert.equal(attribute1[0].name, 'Enlai');
 		assert.equal(attribute1[1].name, 'Rocky');
@@ -189,7 +194,7 @@ describe('attribute entities test', function () {
 		const attribute1 = await mainEntity.attribute1;
 		assert.lengthOf(attribute1, 5);
 		assert.isNull(attribute1[0]);
-		assert.instanceOf(attribute1[1], Entity1);
+		assert.equal(attribute1[1], 10);
 		assert.instanceOf(attribute1[2], Entity1);
 		assert.instanceOf(attribute1[3], Entity1);
 		assert.instanceOf(attribute1[4], Entity1);
@@ -197,7 +202,7 @@ describe('attribute entities test', function () {
 		const attribute2 = await mainEntity.attribute2;
 		assert.lengthOf(await attribute2, 4);
 		assert.isNull(attribute2[0]);
-		assert.instanceOf(attribute2[1], Entity2);
+		assert.equal(attribute2[1], 11);
 		assert.instanceOf(attribute2[2], Entity2);
 		assert.instanceOf(attribute2[3], Entity2);
 
@@ -236,24 +241,25 @@ describe('attribute entities test', function () {
 		assert.equal(mainEntity.getAttribute('attribute1').value.current[1], 'B');
 		assert.equal(mainEntity.getAttribute('attribute2').value.current[0], 'C');
 
-		sinon.stub(entity.getDriver(), 'findById')
+		sinon.stub(entity.getDriver(), 'findByIds')
 			.onCall(0)
 			.callsFake(() => {
-				return new QueryResult({id: 'A', name: 'Bucky', type: 'dog'});
+				return new QueryResult([
+					{id: 'A', name: 'Bucky', type: 'dog'},
+					{id: 'B', name: 'Enlai', type: 'dog'}
+				]);
 			})
 			.onCall(1)
 			.callsFake(() => {
-				return new QueryResult({id: 'B', name: 'Enlai', type: 'dog'});
-			})
-			.onCall(2)
-			.callsFake(() => {
-				return new QueryResult({id: 'C', firstName: 'Foo', lastName: 'Bar'});
+				return new QueryResult([{id: 'C', firstName: 'Foo', lastName: 'Bar'}]);
 			});
+
+		mainEntity.setExisting(true);
 
 		const attribute1 = await mainEntity.attribute1;
 		const attribute2 = await mainEntity.attribute2;
 
-		entity.getDriver().findById.restore();
+		entity.getDriver().findByIds.restore();
 
 		assert.lengthOf(attribute1, 2);
 		assert.equal(attribute1[0].id, 'A');

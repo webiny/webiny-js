@@ -1,19 +1,23 @@
 import {assert} from 'chai';
+
 const sinon = require('sinon');
 const {ComplexEntity, SimpleEntity} = require('./entities/complexEntity');
 
 describe('populateFromStorage test', function () {
 	it('should populate entity correctly with data received from MySQL', async () => {
-		const user = new ComplexEntity();
-		user.populateFromStorage({
-			firstName: 'test',
-			lastName: 'tester',
-			verification: `{"verified":true,"documentType":"driversLicense"}`,
-			tags: `[{"slug":"no-name","label":"No Name"},{"slug":"adult-user","label":"Adult User"}]`,
-			simpleEntity: 1,
-			simpleEntities: '[2,3,4]'
+		sinon.stub(ComplexEntity.getDriver().getConnection(), 'query').callsFake((query, callback) => {
+			callback(null, [{
+				firstName: 'test',
+				lastName: 'tester',
+				verification: `{"verified":true,"documentType":"driversLicense"}`,
+				tags: `[{"slug":"no-name","label":"No Name"},{"slug":"adult-user","label":"Adult User"}]`,
+				simpleEntity: 'A',
+				simpleEntities: '["B","C","D"]'
+			}]);
 		});
 
+		const user = await ComplexEntity.findById('A');
+		ComplexEntity.getDriver().getConnection().query.restore();
 
 		assert.equal(user.firstName, 'test');
 		assert.equal(user.lastName, 'tester');
@@ -30,33 +34,33 @@ describe('populateFromStorage test', function () {
 		});
 
 		const simpleEntity = await user.simpleEntity;
-
+		assert.equal(user.getAttribute('simpleEntity').value.current, 'A');
 		user.getDriver().getConnection().query.restore();
 
-		assert.equal(user.getAttribute('simpleEntity').value.current, 1);
-		assert.equal(user.getAttribute('simpleEntities').value.current[0], 2);
-		assert.equal(user.getAttribute('simpleEntities').value.current[1], 3);
-		assert.equal(user.getAttribute('simpleEntities').value.current[2], 4);
+		assert.equal(simpleEntity.id, 1);
+		assert.equal(simpleEntity.name, 'Test-1');
+
+		assert.equal(user.getAttribute('simpleEntities').value.current[0], 'B');
+		assert.equal(user.getAttribute('simpleEntities').value.current[1], 'C');
+		assert.equal(user.getAttribute('simpleEntities').value.current[2], 'D');
 
 		sinon.stub(user.getDriver().getConnection(), 'query')
 			.onCall(0)
 			.callsFake((query, callback) => {
-				callback(null, [{id: 2, name: 'Test-2'}]);
+				callback(null, [
+					{id: 2, name: 'Test-2'},
+					{id: 3, name: 'Test-3'},
+					{id: 4, name: 'Test-4'},
+				]);
 			})
 			.onCall(1)
 			.callsFake((query, callback) => {
-				callback(null, [{id: 3, name: 'Test-3'}]);
-			})
-			.onCall(2)
-			.callsFake((query, callback) => {
-				callback(null, [{id: 4, name: 'Test-4'}]);
+				callback(null, [{count: 3}]);
 			});
 
-		assert.equal(simpleEntity.id, 1);
-		assert.equal(simpleEntity.name, 'Test-1');
 		assert.lengthOf(await user.simpleEntities, 3);
 
-		const simpleEntities = await user.simpleEntities; 
+		const simpleEntities = await user.simpleEntities;
 		assert.instanceOf(simpleEntities[0], SimpleEntity);
 		assert.equal(simpleEntities[0].id, 2);
 		assert.equal(simpleEntities[0].name, 'Test-2');
@@ -70,7 +74,6 @@ describe('populateFromStorage test', function () {
 		assert.equal(simpleEntities[2].name, 'Test-4');
 
 		user.getDriver().getConnection().query.restore();
-
 	});
 });
 
