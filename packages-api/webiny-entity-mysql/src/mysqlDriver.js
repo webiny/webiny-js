@@ -90,7 +90,7 @@ class MySQLDriver extends Driver {
 			const sql = queryBuilder.build({
 				operation: 'select',
 				table: this.getTableName(entity),
-				where: options.where,
+				where: options.query,
 				limit: 1
 			});
 
@@ -113,7 +113,13 @@ class MySQLDriver extends Driver {
 
 	async find(entity, options) {
 		return new Promise(async (resolve, reject) => {
-			const sql = queryBuilder.build(_.merge({}, options, {table: this.getTableName(entity), operation: 'select'}));
+			const clonedOptions = _.merge({}, options, {table: this.getTableName(entity), operation: 'select'});
+			if (_.has(clonedOptions, 'query')) {
+				clonedOptions.where = clonedOptions.query;
+				delete  clonedOptions.query;
+			}
+
+			const sql = queryBuilder.build(clonedOptions);
 
 			if (this.workingWithConnectionPool()) {
 				this.getConnection().getConnection((error, connection) => {

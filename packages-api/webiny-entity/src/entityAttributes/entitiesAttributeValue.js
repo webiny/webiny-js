@@ -50,9 +50,9 @@ class EntitiesAttributeValue extends AttributeValue {
 			} else {
 				let id = await this.attribute.getParentModel().getAttribute('id').getStorageValue();
 				if (classes.using.class) {
-					this.current = await classes.using.class.find({where: {[classes.using.attribute]: id}});
+					this.current = await classes.using.class.find({query: {[classes.using.attribute]: id}});
 				} else {
-					this.current = await classes.entities.class.find({where: {[classes.entities.attribute]: id}});
+					this.current = await classes.entities.class.find({query: {[classes.entities.attribute]: id}});
 				}
 			}
 		}

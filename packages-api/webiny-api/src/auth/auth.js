@@ -45,7 +45,7 @@ class Auth implements IAuth {
     }
 
     async processLogin(email: string, password: string): Promise<string> {
-        const user = await this.config.entity.findOne({ where: { email } });
+        const user = await this.config.entity.findOne({ query: { email } });
         if (user) {
             return new Promise((resolve, reject) => {
                 bcrypt.compare(password, user.password, (err, res) => {
