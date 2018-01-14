@@ -113,6 +113,11 @@ class Entity {
 		return this;
 	}
 
+	/**
+	 * Saves current and all linked entities (if autoSave on the attribute was enabled).
+	 * @param params
+	 * @returns {Promise<*>}
+	 */
 	async save(params = {}) {
 		if (this.processing) {
 			return;
@@ -122,30 +127,44 @@ class Entity {
 
 		const existing = this.isExisting();
 
-		if (existing) {
-			await this.emit('beforeUpdate');
-		} else {
-			await this.emit('beforeCreate');
+		try {
+			if (existing) {
+				await this.emit('beforeUpdate');
+			} else {
+				await this.emit('beforeCreate');
+			}
+
+			await this.emit('beforeSave');
+			await this.getDriver().save(this, params);
+			this.setExisting();
+			await this.emit('afterSave');
+
+			if (existing) {
+				await this.emit('afterUpdate');
+			} else {
+				await this.emit('afterCreate');
+			}
+
+			this.getModel().clean();
+		} catch (e) {
+			throw e;
+		} finally {
+			this.processing = false;
 		}
-
-		await this.emit('beforeSave');
-		await this.getDriver().save(this, params);
-		this.setExisting();
-		await this.emit('afterSave');
-
-		if (existing) {
-			await this.emit('afterUpdate');
-		} else {
-			await this.emit('afterCreate');
-		}
-
-		this.getModel().clean();
-
-		this.processing = false;
-
-		return this;
 	}
 
+	/**
+	 * Executed before delete method. It can be used check if an entity can be deleted and to throw errors if needed.
+	 */
+	async canDelete() {
+		// Does not do anything / perform any checks by default.
+	}
+
+	/**
+	 * Deletes current and all linked entities (if autoDelete on the attribute was enabled).
+	 * @param params
+	 * @returns {Promise<*>}
+	 */
 	async delete(params = {}) {
 		if (this.processing) {
 			return;
@@ -153,19 +172,29 @@ class Entity {
 
 		this.processing = true;
 
-		if (this.getAttribute('id').isEmpty()) {
-			throw Error('Entity cannot be deleted because it was not previously saved.');
+		try {
+			if (this.getAttribute('id').isEmpty()) {
+				throw Error('Entity cannot be deleted because it was not previously saved.');
+			}
+
+			await this.canDelete();
+
+			await this.emit('beforeDelete');
+			await this.getDriver().delete(this, params);
+			await this.emit('afterDelete');
+		} catch (e) {
+			throw e;
+		} finally {
+			this.processing = false;
 		}
-
-		await this.emit('beforeDelete');
-		await this.getDriver().delete(this, params);
-		await this.emit('afterDelete');
-
-		this.processing = false;
-
-		return this;
 	}
 
+	/**
+	 * Finds a single entity matched by given ID.
+	 * @param id
+	 * @param params
+	 * @returns {Promise<*>}
+	 */
 	static async findById(id, params = {}) {
 		const paramsClone = _.cloneDeep(params);
 		await this.emit('query', {type: 'findById', id, params: paramsClone});
@@ -180,6 +209,12 @@ class Entity {
 		return null;
 	}
 
+	/**
+	 * Finds one or more entities matched by given IDs.
+	 * @param ids
+	 * @param params
+	 * @returns {Promise<*>}
+	 */
 	static async findByIds(ids, params = {}) {
 		const paramsClone = _.cloneDeep(params);
 		await this.emit('query', {type: 'findByIds', params: paramsClone});
@@ -195,6 +230,11 @@ class Entity {
 		return entityCollection;
 	}
 
+	/**
+	 * Finds one entity matched by given query parameters.
+	 * @param params
+	 * @returns {Promise<*>}
+	 */
 	static async findOne(params = {}) {
 		const paramsClone = _.cloneDeep(params);
 		await this.emit('query', {type: 'findOne', params: paramsClone});
@@ -208,6 +248,11 @@ class Entity {
 		return null;
 	}
 
+	/**
+	 * Finds one or more entities matched by given query parameters.
+	 * @param params
+	 * @returns {Promise<*>}
+	 */
 	static async find(params = {}) {
 		const paramsClone = _.cloneDeep(params);
 		await this.emit('query', {type: 'find', params: paramsClone});
@@ -223,6 +268,11 @@ class Entity {
 		return entityCollection;
 	}
 
+	/**
+	 * Counts total number of entities matched by given query paramters.
+	 * @param params
+	 * @returns {Promise<*>}
+	 */
 	static async count(params = {}) {
 		const paramsClone = _.cloneDeep(params);
 		await this.emit('query', {type: 'count', params: paramsClone});
@@ -231,6 +281,12 @@ class Entity {
 		return queryResult.getResult();
 	}
 
+	/**
+	 * Registers a listener that will be triggered only on current entity instance.
+	 * @param name
+	 * @param callback
+	 * @returns {EventHandler}
+	 */
 	on(name, callback) {
 		const eventHandler = new EventHandler(name, callback);
 		if (!this.listeners[eventHandler.getName()]) {
@@ -240,6 +296,12 @@ class Entity {
 		return eventHandler;
 	}
 
+	/**
+	 * Registers a listener that will be triggered on all entity instances of current class.
+	 * @param name
+	 * @param callback
+	 * @returns {EventHandler}
+	 */
 	static on(name, callback) {
 		if (!this.listeners) {
 			this.listeners = {};
@@ -253,6 +315,12 @@ class Entity {
 		return eventHandler;
 	}
 
+	/**
+	 * Emits an event, which will trigger both static and instance listeners.
+	 * @param name
+	 * @param data
+	 * @returns {Promise<Entity>}
+	 */
 	async emit(name, data) {
 		if (this.listeners[name]) {
 			for (let i = 0; i < this.listeners[name].length; i++) {
@@ -270,6 +338,12 @@ class Entity {
 		return this;
 	}
 
+	/**
+	 * Emits an event, which will trigger static event listeners.
+	 * @param name
+	 * @param data
+	 * @returns {Promise<void>}
+	 */
 	static async emit(name, data) {
 		if (_.get(this, 'listeners.name')) {
 			for (let i = 0; i < this.listeners[name].length; i++) {

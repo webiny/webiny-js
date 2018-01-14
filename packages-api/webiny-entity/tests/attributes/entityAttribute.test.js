@@ -2,6 +2,8 @@ import {assert} from 'chai';
 
 const {ModelError} = require('webiny-model');
 const {Entity, QueryResult} = require('./../../src');
+const {One} = require('./../entities/numbers');
+
 const sinon = require('sinon');
 
 class Image extends Entity {
@@ -10,6 +12,13 @@ class Image extends Entity {
 		this.attr('filename').char().setValidators('required');
 		this.attr('size').float();
 		this.attr('createdBy').entity(User);
+		this.attr('markedAsCannotDelete').boolean();
+	}
+
+	canDelete() {
+		if (this.markedAsCannotDelete) {
+			throw Error('Cannot delete Image entity');
+		}
 	}
 }
 
@@ -20,6 +29,13 @@ class Company extends Entity {
 		super();
 		this.attr('name').char().setValidators('required');
 		this.attr('image').entity(Image);
+		this.attr('markedAsCannotDelete').boolean();
+	}
+
+	canDelete() {
+		if (this.markedAsCannotDelete) {
+			throw Error('Cannot delete Company entity');
+		}
 	}
 }
 
@@ -30,7 +46,14 @@ class User extends Entity {
 		super();
 		this.attr('firstName').char().setValidators('required');
 		this.attr('lastName').char().setValidators('required');
-		this.attr('company').entity(Company)
+		this.attr('company').entity(Company);
+		this.attr('markedAsCannotDelete').boolean();
+	}
+
+	canDelete() {
+		if (this.markedAsCannotDelete) {
+			throw Error('Cannot delete User entity');
+		}
 	}
 }
 
@@ -260,7 +283,7 @@ describe('entity attribute test', function () {
 
 	});
 
-	it('it must set entity to null', async () => {
+	it('must set entity to null', async () => {
 		const entity = new User();
 		entity.company = {name: 'Test-1'};
 
@@ -270,12 +293,12 @@ describe('entity attribute test', function () {
 		assert.isNull(await entity.company);
 	});
 
-	it('it should return null because no data was assigned', async () => {
+	it('should return null because no data was assigned', async () => {
 		const entity = new User();
 		assert.isNull(await entity.company);
 	});
 
-	it('it should return entity from storage', async () => {
+	it('should return entity from storage', async () => {
 		const entity = new User();
 		entity.getAttribute('company').setStorageValue(1);
 
@@ -290,7 +313,7 @@ describe('entity attribute test', function () {
 		entity.company.name = 'TestCompany';
 	});
 
-	it('it should return correct storage value', async () => {
+	it('should return correct storage value', async () => {
 		const entity = new User();
 
 		entity.getAttribute('company').setStorageValue(1);
@@ -462,5 +485,194 @@ describe('entity attribute test', function () {
 		assert.equal((await company.image).id, 77);
 	});
 
+	it('should lazy load any of the accessed linked entities', async () => {
+		let findById = sinon.stub(One.getDriver(), 'findById')
+			.onCall(0)
+			.callsFake(() => {
+				return new QueryResult({id: 'one', name: 'One', two: 'two'});
+			})
+			.onCall(1)
+			.callsFake(() => {
+				return new QueryResult({id: 'two', name: 'Two', three: 'three'});
+			})
+			.onCall(2)
+			.callsFake(() => {
+				return new QueryResult({id: 'three', name: 'Three', four: 'four', anotherFour: 'anotherFour', five: 'five', six: 'six'});
+			})
+			.onCall(3)
+			.callsFake(() => {
+				return new QueryResult({id: 'four', name: 'Four'});
+			})
+			.onCall(4)
+			.callsFake(() => {
+				return new QueryResult({id: 'anotherFour', name: 'Another Four'});
+			})
+			.onCall(5)
+			.callsFake(() => {
+				return new QueryResult({id: 'five', name: 'Five'});
+			})
+			.onCall(6)
+			.callsFake(() => {
+				return new QueryResult({id: 'six', name: 'Six'});
+			});
+
+		const one = await One.findById('one');
+		assert.equal(one.id, 'one');
+		assert.equal(one.name, 'One');
+		assert.equal(one.getAttribute('two').value.current, 'two');
+
+		const two = await one.two;
+		assert.equal(two.id, 'two');
+		assert.equal(two.name, 'Two');
+
+		assert.equal(two.getAttribute('three').value.current, 'three');
+
+		const three = await two.three;
+		assert.equal(three.id, 'three');
+		assert.equal(three.name, 'Three');
+
+		assert.equal(three.getAttribute('four').value.current, 'four');
+
+		const four = await three.four;
+		assert.equal(four.id, 'four');
+		assert.equal(four.name, 'Four');
+
+		const anotherFour = await three.anotherFour;
+		assert.equal(anotherFour.id, 'anotherFour');
+		assert.equal(anotherFour.name, 'Another Four');
+
+		const five = await three.five;
+		assert.equal(five.id, 'five');
+		assert.equal(five.name, 'Five');
+
+		const six = await three.six;
+		assert.equal(six.id, 'six');
+		assert.equal(six.name, 'Six');
+
+		findById.restore();
+	});
+
+	it('auto delete must be automatically enabled and canDelete must stop deletion if error was thrown', async () => {
+		const user = new User();
+		user.populate({
+			firstName: 'John',
+			lastName: 'Doe',
+			markedAsCannotDelete: true,
+			company: {
+				markedAsCannotDelete: true,
+				image: {
+					size: 123.45,
+					markedAsCannotDelete: true
+				}
+			}
+		});
+
+		let entitySave = sinon.stub(user.getDriver(), 'save')
+			.onCall(0)
+			.callsFake(entity => {
+				entity.id = 55;
+				return new QueryResult();
+			})
+			.onCall(1)
+			.callsFake(entity => {
+				entity.id = 66;
+				return new QueryResult();
+			})
+			.onCall(2)
+			.callsFake(entity => {
+				entity.id = 77;
+				return new QueryResult();
+			});
+
+		await user.save();
+		entitySave.restore();
+
+		let error = null;
+
+		let entityDelete = sinon.stub(user.getDriver(), 'delete');
+		try {
+			await user.delete();
+		} catch (e) {
+			error = e;
+		}
+
+		assert.instanceOf(error, Error);
+		assert.equal(error.message, 'Cannot delete User entity');
+		assert(entityDelete.notCalled);
+
+		user.markedAsCannotDelete = false;
+		try {
+			await user.delete();
+		} catch (e) {
+			error = e;
+		}
+
+		assert.instanceOf(error, Error);
+		assert.equal(error.message, 'Cannot delete Company entity');
+		assert(entityDelete.notCalled);
+
+		const company = await user.company;
+		company.markedAsCannotDelete = false;
+
+		try {
+			await user.delete();
+		} catch (e) {
+			error = e;
+		}
+
+		assert.instanceOf(error, Error);
+		assert.equal(error.message, 'Cannot delete Image entity');
+		assert(entityDelete.notCalled);
+
+		const image = await company.image;
+		image.markedAsCannotDelete = false;
+
+		await user.delete();
+
+		entityDelete.restore();
+		assert(entityDelete.calledThrice);
+	});
+
+	it('should properly delete linked entity even though they are not loaded', async () => {
+		let findById = sinon.stub(One.getDriver(), 'findById')
+			.onCall(0)
+			.callsFake(() => {
+				return new QueryResult({id: 'one', name: 'One', two: 'two'});
+			})
+			.onCall(1)
+			.callsFake(() => {
+				return new QueryResult({id: 'two', name: 'Two', three: 'three'});
+			})
+			.onCall(2)
+			.callsFake(() => {
+				return new QueryResult({id: 'three', name: 'Three', four: 'four', anotherFour: 'anotherFour', five: 'five', six: 'six'});
+			})
+			.onCall(3)
+			.callsFake(() => {
+				return new QueryResult({id: 'four', name: 'Four'});
+			})
+			.onCall(4)
+			.callsFake(() => {
+				return new QueryResult({id: 'anotherFour', name: 'Another Four'});
+			})
+			.onCall(5)
+			.callsFake(() => {
+				return new QueryResult({id: 'five', name: 'Five'});
+			})
+			.onCall(6)
+			.callsFake(() => {
+				return new QueryResult({id: 'six', name: 'Six'});
+			});
+
+		const one = await One.findById('one');
+
+		let entityDelete = sinon.stub(one.getDriver(), 'delete');
+		await one.delete();
+
+		assert.equal(entityDelete.callCount, 7);
+
+		findById.restore();
+		entityDelete.restore();
+	});
 
 });
