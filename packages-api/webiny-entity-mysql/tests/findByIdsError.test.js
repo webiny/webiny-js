@@ -1,15 +1,15 @@
 const sinon = require('sinon');
 const SimpleEntity = require('./entities/simpleEntity');
 
-describe('findOne error test', function () {
-    it('findOne - should find previously inserted entity', async () => {
+describe('findByIds error test', function () {
+    it('findByIds - should throw an error', async () => {
         sinon.stub(SimpleEntity.getDriver().getConnection(), 'query').callsFake((query, callback) => {
 			callback(new Error('This is an error.'));
-		});
+        });
 		sinon.stub(SimpleEntity.getDriver().getConnection(), 'end').callsFake(() => {});
 
 		try {
-			await SimpleEntity.findOne({query: {id: 1}});
+			await SimpleEntity.findByIds([123]);
 		} catch (e) {
 			return;
 		} finally {

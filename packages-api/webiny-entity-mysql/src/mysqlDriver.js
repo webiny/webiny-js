@@ -152,14 +152,6 @@ class MySQLDriver extends Driver {
 		});
 	}
 
-	async findIds(entity, options) {
-		return new Promise(async resolve => {
-			const result = await this.find(entity, _.merge(options, {columns: ['id']}));
-			result.setResult(result.getResult().map(item => item.id));
-			resolve(result);
-		});
-	}
-
 	async count(entity, options) {
 		return new Promise(async (resolve, reject) => {
 			const sql = queryBuilder.build(_.merge({}, options, {table: this.getTableName(entity), operation: 'count'}));

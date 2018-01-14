@@ -54,13 +54,6 @@ class CustomDriver extends Driver {
         return new QueryResult(_.find(this.data[entity.classId], {id}));
     }
 
-	async findIds(entity, options) {
-		return new Promise(async resolve => {
-			const results = await this.find(entity, options);
-			resolve(results.map(item => item.id));
-		});
-	}
-
     async findOne(entity, params) {
         return new QueryResult(_.find(this.data[entity.classId], params.query));
     }

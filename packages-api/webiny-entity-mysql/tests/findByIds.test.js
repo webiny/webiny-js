@@ -3,8 +3,8 @@ import {assert} from 'chai';
 const sinon = require('sinon');
 const SimpleEntity = require('./entities/simpleEntity');
 
-describe('find test', function () {
-	it('find - should find entities and total count', async () => {
+describe('findByIds test', function () {
+	it('findByIds - should find previously inserted entities', async () => {
 		sinon.stub(SimpleEntity.getDriver().getConnection(), 'query').callsFake((query, callback) => {
 			callback(null, [
 				{
@@ -24,21 +24,18 @@ describe('find test', function () {
 
 		sinon.stub(SimpleEntity.getDriver().getConnection(), 'end').callsFake(() => {});
 
-		const entities = await SimpleEntity.find();
+		const simpleEntities = await SimpleEntity.findByIds([1, 2]);
 		SimpleEntity.getDriver().getConnection().query.restore();
 		SimpleEntity.getDriver().getConnection().end.restore();
 
-		assert.isArray(entities);
-		assert.lengthOf(entities, 2);
+		assert.equal(simpleEntities[0].id, 1);
+		assert.equal(simpleEntities[0].name, 'This is a test');
+		assert.equal(simpleEntities[0].slug, 'thisIsATest');
+		assert.isTrue(simpleEntities[0].enabled);
 
-		assert.equal(entities[0].id, 1);
-		assert.equal(entities[0].name, 'This is a test');
-		assert.equal(entities[0].slug, 'thisIsATest');
-		assert.isTrue(entities[0].enabled);
-
-		assert.equal(entities[1].id, 2);
-		assert.equal(entities[1].name, 'This is a test 222');
-		assert.equal(entities[1].slug, 'thisIsATest222');
-		assert.isFalse(entities[1].enabled);
+		assert.equal(simpleEntities[1].id, 2);
+		assert.equal(simpleEntities[1].name, 'This is a test 222');
+		assert.equal(simpleEntities[1].slug, 'thisIsATest222');
+		assert.isFalse(simpleEntities[1].enabled);
 	});
 });
