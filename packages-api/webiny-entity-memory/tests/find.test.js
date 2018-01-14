@@ -29,7 +29,7 @@ describe('find test', function () {
 		assert.equal(entities[1].slug, 'thisIsATest222');
 		assert.isFalse(entities[1].enabled);
 
-		entities = await SimpleEntity.find({where: {name: 'SameEntity'}});
+		entities = await SimpleEntity.find({query: {name: 'SameEntity'}});
 
 		assert.isArray(entities);
 		assert.lengthOf(entities, 2);
@@ -44,7 +44,7 @@ describe('find test', function () {
 		assert.equal(entities[1].slug, 'sameEntity');
 		assert.isTrue(entities[1].enabled);
 
-		entities = await SimpleEntity.find({where: {name: 'SameEntity', enabled: true}});
+		entities = await SimpleEntity.find({query: {name: 'SameEntity', enabled: true}});
 
 		assert.isArray(entities);
 		assert.lengthOf(entities, 1);
