@@ -48,7 +48,7 @@ class MemoryDriver extends Driver {
 
 	async findByIds(entity, ids, options) {
 		const cloned = _.cloneDeep(options);
-		cloned.where = {id: ids};
+		cloned.query = {id: ids};
 		return this.find(entity, cloned);
 	}
 
@@ -62,15 +62,15 @@ class MemoryDriver extends Driver {
 			return new QueryResult([]);
 		}
 
-		const where = _.get(options, 'where', {});
-		if (_.isEmpty(where)) {
+		const query = _.get(options, 'query', {});
+		if (_.isEmpty(query)) {
 			return new QueryResult(this.data[entity.classId])
 		}
 
 		const collection = [];
 
 		this.data[entity.classId].forEach(record => {
-			for (const [key, value] of Object.entries(where)) {
+			for (const [key, value] of Object.entries(query)) {
 				if (_.isArray(value)) {
 					if (!value.includes(record[key])) {
 						return true;

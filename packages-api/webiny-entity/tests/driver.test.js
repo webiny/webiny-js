@@ -5,7 +5,7 @@ describe('default driver test', function () {
     it('save method should return the same user instance', async () => {
         const user = new User();
         const res = await user.save();
-        assert.equal(res, user);
+        assert.isUndefined(res);
     });
 
     it('delete method should return undefined', async () => {
