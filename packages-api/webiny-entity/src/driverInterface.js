@@ -14,6 +14,8 @@ interface DriverInterface {
 
 	findById(entity: Entity, id: any, params: {}): Query,
 
+	findByIds(entity: Entity, ids: Array, params: {}): Query,
+
 	findOne(entity: Entity, params: {}): Query,
 
 	find(entity: Entity, params: {}): Query,

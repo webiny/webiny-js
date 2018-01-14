@@ -6,6 +6,7 @@ describe('find error test', function () {
         sinon.stub(SimpleEntity.getDriver().getConnection(), 'query').callsFake((query, callback) => {
 			callback(new Error('This is an error.'));
 		});
+		sinon.stub(SimpleEntity.getDriver().getConnection(), 'end').callsFake(() => {});
 
 		try {
 			await SimpleEntity.find();
@@ -13,6 +14,7 @@ describe('find error test', function () {
 			return;
 		} finally {
 			SimpleEntity.getDriver().getConnection().query.restore();
+			SimpleEntity.getDriver().getConnection().end.restore();
 		}
 		throw Error(`Error should've been thrown.`);
     });

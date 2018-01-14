@@ -14,9 +14,11 @@ describe('findOne test', function () {
                 }
             ], null);
         });
+		sinon.stub(SimpleEntity.getDriver().getConnection(), 'end').callsFake(() => {});
 
         const simpleEntity = await SimpleEntity.findOne({query: {id: 1}});
 		SimpleEntity.getDriver().getConnection().query.restore();
+		SimpleEntity.getDriver().getConnection().end.restore();
 
 		assert.equal(simpleEntity.id, 1);
         assert.equal(simpleEntity.name, 'This is a test');
