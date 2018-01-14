@@ -13,22 +13,44 @@ class EntityAttribute extends Attribute {
 		this.value = new EntityAttributeValue(this);
 
 		this.entityClass = entity;
-		this.autoSave = true;
+		this.auto = {save: true, delete: true};
 
 		this.getParentModel().getParentEntity().on('afterSave', () => {
 			if (this.getAutoSave() && this.value.current instanceof this.getEntityClass()) {
 				return this.value.current.save();
 			}
 		});
+
+		/**
+		 * This will recursively trigger the same listener on all child entity attributes. Before each delete,
+		 * canDelete callback will be called and stop the delete process if an Error is thrown.
+		 */
+		this.getParentModel().getParentEntity().on('beforeDelete', async () => {
+			if (this.getAutoDelete()) {
+				const entity = await this.getValue();
+				if (entity instanceof this.getEntityClass()) {
+					await entity.delete();
+				}
+			}
+		});
 	}
 
 	setAutoSave(autoSave = true) {
-		this.autoSave = autoSave;
+		this.auto.save = autoSave;
 		return this;
 	}
 
 	getAutoSave() {
-		return this.autoSave;
+		return this.auto.save;
+	}
+
+	setAutoDelete(autoDelete = true) {
+		this.auto.delete = autoDelete;
+		return this;
+	}
+	
+	getAutoDelete() {
+		return this.auto.delete;
 	}
 
 	getEntityClass() {
