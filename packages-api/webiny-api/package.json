@@ -1,7 +1,7 @@
 {
   "name": "webiny-api",
   "version": "1.0.0",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "author": "Pavel Denisjuk",
   "license": "MIT",
   "files": [
