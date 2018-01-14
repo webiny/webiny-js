@@ -10,21 +10,14 @@ class EntityAttribute extends Attribute {
 		 * Attribute's current value.
 		 * @type {undefined}
 		 */
-		this.value = new EntityAttributeValue();
+		this.value = new EntityAttributeValue(this);
 
 		this.entityClass = entity;
 		this.autoSave = true;
 
-
-		this.getParentModel().getParentEntity().on('afterSave', async () => {
-			if (this.getAutoSave()) {
-				for (let i = 0; i < await this.getValue().length; i++) {
-					const value = this.value.current[i];
-					// Let's only save loaded item.
-					if (value instanceof this.getEntityClass()) {
-						await value.save();
-					}
-				}
+		this.getParentModel().getParentEntity().on('afterSave', () => {
+			if (this.getAutoSave() && this.value.current instanceof this.getEntityClass()) {
+				return this.value.current.save();
 			}
 		});
 	}
@@ -87,6 +80,11 @@ class EntityAttribute extends Attribute {
 		return this.value.current;
 	}
 
+	async getJSONValue() {
+		const value = await this.getValue();
+		return value instanceof this.getEntityClass() ? value.toJSON() : value;
+	}
+
 	async validate() {
 		if (this.isSet()) {
 			if (!(this.value.current instanceof this.getEntityClass())) {
@@ -95,7 +93,7 @@ class EntityAttribute extends Attribute {
 			await this.value.current.validate();
 		}
 
-        return Attribute.prototype.validate.call(this);
+		return Attribute.prototype.validate.call(this);
 	}
 }
 

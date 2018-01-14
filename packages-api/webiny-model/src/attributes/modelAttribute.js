@@ -31,7 +31,7 @@ class ModelAttribute extends Attribute {
         return this;
     }
 
-    async getJsonValue() {
+    async getJSONValue() {
 		if (this.isEmpty()) {
 			return null;
 		}
@@ -40,7 +40,7 @@ class ModelAttribute extends Attribute {
     }
 
 	async getStorageValue() {
-		return this.getJsonValue();
+		return this.getJSONValue();
 	}
 
     async validate() {

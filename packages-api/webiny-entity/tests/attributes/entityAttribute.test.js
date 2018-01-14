@@ -1,4 +1,5 @@
 import {assert} from 'chai';
+
 const {ModelError} = require('webiny-model');
 const {Entity, QueryResult} = require('./../../src');
 const sinon = require('sinon');
@@ -8,6 +9,7 @@ class Image extends Entity {
 		super();
 		this.attr('filename').char().setValidators('required');
 		this.attr('size').float();
+		this.attr('createdBy').entity(User);
 	}
 }
 
@@ -299,7 +301,166 @@ describe('entity attribute test', function () {
 
 		entity.company = null;
 		assert.equal(await entity.getAttribute('company').getStorageValue(), null);
-
 	});
+
+	it('it should auto save linked entity only if it is enabled', async () => {
+		const user = new User();
+
+		let save = sinon.stub(user.getDriver(), 'save').callsFake(entity => {
+			entity.id = 55;
+			return new QueryResult();
+		});
+
+		user.populate({
+			firstName: 'John',
+			lastName: 'Doe',
+			company: {
+				image: {
+					size: 123.45
+				}
+			}
+		});
+
+		user.getAttribute('company').setAutoSave(false);
+		user.getAttribute('company').value.current.getAttribute('image').setAutoSave(false);
+
+		await user.save();
+		save.restore();
+
+		assert(save.calledOnce);
+		assert.equal(user.id, 55);
+
+		user.getAttribute('company').setAutoSave();
+
+		// This time we should have an update on User entity, and insert on linked company entity
+		save = sinon.stub(user.getDriver(), 'save')
+			.onCall(0)
+			.callsFake(() => {
+				return new QueryResult();
+			})
+			.onCall(1)
+			.callsFake(entity => {
+				entity.id = 66;
+				return new QueryResult();
+			});
+
+		await user.save();
+		save.restore();
+
+		assert(save.calledTwice);
+		assert.equal(user.id, 55);
+		assert.equal(await user.get('company.id'), 66);
+
+		// Finally, let's put auto save on image entity too.
+
+		user.getAttribute('company').value.current.getAttribute('image').setAutoSave();
+
+		// This time we should have an update on User entity, update on company entity and insert on linked image entity.
+		// Additionally, image entity has a createdBy attribute, but since it's empty, nothing must happen here.
+
+		save = sinon.stub(user.getDriver(), 'save')
+			.onCall(0)
+			.callsFake(() => {
+				return new QueryResult();
+			})
+			.onCall(1)
+			.callsFake(() => {
+				return new QueryResult();
+			})
+			.onCall(2)
+			.callsFake(entity => {
+				entity.id = 77;
+				return new QueryResult();
+			});
+
+		await user.save();
+		save.restore();
+
+		assert(save.calledThrice);
+		assert.equal(user.id, 55);
+		assert.equal(await user.get('company.id'), 66);
+		assert.equal(await user.get('company.image.id'), 77);
+	});
+
+	it('auto save must be automatically enabled', async () => {
+		const user = new User();
+		user.populate({
+			firstName: 'John',
+			lastName: 'Doe',
+			company: {
+				image: {
+					size: 123.45
+				}
+			}
+		});
+
+		let save = sinon.stub(user.getDriver(), 'save')
+			.onCall(0)
+			.callsFake(entity => {
+				entity.id = 55;
+				return new QueryResult();
+			})
+			.onCall(1)
+			.callsFake(entity => {
+				entity.id = 66;
+				return new QueryResult();
+			})
+			.onCall(2)
+			.callsFake(entity => {
+				entity.id = 77;
+				return new QueryResult();
+			});
+
+		await user.save();
+		save.restore();
+
+		assert(save.calledThrice);
+		assert.equal(user.id, 55);
+		assert.equal(await user.get('company.id'), 66);
+		assert.equal(await user.get('company.image.id'), 77);
+	});
+
+	it('should not trigger saving of same entity (that might be also linked in an another linked entity) twice in one save process', async () => {
+		const user = new User();
+		user.populate({
+			firstName: 'John',
+			lastName: 'Doe',
+			company: {
+				image: {
+					size: 123.45,
+					createdBy: user
+				}
+			}
+		});
+		await user.save();
+
+		let save = sinon.stub(user.getDriver(), 'save')
+			.onCall(0)
+			.callsFake(entity => {
+				entity.id = 55;
+				return new QueryResult();
+			})
+			.onCall(1)
+			.callsFake(entity => {
+				entity.id = 66;
+				return new QueryResult();
+			})
+			.onCall(2)
+			.callsFake(entity => {
+				entity.id = 77;
+				return new QueryResult();
+			});
+
+		await user.save();
+		save.restore();
+
+		assert(save.calledThrice);
+		assert.equal(user.id, 55);
+
+		const company = await user.company;
+		assert.equal(company.id, 66);
+		assert.equal((await company.image).id, 77);
+	});
+
 
 });

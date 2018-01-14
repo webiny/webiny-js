@@ -135,7 +135,7 @@ class Model {
     async toJSON(path = null) {
         const json = {};
         for (const [name, attribute] of Object.entries(this.getAttributes())) {
-            json[name] = await attribute.getJsonValue();
+            json[name] = await attribute.getJSONValue();
         }
 
         return path ? await extractor.get(json, path) : json;

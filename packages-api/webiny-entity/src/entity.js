@@ -43,6 +43,7 @@ class Entity {
 
 		this.listeners = {};
 		this.existing = false;
+		this.processing = false;
 
 		this.getDriver().onEntityConstruct(proxy);
 
@@ -86,6 +87,10 @@ class Entity {
 		return this.getModel().getAttributes();
 	}
 
+	async get(path, defaultValue) {
+		return _.get(await this.toJSON(path), path, defaultValue);
+	}
+
 	async toJSON(path = null) {
 		return this.getModel().toJSON(path);
 	}
@@ -109,6 +114,12 @@ class Entity {
 	}
 
 	async save(params = {}) {
+		if (this.processing) {
+			return;
+		}
+
+		this.processing = true;
+
 		const existing = this.isExisting();
 
 		if (existing) {
@@ -129,10 +140,19 @@ class Entity {
 		}
 
 		this.getModel().clean();
+
+		this.processing = false;
+
 		return this;
 	}
 
 	async delete(params = {}) {
+		if (this.processing) {
+			return;
+		}
+
+		this.processing = true;
+
 		if (this.getAttribute('id').isEmpty()) {
 			throw Error('Entity cannot be deleted because it was not previously saved.');
 		}
@@ -140,6 +160,9 @@ class Entity {
 		await this.emit('beforeDelete');
 		await this.getDriver().delete(this, params);
 		await this.emit('afterDelete');
+
+		this.processing = false;
+
 		return this;
 	}
 

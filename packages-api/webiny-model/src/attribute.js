@@ -230,7 +230,7 @@ class Attribute {
 		return this;
 	}
 
-	async getJsonValue() {
+	async getJSONValue() {
 		return this.getValue();
 	}
 

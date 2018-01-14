@@ -8,7 +8,7 @@ describe('default driver test', function () {
         assert.equal(res, user);
     });
 
-    it('delete method should return the same user instance', async () => {
+    it('delete method should return undefined', async () => {
         const user = new User();
 
         let error = null;
@@ -21,7 +21,7 @@ describe('default driver test', function () {
 		assert.instanceOf(error, Error);
 
         user.id = 'ABC';
-		assert.equal(await user.delete(), user);
+		assert.isUndefined(await user.delete());
     });
 
     it('findById method should return null', async () => {

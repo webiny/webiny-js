@@ -77,7 +77,7 @@ class ModelsAttribute extends Attribute {
 		}
 	}
 
-	async getJsonValue() {
+	async getJSONValue() {
 		if (this.isEmpty()) {
 			return null;
 		}
@@ -91,7 +91,7 @@ class ModelsAttribute extends Attribute {
 	}
 
 	async getStorageValue() {
-		return this.getJsonValue();
+		return this.getJSONValue();
 	}
 }
 
