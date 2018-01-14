@@ -1,3 +1,4 @@
+// @flow
 import entity from 'webiny-entity';
 
 class Entity extends entity.Entity {

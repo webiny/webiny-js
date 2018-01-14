@@ -1,4 +1,5 @@
 // TODO: REMOVE THIS FILE
+/*
 
 import ApiContainer from './apiContainer';
 
@@ -58,4 +59,4 @@ export default (Base) => {
             return apiContainer;
         }
     }
-};
+};*/

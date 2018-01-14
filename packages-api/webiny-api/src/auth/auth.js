@@ -4,11 +4,16 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { AuthError, Entity } from './..';
 
+type AuthConfig = {
+    jwtSecret: string,
+    entity: Entity
+}
+
 class Auth implements IAuth {
-    config: IAuthConfig;
+    config: AuthConfig;
     user: null | Entity;
 
-    constructor(config : IAuthConfig) {
+    constructor(config: AuthConfig) {
         this.config = config;
         this.user = null;
     }

@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import 'babel-polyfill';
 import Page from './Lib/Core/Page';
-import isElementOfType from './Lib/isElementOfType';
+import isElementOfType from './Lib/Utils/isElementOfType';
 
 class Webiny {
     constructor() {

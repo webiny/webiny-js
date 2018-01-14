@@ -1,24 +1,26 @@
+// @flow
 import _ from 'lodash';
 import debug from 'debug';
 import { createNamespace } from 'cls-hooked';
-import { app } from 'webiny-api/src';
+import Api from './api';
+import { app } from '.';
 import responseProxy from './response/responseProxy';
 
-let appInstance = null;
+let appInstance: Api;
 
-function initApp(config) {
+function initApp(config: Object) {
     app.setConfig(config);
     app.init();
     appInstance = app;
 }
 
-export default (config) => {
+export default (config: Object) => {
     const log = debug('api:middleware');
     initApp(config);
     const namespace = createNamespace('webiny-api');
 
     // Route request
-    return async (req, res, next) => {
+    return async (req: express$Request, res: express$Response, next: Function) => {
         log('Received new API request');
         namespace.run(async () => {
             return (async () => {

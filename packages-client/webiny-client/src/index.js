@@ -1,6 +1,6 @@
 import React from 'react';
 import Webiny from './core';
-import renderApp from './core/renderApp';
+import renderApp from './render';
 
 const client = {
     Webiny,

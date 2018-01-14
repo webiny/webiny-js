@@ -1,7 +1,1 @@
-import Entity from './entity';
-
-export { Entity };
-
-export default {
-    Entity
-};
+export { default as Entity } from './entity';

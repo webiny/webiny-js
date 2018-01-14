@@ -1,8 +1,10 @@
+// @flow
 import debug from 'debug';
 import _ from 'lodash';
 import { app, ApiResponse } from './../index';
 
-export default async ({ req, res }, next) => {
+export default async (params: { req: express$Request, res: express$Response }, next: Function) => {
+    const { req, res } = params;
     const log = debug('api:endpoint');
     log(`Trying to match an endpoint: %o`, req.url);
     for (let i = 0; i < app.endpoints.length; i++) {

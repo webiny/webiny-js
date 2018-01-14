@@ -1,9 +1,20 @@
+// @flow
 import _ from 'lodash';
+import { Endpoint } from './../endpoint';
 
 let count = 0;
 
 class ApiMethod {
-    constructor(httpMethod, pattern, context) {
+    httpMethod: string;
+    context: Endpoint;
+    pattern: string;
+    callbacks: Array<Function>;
+    regex: RegExp;
+    namedParam: RegExp;
+    wildcardParam: RegExp;
+    paramNames: Array<string>;
+
+    constructor(httpMethod: string, pattern: string, context: Endpoint) {
         this.httpMethod = httpMethod;
         this.context = context;
         this.pattern = pattern.startsWith('/') ? pattern : '/' + pattern;
@@ -34,15 +45,15 @@ class ApiMethod {
         this.regex = new RegExp('^' + regex + '$');
     }
 
-    getPattern() {
+    getPattern(): string {
         return this.pattern;
     }
 
-    getRegex() {
+    getRegex(): RegExp {
         return this.regex;
     }
 
-    exec(req, res, params, context) {
+    exec(req: express$Request, res: express$Response, params: Object, context: Endpoint) {
         if ((this.httpMethod === 'post' || this.httpMethod === 'patch')) {
             // TODO: this.validateBody(req.body);
         }
@@ -61,14 +72,13 @@ class ApiMethod {
         return callback(params, parent);
     }
 
-    addCallback(callable) {
+    addCallback(callable: Function) {
         this.callbacks.unshift(callable);
-        return this;
     }
 
-    createParent(index, bindTo) {
+    createParent(index: number, bindTo: Endpoint) {
         const $this = this;
-        return function (...params) {
+        return function (...params: Array<any>) {
             let callback = $this.callbacks[index];
             if ($this.callbacks.length > (index + 1)) {
                 params.push($this.createParent(index + 1, bindTo));

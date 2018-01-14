@@ -1,14 +1,20 @@
+// @flow
+import ApiMethod from './apiMethod';
+
 class MatchedApiMethod {
-    constructor(apiMethod, params) {
+    apiMethod: ApiMethod;
+    params: Object;
+
+    constructor(apiMethod: ApiMethod, params: Object) {
         this.apiMethod = apiMethod;
         this.params = params;
     }
 
-    getApiMethod() {
+    getApiMethod(): ApiMethod {
         return this.apiMethod;
     }
 
-    getParams() {
+    getParams(): Object {
         return this.params;
     }
 }

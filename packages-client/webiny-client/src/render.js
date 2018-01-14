@@ -1,4 +1,4 @@
-import Webiny from './index';
+import Webiny from './core';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -11,6 +11,36 @@ function init(global) {
     const jquery = require('jquery');
     const Promise = require('bluebird/js/browser/bluebird.core.js');
 
+    global.Promise = Promise;
+    global.$ = global.jQuery = jquery;
+    Promise.config({
+        cancellation: true,
+        warnings: {
+            wForgottenReturn: false
+        }
+    });
+
+    global['webinyOnRender'] = (callback) => {
+        Webiny.onRenderCallbacks.push(callback);
+    };
+
+    global['webinyFirstRenderDone'] = () => {
+        return Webiny.firstRenderDone;
+    };
+
+    require('bootstrap-sass');
+
+    if (DEVELOPMENT) {
+        global['$Webiny'] = Webiny;
+    }
+
+    // Check if `Webiny` config exists in the global
+    if (!global.webinyConfig) {
+        console.error('You must define a "webinyConfig" to bootstrap your app!');
+    }
+    Webiny.Config = webinyConfig;
+
+    // Expose vendor libraries for use in plugins which are built independently
     global['webinyVendor'] = {
         'jquery': require('jquery'),
         'react': require('react'),
@@ -44,38 +74,9 @@ function init(global) {
         'lodash/trimEnd': require('lodash/trimEnd'),
         'lodash/trimStart': require('lodash/trimStart')
     };
-
-    global.Promise = Promise;
-    global.$ = global.jQuery = jquery;
-    Promise.config({
-        cancellation: true,
-        warnings: {
-            wForgottenReturn: false
-        }
-    });
-
-    global['webinyOnRender'] = (callback) => {
-        Webiny.onRenderCallbacks.push(callback);
-    };
-
-    global['webinyFirstRenderDone'] = () => {
-        return Webiny.firstRenderDone;
-    };
-
-    require('bootstrap-sass');
-
-    if (DEVELOPMENT) {
-        global['$Webiny'] = Webiny;
-    }
-
-    // Check if `Webiny` config exists in the global
-    if (!global.webinyConfig) {
-        console.error('You must define a "webinyConfig" to bootstrap your app!');
-    }
-    Webiny.Config = webinyConfig;
 }
 
-export default async ({app, root, module, beforeRender}) => {
+export default async ({ app, root, module, beforeRender }) => {
     if (!initialized) {
         init(window);
 

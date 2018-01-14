@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import Services from './../src/services';
+import Services from './../src/etc/services';
 
 let services;
 

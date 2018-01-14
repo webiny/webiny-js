@@ -1,7 +1,7 @@
-import webiny from 'webiny-api/src';
+import { App } from 'webiny-api/src';
 import CarsEndpoint from './cars';
 
-class Middleware extends webiny.App {
+class Middleware extends App {
     constructor() {
         super();
 

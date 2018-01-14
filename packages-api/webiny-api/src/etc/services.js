@@ -1,10 +1,14 @@
+// @flow
 class Services {
+    services: { [string]: { factory: Function, singleton: boolean, tags: Array<string> } };
+    instances: Object;
+
     constructor() {
         this.services = {};
         this.instances = {};
     }
 
-    add(name, factory, singleton = true, tags = []) {
+    add(name: string, factory: Function, singleton: boolean = true, tags: Array<string> = []): void {
         this.services[name] = {
             factory,
             singleton,
@@ -12,7 +16,7 @@ class Services {
         };
     }
 
-    get(name) {
+    get(name: string): any {
         const service = this.services[name];
         let instance = this.instances[name];
 
@@ -31,9 +35,9 @@ class Services {
         return instance;
     }
 
-    getByTag(tag, interf = null) {
-        const services = [];
-        Object.keys(this.services).forEach(name => {
+    getByTag(tag: string, interf: any = null): Array<any> {
+        const services: Array<any> = [];
+        Object.keys(this.services).forEach((name: string) => {
             const service = this.services[name];
             if (service.tags.includes(tag)) {
                 const instance = this.get(name);

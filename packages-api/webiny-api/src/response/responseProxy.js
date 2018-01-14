@@ -1,23 +1,25 @@
+// @flow
+
 /**
- * This function creates a thin wrapper around the original Response object 
+ * This function creates a thin wrapper around the original Response object
  * to intercept method/property calls and provide a few additional methods.
- * 
- * @param {*} res 
+ *
+ * @param {*} res
  */
-export default (res) => {
+export default (res: express$Response) => {
     let responseData = {};
 
     const interceptor = {
-        getData() {
+        getData(): Object {
             return responseData;
         },
-        setData(data) {
+        setData(data: Object) {
             responseData = data;
         }
     };
 
     return new Proxy(res, {
-        get: (target, key) => {
+        get: (target: any, key: string) => {
             if (interceptor[key]) {
                 return interceptor[key];
             }

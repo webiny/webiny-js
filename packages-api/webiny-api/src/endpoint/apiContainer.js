@@ -1,96 +1,23 @@
+// @flow
 import _ from 'lodash';
 import ApiMethod from './apiMethod';
+import { Endpoint } from './../endpoint';
 import MatchedApiMethod from './matchedApiMethod';
 
+type ApiMethods = {
+    [key: string]: { [key: string]: ApiMethod };
+}
+
 class ApiContainer {
-    constructor(context) {
+    context: Endpoint;
+    apiMethods: ApiMethods;
+
+    constructor(context: Endpoint) {
         this.apiMethods = {};
         this.context = context;
     }
 
-    /**
-     * Create a GET method
-     *
-     * @param pattern URL pattern
-     * @param fn Callback to execute when method is matched
-     *
-     * return ApiMethod|null
-     */
-    get(pattern, fn = null) {
-        return this.api('get', pattern, fn);
-    }
-
-    /**
-     * Create a POST method
-     *
-     * @param pattern URL pattern
-     * @param fn Callback to execute when method is matched
-     *
-     * @return ApiMethod|null
-     */
-    post(pattern, fn = null) {
-        return this.api('post', pattern, fn);
-    }
-
-    /**
-     * Create a PATCH method
-     *
-     * @param pattern URL pattern
-     * @param fn Callback to execute when method is matched
-     *
-     * @return ApiMethod|null
-     */
-    patch(pattern, fn = null) {
-        return this.api('patch', pattern, fn);
-    }
-
-    /**
-     * Create a DELETE method
-     *
-     * @param pattern URL pattern
-     * @param fn Callback to execute when method is matched
-     *
-     * @return ApiMethod|null
-     */
-    delete(pattern, fn = null) {
-        return this.api('delete', pattern, fn);
-    }
-
-    /**
-     * Remove method from API container
-     *
-     * @param http HTTP method
-     * @param pattern Pattern
-     *
-     * @return this
-     */
-    removeMethod(http, pattern) {
-        delete this.apiMethods[http][pattern];
-
-        return this;
-    }
-
-    /**
-     * @return object
-     */
-    getMethods() {
-        return this.apiMethods;
-    }
-
-    /**
-     * Get ApiMethod for given http method and url pattern
-     *
-     * @param httpMethod
-     * @param pattern
-     *
-     * @return ApiMethod|null
-     */
-    getMethod(httpMethod, pattern) {
-        httpMethod = httpMethod.toLowerCase();
-        return _.get(this.apiMethods, [httpMethod, pattern]);
-    }
-
-    api(httpMethod, pattern, callable = null) {
+    api(httpMethod: string, pattern: string, callable?: Function): ?ApiMethod {
         if (!pattern.startsWith('/')) {
             pattern = '/' + pattern;
         }
@@ -101,7 +28,7 @@ class ApiContainer {
             this.apiMethods[httpMethod] = {};
         }
 
-        let apiInstance;
+        let apiInstance: ApiMethod;
         if (callable) {
             if (_.has(this.apiMethods, [httpMethod, pattern])) {
                 apiInstance = this.apiMethods[httpMethod][pattern];
@@ -118,24 +45,53 @@ class ApiContainer {
         return apiInstance;
     }
 
-    matchMethod(httpMethod, url) {
+    get(pattern: string, fn?: Function): ?ApiMethod {
+        return this.api('get', pattern, fn);
+    }
+
+    post(pattern: string, fn?: Function): ?ApiMethod {
+        return this.api('post', pattern, fn);
+    }
+
+    patch(pattern: string, fn?: Function): ?ApiMethod {
+        return this.api('patch', pattern, fn);
+    }
+
+    delete(pattern: string, fn?: Function): ?ApiMethod {
+        return this.api('delete', pattern, fn);
+    }
+
+    removeMethod(http: string, pattern: string): void {
+        delete this.apiMethods[http][pattern];
+    }
+
+    getMethods(): ApiMethods {
+        return this.apiMethods;
+    }
+
+    getMethod(httpMethod: string, pattern: string): ?ApiMethod {
+        httpMethod = httpMethod.toLowerCase();
+        return _.get(this.apiMethods, [httpMethod, pattern]);
+    }
+
+    matchMethod(httpMethod: string, url: string): ?IMatchedApiMethod {
         let matched = null;
         const apiMethods = this.apiMethods[httpMethod.toLowerCase()];
 
         if (!apiMethods) {
             return null;
         }
-        
+
         const methods = [...Object.values(apiMethods)];
 
         const length = arr => arr.filter(v => !_.isEmpty(v)).length;
 
-        methods.sort((a, b) => {
+        methods.sort((methodA: any, methodB: any) => {
             // 1 means 'a' goes after 'b'
             // -1 means 'a' goes before 'b'
 
-            a = a.getPattern();
-            b = b.getPattern();
+            const a: string = methodA.getPattern();
+            const b: string = methodB.getPattern();
 
             if (a.startsWith('/:') && !b.startsWith('/:')) {
                 return 1;

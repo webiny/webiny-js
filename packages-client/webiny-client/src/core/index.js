@@ -1,6 +1,6 @@
-import Webiny from './Webiny';
+import Webiny from './base';
 
-import Logger from './Logger';
+import Logger from './Lib/Logger';
 import ClientStorage from './Lib/ClientStorage';
 import Store from './Lib/ClientStorage/Store';
 import LocalForage from './Lib/ClientStorage/LocalForage';

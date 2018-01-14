@@ -1,7 +1,5 @@
 import { getNamespace } from 'cls-hooked';
-import webiny from 'webiny-api/src';
-
-const { Endpoint, ApiResponse } = webiny;
+import { Endpoint, ApiResponse } from 'webiny-api/src';
 
 class Cars extends Endpoint {
     init(api) {

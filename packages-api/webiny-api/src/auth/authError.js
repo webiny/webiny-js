@@ -1,34 +1,37 @@
+// @flow
 class AuthError {
-    constructor(message, type = '', data = {}) {
+    static INVALID_CREDENTIALS: string;
+    message: string;
+    type: string;
+    data: Object;
+
+    constructor(message: string, type: string = '', data: Object = {}) {
         this.message = message;
         this.data = data;
         this.type = type;
     }
 
-    setMessage(message) {
+    setMessage(message: string): void {
         this.message = message;
-        return this;
     }
 
-    getMessage() {
+    getMessage(): string {
         return this.message;
     }
 
-    setData(data) {
+    setData(data: Object): void {
         this.data = data;
-        return this;
     }
 
-    getData() {
+    getData(): Object {
         return this.data;
     }
 
-    setType(type) {
+    setType(type: string): void {
         this.type = type;
-        return this;
     }
 
-    getType() {
+    getType(): string {
         return this.type;
     }
 }

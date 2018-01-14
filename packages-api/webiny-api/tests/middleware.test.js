@@ -1,7 +1,6 @@
 import request from 'supertest';
 import express from 'express';
-import webiny from 'webiny-api/src';
-const { middleware, EndpointMiddleware } = webiny;
+import { middleware, EndpointMiddleware } from 'webiny-api/src';
 import MiddlewareTestApp from './apps/middleware/app';
 
 describe('Endpoint test', () => {

@@ -1,5 +1,2 @@
-import Auth from './auth';
-import AuthError from './authError';
-
-export { Auth, AuthError };
-export default { Auth, AuthError };
+export {default as Auth} from './auth';
+export {default as AuthError} from './authError';

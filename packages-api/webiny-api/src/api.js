@@ -1,48 +1,61 @@
+// @flow
 import _ from 'lodash';
 import debug from 'debug';
-import { Auth } from './auth';
-import { Entity } from './entity';
 import { getNamespace } from 'cls-hooked';
 import koaCompose from 'koa-compose';
+import { Auth } from './auth';
+import { Entity } from './entity';
+import { Endpoint } from './endpoint';
+import App from './etc/app';
+import Services from './etc/services';
 
-class App {
-    constructor(serviceManager) {
+class Api {
+    config: Object;
+    apps: Array<App>;
+    endpoints: Array<Endpoint>;
+    requestMiddleware: Function;
+    serviceManager: Services;
+
+    constructor(services: Services) {
         this.config = {};
         this.apps = [];
         this.endpoints = [];
         this.requestMiddleware = _.noop;
-        this.serviceManager = serviceManager;
+        this.serviceManager = services;
     }
 
-    getApps() {
+    getApps(): Array<App> {
         return this.apps;
     }
 
-    getRequest() {
+    getRequest(): express$Request {
         return getNamespace('webiny-api').get('req');
     }
 
-    setConfig(config) {
+    setConfig(config: Object) {
         this.config = config;
     }
 
-    getAuth() {
+    getAuth(): IAuth {
         return this.serviceManager.get('Auth');
     }
 
-    init() {
+    init(): void {
         // Prepare apps
         this.apps = this.config.apps;
         this.endpoints = prepareEndpoints.call(this);
         this.requestMiddleware = koaCompose(this.config.middlewares.request([]));
 
+        // Register `Auth` service
         this.serviceManager.add('Auth', () => new Auth(this.config.auth), true);
+
+        // Assign entity driver (if configured)
         if (this.config.entity) {
             Entity.driver = this.config.entity.driver;
         }
     }
 
-    handleRequest(req, res) {
+    handleRequest(req: express$Request, res: express$Response): Promise<void> {
         return this.requestMiddleware({ req, res });
     }
 }
@@ -50,16 +63,16 @@ class App {
 /**
  * Traverse registered apps and construct endpoints map.
  */
-function prepareEndpoints() {
+function prepareEndpoints(): Array<Endpoint> {
     const log = debug('api:endpoints');
     const endpoints = [];
     const urlPattern = this.config.urlPattern || '/{app}/{endpoint}';
 
-    this.apps.map(app => {
-        app.endpoints.map(endpoint => {
+    this.apps.map((app: App) => {
+        app.endpoints.map((endpoint: Endpoint) => {
             const name = endpoint.prototype.constructor.name;
             const url = urlPattern.replace('{app}', _.kebabCase(app.name)).replace('{endpoint}', _.kebabCase(name));
-            //log('Registered endpoint %o', url);
+            log('Registered endpoint %o', url);
             endpoints.push({ url, name, class: endpoint });
         });
     });
@@ -67,4 +80,4 @@ function prepareEndpoints() {
     return endpoints;
 }
 
-export default App;
+export default Api;

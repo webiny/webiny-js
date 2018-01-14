@@ -8,5 +8,5 @@ packages-api/webiny-api/flow-typed
 [lints]
 
 [options]
-
+esproposal.class_static_fields=enable
 [strict]
