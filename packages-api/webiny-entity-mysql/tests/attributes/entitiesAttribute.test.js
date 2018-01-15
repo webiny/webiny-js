@@ -113,7 +113,7 @@ describe('entity attribute test', function () {
 			.onCall(0)
 			.callsFake((query, callback) => {
 				callback(null, [{
-					"id": 'A',
+					"id": 1,
 					"name": "This is a test",
 					"slug": "thisIsATest",
 					"enabled": 1
@@ -123,19 +123,19 @@ describe('entity attribute test', function () {
 			.callsFake((query, callback) => {
 				callback(null, [
 					{
-						"id": 'B',
+						"id": 2,
 						"name": "This is a test B",
 						"slug": "thisIsATestB",
 						"enabled": 1
 					},
 					{
-						"id": 'C',
+						"id": 3,
 						"name": "This is a test C",
 						"slug": "thisIsATestC",
 						"enabled": 1
 					},
 					{
-						"id": 'D',
+						"id": 4,
 						"name": "This is a test D",
 						"slug": "thisIsATestD",
 						"enabled": 1
@@ -148,7 +148,7 @@ describe('entity attribute test', function () {
 			});
 
 		const entity = await ComplexEntity.findOne();
-		assert.equal(entity.id, 'A');
+		assert.equal(entity.id, 1);
 
 		assert.deepEqual(entity.getAttribute('simpleEntitiesLoadedFromTable').value.status, {loading: false, loaded: false});
 		assert.instanceOf(entity.getAttribute('simpleEntitiesLoadedFromTable').value.current, EntityCollection);
@@ -162,9 +162,9 @@ describe('entity attribute test', function () {
 		assert.instanceOf(simpleEntities[0], SimpleEntity);
 		assert.instanceOf(simpleEntities[1], SimpleEntity);
 		assert.instanceOf(simpleEntities[2], SimpleEntity);
-		assert.equal(simpleEntities[0].id, 'B');
-		assert.equal(simpleEntities[1].id, 'C');
-		assert.equal(simpleEntities[2].id, 'D');
+		assert.equal(simpleEntities[0].id, 2);
+		assert.equal(simpleEntities[1].id, 3);
+		assert.equal(simpleEntities[2].id, 4);
 		assert.equal(simpleEntities[0].name, 'This is a test B');
 		assert.equal(simpleEntities[1].name, 'This is a test C');
 		assert.equal(simpleEntities[2].name, 'This is a test D');
@@ -182,14 +182,14 @@ describe('entity attribute test', function () {
 		});
 
 		sinon.stub(entity.getDriver().getConnection(), 'query').callsFake((query, callback) => {
-			callback(null, {insertId: 'A'});
+			callback(null, {insertId: 1});
 		});
 
 		await entity.save();
 
 		entity.getDriver().getConnection().query.restore();
 
-		assert.equal(entity.id, 'A');
+		assert.equal(entity.id, 1);
 		assert.isTrue(entity.getAttribute('id').value.isClean());
 
 		let simpleEntities = await entity.simpleEntitiesLoadedFromTable;
@@ -213,17 +213,17 @@ describe('entity attribute test', function () {
 			})
 			.onCall(1)
 			.callsFake((query, callback) => {
-				callback(null, {insertId: 'B'});
+				callback(null, {insertId: 2});
 
 			})
 			.onCall(2)
 			.callsFake((query, callback) => {
-				callback(null, {insertId: 'C'});
+				callback(null, {insertId: 3});
 
 			})
 			.onCall(3)
 			.callsFake((query, callback) => {
-				callback(null, {insertId: 'D'});
+				callback(null, {insertId: 4});
 
 			});
 
@@ -231,7 +231,7 @@ describe('entity attribute test', function () {
 
 		entity.getDriver().getConnection().query.restore();
 
-		assert.equal(entity.id, 'A');
+		assert.equal(entity.id, 1);
 		assert.isTrue(entity.getAttribute('id').value.isClean());
 		assert.isTrue(entity.getAttribute('simpleEntitiesLoadedFromTable').value.isClean());
 
@@ -241,8 +241,8 @@ describe('entity attribute test', function () {
 		assert.instanceOf(simpleEntities[1], SimpleEntity);
 		assert.instanceOf(simpleEntities[2], SimpleEntity);
 
-		assert.equal(simpleEntities[0].id, 'B');
-		assert.equal(simpleEntities[1].id, 'C');
-		assert.equal(simpleEntities[2].id, 'D');
+		assert.equal(simpleEntities[0].id, 2);
+		assert.equal(simpleEntities[1].id, 3);
+		assert.equal(simpleEntities[2].id, 4);
 	});
 });

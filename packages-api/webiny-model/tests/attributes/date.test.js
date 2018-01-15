@@ -11,9 +11,15 @@ describe('attribute boolean test', function () {
         model.attribute = new Date();
         assert.isDefined(model.attribute);
         assert.instanceOf(model.attribute, Date);
+
+		model.attribute = null;
+		assert.equal(model.attribute, null);
+
+		model.attribute = undefined;
+		assert.isNull(model.attribute);
     });
 
-    [1000, 0, 0.5, {}, [], undefined, null, 'some string', true, false].forEach(value => {
+    [1000, 0, 0.5, {}, [], 'some string', true, false].forEach(value => {
         it(`shouldn\'t accept ${typeof value}`, async () => {
             let error = null;
             try {

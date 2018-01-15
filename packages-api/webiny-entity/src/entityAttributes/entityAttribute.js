@@ -48,7 +48,7 @@ class EntityAttribute extends Attribute {
 		this.auto.delete = autoDelete;
 		return this;
 	}
-	
+
 	getAutoDelete() {
 		return this.auto.delete;
 	}
@@ -108,13 +108,22 @@ class EntityAttribute extends Attribute {
 	}
 
 	async validate() {
-		if (this.isSet()) {
-			if (!(this.value.current instanceof this.getEntityClass())) {
-				this.expected('instance of Entity class', typeof this.value.current);
+		if (this.isSet() && this.hasValue()) {
+			if (this.getParentModel().getParentEntity().getDriver().isId(this.value.current)) {
+				// If current value is a valid ID, we don't need to validate anything (let's not load everything all the time).
+			} else {
+				// On the other hand, if we don't have an ID, we must have a valid instance of given entity class.
+				const isValidInstance = this.value.current instanceof this.getEntityClass();
+				if (!isValidInstance) {
+					this.expected('instance of Entity class', typeof this.value.current);
+				}
 			}
+
+			// This validates on the entity level.
 			await this.value.current.validate();
 		}
 
+		// This validates on the attribute level.
 		return Attribute.prototype.validate.call(this);
 	}
 }

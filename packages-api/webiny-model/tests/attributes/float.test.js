@@ -13,9 +13,15 @@ describe('attribute float test', function () {
 
         model.attribute = 0;
         assert.equal(model.attribute, 0);
+
+		model.attribute = null;
+		assert.equal(model.attribute, null);
+
+		model.attribute = undefined;
+		assert.isNull(model.attribute);
     });
 
-    ['1', '0', '0.5', {}, [], undefined, null, true, false].forEach(value => {
+    ['1', '0', '0.5', {}, [], true, false].forEach(value => {
         it(`shouldn\'t accept ${typeof value}`, async () => {
             let error = null;
             try {

@@ -20,7 +20,7 @@ class Attribute {
 		 * Attribute's current value.
 		 * @type {undefined}
 		 */
-		this.value = new AttributeValue();
+		this.value = new AttributeValue(this);
 
 		/**
 		 * If true - updating will be disabled.
@@ -136,10 +136,19 @@ class Attribute {
 	}
 
 	/**
+	 * Only used for validating data type only (eg. string must not be send to an attribute that accepts numbers).
+	 * Will be triggered before data validation by given validators.
+	 */
+	validateType() {
+	}
+
+	/**
 	 * Perform validation against currently assigned value.
 	 * @throws AttributeValidationException
 	 */
 	async validate() {
+		this.isSet() && this.hasValue() && this.validateType();
+
 		let validators = this.getValidators();
 		if (_.isString(validators)) {
 			try {

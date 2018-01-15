@@ -12,8 +12,6 @@ class AttributeValue {
 					if (instance.isDifferentFrom(value)) {
 						instance.dirty = true;
 					}
-					instance.current = value;
-
 				}
 				instance[key] = value;
 				return true;

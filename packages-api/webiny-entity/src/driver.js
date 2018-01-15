@@ -1,4 +1,5 @@
 const QueryResult = require('./queryResult');
+const _ = require('lodash');
 
 class Driver {
 	constructor() {
@@ -40,8 +41,8 @@ class Driver {
 		return new QueryResult(0);
 	}
 
-	async isId(entity, params) {
-		return true;
+	isId(entity, id, params) {
+		return _.isString(id);
 	}
 }
 

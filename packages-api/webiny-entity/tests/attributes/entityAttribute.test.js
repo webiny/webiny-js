@@ -2,62 +2,10 @@ import {assert} from 'chai';
 
 const {ModelError} = require('webiny-model');
 const {Entity, QueryResult} = require('./../../src');
+const {User, Company, Image} = require('./../entities/userCompanyImage');
 const {One} = require('./../entities/numbers');
-
 const sinon = require('sinon');
 
-class Image extends Entity {
-	constructor() {
-		super();
-		this.attr('filename').char().setValidators('required');
-		this.attr('size').float();
-		this.attr('createdBy').entity(User);
-		this.attr('markedAsCannotDelete').boolean();
-	}
-
-	canDelete() {
-		if (this.markedAsCannotDelete) {
-			throw Error('Cannot delete Image entity');
-		}
-	}
-}
-
-Image.classId = 'Image';
-
-class Company extends Entity {
-	constructor() {
-		super();
-		this.attr('name').char().setValidators('required');
-		this.attr('image').entity(Image);
-		this.attr('markedAsCannotDelete').boolean();
-	}
-
-	canDelete() {
-		if (this.markedAsCannotDelete) {
-			throw Error('Cannot delete Company entity');
-		}
-	}
-}
-
-Company.classId = 'Company';
-
-class User extends Entity {
-	constructor() {
-		super();
-		this.attr('firstName').char().setValidators('required');
-		this.attr('lastName').char().setValidators('required');
-		this.attr('company').entity(Company);
-		this.attr('markedAsCannotDelete').boolean();
-	}
-
-	canDelete() {
-		if (this.markedAsCannotDelete) {
-			throw Error('Cannot delete User entity');
-		}
-	}
-}
-
-User.classId = 'User';
 
 describe('entity attribute test', function () {
 	it('should fail because an invalid instance was set', async () => {
@@ -330,7 +278,7 @@ describe('entity attribute test', function () {
 		const user = new User();
 
 		let save = sinon.stub(user.getDriver(), 'save').callsFake(entity => {
-			entity.id = 55;
+			entity.id = 'A';
 			return new QueryResult();
 		});
 
@@ -338,8 +286,10 @@ describe('entity attribute test', function () {
 			firstName: 'John',
 			lastName: 'Doe',
 			company: {
+				name: 'Company',
 				image: {
-					size: 123.45
+					size: 123.45,
+					filename: 'test.jpg'
 				}
 			}
 		});
@@ -348,10 +298,11 @@ describe('entity attribute test', function () {
 		user.getAttribute('company').value.current.getAttribute('image').setAutoSave(false);
 
 		await user.save();
+
 		save.restore();
 
 		assert(save.calledOnce);
-		assert.equal(user.id, 55);
+		assert.equal(user.id, 'A');
 
 		user.getAttribute('company').setAutoSave();
 
@@ -363,16 +314,17 @@ describe('entity attribute test', function () {
 			})
 			.onCall(1)
 			.callsFake(entity => {
-				entity.id = 66;
+				entity.id = 'B';
 				return new QueryResult();
 			});
 
 		await user.save();
+
 		save.restore();
 
 		assert(save.calledTwice);
-		assert.equal(user.id, 55);
-		assert.equal(await user.get('company.id'), 66);
+		assert.equal(user.id, 'A');
+		assert.equal(await user.get('company.id'), 'B');
 
 		// Finally, let's put auto save on image entity too.
 
@@ -392,17 +344,21 @@ describe('entity attribute test', function () {
 			})
 			.onCall(2)
 			.callsFake(entity => {
-				entity.id = 77;
+				entity.id = 'C';
 				return new QueryResult();
 			});
 
-		await user.save();
+		try {
+			await user.save();
+		} catch (e) {
+			const bbb = 123;
+		}
 		save.restore();
 
 		assert(save.calledThrice);
-		assert.equal(user.id, 55);
-		assert.equal(await user.get('company.id'), 66);
-		assert.equal(await user.get('company.image.id'), 77);
+		assert.equal(user.id, 'A');
+		assert.equal(await user.get('company.id'), 'B');
+		assert.equal(await user.get('company.image.id'), 'C');
 	});
 
 	it('auto save must be automatically enabled', async () => {
@@ -411,8 +367,10 @@ describe('entity attribute test', function () {
 			firstName: 'John',
 			lastName: 'Doe',
 			company: {
+				name: 'Company',
 				image: {
-					size: 123.45
+					size: 123.45,
+					filename: 'test.jpg'
 				}
 			}
 		});
@@ -420,17 +378,17 @@ describe('entity attribute test', function () {
 		let save = sinon.stub(user.getDriver(), 'save')
 			.onCall(0)
 			.callsFake(entity => {
-				entity.id = 55;
+				entity.id = 'A';
 				return new QueryResult();
 			})
 			.onCall(1)
 			.callsFake(entity => {
-				entity.id = 66;
+				entity.id = 'B';
 				return new QueryResult();
 			})
 			.onCall(2)
 			.callsFake(entity => {
-				entity.id = 77;
+				entity.id = 'C';
 				return new QueryResult();
 			});
 
@@ -438,9 +396,9 @@ describe('entity attribute test', function () {
 		save.restore();
 
 		assert(save.calledThrice);
-		assert.equal(user.id, 55);
-		assert.equal(await user.get('company.id'), 66);
-		assert.equal(await user.get('company.image.id'), 77);
+		assert.equal(user.id, 'A');
+		assert.equal(await user.get('company.id'), 'B');
+		assert.equal(await user.get('company.image.id'), 'C');
 	});
 
 	it('should not trigger saving of same entity (that might be also linked in an another linked entity) twice in one save process', async () => {
@@ -449,8 +407,10 @@ describe('entity attribute test', function () {
 			firstName: 'John',
 			lastName: 'Doe',
 			company: {
+				name: 'Company',
 				image: {
 					size: 123.45,
+					filename: 'test.jpg',
 					createdBy: user
 				}
 			}
@@ -460,17 +420,17 @@ describe('entity attribute test', function () {
 		let save = sinon.stub(user.getDriver(), 'save')
 			.onCall(0)
 			.callsFake(entity => {
-				entity.id = 55;
+				entity.id = 'A';
 				return new QueryResult();
 			})
 			.onCall(1)
 			.callsFake(entity => {
-				entity.id = 66;
+				entity.id = 'B';
 				return new QueryResult();
 			})
 			.onCall(2)
 			.callsFake(entity => {
-				entity.id = 77;
+				entity.id = 'C';
 				return new QueryResult();
 			});
 
@@ -478,11 +438,11 @@ describe('entity attribute test', function () {
 		save.restore();
 
 		assert(save.calledThrice);
-		assert.equal(user.id, 55);
+		assert.equal(user.id, 'A');
 
 		const company = await user.company;
-		assert.equal(company.id, 66);
-		assert.equal((await company.image).id, 77);
+		assert.equal(company.id, 'B');
+		assert.equal((await company.image).id, 'C');
 	});
 
 	it('should lazy load any of the accessed linked entities', async () => {
@@ -559,8 +519,10 @@ describe('entity attribute test', function () {
 			lastName: 'Doe',
 			markedAsCannotDelete: true,
 			company: {
+				name: 'Company',
 				markedAsCannotDelete: true,
 				image: {
+					filename: 'test.jpg',
 					size: 123.45,
 					markedAsCannotDelete: true
 				}
@@ -673,6 +635,18 @@ describe('entity attribute test', function () {
 
 		findById.restore();
 		entityDelete.restore();
+	});
+
+	it('should not trigger save on linked entity since it was not loaded', async () => {
+	});
+
+	it('should create new entity', async () => {
+	});
+
+	it('should delete existing entity', async () => {
+	});
+
+	it('should correctly use an alternate field for loading and not the default one', async () => {
 	});
 
 });

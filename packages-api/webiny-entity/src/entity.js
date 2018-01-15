@@ -21,16 +21,12 @@ class Entity {
 					return instance.constructor[key];
 				}
 
-				if (instance[key]) {
-					return instance[key];
-				}
-
 				const attr = instance.getModel().getAttribute(key);
 				if (attr) {
 					return attr.getValue();
 				}
 
-				return undefined;
+				return instance[key];
 			}
 		});
 
@@ -128,6 +124,8 @@ class Entity {
 		const existing = this.isExisting();
 
 		try {
+			await this.validate();
+
 			if (existing) {
 				await this.emit('beforeUpdate');
 			} else {
@@ -177,7 +175,9 @@ class Entity {
 				throw Error('Entity cannot be deleted because it was not previously saved.');
 			}
 
-			await this.canDelete();
+			if (!(params.skipCanDelete)) {
+				await this.canDelete();
+			}
 
 			await this.emit('beforeDelete');
 			await this.getDriver().delete(this, params);
@@ -187,6 +187,16 @@ class Entity {
 		} finally {
 			this.processing = false;
 		}
+	}
+
+	/**
+	 * Tells us whether a given ID is valid or not.
+	 * @param id
+	 * @param params
+	 * @returns {*}
+	 */
+	static isId(id, params = {}) {
+		return this.getDriver().isId(this, id, _.cloneDeep(params));
 	}
 
 	/**

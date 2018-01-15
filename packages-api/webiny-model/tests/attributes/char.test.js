@@ -13,9 +13,15 @@ describe('attribute char test', function () {
 
         model.attribute = 'some string 2';
         assert.equal(model.attribute, 'some string 2');
+
+		model.attribute = null;
+		assert.equal(model.attribute, null);
+
+		model.attribute = undefined;
+		assert.isNull(model.attribute);
     });
 
-    [123, 0, 0.5, {}, [], undefined, null, false].forEach(value => {
+    [123, 0, 0.5, {}, [], false].forEach(value => {
         it(`shouldn\'t accept ${typeof value}`, async () => {
             let error = null;
             try {

@@ -129,6 +129,7 @@ class EntitiesAttribute extends Attribute {
 
 	/**
 	 * Will not get triggered if setToStorage is set to false, that's why we don't have to do any additional checks here.
+	 * It will return only valid IDs, other values will be ignored because they must not enter storage.
 	 * @returns {Promise<*>}
 	 */
 	async getStorageValue() {

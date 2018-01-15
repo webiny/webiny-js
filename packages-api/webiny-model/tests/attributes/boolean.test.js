@@ -13,9 +13,15 @@ describe('attribute boolean test', function () {
 
         model.attribute = true;
         assert.equal(model.attribute, true);
+
+		model.attribute = null;
+		assert.equal(model.attribute, null);
+
+		model.attribute = undefined;
+		assert.isNull(model.attribute);
     });
 
-    [1000, 0, 0.5, {}, [], undefined, null, 'some string'].forEach(value => {
+    [1000, 0, 0.5, {}, [], 'some string'].forEach(value => {
         it(`shouldn\'t accept ${typeof value}`, async () => {
             let error = null;
             try {

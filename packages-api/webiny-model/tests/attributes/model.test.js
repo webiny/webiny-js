@@ -12,7 +12,6 @@ describe('attribute model test', function () {
 		}
 
 		const model = new Model(function () {
-			const a = this.attr('attribute1');
 			this.attr('attribute1').model(Model1);
 			this.attr('attribute2').model(Model2);
 		});
