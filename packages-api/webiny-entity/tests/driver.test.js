@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const User = require('./entities/User');
+const User = require('./entities/user');
 
 describe('default driver test', function () {
     it('save method should return the same user instance', async () => {

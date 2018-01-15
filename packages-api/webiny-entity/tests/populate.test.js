@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const User = require('./entities/User');
+const User = require('./entities/user');
 
 describe('set test', function () {
     it('should populate values correctly', async () => {
