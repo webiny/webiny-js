@@ -151,7 +151,7 @@ describe('entity attribute test', function () {
 		assert.equal(entity.id, 1);
 
 		assert.deepEqual(entity.getAttribute('simpleEntitiesLoadedFromTable').value.status, {loading: false, loaded: false});
-		assert.instanceOf(entity.getAttribute('simpleEntitiesLoadedFromTable').value.current, EntityCollection);
+		assert.instanceOf(entity.getAttribute('simpleEntitiesLoadedFromTable').value.getCurrent(), EntityCollection);
 		assert.deepEqual(entity.getAttribute('simpleEntitiesLoadedFromTable').value.status, {loading: false, loaded: false});
 
 		// After getting the attribute, let's check if everything was loaded correctly.

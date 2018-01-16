@@ -3,7 +3,7 @@ const _ = require('lodash');
 
 class DateAttribute extends Attribute {
 	validateType() {
-		!_.isDate(this.value.current) && this.expected('Date object', typeof this.value.current);
+		!_.isDate(this.value.getCurrent()) && this.expected('Date object', typeof this.value.getCurrent());
 	}
 }
 

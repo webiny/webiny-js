@@ -21,7 +21,7 @@ class ModelsAttribute extends Attribute {
 
 		// Even if the value is invalid (eg. a string), we allow it here, but calling validate() will fail.
 		if (!_.isArray(values)) {
-			this.value.current = values;
+			this.value.setCurrent(values);
 			return this;
 		}
 
@@ -35,7 +35,7 @@ class ModelsAttribute extends Attribute {
 				newValues.push(values[i]);
 			}
 		}
-		this.value.current = newValues;
+		this.value.setCurrent(newValues);
 
 		return this;
 	}
@@ -45,13 +45,13 @@ class ModelsAttribute extends Attribute {
 			return;
 		}
 
-		if (!_.isArray(this.value.current)) {
-			this.expected('array', typeof this.value.current);
+		if (!_.isArray(this.value.getCurrent())) {
+			this.expected('array', typeof this.value.getCurrent());
 		}
 
 		const errors = [];
-		for (let i = 0; i < this.value.current.length; i++) {
-			if (!this.value.current[i] instanceof this.getModelClass()) {
+		for (let i = 0; i < this.value.getCurrent().length; i++) {
+			if (!this.value.getCurrent()[i] instanceof this.getModelClass()) {
 				errors.push({
 					type: ModelError.INVALID_ATTRIBUTE,
 					data: {
@@ -62,7 +62,7 @@ class ModelsAttribute extends Attribute {
 				continue;
 			}
 			try {
-				await this.value.current[i].validate();
+				await this.value.getCurrent()[i].validate();
 			} catch (e) {
 				errors.push({
 					type: e.getType(),

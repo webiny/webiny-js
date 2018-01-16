@@ -3,7 +3,8 @@ import {assert} from 'chai';
 const {ModelError} = require('webiny-model');
 const {Entity, QueryResult} = require('./../../src');
 const {User, Company, Image} = require('./../entities/userCompanyImage');
-const {One} = require('./../entities/numbers');
+const {One} = require('./../entities/oneTwoThree');
+const {ClassA} = require('./../entities/abc');
 const sinon = require('sinon');
 
 
@@ -249,7 +250,7 @@ describe('entity attribute test', function () {
 	it('should return entity from storage', async () => {
 		const entity = new User();
 		entity.getAttribute('company').setStorageValue('A');
-		assert.equal(entity.getAttribute('company').value.current, 'A');
+		assert.equal(entity.getAttribute('company').value.getCurrent(), 'A');
 
 		sinon.stub(entity.getDriver(), 'findById').callsFake(() => {
 			return new QueryResult({id: 'A', name: 'TestCompany'});
@@ -309,7 +310,7 @@ describe('entity attribute test', function () {
 		});
 
 		user.getAttribute('company').setAutoSave(false);
-		user.getAttribute('company').value.current.getAttribute('image').setAutoSave(false);
+		user.getAttribute('company').value.getCurrent().getAttribute('image').setAutoSave(false);
 
 		await user.save();
 
@@ -342,7 +343,7 @@ describe('entity attribute test', function () {
 
 		// Finally, let's put auto save on image entity too.
 
-		user.getAttribute('company').value.current.getAttribute('image').setAutoSave();
+		user.getAttribute('company').value.getCurrent().getAttribute('image').setAutoSave();
 
 		// This time we should have an update on User entity, update on company entity and insert on linked image entity.
 		// Additionally, image entity has a createdBy attribute, but since it's empty, nothing must happen here.
@@ -493,19 +494,19 @@ describe('entity attribute test', function () {
 		const one = await One.findById('one');
 		assert.equal(one.id, 'one');
 		assert.equal(one.name, 'One');
-		assert.equal(one.getAttribute('two').value.current, 'two');
+		assert.equal(one.getAttribute('two').value.getCurrent(), 'two');
 
 		const two = await one.two;
 		assert.equal(two.id, 'two');
 		assert.equal(two.name, 'Two');
 
-		assert.equal(two.getAttribute('three').value.current, 'three');
+		assert.equal(two.getAttribute('three').value.getCurrent(), 'three');
 
 		const three = await two.three;
 		assert.equal(three.id, 'three');
 		assert.equal(three.name, 'Three');
 
-		assert.equal(three.getAttribute('four').value.current, 'four');
+		assert.equal(three.getAttribute('four').value.getCurrent(), 'four');
 
 		const four = await three.four;
 		assert.equal(four.id, 'four');
@@ -526,7 +527,7 @@ describe('entity attribute test', function () {
 		findById.restore();
 	});
 
-	it('auto delete must be automatically enabled and canDelete must stop deletion if error was thrown', async () => {
+	it('auto delete must be manually enabled and canDelete must stop deletion if error was thrown', async () => {
 		const user = new User();
 		user.populate({
 			firstName: 'John',
@@ -609,7 +610,7 @@ describe('entity attribute test', function () {
 		assert(entityDelete.calledThrice);
 	});
 
-	it('should properly delete linked entity even though they are not loaded', async () => {
+	it('should properly delete linked entity even though they are not loaded (auto delete enabled)', async () => {
 		let findById = sinon.stub(One.getDriver(), 'findById')
 			.onCall(0)
 			.callsFake(() => {
@@ -673,7 +674,7 @@ describe('entity attribute test', function () {
 		assert(save.calledOnce);
 	});
 
-	it('should create new entity and save links correctly (should assign parent\'s ID)', async () => {
+	it('should create new entity and save links correctly', async () => {
 		const findById = sinon.stub(One.getDriver(), 'findById')
 			.onCall(0)
 			.callsFake(() => {
@@ -714,29 +715,74 @@ describe('entity attribute test', function () {
 		const three = await two.three;
 		assert.equal(three.id, 'three');
 
-
+		assert.equal(await one.getAttribute('two').getStorageValue(), 'two');
+		assert.equal(await two.getAttribute('three').getStorageValue(), 'three');
 	});
 
-	it('should delete existing entity', async () => {
+	it('should not delete linked entities if main entity is deleted and auto delete is not enabled', async () => {
+		const entityFindById = sinon.stub(ClassA.getDriver(), 'findById')
+			.onCall(0)
+			.callsFake(() => {
+				return new QueryResult({id: 'classA', name: 'ClassA'});
+			});
+
+		const classA = await ClassA.findById('classA');
+		entityFindById.restore();
+
+		classA.classB = {name: 'classB', classC: {name: 'classC'}};
+
+		const entitySave = sinon.stub(classA.getDriver(), 'save')
+			.onCall(0)
+			.callsFake(entity => {
+				entity.id = 'classC';
+				return new QueryResult();
+			})
+			.onCall(1)
+			.callsFake(entity => {
+				entity.id = 'classB';
+				return new QueryResult();
+			})
+			.onCall(2)
+			.callsFake(() => {
+				return new QueryResult();
+			});
+
+		await classA.save();
+		entitySave.restore();
+
+		assert(entitySave.calledThrice);
+
+		assert.equal(classA.id, 'classA');
+
+		const classB = await classA.classB;
+		assert.equal(classB.id, 'classB');
+
+		const classC = await classB.classC;
+		assert.equal(classC.id, 'classC');
+
+		assert.equal(await classA.getAttribute('classB').getStorageValue(), 'classB');
+		assert.equal(await classB.getAttribute('classC').getStorageValue(), 'classC');
+
+		const entityDelete = sinon.stub(ClassA.getDriver(), 'delete')
+			.onCall(0)
+			.callsFake(() => {
+				return new QueryResult();
+			});
+
+		await classA.delete();
+		assert(entityDelete.calledOnce);
 	});
 
-	it('should correctly use an alternate attribute for linked entity', async () => {
+	it('should delete existing entity once new once was assigned and main entity saved', async () => {
+		const findById = sinon.stub(One.getDriver(), 'findById')
+			.onCall(0)
+			.callsFake(() => {
+				return new QueryResult({id: 'A', name: 'Class A'});
+			});
+
+		const one = await ClassA.findById('a');
+		findById.restore();
+
+		one.two = {name: 'two', three: {name: 'three'}};
 	});
-
-	it('should return correct storage value', async () => {
-		/*const entity = new User();
-
-		entity.getAttribute('company').setStorageValue(1);
-
-		sinon.stub(entity.getDriver(), 'findById').callsFake(() => new QueryResult({id: 1, name: 'TestCompany'}));
-		assert.equal(await entity.getAttribute('company').getStorageValue(), 1);
-		entity.getDriver().findById.restore();
-
-		entity.company = {id: 5, name: 'Test-1'};
-		assert.equal(await entity.getAttribute('company').getStorageValue(), 5);
-
-		entity.company = null;
-		assert.equal(await entity.getAttribute('company').getStorageValue(), null);*/
-	});
-
 });

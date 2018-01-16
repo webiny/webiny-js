@@ -8,7 +8,7 @@ describe('onSet test', function () {
         });
 
         model.populate({number: 2});
-		assert.equal(model.getAttribute('number').value.current, 5);
+		assert.equal(model.getAttribute('number').value.getCurrent(), 5);
 		assert.equal(model.number, 5)
     });
 });

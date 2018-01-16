@@ -22,7 +22,7 @@ class Company extends Entity {
 	constructor() {
 		super();
 		this.attr('name').char().setValidators('required');
-		this.attr('image').entity(Image);
+		this.attr('image').entity(Image).setAutoDelete();
 		this.attr('markedAsCannotDelete').boolean();
 	}
 
@@ -40,7 +40,7 @@ class User extends Entity {
 		super();
 		this.attr('firstName').char().setValidators('required');
 		this.attr('lastName').char().setValidators('required');
-		this.attr('company').entity(Company);
+		this.attr('company').entity(Company).setAutoDelete();
 		this.attr('markedAsCannotDelete').boolean();
 	}
 

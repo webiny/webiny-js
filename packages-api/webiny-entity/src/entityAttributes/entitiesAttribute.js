@@ -92,7 +92,7 @@ class EntitiesAttribute extends Attribute {
 
 			// Even if the value is invalid (eg. a string), we allow it here, but calling validate() will fail.
 			if (value instanceof EntityCollection) {
-				this.value.current = value;
+				this.value.setCurrent(value);
 				return;
 			}
 
@@ -115,11 +115,11 @@ class EntitiesAttribute extends Attribute {
 					}
 				}
 
-				this.value.current = collection;
+				this.value.setCurrent(collection);
 				return;
 			}
 
-			this.value.current = value;
+			this.value.setCurrent(value);
 		});
 	}
 
@@ -129,11 +129,11 @@ class EntitiesAttribute extends Attribute {
 	 * @returns {Promise<*>}
 	 */
 	async getStorageValue() {
-		if (_.isArray(this.value.current)) {
+		if (_.isArray(this.value.getCurrent())) {
 			// Not using getValue method because it would load the entity without need.
 			const storageValue = [];
-			for (let i = 0; i < this.value.current.length; i++) {
-				const value = this.value.current[i];
+			for (let i = 0; i < this.value.getCurrent().length; i++) {
+				const value = this.value.getCurrent()[i];
 				if (value instanceof this.getEntitiesClass()) {
 					storageValue.push(value.id);
 					continue;
@@ -149,7 +149,7 @@ class EntitiesAttribute extends Attribute {
 	}
 
 	hasValue() {
-		return !_.isEmpty(this.value.current);
+		return !_.isEmpty(this.value.getCurrent());
 	}
 
 	async validate() {
@@ -157,19 +157,19 @@ class EntitiesAttribute extends Attribute {
 			return;
 		}
 
-		if (!_.isArray(this.value.current)) {
-			this.expected('array', typeof this.value.current);
+		if (!_.isArray(this.value.getCurrent())) {
+			this.expected('array', typeof this.value.getCurrent());
 		}
 
 		const errors = [];
-		for (let i = 0; i < this.value.current.length; i++) {
+		for (let i = 0; i < this.value.getCurrent().length; i++) {
 			const {Entity} = require('./..');
 
-			if (!(this.value.current[i] instanceof Entity)) {
+			if (!(this.value.getCurrent()[i] instanceof Entity)) {
 				continue;
 			}
 
-			if (!(this.value.current[i] instanceof this.getEntitiesClass())) {
+			if (!(this.value.getCurrent()[i] instanceof this.getEntitiesClass())) {
 				errors.push({
 					type: ModelError.INVALID_ATTRIBUTE,
 					data: {
@@ -180,7 +180,7 @@ class EntitiesAttribute extends Attribute {
 			}
 
 			try {
-				await this.value.current[i].validate();
+				await this.value.getCurrent()[i].validate();
 			} catch (e) {
 				errors.push({
 					type: e.getType(),

@@ -152,7 +152,7 @@ class Attribute {
 		let validators = this.getValidators();
 		if (_.isString(validators)) {
 			try {
-				return await validation.validate(this.value.current, validators);
+				return await validation.validate(this.value.getCurrent(), validators);
 			} catch (e) {
 				throw new ModelError('Invalid attribute.', ModelError.INVALID_ATTRIBUTE, {
 					message: e.getMessage(),
@@ -161,7 +161,7 @@ class Attribute {
 				})
 			}
 		} else if (_.isFunction(validators)) {
-			return await validators(this.value.current, this);
+			return await validators(this.value.getCurrent(), this);
 		}
 	}
 
@@ -170,7 +170,7 @@ class Attribute {
 	 * @returns {boolean}
 	 */
 	hasValue() {
-		return this.value.current !== null && this.value.current !== undefined;
+		return this.value.getCurrent() !== null && this.value.getCurrent() !== undefined;
 	}
 
 	/**
@@ -207,9 +207,9 @@ class Attribute {
 		}
 
 		if (_.isFunction(this.onSetCallback)) {
-			this.value.current = this.onSetCallback(value);
+			this.value.setCurrent(this.onSetCallback(value));
 		} else {
-			this.value.current = value;
+			this.value.setCurrent(value);
 		}
 	}
 
@@ -219,14 +219,14 @@ class Attribute {
 	 */
 	getValue() {
 		if (this.isEmpty()) {
-			this.value.current = this.getDefaultValue();
+			this.value.setCurrent(this.getDefaultValue());
 		}
 
 		if (_.isFunction(this.onGetCallback)) {
-			return this.onGetCallback(this.value.current);
+			return this.onGetCallback(this.value.getCurrent());
 		}
 
-		return this.value.current;
+		return this.value.getCurrent();
 	}
 
 	onSet(callback) {
@@ -257,10 +257,8 @@ class Attribute {
 	}
 
 	setStorageValue(value) {
-		this.value.current = value;
-
 		// We don't want to mark value as dirty.
-		this.value.clean();
+		this.value.setCurrent(value).clean();
 		return this;
 	}
 

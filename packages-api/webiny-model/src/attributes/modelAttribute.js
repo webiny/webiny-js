@@ -26,7 +26,7 @@ class ModelAttribute extends Attribute {
 			newValue.populate(value);
 		}
 
-		this.value.current = newValue;
+		this.value.setCurrent(newValue);
 
 		return this;
 	}
@@ -47,10 +47,10 @@ class ModelAttribute extends Attribute {
 	 * If value is assigned (checked in the parent validate call), it must by an instance of Model.
 	 */
 	validateType() {
-		if (this.value.current instanceof this.getModelClass()) {
+		if (this.value.getCurrent() instanceof this.getModelClass()) {
 			return;
 		}
-		this.expected('instance of Model class', typeof this.value.current);
+		this.expected('instance of Model class', typeof this.value.getCurrent());
 	}
 
 	async validate() {
@@ -58,7 +58,7 @@ class ModelAttribute extends Attribute {
 		await Attribute.prototype.validate.call(this);
 
 		// This validates on the model level.
-		this.value.current instanceof this.getModelClass() && await this.value.current.validate();
+		this.value.getCurrent() instanceof this.getModelClass() && await this.value.getCurrent().validate();
 	}
 }
 

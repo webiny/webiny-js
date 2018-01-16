@@ -18,7 +18,14 @@ class EntityAttribute extends Attribute {
 		this.value = new EntityAttributeValue(this);
 
 		this.entityClass = entity;
-		this.auto = {save: true, delete: true};
+
+		/**
+		 * Auto save is always enabled, but delete not. This is because users will more often create many to one relationship than
+		 * one to one. If user wants a strict one to one relationship, then delete flag must be set to true. In other words, it would
+		 * be correct to say that if auto delete is enabled, we are dealing with one to one relationship.
+		 * @type {{save: boolean, delete: boolean}}
+		 */
+		this.auto = {save: true, delete: false};
 
 		/**
 		 * Before save, let's validate and save linked entity.
@@ -27,9 +34,11 @@ class EntityAttribute extends Attribute {
 		 * validation will be called internally in the save method.
 		 */
 		this.getParentModel().getParentEntity().on('beforeSave', async () => {
-			if (this.getAutoSave() && this.value.current instanceof this.getEntityClass()) {
-				await this.value.current.save();
-				this.getParentModel().getParentEntity()
+			if (this.getAutoSave() && this.value.getCurrent() instanceof this.getEntityClass()) {
+				await this.value.getCurrent().save();
+
+				// If previously we had a different entity linked, we must delete it.
+
 			}
 		});
 
@@ -107,13 +116,13 @@ class EntityAttribute extends Attribute {
 
 			switch (true) {
 				case value instanceof Entity:
-					this.value.current = value;
+					this.value.setCurrent(value);
 					break;
 				case _.isObject(value):
-					this.value.current = new this.entityClass().populate(value);
+					this.value.setCurrent(new this.entityClass().populate(value));
 					break;
 				default:
-					this.value.current = value;
+					this.value.setCurrent(value);
 			}
 		});
 	}
@@ -126,20 +135,19 @@ class EntityAttribute extends Attribute {
 		const {Entity} = require('./..');
 
 		// Not using getValue method because it would load the entity without need.
-		let current = this.value.current;
+		let current = this.value.getCurrent();
 
 		// But still, if the value is loading currently, let's wait for it to load completely, and then use that value.
 		if (this.value.isLoading()) {
 			current = await this.value.load();
 		}
 
-		return current instanceof Entity ? current.id : this.value.current;
+		return current instanceof Entity ? current.id : this.value.getCurrent();
 	}
 
 	setStorageValue(value) {
-		this.value.current = value;
+		this.value.setCurrent(value);
 
-		const aaa  = this.value;
 		// We don't want to mark value as dirty.
 		this.value.clean();
 		return this;
@@ -152,13 +160,13 @@ class EntityAttribute extends Attribute {
 	}
 
 	validateType() {
-		if (this.getParentModel().getParentEntity().isId(this.value.current)) {
+		if (this.getParentModel().getParentEntity().isId(this.value.getCurrent())) {
 			return;
 		}
-		if (this.value.current instanceof this.getEntityClass()) {
+		if (this.value.getCurrent() instanceof this.getEntityClass()) {
 			return;
 		}
-		this.expected('instance of Entity class or a valid ID', typeof this.value.current);
+		this.expected('instance of Entity class or a valid ID', typeof this.value.getCurrent());
 	}
 
 	async validate() {
@@ -166,7 +174,7 @@ class EntityAttribute extends Attribute {
 		await Attribute.prototype.validate.call(this);
 
 		// This validates on the model level.
-		this.value.current instanceof this.getEntityClass() && await this.value.current.validate();
+		this.value.getCurrent() instanceof this.getEntityClass() && await this.value.getCurrent().validate();
 	}
 }
 

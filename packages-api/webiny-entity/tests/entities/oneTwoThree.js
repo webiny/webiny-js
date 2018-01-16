@@ -1,10 +1,11 @@
 const {Entity} = require('./../../src');
 
+
 class One extends Entity {
 	constructor() {
 		super();
 		this.attr('name').char();
-		this.attr('two').entity(Two);
+		this.attr('two').entity(Two).setAutoDelete();
 	}
 }
 
@@ -12,7 +13,7 @@ class Two extends Entity {
 	constructor() {
 		super();
 		this.attr('name').char();
-		this.attr('three').entity(Three);
+		this.attr('three').entity(Three).setAutoDelete();
 	}
 }
 
@@ -20,10 +21,10 @@ class Three extends Entity {
 	constructor() {
 		super();
 		this.attr('name').char();
-		this.attr('four').entity(Four);
-		this.attr('anotherFour').entity(Four);
-		this.attr('five').entity(Five);
-		this.attr('six').entity(Six);
+		this.attr('four').entity(Four).setAutoDelete();
+		this.attr('anotherFour').entity(Four).setAutoDelete();
+		this.attr('five').entity(Five).setAutoDelete();
+		this.attr('six').entity(Six).setAutoDelete();
 	}
 }
 

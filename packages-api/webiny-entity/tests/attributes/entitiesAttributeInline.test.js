@@ -231,9 +231,9 @@ describe('attribute entities test', function () {
 			attribute2: ['C']
 		});
 
-		assert.equal(mainEntity.getAttribute('attribute1').value.current[0], 'A');
-		assert.equal(mainEntity.getAttribute('attribute1').value.current[1], 'B');
-		assert.equal(mainEntity.getAttribute('attribute2').value.current[0], 'C');
+		assert.equal(mainEntity.getAttribute('attribute1').value.getCurrent()[0], 'A');
+		assert.equal(mainEntity.getAttribute('attribute1').value.getCurrent()[1], 'B');
+		assert.equal(mainEntity.getAttribute('attribute2').value.getCurrent()[0], 'C');
 
 		sinon.stub(entity.getDriver(), 'findByIds')
 			.onCall(0)

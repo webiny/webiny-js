@@ -249,8 +249,8 @@ describe('attribute entities test', function () {
 			attribute2: ['C']
 		});
 
-		assert.isArray(mainEntity.getAttribute('attribute1').value.current);
-		assert.isArray(mainEntity.getAttribute('attribute2').value.current);
+		assert.isArray(mainEntity.getAttribute('attribute1').value.getCurrent());
+		assert.isArray(mainEntity.getAttribute('attribute2').value.getCurrent());
 	});
 
 	it('should lazy load any of the accessed linked entities', async () => {
@@ -273,10 +273,10 @@ describe('attribute entities test', function () {
 				return new QueryResult([{id: 13, firstName: 'Foo', lastName: 'Bar'}]);
 			});
 
-		assert.isArray(mainEntity.getAttribute('attribute1').value.current);
-		assert.lengthOf(mainEntity.getAttribute('attribute1').value.current, 0);
-		assert.isArray(mainEntity.getAttribute('attribute2').value.current);
-		assert.lengthOf(mainEntity.getAttribute('attribute2').value.current, 0);
+		assert.isArray(mainEntity.getAttribute('attribute1').value.getCurrent());
+		assert.lengthOf(mainEntity.getAttribute('attribute1').value.getCurrent(), 0);
+		assert.isArray(mainEntity.getAttribute('attribute2').value.getCurrent());
+		assert.lengthOf(mainEntity.getAttribute('attribute2').value.getCurrent(), 0);
 
 		const attribute1 = await mainEntity.attribute1;
 		assert.instanceOf(attribute1, EntityCollection);
