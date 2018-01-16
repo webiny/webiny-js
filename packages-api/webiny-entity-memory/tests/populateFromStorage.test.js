@@ -51,14 +51,13 @@ describe('populateFromStorage test', function () {
 		assert.equal(complexEntity.tags[1].label, 'Adult User');
 		assert.lengthOf(complexEntity.tags, 2);
 
-		const simpleEntity = await complexEntity.simpleEntity;
 		assert.deepEqual(complexEntity.getAttribute('simpleEntities').value.status, {loading: false, loaded: false});
-
-		assert.equal(complexEntity.getAttribute('simpleEntity').value.current, 'A');
 		assert.equal(complexEntity.getAttribute('simpleEntities').value.current[0], 'B');
 		assert.equal(complexEntity.getAttribute('simpleEntities').value.current[1], 'C');
 		assert.equal(complexEntity.getAttribute('simpleEntities').value.current[2], 'D');
 
+		assert.equal(complexEntity.getAttribute('simpleEntity').value.current, 'A');
+		const simpleEntity = await complexEntity.simpleEntity;
 		assert.equal(simpleEntity.id, 'A');
 		assert.equal(simpleEntity.name, 'Test-A');
 

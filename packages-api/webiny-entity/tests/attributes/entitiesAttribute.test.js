@@ -228,9 +228,10 @@ describe('attribute entities test', function () {
 		assert.equal(attribute1Value[2], 'C');
 
 		const attribute2Value = await mainEntity.getAttribute('attribute2').getStorageValue();
-		assert.lengthOf(attribute2Value, 2);
-		assert.equal(attribute2Value[0], 'X');
-		assert.equal(attribute2Value[1], 'Y');
+		assert.lengthOf(attribute2Value, 3);
+		assert.equal(attribute2Value[0], 'AA');
+		assert.equal(attribute2Value[1], 'X');
+		assert.equal(attribute2Value[2], 'Y');
 
 		entity.getDriver().findById.restore();
 

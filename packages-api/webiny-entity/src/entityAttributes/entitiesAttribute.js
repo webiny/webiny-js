@@ -27,10 +27,6 @@ class EntitiesAttribute extends Attribute {
 		 */
 		this.value = new EntitiesAttributeValue(this);
 
-		/**
-		 * TODO: maybe add the ability to set this flag globally on all entities, but also override specifically where needed.
-		 * @type {boolean}
-		 */
 		this.autoSave = true;
 
 		/**
@@ -143,7 +139,7 @@ class EntitiesAttribute extends Attribute {
 					continue;
 				}
 
-				this.getParentModel().getParentEntity().getDriver().isId(value) && storageValue.push(value);
+				this.getParentModel().getParentEntity().isId(value) && storageValue.push(value);
 			}
 
 			return storageValue;

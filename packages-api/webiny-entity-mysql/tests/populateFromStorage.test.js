@@ -11,12 +11,19 @@ describe('populateFromStorage test', function () {
 				lastName: 'tester',
 				verification: `{"verified":true,"documentType":"driversLicense"}`,
 				tags: `[{"slug":"no-name","label":"No Name"},{"slug":"adult-user","label":"Adult User"}]`,
-				simpleEntity: 'A',
-				simpleEntities: '["B","C","D"]'
+				simpleEntity: 1,
+				simpleEntities: '[22, 33, 44]'
 			}]);
 		});
 
-		const user = await ComplexEntity.findById('A');
+		let user = new ComplexEntity();
+		assert.isFalse(user.getAttribute('simpleEntity').value.isLoading());
+		assert.isFalse(user.getAttribute('simpleEntity').value.isLoaded());
+
+		user = await ComplexEntity.findById(1);
+		assert.isFalse(user.getAttribute('simpleEntity').value.isLoading());
+		assert.isFalse(user.getAttribute('simpleEntity').value.isLoaded());
+
 		ComplexEntity.getDriver().getConnection().query.restore();
 
 		assert.equal(user.firstName, 'test');
@@ -29,20 +36,21 @@ describe('populateFromStorage test', function () {
 		assert.equal(user.tags[1].label, 'Adult User');
 		assert.lengthOf(user.tags, 2);
 
+		assert.equal(user.getAttribute('simpleEntity').value.current, 1);
+
 		sinon.stub(user.getDriver().getConnection(), 'query').callsFake((query, callback) => {
 			callback(null, [{id: 1, name: 'Test-1'}]);
 		});
 
 		const simpleEntity = await user.simpleEntity;
-		assert.equal(user.getAttribute('simpleEntity').value.current, 'A');
 		user.getDriver().getConnection().query.restore();
 
 		assert.equal(simpleEntity.id, 1);
 		assert.equal(simpleEntity.name, 'Test-1');
 
-		assert.equal(user.getAttribute('simpleEntities').value.current[0], 'B');
-		assert.equal(user.getAttribute('simpleEntities').value.current[1], 'C');
-		assert.equal(user.getAttribute('simpleEntities').value.current[2], 'D');
+		assert.equal(user.getAttribute('simpleEntities').value.current[0], 22);
+		assert.equal(user.getAttribute('simpleEntities').value.current[1], 33);
+		assert.equal(user.getAttribute('simpleEntities').value.current[2], 44);
 
 		sinon.stub(user.getDriver().getConnection(), 'query')
 			.onCall(0)

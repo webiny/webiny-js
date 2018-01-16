@@ -195,6 +195,16 @@ class Entity {
 	 * @param params
 	 * @returns {*}
 	 */
+	isId(id, params = {}) {
+		return this.getDriver().isId(this, id, _.cloneDeep(params));
+	}
+
+	/**
+	 * Tells us whether a given ID is valid or not.
+	 * @param id
+	 * @param params
+	 * @returns {*}
+	 */
 	static isId(id, params = {}) {
 		return this.getDriver().isId(this, id, _.cloneDeep(params));
 	}
@@ -214,7 +224,7 @@ class Entity {
 
 		const queryResult = await this.getDriver().findById(this, id, paramsClone);
 		if (queryResult.getResult()) {
-			return await new this().setExisting().populateFromStorage(queryResult.getResult()).emit('load');
+			return new this().setExisting().populateFromStorage(queryResult.getResult());
 		}
 		return null;
 	}
@@ -233,7 +243,7 @@ class Entity {
 		const entityCollection = new EntityCollection().setParams(paramsClone).setMeta(queryResult.getMeta());
 		if (queryResult.getResult()) {
 			for (let i = 0; i < queryResult.getResult().length; i++) {
-				entityCollection.push(await new this().setExisting().populateFromStorage(queryResult.getResult()[i]).emit('loaded'));
+				entityCollection.push(new this().setExisting().populateFromStorage(queryResult.getResult()[i]));
 			}
 		}
 
@@ -251,9 +261,7 @@ class Entity {
 
 		const queryResult = await this.getDriver().findOne(this, paramsClone);
 		if (queryResult.getResult()) {
-			const entity = new this().setExisting().populateFromStorage(queryResult.getResult());
-			await entity.emit('load');
-			return entity;
+			return new this().setExisting().populateFromStorage(queryResult.getResult());
 		}
 		return null;
 	}

@@ -168,7 +168,7 @@ class MySQLDriver extends Driver {
 		});
 	}
 
-	isId(value) {
+	isId(entity, value, options) {
 		return _.isFunction(this.idGenerator) ? _.isString(value) : _.isNumber(value) && value > 0;
 	}
 
