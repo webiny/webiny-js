@@ -9,11 +9,11 @@
     ],
     "license": "MIT",
     "dependencies": {
-        "babel-runtime": "^6.26.0",
-        "moment": "^2.20.1"
+        "babel-runtime": "^6.26.0"
     },
     "devDependencies": {
         "chai-as-promised": "^7.1.1",
-        "moment-es6": "^1.0.0"
+        "fecha": "^2.3.2",
+        "sinon": "^4.1.6"
     }
 }

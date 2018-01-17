@@ -1,6 +1,6 @@
 // @flow
 import _ from 'lodash';
-import moment from 'moment-es6';
+import fecha from 'fecha';
 
 class MockDriver implements IFileStorageDriver {
     fileSystem: { [string]: IFileData };
@@ -25,13 +25,17 @@ class MockDriver implements IFileStorageDriver {
      * Writes the given File
      */
     setFile(key: string, file: IFileData): Promise<boolean | string> {
+        if (file.body === null) {
+            return Promise.resolve(false);
+        }
+
         let newKey = key;
         if (this.config.createDatePrefix) {
             if (!/^\/\d{4}\/\d{2}\/\d{2}\//.test(newKey)) {
-                newKey = '/' + moment().format('YYYY/MM/DD') + key;
+                newKey = '/' + fecha.format(Date.now(), 'YYYY/MM/DD') + key;
             }
         }
-        this.fileSystem[newKey] = file;
+        this.fileSystem[newKey] = { ...file };
 
         return Promise.resolve(newKey);
     }
@@ -93,7 +97,7 @@ class MockDriver implements IFileStorageDriver {
      * Renames a file
      */
     rename(sourceKey: string, targetKey: string): Promise<boolean> {
-        this.fileSystem[targetKey] = _.cloneDeep(this.fileSystem[sourceKey]);
+        this.fileSystem[targetKey] = { ...this.fileSystem[sourceKey] };
         delete this.fileSystem[sourceKey];
         return Promise.resolve(true);
     }
