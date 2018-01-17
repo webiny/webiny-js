@@ -6,6 +6,11 @@ class EntityAttributeValue extends AttributeValue {
 		super(attribute);
 		this.loading = false;
 		this.queue = [];
+
+		// Contains initial value received upon loading from storage. If the current value becomes different from initial,
+		// upon save, old entity must be removed. This is only active when auto delete option on the attribute is enabled,
+		// which then represents a one to one relationship.
+		this.initial = null;
 	}
 
 	/**
@@ -27,13 +32,11 @@ class EntityAttributeValue extends AttributeValue {
 			})
 		}
 
-		const classes = this.attribute.classes;
-
 		this.loading = true;
 
 		// Only if we have a valid ID set, we must load linked entity.
 		if (this.attribute.getParentModel().getParentEntity().isId(this.current)) {
-			this.current = await classes.entity.class.findById(this.current);
+			this.current = await this.attribute.classes.entity.class.findById(this.current);
 		}
 
 		_.isFunction(callback) && await callback();
@@ -58,12 +61,37 @@ class EntityAttributeValue extends AttributeValue {
 		return this.loading;
 	}
 
+	isDifferentFrom(value) {
+		return _.get(this.current, 'id', this.current) !== _.get(value, 'id', value);
+	}
+
+	setInitial(value) {
+		this.initial = value;
+		return this;
+	}
+
+	getInitial() {
+		return this.initial;
+	}
+
+	currentIsDifferentFromInitial() {
+		return this.isDifferentFrom(this.initial);
+	}
+
+	async deleteInitial() {
+		if (this.currentIsDifferentFromInitial() && this.initial) {
+			const initial = await this.attribute.classes.entity.class.findById(this.initial);
+			initial && await initial.delete();
+			this.setInitial(this.getCurrent())
+		}
+	}
+
 	/**
 	 * Value cannot be set as clean if there is no ID present.
 	 * @returns {EntityAttributeValue}
 	 */
 	clean() {
-		if (_.get(this.value, 'current.id')) {
+		if (_.get(this.current, 'id')) {
 			return super.clean();
 		}
 

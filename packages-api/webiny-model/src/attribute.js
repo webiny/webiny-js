@@ -258,7 +258,7 @@ class Attribute {
 
 	setStorageValue(value) {
 		// We don't want to mark value as dirty.
-		this.value.setCurrent(value).clean();
+		this.value.setCurrent(value, {skipDifferenceCheck: true});
 		return this;
 	}
 
