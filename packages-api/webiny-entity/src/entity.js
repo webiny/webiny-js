@@ -50,35 +50,70 @@ class Entity {
 		return proxy;
 	}
 
+	/**
+	 * Returns instance of entity's model.
+	 * @returns {*}
+	 */
 	getModel() {
 		return this.model;
 	}
 
+	/**
+	 * Returns instance of used driver.
+	 * @returns {Driver}
+	 */
 	static getDriver() {
 		return this.driver;
 	}
 
+	/**
+	 * Returns instance of used driver.
+	 * @returns {Driver}
+	 */
 	getDriver() {
 		return this.constructor.driver;
 	}
 
+	/**
+	 * Sets whether entity is existing or not.
+	 * @param flag
+	 * @returns {Entity}
+	 */
 	setExisting(flag = true) {
 		this.existing = flag;
 		return this;
 	}
 
+	/**
+	 * Returns true if entity exists or in other words, is already saved in storage. Otherwise returns false.
+	 * @returns {boolean|*}
+	 */
 	isExisting() {
 		return this.existing;
 	}
 
-	attr(attribute) {
-		return this.getModel().getAttributesContainer().attr(attribute);
+	/**
+	 * Creates new attribute with name.
+	 * @param name
+	 * @returns {*}
+	 */
+	attr(name) {
+		return this.getModel().getAttributesContainer().attr(name);
 	}
 
-	getAttribute(attribute) {
-		return this.getModel().getAttribute(attribute);
+	/**
+	 * Returns single attribute by given name.
+	 * @param name
+	 * @returns {*|string}
+	 */
+	getAttribute(name) {
+		return this.getModel().getAttribute(name);
 	}
 
+	/**
+	 * Returns all entity's attributes.
+	 * @returns {*}
+	 */
 	getAttributes() {
 		return this.getModel().getAttributes();
 	}
@@ -87,23 +122,50 @@ class Entity {
 		return _.get(await this.toJSON(path), path, defaultValue);
 	}
 
+	async set(path, defaultValue) {
+		return _.get(await this.toJSON(path), path, defaultValue);
+	}
+
+	/**
+	 * Returns entity's JSON representation.
+	 * @param path
+	 * @returns {Promise<void>}
+	 */
 	async toJSON(path = null) {
 		return this.getModel().toJSON(path);
 	}
 
+	/**
+	 * Returns data suitable for storage.
+	 * @returns {Promise<Promise<*>|*|Promise<{}>>}
+	 */
 	async toStorage() {
 		return this.getModel().toStorage();
 	}
 
+	/**
+	 * Validates current entity and throws exception that contains all invalid attributes.
+	 * @returns {Promise<void>}
+	 */
 	async validate() {
 		return this.getModel().validate();
 	}
 
+	/**
+	 * Used to populate entity with given data.
+	 * @param data
+	 * @returns {Entity}
+	 */
 	populate(data) {
 		this.getModel().populate(data);
 		return this;
 	}
 
+	/**
+	 * Used when populating entity with data from storage.
+	 * @param data
+	 * @returns {Entity}
+	 */
 	populateFromStorage(data) {
 		this.getModel().populateFromStorage(data);
 		return this;
