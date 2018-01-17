@@ -1,0 +1,19 @@
+{
+    "name": "webiny-file-storage",
+    "version": "1.0.0",
+    "main": "lib/index.js",
+    "contributors": [
+        "Pavel Denisjuk <pavel@webiny.com>",
+        "Sven Al Hamad <sven@webiny.com>",
+        "Adrian Smijulj <adrian@webiny.com>"
+    ],
+    "license": "MIT",
+    "dependencies": {
+        "babel-runtime": "^6.26.0",
+        "moment": "^2.20.1"
+    },
+    "devDependencies": {
+        "chai-as-promised": "^7.1.1",
+        "moment-es6": "^1.0.0"
+    }
+}
