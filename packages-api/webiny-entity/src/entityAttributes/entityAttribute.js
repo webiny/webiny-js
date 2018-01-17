@@ -31,14 +31,15 @@ class EntityAttribute extends Attribute {
 		 * Before save, let's validate and save linked entity.
 		 *
 		 * This ensures that parent entity has a valid ID which can be stored and also that all nested data is valid since
-		 * validation will be called internally in the save method.
+		 * validation will be called internally in the save method. Save operations will be executed starting from bottom
+		 * nested entities, ending with the main parent entity.
 		 */
 		this.getParentModel().getParentEntity().on('beforeSave', async () => {
 			if (this.getAutoSave() && this.value.getCurrent() instanceof this.getEntityClass()) {
 				await this.value.getCurrent().save();
 
-				// If previously we had a different entity linked, we must delete it.
-
+				// If initially we had a different entity linked, we must delete it. The following method will only do deletes if needed.
+				await this.value.deleteInitial();
 			}
 		});
 
@@ -46,7 +47,7 @@ class EntityAttribute extends Attribute {
 		 * This will recursively trigger the same listener on all child entity attributes. Before each delete,
 		 * canDelete callback will be called and stop the delete process if an Error is thrown.
 		 *
-		 * Deletes will be executed starting from bottom nested entities, ending with the main parent entity.
+		 * Delete operations will be executed starting from bottom nested entities, ending with the main parent entity.
 		 */
 		this.getParentModel().getParentEntity().on('beforeDelete', async () => {
 			if (this.getAutoDelete()) {
@@ -127,10 +128,18 @@ class EntityAttribute extends Attribute {
 		});
 	}
 
+	/**
+	 * Loads current entity if needed and returns it.
+	 * @returns {Promise<void>}
+	 */
 	async getValue() {
 		return this.value.load();
 	}
 
+	/**
+	 * Returns storage value (entity ID or null).
+	 * @returns {Promise<*>}
+	 */
 	async getStorageValue() {
 		const {Entity} = require('./..');
 
@@ -145,20 +154,28 @@ class EntityAttribute extends Attribute {
 		return current instanceof Entity ? current.id : this.value.getCurrent();
 	}
 
+	/**
+	 * Sets value received from storage.
+	 * @param value
+	 * @returns {EntityAttribute}
+	 */
 	setStorageValue(value) {
-		this.value.setCurrent(value);
-
-		// We don't want to mark value as dirty.
-		this.value.clean();
+		this.value.setCurrent(value, {skipDifferenceCheck: true}).setInitial(value);
 		return this;
 	}
 
-
+	/**
+	 * Returns JSON value.
+	 * @returns {Promise<void>}
+	 */
 	async getJSONValue() {
 		const value = await this.getValue();
 		return value instanceof this.getEntityClass() ? value.toJSON() : value;
 	}
 
+	/**
+	 * Validates current value - if it's not a valid ID or an instance of Entity class, an error will be thrown.
+	 */
 	validateType() {
 		if (this.getParentModel().getParentEntity().isId(this.value.getCurrent())) {
 			return;
@@ -169,11 +186,15 @@ class EntityAttribute extends Attribute {
 		this.expected('instance of Entity class or a valid ID', typeof this.value.getCurrent());
 	}
 
+	/**
+	 * Validates on attribute level and then on entity level (its attributes recursively).
+	 * @returns {Promise<void>}
+	 */
 	async validate() {
 		// This validates on the attribute level.
 		await Attribute.prototype.validate.call(this);
 
-		// This validates on the model level.
+		// This validates on the entity level.
 		this.value.getCurrent() instanceof this.getEntityClass() && await this.value.getCurrent().validate();
 	}
 }

@@ -7,7 +7,6 @@ const {One} = require('./../entities/oneTwoThree');
 const {ClassA} = require('./../entities/abc');
 const sinon = require('sinon');
 
-
 describe('entity attribute test', function () {
 	it('should fail because an invalid instance was set', async () => {
 		const user = new User();
@@ -771,18 +770,99 @@ describe('entity attribute test', function () {
 
 		await classA.delete();
 		assert(entityDelete.calledOnce);
+
+		entityDelete.restore();
 	});
 
-	it('should delete existing entity once new once was assigned and main entity saved', async () => {
-		const findById = sinon.stub(One.getDriver(), 'findById')
+	it('should delete existing entity once new one was assigned and main entity saved', async () => {
+		let entityFindById = sinon.stub(One.getDriver(), 'findById')
 			.onCall(0)
 			.callsFake(() => {
-				return new QueryResult({id: 'A', name: 'Class A'});
+				return new QueryResult({id: 'one', name: 'One', two: 'two'});
+			})
+			.onCall(1)
+			.callsFake(() => {
+				return new QueryResult({id: 'two', name: 'Two', three: 'three'});
 			});
 
-		const one = await ClassA.findById('a');
-		findById.restore();
+		const one = await One.findById('a');
+		assert.equal(await one.getAttribute('two').getStorageValue(), 'two');
+		assert.equal(one.getAttribute('two').value.getInitial(), 'two');
 
-		one.two = {name: 'two', three: {name: 'three'}};
+		one.two = {
+			name: 'Another Two',
+			three: {name: 'Another Three', four: {name: 'Another Four'}, anotherFour: {name: 'Another Four x2'}}
+		};
+
+		// Since set is async, to test initial / current values, we had to get value of attribute two...
+		await one.two;
+
+		assert.equal(entityFindById.callCount, 2);
+		entityFindById.restore();
+
+		// ... and now we can be sure the values are set and ready for testing.
+		assert.equal(one.getAttribute('two').value.getInitial(), 'two');
+		assert.equal(one.getAttribute('two').value.getCurrent().id, null);
+
+		// This is what will happen once we execute save method on One entity
+
+		// 1. recursively call save method on all child entities.
+		let entitySave = sinon.stub(One.getDriver(), 'save')
+			.onCall(0)
+			.callsFake(entity => {
+				entity.id = 'anotherFour';
+				return new QueryResult();
+			})
+			.onCall(1)
+			.callsFake((entity) => {
+				entity.id = 'anotherFourFour';
+				return new QueryResult();
+			})
+			.onCall(2)
+			.callsFake((entity) => {
+				entity.id = 'anotherThree';
+				return new QueryResult();
+			})
+			.onCall(3)
+			.callsFake((entity) => {
+				entity.id = 'anotherTwo';
+				return new QueryResult();
+			})
+			.onCall(4)
+			.callsFake(() => {
+				return new QueryResult();
+			});
+
+		// 2. Once the save is done, deletes will start because main entity has a different entity on attribute 'two'. Before deletions,
+		// findById method will be executed to recursively load entities and then of course delete them.
+		entityFindById = sinon.stub(One.getDriver(), 'findById')
+			.onCall(0)
+			.callsFake(() => {
+				return new QueryResult({id: 'two', name: 'Two', three: 'three'});
+			})
+			.onCall(1)
+			.callsFake(() => {
+				return new QueryResult({id: 'three', name: 'Three'});
+			});
+
+
+		let entityDelete = sinon.stub(One.getDriver(), 'delete')
+			.onCall(0)
+			.callsFake(() => {
+				return new QueryResult();
+			})
+			.onCall(1)
+			.callsFake(() => {
+				return new QueryResult();
+			});
+
+		await one.save();
+
+		assert.equal(entitySave.callCount, 5);
+		assert.equal(entityFindById.callCount, 2);
+		assert.equal(entityDelete.callCount, 2);
+
+		entityFindById.restore();
+		entityDelete.restore();
 	});
 });

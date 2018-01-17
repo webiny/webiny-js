@@ -1,18 +1,20 @@
 class AttributeValue {
 	constructor(attribute) {
 		this.attribute = attribute;
-		this.previous = null;
 		this.current = null;
 		this.dirty = false;
 		this.set = false;
 	}
 
-	setCurrent(value) {
+	setCurrent(value, options = {}) {
 		this.set = true;
-		this.previous = this.current;
-		if (this.isDifferentFrom(value)) {
-			this.dirty = true;
+
+		if (!options.skipDifferenceCheck) {
+			if (this.isDifferentFrom(value)) {
+				this.dirty = true;
+			}
 		}
+
 		this.current = value;
 		return this;
 	}
