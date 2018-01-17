@@ -865,7 +865,4 @@ describe('entity attribute test', function () {
 		entityFindById.restore();
 		entityDelete.restore();
 	});
-
-	it('should save linked entities only if loaded and dirty', async () => {
-	});
 });

@@ -1,7 +1,6 @@
 const {Model} = require('webiny-model');
 const Entity = require('./entity');
 
-
 class VerificationModel extends Model {
 	constructor() {
 		super();
