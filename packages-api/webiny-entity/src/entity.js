@@ -118,12 +118,12 @@ class Entity {
 		return this.getModel().getAttributes();
 	}
 
-	async get(path, defaultValue) {
-		return _.get(await this.toJSON(path), path, defaultValue);
+	async get(path = '', defaultValue) {
+		return this.getModel().get(path, defaultValue);
 	}
 
-	async set(path, defaultValue) {
-		return _.get(await this.toJSON(path), path, defaultValue);
+	async set(path, value) {
+		return this.getModel().set(path, value);
 	}
 
 	/**
