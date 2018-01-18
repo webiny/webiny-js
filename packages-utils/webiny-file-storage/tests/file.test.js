@@ -4,9 +4,9 @@ import chaiAsPromised from 'chai-as-promised';
 
 chai.use(chaiAsPromised);
 chai.should();
-const { expect, assert } = chai;
+const { assert } = chai;
 
-import { Storage, File } from '../src';
+import { Storage, StorageError, File } from '../src';
 import MockDriver from './mockDriver';
 
 describe('File class test', function () {
@@ -16,7 +16,7 @@ describe('File class test', function () {
 
     const file1 = {
         key: '/path/1',
-        data: { body: 'file1', meta: { ext: 'jpg', size: 412, timeModified: Date.now() } }
+        data: { body: 'file1', meta: { ext: 'jpg', size: 412, timeModified: Date.now(), type: 'text/plain' } }
     };
 
     it('should store file body and meta', async function () {
@@ -31,11 +31,6 @@ describe('File class test', function () {
             storage.exists(file.getKey()).should.become(true),
             storage.getFile(file.getKey()).should.become(file1.data)
         ]);
-    });
-
-    it('should not store empty file body', async function () {
-        const file = new File(file1.key, storage);
-        return file.save().should.become(false);
     });
 
     it('should return storage instance', function () {
@@ -74,9 +69,9 @@ describe('File class test', function () {
         return file.getMeta().should.become(file1.data.meta);
     });
 
-    it('should not return file body', function () {
+    it('should throw a StorageError exception', function () {
         const file = new File('/missing/key', storage);
-        return file.getBody().should.become(null);
+        return file.getBody().should.be.rejectedWith(StorageError);
     });
 
     it('should return time modified', function () {
@@ -87,6 +82,11 @@ describe('File class test', function () {
     it('should return file size', function () {
         const file = new File(file1.key, storage);
         return file.getSize().should.become(file1.data.meta.size);
+    });
+
+    it('should return file content type', function () {
+        const file = new File(file1.key, storage);
+        return file.getContentType(file1.key).should.become(file1.data.meta.type);
     });
 
     it('should return absolute file path', function () {
@@ -105,6 +105,6 @@ describe('File class test', function () {
     it('should delete a file', async function () {
         const file = new File(file1.key, storage);
         await file.delete();
-        return storage.getFile(file1.key).should.become(null);
+        return storage.getFile(file1.key).should.be.rejectedWith(StorageError);
     });
 });

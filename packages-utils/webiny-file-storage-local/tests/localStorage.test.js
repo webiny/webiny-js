@@ -6,6 +6,7 @@ chai.should();
 const expect = chai.expect;
 
 import Storage from '../src/storage';
+import StorageError from '../src/storageError';
 import MockDriver from './mockDriver';
 
 describe('Storage class test', function () {
@@ -18,7 +19,7 @@ describe('Storage class test', function () {
         key: '/path/1',
         data: { body: 'file1', meta: {} }
     };
-    const file1Meta = { ext: 'jpg', size: 412, timeModified: Date.now(), type: 'text/plain' };
+    const file1Meta = { ext: 'jpg', size: 412, timeModified: Date.now() };
     const file2 = {
         key: '/path/2',
         data: { body: 'file2', meta: { ext: 'png', size: 173, timeModified: Date.now() } }
@@ -78,10 +79,6 @@ describe('Storage class test', function () {
 
     it('should return file size', function () {
         return storage.getSize(file2.key).should.become(file2.data.meta.size);
-    });
-
-    it('should return file content type', function () {
-        return storage.getContentType(file1.key).should.become(file1.data.meta.type);
     });
 
     it('should return a public file URL', function () {

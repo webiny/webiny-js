@@ -5,14 +5,15 @@ export default class File implements IFile {
     key: string;
     storage: Storage;
     file: IFileData;
+    bodyLoaded: boolean;
+    metaLoaded: boolean;
 
     constructor(key: string, storage: Storage) {
         this.key = key;
         this.storage = storage;
-        this.file = {
-            body: null,
-            meta: null
-        };
+        this.file = { body: '' };
+        this.bodyLoaded = false;
+        this.metaLoaded = false;
     }
 
     /**
@@ -39,12 +40,11 @@ export default class File implements IFile {
     /**
      * Get file body
      */
-    async getBody(options?: { encoding: string }): Promise<null | string | Buffer> {
-        if (!this.file.body) {
-            const file = await this.storage.getFile(this.key, options);
-            if (file) {
-                this.file = file;
-            }
+    async getBody(options?: Object): Promise<string | Buffer> {
+        if (!this.bodyLoaded) {
+            this.file = await this.storage.getFile(this.key, options);
+            this.bodyLoaded = true;
+            this.metaLoaded = true;
         }
         return this.file.body;
     }
@@ -52,18 +52,12 @@ export default class File implements IFile {
     /**
      * Get file meta
      */
-    async getMeta(): Promise<Object | null> {
-        if (!this.file.meta) {
+    async getMeta(): Promise<?Object> {
+        if (!this.metaLoaded) {
             this.file.meta = await this.storage.getMeta(this.key);
+            this.metaLoaded = true;
         }
         return this.file.meta;
-    }
-
-    /**
-     * Get time modified
-     */
-    getTimeModified(): Promise<number | null> {
-        return this.storage.getTimeModified(this.key);
     }
 
     /**
@@ -71,6 +65,7 @@ export default class File implements IFile {
      */
     setBody(data: string | Buffer): void {
         this.file.body = data;
+        this.bodyLoaded = true;
     }
 
     /**
@@ -78,6 +73,14 @@ export default class File implements IFile {
      */
     setMeta(meta: Object): void {
         this.file.meta = meta;
+        this.metaLoaded = true;
+    }
+
+    /**
+     * Get time modified
+     */
+    getTimeModified(): Promise<?number> {
+        return this.storage.getTimeModified(this.key);
     }
 
     /**
@@ -97,12 +100,9 @@ export default class File implements IFile {
     /**
      * Save file (call `setFile` on Storage instance)
      */
-    async save(): Promise<boolean | string> {
-        const newKey = await this.storage.setFile(this.key, this.file);
-        if (typeof newKey === 'string') {
-            this.key = newKey;
-        }
-        return newKey;
+    async save(): Promise<boolean> {
+        this.key = await this.storage.setFile(this.key, this.file);
+        return true;
     }
 
     /**
@@ -118,7 +118,14 @@ export default class File implements IFile {
     /**
      * Get file size in bytes
      */
-    getSize(): Promise<number | null> {
+    getSize(): Promise<?number> {
         return this.storage.getSize(this.key);
+    }
+
+    /**
+     * Get content type
+     */
+    getContentType(key: string): Promise<?string> {
+        return this.storage.getContentType(key);
     }
 }

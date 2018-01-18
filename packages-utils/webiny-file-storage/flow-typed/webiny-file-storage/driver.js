@@ -1,23 +1,23 @@
 declare type IFileData = {
-    body: null | string | Buffer,
-    meta: null | Object
+    body: string | Buffer,
+    meta?: Object
 }
 
 declare interface IFileStorageDriver {
     /**
      * Reads the contents of the file
      */
-    getFile(key: string, options?: { encoding: string }): Promise<IFileData | null>;
+    getFile(key: string, options?: Object): Promise<IFileData>;
 
     /**
      * Writes the given file and returns final file key
      */
-    setFile(key: string, file: IFileData): Promise<boolean | string>;
+    setFile(key: string, file: IFileData): Promise<string>;
 
     /**
      * Get meta data
      */
-    getMeta(key: string): Promise<Object | null>;
+    getMeta(key: string): Promise<?Object>;
 
     /**
      * Set meta data
@@ -37,12 +37,7 @@ declare interface IFileStorageDriver {
      * @param key       (Optional) Key of a directory to get keys from. If not set - keys will be read from the storage root.
      * @param filter    (Optional) Glob pattern to filter returned file keys
      */
-    getKeys(key?: string, filter?: string | null): Promise<Array<string>>;
-
-    /**
-     * Returns the last modified time
-     */
-    getTimeModified(key: string): Promise<number | null>;
+    getKeys(key?: string, filter?: string): Promise<Array<string>>;
 
     /**
      * Deletes the file
@@ -62,7 +57,17 @@ declare interface IFileStorageDriver {
     /**
      * Get file size (if supported)
      */
-    getSize(key: string): Promise<number | null>;
+    getSize(key: string): Promise<?number>;
+
+    /**
+     * Returns the last modified time
+     */
+    getTimeModified(key: string): Promise<?number>;
+
+    /**
+     * Returns content type
+     */
+    getContentType(key: string): Promise<?string>;
 
     /**
      * Get absolute file path (if supported).

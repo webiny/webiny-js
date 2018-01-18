@@ -2,7 +2,9 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { appEntry, SpaConfigPlugin } = require('webiny-scripts/lib/spa');
 
-module.exports = ({ config }) => {
+module.exports = ({ config, env }) => {
+    const spaConfigs = env === 'production' ? require('./configs.prod.js') : require('./configs.dev.js');
+
     config.entry['admin'] = appEntry(__dirname + '/Admin/index.js');
     config.entry['frontend'] = appEntry(__dirname + '/Frontend/index.js');
 
@@ -25,7 +27,7 @@ module.exports = ({ config }) => {
             template: __dirname + '/Frontend/index.html',
             chunks: ['common', 'frontend']
         }),
-        new SpaConfigPlugin(require('./Configs.js'))
+        new SpaConfigPlugin(spaConfigs)
     ];
 
     return config;

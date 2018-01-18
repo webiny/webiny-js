@@ -19,17 +19,22 @@ declare interface IFile {
     /**
      * Get file contents
      */
-    getBody(options?: { encoding: string }): Promise<null | string | Buffer>;
+    getBody(options?: Object): Promise<string | Buffer>;
 
     /**
      * Get file meta
      */
-    getMeta(): Promise<Object | null>;
+    getMeta(): Promise<?Object>;
 
     /**
      * Get time modified
      */
-    getTimeModified(): Promise<number | null>;
+    getTimeModified(): Promise<?number>;
+
+    /**
+     * Get content type
+     */
+    getContentType(key: string): Promise<?string>;
 
     /**
      * Set file body
@@ -54,7 +59,7 @@ declare interface IFile {
     /**
      * Save file
      */
-    save(): Promise<boolean | string>;
+    save(): Promise<boolean>;
 
     /**
      * Get absolute file path.
@@ -69,5 +74,5 @@ declare interface IFile {
      *
      * @return int|null Number of bytes or null
      */
-    getSize(): Promise<number | null>;
+    getSize(): Promise<?number>;
 }

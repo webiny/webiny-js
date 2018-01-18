@@ -1,6 +1,7 @@
 // @flow
 import _ from 'lodash';
 import fecha from 'fecha';
+import StorageError from './../src/storageError';
 
 class MockDriver implements IFileStorageDriver {
     fileSystem: { [string]: IFileData };
@@ -17,18 +18,17 @@ class MockDriver implements IFileStorageDriver {
     /**
      * Reads the contents of the file
      */
-    getFile(key: string, options?: { encoding: string }): Promise<IFileData | null> {
-        return Promise.resolve(this.fileSystem[key] || null);
+    getFile(key: string, options?: Object): Promise<IFileData> {
+        if (!_.has(this.fileSystem, key)) {
+            return Promise.reject(new StorageError('File not found'));
+        }
+        return Promise.resolve(this.fileSystem[key]);
     }
 
     /**
      * Writes the given File
      */
-    setFile(key: string, file: IFileData): Promise<boolean | string> {
-        if (file.body === null) {
-            return Promise.resolve(false);
-        }
-
+    setFile(key: string, file: IFileData): Promise<string> {
         let newKey = key;
         if (this.config.createDatePrefix) {
             if (!/^\/\d{4}\/\d{2}\/\d{2}\//.test(newKey)) {
@@ -43,7 +43,7 @@ class MockDriver implements IFileStorageDriver {
     /**
      * Get meta data
      */
-    getMeta(key: string): Promise<Object | null> {
+    getMeta(key: string): Promise<?Object> {
         return Promise.resolve(_.get(this.fileSystem, `${key}.meta`, null));
     }
 
@@ -112,8 +112,15 @@ class MockDriver implements IFileStorageDriver {
     /**
      * Get file size (if supported)
      */
-    getSize(key: string): Promise<number | null> {
+    getSize(key: string): Promise<?number> {
         return Promise.resolve(_.get(this.fileSystem[key], 'meta.size', null));
+    }
+
+    /**
+     * Returns content type
+     */
+    getContentType(key: string): Promise<?string> {
+        return Promise.resolve(_.get(this.fileSystem[key], 'meta.type', null));
     }
 
     /**
