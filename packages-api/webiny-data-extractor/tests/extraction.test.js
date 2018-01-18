@@ -1,63 +1,43 @@
 import {assert} from 'chai';
 
 const extractor = require('./../src');
-
-const data = {
-	firstName: 'John',
-	lastName: 'Doe',
-	age: 30,
-	enabled: true,
-	company: {
-		name: 'Webiny LTD',
-		city: 'London',
-		image: {
-			file: 'webiny.jpg',
-			size: {width: 12.5, height: 44},
-			visible: false
-		}
-	},
-	subscription: {
-		name: 'Free',
-		price: 0,
-		commitment: {
-			expiresOn: 'never'
-		}
-	},
-	objects: [
-		{type: 'cube', size: 'large', weight: 'heavy'},
-		{type: 'sphere', size: 'medium', weight: 'medium-heavy'},
-		{type: 'pyramid', size: 'small', weight: 'light'}
-	],
-	promised: new Promise(resolve => {
-		setTimeout(() => {
-			resolve(100);
-		}, 5);
-	})
-};
+const mock = require('./mock');
 
 describe('extracting values test', () => {
 	it('should return regular root keys', async () => {
-		const extracted = await extractor.get(data, 'firstName,lastName,enabled');
+		const extracted = await extractor.get(mock, 'firstName,lastName,enabled');
 		assert.equal(extracted.firstName, 'John');
 		assert.equal(extracted.lastName, 'Doe');
 		assert.equal(extracted.enabled, true);
 	});
 
 	it('should return nested keys - marked with dots', async () => {
-		const extracted = await extractor.get(data, 'subscription.name,subscription.price,subscription.commitment.expiresOn');
+		const extracted = await extractor.get(mock, 'subscription.name,subscription.price,subscription.commitment.expiresOn');
 		assert.equal(extracted.subscription.name, 'Free');
 		assert.equal(extracted.subscription.price, 0);
 		assert.equal(extracted.subscription.commitment.expiresOn, 'never');
 	});
 
 	it('should return nested keys in square brackets', async () => {
-		const extracted = await extractor.get(data, 'company[name,city]');
+		const extracted = await extractor.get(mock, 'company[name,city]');
 		assert.equal(extracted.company.name, 'Webiny LTD');
 		assert.equal(extracted.company.city, 'London');
 	});
 
+	it('should return more values that were passed after the square brackets (let\'s make sure internal character counters work)', async () => {
+		const extracted = await extractor.get(mock, 'company[name,city],firstName,lastName');
+		assert.deepEqual(extracted, {
+			company: {
+				name: 'Webiny LTD',
+				city: 'London'
+			},
+			firstName: 'John',
+			lastName: 'Doe'
+		});
+	});
+
 	it('should return whole objects if nested keys aren\'t set', async () => {
-		const extracted = await extractor.get(data, `company[name,city,image]`);
+		const extracted = await extractor.get(mock, `company[name,city,image]`);
 
 		assert.equal(extracted.company.name, 'Webiny LTD');
 		assert.equal(extracted.company.city, 'London');
@@ -71,14 +51,14 @@ describe('extracting values test', () => {
 	});
 
 	it('if a key is an array and no nested keys are set, it should be returned completely', async () => {
-		const extracted = await extractor.get(data, `age,objects`);
+		const extracted = await extractor.get(mock, `age,meta.objects`);
 		assert.equal(extracted.age, 30);
-		assert.isArray(extracted.objects);
-		assert.lengthOf(extracted.objects, 3);
+		assert.isArray(extracted.meta.objects);
+		assert.lengthOf(extracted.meta.objects, 3);
 	});
 
 	it('should support listing paths in multiple lines and return complete data with all nested keys', async () => {
-		const extracted = await extractor.get(data, `
+		const extracted = await extractor.get(mock, `
 			 firstName,lastName,enabled,
 			 subscription.name,subscription.price,
 			 company[name,city,image],
@@ -92,14 +72,14 @@ describe('extracting values test', () => {
 	});
 
 	it('should correctly receive value that was returned async', async () => {
-		const extracted = await extractor.get(data, `promised`);
+		const extracted = await extractor.get(mock, `promised`);
 
 		assert.hasAllKeys(extracted, ['promised']);
 		assert.equal(extracted.promised, 100);
 	});
 
 	it('should not include fields that do not exist', async () => {
-		const extracted = await extractor.get(data, `
+		const extracted = await extractor.get(mock, `
 			firstName,middleName,lastName,
 			company.name,company.name1,company.image.size.something,
 			subscription[basicName,name,commitment[something]],
@@ -119,5 +99,175 @@ describe('extracting values test', () => {
 				name: 'Free'
 			}
 		});
+	});
+
+	it('should correctly return keys if arrays are present in the path', async () => {
+		let extracted = await extractor.get(mock, 'meta.objects');
+		assert.deepEqual(extracted.meta.objects, mock.meta.objects);
+		assert.hasAllKeys(extracted.meta, ['objects']);
+
+		extracted = await extractor.get(mock, 'meta.objects.type');
+		assert.deepEqual(extracted, {
+			meta: {
+				objects: [
+					{type: 'cube'},
+					{type: 'sphere'},
+					{type: 'pyramid'}
+				]
+			}
+		});
+
+		extracted = await extractor.get(mock, 'meta.objects.type,meta.objects.size,meta.objects.weight');
+
+		assert.deepEqual(extracted, {
+			meta: {
+				objects: [
+					{
+						type: 'cube',
+						size: 'large',
+						weight: 'heavy'
+					},
+					{
+						type: 'sphere',
+						size: 'medium',
+						weight: 'medium-heavy'
+					},
+					{
+						type: 'pyramid',
+						size: 'small',
+						weight: 'light'
+					}
+				]
+			}
+		});
+
+
+		extracted = await extractor.get(mock, 'meta.objects[type,size,weight]');
+
+		assert.deepEqual(extracted, {
+			meta: {
+				objects: [
+					{
+						type: 'cube',
+						size: 'large',
+						weight: 'heavy'
+					},
+					{
+						type: 'sphere',
+						size: 'medium',
+						weight: 'medium-heavy'
+					},
+					{
+						type: 'pyramid',
+						size: 'small',
+						weight: 'light'
+					}
+				]
+			}
+		});
+
+		extracted = await extractor.get(mock, 'meta.objects[type,size,weight,colors.key]');
+
+		assert.deepEqual(extracted, {
+			meta: {
+				objects: [
+					{
+						type: 'cube',
+						size: 'large',
+						weight: 'heavy',
+						colors: [
+							{key: 'red'},
+							{key: 'blue'},
+							{key: 'green'}
+						]
+					},
+					{
+						type: 'sphere',
+						size: 'medium',
+						weight: 'medium-heavy',
+						colors: [
+							{key: 'black'},
+							{key: 'white'},
+							{key: 'gray'}
+						]
+					},
+					{
+						type: 'pyramid',
+						size: 'small',
+						weight: 'light',
+						colors: [
+							{key: 'purple'},
+							{key: 'orange'}
+						]
+					}
+				]
+			}
+		});
+
+		const extractedWithBraces = await extractor.get(mock, 'meta.objects[type,size,weight,colors[key,label]]');
+		extracted = await extractor.get(mock, 'meta.objects[type,size,weight,colors.key,colors.label]');
+
+		const expectedResult = {
+			"meta": {
+				"objects": [
+					{
+						"type": "cube",
+						"size": "large",
+						"weight": "heavy",
+						"colors": [
+							{
+								"key": "red",
+								"label": "Red"
+							},
+							{
+								"key": "blue",
+								"label": "Blue"
+							},
+							{
+								"key": "green",
+								"label": "Green"
+							}
+						]
+					},
+					{
+						"type": "sphere",
+						"size": "medium",
+						"weight": "medium-heavy",
+						"colors": [
+							{
+								"key": "black",
+								"label": "Black"
+							},
+							{
+								"key": "white",
+								"label": "White"
+							},
+							{
+								"key": "gray",
+								"label": "Gray"
+							}
+						]
+					},
+					{
+						"type": "pyramid",
+						"size": "small",
+						"weight": "light",
+						"colors": [
+							{
+								"key": "purple",
+								"label": "Purple"
+							},
+							{
+								"key": "orange",
+								"label": "Orange"
+							}
+						]
+					}
+				]
+			}
+		};
+
+		assert.deepEqual(extracted, expectedResult);
+		assert.deepEqual(extractedWithBraces, expectedResult);
 	});
 });
