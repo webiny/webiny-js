@@ -145,6 +145,27 @@ class Model {
 		return path ? await extractor.get(json, path) : json;
 	}
 
+	async get(path = '', defaultValue) {
+		const steps = _.isArray(path) ? path : path.split('.');
+		let value = this;
+		for (let i = 0; i < steps.length; i++) {
+			if (!_.isObject(value)) {
+				break;
+			}
+			value = await value.getAttribute(steps[i]).getValue();
+		}
+
+		return typeof(value) === 'undefined' ? defaultValue : value;
+	}
+
+	async set(path, value) {
+		const steps = path.split('.');
+		const lastStep = steps.pop();
+
+		const model = await this.get(steps);
+		return model.getAttribute(lastStep).setValue(value);
+	}
+
 	/**
 	 * Returns data that is suitable for latter saving in a storage layer (database, caching etc.). This is useful because attributes can
 	 * have different values here (eg. only ID sometimes is needed) and also some attributes don't even need to be saved in the storage,
