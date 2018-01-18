@@ -101,7 +101,7 @@ describe('extracting values test', () => {
 		});
 	});
 
-	it('should correctly return keys if arrays are present in the path', async () => {
+	it('array tests - should correctly return keys if arrays are present in the path', async () => {
 		let extracted = await extractor.get(mock, 'meta.objects');
 		assert.deepEqual(extracted.meta.objects, mock.meta.objects);
 		assert.hasAllKeys(extracted.meta, ['objects']);
@@ -140,9 +140,10 @@ describe('extracting values test', () => {
 				]
 			}
 		});
+	});
 
-
-		extracted = await extractor.get(mock, 'meta.objects[type,size,weight]');
+	it('array tests - extraction must work correctly with square brackets', async () => {
+		let extracted = await extractor.get(mock, 'meta.objects[type,size,weight]');
 
 		assert.deepEqual(extracted, {
 			meta: {
@@ -204,8 +205,12 @@ describe('extracting values test', () => {
 			}
 		});
 
+	});
+
+	it('array tests - extraction must work with deeply nested arrays', async () => {
+
 		const extractedWithBraces = await extractor.get(mock, 'meta.objects[type,size,weight,colors[key,label]]');
-		extracted = await extractor.get(mock, 'meta.objects[type,size,weight,colors.key,colors.label]');
+		const extracted = await extractor.get(mock, 'meta.objects[type,size,weight,colors.key,colors.label]');
 
 		const expectedResult = {
 			"meta": {
@@ -269,5 +274,23 @@ describe('extracting values test', () => {
 
 		assert.deepEqual(extracted, expectedResult);
 		assert.deepEqual(extractedWithBraces, expectedResult);
+
+
+	});
+
+	it('array tests - extraction must work correctly with square brackets', async () => {
+		const extract1 = await extractor.get(mock, 'meta.objects');
+		const extract2 = await extractor.get(mock, 'meta.objects[type,size,weight,colors[key,label,comments]]');
+		const extract3 = await extractor.get(mock, 'meta.objects[type,size,weight,colors.key,colors.label,colors.comments]');
+		const extract4 = await extractor.get(mock, 'meta.objects[type,size,weight,colors.key,colors.label,colors.comments[id,text,score]]');
+		const extract5 = await extractor.get(mock, 'meta.objects[type,size,weight,colors.key,colors.label,colors.comments.id,colors.comments.text,colors.comments.score]');
+
+		const expectedResult = {meta: {objects: mock.meta.objects}};
+
+		assert.deepEqual(extract1, expectedResult);
+		assert.deepEqual(extract2, expectedResult);
+		assert.deepEqual(extract3, expectedResult);
+		assert.deepEqual(extract4, expectedResult);
+		assert.deepEqual(extract5, expectedResult);
 	});
 });
