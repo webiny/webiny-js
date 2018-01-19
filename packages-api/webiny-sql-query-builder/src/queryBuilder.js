@@ -1,6 +1,6 @@
 import _ from 'lodash';
-const {operatorsProcessor} = require('./processors');
-const SqlString = require('sqlstring');
+import {operatorsProcessor} from './processors'
+import SqlString from 'sqlstring'
 
 class QueryBuilder {
 	build(options) {
@@ -118,4 +118,5 @@ class QueryBuilder {
 	}
 }
 
-module.exports = new QueryBuilder();
+const queryBuilder = new QueryBuilder();
+export default queryBuilder;

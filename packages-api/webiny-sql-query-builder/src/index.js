@@ -1,1 +1,2 @@
-module.exports = require('./queryBuilder');
+import queryBuilder from './queryBuilder';
+export default queryBuilder;

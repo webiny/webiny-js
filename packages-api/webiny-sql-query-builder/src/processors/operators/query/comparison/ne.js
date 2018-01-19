@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-module.exports = {
+export default {
     canProcess: ({value}) => {
         return _.has(value, '$ne');
     },

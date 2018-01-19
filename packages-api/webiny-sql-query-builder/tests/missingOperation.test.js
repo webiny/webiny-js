@@ -1,4 +1,4 @@
-const queryBuilder = require('./../src');
+import queryBuilder from './../src';
 
 describe('missing operation error test', function () {
     it('should throw an error because operation does not exist', async () => {

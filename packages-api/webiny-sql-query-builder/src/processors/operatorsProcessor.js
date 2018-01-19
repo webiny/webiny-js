@@ -1,5 +1,5 @@
-const operators = require('./operators');
-const SqlString = require('sqlstring');
+import operators from './operators';
+import SqlString from 'sqlstring';
 
 class OperatorsProcessor {
     constructor() {
@@ -11,7 +11,7 @@ class OperatorsProcessor {
             operators.query.comparison.in,
             operators.query.comparison.ne,
         ];
-    }
+	}
 
     execute(payload) {
         return this.process({$and: payload});
@@ -43,4 +43,5 @@ class OperatorsProcessor {
     }
 }
 
-module.exports = new OperatorsProcessor();
+const operatorsProcessor = new OperatorsProcessor();
+export default operatorsProcessor;

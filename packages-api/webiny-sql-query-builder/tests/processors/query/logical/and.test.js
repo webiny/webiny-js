@@ -1,5 +1,5 @@
-const {assert, expect} = require('chai');
-const {operatorsProcessor} = require('./../../../../src/processors');
+import {assert, expect} from 'chai';
+import {operatorsProcessor} from './../../../../src/processors';
 
 describe('$and logical operator test', function () {
     it('should generate correct statement', () => {

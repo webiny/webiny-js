@@ -1,4 +1,4 @@
-module.exports = {
-    and: require('./and'),
-    or: require('./or')
-};
+import and from './and';
+import or from './or';
+
+export default {and, or}
