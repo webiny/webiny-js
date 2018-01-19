@@ -86,8 +86,8 @@ class Validation {
 				}
 				throw new ValidationError(e.message, name, value);
 			}
-			return true;
 		}
+		return true;
 	}
 }
 
