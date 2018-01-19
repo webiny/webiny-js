@@ -43,11 +43,12 @@
         "test:utils": "mocha --require source-map-support/register --require babel-core/register \"packages-utils/**/tests/**/*.test.js\"",
         "test:webiny-api": "yarn mocha \"packages-api/webiny-api/tests/**/*.test.js\"",
         "test:webiny-data-extractor": "yarn mocha \"packages-utils/webiny-data-extractor/tests/**/*.test.js\"",
+
         "test:webiny-model": "yarn mocha \"packages-api/webiny-model/tests/**/*.test.js\"",
 
         "coverage": "nyc --reporter=text yarn test:all",
         "coverage:wfs-local": "nyc --reporter=text --include packages-utils/webiny-file-storage-local mocha --require source-map-support/register --require babel-core/register \"packages-utils/webiny-file-storage-local/tests/**/*.test.js\"",
-        "test:travis": "yarn build && nyc yarn test:all && nyc report --reporter=text-lcov | coveralls"
+        "test:travis": "yarn build && nyc yarn test && nyc report --reporter=text-lcov | coveralls"
     },
     "pre-commit": [
     ],
