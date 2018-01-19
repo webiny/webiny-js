@@ -1,4 +1,4 @@
-const _ = require('lodash');
+import _ from 'lodash';
 const {validation} = require('webiny-validation');
 const ModelError = require('./modelError');
 const AttributeValue = require('./attributeValue');

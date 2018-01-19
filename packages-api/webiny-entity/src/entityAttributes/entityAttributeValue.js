@@ -1,5 +1,5 @@
 const {AttributeValue} = require('webiny-model');
-const _ = require('lodash');
+import _ from 'lodash';
 
 class EntityAttributeValue extends AttributeValue {
 	constructor(attribute) {

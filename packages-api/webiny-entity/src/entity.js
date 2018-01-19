@@ -1,7 +1,7 @@
 const Driver = require('./driver');
 const EventHandler = require('./eventHandler');
 const EntityCollection = require('./entityCollection');
-const _ = require('lodash');
+import _ from 'lodash';
 
 class Entity {
 	constructor() {

@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const _ = require('lodash');
+import _ from 'lodash';
 
 const {Entity} = require('./../src');
 

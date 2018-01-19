@@ -1,5 +1,5 @@
-const _ = require('lodash');
-const extractor = require('webiny-data-extractor');
+import _ from 'lodash';
+import extractor from 'webiny-data-extractor';
 const DefaultAttributesContainer = require('./defaultAttributesContainer');
 const ModelError = require('./modelError');
 

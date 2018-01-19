@@ -1,4 +1,4 @@
-const _ = require('lodash');
+import _ from 'lodash';
 const {operatorsProcessor} = require('./processors');
 const SqlString = require('sqlstring');
 

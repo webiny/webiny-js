@@ -1,5 +1,5 @@
 const Attribute = require('./../attribute');
-const _ = require('lodash');
+import _ from 'lodash';
 
 class FloatAttribute extends Attribute {
 	validateType() {

@@ -1,7 +1,7 @@
 const {MySQLModel} = require('./model');
 const {Driver, QueryResult} = require('webiny-entity');
 const queryBuilder = require('webiny-sql-query-builder');
-const _ = require('lodash');
+import _ from 'lodash';
 
 class MySQLDriver extends Driver {
 	constructor(options) {

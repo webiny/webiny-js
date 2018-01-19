@@ -1,5 +1,5 @@
 const {Driver, QueryResult} = require('webiny-entity');
-const _ = require('lodash');
+import _ from 'lodash';
 const mdbid = require('mdbid');
 
 class MemoryDriver extends Driver {

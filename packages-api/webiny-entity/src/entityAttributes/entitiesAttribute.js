@@ -1,6 +1,6 @@
 const {ModelError, Attribute} = require('webiny-model');
 const EntityCollection = require('./../../src/entityCollection');
-const _ = require('lodash');
+import _ from 'lodash';
 const EntitiesAttributeValue = require('./entitiesAttributeValue');
 
 class EntitiesAttribute extends Attribute {

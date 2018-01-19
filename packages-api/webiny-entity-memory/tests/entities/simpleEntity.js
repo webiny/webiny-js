@@ -1,4 +1,4 @@
-const _ = require('lodash');
+import _ from 'lodash';
 const Entity = require('./entity');
 
 class SimpleEntity extends Entity {

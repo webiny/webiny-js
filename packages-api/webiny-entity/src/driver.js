@@ -1,5 +1,5 @@
 const QueryResult = require('./queryResult');
-const _ = require('lodash');
+import _ from 'lodash';
 
 class Driver {
 	constructor() {
