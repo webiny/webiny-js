@@ -2,7 +2,7 @@ import {assert} from 'chai';
 
 const {Entity, QueryResult, EntityCollection} = require('./../../src');
 const {ModelError} = require('webiny-model');
-const sinon = require('sinon');
+import sinon from 'sinon';
 
 describe('attribute entities test', function () {
 	class Entity1 extends Entity {

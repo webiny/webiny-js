@@ -3,7 +3,7 @@ import {assert} from 'chai';
 const {EntityCollection} = require('webiny-entity');
 
 const {ComplexEntity, SimpleEntity} = require('./../entities/complexEntity');
-const sinon = require('sinon');
+import sinon from 'sinon';
 
 describe('entity attribute test', function () {
 	it('it must populate the attribute correctly', async () => {

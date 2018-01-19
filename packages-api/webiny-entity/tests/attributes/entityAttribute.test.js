@@ -5,7 +5,7 @@ const {Entity, QueryResult} = require('./../../src');
 const {User, Company, Image} = require('./../entities/userCompanyImage');
 const {One} = require('./../entities/oneTwoThree');
 const {ClassA} = require('./../entities/abc');
-const sinon = require('sinon');
+import sinon from 'sinon';
 
 describe('entity attribute test', function () {
 	it('should fail because an invalid instance was set', async () => {

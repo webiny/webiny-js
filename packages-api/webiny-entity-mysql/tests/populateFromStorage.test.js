@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 
-const sinon = require('sinon');
+import sinon from 'sinon';
 const {ComplexEntity, SimpleEntity} = require('./entities/complexEntity');
 
 describe('populateFromStorage test', function () {
