@@ -38,12 +38,11 @@
         "mocha": "mocha --require source-map-support/register --require babel-core/register",
         "build": "lerna exec -- babel src -d lib --source-maps --copy-files",
 
-        "test": "mocha --require source-map-support/register --require babel-core/register \"packages-*/**/tests/**/*.test.js\"",
-        "test:api": "mocha --require source-map-support/register --require babel-core/register \"packages-api/**/tests/**/*.test.js\"",
-        "test:utils": "mocha --require source-map-support/register --require babel-core/register \"packages-utils/**/tests/**/*.test.js\"",
+        "test": "yarn mocha \"packages-*/**/tests/**/*.test.js\"",
+        "test:api": "yarn mocha \"packages-api/**/tests/**/*.test.js\"",
+        "test:utils": "yarn mocha \"packages-utils/**/tests/**/*.test.js\"",
         "test:webiny-api": "yarn mocha \"packages-api/webiny-api/tests/**/*.test.js\"",
         "test:webiny-data-extractor": "yarn mocha \"packages-utils/webiny-data-extractor/tests/**/*.test.js\"",
-
         "test:webiny-model": "yarn mocha \"packages-api/webiny-model/tests/**/*.test.js\"",
 
         "coverage": "nyc --reporter=text yarn test:all",
