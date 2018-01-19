@@ -1,12 +1,12 @@
-const ValidationError = require('./../validationError');
+import _ from 'lodash';
+import ValidationError from './../validationError';
 
-module.exports = (value) => {
+export default (value) => {
     if (!value) return;
-    value = value + '';
 
-	const re = new RegExp('^\-?[0-9]+$');
-	if ((re.test(value))) {
-		return true;
-	}
-	throw new ValidationError('Value needs to be an integer.');
+    if (_.isInteger(value)) {
+        return true;
+    }
+
+    throw new ValidationError('Value needs to be an integer.');
 };

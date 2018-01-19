@@ -1,25 +1,21 @@
-const {validation} = require('./../src');
-import {assert} from 'chai';
+import { validation, ValidationError } from './../src';
+import chai from './chai';
 
-describe('disabling error throwing test', () => {
-	it('by default it must throw errors on invalid data', async () => {
-		let error = null;
-		try {
-			await validation.validate('1234567890', '');
-		} catch (e) {
-			error = e;
-		}
+const { expect } = chai;
 
-		assert.isNull(error);
-	});
+describe('invalid validators test', () => {
+    it('must throw error if validators were not passed as a non-empty string', () => {
+        return Promise.all([
+            validation.validate('123', null).should.be.rejected,
+            validation.validate('123', 123).should.be.rejected,
+            validation.validate('123', []).should.be.rejected,
+            validation.validate('123', {}, {}).should.be.rejected
+        ]);
+    });
 
-	it('must throw error if validators were not passed as a string', async () => {
-		try {
-			await validation.validate('123', {}, {});
-		} catch (e) {
-			return;
-		}
-
-		throw Error(`Error should've been thrown.`);
-	});
+    it('must throw error on non-existing validator', () => {
+        return validation.validate('1234567890', 'xyz').should.be.rejectedWith(ValidationError).then(error => {
+            expect(error.getValidator()).to.equal('xyz');
+        });
+    });
 });

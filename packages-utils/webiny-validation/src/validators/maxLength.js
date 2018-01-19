@@ -1,7 +1,7 @@
-const _ = require('lodash');
-const ValidationError = require('./../validationError');
+import _ from 'lodash';
+import ValidationError from './../validationError';
 
-module.exports = (value, length) => {
+export default (value, length) => {
     if (!value) return;
 
 	if (_.isObject(value)) {

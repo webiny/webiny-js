@@ -1,36 +1,16 @@
-const {validation, ValidationError} = require('./../src');
-import {assert} from 'chai';
+import { validation, ValidationError } from './../src';
+import chai from './chai';
+
+const { expect } = chai;
 
 describe('async/sync validation test', () => {
-	it('by default it must validate asynchronously', async () => {
-		const valid = validation.validate('test', 'required');
-		assert.instanceOf(valid, Promise);
-		assert.isTrue(await valid);
+    it('must validate asynchronously', async () => {
+        expect(validation.validate('test', 'required')).to.become(true);
+        expect(validation.validate('', 'required')).to.be.rejectedWith(ValidationError);
+    });
 
-		let invalid = validation.validate('', 'required');
-		assert.instanceOf(invalid, Promise);
-
-		let error = null;
-		try {
-			await invalid;
-		} catch (e) {
-			error = e;
-		}
-
-		assert.instanceOf(error, ValidationError);
-
-	});
-
-	it('should validate synchronously when options\' async flag is set to false', async () => {
-		assert.isTrue(validation.validate('test', 'required', {async: false}));
-
-		let error = null;
-		try {
-			validation.validate('', 'required', {async: false});
-		} catch (e) {
-			error = e;
-		}
-
-		assert.instanceOf(error, ValidationError);
-	});
+    it('must validate synchronously', async () => {
+        expect(validation.validateSync('test', 'required')).to.be.true;
+        expect(() => validation.validateSync('', 'required')).to.throw(ValidationError);
+    });
 });

@@ -1,20 +1,16 @@
-const { validation } = require('./../src');
+import { validation } from './../src';
+import './chai';
 
 describe('password test', () => {
-    it('should not get triggered if an empty value was set', async () => {
-        await validation.validate(null, 'password');
+    it('should not get triggered if an empty value was set', () => {
+        return validation.validate(null, 'password').should.be.fulfilled;
     });
 
-    it('should fail - values are too short', async () => {
-        try {
-            await validation.validate('12312', 'password')
-        } catch (e) {
-            return;
-        }
-        throw Error('Error should have been thrown.');
+    it('should fail - values are too short', () => {
+        return validation.validate('12312', 'password').should.be.rejected;
     });
 
-    it('should pass - value is long enough', async () => {
-        await validation.validate('123123', 'password');
+    it('should pass - value is long enough', () => {
+        return validation.validate('123123', 'password').should.become(true);
     });
 });

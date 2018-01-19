@@ -1,6 +1,6 @@
-const ValidationError = require('./../validationError');
+import ValidationError from './../validationError';
 
-module.exports = (value, max) => {
+export default (value, max) => {
     if (!value) return;
     value = value + '';
 

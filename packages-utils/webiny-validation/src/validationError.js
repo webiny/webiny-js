@@ -1,62 +1,56 @@
+// @flow
 class ValidationError extends Error {
-    constructor(message, validator, value = null) {
+    validator: string;
+    value: any;
+
+    constructor(message: string, validator: string, value: any) {
         super();
         this.message = message;
         this.validator = validator;
         this.value = value;
     }
 
-	/**
-	 * Sets the name of validator that resulted with an error.
-	 * @param validator
-	 */
-	setValidator(validator) {
+    /**
+     * Sets the name of validator that resulted with an error.
+     */
+    setValidator(validator: string) {
         this.validator = validator;
     }
 
-	/**
-	 * Returns the name of validator that resulted with an error.
-	 * @returns {*}
-	 */
-	getValidator() {
-		return this.validator;
-	}
+    /**
+     * Returns the name of validator that resulted with an error.
+     */
+    getValidator(): string {
+        return this.validator;
+    }
 
-	/**
-	 * Returns validation message.
-	 * @returns {string}
-	 */
-    getMessage() {
+    /**
+     * Returns validation message.
+     */
+    getMessage(): string {
         return this.message;
     }
 
-	/**
-	 * Sets validation message.
-	 * @param message
-	 * @returns {ValidationError}
-	 */
-	setMessage(message) {
-		this.message = message;
-		return this;
-	}
+    /**
+     * Sets validation message.
+     */
+    setMessage(message: string) {
+        this.message = message;
+    }
 
-	/**
-	 * Returns value that is invalid.
-	 * @returns {*}
-	 */
-    getValue() {
+    /**
+     * Returns value that is invalid.
+     */
+    getValue(): any {
         return this.value;
     }
 
-	/**
-	 * Sets invalid value.
-	 * @param value
-	 * @returns {ValidationError}
-	 */
-	setValue(value) {
-		this.value = value;
-		return this;
-	}
+    /**
+     * Sets invalid value.
+     */
+    setValue(value: any) {
+        this.value = value;
+    }
 }
 
-module.exports = ValidationError;
+export default ValidationError;

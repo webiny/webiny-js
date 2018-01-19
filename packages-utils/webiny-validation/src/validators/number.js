@@ -1,5 +1,5 @@
-const _ = require('lodash');
-const ValidationError = require('./../validationError');
+import _ from 'lodash';
+import ValidationError from './../validationError';
 
 /**
  * Only real numbers can pass this validator. 
@@ -7,7 +7,7 @@ const ValidationError = require('./../validationError');
  * 
  * @param {any} value 
  */
-module.exports = (value) => {
+export default (value) => {
     if (!value && !_.isNaN(value)) return;
 
     if (_.isNumber(value) && !_.isNaN(value)) {

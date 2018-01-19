@@ -1,84 +1,40 @@
-const _ = require('lodash');
-const ValidationError = require('./validationError');
-
-class Validation {
-	constructor() {
-		this.validators = require('./validators');
-	}
-
-	setValidator(name, callable) {
-		this.validators[name] = callable;
-		return this;
-	}
-
-	getValidator(name) {
-		if (!this.validators[name]) {
-			throw new ValidationError('Validator `' + name + '` does not exist!', name);
-		}
-		return this.validators[name];
-	}
-
-	parseValidateProperty(validators) {
-		let validate = validators.split(',');
-
-		validators = {};
-		validate.forEach(v => {
-			let validator = _.trim(v).split(':');
-			let vName = validator.shift();
-			validators[vName] = validator;
-		});
-		return validators;
-	}
-
-	validate(value, validators, options = {}) {
-		if (!validators) {
-			return;
-		}
-
-		if (!_.isString(validators)) {
-			throw new Error('Validators must be specified as a string (eg. required,minLength:10,email).')
-		}
-
-		validators = this.parseValidateProperty(validators);
-
-		if (options.async === false) {
-			return this.__validateSync(value, validators, options);
-		}
-
-		return this.__validateAsync(value, validators, options);
-	}
-
-	async __validateAsync(value, validators, options = {}) {
-		for (const [name, parameters] of Object.entries(validators)) {
-			const validator = this.getValidator(name);
-			try {
-				await validator(value, parameters);
-			} catch (e) {
-				if (options.throw === false) {
-					return {message: e.message, name, value};
-				}
-				throw new ValidationError(e.message, name, value);
-			}
-		}
-		return true;
-	}
-
-	__validateSync(value, validators, options) {
-		for (const [name, parameters] of Object.entries(validators)) {
-			const validator = this.getValidator(name);
-			try {
-				validator(value, parameters);
-			} catch (e) {
-				if (options.throw === false) {
-					return {message: e.message, name, value};
-				}
-				throw new ValidationError(e.message, name, value);
-			}
-		}
-		return true;
-	}
-}
+// @flow
+import Validation from './validation';
+import ValidationError from './validationError';
+import creditCard from './validators/creditCard';
+import email from './validators/email';
+import eq from './validators/eq';
+import gt from './validators/gt';
+import gte from './validators/gte';
+import isIn from './validators/in';
+import integer from './validators/integer';
+import lt from './validators/lt';
+import lte from './validators/lte';
+import maxLength from './validators/maxLength';
+import minLength from './validators/minLength';
+import number from './validators/number';
+import password from './validators/password';
+import phone from './validators/phone';
+import required from './validators/required';
+import url from './validators/url';
 
 const validation = new Validation();
+validation.setValidator('creditCard', creditCard);
+validation.setValidator('email', email);
+validation.setValidator('eq', eq);
+validation.setValidator('gt', gt);
+validation.setValidator('gte', gte);
+validation.setValidator('in', isIn);
+validation.setValidator('integer', integer);
+validation.setValidator('lt', lt);
+validation.setValidator('lte', lte);
+validation.setValidator('maxLength', maxLength);
+validation.setValidator('minLength', minLength);
+validation.setValidator('number', number);
+validation.setValidator('password', password);
+validation.setValidator('phone', phone);
+validation.setValidator('required', required);
+validation.setValidator('url', url);
 
-module.exports = {validation, ValidationError};
+
+module.exports = { validation, ValidationError };

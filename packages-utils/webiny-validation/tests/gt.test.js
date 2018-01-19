@@ -1,22 +1,22 @@
-const { validation } = require('./../src');
+import { validation } from './../src';
+import './chai';
 
 describe('gt test', () => {
-    it('should not get triggered if an empty value was set', async () => {
-        await validation.validate(null, 'gt');
+    it('should not get triggered if an empty value was set', () => {
+        return validation.validate(null, 'gt').should.be.fulfilled;
     });
 
-    it('should fail - numbers are not greater', async () => {
-        try {
-            await validation.validate(12, 'gt:12');
-            await validation.validate(12, 'gt:100');
-        } catch (e) {
-            return;
-        }
-        throw Error('Error should have been thrown.');
+    it('should fail - numbers are not greater', () => {
+        return Promise.all([
+            validation.validate(12, 'gt:12').should.be.rejected,
+            validation.validate(12, 'gt:100').should.be.rejected
+        ]);
     });
 
-    it('should pass - numbers are greater', async () => {
-        await validation.validate(12, 'gt:11');
-        await validation.validate(12, 'gt:11.999999999');
+    it('should pass - numbers are greater', () => {
+        return Promise.all([
+            validation.validate(13, 'gt:12').should.become(true),
+            validation.validate(120, 'gt:100').should.become(true)
+        ]);
     });
 });
