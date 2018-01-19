@@ -21,4 +21,15 @@ describe('INSERT statement test', function () {
 
         assert.equal(sql, `INSERT INTO TestTable (name, enabled) VALUES ('Test', false)`);
     });
+
+    it('should generate an INSERT statement with ON DUPLICATE KEY UPDATE (aka "UPSERT")', async () => {
+        const sql = queryBuilder.build({
+            operation: 'insert',
+			onDuplicateKeyUpdate: true,
+            table: 'TestTable',
+            data: {name: 'Test', enabled: false}
+        });
+
+        assert.equal(sql, `INSERT INTO TestTable (name, enabled) VALUES ('Test', false) ON DUPLICATE KEY UPDATE name = 'Test', enabled = false`);
+    });
 });

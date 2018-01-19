@@ -48,7 +48,7 @@ class Validation {
 		return this.__validateAsync(value, validators, options);
 	}
 
-	async __validateAsync(value, validators, options) {
+	async __validateAsync(value, validators, options = {}) {
 		for (const [name, parameters] of Object.entries(validators)) {
 			const validator = this.getValidator(name);
 			try {
