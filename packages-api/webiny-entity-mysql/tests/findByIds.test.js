@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 
 import sinon from 'sinon';
-const SimpleEntity = require('./entities/simpleEntity');
+import SimpleEntity from './entities/simpleEntity'
 
 describe('findByIds test', function () {
 	it('findByIds - should find previously inserted entities', async () => {

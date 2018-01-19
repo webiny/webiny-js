@@ -1,4 +1,4 @@
-const {Entity} = require('./../../src');
+import {Entity} from './../../src'
 
 
 class One extends Entity {
@@ -49,6 +49,6 @@ class Six extends Entity {
 	}
 }
 
-module.exports = {
+export {
 	One, Two, Three, Four, Five, Six
 };

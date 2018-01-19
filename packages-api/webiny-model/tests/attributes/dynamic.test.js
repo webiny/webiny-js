@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const Model = require('./../../src/model');
+import Model from './../../src/model'
 
 const model = new Model(function () {
     this.attr('attribute').dynamic(() => {

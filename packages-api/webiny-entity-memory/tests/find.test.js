@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const SimpleEntity = require('./entities/simpleEntity');
+import SimpleEntity from './entities/simpleEntity';
 
 describe('find test', function () {
 	it('find - should find entities', async () => {

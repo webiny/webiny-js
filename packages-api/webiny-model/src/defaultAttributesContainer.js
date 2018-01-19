@@ -1,5 +1,5 @@
-const AttributesContainer = require('./attributesContainer');
-const attributes = require('./attributes');
+import AttributesContainer from './attributesContainer'
+import attributes from './attributes'
 
 /**
  * Contains basic attributes. If needed, this class can be extended to add additional attributes,
@@ -55,4 +55,4 @@ class DefaultAttributesContainer extends AttributesContainer {
     }
 }
 
-module.exports = DefaultAttributesContainer;
+export default DefaultAttributesContainer;

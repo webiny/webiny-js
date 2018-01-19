@@ -1,5 +1,1 @@
-const MySQLDriver = require('./mysqlDriver');
-
-module.exports = {
-    MySQLDriver
-};
+export { default as MySQLDriver } from './mysqlDriver';

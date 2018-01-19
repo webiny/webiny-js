@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const Model = require('./../src/model');
+import Model from './../src/model'
 
 describe('onGet test', function () {
     it('should increment value by 2 on get', async () => {

@@ -1,8 +1,8 @@
 import {assert} from 'chai';
 
-const {Entity} = require('webiny-entity');
-const {MySQLDriver} = require('./../src');
-const mysql = require('mysql');
+import {Entity} from 'webiny-entity'
+import {MySQLDriver} from './../src'
+import mysql from 'mysql'
 
 class EntityIntegerId extends Entity {
 }

@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const User = require('./entities/user');
+import User from './entities/user'
 
 describe('invalid attribute test', function () {
     it('should throw an error - attribute doesn\'t exist', async () => {

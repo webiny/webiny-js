@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 
-const {User, Size} = require('./models/userModels');
+import {User, Size} from './models/userModels'
 const user = new User();
 user.populate({
 	firstName: 'John',

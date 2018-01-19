@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-const SimpleEntity = require('./entities/simpleEntity');
+import SimpleEntity from './entities/simpleEntity'
 
 const simpleEntity = new SimpleEntity();
 

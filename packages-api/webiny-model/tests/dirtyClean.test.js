@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const Model = require('./../src/model');
+import Model from './../src/model'
 
 describe('dirty and clean test', function () {
     it('should make attributes dirty', async () => {

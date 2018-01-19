@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const Model = require('./../src/model');
+import Model from './../src/model'
 
 class Model1 extends Model {
     constructor() {

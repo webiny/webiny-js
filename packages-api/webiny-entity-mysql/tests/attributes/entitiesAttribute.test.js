@@ -1,8 +1,8 @@
 import {assert} from 'chai';
 
-const {EntityCollection} = require('webiny-entity');
+import {EntityCollection} from 'webiny-entity'
 
-const {ComplexEntity, SimpleEntity} = require('./../entities/complexEntity');
+import {ComplexEntity, SimpleEntity} from './../entities/complexEntity'
 import sinon from 'sinon';
 
 describe('entity attribute test', function () {

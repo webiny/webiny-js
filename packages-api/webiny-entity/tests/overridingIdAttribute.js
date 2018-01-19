@@ -1,5 +1,5 @@
-const {Entity, Driver} = require('./../src');
-const {attributes} = require('webiny-model');
+import {Entity, Driver} from './../src'
+import {attributes} from 'webiny-model'
 import {assert} from 'chai';
 
 describe('overriding ID attribute test', function () {

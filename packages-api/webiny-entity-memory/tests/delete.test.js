@@ -1,4 +1,4 @@
-const SimpleEntity = require('./entities/simpleEntity');
+import SimpleEntity from './entities/simpleEntity';
 import {assert} from 'chai';
 
 describe('delete test', function () {

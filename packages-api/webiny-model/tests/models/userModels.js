@@ -1,4 +1,4 @@
-const Model = require('./../../src/model');
+import Model from './../../src/model'
 
 class Size extends Model {
 	constructor() {
@@ -37,4 +37,9 @@ class User extends Model {
 	}
 }
 
-module.exports = {Size, Image, Company, User};
+export {
+	Size,
+	Image,
+	Company,
+	User
+}

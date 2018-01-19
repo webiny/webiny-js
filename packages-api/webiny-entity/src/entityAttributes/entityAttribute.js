@@ -1,6 +1,7 @@
-const {Attribute} = require('webiny-model');
+import {Attribute} from 'webiny-model'
 import _ from 'lodash';
-const EntityAttributeValue = require('./entityAttributeValue');
+import EntityAttributeValue from './entityAttributeValue'
+import Entity from './../entity'
 
 class EntityAttribute extends Attribute {
 	constructor(name, attributesContainer, entity) {
@@ -113,8 +114,6 @@ class EntityAttribute extends Attribute {
 				return this;
 			}
 
-			const {Entity} = require('./..');
-
 			switch (true) {
 				case value instanceof Entity:
 					this.value.setCurrent(value);
@@ -141,8 +140,6 @@ class EntityAttribute extends Attribute {
 	 * @returns {Promise<*>}
 	 */
 	async getStorageValue() {
-		const {Entity} = require('./..');
-
 		// Not using getValue method because it would load the entity without need.
 		let current = this.value.getCurrent();
 
@@ -199,4 +196,4 @@ class EntityAttribute extends Attribute {
 	}
 }
 
-module.exports = EntityAttribute;
+export default EntityAttribute;

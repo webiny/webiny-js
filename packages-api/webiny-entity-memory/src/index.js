@@ -1,5 +1,1 @@
-const MemoryDriver = require('./memoryDriver');
-
-module.exports = {
-    MemoryDriver
-};
+export { default as MemoryDriver } from './memoryDriver';

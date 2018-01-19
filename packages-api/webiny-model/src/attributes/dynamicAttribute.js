@@ -1,4 +1,4 @@
-const Attribute = require('./../attribute');
+import Attribute from './../attribute'
 
 class DynamicAttribute extends Attribute {
     constructor(name, attributesContainer, callback) {
@@ -16,4 +16,4 @@ class DynamicAttribute extends Attribute {
     }
 }
 
-module.exports = DynamicAttribute;
+export default DynamicAttribute;

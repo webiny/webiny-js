@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const User = require('./entities/user');
+import User from './entities/user'
 
 describe('driver override test', function () {
     it('should validate given ID correctly (static call)', async () => {

@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const DateEntity = require('./../entities/dateEntity');
+import DateEntity from './../entities/dateEntity'
 
 describe('date attribute test', function () {
 	it('it must return YYYY-MM-DD hh:mm:ss format when sending to storage', async () => {

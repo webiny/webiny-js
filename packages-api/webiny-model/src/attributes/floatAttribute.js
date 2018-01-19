@@ -1,4 +1,4 @@
-const Attribute = require('./../attribute');
+import Attribute from './../attribute'
 import _ from 'lodash';
 
 class FloatAttribute extends Attribute {
@@ -8,4 +8,4 @@ class FloatAttribute extends Attribute {
 	}
 }
 
-module.exports = FloatAttribute;
+export default FloatAttribute;

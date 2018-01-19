@@ -1,7 +1,7 @@
-const entityAttribute = require('./entityAttribute');
-const entitiesAttribute = require('./entitiesAttribute');
+import entityAttribute from './entityAttribute'
+import entitiesAttribute from './entitiesAttribute'
 
-module.exports = {
+export default {
     entity: entityAttribute,
     entities: entitiesAttribute
 };

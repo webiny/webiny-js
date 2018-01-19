@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const User = require('./entities/user');
+import User from './entities/user'
 
 describe('class ID test', function () {
     it('should be able to access classId on a class', async () => {

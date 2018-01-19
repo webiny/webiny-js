@@ -1,4 +1,4 @@
-const Entity = require('./entity');
+import Entity from './entity'
 
 class DateEntity extends Entity {
 	constructor() {
@@ -9,4 +9,4 @@ class DateEntity extends Entity {
 }
 
 DateEntity.classId = 'DateEntity';
-module.exports = DateEntity;
+export default DateEntity;

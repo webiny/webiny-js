@@ -51,4 +51,4 @@ class AttributeValue {
 	}
 }
 
-module.exports = AttributeValue;
+export default AttributeValue;

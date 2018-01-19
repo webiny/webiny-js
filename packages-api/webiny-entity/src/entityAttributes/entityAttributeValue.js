@@ -1,4 +1,4 @@
-const {AttributeValue} = require('webiny-model');
+import {AttributeValue} from 'webiny-model'
 import _ from 'lodash';
 
 class EntityAttributeValue extends AttributeValue {
@@ -99,4 +99,4 @@ class EntityAttributeValue extends AttributeValue {
 	}
 }
 
-module.exports = EntityAttributeValue;
+export default EntityAttributeValue;

@@ -1,20 +1,19 @@
-const char = require('./charAttribute');
-const boolean = require('./booleanAttribute');
-const integer = require('./integerAttribute');
-const float = require('./floatAttribute');
-const dynamic = require('./dynamicAttribute');
-const model = require('./modelAttribute');
-const models = require('./modelsAttribute');
+import char from './charAttribute';
+import boolean from './booleanAttribute';
+import integer from './integerAttribute';
+import float from './floatAttribute';
+import dynamic from './dynamicAttribute';
+import date from './dateAttribute';
+import model from './modelAttribute';
+import models from './modelsAttribute';
 
-const date = require('./dateAttribute');
-
-module.exports = {
-    char,
-    boolean,
-    integer,
-    float,
-    dynamic,
-    model,
-    models,
-    date
+export default {
+	char,
+	boolean,
+	integer,
+	float,
+	dynamic,
+	model,
+	models,
+	date
 };

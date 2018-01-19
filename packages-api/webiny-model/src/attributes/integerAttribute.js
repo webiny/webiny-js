@@ -1,4 +1,4 @@
-const Attribute = require('./../attribute');
+import Attribute from './../attribute'
 import _ from 'lodash';
 
 class IntegerAttribute extends Attribute {
@@ -7,4 +7,4 @@ class IntegerAttribute extends Attribute {
 	}
 }
 
-module.exports = IntegerAttribute;
+export default IntegerAttribute;

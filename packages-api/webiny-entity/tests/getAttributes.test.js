@@ -1,6 +1,6 @@
 import {assert} from 'chai';
-const User = require('./entities/user');
-const {attributes} = require('webiny-model');
+import User from './entities/user'
+import {attributes} from 'webiny-model'
 
 describe('getAttributes test', function () {
     it('should return all attribute', async () => {

@@ -1,6 +1,6 @@
 import {assert} from 'chai';
-const Model = require('./../src/model');
-const DefaultAttributesContainer = require('./../src/defaultAttributesContainer');
+import Model from './../src/model'
+import DefaultAttributesContainer from './../src/defaultAttributesContainer'
 
 class DefaultAttributesContainerOverride extends DefaultAttributesContainer {
     newAttribute() {

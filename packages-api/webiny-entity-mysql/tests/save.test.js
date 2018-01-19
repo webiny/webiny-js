@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import sinon from 'sinon';
-const SimpleEntity = require('./entities/simpleEntity');
-const mdbid = require('mdbid');
+import SimpleEntity from './entities/simpleEntity'
+import mdbid from 'mdbid';
 
 describe('save test', function () {
     it('should save new entity into database and entity should receive an integer ID', async () => {

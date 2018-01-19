@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const SimpleEntity = require('./entities/simpleEntity');
+import SimpleEntity from './entities/simpleEntity';
 
 describe('count test', function () {
 	it('count - should count entities correctly', async () => {

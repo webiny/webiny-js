@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 
-const {Entity} = require('./../src');
+import {Entity} from './../src'
 
 class Invoice extends Entity {
 	constructor() {

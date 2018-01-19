@@ -1,5 +1,5 @@
-const {DefaultAttributesContainer} = require('webiny-model');
-const attributes = require('./entityAttributes');
+import {DefaultAttributesContainer} from 'webiny-model'
+import attributes from './entityAttributes'
 
 class EntityAttributesContainer extends DefaultAttributesContainer {
     entity(entity) {
@@ -16,4 +16,4 @@ class EntityAttributesContainer extends DefaultAttributesContainer {
     }
 }
 
-module.exports = EntityAttributesContainer;
+export default EntityAttributesContainer;

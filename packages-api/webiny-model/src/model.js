@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import extractor from 'webiny-data-extractor';
-const DefaultAttributesContainer = require('./defaultAttributesContainer');
-const ModelError = require('./modelError');
+import DefaultAttributesContainer from './defaultAttributesContainer'
+import ModelError from './modelError'
 
 class Model {
 	constructor(definition) {
@@ -196,4 +196,4 @@ class Model {
 	}
 }
 
-module.exports = Model;
+export default Model;

@@ -1,7 +1,7 @@
 // @flow
-import entity from 'webiny-entity';
+import {Entity as BaseEntity} from 'webiny-entity';
 
-class Entity extends entity.Entity {
+class Entity extends BaseEntity {
     constructor() {
         super();
 

@@ -1,4 +1,4 @@
-const Entity = require('./../../src/entity');
+import Entity from './../../src/entity'
 
 class User extends Entity {
     constructor() {
@@ -13,4 +13,4 @@ class User extends Entity {
 
 User.classId = 'User';
 
-module.exports = User;
+export default User;

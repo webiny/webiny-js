@@ -1,6 +1,6 @@
-const {Driver, QueryResult} = require('webiny-entity');
+import {Driver, QueryResult} from 'webiny-entity';
 import _ from 'lodash';
-const mdbid = require('mdbid');
+import mdbid from 'mdbid';
 
 class MemoryDriver extends Driver {
 	constructor() {
@@ -118,4 +118,4 @@ class MemoryDriver extends Driver {
 	}
 }
 
-module.exports = MemoryDriver;
+export default MemoryDriver;

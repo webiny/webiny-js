@@ -1,5 +1,5 @@
-const {Model} = require('webiny-model');
-const Entity = require('./entity');
+import {Model} from 'webiny-model';
+import Entity from './entity';
 
 class VerificationModel extends Model {
 	constructor() {
@@ -40,6 +40,9 @@ class ComplexEntity extends Entity {
 
 ComplexEntity.classId = 'ComplexEntity';
 
-module.exports = {
-	VerificationModel, TagModel, ComplexEntity, SimpleEntity
-};
+export {
+	VerificationModel,
+	TagModel,
+	ComplexEntity,
+	SimpleEntity
+}

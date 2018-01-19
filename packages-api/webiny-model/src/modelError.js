@@ -38,4 +38,4 @@ ModelError.INVALID_ATTRIBUTES = 'invalidAttributes';
 ModelError.ATTRIBUTE_NOT_FOUND = 'attributeNotFound';
 ModelError.POPULATE_FAILED_NOT_OBJECT = 'populateFailedNotObject';
 
-module.exports = ModelError;
+export default ModelError;

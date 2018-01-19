@@ -1,4 +1,4 @@
-const {attributes} = require('webiny-model');
+import {attributes} from 'webiny-model'
 
 class BooleanAttribute extends attributes.boolean {
     /**
@@ -10,4 +10,4 @@ class BooleanAttribute extends attributes.boolean {
     }
 }
 
-module.exports = BooleanAttribute;
+export default BooleanAttribute;

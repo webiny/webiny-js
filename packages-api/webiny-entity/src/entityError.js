@@ -35,4 +35,4 @@ class EntityError {
 
 EntityError.ATTRIBUTE_NOT_FOUND = 'attributeNotFound';
 
-module.exports = EntityError;
+export default EntityError;

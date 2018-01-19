@@ -1,4 +1,4 @@
-const Attribute = require('./../attribute');
+import Attribute from './../attribute'
 import _ from 'lodash';
 
 class CharAttribute extends Attribute {
@@ -7,4 +7,4 @@ class CharAttribute extends Attribute {
 	}
 }
 
-module.exports = CharAttribute;
+export default CharAttribute;

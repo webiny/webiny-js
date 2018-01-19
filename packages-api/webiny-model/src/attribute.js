@@ -1,7 +1,7 @@
 import _ from 'lodash';
-const {validation} = require('webiny-validation');
-const ModelError = require('./modelError');
-const AttributeValue = require('./attributeValue');
+import {validation} from 'webiny-validation'
+import ModelError from './modelError'
+import AttributeValue from './attributeValue'
 
 class Attribute {
 	constructor(name, attributesContainer) {
@@ -309,4 +309,4 @@ class Attribute {
 	}
 }
 
-module.exports = Attribute;
+export default Attribute;

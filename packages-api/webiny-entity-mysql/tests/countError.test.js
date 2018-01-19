@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-const SimpleEntity = require('./entities/simpleEntity');
+import SimpleEntity from './entities/simpleEntity'
 
 describe('count error test', function () {
 	it('count - an error must be thrown', async () => {

@@ -1,5 +1,6 @@
-const QueryResult = require('./queryResult');
+import QueryResult from './queryResult'
 import _ from 'lodash';
+import EntityModel from './entityModel';
 
 class Driver {
 	constructor() {
@@ -9,7 +10,6 @@ class Driver {
 	}
 
 	getModelClass() {
-		const {EntityModel} = require('.');
 		return EntityModel;
 	}
 
@@ -46,4 +46,4 @@ class Driver {
 	}
 }
 
-module.exports = Driver;
+export default Driver;

@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import sinon from 'sinon';
-const SimpleEntity = require('./entities/simpleEntity');
-const mdbid = require('mdbid');
+import SimpleEntity from './entities/simpleEntity'
+import mdbid from 'mdbid';
 
 describe('save error test', function () {
     it('should save new entity but an exception must be thrown', async () => {

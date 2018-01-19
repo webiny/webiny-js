@@ -1,4 +1,4 @@
-const Attribute = require('./../attribute');
+import Attribute from './../attribute'
 import _ from 'lodash';
 
 class DateAttribute extends Attribute {
@@ -7,4 +7,4 @@ class DateAttribute extends Attribute {
 	}
 }
 
-module.exports = DateAttribute;
+export default DateAttribute;

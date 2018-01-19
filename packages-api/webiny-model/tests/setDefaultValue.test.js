@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const Model = require('./../src/model');
+import Model from './../src/model'
 
 describe('setDefaultValue test', function () {
     it('should set default values', async () => {

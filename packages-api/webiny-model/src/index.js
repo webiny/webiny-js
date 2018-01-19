@@ -1,9 +1,7 @@
-module.exports = {
-    Attribute: require('./attribute'),
-    AttributesContainer: require('./attributesContainer'),
-    AttributeValue: require('./attributeValue'),
-    DefaultAttributesContainer: require('./defaultAttributesContainer'),
-    Model: require('./model'),
-    ModelError: require('./modelError'),
-    attributes: require('./attributes')
-};
+export { default as Attribute } from './attribute';
+export { default as AttributesContainer } from './attributesContainer';
+export { default as AttributeValue } from './attributeValue';
+export { default as DefaultAttributesContainer } from './defaultAttributesContainer';
+export { default as Model } from './model';
+export { default as ModelError } from './modelError';
+export { default as attributes } from './attributes';

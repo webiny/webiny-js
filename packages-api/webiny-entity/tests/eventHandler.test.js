@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import _ from 'lodash';
 
-const {EventHandler, Entity} = require('./../src');
+import {EventHandler, Entity} from './../src'
 
 class EventsEntity extends Entity {
 

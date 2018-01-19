@@ -1,11 +1,9 @@
-module.exports = {
-    Entity: require('./entity'),
-    EntityError: require('./entityError'),
-    EntityModel: require('./entityModel'),
-    EntityCollection: require('./entityCollection'),
-    EntityAttributesContainer: require('./entityAttributesContainer'),
-	QueryResult: require('./queryResult'),
-    Driver: require('./driver'),
-    EventHandler: require('./eventHandler'),
-    attributes: require('./entityAttributes')
-};
+export {default as Entity} from './entity';
+export {default as EntityError} from './entityError';
+export {default as EntityModel} from './entityModel';
+export {default as EntityCollection} from './entityCollection';
+export {default as EntityAttributesContainer} from './entityAttributesContainer';
+export {default as QueryResult} from './queryResult';
+export {default as Driver} from './driver';
+export {default as EventHandler} from './eventHandler';
+export {default as attributes} from './entityAttributes';

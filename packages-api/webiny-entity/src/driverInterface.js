@@ -1,6 +1,6 @@
 // @flow
-const Query = require('./entityOperation');
-const Entity = require('./entity');
+import Query from './entityOperation'
+import Entity from './entity'
 
 interface DriverInterface {
 
@@ -23,4 +23,4 @@ interface DriverInterface {
 	count(entity: Entity, params: {}): Query,
 }
 
-module.exports = DriverInterface;
+export default DriverInterface;

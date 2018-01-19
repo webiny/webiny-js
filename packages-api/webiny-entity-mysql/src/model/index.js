@@ -1,5 +1,1 @@
-const MySQLModel = require('./mysqlModel');
-
-module.exports = {
-    MySQLModel
-};
+export { default as MySQLModel } from './mysqlModel';

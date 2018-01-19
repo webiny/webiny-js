@@ -1,6 +1,6 @@
 import {assert} from 'chai';
-const Model = require('./../../src/model');
-const ModelError = require('./../../src/modelError');
+import Model from './../../src/model'
+import ModelError from './../../src/modelError'
 
 describe('attribute models test', function () {
     class Model1 extends Model {

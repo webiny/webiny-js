@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 
-const {ModelError} = require('webiny-model');
-const {User, Company} = require('./entities/userCompanyImage');
+import {ModelError} from 'webiny-model'
+import {User, Company} from './entities/userCompanyImage'
 
 describe('entity nested validation test', function () {
 	it('should fail because we have an invalid instance', async () => {

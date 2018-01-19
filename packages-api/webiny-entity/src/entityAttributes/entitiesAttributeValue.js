@@ -1,11 +1,12 @@
-const {AttributeValue} = require('webiny-model');
+import {AttributeValue} from 'webiny-model'
 import _ from 'lodash';
+import Entity from './../entity'
+import EntityCollection from './../entityCollection';
 
 class EntitiesAttributeValue extends AttributeValue {
 	constructor(attribute) {
 		super(attribute);
 
-		const {EntityCollection} = require('webiny-entity');
 		this.current = new EntityCollection();
 		this.set = false;
 
@@ -88,7 +89,6 @@ class EntitiesAttributeValue extends AttributeValue {
 	clean() {
 		const entities = this.current || [];
 		for (let i = 0; i < entities.length; i++) {
-			const {Entity} = require('./..');
 			if (entities[i] instanceof Entity) {
 				if (!entities[i].id) {
 					return this;
@@ -100,4 +100,4 @@ class EntitiesAttributeValue extends AttributeValue {
 	}
 }
 
-module.exports = EntitiesAttributeValue;
+export default EntitiesAttributeValue;

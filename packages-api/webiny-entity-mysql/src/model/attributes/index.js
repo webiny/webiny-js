@@ -1,10 +1,10 @@
-const boolean = require('./booleanAttribute');
-const date = require('./dateAttribute');
-const model = require('./modelAttribute');
-const models = require('./modelsAttribute');
-const entities = require('./entitiesAttribute');
+import boolean from './booleanAttribute'
+import date from './dateAttribute'
+import model from './modelAttribute'
+import models from './modelsAttribute'
+import entities from './entitiesAttribute'
 
-module.exports = {
+export default {
     boolean,
     date,
 	model,

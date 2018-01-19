@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 
-const SimpleEntity = require('./entities/simpleEntity');
+import SimpleEntity from './entities/simpleEntity'
 
 describe('table name test', function () {
 	it('it should return classId as table name', async () => {

@@ -1,6 +1,6 @@
 import {assert} from 'chai';
-const {Entity, QueryResult} = require('./../../src');
-const {ModelError} = require('webiny-model');
+import {Entity, QueryResult} from './../../src'
+import {ModelError} from 'webiny-model'
 import sinon from 'sinon';
 
 describe('attribute entities test', function () {

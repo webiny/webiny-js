@@ -1,6 +1,6 @@
-const Attribute = require('./../attribute');
+import Attribute from './../attribute'
 import _ from 'lodash';
-const ModelError = require('./../modelError');
+import ModelError from './../modelError'
 
 class ModelsAttribute extends Attribute {
 	constructor(name, attributesContainer, model) {
@@ -95,4 +95,4 @@ class ModelsAttribute extends Attribute {
 	}
 }
 
-module.exports = ModelsAttribute;
+export default ModelsAttribute;

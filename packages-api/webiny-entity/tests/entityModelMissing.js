@@ -1,4 +1,4 @@
-const {Entity, Driver} = require('./../src');
+import {Entity, Driver} from './../src'
 import {assert} from 'chai';
 
 class ExtendedEntityDriver extends Driver {

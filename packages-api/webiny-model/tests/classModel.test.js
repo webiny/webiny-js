@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const BasicModel = require('./models/basicModel.js');
+import BasicModel from './models/basicModel.js'
 
 const model = new BasicModel;
 

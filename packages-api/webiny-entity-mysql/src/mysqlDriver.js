@@ -1,5 +1,5 @@
-const {MySQLModel} = require('./model');
-const {Driver, QueryResult} = require('webiny-entity');
+import {MySQLModel} from './model'
+import {Driver, QueryResult} from 'webiny-entity'
 import queryBuilder from 'webiny-sql-query-builder';
 import _ from 'lodash';
 
@@ -230,4 +230,4 @@ class MySQLDriver extends Driver {
 	}
 }
 
-module.exports = MySQLDriver;
+export default MySQLDriver;

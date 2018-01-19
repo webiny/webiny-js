@@ -1,6 +1,6 @@
 import {assert} from 'chai';
-const ModelError = require('./../src/modelError');
-const ValidationTestModel = require('./models/validationTestModel.js');
+import ModelError from './../src/modelError'
+import ValidationTestModel from './models/validationTestModel.js'
 
 describe('validation test', function () {
     it('should throw an error because required fields are missing', async () => {

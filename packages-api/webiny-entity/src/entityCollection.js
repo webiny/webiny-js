@@ -30,4 +30,4 @@ class EntityCollection extends Array {
     }
 }
 
-module.exports = EntityCollection;
+export default EntityCollection;

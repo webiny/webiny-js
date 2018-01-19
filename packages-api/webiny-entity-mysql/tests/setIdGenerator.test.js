@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const SimpleEntity = require('./entities/simpleEntity');
+import SimpleEntity from './entities/simpleEntity'
 
 describe('set/get custom id generator handler flag test', function () {
 	it('setHashIds / getHashIds - should set/get value correctly', async () => {

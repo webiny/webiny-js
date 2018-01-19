@@ -1,4 +1,4 @@
-const {Entity} = require('./../../src');
+import {Entity} from './../../src'
 
 class Image extends Entity {
 	constructor() {
@@ -53,4 +53,4 @@ class User extends Entity {
 
 User.classId = 'User';
 
-module.exports = {User, Company, Image};
+export {User, Company, Image};

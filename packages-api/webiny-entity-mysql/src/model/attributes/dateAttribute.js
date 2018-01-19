@@ -1,5 +1,5 @@
-const {attributes} = require('webiny-model');
-const fecha = require('fecha');
+import {attributes} from 'webiny-model'
+import fecha from 'fecha'
 
 class DateAttribute extends attributes.date {
 	setStorageValue(value) {
@@ -19,4 +19,4 @@ class DateAttribute extends attributes.date {
 	}
 }
 
-module.exports = DateAttribute;
+export default DateAttribute;

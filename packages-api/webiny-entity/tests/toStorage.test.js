@@ -1,7 +1,7 @@
 import {assert} from 'chai';
-const User = require('./entities/user');
-const {Entity, Driver, EntityModel, EntityAttributesContainer} = require('./../src');
-const {attributes} = require('webiny-model');
+import User from './entities/user'
+import {Entity, Driver, EntityModel, EntityAttributesContainer} from './../src'
+import {attributes} from 'webiny-model'
 
 describe('toStorage test', function () {
     it('should return the same values, except dynamic attribute', async () => {

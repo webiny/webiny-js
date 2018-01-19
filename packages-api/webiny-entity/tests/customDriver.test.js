@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const {Entity, Driver, EntityModel, QueryResult} = require('./../src');
+import {Entity, Driver, EntityModel, QueryResult} from './../src'
 import _ from 'lodash';
 
 class CustomDriver extends Driver {

@@ -1,5 +1,5 @@
-const {EntityModel} = require('webiny-entity');
-const AttributesContainer = require('./mysqlAttributesContainer');
+import {EntityModel} from 'webiny-entity'
+import AttributesContainer from './mysqlAttributesContainer'
 
 class MySQLModel extends EntityModel {
     getAttributesContainerInstance() {
@@ -7,4 +7,4 @@ class MySQLModel extends EntityModel {
     }
 }
 
-module.exports = MySQLModel;
+export default MySQLModel;

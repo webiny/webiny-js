@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const {ComplexEntity, SimpleEntity} = require('./entities/complexEntity');
+import {ComplexEntity, SimpleEntity} from './entities/complexEntity';
 
 describe('toStorage test', function () {
 	it('should correctly adapt the data for Memory', async () => {

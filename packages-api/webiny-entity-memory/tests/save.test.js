@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const SimpleEntity = require('./entities/simpleEntity');
+import SimpleEntity from './entities/simpleEntity';
 
 describe('save test', function () {
 	it('should save new and update entity correctly', async () => {

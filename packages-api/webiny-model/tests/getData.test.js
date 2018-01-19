@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const Model = require('./../src/model');
+import Model from './../src/model'
 
 describe('setOnce test', function () {
     it('shouldn\'t allow value change', async () => {

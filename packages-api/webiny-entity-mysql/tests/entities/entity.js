@@ -1,8 +1,8 @@
-const entity = require('webiny-entity');
-const {MySQLDriver} = require('./../../src');
-const mysql = require('mysql');
+import {MySQLDriver} from './../../src'
+import mysql from 'mysql'
+import {Entity as BaseEntity} from 'webiny-entity';
 
-class Entity extends entity.Entity {
+class Entity extends BaseEntity {
 }
 
 Entity.driver = new MySQLDriver({
@@ -10,4 +10,4 @@ Entity.driver = new MySQLDriver({
 	connection: mysql.createConnection({})
 });
 
-module.exports = Entity;
+export default Entity;

@@ -1,6 +1,5 @@
 import {assert} from 'chai';
-const {MemoryDriver} = require('./../src');
-
+import {MemoryDriver} from './../src';
 const driver = new MemoryDriver();
 
 describe('import and flush memory test', function () {

@@ -1,4 +1,4 @@
-const {attributes} = require('webiny-entity');
+import {attributes} from 'webiny-entity'
 
 class EntitiesAttribute extends attributes.entities {
 	async getStorageValue() {
@@ -16,4 +16,4 @@ class EntitiesAttribute extends attributes.entities {
 
 }
 
-module.exports = EntitiesAttribute;
+export default EntitiesAttribute;

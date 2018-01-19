@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const User = require('./entities/user');
+import User from './entities/user'
 
 describe('toJSON test', function () {
     it('should extract values correctly', async () => {

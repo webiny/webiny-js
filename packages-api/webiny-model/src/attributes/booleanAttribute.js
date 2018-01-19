@@ -1,4 +1,4 @@
-const Attribute = require('./../attribute');
+import Attribute from './../attribute'
 import _ from 'lodash';
 
 class BooleanAttribute extends Attribute {
@@ -7,4 +7,4 @@ class BooleanAttribute extends Attribute {
     }
 }
 
-module.exports = BooleanAttribute;
+export default BooleanAttribute;

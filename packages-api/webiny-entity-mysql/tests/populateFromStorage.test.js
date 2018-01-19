@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 
 import sinon from 'sinon';
-const {ComplexEntity, SimpleEntity} = require('./entities/complexEntity');
+import {ComplexEntity, SimpleEntity} from './entities/complexEntity'
 
 describe('populateFromStorage test', function () {
 	it('should populate entity correctly with data received from MySQL', async () => {

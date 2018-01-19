@@ -23,4 +23,4 @@ class QueryResult {
 	}
 }
 
-module.exports = QueryResult;
+export default QueryResult;

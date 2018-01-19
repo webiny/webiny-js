@@ -1,7 +1,8 @@
-const {ModelError, Attribute} = require('webiny-model');
-const EntityCollection = require('./../../src/entityCollection');
+import {ModelError, Attribute} from 'webiny-model'
+import EntityCollection from './../../src/entityCollection'
 import _ from 'lodash';
-const EntitiesAttributeValue = require('./entitiesAttributeValue');
+import EntitiesAttributeValue from './entitiesAttributeValue'
+import Entity from './../entity'
 
 class EntitiesAttribute extends Attribute {
 	constructor(name, attributesContainer, entity, attributeName = null) {
@@ -101,8 +102,6 @@ class EntitiesAttribute extends Attribute {
 				for (let i = 0; i < value.length; i++) {
 					const current = value[i];
 
-					const {Entity} = require('./..');
-
 					switch (true) {
 						case current instanceof Entity:
 							collection.push(current);
@@ -163,7 +162,6 @@ class EntitiesAttribute extends Attribute {
 
 		const errors = [];
 		for (let i = 0; i < this.value.getCurrent().length; i++) {
-			const {Entity} = require('./..');
 
 			if (!(this.value.getCurrent()[i] instanceof Entity)) {
 				continue;
@@ -196,4 +194,4 @@ class EntitiesAttribute extends Attribute {
 	}
 }
 
-module.exports = EntitiesAttribute;
+export default EntitiesAttribute;

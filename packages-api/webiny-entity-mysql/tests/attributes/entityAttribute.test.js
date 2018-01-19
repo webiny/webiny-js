@@ -1,6 +1,6 @@
 
 import {assert} from 'chai';
-const {ComplexEntity, SimpleEntity} = require('./../entities/complexEntity');
+import {ComplexEntity, SimpleEntity} from './../entities/complexEntity'
 
 describe('entity attribute test', function () {
 	it('it must populate the attribute correctly', async () => {

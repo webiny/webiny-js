@@ -1,4 +1,4 @@
-const Model = require('./../../src/model');
+import Model from './../../src/model'
 
 class ValidationTestModel extends Model
 {
@@ -10,4 +10,4 @@ class ValidationTestModel extends Model
     }
 }
 
-module.exports = ValidationTestModel;
+export default ValidationTestModel;

@@ -1,6 +1,6 @@
 import {assert} from 'chai';
-const User = require('./entities/user');
-const {Driver, Entity} = require('./../src');
+import User from './entities/user'
+import {Driver, Entity} from './../src'
 
 describe('driver override test', function () {
     it('should use basic driver', async () => {

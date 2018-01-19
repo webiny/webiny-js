@@ -1,6 +1,5 @@
 import {assert} from 'chai';
-
-const {ComplexEntity, SimpleEntity} = require('./entities/complexEntity');
+import {ComplexEntity, SimpleEntity} from './entities/complexEntity';
 
 describe('populateFromStorage test', function () {
 	it('should populate entity correctly with data received from memory', async () => {

@@ -1,6 +1,6 @@
-const Driver = require('./driver');
-const EventHandler = require('./eventHandler');
-const EntityCollection = require('./entityCollection');
+import Driver from './driver'
+import EventHandler from './eventHandler'
+import EntityCollection from './entityCollection'
 import _ from 'lodash';
 
 class Entity {
@@ -436,4 +436,4 @@ class Entity {
 Entity.classId = null;
 Entity.driver = new Driver();
 
-module.exports = Entity;
+export default Entity;

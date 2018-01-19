@@ -1,4 +1,4 @@
-const {attributes} = require('webiny-model');
+import {attributes} from 'webiny-model'
 
 class ModelsAttribute extends attributes.models {
 	setStorageValue(value) {
@@ -15,4 +15,4 @@ class ModelsAttribute extends attributes.models {
 	}
 }
 
-module.exports = ModelsAttribute;
+export default ModelsAttribute;

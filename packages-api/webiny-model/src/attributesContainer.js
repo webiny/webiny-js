@@ -25,4 +25,4 @@ class AttributesContainer {
     }
 }
 
-module.exports = AttributesContainer;
+export default AttributesContainer;

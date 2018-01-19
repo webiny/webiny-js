@@ -1,5 +1,5 @@
-const {EntityAttributesContainer} = require('webiny-entity');
-const attributes = require('./attributes');
+import {EntityAttributesContainer} from 'webiny-entity'
+import attributes from './attributes'
 
 /**
  * Contains basic attributes. If needed, this class can be extended to add additional attributes,
@@ -38,4 +38,4 @@ class MySQLAttributesContainer extends EntityAttributesContainer {
 	}
 }
 
-module.exports = MySQLAttributesContainer;
+export default MySQLAttributesContainer;

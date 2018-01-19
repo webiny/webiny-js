@@ -1,7 +1,7 @@
 import {assert} from 'chai';
-const Model = require('./../../src/model');
-const ModelError = require('./../../src/modelError');
-const {User} = require('./../models/userModels');
+import Model from './../../src/model'
+import ModelError from './../../src/modelError'
+import {User} from './../models/userModels'
 
 describe('attribute model test', function () {
 	describe('accepting correct Model classes test', () => {

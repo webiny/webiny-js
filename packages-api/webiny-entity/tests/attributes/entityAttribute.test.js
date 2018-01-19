@@ -1,10 +1,10 @@
 import {assert} from 'chai';
 
-const {ModelError} = require('webiny-model');
-const {Entity, QueryResult} = require('./../../src');
-const {User, Company, Image} = require('./../entities/userCompanyImage');
-const {One} = require('./../entities/oneTwoThree');
-const {ClassA} = require('./../entities/abc');
+import {ModelError} from 'webiny-model'
+import {Entity, QueryResult} from './../../src'
+import {User, Company, Image} from './../entities/userCompanyImage'
+import {One} from './../entities/oneTwoThree'
+import {ClassA} from './../entities/abc'
 import sinon from 'sinon';
 
 describe('entity attribute test', function () {

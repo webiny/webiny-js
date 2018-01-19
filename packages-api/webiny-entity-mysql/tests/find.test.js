@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 
 import sinon from 'sinon';
-const SimpleEntity = require('./entities/simpleEntity');
+import SimpleEntity from './entities/simpleEntity'
 
 describe('find test', function () {
 	it('find - should find entities and total count', async () => {

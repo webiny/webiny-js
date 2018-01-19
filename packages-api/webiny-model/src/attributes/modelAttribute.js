@@ -1,4 +1,5 @@
-const Attribute = require('./../attribute');
+import Attribute from './../attribute'
+import Model from './../model'
 
 class ModelAttribute extends Attribute {
 	constructor(name, attributesContainer, model) {
@@ -15,8 +16,6 @@ class ModelAttribute extends Attribute {
 		if (!this.canSetValue()) {
 			return this;
 		}
-
-		const {Model} = require('./..');
 
 		let newValue = null;
 		if (value instanceof Model) {
@@ -62,4 +61,4 @@ class ModelAttribute extends Attribute {
 	}
 }
 
-module.exports = ModelAttribute;
+export default ModelAttribute;

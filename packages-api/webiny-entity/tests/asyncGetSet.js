@@ -1,7 +1,7 @@
 import {assert} from 'chai';
-const {User, Image} = require('./entities/userCompanyImage');
+import {User, Image} from './entities/userCompanyImage'
 import sinon from 'sinon';
-const {QueryResult} = require('./../src');
+import {QueryResult} from './../src'
 
 describe('async get and set methods test', async function () {
 	it('should be able to get simple attributes', async () => {

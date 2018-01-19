@@ -1,5 +1,5 @@
 import _ from 'lodash';
-const Entity = require('./entity');
+import Entity from './entity';
 
 class SimpleEntity extends Entity {
 	constructor() {
@@ -14,4 +14,4 @@ class SimpleEntity extends Entity {
 }
 
 SimpleEntity.classId = 'SimpleEntity';
-module.exports = SimpleEntity;
+export default SimpleEntity;

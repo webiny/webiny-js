@@ -1,10 +1,11 @@
-const entity = require('webiny-entity');
-const {MemoryDriver} = require('./../../src');
+import {Entity as BaseEntity} from 'webiny-entity';
 
-class Entity extends entity.Entity {
+import {MemoryDriver} from './../../src';
+
+class Entity extends BaseEntity {
 
 }
 
 Entity.driver = new MemoryDriver();
 
-module.exports = Entity;
+export default Entity;
