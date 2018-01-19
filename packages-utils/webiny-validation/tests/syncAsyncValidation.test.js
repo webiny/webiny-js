@@ -1,7 +1,7 @@
 const {validation, ValidationError} = require('./../src');
 import {assert} from 'chai';
 
-describe('multiple validators test', () => {
+describe('async/sync validation test', () => {
 	it('by default it must validate asynchronously', async () => {
 		const valid = validation.validate('test', 'required');
 		assert.instanceOf(valid, Promise);
