@@ -1,4 +1,4 @@
-class ValidationError extends Error {
+class InvalidDataError extends Error {
     constructor(message, validator, value = null) {
         super();
         this.message = message;
@@ -59,4 +59,4 @@ class ValidationError extends Error {
 	}
 }
 
-module.exports = ValidationError;
+module.exports = InvalidDataError;

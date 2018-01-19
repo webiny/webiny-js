@@ -32,6 +32,5 @@ describe('async/sync validation test', () => {
 		}
 
 		assert.instanceOf(error, ValidationError);
-
 	});
 });
