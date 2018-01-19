@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 	firstName: 'John',
 	lastName: 'Doe',
 	age: 30,
