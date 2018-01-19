@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 
-const sinon = require('sinon');
+import sinon from 'sinon';
 const SimpleEntity = require('./entities/simpleEntity');
 
 describe('findByIds test', function () {

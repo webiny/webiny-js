@@ -1,3 +1,5 @@
-module.exports = {
-    query: require('./query')
-};
+import query from './query';
+
+export default {
+	query
+}

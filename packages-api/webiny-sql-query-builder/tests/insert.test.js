@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const queryBuilder = require('./../src');
+import queryBuilder from './../src';
 
 describe('INSERT statement test', function () {
     it('should generate an INSERT statement', async () => {

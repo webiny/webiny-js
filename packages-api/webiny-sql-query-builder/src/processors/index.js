@@ -1,3 +1,1 @@
-module.exports = {
-    operatorsProcessor: require('./operatorsProcessor')
-};
+export {default as operatorsProcessor} from './operatorsProcessor';

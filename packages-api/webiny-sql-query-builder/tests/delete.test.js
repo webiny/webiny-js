@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-const queryBuilder = require('./../src');
+import queryBuilder from './../src';
 
 describe('DELETE statement test', function () {
     it('should generate a DELETE statement', async () => {

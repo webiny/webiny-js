@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-module.exports = {
+export default {
     canProcess: ({key}) => {
         return key === '$or';
     },

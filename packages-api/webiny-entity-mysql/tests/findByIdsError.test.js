@@ -1,4 +1,4 @@
-const sinon = require('sinon');
+import sinon from 'sinon';
 const SimpleEntity = require('./entities/simpleEntity');
 
 describe('findByIds error test', function () {

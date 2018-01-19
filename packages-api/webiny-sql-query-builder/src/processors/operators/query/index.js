@@ -1,4 +1,4 @@
-module.exports = {
-    logical: require('./logical'),
-    comparison: require('./comparison')
-};
+import logical from './logical';
+import comparison from './comparison';
+
+export default {logical, comparison}

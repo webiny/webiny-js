@@ -1,5 +1,5 @@
-module.exports = {
-    eq: require('./eq'),
-    in: require('./in'),
-    ne: require('./ne'),
-};
+import eq from './eq';
+import inValidator from './in';
+import ne from './ne';
+
+export default {eq, in: inValidator, ne}

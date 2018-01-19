@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 const {User, Image} = require('./entities/userCompanyImage');
-const sinon = require('sinon');
+import sinon from 'sinon';
 const {QueryResult} = require('./../src');
 
 describe('async get and set methods test', async function () {
