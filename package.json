@@ -45,7 +45,7 @@
     "test:travis": "yarn build && nyc yarn test:all && nyc report --reporter=text-lcov | coveralls"
   },
   "pre-commit": [
-    "test:all"
+
   ],
   "nyc": {
     "include": [
