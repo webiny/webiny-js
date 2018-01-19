@@ -1,4 +1,2 @@
-import logical from './logical';
-import comparison from './comparison';
-
-export default {logical, comparison}
+export { default as logical } from './logical';
+export { default as comparison } from './comparison';

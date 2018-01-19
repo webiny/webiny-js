@@ -1,15 +1,17 @@
+// @flow
 import _ from 'lodash';
 
-export default {
-	canProcess: ({key, value}) => {
-		if (key.charAt(0) === '$') {
-			return false;
-		}
+const inOperator: Operator = {
+    canProcess: ({ key, value }) => {
+        if (key.charAt(0) === '$') {
+            return false;
+        }
 
-		return _.isArray(value) || _.has(value, '$in');
-	},
-	process: ({key, value, processor}) => {
-		value = _.get(value, '$in', value);
-		return key + ' IN(' + value.map(item => processor.escape(item)).join(', ') + ')';
-	}
+        return _.isArray(value) || _.has(value, '$in');
+    },
+    process: ({ key, value, processor }) => {
+        value = _.get(value, '$in', value);
+        return key + ' IN(' + value.map(item => processor.escape(item)).join(', ') + ')';
+    }
 };
+export default inOperator;

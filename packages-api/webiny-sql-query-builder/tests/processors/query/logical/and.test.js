@@ -1,5 +1,6 @@
 import {assert, expect} from 'chai';
-import {operatorsProcessor} from './../../../../src/processors';
+import {OperatorsProcessor} from './../../../../src/processors';
+const operatorsProcessor = new OperatorsProcessor();
 
 describe('$and logical operator test', function () {
     it('should generate correct statement', () => {

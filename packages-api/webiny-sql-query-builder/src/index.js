@@ -1,2 +1,3 @@
-import queryBuilder from './queryBuilder';
-export default queryBuilder;
+import QueryBuilder from './queryBuilder';
+
+export default new QueryBuilder();

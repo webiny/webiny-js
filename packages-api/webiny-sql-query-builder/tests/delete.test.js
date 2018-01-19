@@ -12,6 +12,6 @@ describe('DELETE statement test', function () {
             order: {name: -1, createdOn: 1}
         });
 
-        assert.equal(sql, `DELETE FROM TestTable WHERE (name = 'Test' AND enabled = true AND deletedOn IS NULL) ORDER BY name DESC, createdOn ASC LIMIT 10 OFFSET 0`);
+        assert.equal(sql, `DELETE FROM TestTable WHERE (name = 'Test' AND enabled = true AND deletedOn IS NULL) ORDER BY name DESC, createdOn ASC LIMIT 10`);
     });
 });

@@ -1,19 +1,20 @@
+// @flow
 import _ from 'lodash';
 
-export default {
-    canProcess: ({key}) => {
+const and: Operator = {
+    canProcess: ({ key }) => {
         return key === '$and';
     },
-    process:({value, processor}) => {
+    process: ({ value, processor }) => {
         let output = '';
         switch (true) {
             case _.isArray(value):
                 value.forEach(object => {
                     for (const [andKey, andValue] of Object.entries(object)) {
                         if (output === '') {
-                            output = processor.process({[andKey]: andValue});
+                            output = processor.process({ [andKey]: andValue });
                         } else {
-                            output += ' AND ' + processor.process({[andKey]: andValue});
+                            output += ' AND ' + processor.process({ [andKey]: andValue });
                         }
                     }
                 });
@@ -21,9 +22,9 @@ export default {
             case _.isPlainObject(value):
                 for (const [andKey, andValue] of Object.entries(value)) {
                     if (output === '') {
-                        output = processor.process({[andKey]: andValue});
+                        output = processor.process({ [andKey]: andValue });
                     } else {
-                        output += ' AND ' + processor.process({[andKey]: andValue});
+                        output += ' AND ' + processor.process({ [andKey]: andValue });
                     }
                 }
                 break;
@@ -34,3 +35,5 @@ export default {
         return '(' + output + ')';
     }
 };
+
+export default and;

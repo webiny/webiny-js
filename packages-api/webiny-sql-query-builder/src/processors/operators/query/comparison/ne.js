@@ -1,10 +1,11 @@
+// @flow
 import _ from 'lodash';
 
-export default {
-    canProcess: ({value}) => {
+const ne: Operator = {
+    canProcess: ({ value }) => {
         return _.has(value, '$ne');
     },
-    process: ({key, value, processor}) => {
+    process: ({ key, value, processor }) => {
         if (value['$ne'] === null) {
             return key + ' IS NOT NULL';
         }
@@ -12,3 +13,4 @@ export default {
         return key + ' <> ' + processor.escape(value['$ne']);
     }
 };
+export default ne;

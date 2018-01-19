@@ -1,122 +1,132 @@
+// @flow
 import _ from 'lodash';
-import {operatorsProcessor} from './processors'
+import { OperatorsProcessor } from './processors'
 import SqlString from 'sqlstring'
 
+const operatorsProcessor = new OperatorsProcessor();
+
 class QueryBuilder {
-	build(options) {
-		if (_.isFunction(this[options.operation])) {
-			return this[options.operation](options);
-		}
+    build(options: QueryOptions & { operation: string }): string {
+        // The following line is a hack to make Flow happy when accessing methods dynamically
+        const $this: Object = (this: Object);
+        if (_.isFunction($this[options.operation])) {
+            return $this[options.operation](options);
+        }
 
-		throw Error(`Unknown or missing operation (${options.operation}).`);
-	}
+        throw Error(`Unknown or missing operation (${options.operation}).`);
+    }
 
-	update(options) {
-		const values = [];
-		for (const [key, value] of Object.entries(options.data)) {
-			values.push(key + ' = ' + SqlString.escape(value));
-		}
+    update(options: QueryOptions & { data: Object }): string {
+        const values = [];
+        for (const [key, value] of Object.entries(options.data)) {
+            values.push(key + ' = ' + SqlString.escape(value));
+        }
 
-		let operation = `UPDATE ${options.table} SET ${values.join(', ')}`;
-		operation += this._getWhere(options);
-		operation += this._getOrder(options);
-		operation += this._getLimit(options);
-		operation += this._getOffset(options);
+        let operation = `UPDATE ${options.table} SET ${values.join(', ')}`;
+        operation += this._getWhere(options);
+        operation += this._getOrder(options);
+        operation += this._getLimit(options);
+        operation += this._getOffset(options);
 
-		return operation;
-	}
+        return operation;
+    }
 
-	insert(options) {
-		const columns = _.keys(options.data).join(', ');
-		const insertValues = _.values(options.data).map(value => SqlString.escape(value)).join(', ');
+    insert(options: QueryOptions & { data: Object, onDuplicateKeyUpdate?: boolean }): string {
+        const columns = _.keys(options.data).join(', ');
+        const insertValues = _.values(options.data).map(value => SqlString.escape(value)).join(', ');
 
-		if (!options.onDuplicateKeyUpdate) {
-			return `INSERT INTO ${options.table} (${columns}) VALUES (${insertValues})`;
-		}
+        if (!options.onDuplicateKeyUpdate) {
+            return `INSERT INTO ${options.table} (${columns}) VALUES (${insertValues})`;
+        }
 
-		const updateValues = [];
-		for (const [key, value] of Object.entries(options.data)) {
-			updateValues.push(key + ' = ' + SqlString.escape(value));
-		}
+        const updateValues = [];
+        for (const [key, value] of Object.entries(options.data)) {
+            updateValues.push(key + ' = ' + SqlString.escape(value));
+        }
 
-		return `INSERT INTO ${options.table} (${columns}) VALUES (${insertValues}) ON DUPLICATE KEY UPDATE ${updateValues.join(', ')}`;
-	}
+        return `INSERT INTO ${options.table} (${columns}) VALUES (${insertValues}) ON DUPLICATE KEY UPDATE ${updateValues.join(', ')}`;
+    }
 
-	select(options) {
-		let operation = `SELECT`;
-		operation += this._getColumns(options);
-		operation += ` FROM ${options.table}`;
-		operation += this._getWhere(options);
-		operation += this._getOrder(options);
-		operation += this._getLimit(options);
-		operation += this._getOffset(options);
+    select(options: QueryOptions): string {
+        let operation = `SELECT`;
+        operation += this._getColumns(options);
+        operation += ` FROM ${options.table}`;
+        operation += this._getWhere(options);
+        operation += this._getOrder(options);
+        operation += this._getLimit(options);
+        operation += this._getOffset(options);
 
-		return operation;
-	}
+        return operation;
+    }
 
-	delete(options) {
-		let operation = `DELETE FROM ${options.table}`;
-		operation += this._getWhere(options);
-		operation += this._getOrder(options);
-		operation += this._getLimit(options);
-		operation += this._getOffset(options);
+    delete(options: QueryOptions): string {
+        let operation = `DELETE FROM ${options.table}`;
+        operation += this._getWhere(options);
+        operation += this._getOrder(options);
+        operation += this._getLimit(options);
+        operation += this._getOffset(options);
 
-		return operation;
-	}
+        return operation;
+    }
 
-	count(options) {
-		let operation = `SELECT COUNT(*) AS count FROM ${options.table}`;
-		operation += this._getWhere(options);
-		operation += this._getOrder(options);
-		operation += this._getLimit(options);
-		operation += this._getOffset(options);
+    count(options: QueryOptions): string {
+        let operation = `SELECT COUNT(*) AS count FROM ${options.table}`;
+        operation += this._getWhere(options);
+        operation += this._getOrder(options);
+        operation += this._getLimit(options);
+        operation += this._getOffset(options);
 
-		return operation;
-	}
+        return operation;
+    }
 
-	_getColumns(options) {
-		if (_.isEmpty(options.columns)) {
-			return ' *';
-		}
+    _getColumns(options: { columns?: Array<string> }): string {
+        const columns = options.columns || [];
 
-		return ' ' + options.columns.join(', ');
-	}
+        if (_.isEmpty(columns)) {
+            return ' *';
+        }
 
-	_getWhere(options) {
-		if (_.isEmpty(options.where)) {
-			return '';
-		}
+        return ' ' + columns.join(', ');
+    }
 
-		return ' WHERE ' + operatorsProcessor.execute(options.where);
-	}
+    _getWhere(options: { where?: Object }): string {
+        if (_.isEmpty(options.where)) {
+            return '';
+        }
 
-	_getOrder(options) {
-		if (_.isEmpty(options.order)) {
-			return '';
-		}
+        return ' WHERE ' + operatorsProcessor.execute(options.where);
+    }
 
-		let query = [];
-		for (const [sort, order] of Object.entries(options.order)) {
-			query.push(`${sort} ${order === 1 ? 'ASC' : 'DESC'}`);
-		}
+    _getOrder(options: { order?: { [string]: number } }): string {
+        if (_.isEmpty(options.order)) {
+            return '';
+        }
 
-		return ' ORDER BY ' + query.join(', ');
-	}
+        let query = [];
+        for (const [sort, order] of Object.entries(options.order)) {
+            query.push(`${sort} ${order === 1 ? 'ASC' : 'DESC'}`);
+        }
 
-	_getLimit(options) {
-		if (!_.isNumber(options.limit)) {
-			return '';
-		}
-		return ` LIMIT ${options.limit}`;
-	}
+        return ' ORDER BY ' + query.join(', ');
+    }
 
-	_getOffset(options) {
-		if (!_.isNumber(options.offset)) {
-			return '';
-		}
-		return ` OFFSET ${options.offset}`;
-	}
+    _getLimit(options: { limit?: number }): string {
+        const limit = options.limit || 0;
+
+        if (_.isNumber(limit) && limit > 0) {
+            return ` LIMIT ${limit}`;
+        }
+        return '';
+    }
+
+    _getOffset(options: { offset?: number }): string {
+        const offset = options.offset || 0;
+
+        if (_.isNumber(offset) && offset > 0) {
+            return ` OFFSET ${offset}`;
+        }
+        return '';
+    }
 }
 
-const queryBuilder = new QueryBuilder();
-export default queryBuilder;
+export default QueryBuilder;

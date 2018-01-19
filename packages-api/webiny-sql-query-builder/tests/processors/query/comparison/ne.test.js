@@ -1,5 +1,6 @@
 import {assert} from 'chai';
-import {operatorsProcessor} from './../../../../src/processors';
+import {OperatorsProcessor} from './../../../../src/processors';
+const operatorsProcessor = new OperatorsProcessor();
 
 describe('regular and $ne equality comparison operator test', function () {
     it('should generate correct statement using $ne equality operator', () => {

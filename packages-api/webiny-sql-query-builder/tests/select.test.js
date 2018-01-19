@@ -14,12 +14,12 @@ describe('SELECT statement test', function () {
 		};
 
 		let sql = queryBuilder.build(params);
-		assert.equal(sql, `SELECT * FROM TestTable WHERE (name = 'Test' AND enabled = true AND deletedOn IS NULL) ORDER BY name DESC, createdOn ASC LIMIT 10 OFFSET 0`);
+		assert.equal(sql, `SELECT * FROM TestTable WHERE (name = 'Test' AND enabled = true AND deletedOn IS NULL) ORDER BY name DESC, createdOn ASC LIMIT 10`);
 
 		params.columns = ['name', 'enabled'];
 		sql = queryBuilder.build(params);
 
-		assert.equal(sql, `SELECT name, enabled FROM TestTable WHERE (name = 'Test' AND enabled = true AND deletedOn IS NULL) ORDER BY name DESC, createdOn ASC LIMIT 10 OFFSET 0`);
+		assert.equal(sql, `SELECT name, enabled FROM TestTable WHERE (name = 'Test' AND enabled = true AND deletedOn IS NULL) ORDER BY name DESC, createdOn ASC LIMIT 10`);
 
 	});
 });

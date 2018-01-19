@@ -1,7 +1,8 @@
+// @flow
 import _ from 'lodash';
 
-export default {
-    canProcess: ({key, value}) => {
+const eq: Operator = {
+    canProcess: ({ key, value }) => {
         if (key.charAt(0) === '$') {
             return false;
         }
@@ -13,7 +14,7 @@ export default {
         // Valid values are 1, '1', null, true, false
         return _.isString(value) || _.isNumber(value) || [null, true, false].includes(value);
     },
-    process: ({key, value, processor}) => {
+    process: ({ key, value, processor }) => {
         value = _.get(value, '$eq', value);
 
         if (value === null) {
@@ -23,3 +24,5 @@ export default {
         return key + ' = ' + processor.escape(value);
     }
 };
+
+export default eq;

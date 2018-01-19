@@ -1,47 +1,45 @@
-import operators from './operators';
+// @flow
 import SqlString from 'sqlstring';
+import { logical, comparison } from './operators/query';
 
 class OperatorsProcessor {
+    operators: Array<Operator>;
+
     constructor() {
-        this.processors = [
-            operators.query.logical.and,
-            operators.query.logical.or,
-
-            operators.query.comparison.eq,
-            operators.query.comparison.in,
-            operators.query.comparison.ne,
+        this.operators = [
+            logical.and,
+            logical.or,
+            comparison.eq,
+            comparison.in,
+            comparison.ne,
         ];
-	}
-
-    execute(payload) {
-        return this.process({$and: payload});
     }
 
-    process(payload) {
+    execute(payload: Payload): string {
+        return this.process({ $and: payload });
+    }
+
+    process(payload: Payload): string {
         let output = '';
 
         outerLoop:
             for (const [key, value] of Object.entries(payload)) {
-                const current = {key: null, value: null};
-                current.key = key;
-                current.value = value;
-                for (let i = 0; i < this.processors.length; i++) {
-                    current.operator = this.processors[i];
-                    if (current.operator.canProcess({key, value, processor: this})) {
-                        output += current.operator.process({key, value, processor: this});
+                for (let i = 0; i < this.operators.length; i++) {
+                    const operator = this.operators[i];
+                    if (operator.canProcess({ key, value, processor: this })) {
+                        output += operator.process({ key, value, processor: this });
                         continue outerLoop;
                     }
                 }
-                throw Error(`Invalid operator {${current.key} : ${current.value}}.`);
+                throw new Error(`Invalid operator {${key} : ${(value: any)}}.`);
             }
 
         return output;
     }
 
-    escape(value) {
+    escape(value: any) {
         return SqlString.escape(value);
     }
 }
 
-const operatorsProcessor = new OperatorsProcessor();
-export default operatorsProcessor;
+export default OperatorsProcessor;

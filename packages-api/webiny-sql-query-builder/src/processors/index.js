@@ -1,1 +1,1 @@
-export {default as operatorsProcessor} from './operatorsProcessor';
+export { default as OperatorsProcessor } from './operatorsProcessor';
