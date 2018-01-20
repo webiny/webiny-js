@@ -1,6 +1,7 @@
 import {assert} from 'chai';
 
 import {User, Size} from './models/userModels'
+import {Model} from "../src";
 const user = new User();
 user.populate({
 	firstName: 'John',
@@ -85,5 +86,40 @@ describe('async get and set methods test', async function () {
 		}
 
 		throw Error(`Error should've been thrown.`);
+	});
+
+	it('should be able to directly set/get values in arrays', async () => {
+		class Pet extends Model {
+			constructor() {
+				super();
+				this.attr('name').char();
+				this.attr('enabled').boolean();
+			}
+		}
+
+		class User extends Model {
+			constructor() {
+				super();
+				this.attr('name').char();
+				this.attr('pets').models(Pet);
+			}
+		}
+
+		const user = new User();
+		user.name = 'John';
+		user.pets = [{name: 'Enlai', enabled: false}, {name: 'Lina', enabled: false}, {name: 'Bucky', enabled: false}];
+
+		assert.equal(await user.get('pets.0.name'), 'Enlai');
+		assert.equal(await user.get('pets.1.name'), 'Lina');
+		assert.equal(await user.get('pets.2.name'), 'Bucky');
+
+		await user.set('pets.0.name', 'Enlai_UPDATED');
+		await user.set('pets.1.name', 'Lina_UPDATED');
+		await user.set('pets.2.name', 'Bucky_UPDATED');
+
+		assert.equal(await user.get('pets.0.name'), 'Enlai_UPDATED');
+		assert.equal(await user.get('pets.1.name'), 'Lina_UPDATED');
+		assert.equal(await user.get('pets.2.name'), 'Bucky_UPDATED');
+
 	});
 });
