@@ -37,7 +37,10 @@ class EntityAttribute extends Attribute {
 		 */
 		this.getParentModel().getParentEntity().on('beforeSave', async () => {
 			if (this.getAutoSave() && this.value.getCurrent() instanceof this.getEntityClass()) {
-				await this.value.getCurrent().save();
+
+				// We don't need to validate here because validate method was called on the parent entity, which caused
+				// the validation of data to be executed recursively on all attribute values.
+				await this.value.getCurrent().save({validation: true});
 
 				// If initially we had a different entity linked, we must delete it. The following method will only do deletes if needed.
 				await this.value.deleteInitial();

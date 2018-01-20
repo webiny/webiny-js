@@ -186,7 +186,7 @@ class Entity {
 		const existing = this.isExisting();
 
 		try {
-			await this.validate();
+			!(params.validation === false) && await this.validate();
 
 			if (existing) {
 				await this.emit('beforeUpdate');

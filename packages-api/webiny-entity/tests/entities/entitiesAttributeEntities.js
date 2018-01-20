@@ -23,6 +23,7 @@ class Entity2 extends Entity {
 		this.attr('lastName').char().setValidators('required');
 		this.attr('enabled').boolean();
 		this.attr('markedAsCannotDelete').boolean();
+		this.attr('entity1Entities').entities(Entity1);
 	}
 
 	canDelete() {

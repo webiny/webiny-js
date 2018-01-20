@@ -28,7 +28,11 @@ class EntitiesAttribute extends Attribute {
 		 */
 		this.value = new EntitiesAttributeValue(this);
 
-		this.autoSave = true;
+		/**
+		 * Auto save and delete are both enabled by default.
+		 * @type {{save: boolean, delete: boolean}}
+		 */
+		this.auto = {save: true, delete: false};
 
 		/**
 		 * By default, we don't want to have links stored in entity attribute directly.
@@ -36,13 +40,13 @@ class EntitiesAttribute extends Attribute {
 		 */
 		this.toStorage = false;
 
-		this.getParentModel().getParentEntity().on('afterSave', async () => {
-			if (this.getAutoSave() && (this.value.isLoading() || this.value.isSet())) {
+		this.getParentModel().getParentEntity().on('beforeSave', async () => {
+			if (this.getAutoSave() && (this.value.isLoading() || this.value.isLoaded())) {
 				const entities = await this.getValue();
 				for (let i = 0; i < entities.length; i++) {
 					// Let's only save loaded item.
 					if (entities[i] instanceof this.getEntitiesClass()) {
-						await entities[i].save();
+						await entities[i].save({validation: false});
 					}
 				}
 			}
@@ -67,13 +71,42 @@ class EntitiesAttribute extends Attribute {
 		return this.classes.using;
 	}
 
+	/**
+	 * Should linked entities be automatically saved once parent entity is saved? By default, linked entities will be automatically saved,
+	 * before main entity was saved. Can be disabled, although not recommended since manual saving needs to be done in that case.
+	 * @param autoSave
+	 * @returns {EntityAttribute}
+	 */
 	setAutoSave(autoSave = true) {
-		this.autoSave = autoSave;
+		this.auto.save = autoSave;
 		return this;
 	}
 
+	/**
+	 * Returns true if auto save is enabled, otherwise false.
+	 * @returns {boolean}
+	 */
 	getAutoSave() {
-		return this.autoSave;
+		return this.auto.save;
+	}
+
+	/**
+	 * Should linked entity be automatically deleted once parent entity is deleted? By default, linked entities will be automatically
+	 * deleted, before main entity was deleted. Can be disabled, although not recommended since manual deletion needs to be done in that case.
+	 * @param autoDelete
+	 * @returns {EntityAttribute}
+	 */
+	setAutoDelete(autoDelete = true) {
+		this.auto.delete = autoDelete;
+		return this;
+	}
+
+	/**
+	 * Returns true if auto delete is enabled, otherwise false.
+	 * @returns {boolean}
+	 */
+	getAutoDelete() {
+		return this.auto.delete;
 	}
 
 	async getValue() {
