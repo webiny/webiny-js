@@ -152,7 +152,8 @@ class Model {
 			if (!_.isObject(value)) {
 				break;
 			}
-			value = await value.getAttribute(steps[i]).getValue();
+
+			value = await value[steps[i]];
 		}
 
 		return typeof(value) === 'undefined' ? defaultValue : value;
