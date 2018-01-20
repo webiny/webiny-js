@@ -278,5 +278,6 @@ describe('entity delete test', function () {
 
 		entityFindById.restore();
 		entityDelete.restore();
+		entitySave.restore();
 	});
 });

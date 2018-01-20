@@ -1,58 +1,10 @@
-import {assert} from 'chai';
-
-import {Entity, QueryResult, EntityCollection} from './../../src'
+import {QueryResult, EntityCollection} from '../../../../src/index'
 import {ModelError} from 'webiny-model'
+import {MainEntity, Entity1, Entity2, MainSetOnceEntity} from '../../../entities/entitiesAttributeEntities';
+import {assert} from 'chai';
 import sinon from 'sinon';
 
 describe('attribute entities test', function () {
-	class Entity1 extends Entity {
-		constructor() {
-			super();
-			this.attr('name').char().setValidators('required');
-			this.attr('number').integer();
-			this.attr('type').char().setValidators('in:cat:dog:mouse:parrot');
-			this.attr('markedAsCannotDelete').boolean();
-		}
-
-		canDelete() {
-			if (this.markedAsCannotDelete) {
-				throw Error('Cannot delete Entity1 entity');
-			}
-		}
-	}
-
-	class Entity2 extends Entity {
-		constructor() {
-			super();
-			this.attr('firstName').char().setValidators('required');
-			this.attr('lastName').char().setValidators('required');
-			this.attr('enabled').boolean();
-			this.attr('markedAsCannotDelete').boolean();
-		}
-
-		canDelete() {
-			if (this.markedAsCannotDelete) {
-				throw Error('Cannot delete Entity2 entity');
-			}
-		}
-	}
-
-	class MainEntity extends Entity {
-		constructor() {
-			super();
-			this.attr('attribute1').entities(Entity1);
-			this.attr('attribute2').entities(Entity2);
-		}
-	}
-
-	class MainSetOnceEntity extends Entity {
-		constructor() {
-			super();
-			this.attr('attribute1').entities(Entity1).setOnce();
-			this.attr('attribute2').entities(Entity2);
-		}
-	}
-
 	const entity = new MainEntity();
 
 	it('should fail - attributes should accept array of entities', async () => {
