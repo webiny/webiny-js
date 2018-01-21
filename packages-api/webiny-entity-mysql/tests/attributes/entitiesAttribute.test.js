@@ -206,32 +206,33 @@ describe('entity attribute test', function () {
 		// Now let's try to save entity with auto save enabled on "simpleEntitiesLoadedFromTable" attribute.
 		entity.getAttribute('simpleEntitiesLoadedFromTable').setAutoSave();
 
-		sinon.stub(ComplexEntity.getDriver().getConnection(), 'query')
+		const entitySave = sinon.stub(ComplexEntity.getDriver().getConnection(), 'query')
 			.onCall(0)
 			.callsFake((query, callback) => {
-				callback(null, {entityId: 'does not matter'});
+				callback(null, {insertId: 4});
 			})
 			.onCall(1)
-			.callsFake((query, callback) => {
-				callback(null, {insertId: 2});
-
-			})
-			.onCall(2)
 			.callsFake((query, callback) => {
 				callback(null, {insertId: 3});
 
 			})
+			.onCall(2)
+			.callsFake((query, callback) => {
+				callback(null, {insertId: 2});
+
+			})
 			.onCall(3)
 			.callsFake((query, callback) => {
-				callback(null, {insertId: 4});
+				callback(null, {});
 
 			});
 
 		await entity.save();
+		assert.equal(entitySave.callCount, 4);
 
 		entity.getDriver().getConnection().query.restore();
 
-		assert.equal(entity.id, 1);
+	 	assert.equal(entity.id, 1);
 		assert.isTrue(entity.getAttribute('id').value.isClean());
 		assert.isTrue(entity.getAttribute('simpleEntitiesLoadedFromTable').value.isClean());
 
@@ -241,8 +242,8 @@ describe('entity attribute test', function () {
 		assert.instanceOf(simpleEntities[1], SimpleEntity);
 		assert.instanceOf(simpleEntities[2], SimpleEntity);
 
-		assert.equal(simpleEntities[0].id, 2);
+		assert.equal(simpleEntities[2].id, 2);
 		assert.equal(simpleEntities[1].id, 3);
-		assert.equal(simpleEntities[2].id, 4);
+		assert.equal(simpleEntities[0].id, 4);
 	});
 });

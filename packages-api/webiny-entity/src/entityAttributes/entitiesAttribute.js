@@ -1,202 +1,230 @@
-import { ModelError, Attribute } from "webiny-model";
-import EntityCollection from "./../entityCollection";
-import _ from "lodash";
-import EntitiesAttributeValue from "./entitiesAttributeValue";
-import Entity from "./../entity";
+import {ModelError, Attribute} from 'webiny-model'
+import EntityCollection from './../../src/entityCollection'
+import _ from 'lodash';
+import EntitiesAttributeValue from './entitiesAttributeValue'
+import Entity from './../entity'
 
 class EntitiesAttribute extends Attribute {
-    constructor(name, attributesContainer, entity, attributeName = null) {
-        super(name, attributesContainer);
+	constructor(name, attributesContainer, entity, attributeName = null) {
+		super(name, attributesContainer);
 
-        this.classes = {
-            parent: this.getParentModel().getParentEntity().constructor.name,
-            entities: { class: entity, attribute: attributeName },
-            using: { class: null, attribute: null }
-        };
+		this.classes = {
+			parent: this.getParentModel().getParentEntity().constructor.name,
+			entities: {class: entity, attribute: attributeName},
+			using: {class: null, attribute: null}
+		};
 
-        // By default, we will be using a camel case version of parent entity's class name.
-        this.classes.using.attribute = _.camelCase(this.classes.parent);
+		// By default, we will be using a camel case version of parent entity's class name.
+		this.classes.using.attribute = _.camelCase(this.classes.parent);
 
-        // We will use the same value here to (when loading entities without a middle aggregation entity).
-        if (!this.classes.entities.attribute) {
-            this.classes.entities.attribute = this.classes.using.attribute;
-        }
+		// We will use the same value here to (when loading entities without a middle aggregation entity).
+		if (!this.classes.entities.attribute) {
+			this.classes.entities.attribute = this.classes.using.attribute;
+		}
 
-        /**
-         * Attribute's current value.
-         * @type {undefined}
-         */
-        this.value = new EntitiesAttributeValue(this);
+		/**
+		 * Attribute's current value.
+		 * @type {undefined}
+		 */
+		this.value = new EntitiesAttributeValue(this);
 
-        this.autoSave = true;
+		/**
+		 * Auto save and delete are both enabled by default.
+		 * @type {{save: boolean, delete: boolean}}
+		 */
+		this.auto = {save: true, delete: false};
 
-        /**
-         * By default, we don't want to have links stored in entity attribute directly.
-         * @var bool
-         */
-        this.toStorage = false;
+		/**
+		 * By default, we don't want to have links stored in entity attribute directly.
+		 * @var bool
+		 */
+		this.toStorage = false;
 
-        this.getParentModel()
-            .getParentEntity()
-            .on("afterSave", async () => {
-                if (this.getAutoSave() && (this.value.isLoading() || this.value.isSet())) {
-                    const entities = await this.getValue();
-                    for (let i = 0; i < entities.length; i++) {
-                        // Let's only save loaded item.
-                        if (entities[i] instanceof this.getEntitiesClass()) {
-                            await entities[i].save();
-                        }
-                    }
-                }
-            });
-    }
+		this.getParentModel().getParentEntity().on('beforeSave', async () => {
+			if (this.getAutoSave() && (this.value.isLoading() || this.value.isLoaded())) {
+				const entities = await this.getValue();
+				for (let i = 0; i < entities.length; i++) {
+					// Let's only save loaded item.
+					if (entities[i] instanceof this.getEntitiesClass()) {
+						await entities[i].save({validation: false});
+					}
+				}
+			}
+		});
+	}
 
-    getEntitiesClass() {
-        return this.classes.entities.class;
-    }
+	getEntitiesClass() {
+		return this.classes.entities.class;
+	}
 
-    getUsingClass() {
-        return this.classes.using.class;
-    }
+	getUsingClass() {
+		return this.classes.using.class;
+	}
 
-    setUsing(entityClass, entityAttribute = null) {
-        this.classes.using.class = entityClass;
-        this.classes.using.attribute = entityAttribute;
-        return this;
-    }
+	setUsing(entityClass, entityAttribute = null) {
+		this.classes.using.class = entityClass;
+		this.classes.using.attribute = entityAttribute;
+		return this;
+	}
 
-    getUsing() {
-        return this.classes.using;
-    }
+	getUsing() {
+		return this.classes.using;
+	}
 
-    setAutoSave(autoSave = true) {
-        this.autoSave = autoSave;
-        return this;
-    }
+	/**
+	 * Should linked entities be automatically saved once parent entity is saved? By default, linked entities will be automatically saved,
+	 * before main entity was saved. Can be disabled, although not recommended since manual saving needs to be done in that case.
+	 * @param autoSave
+	 * @returns {EntityAttribute}
+	 */
+	setAutoSave(autoSave = true) {
+		this.auto.save = autoSave;
+		return this;
+	}
 
-    getAutoSave() {
-        return this.autoSave;
-    }
+	/**
+	 * Returns true if auto save is enabled, otherwise false.
+	 * @returns {boolean}
+	 */
+	getAutoSave() {
+		return this.auto.save;
+	}
 
-    async getValue() {
-        return this.value.load();
-    }
+	/**
+	 * Should linked entity be automatically deleted once parent entity is deleted? By default, linked entities will be automatically
+	 * deleted, before main entity was deleted. Can be disabled, although not recommended since manual deletion needs to be done in that case.
+	 * @param autoDelete
+	 * @returns {EntityAttribute}
+	 */
+	setAutoDelete(autoDelete = true) {
+		this.auto.delete = autoDelete;
+		return this;
+	}
 
-    /**
-     * Only allowing EntityCollection or plain arrays
-     * @param value
-     * @returns {Promise<void>}
-     */
-    setValue(value) {
-        this.value.load(() => {
-            if (!this.canSetValue()) {
-                return;
-            }
+	/**
+	 * Returns true if auto delete is enabled, otherwise false.
+	 * @returns {boolean}
+	 */
+	getAutoDelete() {
+		return this.auto.delete;
+	}
 
-            // Even if the value is invalid (eg. a string), we allow it here, but calling validate() will fail.
-            if (value instanceof EntityCollection) {
-                this.value.setCurrent(value);
-                return;
-            }
+	async getValue() {
+		return this.value.load();
+	}
 
-            if (_.isArray(value)) {
-                const collection = new EntityCollection();
-                for (let i = 0; i < value.length; i++) {
-                    const current = value[i];
+	/**
+	 * Only allowing EntityCollection or plain arrays
+	 * @param value
+	 * @returns {Promise<void>}
+	 */
+	setValue(value) {
+		this.value.load(() => {
+			if (!this.canSetValue()) {
+				return;
+			}
 
-                    switch (true) {
-                        case current instanceof Entity:
-                            collection.push(current);
-                            break;
-                        case _.isObject(current):
-                            collection.push(new this.classes.entities.class().populate(current));
-                            break;
-                        default:
-                            collection.push(current);
-                    }
-                }
+			// Even if the value is invalid (eg. a string), we allow it here, but calling validate() will fail.
+			if (value instanceof EntityCollection) {
+				this.value.setCurrent(value);
+				return;
+			}
 
-                this.value.setCurrent(collection);
-                return;
-            }
+			if (_.isArray(value)) {
+				const collection = new EntityCollection();
+				for (let i = 0; i < value.length; i++) {
+					const current = value[i];
 
-            this.value.setCurrent(value);
-        });
-    }
+					switch (true) {
+						case current instanceof Entity:
+							collection.push(current);
+							break;
+						case _.isObject(current):
+							collection.push(new this.classes.entities.class().populate(current));
+							break;
+						default:
+							collection.push(current);
+					}
+				}
 
-    /**
-     * Will not get triggered if setToStorage is set to false, that's why we don't have to do any additional checks here.
-     * It will return only valid IDs, other values will be ignored because they must not enter storage.
-     * @returns {Promise<*>}
-     */
-    async getStorageValue() {
-        if (_.isArray(this.value.getCurrent())) {
-            // Not using getValue method because it would load the entity without need.
-            const storageValue = [];
-            for (let i = 0; i < this.value.getCurrent().length; i++) {
-                const value = this.value.getCurrent()[i];
-                if (value instanceof this.getEntitiesClass()) {
-                    storageValue.push(value.id);
-                    continue;
-                }
+				this.value.setCurrent(collection);
+				return;
+			}
 
-                this.getParentModel()
-                    .getParentEntity()
-                    .isId(value) && storageValue.push(value);
-            }
+			this.value.setCurrent(value);
+		});
+	}
 
-            return storageValue;
-        }
+	/**
+	 * Will not get triggered if setToStorage is set to false, that's why we don't have to do any additional checks here.
+	 * It will return only valid IDs, other values will be ignored because they must not enter storage.
+	 * @returns {Promise<*>}
+	 */
+	async getStorageValue() {
+		if (_.isArray(this.value.getCurrent())) {
+			// Not using getValue method because it would load the entity without need.
+			const storageValue = [];
+			for (let i = 0; i < this.value.getCurrent().length; i++) {
+				const value = this.value.getCurrent()[i];
+				if (value instanceof this.getEntitiesClass()) {
+					storageValue.push(value.id);
+					continue;
+				}
 
-        return [];
-    }
+				this.getParentModel().getParentEntity().isId(value) && storageValue.push(value);
+			}
 
-    hasValue() {
-        return !_.isEmpty(this.value.getCurrent());
-    }
+			return storageValue;
+		}
 
-    async validate() {
-        if (this.isEmpty()) {
-            return;
-        }
+		return [];
+	}
 
-        if (!_.isArray(this.value.getCurrent())) {
-            this.expected("array", typeof this.value.getCurrent());
-        }
+	hasValue() {
+		return !_.isEmpty(this.value.getCurrent());
+	}
 
-        const errors = [];
-        for (let i = 0; i < this.value.getCurrent().length; i++) {
-            if (!(this.value.getCurrent()[i] instanceof Entity)) {
-                continue;
-            }
+	async validate() {
+		if (this.isEmpty()) {
+			return;
+		}
 
-            if (!(this.value.getCurrent()[i] instanceof this.getEntitiesClass())) {
-                errors.push({
-                    type: ModelError.INVALID_ATTRIBUTE,
-                    data: {
-                        index: i
-                    },
-                    message: `Validation failed, item at index ${i} not an instance of correct Entity class.`
-                });
-            }
+		if (!_.isArray(this.value.getCurrent())) {
+			this.expected('array', typeof this.value.getCurrent());
+		}
 
-            try {
-                await this.value.getCurrent()[i].validate();
-            } catch (e) {
-                errors.push({
-                    type: e.getType(),
-                    data: { index: i, ...e.getData() },
-                    message: e.getMessage()
-                });
-            }
-        }
+		const errors = [];
+		for (let i = 0; i < this.value.getCurrent().length; i++) {
 
-        if (!_.isEmpty(errors)) {
-            throw new ModelError("Validation failed.", ModelError.INVALID_ATTRIBUTE, {
-                items: errors
-            });
-        }
-    }
+			if (!(this.value.getCurrent()[i] instanceof Entity)) {
+				continue;
+			}
+
+			if (!(this.value.getCurrent()[i] instanceof this.getEntitiesClass())) {
+				errors.push({
+					type: ModelError.INVALID_ATTRIBUTE,
+					data: {
+						index: i
+					},
+					message: `Validation failed, item at index ${i} not an instance of correct Entity class.`
+				});
+			}
+
+			try {
+				await this.value.getCurrent()[i].validate();
+			} catch (e) {
+				errors.push({
+					type: e.getType(),
+					data: {index: i, ...e.getData()},
+					message: e.getMessage()
+				});
+			}
+		}
+
+		if (!_.isEmpty(errors)) {
+			throw new ModelError('Validation failed.', ModelError.INVALID_ATTRIBUTE, {items: errors});
+		}
+	}
 }
 
 export default EntitiesAttribute;

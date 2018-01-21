@@ -53,4 +53,4 @@ class User extends Entity {
 
 User.classId = 'User';
 
-export {User, Company, Image};
+export {User, Company, Image, Entity};

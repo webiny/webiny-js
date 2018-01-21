@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-import {Entity, QueryResult} from './../../src'
+import {Entity, QueryResult} from '../../../../src/index'
 import {ModelError} from 'webiny-model'
 import sinon from 'sinon';
 
