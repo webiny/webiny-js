@@ -1,64 +1,70 @@
-import Attribute from './../attribute'
-import Model from './../model'
+// @flow
+import Attribute from "./../attribute";
+import Model from "./../model";
+import { AttributesContainer } from "../index";
 
 class ModelAttribute extends Attribute {
-	constructor(name, attributesContainer, model) {
-		super(name, attributesContainer);
-		this.modelClass = model;
-		this.defaultValue = () => new this.modelClass();
-	}
+    modelClass: Model.constructor;
 
-	getModelClass() {
-		return this.modelClass;
-	}
+    constructor(name: string, attributesContainer: AttributesContainer, model: Model.constructor) {
+        super(name, attributesContainer);
+        this.modelClass = model;
+        this.defaultValue = () => new this.modelClass();
+    }
 
-	setValue(value) {
-		if (!this.canSetValue()) {
-			return this;
-		}
+    getModelClass(): Model.constructor {
+        return this.modelClass;
+    }
 
-		let newValue = null;
-		if (value instanceof Model) {
-			newValue = value;
-		} else {
-			newValue = new this.modelClass();
-			newValue.populate(value);
-		}
+    setValue(value: any): this {
+        if (!this.canSetValue()) {
+            return this;
+        }
 
-		this.value.setCurrent(newValue);
+        let newValue = null;
+        if (value instanceof Model) {
+            newValue = value;
+        } else {
+            newValue = new this.modelClass();
+            newValue.populate(value);
+        }
 
-		return this;
-	}
+        this.value.setCurrent(newValue);
 
-	async getJSONValue() {
-		if (this.isEmpty()) {
-			return null;
-		}
+        return this;
+    }
 
-		return this.getValue().toJSON();
-	}
+    async getJSONValue(): Object {
+        if (this.isEmpty()) {
+            return null;
+        }
 
-	async getStorageValue() {
-		return this.getJSONValue();
-	}
+        return this.getValue().toJSON();
+    }
 
-	/**
-	 * If value is assigned (checked in the parent validate call), it must by an instance of Model.
-	 */
-	validateType() {
-		if (this.value.getCurrent() instanceof this.getModelClass()) {
-			return;
-		}
-		this.expected('instance of Model class', typeof this.value.getCurrent());
-	}
+    async getStorageValue(): Object {
+        return this.getJSONValue();
+    }
 
-	async validate() {
-		// This validates on the attribute level.
-		await Attribute.prototype.validate.call(this);
+    /**
+     * If value is assigned (checked in the parent validate call), it must by an instance of Model.
+     */
+    validateType() {
+        if (this.value.getCurrent() instanceof this.getModelClass()) {
+            return;
+        }
+        this.expected("instance of Model class", typeof this.value.getCurrent());
+    }
 
-		// This validates on the model level.
-		this.value.getCurrent() instanceof this.getModelClass() && await this.value.getCurrent().validate();
-	}
+    async validate(): Promise<void> {
+        // This validates on the attribute level.
+        await Attribute.prototype.validate.call(this);
+
+        // This validates on the model level.
+        if (this.value.getCurrent() instanceof this.getModelClass()) {
+            await this.value.getCurrent().validate();
+        }
+    }
 }
 
 export default ModelAttribute;

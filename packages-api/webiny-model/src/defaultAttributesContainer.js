@@ -1,56 +1,71 @@
-import AttributesContainer from './attributesContainer'
-import attributes from './attributes'
+// @flow
+import AttributesContainer from "./attributesContainer";
+import {
+    CharAttribute,
+    BooleanAttribute,
+    IntegerAttribute,
+    FloatAttribute,
+    DateAttribute,
+    DynamicAttribute,
+    ModelAttribute,
+    ModelsAttribute
+} from "./attributes";
 
 /**
  * Contains basic attributes. If needed, this class can be extended to add additional attributes,
  * and then be set as a new attributes container as the default one.
  */
 class DefaultAttributesContainer extends AttributesContainer {
-    char() {
+    attr(attribute: string): DefaultAttributesContainer {
+        super.attr(attribute);
+        return this;
+    }
+
+    char(): CharAttribute {
         const model = this.getParentModel();
-        model.setAttribute(this.name, new attributes.char(this.name, this));
+        model.setAttribute(this.name, new CharAttribute(this.name, this));
         return model.getAttribute(this.name);
     }
 
-    boolean() {
+    boolean(): BooleanAttribute {
         const model = this.getParentModel();
-        model.setAttribute(this.name, new attributes.boolean(this.name, this));
+        model.setAttribute(this.name, new BooleanAttribute(this.name, this));
         return model.getAttribute(this.name);
     }
 
-    integer() {
+    integer(): IntegerAttribute {
         const model = this.getParentModel();
-        model.setAttribute(this.name, new attributes.integer(this.name, this));
+        model.setAttribute(this.name, new IntegerAttribute(this.name, this));
         return model.getAttribute(this.name);
     }
 
-    float() {
+    float(): FloatAttribute {
         const model = this.getParentModel();
-        model.setAttribute(this.name, new attributes.float(this.name, this));
+        model.setAttribute(this.name, new FloatAttribute(this.name, this));
         return model.getAttribute(this.name);
     }
 
-    dynamic(callback) {
+    dynamic(callback: Function): DynamicAttribute {
         const model = this.getParentModel();
-        model.setAttribute(this.name, new attributes.dynamic(this.name, this, callback));
+        model.setAttribute(this.name, new DynamicAttribute(this.name, this, callback));
         return model.getAttribute(this.name);
     }
 
-    model(model) {
+    model(model: IModel): ModelAttribute {
         const parent = this.getParentModel();
-        parent.setAttribute(this.name, new attributes.model(this.name, this, model));
+        parent.setAttribute(this.name, new ModelAttribute(this.name, this, model));
         return parent.getAttribute(this.name);
     }
 
-    models(model) {
+    models(model: IModel): ModelsAttribute {
         const parent = this.getParentModel();
-        parent.setAttribute(this.name, new attributes.models(this.name, this, model));
+        parent.setAttribute(this.name, new ModelsAttribute(this.name, this, model));
         return parent.getAttribute(this.name);
     }
 
-    date() {
+    date(): DateAttribute {
         const model = this.getParentModel();
-        model.setAttribute(this.name, new attributes.date(this.name, this));
+        model.setAttribute(this.name, new DateAttribute(this.name, this));
         return model.getAttribute(this.name);
     }
 }

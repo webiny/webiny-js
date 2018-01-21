@@ -1,199 +1,217 @@
-import _ from 'lodash';
-import extractor from 'webiny-data-extractor';
-import DefaultAttributesContainer from './defaultAttributesContainer'
-import ModelError from './modelError'
+// @flow
+import _ from "lodash";
+import extractor from "webiny-data-extractor";
+import DefaultAttributesContainer from "./defaultAttributesContainer";
+import ModelError from "./modelError";
+import Attribute from "./attribute";
 
-class Model {
-	constructor(definition) {
-		this.attributes = {};
-		this.validating = false;
+class Model implements IModel {
+    attributes: { [string]: IAttribute };
+    validating: boolean;
+    attributesContainer: DefaultAttributesContainer;
 
-		this.attributesContainer = this.getAttributesContainerInstance();
+    constructor(definition?: Function) {
+        this.attributes = {};
+        this.validating = false;
+        this.attributesContainer = this.createAttributesContainer();
 
-		if (_.isFunction(definition)) {
-			definition.call(this)
-		}
+        if (typeof definition === "function") {
+            definition.call(this);
+        }
 
-		return new Proxy(this, {
-			set: (instance, key, value) => {
-				const attr = instance.getAttribute(key);
-				if (attr) {
-					attr.setValue(value);
-					return true;
-				}
+        return new Proxy((this: Object), {
+            set: (instance: Model, key: string, value: any) => {
+                const attr = instance.getAttribute(key);
+                if (attr) {
+                    attr.setValue(value);
+                    return true;
+                }
 
-				instance[key] = value;
-				return true;
-			},
-			get: (instance, key) => {
-				const attr = instance.getAttribute(key);
-				if (attr) {
-					return attr.getValue();
-				}
+                (instance: Object)[key] = value;
+                return true;
+            },
+            get: (instance: Model, key: string) => {
+                const attr = instance.getAttribute(key);
+                if (attr) {
+                    return attr.getValue();
+                }
 
-				return instance[key];
-			}
-		});
-	}
+                return (instance: Object)[key];
+            }
+        });
+    }
 
-	attr(attribute) {
-		return this.getAttributesContainer().attr(attribute);
-	}
+    attr(attribute: string): DefaultAttributesContainer {
+        return this.getAttributesContainer().attr(attribute);
+    }
 
-	getAttributesContainerInstance() {
-		return new DefaultAttributesContainer(this);
-	}
+    createAttributesContainer(): DefaultAttributesContainer {
+        return new DefaultAttributesContainer(((this: any): Model));
+    }
 
-	getAttributesContainer() {
-		return this.attributesContainer;
-	}
+    getAttributesContainer(): DefaultAttributesContainer {
+        return this.attributesContainer;
+    }
 
-	getAttribute(attribute) {
-		if (_.has(this.attributes, attribute)) {
-			return this.attributes[attribute];
-		}
-		return undefined;
-	}
+    getAttribute(attribute: string): ?IAttribute {
+        if (_.has(this.attributes, attribute)) {
+            return this.attributes[attribute];
+        }
+        return undefined;
+    }
 
-	setAttribute(name, attribute) {
-		this.attributes[name] = attribute;
-		return this;
-	}
+    setAttribute(name: string, attribute: IAttribute): Model {
+        this.attributes[name] = attribute;
+        return this;
+    }
 
-	getAttributes() {
-		return this.attributes;
-	}
+    getAttributes(): { [string]: IAttribute } {
+        return this.attributes;
+    }
 
-	clean() {
-		for (const [name, attribute] of Object.entries(this.getAttributes())) {
-			attribute.value.clean();
-		}
-	}
+    clean(): void {
+        _.each(this.attributes, (attribute: Attribute) => {
+            attribute.value.clean();
+        });
+    }
 
-	isDirty() {
-		for (const [name, attribute] of Object.entries(this.getAttributes())) {
-			if (attribute.value.isDirty()) {
-				return true;
-			}
-		}
-		return false;
-	}
+    isDirty(): boolean {
+        let name;
+        for (name in this.attributes) {
+            const attribute: IAttribute = this.attributes[name];
+            if (attribute.value.isDirty()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	isClean() {
-		return !this.isDirty();
-	}
+    isClean(): boolean {
+        return !this.isDirty();
+    }
 
-	/**
-	 * Populates the model with given data.
-	 * @param data
-	 * @returns {Model}
-	 */
-	populate(data) {
-		if (!_.isObject(data)) {
-			throw new ModelError('Populate failed - received data not an object.', ModelError.POPULATE_FAILED_NOT_OBJECT);
-		}
+    /**
+     * Populates the model with given data.
+     */
+    populate(data: Object): this {
+        if (!_.isObject(data)) {
+            throw new ModelError(
+                "Populate failed - received data not an object.",
+                ModelError.POPULATE_FAILED_NOT_OBJECT
+            );
+        }
 
-		for (const [name, attribute] of Object.entries(this.getAttributes())) {
-			if (attribute.getSkipOnPopulate()) {
-				continue;
-			}
+        _.each(this.attributes, (attribute: Attribute, name: string) => {
+            if (attribute.getSkipOnPopulate()) {
+                return;
+            }
 
-			if (_.has(data, name)) {
-				attribute.setValue(data[name]);
-			}
-		}
+            if (_.has(data, name)) {
+                attribute.setValue(data[name]);
+            }
+        });
 
-		return this;
-	}
+        return this;
+    }
 
-	/**
-	 * Validates values of all attributes.
-	 * @returns {Promise.<void>}
-	 */
-	async validate() {
-		if (this.validating) {
-			return;
-		}
-		this.validating = true;
+    /**
+     * Validates values of all attributes.
+     */
+    async validate(): Promise<void> {
+        if (this.validating) {
+            return;
+        }
+        this.validating = true;
 
-		const invalidAttributes = {};
-		for (const [name, attribute] of Object.entries(this.getAttributes())) {
-			try {
-				await attribute.validate();
-			} catch (e) {
-				invalidAttributes[attribute.getName()] = {
-					type: e.getType(),
-					data: e.getData(),
-					message: e.getMessage()
-				};
-			}
-		}
+        const invalidAttributes = {};
+        await Promise.all(
+            Object.keys(this.attributes).map(async (name: string) => {
+                const attribute: IAttribute = this.attributes[name];
+                try {
+                    await attribute.validate();
+                } catch (e) {
+                    invalidAttributes[name] = {
+                        type: e.getType(),
+                        data: e.getData(),
+                        message: e.getMessage()
+                    };
+                }
+            })
+        );
 
-		this.validating = false;
+        this.validating = false;
 
-		if (!_.isEmpty(invalidAttributes)) {
-			throw new ModelError('Validation failed.', ModelError.INVALID_ATTRIBUTES, {invalidAttributes});
-		}
-	}
+        if (!_.isEmpty(invalidAttributes)) {
+            throw new ModelError("Validation failed.", ModelError.INVALID_ATTRIBUTES, {
+                invalidAttributes
+            });
+        }
+    }
 
-	async toJSON(path = null) {
-		const json = {};
-		for (const [name, attribute] of Object.entries(this.getAttributes())) {
-			json[name] = await attribute.getJSONValue();
-		}
+    async toJSON(path: ?string): Promise<{}> {
+        const json = {};
+        let name;
 
-		return path ? await extractor.get(json, path) : json;
-	}
+        for (name in this.attributes) {
+            json[name] = await this.attributes[name].getJSONValue();
+        }
 
-	async get(path = '', defaultValue) {
-		const steps = _.isArray(path) ? path : path.split('.');
-		let value = this;
-		for (let i = 0; i < steps.length; i++) {
-			if (!_.isObject(value)) {
-				break;
-			}
-			value = await value.getAttribute(steps[i]).getValue();
-		}
+        return path ? await extractor.get(json, path) : json;
+    }
 
-		return typeof(value) === 'undefined' ? defaultValue : value;
-	}
+    async get(path: string | Array<string> = "", defaultValue: any) {
+        const steps = typeof path === "string" ? path.split(".") : path;
+        let value: Object = this;
+        for (let i = 0; i < steps.length; i++) {
+            if (!_.isObject(value)) {
+                break;
+            }
 
-	async set(path, value) {
-		const steps = path.split('.');
-		const lastStep = steps.pop();
+            value = await value[steps[i]];
+        }
 
-		const model = await this.get(steps);
-		return model.getAttribute(lastStep).setValue(value);
-	}
+        return typeof value === "undefined" ? defaultValue : value;
+    }
 
-	/**
-	 * Returns data that is suitable for latter saving in a storage layer (database, caching etc.). This is useful because attributes can
-	 * have different values here (eg. only ID sometimes is needed) and also some attributes don't even need to be saved in the storage,
-	 * which is most often the case with dynamic attributes.
-	 * @returns {Promise.<{}>}
-	 */
-	async toStorage() {
-		const json = {};
-		for (const [name, attribute] of Object.entries(this.getAttributes())) {
-			if (attribute.getToStorage()) {
-				json[name] = await attribute.getStorageValue();
-			}
-		}
+    async set(path: string, value: any) {
+        const steps = path.split(".");
+        const lastStep = steps.pop();
 
-		return json;
-	}
+        const model = await this.get(steps);
+        return model.getAttribute(lastStep).setValue(value);
+    }
 
-	populateFromStorage(data) {
-		if (!_.isObject(data)) {
-			throw new ModelError('Populate failed - received data not an object.', ModelError.POPULATE_FAILED_NOT_OBJECT);
-		}
+    /**
+     * Returns data that is suitable for latter saving in a storage layer (database, caching etc.). This is useful because attributes can
+     * have different values here (eg. only ID sometimes is needed) and also some attributes don't even need to be saved in the storage,
+     * which is most often the case with dynamic attributes.
+     */
+    async toStorage(): Promise<{}> {
+        const json = {};
+        let name;
+        for (name in this.attributes) {
+            json[name] = await this.attributes[name].getStorageValue();
+        }
 
-		for (const [name, attribute] of Object.entries(this.getAttributes())) {
-			_.has(data, name) && attribute.getToStorage() && attribute.setStorageValue(data[name]);
-		}
+        return json;
+    }
 
-		return this;
-	}
+    populateFromStorage(data: Object) {
+        if (!_.isObject(data)) {
+            throw new ModelError(
+                "Populate failed - received data not an object.",
+                ModelError.POPULATE_FAILED_NOT_OBJECT
+            );
+        }
+
+        let name;
+        for (name in this.attributes) {
+            const attribute: IAttribute = this.attributes[name];
+            _.has(data, name) && attribute.getToStorage() && attribute.setStorageValue(data[name]);
+        }
+
+        return this;
+    }
 }
 
 export default Model;

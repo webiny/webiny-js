@@ -1,41 +1,48 @@
-class ModelError {
-    constructor(message, type = '', data = {}) {
+// @flow
+class ModelError extends Error {
+    static INVALID_ATTRIBUTE: string;
+    static INVALID_ATTRIBUTES: string;
+    static ATTRIBUTE_NOT_FOUND: string;
+    static POPULATE_FAILED_NOT_OBJECT: string;
+
+    type: string;
+    data: Object;
+
+    constructor(message: string, type: string = "", data: Object = {}) {
+        super();
         this.message = message;
         this.data = data;
         this.type = type;
     }
 
-    setMessage(message) {
+    setMessage(message: string) {
         this.message = message;
-        return this;
     }
 
-    getMessage() {
+    getMessage(): string {
         return this.message;
     }
 
-    setData(data) {
+    setData(data: Object) {
         this.data = data;
-        return this;
     }
 
-    getData() {
+    getData(): Object {
         return this.data;
     }
 
-    setType(type) {
+    setType(type: string) {
         this.type = type;
-        return this;
     }
 
-    getType() {
+    getType(): string {
         return this.type;
     }
 }
 
-ModelError.INVALID_ATTRIBUTE = 'invalidAttribute';
-ModelError.INVALID_ATTRIBUTES = 'invalidAttributes';
-ModelError.ATTRIBUTE_NOT_FOUND = 'attributeNotFound';
-ModelError.POPULATE_FAILED_NOT_OBJECT = 'populateFailedNotObject';
+ModelError.INVALID_ATTRIBUTE = "invalidAttribute";
+ModelError.INVALID_ATTRIBUTES = "invalidAttributes";
+ModelError.ATTRIBUTE_NOT_FOUND = "attributeNotFound";
+ModelError.POPULATE_FAILED_NOT_OBJECT = "populateFailedNotObject";
 
 export default ModelError;

@@ -1,26 +1,30 @@
+// @flow
+
 /**
  * Base AttributesContainer class, can be extended to implement new types of model attributes.
  */
-class AttributesContainer {
-    constructor(model) {
+class AttributesContainer implements IAttributesContainer {
+    parentModel: IModel;
+    name: string;
+
+    constructor(model: IModel) {
         /**
          * Parent parentModel - instance of Model class.
          */
         this.parentModel = model;
 
         /**
-         *
-         * @type {null}
+         * Name of current attribute
          */
-        this.name = null;
+        this.name = "";
     }
 
-    attr(attribute) {
+    attr(attribute: string): AttributesContainer {
         this.name = attribute;
         return this;
     }
 
-    getParentModel() {
+    getParentModel(): IModel {
         return this.parentModel;
     }
 }

@@ -1,54 +1,61 @@
+// @flow
+
 class AttributeValue {
-	constructor(attribute) {
-		this.attribute = attribute;
-		this.current = null;
-		this.dirty = false;
-		this.set = false;
-	}
+    attribute: IAttribute;
+    current: any;
+    dirty: boolean;
+    set: boolean;
 
-	setCurrent(value, options = {}) {
-		this.set = true;
+    constructor(attribute: IAttribute) {
+        this.attribute = attribute;
+        this.current = null;
+        this.dirty = false;
+        this.set = false;
+    }
 
-		if (!options.skipDifferenceCheck) {
-			if (this.isDifferentFrom(value)) {
-				this.dirty = true;
-			}
-		}
+    setCurrent(value: any, options: Object = {}): this {
+        this.set = true;
 
-		this.current = value;
-		return this;
-	}
+        if (!options.skipDifferenceCheck) {
+            if (this.isDifferentFrom(value)) {
+                this.dirty = true;
+            }
+        }
 
-	getCurrent() {
-		return this.current;
-	}
+        this.current = value;
+        return this;
+    }
 
-	isDifferentFrom(value) {
-		return this.current !== value;
-	}
+    getCurrent(): any {
+        return this.current;
+    }
 
-	isDirty() {
-		return this.dirty;
-	}
+    isDifferentFrom(value: any): boolean {
+        return this.current !== value;
+    }
 
-	isClean() {
-		return !this.isDirty();
-	}
+    isDirty(): boolean {
+        return this.dirty;
+    }
 
-	clean() {
-		this.dirty = false;
-		return this;
-	}
+    isClean(): boolean {
+        return !this.isDirty();
+    }
 
-	isSet() {
-		return this.set;
-	}
+    clean(): this {
+        this.dirty = false;
+        return this;
+    }
 
-	reset() {
-		this.current = null;
-		this.dirty = false;
-		this.set = false;
-	}
+    isSet(): boolean {
+        return this.set;
+    }
+
+    reset(): void {
+        this.current = null;
+        this.dirty = false;
+        this.set = false;
+    }
 }
 
 export default AttributeValue;
