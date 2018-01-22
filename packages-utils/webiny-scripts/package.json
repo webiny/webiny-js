@@ -45,9 +45,15 @@
     "webpack-hot-middleware": "^2.18.0",
     "webpack-visualizer-plugin": "^0.1.11",
     "write-file-webpack-plugin": "^3.4.2",
-    "yargs": "^10.0.3"
+    "yargs": "^10.0.3",
+    "snyk": "^1.69.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0"
-  }
+  },
+  "scripts": {
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
+  },
+  "snyk": true
 }
