@@ -1,6 +1,6 @@
-import _ from 'lodash';
-import Webiny from './../../Webiny';
-import Component from './../Core/Component';
+import _ from "lodash";
+import { Webiny } from "./../../../index";
+import Component from "./../Core/Component";
 
 class LazyLoad extends Component {
     constructor(props) {
@@ -16,7 +16,7 @@ class LazyLoad extends Component {
         super.componentWillMount();
         Webiny.import(this.props.modules, this.props.options).then(modules => {
             // Finish loading and render content
-            this.setState({loaded: true, modules});
+            this.setState({ loaded: true, modules });
             this.props.onLoad(modules);
         });
     }

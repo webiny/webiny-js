@@ -1,7 +1,7 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import _ from 'lodash';
-import Webiny from './../../Webiny';
+import React from "react";
+import ReactDOM from "react-dom";
+import _ from "lodash";
+import { Webiny } from "./../../../index";
 
 // These will be lazy loaded when first growl is performed
 let GrowlComponents = null;
@@ -9,17 +9,22 @@ let GrowlContainer = null;
 
 function getGrowler() {
     if (!GrowlContainer) {
-        document.body.appendChild(document.createElement('webiny-growler'));
-        return new Promise((resolve) => {
+        document.body.appendChild(document.createElement("webiny-growler"));
+        return new Promise(resolve => {
             const growlContainer = (
-                <Webiny.Ui.LazyLoad modules={['Growl']}>
-                    {({Growl}) => {
+                <Webiny.Ui.LazyLoad modules={["Growl"]}>
+                    {({ Growl }) => {
                         GrowlComponents = Growl;
-                        return <GrowlComponents.Container ref={ref => GrowlContainer = ref} onComponentDidMount={resolve}/>;
+                        return (
+                            <GrowlComponents.Container
+                                ref={ref => (GrowlContainer = ref)}
+                                onComponentDidMount={resolve}
+                            />
+                        );
                     }}
                 </Webiny.Ui.LazyLoad>
             );
-            ReactDOM.render(growlContainer, document.querySelector('webiny-growler'));
+            ReactDOM.render(growlContainer, document.querySelector("webiny-growler"));
         });
     }
 
@@ -28,7 +33,6 @@ function getGrowler() {
 
 function Growler(component) {
     return getGrowler().then(growler => growler.addGrowl(component));
-
 }
 
 _.assign(Growler, {
@@ -42,44 +46,44 @@ _.assign(Growler, {
         growler.removeById(growlId);
     },
 
-    async info(message, title = 'Info', sticky = false, ttl = 3000) {
+    async info(message, title = "Info", sticky = false, ttl = 3000) {
         const growler = await getGrowler();
 
         if (!growler) {
             return null;
         }
 
-        return growler.addGrowl(<GrowlComponents.Info {...{message, title, sticky, ttl}}/>);
+        return growler.addGrowl(<GrowlComponents.Info {...{ message, title, sticky, ttl }} />);
     },
 
-    async success(message, title = 'Success', sticky = false, ttl = 3000) {
+    async success(message, title = "Success", sticky = false, ttl = 3000) {
         const growler = await getGrowler();
 
         if (!growler) {
             return null;
         }
 
-        return growler.addGrowl(<GrowlComponents.Success {...{message, title, sticky, ttl}}/>);
+        return growler.addGrowl(<GrowlComponents.Success {...{ message, title, sticky, ttl }} />);
     },
 
-    async danger(message, title = 'Danger', sticky = true, ttl = 3000) {
+    async danger(message, title = "Danger", sticky = true, ttl = 3000) {
         const growler = await getGrowler();
 
         if (!growler) {
             return null;
         }
 
-        return growler.addGrowl(<GrowlComponents.Danger {...{message, title, sticky, ttl}}/>);
+        return growler.addGrowl(<GrowlComponents.Danger {...{ message, title, sticky, ttl }} />);
     },
 
-    async warning(message, title = 'Warning', sticky = true, ttl = 3000) {
+    async warning(message, title = "Warning", sticky = true, ttl = 3000) {
         const growler = await getGrowler();
 
         if (!growler) {
             return null;
         }
 
-        return growler.addGrowl(<GrowlComponents.Warning {...{message, title, sticky, ttl}}/>);
+        return growler.addGrowl(<GrowlComponents.Warning {...{ message, title, sticky, ttl }} />);
     }
 });
 

@@ -1,12 +1,12 @@
-import Webiny from './../../../Webiny';
+import { Webiny } from "./../../../../index";
 
 class NumberModifier {
     getName() {
-        return 'number';
+        return "number";
     }
 
     execute(value) {
-        return Webiny.I18n.number(value)
+        return Webiny.I18n.number(value);
     }
 }
 

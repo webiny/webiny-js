@@ -1,11 +1,11 @@
-import React from 'react';
-import _ from 'lodash';
-import Webiny from './../Webiny';
-import hoistNonReactStatics from 'hoist-non-react-statics';
-import {Map} from 'immutable';
-import LazyLoad from './Ui/LazyLoad';
-import WebinyComponent from './Core/Component';
-import ModalComponent from './Core/ModalComponent';
+import React from "react";
+import _ from "lodash";
+import { Webiny } from "./../../../index";
+import hoistNonReactStatics from "hoist-non-react-statics";
+import { Map } from "immutable";
+import LazyLoad from "./Ui/LazyLoad";
+import WebinyComponent from "./Core/Component";
+import ModalComponent from "./Core/ModalComponent";
 
 /**
  * This function creates a wrapper class around given component to allow component styling and lazy loading of dependencies
@@ -25,18 +25,18 @@ export default (Component, options = {}) => {
 
     // Automatically expose modal dialog methods
     if (Component.prototype instanceof ModalComponent) {
-        _.merge(options, {api: ['show', 'hide', 'isAnimating', 'isShown', 'getDialog']});
+        _.merge(options, { api: ["show", "hide", "isAnimating", "isShown", "getDialog"] });
     }
 
     class ComponentWrapper extends WebinyComponent {
         constructor(props) {
             super(props);
             if (options.api) {
-                options.api.forEach((method) => {
+                options.api.forEach(method => {
                     Object.defineProperty(this, method, {
                         get: () => this.component[method]
                     });
-                })
+                });
             }
         }
 
@@ -59,7 +59,7 @@ export default (Component, options = {}) => {
             delete config.defaultProps;
 
             // modules are overwritten
-            if (_.hasIn(config, 'options.modules')) {
+            if (_.hasIn(config, "options.modules")) {
                 ComponentWrapper.options.modules = config.options.modules;
                 delete config.options.modules;
             }
@@ -72,8 +72,8 @@ export default (Component, options = {}) => {
         }
 
         render() {
-            const props = _.omit(this.props, ['styles']);
-            props.ref = c => this.component = c;
+            const props = _.omit(this.props, ["styles"]);
+            props.ref = c => (this.component = c);
 
             // Detect if component override based on `context` is possible
             if (props.context) {
@@ -81,8 +81,8 @@ export default (Component, options = {}) => {
                 if (context) {
                     return (
                         <LazyLoad modules={[context.name]}>
-                            {(loaded) => {
-                                const props = _.pick(this.props, ['value', 'children', 'onChange']);
+                            {loaded => {
+                                const props = _.pick(this.props, ["value", "children", "onChange"]);
                                 if (this.props.contextProps) {
                                     _.merge(props, this.props.contextProps);
                                 }
@@ -93,20 +93,20 @@ export default (Component, options = {}) => {
                                 const modules = options.modules || {};
                                 if (Object.keys(modules).length > 0) {
                                     return (
-                                        <LazyLoad modules={modules} options={{props}}>
-                                            {(modules) => {
+                                        <LazyLoad modules={modules} options={{ props }}>
+                                            {modules => {
                                                 if (options.modulesProp) {
                                                     props[options.modulesProp] = modules;
                                                 } else {
                                                     _.assign(props, modules);
                                                 }
-                                                return <RenderComponent {...props}/>;
+                                                return <RenderComponent {...props} />;
                                             }}
                                         </LazyLoad>
                                     );
                                 }
 
-                                return <RenderComponent {...props}/>
+                                return <RenderComponent {...props} />;
                             }}
                         </LazyLoad>
                     );
@@ -123,29 +123,29 @@ export default (Component, options = {}) => {
             const modules = options.modules || {};
             if (Object.keys(modules).length > 0) {
                 return (
-                    <LazyLoad modules={modules} options={{props}}>
-                        {(modules) => {
+                    <LazyLoad modules={modules} options={{ props }}>
+                        {modules => {
                             if (options.modulesProp) {
                                 props[options.modulesProp] = modules;
                             } else {
                                 _.assign(props, modules);
                             }
-                            if (typeof options.getComponent === 'function') {
+                            if (typeof options.getComponent === "function") {
                                 const RenderComponent = options.getComponent(props);
-                                return <RenderComponent {...props}/>;
+                                return <RenderComponent {...props} />;
                             }
-                            return <Component {...props}/>;
+                            return <Component {...props} />;
                         }}
                     </LazyLoad>
                 );
             }
 
-            if (typeof options.getComponent === 'function') {
+            if (typeof options.getComponent === "function") {
                 const RenderComponent = options.getComponent(props);
-                return <RenderComponent {...props}/>;
+                return <RenderComponent {...props} />;
             }
 
-            return <Component {...props}/>
+            return <Component {...props} />;
         }
     }
 

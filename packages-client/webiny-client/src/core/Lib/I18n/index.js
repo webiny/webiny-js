@@ -1,40 +1,40 @@
-import _ from 'lodash';
-import md5 from 'blueimp-md5';
-import Webiny from './../../Webiny';
-import React from 'react';
-import I18nComponent from './I18n';
-import fecha from 'fecha';
-import accounting from 'accounting';
+import _ from "lodash";
+import md5 from "blueimp-md5";
+import { Webiny } from "./../../../index";
+import React from "react";
+import I18nComponent from "./I18n";
+import fecha from "fecha";
+import accounting from "accounting";
 
-import modifiers from './Modifiers';
-import PhpJsMap from './PhpJsMap';
+import modifiers from "./Modifiers";
+import PhpJsMap from "./PhpJsMap";
 
 /**
  * Main class used for all I18n needs.
  */
 class I18n {
     constructor() {
-        this.groups = {list: []};
-        this.locales = {current: null, list: []};
+        this.groups = { list: [] };
+        this.locales = { current: null, list: [] };
 
         /**
          * If we fail to fetch formats for currently selected locale, these default formats will be used.
          * @type {{date: string, time: string, datetime: string, number: string}}
          */
         this.defaultFormats = {
-            date: 'd/m/Y',
-            time: 'h:i',
-            datetime: 'd/m/Y H:i',
+            date: "d/m/Y",
+            time: "h:i",
+            datetime: "d/m/Y H:i",
             price: {
-                symbol: '',
-                format: '{symbol}{amount}',
-                decimal: '.',
-                thousand: ',',
+                symbol: "",
+                format: "{symbol}{amount}",
+                decimal: ".",
+                thousand: ",",
                 precision: 2
             },
             number: {
-                decimal: '.',
-                thousand: ', ',
+                decimal: ".",
+                thousand: ", ",
                 precision: 2
             }
         };
@@ -83,7 +83,7 @@ class I18n {
         };
 
         Object.getOwnPropertyNames(I18n.prototype).map(method => {
-            if (method !== 'constructor') {
+            if (method !== "constructor") {
                 translate[method] = this[method].bind(this);
             }
         });
@@ -103,13 +103,17 @@ class I18n {
         this.setLocale(Webiny.Config.I18n.locale).setCacheKey(Webiny.Config.I18n.locale.cacheKey);
 
         // Cached I18N translations from previous sessions.
-        let i18nCache = await Webiny.IndexedDB.get('Webiny.I18n');
+        let i18nCache = await Webiny.IndexedDB.get("Webiny.I18n");
 
         const allJsApps = _.keys(Webiny.Apps);
         let neededJsApps = [];
 
         // If we have the same cache key and the same locale, that means we have latest translations - we can safely read from local storage.
-        if (i18nCache && i18nCache.cacheKey === this.getCacheKey() && i18nCache.locale === this.getLocale().key) {
+        if (
+            i18nCache &&
+            i18nCache.cacheKey === this.getCacheKey() &&
+            i18nCache.locale === this.getLocale().key
+        ) {
             // Oh yeah, we have the same cache key, but let's still check if we have a JS app which we didn't cache before maybe.
             allJsApps.forEach(jsApp => {
                 if (!i18nCache.translations[jsApp]) {
@@ -124,12 +128,17 @@ class I18n {
 
         // If there are new apps to be added to the existing list of translations, let's load and update the cache.
         if (neededJsApps.length > 0) {
-            const api = new Webiny.Api.Endpoint('/entities/webiny/i18n-texts');
-            const response = await api.get('translations/locales/' + this.getLocale().key, {jsApps: neededJsApps});
+            const api = new Webiny.Api.Endpoint("/entities/webiny/i18n-texts");
+            const response = await api.get("translations/locales/" + this.getLocale().key, {
+                jsApps: neededJsApps
+            });
 
             // If we have a valid cache, let's just update translations in it.
             if (i18nCache) {
-                _.each(response.getData('translations'), (translations, jsApp) => i18nCache.translations[jsApp] = translations);
+                _.each(
+                    response.getData("translations"),
+                    (translations, jsApp) => (i18nCache.translations[jsApp] = translations)
+                );
             } else {
                 // Otherwise, define it directly with data received in response.
                 i18nCache = response.getData();
@@ -144,18 +153,18 @@ class I18n {
             });
 
             // Update the cache.
-            await Webiny.IndexedDB.set('Webiny.I18n', i18nCache);
+            await Webiny.IndexedDB.set("Webiny.I18n", i18nCache);
         }
 
         // Let's store all keys/translations into I18N - data is flatten, meaning we don't have structure received from server anymore).
         _.each(i18nCache.translations, jsApps => {
-            _.each(jsApps, translations => this.mergeTranslations(translations))
+            _.each(jsApps, translations => this.mergeTranslations(translations));
         });
 
         // Finally, let's set i18n cookie, this constantly prolongs cookie expiration.
-        Webiny.Cookies.set('webiny-i18n', this.getLocale().key, {expires: 30});
+        Webiny.Cookies.set("webiny-i18n", this.getLocale().key, { expires: 30 });
         Webiny.Http.addRequestInterceptor(http => {
-            http.addHeader('X-Webiny-I18n', this.getLocale().key);
+            http.addHeader("X-Webiny-I18n", this.getLocale().key);
         });
 
         return this;
@@ -166,8 +175,8 @@ class I18n {
      * @param locale
      */
     setLocaleAndReload(locale) {
-        Webiny.IndexedDB.remove('Webiny.I18n');
-        Webiny.Cookies.set('webiny-i18n', locale, {expires: 30});
+        Webiny.IndexedDB.remove("Webiny.I18n");
+        Webiny.Cookies.set("webiny-i18n", locale, { expires: 30 });
         location.reload();
     }
 
@@ -190,7 +199,7 @@ class I18n {
      * @param outputFormat
      * @param inputFormat
      */
-    date(value, outputFormat = null, inputFormat = 'Y-m-dTH:i:sO') {
+    date(value, outputFormat = null, inputFormat = "Y-m-dTH:i:sO") {
         if (!outputFormat) {
             outputFormat = this.getDateFormat();
         }
@@ -199,7 +208,7 @@ class I18n {
             try {
                 value = fecha.parse(value, this.convertPhpToJsDateTimeFormat(inputFormat));
             } catch (e) {
-                value = fecha.parse(value, 'X');
+                value = fecha.parse(value, "X");
             }
         }
 
@@ -213,7 +222,7 @@ class I18n {
      * @param outputFormat
      * @param inputFormat
      */
-    time(value, outputFormat = null, inputFormat = 'Y-m-dTH:i:sO') {
+    time(value, outputFormat = null, inputFormat = "Y-m-dTH:i:sO") {
         if (!outputFormat) {
             outputFormat = this.getTimeFormat();
         }
@@ -222,7 +231,7 @@ class I18n {
             try {
                 value = fecha.parse(value, this.convertPhpToJsDateTimeFormat(inputFormat));
             } catch (e) {
-                value = fecha.parse(value, 'X');
+                value = fecha.parse(value, "X");
             }
         }
 
@@ -236,7 +245,7 @@ class I18n {
      * @param outputFormat
      * @param inputFormat
      */
-    datetime(value, outputFormat = null, inputFormat = 'Y-m-dTH:i:sO') {
+    datetime(value, outputFormat = null, inputFormat = "Y-m-dTH:i:sO") {
         if (!outputFormat) {
             outputFormat = this.getDatetimeFormat();
         }
@@ -245,7 +254,7 @@ class I18n {
             try {
                 value = fecha.parse(value, this.convertPhpToJsDateTimeFormat(inputFormat));
             } catch (e) {
-                value = fecha.parse(value, 'X');
+                value = fecha.parse(value, "X");
             }
         }
 
@@ -266,10 +275,17 @@ class I18n {
 
         // Let's convert Webiny format to accounting.
         let format = outputFormat.format;
-        format = format.replace('{symbol}', '%s');
-        format = format.replace('{amount}', '%v');
+        format = format.replace("{symbol}", "%s");
+        format = format.replace("{amount}", "%v");
 
-        return accounting.formatMoney(value, outputFormat.symbol, outputFormat.precision, outputFormat.thousand, outputFormat.decimal, format);
+        return accounting.formatMoney(
+            value,
+            outputFormat.symbol,
+            outputFormat.precision,
+            outputFormat.thousand,
+            outputFormat.decimal,
+            format
+        );
     }
 
     /**
@@ -283,7 +299,12 @@ class I18n {
         } else {
             outputFormat = _.assign({}, this.defaultFormats.number, outputFormat);
         }
-        return accounting.formatNumber(value, outputFormat.precision, outputFormat.thousand, outputFormat.decimal);
+        return accounting.formatNumber(
+            value,
+            outputFormat.precision,
+            outputFormat.thousand,
+            outputFormat.decimal
+        );
     }
 
     /**
@@ -309,7 +330,7 @@ class I18n {
      * @returns {*|string}
      */
     getTranslation(key) {
-        return this.translations[key] || '';
+        return this.translations[key] || "";
     }
 
     /**
@@ -366,9 +387,12 @@ class I18n {
     /**
      * Returns a list of all available locales.
      */
-    async getLocales(query = {_fields: 'id,key,label,enabled'}) {
-        const response = await new Webiny.Api.Endpoint('/entities/webiny/i18n-locales').get(null, query);
-        this.locales.list = response.getData('list');
+    async getLocales(query = { _fields: "id,key,label,enabled" }) {
+        const response = await new Webiny.Api.Endpoint("/entities/webiny/i18n-locales").get(
+            null,
+            query
+        );
+        this.locales.list = response.getData("list");
         return this.locales.list;
     }
 
@@ -383,9 +407,12 @@ class I18n {
     /**
      * Returns a list of all available text groups.
      */
-    async getTextGroups(query = {_fields: 'id,app,name,description'}) {
-        const response = await new Webiny.Api.Endpoint('/entities/webiny/i18n-text-groups').get(null, query);
-        this.locales.list = response.getData('list');
+    async getTextGroups(query = { _fields: "id,app,name,description" }) {
+        const response = await new Webiny.Api.Endpoint("/entities/webiny/i18n-text-groups").get(
+            null,
+            query
+        );
+        this.locales.list = response.getData("list");
         return this.locales.list;
     }
 
@@ -448,35 +475,43 @@ class I18n {
      * Returns current format to be used when outputting dates.
      */
     getDateFormat() {
-        return _.get(this.locales.current, 'formats.date', this.defaultFormats.date);
+        return _.get(this.locales.current, "formats.date", this.defaultFormats.date);
     }
 
     /**
      * Returns current format to be used when outputting time.
      */
     getTimeFormat() {
-        return _.get(this.locales.current, 'formats.time', this.defaultFormats.time);
+        return _.get(this.locales.current, "formats.time", this.defaultFormats.time);
     }
 
     /**
      * Returns current format to be used when outputting date/time.
      */
     getDatetimeFormat() {
-        return _.get(this.locales.current, 'formats.datetime', this.defaultFormats.datetime);
+        return _.get(this.locales.current, "formats.datetime", this.defaultFormats.datetime);
     }
 
     /**
      * Returns current format to be used when outputting prices.
      */
     getPriceFormat() {
-        return _.assign({}, this.defaultFormats.price, _.get(this.locales.current, 'formats.price', {}));
+        return _.assign(
+            {},
+            this.defaultFormats.price,
+            _.get(this.locales.current, "formats.price", {})
+        );
     }
 
     /**
      * Returns current format to be used when outputting numbers.
      */
     getNumberFormat() {
-        return _.assign({}, this.defaultFormats.number, _.get(this.locales.current, 'formats.number', {}));
+        return _.assign(
+            {},
+            this.defaultFormats.number,
+            _.get(this.locales.current, "formats.number", {})
+        );
     }
 
     /**
@@ -486,7 +521,7 @@ class I18n {
      * @returns {string}
      */
     getTextKey(namespace, base) {
-        return namespace + '.' + md5(base);
+        return namespace + "." + md5(base);
     }
 
     /**
@@ -496,7 +531,7 @@ class I18n {
      * @returns {string}
      */
     convertPhpToJsDateTimeFormat(format) {
-        let output = '';
+        let output = "";
         for (let i = 0; i < format.length; i++) {
             const current = format[i];
             output += PhpJsMap[current] && PhpJsMap[current][0] ? PhpJsMap[current][0] : current;
@@ -513,12 +548,12 @@ class I18n {
      */
     processTextPart(part, values) {
         // If not a variable, but an ordinary text, just return it, we don't need to do any extra processing with it.
-        if (!_.startsWith(part, '{')) {
+        if (!_.startsWith(part, "{")) {
             return part;
         }
 
-        part = _.trim(part, '{}');
-        part = part.split('|');
+        part = _.trim(part, "{}");
+        part = part.split("|");
 
         let [variable, modifier] = part;
 
@@ -527,12 +562,12 @@ class I18n {
         }
 
         // Check if we have received {value: ..., format: ...} object.
-        const output = {value: values[variable], format: null};
+        const output = { value: values[variable], format: null };
 
         // If variable value is an object, the it must have 'value' key set.
         // We must also be sure we are not dealing with React component.
         if (_.isPlainObject(output.value) && !React.isValidElement(output.value)) {
-            if (!_.has(output.value, 'value')) {
+            if (!_.has(output.value, "value")) {
                 throw Error(`Key "value" is missing for variable {${variable}}.`);
             }
 
@@ -545,11 +580,11 @@ class I18n {
         }
 
         if (modifier) {
-            let parameters = modifier.split(':');
+            let parameters = modifier.split(":");
             let name = parameters.shift();
             if (this.modifiers[name]) {
                 const modifier = this.modifiers[name];
-                output.value = modifier.execute('' + output.value, parameters);
+                output.value = modifier.execute("" + output.value, parameters);
             }
         }
 
@@ -586,11 +621,13 @@ class I18n {
         const parts = text.split(/(\{.*?\})/);
 
         if (stringOutput) {
-            return parts.reduce((carry, part) => carry + this.processTextPart(part, values), '');
+            return parts.reduce((carry, part) => carry + this.processTextPart(part, values), "");
         }
 
         // Let's create a JSX output
-        return parts.map((part, index) => <webiny-i18n-part key={index}>{this.processTextPart(part, values)}</webiny-i18n-part>);
+        return parts.map((part, index) => (
+            <webiny-i18n-part key={index}>{this.processTextPart(part, values)}</webiny-i18n-part>
+        ));
     }
 
     toText(element) {
@@ -598,12 +635,12 @@ class I18n {
             return element;
         }
 
-        if (Webiny.elementHasFlag(element, 'i18n')) {
+        if (Webiny.elementHasFlag(element, "i18n")) {
             const props = element.props;
             return this.translate(props.base, props.variables, props.textKey);
         }
 
-        return '';
+        return "";
     }
 
     /**
@@ -614,9 +651,8 @@ class I18n {
      * @returns {XML}
      */
     render(textKey, base, variables) {
-        return React.createElement(this.component, {textKey, base, variables});
+        return React.createElement(this.component, { textKey, base, variables });
     }
-
 }
 
 export default new I18n();

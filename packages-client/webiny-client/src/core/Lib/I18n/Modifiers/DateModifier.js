@@ -1,12 +1,12 @@
-import Webiny from './../../../Webiny';
+import { Webiny } from "./../../../../index";
 
 class DateModifier {
     getName() {
-        return 'date';
+        return "date";
     }
 
     execute(value) {
-        return Webiny.I18n.date(value)
+        return Webiny.I18n.date(value);
     }
 }
 

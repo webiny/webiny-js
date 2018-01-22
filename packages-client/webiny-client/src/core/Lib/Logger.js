@@ -1,7 +1,7 @@
-import _ from 'lodash';
-import $ from 'jquery';
-import Webiny from './Webiny';
-import platform from 'platform';
+import _ from "lodash";
+import $ from "jquery";
+import { Webiny } from "./../../index";
+import platform from "platform";
 
 class Logger {
     constructor() {
@@ -26,7 +26,7 @@ class Logger {
     errorHandler() {
         // javascript system errors
         window.onerror = (msg, url, line, columnNo, error) => {
-            this.reportError('js', msg, error.stack);
+            this.reportError("js", msg, error.stack);
         };
 
         // API response errors
@@ -35,17 +35,22 @@ class Logger {
                 // we want to log only responses that are not valid JSON objects
                 // 5xx response with a valid JSON object is probably an expected exception
                 try {
-                    if (typeof response.data === 'string') {
+                    if (typeof response.data === "string") {
                         JSON.parse(response.data);
                     }
 
                     // if the status code is 503 and has errorCode of w1, it's a PHP error (this is caught by PHP logger)
                     // in that case we just want to inform the user with a growl notification
-                    if (response.status === 503 && response.data.code === 'W1') {
-                        Webiny.Growl.danger(response.data.message, 'System Error', false, 10000);
+                    if (response.status === 503 && response.data.code === "W1") {
+                        Webiny.Growl.danger(response.data.message, "System Error", false, 10000);
                     }
                 } catch (e) {
-                    this.reportError('api', response.data, response.request.body, response.request.method + ' ' + response.request.url);
+                    this.reportError(
+                        "api",
+                        response.data,
+                        response.request.body,
+                        response.request.method + " " + response.request.url
+                    );
                 }
             }
 
@@ -56,7 +61,7 @@ class Logger {
     reportError(type, msg, stack, url = null) {
         const date = new Date();
         const errorHash = this.hashString(msg + url);
-        url = (_.isNull(url) ? location.href : url);
+        url = _.isNull(url) ? location.href : url;
 
         if (this.errorHashMap.indexOf(errorHash) < 0) {
             this.errors.push({
@@ -94,9 +99,9 @@ class Logger {
         if (this.errors.length > 0) {
             this.stopInterval();
             $.ajax({
-                method: 'POST',
-                url: Webiny.Config.Api.Url + '/entities/webiny/logger-error-group/save-report',
-                data: {errors: this.errors, client: this.clientInfo}
+                method: "POST",
+                url: Webiny.Config.Api.Url + "/entities/webiny/logger-error-group/save-report",
+                data: { errors: this.errors, client: this.clientInfo }
             }).done(() => {
                 this.errors = [];
                 this.errorHashMap = [];
@@ -112,7 +117,7 @@ class Logger {
         }
         for (let i = 0; i < str.length; i++) {
             const char = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
+            hash = (hash << 5) - hash + char;
             hash = hash & hash; // Convert to 32bit integer
         }
         return hash;

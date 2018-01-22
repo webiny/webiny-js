@@ -1,21 +1,27 @@
-import React from 'react';
-import _ from 'lodash';
-import Webiny from './../../Webiny';
+import React from "react";
+import _ from "lodash";
+import { Webiny } from "./../../../index";
 
 class Auth {
     constructor() {
-        this.loginRoute = 'Login';
-        this.forbiddenRoute = 'Forbidden';
+        this.loginRoute = "Login";
+        this.forbiddenRoute = "Forbidden";
         this.routerEvent = null;
     }
 
     init() {
-        Webiny.Router.addRoute(new Webiny.Route(this.loginRoute, '/login', this.renderLogin(), 'Login').setLayout('empty'));
-        Webiny.Router.addRoute(new Webiny.Route(this.forbiddenRoute, '/forbidden', this.renderForbidden(), 'Forbidden'));
+        Webiny.Router.addRoute(
+            new Webiny.Route(this.loginRoute, "/login", this.renderLogin(), "Login").setLayout(
+                "empty"
+            )
+        );
+        Webiny.Router.addRoute(
+            new Webiny.Route(this.forbiddenRoute, "/forbidden", this.renderForbidden(), "Forbidden")
+        );
 
         Webiny.Router.onBeforeStart(routerEvent => {
             Webiny.Http.addRequestInterceptor(http => {
-                http.addHeader('X-Webiny-Authorization', Webiny.Cookies.get(this.getCookieName()));
+                http.addHeader("X-Webiny-Authorization", Webiny.Cookies.get(this.getCookieName()));
             });
 
             // Watch if we got a forbidden request - then log out
@@ -44,7 +50,7 @@ class Auth {
     checkUser(routerEvent) {
         this.routerEvent = routerEvent;
 
-        if (Webiny.Model.get('User')) {
+        if (Webiny.Model.get("User")) {
             return this.checkRouteRole(routerEvent);
         }
 
@@ -60,22 +66,28 @@ class Auth {
     }
 
     checkRouteRole(routerEvent) {
-        if (_.has(routerEvent.route, 'role')) {
-            return new Promise((resolve) => {
-                const user = Webiny.Model.get('User');
+        if (_.has(routerEvent.route, "role")) {
+            return new Promise(resolve => {
+                const user = Webiny.Model.get("User");
 
-                if (user && _.isArray(routerEvent.route.role) && this.hasRole(routerEvent.route.role)) {
+                if (
+                    user &&
+                    _.isArray(routerEvent.route.role) &&
+                    this.hasRole(routerEvent.route.role)
+                ) {
                     return resolve(routerEvent);
                 }
 
                 if (user && _.isFunction(routerEvent.route.role)) {
-                    return Promise.resolve(routerEvent.route.role(routerEvent.route)).then(allowed => {
-                        if (!allowed) {
-                            routerEvent.stop();
-                            routerEvent.goToRoute(this.forbiddenRoute);
+                    return Promise.resolve(routerEvent.route.role(routerEvent.route)).then(
+                        allowed => {
+                            if (!allowed) {
+                                routerEvent.stop();
+                                routerEvent.goToRoute(this.forbiddenRoute);
+                            }
+                            resolve(routerEvent);
                         }
-                        resolve(routerEvent);
-                    });
+                    );
                 }
 
                 routerEvent.stop();
@@ -93,10 +105,10 @@ class Auth {
      * @returns {*}
      */
     goToLogin(routerEvent) {
-        const isLoginRoute = _.get(routerEvent.route, 'name') === this.loginRoute;
+        const isLoginRoute = _.get(routerEvent.route, "name") === this.loginRoute;
 
         if (!isLoginRoute) {
-            Webiny.LocalStorage.set('loginRedirect', window.location.href);
+            Webiny.LocalStorage.set("loginRedirect", window.location.href);
             routerEvent.stop();
             routerEvent.goToRoute(this.loginRoute);
         }
@@ -118,15 +130,15 @@ class Auth {
      * @returns {boolean}
      */
     isAuthorized(user) {
-        if (!!_.find(user.roles, {slug: 'administrator'})) {
+        if (_.find(user.roles, { slug: "administrator" })) {
             return true;
         }
 
-        return !!_.find(user.roleGroups, rg => !!_.find(rg.roles, {slug: 'administrator'}));
+        return !!_.find(user.roleGroups, rg => !!_.find(rg.roles, { slug: "administrator" }));
     }
 
     getUserFields() {
-        return '*,roles.slug,roleGroups[id,name,roles.slug],gravatar';
+        return "*,roles.slug,roleGroups[id,name,roles.slug],gravatar";
     }
 
     /**
@@ -135,9 +147,11 @@ class Auth {
      * @returns Promise
      */
     getUser() {
-        return this.getApiEndpoint().get('/me', {_fields: this.getUserFields()}).then(apiResponse => {
-            return Promise.resolve(this.verifyUser(apiResponse)).then(() => apiResponse);
-        });
+        return this.getApiEndpoint()
+            .get("/me", { _fields: this.getUserFields() })
+            .then(apiResponse => {
+                return Promise.resolve(this.verifyUser(apiResponse)).then(() => apiResponse);
+            });
     }
 
     /**
@@ -145,12 +159,12 @@ class Auth {
      * @returns {string}
      */
     getCookieName() {
-        return 'webiny-token';
+        return "webiny-token";
     }
 
     getApiEndpoint() {
         if (!this.authApi) {
-            this.authApi = new Webiny.Api.Endpoint('/entities/webiny/users')
+            this.authApi = new Webiny.Api.Endpoint("/entities/webiny/users");
         }
         return this.authApi;
     }
@@ -161,7 +175,7 @@ class Auth {
 
     logout(redirect = true) {
         let logout = Promise.resolve().then(() => {
-            Webiny.Model.set('User', null);
+            Webiny.Model.set("User", null);
             Webiny.Cookies.remove(this.getCookieName());
         });
 
@@ -189,7 +203,7 @@ class Auth {
             this.routerEvent && this.routerEvent.stop();
             return this.logout();
         }
-        Webiny.Model.set('User', data);
+        Webiny.Model.set("User", data);
     }
 
     /**
@@ -201,7 +215,7 @@ class Auth {
             role = [role];
         }
 
-        const user = Webiny.Model.get('User');
+        const user = Webiny.Model.get("User");
         // First check user roles
         let hasRole = _.find(user.roles, r => role.indexOf(r.slug) > -1);
         if (!hasRole) {

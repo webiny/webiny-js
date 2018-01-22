@@ -1,12 +1,12 @@
-import Webiny from './../../../Webiny';
+import { Webiny } from "./../../../../index";
 
 class PriceModifier {
     getName() {
-        return 'price';
+        return "price";
     }
 
     execute(value) {
-        return Webiny.I18n.price(value)
+        return Webiny.I18n.price(value);
     }
 }
 

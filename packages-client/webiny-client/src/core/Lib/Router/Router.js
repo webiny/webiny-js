@@ -1,28 +1,27 @@
-import _ from 'lodash';
-import $ from 'jquery';
-import Webiny from './../../Webiny';
-import RouterEvent from './RouterEvent';
-import Utils from './RouterUtils';
-import Dispatcher from './../Core/Dispatcher';
-import 'jquery-deparam';
-import createBrowserHistory from 'history/createBrowserHistory';
-import anchorClickHandler from './AnchorClickHandler';
+import _ from "lodash";
+import $ from "jquery";
+import { Webiny } from "./../../../index";
+import RouterEvent from "./RouterEvent";
+import Utils from "./RouterUtils";
+import Dispatcher from "./../Core/Dispatcher";
+import "jquery-deparam";
+import createBrowserHistory from "history/createBrowserHistory";
+import anchorClickHandler from "./AnchorClickHandler";
 
 /**
  * ROUTER
  * Router class is responsible for HTML5 URLs and serving view components
  */
 class Router {
-
     constructor() {
         this.baseUrl = null;
-        this.appUrl = '';
+        this.appUrl = "";
         this.history = null;
         this.routes = [];
         this.defaultComponents = {};
         this.layouts = {};
         this.defaultRoute = null; // If router didn't match anything, it will reroute here
-        this.titlePattern = '%s';
+        this.titlePattern = "%s";
         this.activeRoute = null;
         this.beforeStart = [];
         this.routeWillChange = [];
@@ -58,16 +57,16 @@ class Router {
         if (!this.started) {
             this.started = true;
             const $this = this;
-            $(document).on('click', 'a', function handleClick(e) {
+            $(document).on("click", "a", function handleClick(e) {
                 $this.anchorClickHandler($this, this, e);
             });
 
             this.history.listen(location => {
                 this.activeRoute = null;
                 let url = location.pathname;
-                url = url.replace(this.appUrl, '');
-                if (url === '') {
-                    url = '/';
+                url = url.replace(this.appUrl, "");
+                if (url === "") {
+                    url = "/";
                 }
 
                 if (!url.startsWith(this.baseUrl)) {
@@ -79,22 +78,24 @@ class Router {
                 }
 
                 this.activeRoute = matched;
-                if (_.get(this.history, 'location.state.title')) {
-                    this.activeRoute.setTitle(_.get(this.history, 'location.state.title'));
+                if (_.get(this.history, "location.state.title")) {
+                    this.activeRoute.setTitle(_.get(this.history, "location.state.title"));
                 }
 
-                Utils.routeWillChange(matched, this.routeWillChange).then(routerEvent => {
-                    if (!routerEvent.isStopped()) {
-                        Utils.renderRoute(matched).then(route => {
-                            Dispatcher.dispatch('RouteChanged', new RouterEvent(route));
-                        });
-                    }
-                }).catch(Utils.exceptionHandler);
+                Utils.routeWillChange(matched, this.routeWillChange)
+                    .then(routerEvent => {
+                        if (!routerEvent.isStopped()) {
+                            Utils.renderRoute(matched).then(route => {
+                                Dispatcher.dispatch("RouteChanged", new RouterEvent(route));
+                            });
+                        }
+                    })
+                    .catch(Utils.exceptionHandler);
             });
 
             // Listen for "RouteChanged" event and process callbacks
-            Dispatcher.on('RouteChanged', (event) => {
-                if (_.isNumber(_.get(this.history, 'location.state.scrollY'))) {
+            Dispatcher.on("RouteChanged", event => {
+                if (_.isNumber(_.get(this.history, "location.state.scrollY"))) {
                     window.scrollTo(0, this.history.location.state.scrollY);
                 } else {
                     window.scrollTo(0, 0);
@@ -117,9 +118,11 @@ class Router {
         const routerEvent = new RouterEvent(matchedRoute, true);
         let beforeStartChain = Promise.resolve(routerEvent);
         this.beforeStart.forEach(callback => {
-            beforeStartChain = beforeStartChain.then(() => {
-                return callback(routerEvent);
-            }).catch(Utils.exceptionHandler);
+            beforeStartChain = beforeStartChain
+                .then(() => {
+                    return callback(routerEvent);
+                })
+                .catch(Utils.exceptionHandler);
         });
 
         beforeStartChain = beforeStartChain.then(() => {
@@ -128,7 +131,7 @@ class Router {
                     return Utils.handleRouteNotMatched(url, this.routeNotMatched);
                 }
                 Utils.renderRoute(routerEvent.route).then(route => {
-                    Dispatcher.dispatch('RouteChanged', new RouterEvent(route, true));
+                    Dispatcher.dispatch("RouteChanged", new RouterEvent(route, true));
                 });
             } else {
                 if (routerEvent.goTo !== null) {
@@ -183,7 +186,11 @@ class Router {
 
     getLayout(name) {
         if (!_.has(this.layouts, name)) {
-            console.warn('Layout "' + name + '" not found in Webiny.Router! Make sure you have registered your layout before using it.');
+            console.warn(
+                'Layout "' +
+                    name +
+                    '" not found in Webiny.Router! Make sure you have registered your layout before using it.'
+            );
         }
         return this.layouts[name] || null;
     }
@@ -198,7 +205,7 @@ class Router {
     }
 
     addRoute(route) {
-        const index = _.findIndex(this.routes, {name: route.name});
+        const index = _.findIndex(this.routes, { name: route.name });
         if (index > -1) {
             this.routes[index] = route;
         } else {
@@ -208,7 +215,7 @@ class Router {
     }
 
     deleteRoute(name) {
-        const index = _.findIndex(this.routes, {name});
+        const index = _.findIndex(this.routes, { name });
         if (index > -1) {
             this.routes.splice(index, 1);
         }
@@ -216,11 +223,11 @@ class Router {
     }
 
     routeExists(name) {
-        return !!_.find(this.routes, {name});
+        return !!_.find(this.routes, { name });
     }
 
     getRoute(name) {
-        const route = _.find(this.routes, {name});
+        const route = _.find(this.routes, { name });
         if (!route) {
             return false;
         }
@@ -228,7 +235,7 @@ class Router {
     }
 
     getRouteByPattern(pattern) {
-        const route = _.find(this.routes, {pattern});
+        const route = _.find(this.routes, { pattern });
         if (!route) {
             return false;
         }
@@ -244,7 +251,7 @@ class Router {
     }
 
     setQueryParams(params) {
-        this.goToRoute('current', params);
+        this.goToRoute("current", params);
     }
 
     getHref(params = {}) {
@@ -253,7 +260,7 @@ class Router {
 
     goToRoute(route, params = {}, options = {}) {
         if (_.isString(route)) {
-            route = route !== 'current' ? _.find(this.routes, {name: route}) : this.activeRoute;
+            route = route !== "current" ? _.find(this.routes, { name: route }) : this.activeRoute;
         }
 
         if (!route) {
@@ -261,7 +268,7 @@ class Router {
         }
 
         if (route === this.activeRoute && _.isEqual(params, this.activeRoute.getParams())) {
-            console.warn('Route will not change!');
+            console.warn("Route will not change!");
             return null;
         }
         return this.goToUrl(route.getHref(params, null), false, options);
@@ -273,7 +280,7 @@ class Router {
 
     goToUrl(url, replace = false, options = {}) {
         // Strip app URL if present
-        url = url.replace(this.appUrl, '');
+        url = url.replace(this.appUrl, "");
         if (url.indexOf(this.baseUrl) !== 0) {
             url = this.baseUrl + url;
         }
@@ -312,7 +319,7 @@ class Router {
     }
 
     setTitle(title) {
-        Webiny.Page.setTitle(this.getTitlePattern().replace('%s', title));
+        Webiny.Page.setTitle(this.getTitlePattern().replace("%s", title));
     }
 
     setTitlePattern(pattern) {
@@ -353,11 +360,11 @@ class Router {
             if (value === 1) {
                 sort.push(field);
             } else {
-                sort.push('-' + field);
+                sort.push("-" + field);
             }
         });
-        return sort.length ? sort.join(',') : null;
+        return sort.length ? sort.join(",") : null;
     }
 }
 
-export default new Router;
+export default new Router();

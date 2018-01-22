@@ -1,10 +1,9 @@
-import React from 'react';
-import _ from 'lodash';
-import Webiny from './../../Webiny';
-import Menu from './Menu';
+import React from "react";
+import _ from "lodash";
+import { Webiny } from "./../../../index";
+import Menu from "./Menu";
 
 class Module {
-
     /**
      * Instantiate a module of given app instance
      * @param app
@@ -51,12 +50,12 @@ class Module {
     }
 
     registerMenus(...menus) {
-        _.each(menus, menu => Menu.add(React.cloneElement(menu, {apps: [this.app.name]})));
+        _.each(menus, menu => Menu.add(React.cloneElement(menu, { apps: [this.app.name] })));
         return this;
     }
 
     registerDefaultLayout(component) {
-        this.registerLayout('default', component);
+        this.registerLayout("default", component);
         return this;
     }
 

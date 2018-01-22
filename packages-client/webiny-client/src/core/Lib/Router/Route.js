@@ -1,11 +1,11 @@
-import React from 'react';
-import _ from 'lodash';
-import $ from 'jquery';
-import Webiny from './../../Webiny';
-import Router from './Router';
+import React from "react";
+import _ from "lodash";
+import $ from "jquery";
+import { Webiny } from "./../../../index";
+import Router from "./Router";
 
 class Route {
-    constructor(name, pattern, components, title = '') {
+    constructor(name, pattern, components, title = "") {
         this.name = name;
         this.pattern = pattern;
         this.components = Route.normalizeComponents(components);
@@ -17,20 +17,20 @@ class Route {
         const params = pattern.match(this.namedParam);
         if (params) {
             params.forEach(item => {
-                this.paramNames.push(item.replace(':', ''));
+                this.paramNames.push(item.replace(":", ""));
             });
         }
 
         const splatParams = pattern.match(this.splatParam);
         if (splatParams) {
             splatParams.forEach(item => {
-                this.paramNames.push(item.replace('*', ''));
+                this.paramNames.push(item.replace("*", ""));
             });
         }
 
         // Build route regex
-        const regex = pattern.replace(this.namedParam, '([^\/]+)').replace(this.splatParam, '(.*?)');
-        this.regex = new RegExp('^' + regex + '$');
+        const regex = pattern.replace(this.namedParam, "([^/]+)").replace(this.splatParam, "(.*?)");
+        this.regex = new RegExp("^" + regex + "$");
     }
 
     match(url) {
@@ -79,16 +79,16 @@ class Route {
 
         // Build main URL
         this.paramNames.forEach(param => {
-            url = url.replace(':' + param, newParams[param]);
+            url = url.replace(":" + param, newParams[param]);
             delete newParams[param];
         });
 
         // Build query string from the remaining params
         if (Object.keys(newParams).length > 0) {
-            url += '?' + $.param(newParams);
+            url += "?" + $.param(newParams);
         }
 
-        return _.trimEnd(Router.getBaseUrl(), '/') + url;
+        return _.trimEnd(Router.getBaseUrl(), "/") + url;
     }
 
     getPattern() {
@@ -137,7 +137,7 @@ class Route {
         }
 
         if (_.isFunction(components)) {
-            output['Content'] = components;
+            output["Content"] = components;
         }
 
         _.each(components, (component, placeholder) => {
@@ -177,7 +177,7 @@ class Route {
 
     setRole(role) {
         if (_.isString(role)) {
-            role = role.split(',');
+            role = role.split(",");
         }
         this.role = role;
         return this;
@@ -199,15 +199,18 @@ class Route {
             return components;
         }
 
-        if (components.prototype instanceof Webiny.Ui.Component || React.isValidElement(components)) {
-            return {Content: components};
+        if (
+            components.prototype instanceof Webiny.Ui.Component ||
+            React.isValidElement(components)
+        ) {
+            return { Content: components };
         }
 
         return components;
     }
 }
 
-Route.prototype.layout = 'default';
+Route.prototype.layout = "default";
 Route.prototype.module = false;
 Route.prototype.namedParam = /:\w+/g;
 Route.prototype.splatParam = /\*\w+/g;

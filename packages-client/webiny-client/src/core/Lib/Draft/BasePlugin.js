@@ -1,18 +1,18 @@
-import _ from 'lodash';
-import Immutable from 'immutable';
-import Webiny from './../../Webiny';
+import _ from "lodash";
+import Immutable from "immutable";
+import { Webiny } from "./../../../index";
 
 function filterKey(contentState, entityKey) {
     if (entityKey) {
         const entity = contentState.getEntity(entityKey);
-        return entity.getMutability() === 'MUTABLE' ? entityKey : null;
+        return entity.getMutability() === "MUTABLE" ? entityKey : null;
     }
     return null;
 }
 
 class BasePlugin {
     constructor(config = {}) {
-        this.name = '';
+        this.name = "";
         this.config = config;
         this.editor = null;
         this.Draft = null;
@@ -43,16 +43,20 @@ class BasePlugin {
     // function borrowed from: https://github.com/draft-js-plugins/draft-js-plugins/blob/master/draft-js-dnd-plugin/src/modifiers/addBlock.js
     insertDataBlock(editorState, insertData = null) {
         const Draft = this.Draft;
-        let type = 'unstyled';
+        let type = "unstyled";
         let currentContentState = editorState.getCurrentContent();
         let currentSelectionState = editorState.getSelection();
 
         // in case text is selected it is removed and then the block is appended
-        const afterRemovalContentState = Draft.Modifier.removeRange(currentContentState, currentSelectionState, 'backward');
+        const afterRemovalContentState = Draft.Modifier.removeRange(
+            currentContentState,
+            currentSelectionState,
+            "backward"
+        );
 
         // deciding on the position to split the text
         const targetSelection = afterRemovalContentState.getSelectionAfter();
-        const blockKeyForTarget = targetSelection.get('focusKey');
+        const blockKeyForTarget = targetSelection.get("focusKey");
         const block = currentContentState.getBlockForKey(blockKeyForTarget);
         let insertionTargetSelection;
         let insertionTargetBlock;
@@ -67,7 +71,10 @@ class BasePlugin {
             insertionTargetBlock = afterRemovalContentState;
         } else {
             // the only way to insert a new seems to be by splitting an existing in two
-            insertionTargetBlock = Draft.Modifier.splitBlock(afterRemovalContentState, targetSelection);
+            insertionTargetBlock = Draft.Modifier.splitBlock(
+                afterRemovalContentState,
+                targetSelection
+            );
             // the position to insert our blocks
             insertionTargetSelection = insertionTargetBlock.getSelectionAfter();
         }
@@ -77,13 +84,17 @@ class BasePlugin {
         if (insertData) {
             // creating a new ContentBlock including the entity with data
             // Entity will be created with a specific type, if defined, else will fall back to the ContentBlock type
-            const {text, data, entity} = insertData;
+            const { text, data, entity } = insertData;
             let characterList = Immutable.List();
             type = insertData.type;
             if (entity) {
-                currentContentState = currentContentState.createEntity(entity.type || type, entity.mutability, entity.data);
+                currentContentState = currentContentState.createEntity(
+                    entity.type || type,
+                    entity.mutability,
+                    entity.data
+                );
                 const entityKey = currentContentState.getLastCreatedEntityKey();
-                const charData = Draft.CharacterMetadata.create({entity: entityKey});
+                const charData = Draft.CharacterMetadata.create({ entity: entityKey });
                 characterList = Immutable.List(Immutable.Repeat(charData, text.length || 1));
             }
 
@@ -102,29 +113,47 @@ class BasePlugin {
         fragmentArray.push(
             new Draft.ContentBlock({
                 key: Draft.genKey(),
-                type: 'unstyled',
-                text: '',
+                type: "unstyled",
+                text: "",
                 characterList: Immutable.List()
             })
         );
 
-        const newContentStateAfterSplit = Draft.Modifier.setBlockType(insertionTargetBlock, insertionTargetSelection, type);
+        const newContentStateAfterSplit = Draft.Modifier.setBlockType(
+            insertionTargetBlock,
+            insertionTargetSelection,
+            type
+        );
         // create fragment containing the two content blocks
         const fragment = Draft.BlockMapBuilder.createFromArray(fragmentArray);
         // replace the content block we reserved for our insert
-        const contentStateWithBlock = Draft.Modifier.replaceWithFragment(newContentStateAfterSplit, insertionTargetSelection, fragment);
+        const contentStateWithBlock = Draft.Modifier.replaceWithFragment(
+            newContentStateAfterSplit,
+            insertionTargetSelection,
+            fragment
+        );
         // update editor state with our new state including the block
-        const newState = Draft.EditorState.push(editorState, contentStateWithBlock, 'insert-fragment');
-        return Draft.EditorState.forceSelection(newState, contentStateWithBlock.getSelectionAfter());
+        const newState = Draft.EditorState.push(
+            editorState,
+            contentStateWithBlock,
+            "insert-fragment"
+        );
+        return Draft.EditorState.forceSelection(
+            newState,
+            contentStateWithBlock.getSelectionAfter()
+        );
     }
 
     getRangesForDraftEntity(block, key) {
         const ranges = [];
-        block.findEntityRanges(c => {
-            return c.getEntity() === key;
-        }, (start, end) => {
-            ranges.push({start, end});
-        });
+        block.findEntityRanges(
+            c => {
+                return c.getEntity() === key;
+            },
+            (start, end) => {
+                ranges.push({ start, end });
+            }
+        );
 
         return ranges;
     }
@@ -146,7 +175,8 @@ class BasePlugin {
         const startOffset = targetSelection.getStartOffset();
         const startBlock = contentState.getBlockForKey(startKey);
 
-        entityKey = startOffset === startBlock.getLength() ? null : startBlock.getEntityAt(startOffset);
+        entityKey =
+            startOffset === startBlock.getLength() ? null : startBlock.getEntityAt(startOffset);
 
         return filterKey(contentState, entityKey);
     }
@@ -159,7 +189,7 @@ class BasePlugin {
         const blockKey = block.getKey();
 
         let entitySelection;
-        this.getRangesForDraftEntity(block, entityKey).forEach((range) => {
+        this.getRangesForDraftEntity(block, entityKey).forEach(range => {
             if (range.start <= selectionOffset && selectionOffset <= range.end) {
                 entitySelection = new Draft.SelectionState({
                     anchorOffset: range.start,

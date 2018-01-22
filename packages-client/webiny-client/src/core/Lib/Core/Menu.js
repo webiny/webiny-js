@@ -1,6 +1,6 @@
-import _ from 'lodash';
-import React from 'react';
-import Webiny from './../../Webiny';
+import _ from "lodash";
+import React from "react";
+import { Webiny } from "./../../../index";
 
 function findMenuIndex(findIn, menu) {
     return _.findIndex(findIn, item => {
@@ -16,7 +16,7 @@ function mergeMenus(menu1, menu2) {
         return menu2;
     }
 
-    const omit = ['renderer', 'children', 'apps'];
+    const omit = ["renderer", "children", "apps"];
 
     // Create merged props object
     const newProps = _.merge({}, _.omit(menu1.props, omit), _.omit(menu2.props, omit));
@@ -29,7 +29,9 @@ function mergeMenus(menu1, menu2) {
         if (existingMenu > -1) {
             newChildren[existingMenu] = mergeMenus(newChildren[existingMenu], child);
         } else {
-            newChildren.push(React.cloneElement(child, {key: child.props.id || child.props.label}));
+            newChildren.push(
+                React.cloneElement(child, { key: child.props.id || child.props.label })
+            );
         }
     });
 
@@ -37,9 +39,13 @@ function mergeMenus(menu1, menu2) {
 }
 
 function sortMenus(menus, level = 0) {
-    menus = _.sortBy(menus, ['props.order', 'props.label']);
+    menus = _.sortBy(menus, ["props.order", "props.label"]);
     return menus.map(menu => {
-        return React.cloneElement(menu, _.assign({}, menu.props, {level}), sortMenus(React.Children.toArray(menu.props.children), level + 1));
+        return React.cloneElement(
+            menu,
+            _.assign({}, menu.props, { level }),
+            sortMenus(React.Children.toArray(menu.props.children), level + 1)
+        );
     });
 }
 
@@ -58,7 +64,7 @@ class Menu {
      */
     add(menu) {
         // Make sure we have a menu ID
-        menu = React.cloneElement(menu, {id: menu.props.id || menu.props.label});
+        menu = React.cloneElement(menu, { id: menu.props.id || menu.props.label });
 
         // If top-level menu already exists...
         const menuIndex = findMenuIndex(this.menu, menu);
@@ -86,4 +92,4 @@ class Menu {
     }
 }
 
-export default new Menu;
+export default new Menu();

@@ -1,12 +1,12 @@
-import Webiny from './../../Webiny';
-import _ from 'lodash';
-import $ from 'jquery';
-import HttpResponse from './Response';
+import { Webiny } from "./../../../index";
+import _ from "lodash";
+import $ from "jquery";
+import HttpResponse from "./Response";
 
 function formatResponse(jqXhr) {
     const headers = {};
-    _.filter(jqXhr.getAllResponseHeaders().split('\n')).map(item => {
-        const [key, value] = item.split(': ');
+    _.filter(jqXhr.getAllResponseHeaders().split("\n")).map(item => {
+        const [key, value] = item.split(": ");
         headers[key] = value;
     });
 
@@ -19,7 +19,6 @@ function formatResponse(jqXhr) {
 }
 
 class HttpRequest {
-
     constructor() {
         this.headers = {};
     }
@@ -27,7 +26,7 @@ class HttpRequest {
     getUrl() {
         let url = this.url;
         if (!_.isEmpty(this.query)) {
-            url += url.indexOf('?') > -1 ? '&' : '?';
+            url += url.indexOf("?") > -1 ? "&" : "?";
             url += $.param(this.query);
         }
         return url;
@@ -106,11 +105,11 @@ class HttpRequest {
     getXhr() {
         const xhr = new window.XMLHttpRequest();
         if (this.progress) {
-            xhr.upload.addEventListener('progress', this.progress, false);
+            xhr.upload.addEventListener("progress", this.progress, false);
         }
 
         if (this.downloadProgress) {
-            xhr.addEventListener('progress', this.downloadProgress, false);
+            xhr.addEventListener("progress", this.downloadProgress, false);
         }
 
         return xhr;
@@ -118,9 +117,10 @@ class HttpRequest {
 
     getRequestObject() {
         const headers = this.getHeaders();
-        const basicAuth = _.get(Webiny.Config, 'Api.BasicAuth', null);
+        const basicAuth = _.get(Webiny.Config, "Api.BasicAuth", null);
         if (basicAuth) {
-            headers['Authorization'] = 'Basic ' + btoa(basicAuth.Username + ':' + basicAuth.Password);
+            headers["Authorization"] =
+                "Basic " + btoa(basicAuth.Username + ":" + basicAuth.Password);
         }
 
         const config = {
@@ -129,12 +129,12 @@ class HttpRequest {
             headers,
             data: JSON.stringify(this.getBody()),
             dataType: this.getResponseType(),
-            contentType: 'application/json;charset=UTF-8',
+            contentType: "application/json;charset=UTF-8",
             processData: false,
             xhr: this.getXhr.bind(this)
         };
 
-        if (['put', 'post', 'patch'].indexOf(config.method) === -1) {
+        if (["put", "post", "patch"].indexOf(config.method) === -1) {
             delete config.data;
         }
 
@@ -164,11 +164,11 @@ class HttpRequest {
     }
 }
 
-HttpRequest.prototype.url = '';
-HttpRequest.prototype.method = 'get';
+HttpRequest.prototype.url = "";
+HttpRequest.prototype.method = "get";
 HttpRequest.prototype.query = null;
 HttpRequest.prototype.body = null;
-HttpRequest.prototype.responseType = 'json';
+HttpRequest.prototype.responseType = "json";
 HttpRequest.prototype.progress = _.noop;
 
 export default HttpRequest;

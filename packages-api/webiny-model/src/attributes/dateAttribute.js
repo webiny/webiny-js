@@ -7,6 +7,10 @@ class DateAttribute extends Attribute {
         !_.isDate(this.value.getCurrent()) &&
             this.expected("Date object", typeof this.value.getCurrent());
     }
+
+    setValue(value: Date | string | number) {
+        this.value.setCurrent(value);
+    }
 }
 
 export default DateAttribute;

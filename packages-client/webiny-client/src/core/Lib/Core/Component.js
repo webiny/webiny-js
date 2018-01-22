@@ -1,20 +1,19 @@
-import _ from 'lodash';
-import React from 'react';
-import isMobile from 'ismobilejs';
-import classNames from 'classnames';
-import Webiny from './../../Webiny';
-import LinkState from './LinkState';
-import Dispatcher from './Dispatcher';
+import _ from "lodash";
+import React from "react";
+import isMobile from "ismobilejs";
+import classNames from "classnames";
+import { Webiny } from "./../../../index";
+import LinkState from "./LinkState";
+import Dispatcher from "./Dispatcher";
 
 class Component extends React.Component {
-
     constructor(props) {
         super(props);
 
         this.__listeners = [];
         this.__cursors = [];
         this.__mounted = true;
-        this.bindMethods('bindTo', 'isRendered', 'i18n');
+        this.bindMethods("bindTo", "isRendered", "i18n");
     }
 
     static extendProps(props) {
@@ -105,7 +104,7 @@ class Component extends React.Component {
     }
 
     isRendered() {
-        if (_.has(this.props, 'renderIf')) {
+        if (_.has(this.props, "renderIf")) {
             return _.isFunction(this.props.renderIf) ? this.props.renderIf() : this.props.renderIf;
         }
         return true;
@@ -146,14 +145,14 @@ class Component extends React.Component {
 
     bindMethods(...methods) {
         if (methods.length === 1 && _.isString(methods[0])) {
-            methods = methods[0].split(',').map(x => x.trim());
+            methods = methods[0].split(",").map(x => x.trim());
         }
 
-        _.forEach(methods, (name) => {
+        _.forEach(methods, name => {
             if (name in this) {
                 this[name] = this[name].bind(this);
             } else {
-                console.info('Missing method [' + name + ']', this);
+                console.info("Missing method [" + name + "]", this);
             }
         });
     }
@@ -164,10 +163,10 @@ class Component extends React.Component {
             cursor = Webiny.Model.select();
             func = key;
         } else {
-            cursor = Webiny.Model.select(key.split('.'));
+            cursor = Webiny.Model.select(key.split("."));
         }
 
-        cursor.on('update', e => {
+        cursor.on("update", e => {
             func(e.data.currentData, e.data.previousData, e);
         });
 
@@ -184,17 +183,19 @@ class Component extends React.Component {
 
         if (this.props.renderer) {
             try {
-                return this.props.renderer.call(this, {props: this.props, state: this.state});
+                return this.props.renderer.call(this, { props: this.props, state: this.state });
             } catch (e) {
-                Webiny.Logger && Webiny.Logger.reportError('js', e.message, e.stack);
+                Webiny.Logger && Webiny.Logger.reportError("js", e.message, e.stack);
                 if (DEVELOPMENT) {
-                    console.error('[RENDER ERROR][' + this.getClassName() + ']', e);
-                    return (
-                        React.createElement('div', null, [
-                            React.createElement('h3', null, '[RENDER ERROR] in component `' + this.getClassName() + '`'),
-                            React.createElement('pre', null, e.stack)
-                        ])
-                    );
+                    console.error("[RENDER ERROR][" + this.getClassName() + "]", e);
+                    return React.createElement("div", null, [
+                        React.createElement(
+                            "h3",
+                            null,
+                            "[RENDER ERROR] in component `" + this.getClassName() + "`"
+                        ),
+                        React.createElement("pre", null, e.stack)
+                    ]);
                 }
             }
         }

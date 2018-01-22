@@ -1,5 +1,5 @@
-import _ from 'lodash';
-import Webiny from './../../Webiny';
+import _ from "lodash";
+import { Webiny } from "./../../../index";
 
 class DepsScanner {
     scan(entry) {
@@ -19,7 +19,7 @@ class DepsScanner {
                                 accumulator.push(path);
                             }
                             deps = deps.then(accumulator => this.load(path, accumulator));
-                        })
+                        });
                     }
                 });
                 return deps;

@@ -1,10 +1,9 @@
-import React from 'react';
-import _ from 'lodash';
-import Webiny from './../../Webiny';
-import Component from './Component';
+import React from "react";
+import _ from "lodash";
+import { Webiny } from "./../../../index";
+import Component from "./Component";
 
 class FormComponent extends Component {
-
     constructor(props) {
         super(props);
 
@@ -15,16 +14,16 @@ class FormComponent extends Component {
         };
 
         this.bindMethods(
-            'isRequired',
-            'validate',
-            'reset',
-            'getValue',
-            'hasValue',
-            'isDisabled',
-            'renderLabel',
-            'renderInfo',
-            'renderDescription',
-            'renderValidationMessage'
+            "isRequired",
+            "validate",
+            "reset",
+            "getValue",
+            "hasValue",
+            "isDisabled",
+            "renderLabel",
+            "renderInfo",
+            "renderDescription",
+            "renderValidationMessage"
         );
     }
 
@@ -73,11 +72,11 @@ class FormComponent extends Component {
     }
 
     reset() {
-        this.setState({isValid: null});
+        this.setState({ isValid: null });
     }
 
     hasValue() {
-        if (this.props.validate && this.props.validate.indexOf('required') === -1) {
+        if (this.props.validate && this.props.validate.indexOf("required") === -1) {
             return true;
         }
 
@@ -89,7 +88,7 @@ class FormComponent extends Component {
     }
 
     setInvalid(message) {
-        this.setState({isValid: false, validationMessage: message});
+        this.setState({ isValid: false, validationMessage: message });
     }
 
     getValue(props = null) {
@@ -100,18 +99,18 @@ class FormComponent extends Component {
     }
 
     isRequired() {
-        return this.props.validate && this.props.validate.indexOf('required') > -1;
+        return this.props.validate && this.props.validate.indexOf("required") > -1;
     }
 
     isDisabled(props = this.props) {
         let disabledBy = props.disabledBy;
         if (_.isFunction(disabledBy)) {
-            return disabledBy({model: props.form.getModel()});
+            return disabledBy({ model: props.form.getModel() });
         }
 
         if (_.isString(disabledBy)) {
-            const falsy = disabledBy.startsWith('!');
-            disabledBy = _.trimStart(disabledBy, '!');
+            const falsy = disabledBy.startsWith("!");
+            disabledBy = _.trimStart(disabledBy, "!");
             const value = !!props.form.getModel(disabledBy);
             return falsy ? value === false : value === true;
         }
@@ -159,14 +158,18 @@ FormComponent.defaultProps = Component.extendProps({
         let label = null;
         if (this.props.label) {
             label = (
-                <Webiny.Ui.LazyLoad modules={['FormGroup']}>
-                    {({FormGroup}) => {
+                <Webiny.Ui.LazyLoad modules={["FormGroup"]}>
+                    {({ FormGroup }) => {
                         let required = null;
-                        if (this.props.validate && this.props.validate.indexOf('required') > -1) {
-                            required = <FormGroup.Required/>;
+                        if (this.props.validate && this.props.validate.indexOf("required") > -1) {
+                            required = <FormGroup.Required />;
                         }
 
-                        return <FormGroup.Label tooltip={this.props.tooltip}>{this.props.label} {required}</FormGroup.Label>;
+                        return (
+                            <FormGroup.Label tooltip={this.props.tooltip}>
+                                {this.props.label} {required}
+                            </FormGroup.Label>
+                        );
                     }}
                 </Webiny.Ui.LazyLoad>
             );
@@ -185,8 +188,8 @@ FormComponent.defaultProps = Component.extendProps({
         }
 
         return (
-            <Webiny.Ui.LazyLoad modules={['FormGroup']}>
-                {({FormGroup}) => (
+            <Webiny.Ui.LazyLoad modules={["FormGroup"]}>
+                {({ FormGroup }) => (
                     <FormGroup.ValidationMessage show={!success}>
                         {this.state.validationMessage}
                     </FormGroup.ValidationMessage>
@@ -206,10 +209,8 @@ FormComponent.defaultProps = Component.extendProps({
         }
 
         return (
-            <Webiny.Ui.LazyLoad modules={['FormGroup']}>
-                {({FormGroup}) => (
-                    <FormGroup.InfoMessage>{info}</FormGroup.InfoMessage>
-                )}
+            <Webiny.Ui.LazyLoad modules={["FormGroup"]}>
+                {({ FormGroup }) => <FormGroup.InfoMessage>{info}</FormGroup.InfoMessage>}
             </Webiny.Ui.LazyLoad>
         );
     },
@@ -224,8 +225,8 @@ FormComponent.defaultProps = Component.extendProps({
         }
 
         return (
-            <Webiny.Ui.LazyLoad modules={['FormGroup']}>
-                {({FormGroup}) => (
+            <Webiny.Ui.LazyLoad modules={["FormGroup"]}>
+                {({ FormGroup }) => (
                     <FormGroup.DescriptionMessage>{description}</FormGroup.DescriptionMessage>
                 )}
             </Webiny.Ui.LazyLoad>

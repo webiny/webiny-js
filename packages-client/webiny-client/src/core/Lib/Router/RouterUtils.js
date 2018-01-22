@@ -1,9 +1,8 @@
-import _ from 'lodash';
-import Webiny from './../../Webiny';
-import RouterEvent from './RouterEvent';
+import _ from "lodash";
+import { Webiny } from "./../../../index";
+import RouterEvent from "./RouterEvent";
 
 class RouterUtils {
-
     setBaseUrl(url) {
         this.baseUrl = url;
         return this;
@@ -52,7 +51,16 @@ class RouterUtils {
     }
 
     sanitizeUrl(url) {
-        return '/' + _.trimStart(url.replace(this.baseUrl, '').split('?').shift(), '/');
+        return (
+            "/" +
+            _.trimStart(
+                url
+                    .replace(this.baseUrl, "")
+                    .split("?")
+                    .shift(),
+                "/"
+            )
+        );
     }
 
     /**
@@ -101,28 +109,34 @@ class RouterUtils {
             defComponents = Webiny.Router.getDefaultComponents();
         }
 
-        return _.merge({Layout: Webiny.Router.getLayout(route.layout)}, defComponents, components);
+        return _.merge(
+            { Layout: Webiny.Router.getLayout(route.layout) },
+            defComponents,
+            components
+        );
     }
 
     handleRouteNotMatched(url, callbacks) {
         const rEvent = new RouterEvent(url);
         let routeNotMatchedChain = Promise.resolve(rEvent);
         callbacks.forEach(callback => {
-            routeNotMatchedChain = routeNotMatchedChain.then(() => {
-                return callback(rEvent);
-            }).catch(this.exceptionHandler);
+            routeNotMatchedChain = routeNotMatchedChain
+                .then(() => {
+                    return callback(rEvent);
+                })
+                .catch(this.exceptionHandler);
         });
 
         routeNotMatchedChain = routeNotMatchedChain.then(() => {
-            if (_.isNumber(_.get(this.history, 'location.state.scrollY'))) {
-                window.scrollTo(0, _.get(this.history, 'location.state.scrollY'));
+            if (_.isNumber(_.get(this.history, "location.state.scrollY"))) {
+                window.scrollTo(0, _.get(this.history, "location.state.scrollY"));
             } else {
                 window.scrollTo(0, 0);
             }
 
             if (!rEvent.isStopped()) {
                 // If URL starts with loaded app prefix, go to default route
-                if (this.baseUrl !== '/' && url.startsWith(this.baseUrl)) {
+                if (this.baseUrl !== "/" && url.startsWith(this.baseUrl)) {
                     const defaultRoute = Webiny.Router.getDefaultRoute();
                     if (defaultRoute) {
                         url = defaultRoute.getHref();

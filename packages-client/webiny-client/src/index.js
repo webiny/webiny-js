@@ -1,10 +1,2 @@
-import React from 'react';
-import Webiny from './core';
-import renderApp from './render';
-
-const client = {
-    Webiny,
-    renderApp
-};
-
-module.exports = client;
+export { default as Webiny } from "./core";
+export { default as render } from "./render";

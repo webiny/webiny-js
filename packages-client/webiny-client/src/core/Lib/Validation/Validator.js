@@ -1,12 +1,11 @@
-import _ from 'lodash';
-import Webiny from './../../Webiny';
-import ValidationError from './ValidationError';
+import _ from "lodash";
+import { Webiny } from "./../../../index";
+import ValidationError from "./ValidationError";
 
 /**
  * @i18n.namespace Webiny.Core.Validators
  */
 class Validator {
-
     constructor() {
         this.validators = {};
     }
@@ -18,19 +17,19 @@ class Validator {
 
     getValidator(name) {
         if (!this.validators[name]) {
-            throw new ValidationError('Validator `' + name + '` does not exist!', name);
+            throw new ValidationError("Validator `" + name + "` does not exist!", name);
         }
         return this.validators[name];
     }
 
     getValidatorsFromProps(props) {
-        let {defaultValidate, validate: validators} = props;
+        let { defaultValidate, validate: validators } = props;
         if (!validators) {
             validators = [];
         }
 
         if (_.isString(validators)) {
-            validators = validators.split(',');
+            validators = validators.split(",");
         }
 
         if (defaultValidate) {
@@ -47,7 +46,7 @@ class Validator {
 
         let validate = validators;
         if (_.isString(validators)) {
-            validate = validators.split(',');
+            validate = validators.split(",");
         }
 
         validators = {};
@@ -55,11 +54,11 @@ class Validator {
             let validator = null;
             let vName = null;
             if (_.isString(v)) {
-                validator = _.trim(v).split(':');
+                validator = _.trim(v).split(":");
                 vName = validator.shift();
             } else {
                 validator = v;
-                vName = _.uniqueId('validator');
+                vName = _.uniqueId("validator");
             }
             validators[vName] = validator;
         });
@@ -79,7 +78,7 @@ class Validator {
         }
 
         elements.forEach(item => {
-            if (item.type === 'validator' && item.props.children) {
+            if (item.type === "validator" && item.props.children) {
                 customMessages[item.props.name] = item.props.children;
             }
         });
@@ -101,7 +100,9 @@ class Validator {
 
         const results = {};
         Object.keys(validators).forEach(validatorName => {
-            const funcValidator = _.isFunction(validators[validatorName]) ? validators[validatorName] : false;
+            const funcValidator = _.isFunction(validators[validatorName])
+                ? validators[validatorName]
+                : false;
             const args = funcValidator ? [] : _.clone(validators[validatorName]);
             if (formData.inputs) {
                 this.parseArgs(args, formData.inputs);
@@ -111,7 +112,9 @@ class Validator {
             chain = chain.then(function validationLink() {
                 let validator = null;
                 try {
-                    validator = funcValidator ? funcValidator(...args) : _this.getValidator(validatorName)(...args);
+                    validator = funcValidator
+                        ? funcValidator(...args)
+                        : _this.getValidator(validatorName)(...args);
                 } catch (e) {
                     throw new ValidationError(e.message, validatorName, value);
                 }
@@ -121,15 +124,17 @@ class Validator {
                 if (validator instanceof Webiny.Http.Request) {
                     validator = validator.catch(e => e);
                 }
-                return Promise.resolve(validator).then(result => {
-                    if (result instanceof Error) {
-                        throw result;
-                    }
-                    results[validatorName] = result;
-                    return results;
-                }).catch(e => {
-                    throw new ValidationError(e.message, validatorName, value);
-                });
+                return Promise.resolve(validator)
+                    .then(result => {
+                        if (result instanceof Error) {
+                            throw result;
+                        }
+                        results[validatorName] = result;
+                        return results;
+                    })
+                    .catch(e => {
+                        throw new ValidationError(e.message, validatorName, value);
+                    });
             });
         });
 
@@ -144,8 +149,8 @@ class Validator {
      */
     parseArgs(args, formInputs) {
         _.each(args, (value, index) => {
-            if (value.indexOf('@') === 0) {
-                const inputName = _.trimStart(value, '@');
+            if (value.indexOf("@") === 0) {
+                const inputName = _.trimStart(value, "@");
                 args[index] = formInputs[inputName].component.getValue();
             }
         });
@@ -154,38 +159,42 @@ class Validator {
 
 const formValidator = new Validator();
 
-formValidator.addValidator('required', (value) => {
-    if (!(!value || value === '' || (_.isArray(value) && value.length === 0))) {
+formValidator.addValidator("required", value => {
+    if (!(!value || value === "" || (_.isArray(value) && value.length === 0))) {
         return true;
     }
-    throw new ValidationError(Webiny.I18n('This field is required'));
+    throw new ValidationError(Webiny.I18n("This field is required"));
 });
 
-formValidator.addValidator('eq', (value, equalTo) => {
+formValidator.addValidator("eq", (value, equalTo) => {
     if (value === equalTo) {
         return true;
     }
-    throw new ValidationError(Webiny.I18n('This field must be equal to {equalTo}', {equalTo}));
+    throw new ValidationError(Webiny.I18n("This field must be equal to {equalTo}", { equalTo }));
 });
 
-formValidator.addValidator('neq', (value, equalTo) => {
+formValidator.addValidator("neq", (value, equalTo) => {
     if (value !== equalTo) {
         return true;
     }
-    throw new ValidationError(Webiny.I18n('This field must not be equal to {equalTo}', {equalTo}));
+    throw new ValidationError(
+        Webiny.I18n("This field must not be equal to {equalTo}", { equalTo })
+    );
 });
 
-formValidator.addValidator('minLength', (value, length) => {
+formValidator.addValidator("minLength", (value, length) => {
     if (_.isObject(value)) {
         value = _.keys(value);
     }
     if (!value || (value.length && value.length >= length)) {
         return true;
     }
-    throw new ValidationError(Webiny.I18n('This field requires at least {length} characters', {length}));
+    throw new ValidationError(
+        Webiny.I18n("This field requires at least {length} characters", { length })
+    );
 });
 
-formValidator.addValidator('maxLength', (value, length) => {
+formValidator.addValidator("maxLength", (value, length) => {
     if (_.isObject(value)) {
         value = _.keys(value);
     }
@@ -193,66 +202,71 @@ formValidator.addValidator('maxLength', (value, length) => {
     if (!value || (value.length && value.length <= length)) {
         return true;
     }
-    throw new ValidationError(Webiny.I18n('This field requires {length} characters at most', {length}));
+    throw new ValidationError(
+        Webiny.I18n("This field requires {length} characters at most", { length })
+    );
 });
 
-formValidator.addValidator('gt', (value, min) => {
+formValidator.addValidator("gt", (value, min) => {
     if (!value || parseFloat(value) > parseFloat(min)) {
         return true;
     }
-    throw new ValidationError(Webiny.I18n('This field needs to be greater than', {min}));
+    throw new ValidationError(Webiny.I18n("This field needs to be greater than", { min }));
 });
 
-formValidator.addValidator('lt', (value, max) => {
+formValidator.addValidator("lt", (value, max) => {
     if (!value || parseFloat(value) < parseFloat(max)) {
         return true;
     }
 
-    throw new ValidationError(Webiny.I18n('This field needs to be less than', {max}));
+    throw new ValidationError(Webiny.I18n("This field needs to be less than", { max }));
 });
 
-formValidator.addValidator('gte', (value, min) => {
+formValidator.addValidator("gte", (value, min) => {
     if (!value || parseFloat(value) >= parseFloat(min)) {
         return true;
     }
-    throw new ValidationError(Webiny.I18n('This field needs to be greater than or equal to', {min}));
+    throw new ValidationError(
+        Webiny.I18n("This field needs to be greater than or equal to", { min })
+    );
 });
 
-formValidator.addValidator('lte', (value, max) => {
+formValidator.addValidator("lte", (value, max) => {
     if (!value || parseFloat(value) <= parseFloat(max)) {
         return true;
     }
 
-    throw new ValidationError(Webiny.I18n('This field needs to be less than or equal to', {max}));
+    throw new ValidationError(Webiny.I18n("This field needs to be less than or equal to", { max }));
 });
 
-formValidator.addValidator('number', (value) => {
-    const re = new RegExp('^\-?[0-9.]+$');
-    if (!value || (re.test(value))) {
+formValidator.addValidator("number", value => {
+    const re = new RegExp("^-?[0-9.]+$");
+    if (!value || re.test(value)) {
         return true;
     }
-    throw new ValidationError(Webiny.I18n('This field needs to be a number'));
+    throw new ValidationError(Webiny.I18n("This field needs to be a number"));
 });
 
-formValidator.addValidator('integer', (value) => {
-    const re = new RegExp('^\-?[0-9]+$');
-    if (!value || (re.test(value))) {
+formValidator.addValidator("integer", value => {
+    const re = new RegExp("^-?[0-9]+$");
+    if (!value || re.test(value)) {
         return true;
     }
-    throw new ValidationError(Webiny.I18n('This field needs to be an integer'));
+    throw new ValidationError(Webiny.I18n("This field needs to be an integer"));
 });
 
-formValidator.addValidator('email', (value) => {
+formValidator.addValidator("email", value => {
+    // eslint-disable-next-line
     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!value || (value.length && re.test(value))) {
         return true;
     }
-    throw new ValidationError(Webiny.I18n('Please enter a valid email address'));
+    throw new ValidationError(Webiny.I18n("Please enter a valid email address"));
 });
 
-formValidator.addValidator('password', (value) => {
+formValidator.addValidator("password", value => {
     if (DEVELOPMENT) {
-        if (!value || ['dev', 'admin'].indexOf(value) > -1) {
+        if (!value || ["dev", "admin"].indexOf(value) > -1) {
             return true;
         }
     }
@@ -265,19 +279,19 @@ formValidator.addValidator('password', (value) => {
 
     const test = value.match(/^.{8,}$/);
     if (test === null) {
-        throw new ValidationError(Webiny.I18n('Password must contain at least 8 characters'));
+        throw new ValidationError(Webiny.I18n("Password must contain at least 8 characters"));
     }
     return true;
 });
 
-formValidator.addValidator('phone', (value) => {
+formValidator.addValidator("phone", value => {
     if (!value || value.match(/^[-+0-9()\s]+$/)) {
         return true;
     }
-    throw new ValidationError(Webiny.I18n('Please enter a valid phone number'));
+    throw new ValidationError(Webiny.I18n("Please enter a valid phone number"));
 });
 
-formValidator.addValidator('json', (value) => {
+formValidator.addValidator("json", value => {
     if (!value) {
         return true;
     }
@@ -285,28 +299,32 @@ formValidator.addValidator('json', (value) => {
     try {
         JSON.parse(value);
     } catch (e) {
-        throw new ValidationError(Webiny.I18n('Please enter a valid JSON string'));
+        throw new ValidationError(Webiny.I18n("Please enter a valid JSON string"));
     }
 
     return true;
 });
 
-
-formValidator.addValidator('url', (value, flags) => {
+formValidator.addValidator("url", (value, flags) => {
     if (!value) {
         return true;
     }
 
     if (!_.isString(flags)) {
-        flags = '';
+        flags = "";
     }
 
-    const options = flags.split(',');
-    const regex = new RegExp(/^(https?:\/\/)((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(\#[-a-z\d_]*)?$/i);
-    const ipRegex = new RegExp(/^(https?:\/\/)(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/);
+    const options = flags.split(",");
+    const regex = new RegExp(
+        // eslint-disable-next-line
+        /^(https?:\/\/)((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(\#[-a-z\d_]*)?$/i
+    );
+    const ipRegex = new RegExp(
+        /^(https?:\/\/)(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
+    );
 
     if (regex.test(value)) {
-        if (!options.includes('noIp')) {
+        if (!options.includes("noIp")) {
             return true;
         }
 
@@ -315,26 +333,27 @@ formValidator.addValidator('url', (value, flags) => {
         }
     }
 
-    throw new ValidationError(Webiny.I18n('Please enter a valid URL'));
+    throw new ValidationError(Webiny.I18n("Please enter a valid URL"));
 });
 
-formValidator.addValidator('creditCard', (value) => {
+formValidator.addValidator("creditCard", value => {
     if (!value) {
         return true;
     }
 
     if (value.length < 12) {
-        throw new ValidationError(Webiny.I18n('Credit card number too short'));
+        throw new ValidationError(Webiny.I18n("Credit card number too short"));
     }
 
-    if (/[^0-9-\s]+/.test(value)) throw new ValidationError(Webiny.I18n('Credit card number invalid'));
+    if (/[^0-9-\s]+/.test(value))
+        throw new ValidationError(Webiny.I18n("Credit card number invalid"));
 
     let nCheck = 0;
     let nDigit = 0;
     let bEven = false;
 
-    value = value.replace(/ /g, '');
-    value = value.replace(/\D/g, '');
+    value = value.replace(/ /g, "");
+    value = value.replace(/\D/g, "");
 
     for (let n = value.length - 1; n >= 0; n--) {
         const cDigit = value.charAt(n);
@@ -351,19 +370,19 @@ formValidator.addValidator('creditCard', (value) => {
         bEven = !bEven;
     }
 
-    if ((nCheck % 10) === 0) {
+    if (nCheck % 10 === 0) {
         return true;
     }
 
-    throw new ValidationError(Webiny.I18n('Credit card number invalid'));
+    throw new ValidationError(Webiny.I18n("Credit card number invalid"));
 });
 
-formValidator.addValidator('creditCardExpiration', (value) => {
+formValidator.addValidator("creditCardExpiration", value => {
     if (_.isPlainObject(value) && !isNaN(parseInt(value.month)) && !isNaN(parseInt(value.year))) {
         return true;
     }
 
-    throw new ValidationError(Webiny.I18n('Please select month and year'));
+    throw new ValidationError(Webiny.I18n("Please select month and year"));
 });
 
 export default formValidator;
