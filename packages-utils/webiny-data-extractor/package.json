@@ -13,6 +13,6 @@
         "lodash": "^4.17.4"
     },
     "devDependencies": {
-        "flow-bin": "^0.62.0"
+        "flow-bin": "^0.63.1"
     }
 }
