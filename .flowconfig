@@ -10,5 +10,7 @@ packages-utils/webiny-file-storage/flow-typed
 [lints]
 
 [options]
+module.file_ext=.js
+module.file_ext=.jsx
 esproposal.class_static_fields=enable
 [strict]
