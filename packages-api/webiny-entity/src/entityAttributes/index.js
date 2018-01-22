@@ -1,7 +1,2 @@
-import entityAttribute from './entityAttribute'
-import entitiesAttribute from './entitiesAttribute'
-
-export default {
-    entity: entityAttribute,
-    entities: entitiesAttribute
-};
+export { default as EntityAttribute } from "./entityAttribute";
+export { default as EntitiesAttribute } from "./entitiesAttribute";
