@@ -3,6 +3,7 @@ sudo: false
 node_js:
   - "node"
   - "6.10"
+cache: yarn
 install:
   - yarn install
 script:
