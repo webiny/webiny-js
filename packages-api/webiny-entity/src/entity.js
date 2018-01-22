@@ -39,13 +39,19 @@ class Entity {
 
 		this.listeners = {};
 		this.existing = false;
-		this.processing = false;
+		this.processing = null;
 
 		this.getDriver().onEntityConstruct(proxy);
 
 		if (!this.getAttribute('id')) {
 			this.attr('id').char();
 		}
+
+		this.on('delete', () => {
+			if (this.getAttribute('id').isEmpty()) {
+				throw Error('Entity cannot be deleted because it was not previously saved.');
+			}
+		});
 
 		return proxy;
 	}
@@ -148,7 +154,9 @@ class Entity {
 	 * @returns {Promise<void>}
 	 */
 	async validate() {
-		return this.getModel().validate();
+		await this.emit('beforeValidate');
+		await this.getModel().validate();
+		await this.emit('afterValidate');
 	}
 
 	/**
@@ -181,43 +189,38 @@ class Entity {
 			return;
 		}
 
-		this.processing = true;
+		this.processing = 'save';
 
 		const existing = this.isExisting();
-
 		try {
-			!(params.validation === false) && await this.validate();
+			params.validation !== false && await this.validate();
 
+			const events = params.events || {};
+			events.save !== false && await this.emit('save');
+
+			events.beforeSave !== false && await this.emit('beforeSave');
 			if (existing) {
-				await this.emit('beforeUpdate');
+				events.beforeUpdate !== false && await this.emit('beforeUpdate');
 			} else {
-				await this.emit('beforeCreate');
+				events.beforeCreate !== false && await this.emit('beforeCreate');
 			}
 
-			await this.emit('beforeSave');
 			await this.getDriver().save(this, params);
 			this.setExisting();
-			await this.emit('afterSave');
 
+			events.afterSave !== false && await this.emit('afterSave');
 			if (existing) {
-				await this.emit('afterUpdate');
+				events.afterUpdate !== false && await this.emit('afterUpdate');
 			} else {
-				await this.emit('afterCreate');
+				events.afterCreate !== false && await this.emit('afterCreate');
 			}
 
 			this.getModel().clean();
 		} catch (e) {
 			throw e;
 		} finally {
-			this.processing = false;
+			this.processing = null;
 		}
-	}
-
-	/**
-	 * Executed before delete method. It can be used check if an entity can be deleted and to throw errors if needed.
-	 */
-	async canDelete() {
-		// Does not do anything / perform any checks by default.
 	}
 
 	/**
@@ -230,24 +233,20 @@ class Entity {
 			return;
 		}
 
-		this.processing = true;
-
 		try {
-			if (this.getAttribute('id').isEmpty()) {
-				throw Error('Entity cannot be deleted because it was not previously saved.');
-			}
+			params.validation !== false && await this.validate();
 
-			if (!(params.skipCanDelete)) {
-				await this.canDelete();
-			}
+			const events = params.events || {};
+			events.delete !== false && await this.emit('delete');
 
-			await this.emit('beforeDelete');
+			events.beforeDelete !== false && await this.emit('beforeDelete');
 			await this.getDriver().delete(this, params);
-			await this.emit('afterDelete');
+			events.afterDelete !== false && await this.emit('afterDelete');
+
 		} catch (e) {
 			throw e;
 		} finally {
-			this.processing = false;
+			this.processing = null;
 		}
 	}
 

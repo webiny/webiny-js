@@ -27,17 +27,17 @@ describe('entity delete test', function () {
 		let entitySave = sinon.stub(user.getDriver(), 'save')
 			.onCall(0)
 			.callsFake(entity => {
-				entity.id = 55;
+				entity.id = 'AA';
 				return new QueryResult();
 			})
 			.onCall(1)
 			.callsFake(entity => {
-				entity.id = 66;
+				entity.id = 'BB';
 				return new QueryResult();
 			})
 			.onCall(2)
 			.callsFake(entity => {
-				entity.id = 77;
+				entity.id = 'CC';
 				return new QueryResult();
 			});
 
@@ -54,10 +54,11 @@ describe('entity delete test', function () {
 		}
 
 		assert.instanceOf(error, Error);
-		assert.equal(error.message, 'Cannot delete User entity');
+		assert.equal(error.message, 'Cannot delete Image entity');
 		assert(entityDelete.notCalled);
 
-		user.markedAsCannotDelete = false;
+		await user.set('company.image.markedAsCannotDelete', false);
+
 		try {
 			await user.delete();
 		} catch (e) {
@@ -68,8 +69,7 @@ describe('entity delete test', function () {
 		assert.equal(error.message, 'Cannot delete Company entity');
 		assert(entityDelete.notCalled);
 
-		const company = await user.company;
-		company.markedAsCannotDelete = false;
+		await user.set('company.markedAsCannotDelete', false);
 
 		try {
 			await user.delete();
@@ -78,11 +78,10 @@ describe('entity delete test', function () {
 		}
 
 		assert.instanceOf(error, Error);
-		assert.equal(error.message, 'Cannot delete Image entity');
+		assert.equal(error.message, 'Cannot delete User entity');
 		assert(entityDelete.notCalled);
 
-		const image = await company.image;
-		image.markedAsCannotDelete = false;
+		await user.set('markedAsCannotDelete', false);
 
 		await user.delete();
 

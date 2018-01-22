@@ -32,7 +32,7 @@ class EntitiesAttribute extends Attribute {
 		 * Auto save and delete are both enabled by default.
 		 * @type {{save: boolean, delete: boolean}}
 		 */
-		this.auto = {save: true, delete: false};
+		this.auto = {save: true, delete: true};
 
 		/**
 		 * By default, we don't want to have links stored in entity attribute directly.
@@ -40,6 +40,10 @@ class EntitiesAttribute extends Attribute {
 		 */
 		this.toStorage = false;
 
+		/**
+		 * Same as in EntityAttribute, entities present here were already validated when parent entity called the validate method.
+		 * At this point, entities are ready to be saved (only loaded entities).
+		 */
 		this.getParentModel().getParentEntity().on('beforeSave', async () => {
 			if (this.getAutoSave() && (this.value.isLoading() || this.value.isLoaded())) {
 				const entities = await this.getValue();
@@ -47,6 +51,28 @@ class EntitiesAttribute extends Attribute {
 					// Let's only save loaded item.
 					if (entities[i] instanceof this.getEntitiesClass()) {
 						await entities[i].save({validation: false});
+					}
+				}
+			}
+		});
+
+		this.getParentModel().getParentEntity().on('delete', async () => {
+			if (this.getAutoDelete()) {
+				const entities = await this.getValue();
+				for (let i = 0; i < entities.length; i++) {
+					if (entities[i] instanceof this.getEntitiesClass()) {
+						await entities[i].emit('delete');
+					}
+				}
+			}
+		});
+
+		this.getParentModel().getParentEntity().on('beforeDelete', async () => {
+			if (this.getAutoDelete()) {
+				const entities = await this.getValue();
+				for (let i = 0; i < entities.length; i++) {
+					if (entities[i] instanceof this.getEntitiesClass()) {
+						await entities[i].delete({events: {delete: false}});
 					}
 				}
 			}

@@ -7,12 +7,11 @@ class Entity1 extends Entity {
 		this.attr('number').integer();
 		this.attr('type').char().setValidators('in:cat:dog:mouse:parrot');
 		this.attr('markedAsCannotDelete').boolean();
-	}
-
-	canDelete() {
-		if (this.markedAsCannotDelete) {
-			throw Error('Cannot delete Entity1 entity');
-		}
+		this.on('delete', () => {
+			if (this.markedAsCannotDelete) {
+				throw Error('Cannot delete Entity1 entity');
+			}
+		});
 	}
 }
 
@@ -24,12 +23,11 @@ class Entity2 extends Entity {
 		this.attr('enabled').boolean();
 		this.attr('markedAsCannotDelete').boolean();
 		this.attr('entity1Entities').entities(Entity1);
-	}
-
-	canDelete() {
-		if (this.markedAsCannotDelete) {
-			throw Error('Cannot delete Entity2 entity');
-		}
+		this.on('delete', () => {
+			if (this.markedAsCannotDelete) {
+				throw Error('Cannot delete Entity2 entity');
+			}
+		});
 	}
 }
 

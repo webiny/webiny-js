@@ -7,12 +7,11 @@ class Image extends Entity {
 		this.attr('size').float();
 		this.attr('createdBy').entity(User);
 		this.attr('markedAsCannotDelete').boolean();
-	}
-
-	canDelete() {
-		if (this.markedAsCannotDelete) {
-			throw Error('Cannot delete Image entity');
-		}
+		this.on('delete', () => {
+			if (this.markedAsCannotDelete) {
+				throw Error('Cannot delete Image entity');
+			}
+		});
 	}
 }
 
@@ -24,12 +23,12 @@ class Company extends Entity {
 		this.attr('name').char().setValidators('required');
 		this.attr('image').entity(Image).setAutoDelete();
 		this.attr('markedAsCannotDelete').boolean();
-	}
+		this.on('delete', () => {
+			if (this.markedAsCannotDelete) {
+				throw Error('Cannot delete Company entity');
+			}
+		});
 
-	canDelete() {
-		if (this.markedAsCannotDelete) {
-			throw Error('Cannot delete Company entity');
-		}
 	}
 }
 
@@ -42,12 +41,11 @@ class User extends Entity {
 		this.attr('lastName').char().setValidators('required');
 		this.attr('company').entity(Company).setAutoDelete();
 		this.attr('markedAsCannotDelete').boolean();
-	}
-
-	canDelete() {
-		if (this.markedAsCannotDelete) {
-			throw Error('Cannot delete User entity');
-		}
+		this.on('delete', () => {
+			if (this.markedAsCannotDelete) {
+				throw Error('Cannot delete User entity');
+			}
+		});
 	}
 }
 

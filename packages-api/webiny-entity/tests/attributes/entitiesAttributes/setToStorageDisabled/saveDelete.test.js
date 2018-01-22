@@ -4,36 +4,36 @@ import {assert} from 'chai';
 import sinon from 'sinon';
 
 describe('save and delete entities attribute test', () => {
-	const mainEntity = new MainEntity();
-	mainEntity.attribute1 = [
-		{id: null, name: 'Enlai', type: 'invalid', markedAsCannotDelete: true},
-		new Entity1().populate({id: null, name: 'Bucky', type: 'invalid'})
-	];
-
-	mainEntity.attribute2 = [
-		{
-			id: null,
-			firstName: 'John',
-			lastName: 'Doe',
-			markedAsCannotDelete: true,
-			entity1Entities: [
-				{id: null, name: 'dd', type: 'dog', markedAsCannotDelete: true},
-				{id: null, name: 'ee', type: 'dog', markedAsCannotDelete: true},
-				{id: null, name: 'ff', type: 'invalid', markedAsCannotDelete: false}
-			]
-		},
-		{
-			id: null,
-			firstName: 'Jane',
-			lastName: 'Doe',
-			markedAsCannotDelete: true,
-			entity1Entities: [
-				{id: null, name: 'gg', type: 'invalid', markedAsCannotDelete: true},
-			]
-		}
-	];
-
 	it('should recursively trigger validation and save all entities if data is valid', async () => {
+		const mainEntity = new MainEntity();
+		mainEntity.attribute1 = [
+			{id: null, name: 'Enlai', type: 'invalid', markedAsCannotDelete: true},
+			new Entity1().populate({id: null, name: 'Bucky', type: 'invalid'})
+		];
+
+		mainEntity.attribute2 = [
+			{
+				id: null,
+				firstName: 'John',
+				lastName: 'Doe',
+				markedAsCannotDelete: true,
+				entity1Entities: [
+					{id: null, name: 'dd', type: 'dog', markedAsCannotDelete: true},
+					{id: null, name: 'ee', type: 'dog', markedAsCannotDelete: true},
+					{id: null, name: 'ff', type: 'invalid', markedAsCannotDelete: false}
+				]
+			},
+			{
+				id: null,
+				firstName: 'Jane',
+				lastName: 'Doe',
+				markedAsCannotDelete: true,
+				entity1Entities: [
+					{id: null, name: 'gg', type: 'invalid', markedAsCannotDelete: true},
+				]
+			}
+		];
+
 		let error = null;
 		try {
 			await mainEntity.save();
@@ -212,10 +212,167 @@ describe('save and delete entities attribute test', () => {
 		entitySave.restore();
 	});
 
-	it('auto delete must be automatically enabled and canDelete must stop deletion if error was thrown', async () => {
+	it('auto delete must be automatically enabled and deletion must stop deletion if error was thrown', async () => {
+		const mainEntity = new MainEntity();
+		mainEntity.attribute1 = [
+			{id: null, name: 'Enlai', type: 'dog', markedAsCannotDelete: true},
+			new Entity1().populate({id: null, name: 'Bucky', type: 'parrot'})
+		];
+
+		mainEntity.attribute2 = [
+			{
+				id: null,
+				firstName: 'John',
+				lastName: 'Doe',
+				markedAsCannotDelete: true,
+				entity1Entities: [
+					{id: null, name: 'dd', type: 'dog', markedAsCannotDelete: true},
+					{id: null, name: 'ee', type: 'dog', markedAsCannotDelete: true},
+					{id: null, name: 'ff', type: 'parrot', markedAsCannotDelete: false}
+				]
+			},
+			{
+				id: null,
+				firstName: 'Jane',
+				lastName: 'Doe',
+				markedAsCannotDelete: true,
+				entity1Entities: [
+					{id: null, name: 'gg', type: 'dog', markedAsCannotDelete: true},
+				]
+			}
+		];
+
+		let entitySave = sinon.stub(mainEntity.getDriver(), 'save')
+			.onCall(0)
+			.callsFake(entity => {
+				entity.id = 'BB';
+				return new QueryResult();
+			})
+			.onCall(1)
+			.callsFake(entity => {
+				entity.id = 'CC';
+				return new QueryResult();
+			})
+			.onCall(2)
+			.callsFake(entity => {
+				entity.id = 'DD';
+				return new QueryResult();
+			})
+			.onCall(3)
+			.callsFake(entity => {
+				entity.id = 'EE';
+				return new QueryResult();
+			})
+			.onCall(4)
+			.callsFake(entity => {
+				entity.id = 'FF';
+				return new QueryResult();
+			})
+			.onCall(5)
+			.callsFake(entity => {
+				entity.id = 'GG';
+				return new QueryResult();
+			})
+			.onCall(6)
+			.callsFake(entity => {
+				entity.id = 'HH';
+				return new QueryResult();
+			})
+			.onCall(7)
+			.callsFake(entity => {
+				entity.id = 'II';
+				return new QueryResult();
+			})
+			.onCall(8)
+			.callsFake(entity => {
+				entity.id = 'AA';
+				return new QueryResult();
+			});
+
+		await mainEntity.save();
+
+		assert.equal(entitySave.callCount, 9);
+		entitySave.restore();
+
+		let entityDelete = sinon.stub(mainEntity.getDriver(), 'delete');
+		let error = null;
+		try {
+			await mainEntity.delete();
+		} catch (e) {
+			error = e;
+		}
+
+		assert.instanceOf(error, Error);
+		assert.equal(error.message, 'Cannot delete Entity1 entity');
+		assert(entityDelete.notCalled);
+
+		await mainEntity.set('attribute1.0.markedAsCannotDelete', false);
+
+		try {
+			await mainEntity.delete();
+		} catch (e) {
+			error = e;
+		}
+
+		assert.instanceOf(error, Error);
+		assert.equal(error.message, 'Cannot delete Entity1 entity');
+		assert(entityDelete.notCalled);
+
+		await mainEntity.set('attribute2.0.entity1Entities.0.markedAsCannotDelete', false);
+
+		try {
+			await mainEntity.delete();
+		} catch (e) {
+			error = e;
+		}
+
+		assert.instanceOf(error, Error);
+		assert.equal(error.message, 'Cannot delete Entity1 entity');
+		assert(entityDelete.notCalled);
+
+		await mainEntity.set('attribute2.0.entity1Entities.1.markedAsCannotDelete', false);
+
+		try {
+			await mainEntity.delete();
+		} catch (e) {
+			error = e;
+		}
+
+		assert.instanceOf(error, Error);
+		assert.equal(error.message, 'Cannot delete Entity2 entity');
+		assert(entityDelete.notCalled);
+
+		await mainEntity.set('attribute2.0.markedAsCannotDelete', false);
+
+		try {
+			await mainEntity.delete();
+		} catch (e) {
+			error = e;
+		}
+
+		assert.instanceOf(error, Error);
+		assert.equal(error.message, 'Cannot delete Entity1 entity');
+		assert(entityDelete.notCalled);
+
+		await mainEntity.set('attribute2.1.entity1Entities.0.markedAsCannotDelete', false);
+
+		try {
+			await mainEntity.delete();
+		} catch (e) {
+			error = e;
+		}
+
+		assert.instanceOf(error, Error);
+		assert.equal(error.message, 'Cannot delete Entity2 entity');
+		assert(entityDelete.notCalled);
+
+		await mainEntity.set('attribute2.1.markedAsCannotDelete', false);
+
+		await mainEntity.delete();
+		assert.equal(entityDelete.callCount, 9);
+		entityDelete.restore();
 
 	});
-
 
 	it('should properly delete linked entity even though they are not loaded', async () => {
 	});

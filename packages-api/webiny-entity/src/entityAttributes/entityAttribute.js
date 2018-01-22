@@ -18,8 +18,6 @@ class EntityAttribute extends Attribute {
 		 */
 		this.value = new EntityAttributeValue(this);
 
-		this.entityClass = entity;
-
 		/**
 		 * Auto save is always enabled, but delete not. This is because users will more often create many to one relationship than
 		 * one to one. If user wants a strict one to one relationship, then delete flag must be set to true. In other words, it would
@@ -36,28 +34,34 @@ class EntityAttribute extends Attribute {
 		 * nested entities, ending with the main parent entity.
 		 */
 		this.getParentModel().getParentEntity().on('beforeSave', async () => {
+			// At this point current value is an instance or is not instance. It cannot be in the 'loading' state, because that was
+			// already checked in the validate method - if in that step entity was in 'loading' state, it will be waited before proceeding.
 			if (this.getAutoSave() && this.value.getCurrent() instanceof this.getEntityClass()) {
-
 				// We don't need to validate here because validate method was called on the parent entity, which caused
 				// the validation of data to be executed recursively on all attribute values.
-				await this.value.getCurrent().save({validation: true});
+				await this.value.getCurrent().save({validation: false});
 
 				// If initially we had a different entity linked, we must delete it. The following method will only do deletes if needed.
-				await this.value.deleteInitial();
+				this.getAutoDelete() && await this.value.deleteInitial();
 			}
 		});
 
-		/**
-		 * This will recursively trigger the same listener on all child entity attributes. Before each delete,
-		 * canDelete callback will be called and stop the delete process if an Error is thrown.
-		 *
-		 * Delete operations will be executed starting from bottom nested entities, ending with the main parent entity.
-		 */
+		this.getParentModel().getParentEntity().on('delete', async () => {
+			if (this.getAutoDelete()) {
+				const entity = await this.getValue();
+				if (entity instanceof this.getEntityClass()) {
+					await entity.emit('delete');
+				}
+			}
+		});
+
 		this.getParentModel().getParentEntity().on('beforeDelete', async () => {
 			if (this.getAutoDelete()) {
 				const entity = await this.getValue();
 				if (entity instanceof this.getEntityClass()) {
-					await entity.delete();
+					// We don't want to fire the "delete" event because its handlers were already executed by upper 'delete' listener.
+					// That listener ensured that all callbacks that might've had blocked the deleted process were executed.
+					await entity.delete({validation: false, events: {delete: false}});
 				}
 			}
 		});
@@ -103,7 +107,7 @@ class EntityAttribute extends Attribute {
 
 
 	getEntityClass() {
-		return this.entityClass;
+		return this.classes.entity.class;
 	}
 
 	/**
@@ -122,7 +126,8 @@ class EntityAttribute extends Attribute {
 					this.value.setCurrent(value);
 					break;
 				case _.isObject(value):
-					this.value.setCurrent(new this.entityClass().populate(value));
+					let entity = this.getEntityClass();
+					this.value.setCurrent(new entity().populate(value));
 					break;
 				default:
 					this.value.setCurrent(value);
@@ -190,12 +195,16 @@ class EntityAttribute extends Attribute {
 	 * Validates on attribute level and then on entity level (its attributes recursively).
 	 * @returns {Promise<void>}
 	 */
-	async validate() {
+	async validate(meta) {
 		// This validates on the attribute level.
 		await Attribute.prototype.validate.call(this);
 
+		// If validation was called within a delete context, entity must be loaded and validated. Validation will validate the data,
+		// but also call canDelete method, which will throw an error if something is blocking the delete.
+		// meta.context === 'delete' && await this.value.load();
+
 		// This validates on the entity level.
-		this.value.getCurrent() instanceof this.getEntityClass() && await this.value.getCurrent().validate();
+		this.value.getCurrent() instanceof this.getEntityClass() && await this.value.getCurrent().validate(meta);
 	}
 }
 

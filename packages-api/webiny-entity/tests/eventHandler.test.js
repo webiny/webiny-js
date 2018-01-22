@@ -17,7 +17,7 @@ describe('event handler test', function () {
     a.on('onAfterCreate', _.noop);
 
     it('should have one event handler registered', async () => {
-        assert.hasAllKeys(a.listeners, ['onAfterCreate']);
+        assert.hasAllKeys(a.listeners, ['delete', 'onAfterCreate']);
         assert.lengthOf(a.listeners.onAfterCreate, 2);
         assert.instanceOf(a.listeners.onAfterCreate[0], EventHandler);
 		assert.instanceOf(a.listeners.onAfterCreate[1], EventHandler);

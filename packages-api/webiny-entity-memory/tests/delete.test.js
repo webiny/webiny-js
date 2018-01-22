@@ -23,7 +23,7 @@ describe('delete test', function () {
 
 		// Try do delete an entity that does not exist.
 		const simpleEntity2 = new SimpleEntity();
-		simpleEntity2.id = 12345;
+		simpleEntity2.id = '12345';
 
 		await simpleEntity2.delete();
 		assert.lengthOf(SimpleEntity.getDriver().data['SimpleEntity'], 1);

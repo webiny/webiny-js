@@ -36,7 +36,7 @@ class EntityAttributeValue extends AttributeValue {
 
 		// Only if we have a valid ID set, we must load linked entity.
 		if (this.attribute.getParentModel().getParentEntity().isId(this.current)) {
-			this.current = await this.attribute.classes.entity.class.findById(this.current);
+			this.current = await this.attribute.getEntityClass().findById(this.current);
 		}
 
 		_.isFunction(callback) && await callback();
@@ -54,7 +54,7 @@ class EntityAttributeValue extends AttributeValue {
 	}
 
 	isLoaded() {
-		return this.current instanceof this.attribute.classes.entity.class;
+		return this.current instanceof this.attribute.getEntityClass();
 	}
 
 	isLoading() {
@@ -80,7 +80,7 @@ class EntityAttributeValue extends AttributeValue {
 
 	async deleteInitial() {
 		if (this.currentIsDifferentFromInitial() && this.initial) {
-			const initial = await this.attribute.classes.entity.class.findById(this.initial);
+			const initial = await this.attribute.getEntityClass().findById(this.initial);
 			initial && await initial.delete();
 			this.setInitial(this.getCurrent())
 		}
