@@ -1,13 +1,5 @@
-import boolean from './booleanAttribute'
-import date from './dateAttribute'
-import model from './modelAttribute'
-import models from './modelsAttribute'
-import entities from './entitiesAttribute'
-
-export default {
-    boolean,
-    date,
-	model,
-	models,
-	entities
-};
+export { default as BooleanAttribute } from "./booleanAttribute";
+export { default as DateAttribute } from "./dateAttribute";
+export { default as ModelAttribute } from "./modelAttribute";
+export { default as ModelsAttribute } from "./modelsAttribute";
+export { default as EntitiesAttribute } from "./entitiesAttribute";

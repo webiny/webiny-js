@@ -1,8 +1,8 @@
-import {EntityModel} from 'webiny-entity'
-import AttributesContainer from './mysqlAttributesContainer'
+import { EntityModel } from "webiny-entity";
+import AttributesContainer from "./mysqlAttributesContainer";
 
 class MySQLModel extends EntityModel {
-    getAttributesContainerInstance() {
+    createAttributesContainer() {
         return new AttributesContainer(this);
     }
 }
