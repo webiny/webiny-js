@@ -16,9 +16,9 @@ class ModelAttribute extends Attribute {
         return this.modelClass;
     }
 
-    setValue(value: any): this {
+    setValue(value: any) {
         if (!this.canSetValue()) {
-            return this;
+            return;
         }
 
         let newValue = null;
@@ -30,8 +30,6 @@ class ModelAttribute extends Attribute {
         }
 
         this.value.setCurrent(newValue);
-
-        return this;
     }
 
     async getJSONValue(): Object {

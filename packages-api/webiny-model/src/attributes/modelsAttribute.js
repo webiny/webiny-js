@@ -17,9 +17,9 @@ class ModelsAttribute extends Attribute {
         return this.modelClass;
     }
 
-    setValue(values: Array<Model> = []): this {
+    setValue(values: Array<Model> = []) {
         if (!this.canSetValue()) {
-            return this;
+            return;
         }
 
         this.value.set = true;
@@ -27,7 +27,7 @@ class ModelsAttribute extends Attribute {
         // Even if the value is invalid (eg. a string), we allow it here, but calling validate() will fail.
         if (!_.isArray(values)) {
             this.value.setCurrent(values);
-            return this;
+            return;
         }
 
         let newValues = [];
@@ -41,8 +41,6 @@ class ModelsAttribute extends Attribute {
             }
         }
         this.value.setCurrent(newValues);
-
-        return this;
     }
 
     async validate(): Promise<void> {

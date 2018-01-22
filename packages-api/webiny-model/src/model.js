@@ -190,7 +190,9 @@ class Model implements IModel {
         const json = {};
         let name;
         for (name in this.attributes) {
-            json[name] = await this.attributes[name].getStorageValue();
+            if (this.attributes[name].getToStorage()) {
+                json[name] = await this.attributes[name].getStorageValue();
+            }
         }
 
         return json;
