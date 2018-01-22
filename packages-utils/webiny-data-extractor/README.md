@@ -1,4 +1,4 @@
-# Webiny Data Extractor [![Build Status](https://travis-ci.org/Webiny/webiny-data-extractor.svg?branch=master)](https://travis-ci.org/Webiny/webiny-data-extractor)
+# Webiny Data Extractor
 
 A small library for easy async data extraction, using dot and square brackets notation.
 

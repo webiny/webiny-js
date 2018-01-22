@@ -1,4 +1,4 @@
-# Webiny Validation [![Build Status](https://travis-ci.org/Webiny/webiny-validation.svg?branch=master)](https://travis-ci.org/Webiny/webiny-validation) [![Coverage Status](https://coveralls.io/repos/github/Webiny/webiny-validation/badge.svg?branch=master)](https://coveralls.io/github/Webiny/webiny-validation?branch=master)
+# Webiny Validation
 
 A simple, pluginable and async data validation library, packed with frequently used validators like `required`, `email`, `url`, `creditCard` etc.
 

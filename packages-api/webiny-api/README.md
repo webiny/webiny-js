@@ -1,4 +1,4 @@
-# Webiny API [![Build Status](https://travis-ci.org/Webiny/webiny-api.svg?branch=master)](https://travis-ci.org/Webiny/webiny-api) [![Coverage Status](https://coveralls.io/repos/github/Webiny/webiny-api/badge.svg?branch=master)](https://coveralls.io/github/Webiny/webiny-api?branch=master)
+# Webiny API
 
 Express middleware to quickly build powerful REST APIs.
 

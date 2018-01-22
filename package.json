@@ -43,8 +43,7 @@
     "source-map-support": "^0.5.0"
   },
   "scripts": {
-    "commit": "git-cz",
-    "flow": "flow",
+    "commit": "yarn lint-staged && git-cz",
     "changelog": "conventional-changelog -p angular -s -i CHANGELOG.md",
     "mocha": "mocha --require source-map-support/register --require babel-core/register",
     "build": "lerna exec -- babel src -d lib --source-maps --copy-files",
@@ -66,6 +65,7 @@
     "test:travis": "yarn build && nyc yarn test && nyc report --reporter=text-lcov | coveralls"
   },
   "pre-commit": [
+    "flow",
     "lint-staged",
     "test"
   ],
