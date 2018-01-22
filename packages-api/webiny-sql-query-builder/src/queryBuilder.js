@@ -1,7 +1,7 @@
 // @flow
-import _ from 'lodash';
-import { OperatorsProcessor } from './processors'
-import SqlString from 'sqlstring'
+import _ from "lodash";
+import { OperatorsProcessor } from "./processors";
+import SqlString from "sqlstring";
 
 const operatorsProcessor = new OperatorsProcessor();
 
@@ -19,10 +19,10 @@ class QueryBuilder {
     update(options: QueryOptions & { data: Object }): string {
         const values = [];
         for (const [key, value] of Object.entries(options.data)) {
-            values.push(key + ' = ' + SqlString.escape(value));
+            values.push(key + " = " + SqlString.escape(value));
         }
 
-        let operation = `UPDATE ${options.table} SET ${values.join(', ')}`;
+        let operation = `UPDATE ${options.table} SET ${values.join(", ")}`;
         operation += this._getWhere(options);
         operation += this._getOrder(options);
         operation += this._getLimit(options);
@@ -32,8 +32,10 @@ class QueryBuilder {
     }
 
     insert(options: QueryOptions & { data: Object, onDuplicateKeyUpdate?: boolean }): string {
-        const columns = _.keys(options.data).join(', ');
-        const insertValues = _.values(options.data).map(value => SqlString.escape(value)).join(', ');
+        const columns = _.keys(options.data).join(", ");
+        const insertValues = _.values(options.data)
+            .map(value => SqlString.escape(value))
+            .join(", ");
 
         if (!options.onDuplicateKeyUpdate) {
             return `INSERT INTO ${options.table} (${columns}) VALUES (${insertValues})`;
@@ -41,10 +43,12 @@ class QueryBuilder {
 
         const updateValues = [];
         for (const [key, value] of Object.entries(options.data)) {
-            updateValues.push(key + ' = ' + SqlString.escape(value));
+            updateValues.push(key + " = " + SqlString.escape(value));
         }
 
-        return `INSERT INTO ${options.table} (${columns}) VALUES (${insertValues}) ON DUPLICATE KEY UPDATE ${updateValues.join(', ')}`;
+        return `INSERT INTO ${
+            options.table
+        } (${columns}) VALUES (${insertValues}) ON DUPLICATE KEY UPDATE ${updateValues.join(", ")}`;
     }
 
     select(options: QueryOptions): string {
@@ -83,31 +87,31 @@ class QueryBuilder {
         const columns = options.columns || [];
 
         if (_.isEmpty(columns)) {
-            return ' *';
+            return " *";
         }
 
-        return ' ' + columns.join(', ');
+        return " " + columns.join(", ");
     }
 
     _getWhere(options: { where?: Object }): string {
         if (_.isEmpty(options.where)) {
-            return '';
+            return "";
         }
 
-        return ' WHERE ' + operatorsProcessor.execute(options.where);
+        return " WHERE " + operatorsProcessor.execute(options.where);
     }
 
     _getOrder(options: { order?: { [string]: number } }): string {
         if (_.isEmpty(options.order)) {
-            return '';
+            return "";
         }
 
         let query = [];
         for (const [sort, order] of Object.entries(options.order)) {
-            query.push(`${sort} ${order === 1 ? 'ASC' : 'DESC'}`);
+            query.push(`${sort} ${order === 1 ? "ASC" : "DESC"}`);
         }
 
-        return ' ORDER BY ' + query.join(', ');
+        return " ORDER BY " + query.join(", ");
     }
 
     _getLimit(options: { limit?: number }): string {
@@ -116,7 +120,7 @@ class QueryBuilder {
         if (_.isNumber(limit) && limit > 0) {
             return ` LIMIT ${limit}`;
         }
-        return '';
+        return "";
     }
 
     _getOffset(options: { offset?: number }): string {
@@ -125,7 +129,7 @@ class QueryBuilder {
         if (_.isNumber(offset) && offset > 0) {
             return ` OFFSET ${offset}`;
         }
-        return '';
+        return "";
     }
 }
 

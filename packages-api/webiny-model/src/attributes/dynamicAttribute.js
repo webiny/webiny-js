@@ -1,18 +1,23 @@
-import Attribute from './../attribute'
+// @flow
+import Attribute from "./../attribute";
+import { AttributesContainer } from "../index";
 
 class DynamicAttribute extends Attribute {
-    constructor(name, attributesContainer, callback) {
+    callback: Function;
+
+    constructor(name: string, attributesContainer: AttributesContainer, callback: Function) {
         super(name, attributesContainer);
         this.callback = callback;
         this.toStorage = false;
     }
 
-    canSetValue() {
+    canSetValue(): boolean {
         return false;
     }
 
-    getValue(params = [], processCallbacks = true) {
-        return this.callback.call(this.getParentModel(), {model: this.getParentModel()});
+    // eslint-disable-next-line
+    getValue(params: Array<any> = [], processCallbacks: boolean = true): any {
+        return this.callback.call(this.getParentModel(), { model: this.getParentModel() });
     }
 }
 

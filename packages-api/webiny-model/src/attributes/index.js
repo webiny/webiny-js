@@ -1,19 +1,8 @@
-import char from './charAttribute';
-import boolean from './booleanAttribute';
-import integer from './integerAttribute';
-import float from './floatAttribute';
-import dynamic from './dynamicAttribute';
-import date from './dateAttribute';
-import model from './modelAttribute';
-import models from './modelsAttribute';
-
-export default {
-	char,
-	boolean,
-	integer,
-	float,
-	dynamic,
-	model,
-	models,
-	date
-};
+export { default as CharAttribute } from "./charAttribute";
+export { default as BooleanAttribute } from "./booleanAttribute";
+export { default as IntegerAttribute } from "./integerAttribute";
+export { default as FloatAttribute } from "./floatAttribute";
+export { default as DynamicAttribute } from "./dynamicAttribute";
+export { default as DateAttribute } from "./dateAttribute";
+export { default as ModelAttribute } from "./modelAttribute";
+export { default as ModelsAttribute } from "./modelsAttribute";

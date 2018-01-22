@@ -1,98 +1,105 @@
-import Attribute from './../attribute'
-import _ from 'lodash';
-import ModelError from './../modelError'
+// @flow
+import Attribute from "./../attribute";
+import _ from "lodash";
+import Model from "./../model";
+import ModelError from "./../modelError";
+import { AttributesContainer } from "../index";
 
 class ModelsAttribute extends Attribute {
-	constructor(name, attributesContainer, model) {
-		super(name, attributesContainer);
-		this.modelClass = model;
-	}
+    modelClass: Model.constructor;
 
-	getModelClass() {
-		return this.modelClass;
-	}
+    constructor(name: string, attributesContainer: AttributesContainer, model: Model.constructor) {
+        super(name, attributesContainer);
+        this.modelClass = model;
+    }
 
-	setValue(values = []) {
-		if (!this.canSetValue()) {
-			return this;
-		}
+    getModelClass(): Model.constructor {
+        return this.modelClass;
+    }
 
-		this.value.set = true;
+    setValue(values: Array<Model> = []): this {
+        if (!this.canSetValue()) {
+            return this;
+        }
 
-		// Even if the value is invalid (eg. a string), we allow it here, but calling validate() will fail.
-		if (!_.isArray(values)) {
-			this.value.setCurrent(values);
-			return this;
-		}
+        this.value.set = true;
 
-		let newValues = [];
-		for (let i = 0; i < values.length; i++) {
-			if (_.isPlainObject(values[i])) {
-				const newValue = new this.modelClass();
-				newValue.populate(_.clone(values[i]));
-				newValues.push(newValue);
-			} else {
-				newValues.push(values[i]);
-			}
-		}
-		this.value.setCurrent(newValues);
+        // Even if the value is invalid (eg. a string), we allow it here, but calling validate() will fail.
+        if (!_.isArray(values)) {
+            this.value.setCurrent(values);
+            return this;
+        }
 
-		return this;
-	}
+        let newValues = [];
+        for (let i = 0; i < values.length; i++) {
+            if (_.isPlainObject(values[i])) {
+                const newValue = new this.modelClass();
+                newValue.populate(_.clone(values[i]));
+                newValues.push(newValue);
+            } else {
+                newValues.push(values[i]);
+            }
+        }
+        this.value.setCurrent(newValues);
 
-	async validate() {
-		if (!this.isSet()) {
-			return;
-		}
+        return this;
+    }
 
-		if (!_.isArray(this.value.getCurrent())) {
-			this.expected('array', typeof this.value.getCurrent());
-		}
+    async validate(): Promise<void> {
+        if (!this.isSet()) {
+            return;
+        }
 
-		const errors = [];
-		for (let i = 0; i < this.value.getCurrent().length; i++) {
-			if (!this.value.getCurrent()[i] instanceof this.getModelClass()) {
-				errors.push({
-					type: ModelError.INVALID_ATTRIBUTE,
-					data: {
-						index: i
-					},
-					message: `Validation failed, item at index ${i} not an instance of Model class.`
-				});
-				continue;
-			}
-			try {
-				await this.value.getCurrent()[i].validate();
-			} catch (e) {
-				errors.push({
-					type: e.getType(),
-					data: {index: i, ...e.getData()},
-					message: e.getMessage()
-				});
-			}
-		}
+        if (!_.isArray(this.value.getCurrent())) {
+            this.expected("array", typeof this.value.getCurrent());
+        }
 
-		if (!_.isEmpty(errors)) {
-			throw new ModelError('Validation failed.', ModelError.INVALID_ATTRIBUTE, {items: errors});
-		}
-	}
+        const errors = [];
+        for (let i = 0; i < this.value.getCurrent().length; i++) {
+            if (!(this.value.getCurrent()[i] instanceof this.getModelClass())) {
+                errors.push({
+                    type: ModelError.INVALID_ATTRIBUTE,
+                    data: {
+                        index: i
+                    },
+                    message: `Validation failed, item at index ${i} not an instance of Model class.`
+                });
+                continue;
+            }
+            try {
+                await this.value.getCurrent()[i].validate();
+            } catch (e) {
+                errors.push({
+                    type: e.getType(),
+                    data: { index: i, ...e.getData() },
+                    message: e.getMessage()
+                });
+            }
+        }
 
-	async getJSONValue() {
-		if (this.isEmpty()) {
-			return null;
-		}
+        if (!_.isEmpty(errors)) {
+            throw new ModelError("Validation failed.", ModelError.INVALID_ATTRIBUTE, {
+                items: errors
+            });
+        }
+    }
 
-		const json = [];
-		for (let i = 0; i < this.getValue().length; i++) {
-			const item = this.getValue()[i];
-			json.push(await item.toJSON());
-		}
-		return json;
-	}
+    async getJSONValue(): Promise<any> {
+        if (this.isEmpty()) {
+            return null;
+        }
 
-	async getStorageValue() {
-		return this.getJSONValue();
-	}
+        const json = [];
+        for (let i = 0; i < this.getValue().length; i++) {
+            const item = this.getValue()[i];
+            json.push(await item.toJSON());
+        }
+        return json;
+    }
+
+    async getStorageValue(): Promise<{}> {
+        return this.getJSONValue();
+    }
 }
 
 export default ModelsAttribute;
