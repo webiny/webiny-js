@@ -2,10 +2,17 @@
 import ValidationError from "./../validationError";
 
 /**
- * @function email
- * @description This validator checks if the given value is a valid email address
- * @param value Value to validate
- * @return {boolean}
+ * @name email
+ * @description Email validator. This validator checks if the given value is a valid email address.
+ * @param {any} value This is the value that will be validated.
+ * @throws {ValidationError}
+ * @example
+ * import { validation } from 'webiny-validation';
+ * validation.validate('email@gmail.com', 'email').then(() => {
+ *  // Valid
+ * }).catch(e => {
+ *  // Invalid
+ * });
  */
 export default (value: any) => {
     if (!value) return;

@@ -7,8 +7,13 @@ A simple, pluginable and async data validation library, packed with frequently u
 
 ## Usage
 ```
-const validation = require('webiny-validation');
-await validation.validate(100, 'required,gte:0,lte:100');
+import { validation } from 'webiny-validation';
+
+validation.validate(123, 'required,number,gt:20').then(() => {
+    // Value is valid
+}).catch(e => {
+    // Value is invalid
+});
 ```
 
 ## List of built-in validators (in alphabetical order)
@@ -31,17 +36,18 @@ await validation.validate(100, 'required,gte:0,lte:100');
 - `url`
 
 
-## Registering new validators
+## Adding new validators
 
 ```
-const validation = require('webiny-validation');
+import { validation, ValidationError } from 'webiny-validation';
+
 validation.setValidator('gender', value => {
-    if (['male', 'female'].includes(value)) {
-            return;
-        }
-        throw new Error('Value needs to be "male" or "female".);
-    });
-    
+  if (['male', 'female'].includes(value)) {
+      return;
+  }
+  throw new ValidationError('Value needs to be "male" or "female".);
+});
+
 // Throws an instance of ValidationError error.
-await validation.validate('none', 'gender'); 
+await validation.validate('none', 'gender');
 ```

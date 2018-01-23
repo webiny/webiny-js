@@ -2,8 +2,6 @@
 
 ### Table of Contents
 
--   [Installation](#installation)
--   [Usage](#usage)
 -   [Classes](#classes)
     -   [Validation](#validation)
         -   [setValidator](#setvalidator)
@@ -21,30 +19,14 @@
     -   [creditCard](#creditcard)
     -   [email](#email)
     -   [eq](#eq)
+    -   [gt](#gt)
+    -   [gte](#gte)
+    -   [in](#in)
     -   [number](#number)
 -   [Flow types](#flow-types)
     -   [Validator](#validator)
-    -   [ParsedValidators](#parsedvalidators)
     -   [ValidationErrorValue](#validationerrorvalue)
     -   [ValidateOptions](#validateoptions)
-
-## Installation
-
-To install this package run:
-
-    yarn add webiny-validation
-
-
-## Usage
-
-    import { validation } from 'webiny-validation';
-
-    validation.validate(123, 'required,number,gt:20').then(() => {
-      // Value is valid
-    }).catch(e => {
-      // Value is invalid
-    });
-
 
 ## Classes
 
@@ -52,6 +34,19 @@ To install this package run:
 
 
 ### Validation
+
+Validation class instance is the main container for all validators.
+When you need to validate something, you will be interacting directly with this class.
+It provides methods for both async and sync validation and also allows you to add new and overwrite existing validators.
+
+**Examples**
+
+```javascript
+import { validation } from 'webiny-validation';
+
+// `validation` is a preconfigured instance of Validation class
+// From here you can either add new validators or use it as-is
+```
 
 #### setValidator
 
@@ -99,6 +94,8 @@ Validate the given value using given validation rules
 Returns **([boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean) \| [ValidationErrorValue](#validationerrorvalue))** 
 
 ### ValidationError
+
+This class is used by validators to throw an error when value validation fails.
 
 **Parameters**
 
@@ -150,39 +147,139 @@ Sets invalid value.
 
 ## Validators
 
-The following are the built-in validators
+The following validators come predefined with the library.
+You can replace them with your own validators by setting your custom [Validator](#validator) object using the same name.
 
 
 ### creditCard
 
-This validator will check if the given value is a credit card number
+Credit card validator. This validator will check if the given value is a credit card number.
 
 **Parameters**
 
--   `value`  Value to validate
+-   `value` **any** This is the value that will be validated.
 
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+**Examples**
+
+```javascript
+import { validation } from 'webiny-validation';
+validation.validate('notACreditCard', 'creditCard').then(() => {
+ // Valid
+}).catch(e => {
+ // Invalid
+});
+```
+
+-   Throws **[ValidationError](#validationerror)** 
 
 ### email
 
-This validator checks if the given value is a valid email address
+Email validator. This validator checks if the given value is a valid email address.
 
 **Parameters**
 
--   `value`  Value to validate
+-   `value` **any** This is the value that will be validated.
 
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+**Examples**
+
+```javascript
+import { validation } from 'webiny-validation';
+validation.validate('email@gmail.com', 'email').then(() => {
+ // Valid
+}).catch(e => {
+ // Invalid
+});
+```
+
+-   Throws **[ValidationError](#validationerror)** 
 
 ### eq
 
-This validator checks if the given values are equal
+Equality validator. This validator checks if the given values are equal.
 
 **Parameters**
 
--   `value`  Value to validate
--   `equalTo`  Value to compare with
+-   `value` **any** This is the value that will be validated.
+-   `equalTo` **any** This is the value to validate against. It is passed as a validator parameter: `eq:valueToCompareWith`
 
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+**Examples**
+
+```javascript
+import { validation } from 'webiny-validation';
+validation.validate('email@gmail.com', 'eq:another@gmail.com').then(() => {
+ // Valid
+}).catch(e => {
+ // Invalid
+});
+```
+
+-   Throws **[ValidationError](#validationerror)** 
+
+### gt
+
+"Greater than" validator. This validator checks if the given values is greater than the `min` value.
+
+**Parameters**
+
+-   `value` **any** This is the value that will be validated.
+-   `min` **any** This is the value to validate against. It is passed as a validator parameter: `gt:valueToCompareAgainst`
+
+**Examples**
+
+```javascript
+import { validation } from 'webiny-validation';
+validation.validate(10, 'gt:100').then(() => {
+ // Valid
+}).catch(e => {
+ // Invalid
+});
+```
+
+-   Throws **[ValidationError](#validationerror)** 
+
+### gte
+
+"Greater than or equals" validator. This validator checks if the given values is greater than or equal to the `min` value.
+
+**Parameters**
+
+-   `value` **any** This is the value that will be validated.
+-   `min` **any** This is the value to validate against. It is passed as a validator parameter: `gte:valueToCompareAgainst`
+
+**Examples**
+
+```javascript
+import { validation } from 'webiny-validation';
+validation.validate(10, 'gte:100').then(() => {
+ // Valid
+}).catch(e => {
+ // Invalid
+});
+```
+
+-   Throws **[ValidationError](#validationerror)** 
+
+### in
+
+"In array" validator. This validator checks if the given values is greater than or equal to the `min` value.
+
+**Parameters**
+
+-   `value` **any** This is the value that will be validated.
+-   `parameters` **any** This is the array of values to search in. It is passed as a validator parameter: `in:1:2:3`. Array values are separated by `:`.
+
+**Examples**
+
+```javascript
+import { validation } from 'webiny-validation';
+validation.validate(10, 'in:10:20:30').then(() => {
+ // Valid
+}).catch(e => {
+ // Invalid
+});
+```
+
+-   Throws **[ValidationError](#validationerror)** 
 
 ### number
 
@@ -196,41 +293,35 @@ Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 ## Flow types
 
-The following are Flow types used in this package
+The following are Flow types used in this package:
 
 
 ### Validator
 
-Validator function signature
+This type defines the validator function.
 
 **Parameters**
 
--   `value` **any** Value to validate
--   `parameters` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;any>** Validator parameters
+-   `value` **any** This is the value being validated.
+-   `parameters` **any** (Optional) This represents any kind of validator parameters.
 
 
 -   Throws **[ValidationError](#validationerror)** 
 
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** `true` if value is valid, throws otherwise
-
-### ParsedValidators
-
-An object containing validators with parameters: `{ [string]: Array<string> }`
-
 ### ValidationErrorValue
 
-An object containing validation error data
+This type defines a structure of validation error data object.
 
 **Properties**
 
--   `name` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Validator name
--   `message` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Error message
--   `value` **any** Value being validated
+-   `name` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Validator name.
+-   `message` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Error message.
+-   `value` **any** Value being validated.
 
 ### ValidateOptions
 
-An object containing validation options
+This is an object containing validation options.
 
 **Properties**
 
--   `throw` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** Should validation throw on failure? Default: true
+-   `throw` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** Should validation throw on failure? Default: true.

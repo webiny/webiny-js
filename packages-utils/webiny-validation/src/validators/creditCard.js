@@ -2,14 +2,19 @@
 import ValidationError from "./../validationError";
 
 /**
- * Credit card validator
- *
- * @function creditCard
- * @description This validator will check if the given value is a credit card number
- * @param value Value to validate
- * @return {boolean}
+ * @name creditCard
+ * @description Credit card validator. This validator will check if the given value is a credit card number.
+ * @param {any} value This is the value that will be validated.
+ * @throws {ValidationError}
+ * @example
+ * import { validation } from 'webiny-validation';
+ * validation.validate('notACreditCard', 'creditCard').then(() => {
+ *  // Valid
+ * }).catch(e => {
+ *  // Invalid
+ * });
  */
-export default (value: any) => {
+export default (value: any): void => {
     if (!value) return;
     value = value + "";
 
@@ -42,7 +47,7 @@ export default (value: any) => {
     }
 
     if (nCheck % 10 === 0) {
-        return true;
+        return;
     }
 
     throw new ValidationError("Credit card number invalid.");

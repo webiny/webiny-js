@@ -9,7 +9,16 @@ const entries = (validators: ParsedValidators): Array<[string, Array<string>]> =
 const invalidRules = "Validators must be specified as a string (eg. required,minLength:10,email).";
 
 /**
+ * Validation class instance is the main container for all validators.
+ * When you need to validate something, you will be interacting directly with this class.
+ * It provides methods for both async and sync validation and also allows you to add new and overwrite existing validators.
+ *
  * @class Validation
+ * @example
+ * import { validation } from 'webiny-validation';
+ *
+ * // `validation` is a preconfigured instance of Validation class
+ * // From here you can either add new validators or use it as-is
  */
 class Validation {
     validators: { [string]: Validator };
