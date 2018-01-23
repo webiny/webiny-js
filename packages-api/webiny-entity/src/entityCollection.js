@@ -1,5 +1,7 @@
-class EntityCollection extends Array {
-    constructor(values = []) {
+// @flow
+class EntityCollection extends Array<Entity> {
+    entityCollection: { params: ?Object, meta: ?Object };
+    constructor(values: Array<Entity> = []) {
         super();
         if (!values.forEach) {
             values = [];
@@ -11,21 +13,21 @@ class EntityCollection extends Array {
         };
     }
 
-    setParams(params) {
+    setParams(params: Object): this {
         this.entityCollection.params = params;
         return this;
     }
 
-    getParams() {
+    getParams(): ?Object {
         return this.entityCollection.params;
     }
 
-    setMeta(meta) {
+    setMeta(meta: ?Object): this {
         this.entityCollection.meta = meta;
         return this;
     }
 
-    getMeta() {
+    getMeta(): ?Object {
         return this.entityCollection.meta;
     }
 }

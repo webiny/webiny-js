@@ -1,3 +1,4 @@
+// @flow
 import { Model } from "webiny-model";
 import EntityAttributesContainer from "./entityAttributesContainer";
 
@@ -7,16 +8,16 @@ class EntityModel extends Model {
         this.parentEntity = null;
     }
 
-    setParentEntity(parentEntity) {
+    setParentEntity(parentEntity: Entity): this {
         this.parentEntity = parentEntity;
         return this;
     }
 
-    getParentEntity() {
+    getParentEntity(): ?Entity {
         return this.parentEntity;
     }
 
-    createAttributesContainer() {
+    createAttributesContainer(): EntityAttributesContainer {
         return new EntityAttributesContainer(this);
     }
 }

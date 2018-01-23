@@ -1,26 +1,30 @@
+// @flow
 class QueryResult {
-	constructor(result = null, meta = null) {
-		this.result = result;
-		this.meta = meta;
-	}
+    result: any;
+    meta: ?Object;
 
-	setResult(result) {
-		this.result = result;
-		return this;
-	}
+    constructor(result: any, meta: ?Object) {
+        this.result = result;
+        this.meta = meta;
+    }
 
-	getResult() {
-		return this.result;
-	}
+    setResult(result: any): this {
+        this.result = result;
+        return this;
+    }
 
-	setMeta(meta) {
-		this.meta = meta;
-		return this;
-	}
+    getResult(): any {
+        return this.result;
+    }
 
-	getMeta() {
-		return this.meta;
-	}
+    setMeta(meta: Object): this {
+        this.meta = meta;
+        return this;
+    }
+
+    getMeta(): ?Object {
+        return this.meta;
+    }
 }
 
 export default QueryResult;
