@@ -6,14 +6,14 @@ import ModelError from "./../modelError";
 import { AttributesContainer } from "../index";
 
 class ModelsAttribute extends Attribute {
-    modelClass: Model.constructor;
+    modelClass: Class<Model>;
 
-    constructor(name: string, attributesContainer: AttributesContainer, model: Model.constructor) {
+    constructor(name: string, attributesContainer: AttributesContainer, model: Class<Model>) {
         super(name, attributesContainer);
         this.modelClass = model;
     }
 
-    getModelClass(): Model.constructor {
+    getModelClass(): Class<Model> {
         return this.modelClass;
     }
 
