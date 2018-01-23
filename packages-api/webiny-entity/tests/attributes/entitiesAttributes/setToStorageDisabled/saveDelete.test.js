@@ -213,6 +213,42 @@ describe("save and delete entities attribute test", () => {
         entitySave.restore();
     });
 
+    it("should save only attributes that were loaded", async () => {
+        const mainEntity = new MainEntity();
+        mainEntity.attribute1 = [
+            { id: null, name: "Enlai", type: "dog", markedAsCannotDelete: false },
+            new Entity1().populate({ id: null, name: "Bucky", type: "dog" })
+        ];
+
+        let entitySave = sinon
+            .stub(mainEntity.getDriver(), "save")
+            .onCall(0)
+            .callsFake(entity => {
+                entity.id = "BB";
+                return new QueryResult();
+            })
+            .onCall(1)
+            .callsFake(entity => {
+                entity.id = "CC";
+                return new QueryResult();
+            })
+            .onCall(2)
+            .callsFake(entity => {
+                entity.id = "AA";
+                return new QueryResult();
+            });
+
+        let entityFind = sinon.stub(mainEntity.getDriver(), "find");
+
+        await mainEntity.save();
+
+        assert.equal(entitySave.callCount, 3);
+        assert.equal(entityFind.callCount, 0);
+
+        entitySave.restore();
+        entityFind.restore();
+    });
+
     it("auto delete must be automatically enabled and deletion must stop deletion if error was thrown", async () => {
         const mainEntity = new MainEntity();
         mainEntity.attribute1 = [
@@ -497,8 +533,6 @@ describe("save and delete entities attribute test", () => {
         entityFind.restore();
         entityDelete.restore();
     });
-
-    it("should not trigger save on linked entity since it was not loaded", async () => {});
 
     it("should add an entity to the list of entities", async () => {});
 
