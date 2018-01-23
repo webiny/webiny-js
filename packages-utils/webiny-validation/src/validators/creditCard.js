@@ -1,21 +1,30 @@
-import ValidationError from './../validationError';
+// @flow
+import ValidationError from "./../validationError";
 
-export default (value) => {
+/**
+ * Credit card validator
+ *
+ * @function creditCard
+ * @description This validator will check if the given value is a credit card number
+ * @param value Value to validate
+ * @return {boolean}
+ */
+export default (value: any) => {
     if (!value) return;
-    value = value + '';
+    value = value + "";
 
     if (value.length < 12) {
-        throw new ValidationError('Credit card number too short.');
+        throw new ValidationError("Credit card number too short.");
     }
 
-    if (/[^0-9-\s]+/.test(value)) throw new ValidationError('Credit card number invalid.');
+    if (/[^0-9-\s]+/.test(value)) throw new ValidationError("Credit card number invalid.");
 
     let nCheck = 0;
     let nDigit = 0;
     let bEven = false;
 
-    value = value.replace(/ /g, '');
-    value = value.replace(/\D/g, '');
+    value = value.replace(/ /g, "");
+    value = value.replace(/\D/g, "");
 
     for (let n = value.length - 1; n >= 0; n--) {
         const cDigit = value.charAt(n);
@@ -32,9 +41,9 @@ export default (value) => {
         bEven = !bEven;
     }
 
-    if ((nCheck % 10) === 0) {
+    if (nCheck % 10 === 0) {
         return true;
     }
 
-    throw new ValidationError('Credit card number invalid.');
+    throw new ValidationError("Credit card number invalid.");
 };

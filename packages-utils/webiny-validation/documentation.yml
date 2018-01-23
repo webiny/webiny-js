@@ -1,0 +1,38 @@
+toc:
+  - name: Installation
+    description: |
+      To install this package run:
+      ```
+      yarn add webiny-validation
+      ```
+  - name: Usage
+    description: |
+      ```
+      import { validation } from 'webiny-validation';
+
+      validation.validate(123, 'required,number,gt:20').then(() => {
+        // Value is valid
+      }).catch(e => {
+        // Value is invalid
+      });
+      ```
+  - name: Classes
+    children:
+    - Validation
+    - ValidationError
+  - name: Validators
+    description: |
+      The following are the built-in validators
+    children:
+    - creditCard
+    - email
+    - eq
+    - number
+  - name: Flow types
+    description: |
+      The following are Flow types used in this package
+    children:
+    - Validator
+    - ParsedValidators
+    - ValidationErrorValue
+    - ValidateOptions
