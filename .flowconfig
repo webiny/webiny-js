@@ -7,6 +7,7 @@ packages-api/webiny-api/flow-typed
 packages-api/webiny-sql-query-builder/flow-typed
 packages-api/webiny-model/flow-typed
 packages-utils/webiny-file-storage/flow-typed
+packages-utils/webiny-validation/flow-typed
 [lints]
 
 [options]
