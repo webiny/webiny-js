@@ -1,19 +1,19 @@
 // @flow
 class QueryResult {
-    result: any;
+    result: mixed;
     meta: ?Object;
 
-    constructor(result: any, meta: ?Object) {
+    constructor(result: mixed, meta: ?Object) {
         this.result = result;
         this.meta = meta;
     }
 
-    setResult(result: any): this {
+    setResult(result: mixed): this {
         this.result = result;
         return this;
     }
 
-    getResult(): any {
+    getResult(): mixed {
         return this.result;
     }
 

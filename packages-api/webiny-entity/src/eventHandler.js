@@ -1,4 +1,8 @@
 // @flow
+
+/**
+ * @private
+ */
 class EventHandler {
     name: string;
     callback: Function;
@@ -12,7 +16,7 @@ class EventHandler {
         this.once = false;
     }
 
-    execute(params: Object): any {
+    execute(params: Object): mixed {
         if (this.getOnce() && this.executed) {
             return;
         }

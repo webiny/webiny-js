@@ -1,10 +1,12 @@
+// @flow
 import { AttributeValue } from "webiny-model";
-import _ from "lodash";
 import Entity from "./../entity";
 import EntityCollection from "./../entityCollection";
 
 class EntitiesAttributeValue extends AttributeValue {
-    constructor(attribute) {
+    initial: EntityCollection;
+
+    constructor(attribute: IAttribute) {
         super(attribute);
 
         this.current = new EntityCollection();
@@ -24,16 +26,16 @@ class EntitiesAttributeValue extends AttributeValue {
      * Ensures data is loaded correctly, and in the end returns current value.
      * @returns {Promise<*>}
      */
-    async load(callback) {
+    async load(callback: ?Function) {
         if (this.isLoaded()) {
-            _.isFunction(callback) && (await callback());
+            typeof callback === "function" && (await callback());
             return this.current;
         }
 
         if (this.isLoading()) {
             return new Promise(resolve => {
                 this.queue.push(async () => {
-                    _.isFunction(callback) && (await callback());
+                    typeof callback === "function" && (await callback());
                     resolve(this.current);
                 });
             });
@@ -76,7 +78,7 @@ class EntitiesAttributeValue extends AttributeValue {
         // Set current entities as new values.
         this.syncInitialCurrent();
 
-        _.isFunction(callback) && (await callback());
+        typeof callback === "function" && (await callback());
 
         this.status.loading = false;
         this.status.loaded = true;
@@ -91,28 +93,28 @@ class EntitiesAttributeValue extends AttributeValue {
         return this.current;
     }
 
-    isLoaded() {
+    isLoaded(): boolean {
         return this.status.loaded;
     }
 
-    isLoading() {
+    isLoading(): boolean {
         return this.status.loading;
     }
 
-    setInitial(value) {
+    setInitial(value: EntityCollection): this {
         this.initial = value;
         return this;
     }
 
-    getInitial() {
+    getInitial(): EntityCollection {
         return this.initial;
     }
 
-    hasInitial() {
+    hasInitial(): boolean {
         return this.initial.length > 0;
     }
 
-    async deleteInitial() {
+    async deleteInitial(): Promise<void> {
         const currentEntitiesIds = this.current.map(entity => entity.id);
 
         for (let i = 0; i < this.getInitial().length; i++) {
@@ -126,15 +128,15 @@ class EntitiesAttributeValue extends AttributeValue {
     /**
      * Creates a new array that contains all currently loaded entities.
      */
-    syncInitialCurrent() {
+    syncInitialCurrent(): void {
         this.initial = this.getCurrent().map(entity => entity);
     }
 
     /**
      * Value cannot be set as clean if ID is missing in one of the entities.
-     * @returns {EntityAttributeValue}
+     * @returns {this}
      */
-    clean() {
+    clean(): this {
         for (let i = 0; i < this.current.length; i++) {
             if (this.current[i] instanceof Entity) {
                 if (!this.current[i].id) {

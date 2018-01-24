@@ -1,5 +1,4 @@
 // @flow
-import _ from "lodash";
 import QueryResult from "./queryResult";
 import EntityModel from "./entityModel";
 
@@ -24,12 +23,12 @@ class Driver {
     }
 
     // eslint-disable-next-line
-    async findById(entity: Entity, id: string, params: {}): Promise<QueryResult> {
+    async findById(entity: Entity, id: mixed, params: {}): Promise<QueryResult> {
         return new QueryResult();
     }
 
     // eslint-disable-next-line
-    async findByIds(entity: Entity, ids: Array<string>, params: {}): Promise<QueryResult> {
+    async findByIds(entity: Entity, ids: Array<mixed>, params: {}): Promise<QueryResult> {
         return new QueryResult();
     }
 
@@ -49,8 +48,8 @@ class Driver {
     }
 
     // eslint-disable-next-line
-    isId(entity: Entity, id: string, params: {}): boolean {
-        return _.isString(id);
+    isId(entity: Entity, id: mixed, params: {}): boolean {
+        return typeof id === "string";
     }
 }
 

@@ -1,11 +1,20 @@
+// @flow
+import _ from "lodash";
 import { ModelError, Attribute } from "webiny-model";
 import EntityCollection from "./../../src/entityCollection";
-import _ from "lodash";
-import EntitiesAttributeValue from "./entitiesAttributeValue";
 import Entity from "./../entity";
+import EntitiesAttributeValue from "./entitiesAttributeValue";
+import EntityAttributesContainer from "../entityAttributesContainer";
 
 class EntitiesAttribute extends Attribute {
-    constructor(name, attributesContainer, entity, attributeName = null) {
+    value: EntitiesAttributeValue;
+
+    constructor(
+        name: string,
+        attributesContainer: EntityAttributesContainer,
+        entity: Entity,
+        attributeName: ?string = null
+    ) {
         super(name, attributesContainer);
 
         this.classes = {
@@ -26,7 +35,7 @@ class EntitiesAttribute extends Attribute {
          * Attribute's current value.
          * @type {undefined}
          */
-        this.value = new EntitiesAttributeValue(this);
+        this.value = new EntitiesAttributeValue(((this: any): EntitiesAttribute));
 
         /**
          * Auto save and delete are both enabled by default.
@@ -93,21 +102,21 @@ class EntitiesAttribute extends Attribute {
             });
     }
 
-    getEntitiesClass() {
+    getEntitiesClass(): Class<Entity> {
         return this.classes.entities.class;
     }
 
-    getUsingClass() {
+    getUsingClass(): ?Class<Entity> {
         return this.classes.using.class;
     }
 
-    setUsing(entityClass, entityAttribute = null) {
+    setUsing(entityClass: Class<Entity>, entityAttribute: ?string = null) {
         this.classes.using.class = entityClass;
         this.classes.using.attribute = entityAttribute;
         return this;
     }
 
-    getUsing() {
+    getUsing(): { class: ?Class<Entity>, attribute: ?string } {
         return this.classes.using;
     }
 
@@ -117,7 +126,7 @@ class EntitiesAttribute extends Attribute {
      * @param autoSave
      * @returns {EntityAttribute}
      */
-    setAutoSave(autoSave = true) {
+    setAutoSave(autoSave: boolean = true) {
         this.auto.save = autoSave;
         return this;
     }
@@ -126,7 +135,7 @@ class EntitiesAttribute extends Attribute {
      * Returns true if auto save is enabled, otherwise false.
      * @returns {boolean}
      */
-    getAutoSave() {
+    getAutoSave(): boolean {
         return this.auto.save;
     }
 
@@ -136,7 +145,7 @@ class EntitiesAttribute extends Attribute {
      * @param autoDelete
      * @returns {EntityAttribute}
      */
-    setAutoDelete(autoDelete = true) {
+    setAutoDelete(autoDelete: boolean = true) {
         this.auto.delete = autoDelete;
         return this;
     }
@@ -145,11 +154,11 @@ class EntitiesAttribute extends Attribute {
      * Returns true if auto delete is enabled, otherwise false.
      * @returns {boolean}
      */
-    getAutoDelete() {
+    getAutoDelete(): boolean {
         return this.auto.delete;
     }
 
-    async getValue() {
+    async getValue(): Promise<EntityCollection> {
         return this.value.load();
     }
 
@@ -158,7 +167,7 @@ class EntitiesAttribute extends Attribute {
      * @param value
      * @returns {Promise<void>}
      */
-    setValue(value): any {
+    setValue(value: Array<{}> | EntityCollection): Promise<void> {
         return new Promise((resolve, reject) => {
             this.value.load(() => {
                 if (!this.canSetValue()) {
@@ -211,7 +220,7 @@ class EntitiesAttribute extends Attribute {
      * It will return only valid IDs, other values will be ignored because they must not enter storage.
      * @returns {Promise<*>}
      */
-    async getStorageValue(): any {
+    async getStorageValue(): mixed {
         if (_.isArray(this.value.getCurrent())) {
             // Not using getValue method because it would load the entity without need.
             const storageValue = [];

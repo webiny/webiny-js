@@ -1,11 +1,12 @@
 // @flow
 import _ from "lodash";
+import { Attribute } from "webiny-model";
 import Driver from "./driver";
 import EventHandler from "./eventHandler";
 import EntityCollection from "./entityCollection";
 import EntityModel from "./entityModel";
 import EntityAttributesContainer from "./entityAttributesContainer";
-import { Attribute } from "webiny-model";
+import QueryResult from "./queryResult";
 
 declare type EntitySaveParams = {
     validation?: boolean,
@@ -150,11 +151,11 @@ class Entity {
         return this.getModel().getAttributes();
     }
 
-    async get(path: string | Array<string> = "", defaultValue: any = null) {
+    async get(path: string | Array<string> = "", defaultValue: mixed = null) {
         return this.getModel().get(path, defaultValue);
     }
 
-    async set(path: string, value: any) {
+    async set(path: string, value: mixed) {
         return this.getModel().set(path, value);
     }
 
@@ -271,7 +272,7 @@ class Entity {
      * @param id
      * @param params
      */
-    isId(id: any, params: Object = {}): boolean {
+    isId(id: mixed, params: Object = {}): boolean {
         return this.getDriver().isId(this, id, _.cloneDeep(params));
     }
 
@@ -280,7 +281,7 @@ class Entity {
      * @param id
      * @param params
      */
-    static isId(id: any, params: Object = {}): boolean {
+    static isId(id: mixed, params: Object = {}): boolean {
         return this.getDriver().isId(this, id, _.cloneDeep(params));
     }
 
@@ -289,7 +290,7 @@ class Entity {
      * @param id
      * @param params
      */
-    static async findById(id: string, params: Object = {}): Promise<null | Entity> {
+    static async findById(id: mixed, params: Object = {}): Promise<null | Entity> {
         const paramsClone = _.cloneDeep(params);
         await this.emit("query", { type: "findById", id, params: paramsClone });
         if (!id) {
@@ -297,8 +298,9 @@ class Entity {
         }
 
         const queryResult = await this.getDriver().findById(this, id, paramsClone);
-        if (queryResult.getResult()) {
-            return new this().setExisting().populateFromStorage(queryResult.getResult());
+        const result = queryResult.getResult();
+        if (result && _.isPlainObject(result)) {
+            return new this().setExisting().populateFromStorage(((result: any): Object));
         }
         return null;
     }
@@ -308,19 +310,18 @@ class Entity {
      * @param ids
      * @param params
      */
-    static async findByIds(ids: Array<string>, params: Object = {}): Promise<EntityCollection> {
+    static async findByIds(ids: Array<mixed>, params: Object = {}): Promise<EntityCollection> {
         const paramsClone = _.cloneDeep(params);
         await this.emit("query", { type: "findByIds", params: paramsClone });
 
-        const queryResult = await this.getDriver().findByIds(this, ids, paramsClone);
+        const queryResult: QueryResult = await this.getDriver().findByIds(this, ids, paramsClone);
         const entityCollection = new EntityCollection()
             .setParams(paramsClone)
             .setMeta(queryResult.getMeta());
-        if (queryResult.getResult()) {
-            for (let i = 0; i < queryResult.getResult().length; i++) {
-                entityCollection.push(
-                    new this().setExisting().populateFromStorage(queryResult.getResult()[i])
-                );
+        const result: Array<Object> = (queryResult.getResult(): any);
+        if (result instanceof Array) {
+            for (let i = 0; i < result.length; i++) {
+                entityCollection.push(new this().setExisting().populateFromStorage(result[i]));
             }
         }
 
@@ -336,8 +337,9 @@ class Entity {
         await this.emit("query", { type: "findOne", params: paramsClone });
 
         const queryResult = await this.getDriver().findOne(this, paramsClone);
-        if (queryResult.getResult()) {
-            return new this().setExisting().populateFromStorage(queryResult.getResult());
+        const result = queryResult.getResult();
+        if (_.isPlainObject(result)) {
+            return new this().setExisting().populateFromStorage(((result: any): Object));
         }
         return null;
     }
@@ -350,16 +352,17 @@ class Entity {
         const paramsClone = _.cloneDeep(params);
         await this.emit("query", { type: "find", params: paramsClone });
 
-        const queryResult = await this.getDriver().find(this, paramsClone);
+        const queryResult: QueryResult = await this.getDriver().find(this, paramsClone);
         const entityCollection = new EntityCollection()
             .setParams(paramsClone)
             .setMeta(queryResult.getMeta());
-        if (queryResult.getResult()) {
-            for (let i = 0; i < queryResult.getResult().length; i++) {
+        const result: Array<Object> = (queryResult.getResult(): any);
+        if (result instanceof Array) {
+            for (let i = 0; i < result.length; i++) {
                 entityCollection.push(
                     await new this()
                         .setExisting()
-                        .populateFromStorage(queryResult.getResult()[i])
+                        .populateFromStorage(result[i])
                         .emit("loaded")
                 );
             }
@@ -376,8 +379,8 @@ class Entity {
         const paramsClone = _.cloneDeep(params);
         await this.emit("query", { type: "count", params: paramsClone });
 
-        const queryResult = await this.getDriver().count(this, paramsClone);
-        return queryResult.getResult();
+        const queryResult: QueryResult = await this.getDriver().count(this, paramsClone);
+        return ((queryResult.getResult(): any): number);
     }
 
     /**
