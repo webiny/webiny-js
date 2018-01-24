@@ -202,7 +202,7 @@ class Attribute implements IAttribute {
     /**
      * Sets attribute's value.
      */
-    setValue(value: any): any {
+    setValue(value: any): void {
         if (!this.canSetValue()) {
             return;
         }

@@ -158,7 +158,7 @@ class EntitiesAttribute extends Attribute {
      * @param value
      * @returns {Promise<void>}
      */
-    setValue(value): any {
+    setValue(value): Promise<void> {
         return new Promise((resolve, reject) => {
             this.value.load(() => {
                 if (!this.canSetValue()) {
@@ -211,7 +211,7 @@ class EntitiesAttribute extends Attribute {
      * It will return only valid IDs, other values will be ignored because they must not enter storage.
      * @returns {Promise<*>}
      */
-    async getStorageValue(): any {
+    async getStorageValue() {
         if (_.isArray(this.value.getCurrent())) {
             // Not using getValue method because it would load the entity without need.
             const storageValue = [];

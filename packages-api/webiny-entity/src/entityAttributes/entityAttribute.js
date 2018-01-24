@@ -1,211 +1,232 @@
-import {Attribute} from 'webiny-model'
-import _ from 'lodash';
-import EntityAttributeValue from './entityAttributeValue'
-import Entity from './../entity'
+import { Attribute } from "webiny-model";
+import _ from "lodash";
+import EntityAttributeValue from "./entityAttributeValue";
+import Entity from "./../entity";
 
 class EntityAttribute extends Attribute {
-	constructor(name, attributesContainer, entity) {
-		super(name, attributesContainer);
+    constructor(name, attributesContainer, entity) {
+        super(name, attributesContainer);
 
-		this.classes = {
-			parent: this.getParentModel().getParentEntity().constructor.name,
-			entity: {class: entity}
-		};
+        this.classes = {
+            parent: this.getParentModel().getParentEntity().constructor.name,
+            entity: { class: entity }
+        };
 
-		/**
-		 * Attribute's current value.
-		 * @type {undefined}
-		 */
-		this.value = new EntityAttributeValue(this);
+        /**
+         * Attribute's current value.
+         * @type {undefined}
+         */
+        this.value = new EntityAttributeValue(this);
 
-		/**
-		 * Auto save is always enabled, but delete not. This is because users will more often create many to one relationship than
-		 * one to one. If user wants a strict one to one relationship, then delete flag must be set to true. In other words, it would
-		 * be correct to say that if auto delete is enabled, we are dealing with one to one relationship.
-		 * @type {{save: boolean, delete: boolean}}
-		 */
-		this.auto = {save: true, delete: false};
+        /**
+         * Auto save is always enabled, but delete not. This is because users will more often create many to one relationship than
+         * one to one. If user wants a strict one to one relationship, then delete flag must be set to true. In other words, it would
+         * be correct to say that if auto delete is enabled, we are dealing with one to one relationship.
+         * @type {{save: boolean, delete: boolean}}
+         */
+        this.auto = { save: true, delete: false };
 
-		/**
-		 * Before save, let's validate and save linked entity.
-		 *
-		 * This ensures that parent entity has a valid ID which can be stored and also that all nested data is valid since
-		 * validation will be called internally in the save method. Save operations will be executed starting from bottom
-		 * nested entities, ending with the main parent entity.
-		 */
-		this.getParentModel().getParentEntity().on('beforeSave', async () => {
-			// At this point current value is an instance or is not instance. It cannot be in the 'loading' state, because that was
-			// already checked in the validate method - if in that step entity was in 'loading' state, it will be waited before proceeding.
-			if (this.getAutoSave() && this.value.getCurrent() instanceof this.getEntityClass()) {
-				// We don't need to validate here because validate method was called on the parent entity, which caused
-				// the validation of data to be executed recursively on all attribute values.
-				await this.value.getCurrent().save({validation: false});
+        /**
+         * Before save, let's validate and save linked entity.
+         *
+         * This ensures that parent entity has a valid ID which can be stored and also that all nested data is valid since
+         * validation will be called internally in the save method. Save operations will be executed starting from bottom
+         * nested entities, ending with the main parent entity.
+         */
+        this.getParentModel()
+            .getParentEntity()
+            .on("beforeSave", async () => {
+                // At this point current value is an instance or is not instance. It cannot be in the 'loading' state, because that was
+                // already checked in the validate method - if in that step entity was in 'loading' state, it will be waited before proceeding.
+                if (
+                    this.getAutoSave() &&
+                    this.value.getCurrent() instanceof this.getEntityClass()
+                ) {
+                    // We don't need to validate here because validate method was called on the parent entity, which caused
+                    // the validation of data to be executed recursively on all attribute values.
+                    await this.value.getCurrent().save({ validation: false });
 
-				// If initially we had a different entity linked, we must delete it. The following method will only do deletes if needed.
-				this.getAutoDelete() && await this.value.deleteInitial();
-			}
-		});
+                    // If initially we had a different entity linked, we must delete it.
+                    // If initial is empty, that means nothing was ever loaded (attribute was not accessed) and there is nothing to do.
+                    // Otherwise, deleteInitial method will internally delete only entities that are not needed anymore.
+                    if (this.getAutoSave() && this.getAutoDelete()) {
+                        await this.value.deleteInitial();
 
-		this.getParentModel().getParentEntity().on('delete', async () => {
-			if (this.getAutoDelete()) {
-				const entity = await this.getValue();
-				if (entity instanceof this.getEntityClass()) {
-					await entity.emit('delete');
-				}
-			}
-		});
+                        // Set current entities as new initial values.
+                        this.value.syncInitial();
+                    }
+                }
+            });
 
-		this.getParentModel().getParentEntity().on('beforeDelete', async () => {
-			if (this.getAutoDelete()) {
-				const entity = await this.getValue();
-				if (entity instanceof this.getEntityClass()) {
-					// We don't want to fire the "delete" event because its handlers were already executed by upper 'delete' listener.
-					// That listener ensured that all callbacks that might've had blocked the deleted process were executed.
-					await entity.delete({validation: false, events: {delete: false}});
-				}
-			}
-		});
-	}
+        this.getParentModel()
+            .getParentEntity()
+            .on("delete", async () => {
+                if (this.getAutoDelete()) {
+                    const entity = await this.getValue();
+                    if (entity instanceof this.getEntityClass()) {
+                        await entity.emit("delete");
+                    }
+                }
+            });
 
-	/**
-	 * Should linked entity be automatically saved once parent entity is saved? By default, linked entities will be automatically saved,
-	 * after main entity was saved. Can be disabled, although not recommended since manual saving needs to be done in that case.
-	 * @param autoSave
-	 * @returns {EntityAttribute}
-	 */
-	setAutoSave(autoSave = true) {
-		this.auto.save = autoSave;
-		return this;
-	}
+        this.getParentModel()
+            .getParentEntity()
+            .on("beforeDelete", async () => {
+                if (this.getAutoDelete()) {
+                    const entity = await this.getValue();
+                    if (entity instanceof this.getEntityClass()) {
+                        // We don't want to fire the "delete" event because its handlers were already executed by upper 'delete' listener.
+                        // That listener ensured that all callbacks that might've had blocked the deleted process were executed.
+                        await entity.delete({ validation: false, events: { delete: false } });
+                    }
+                }
+            });
+    }
 
-	/**
-	 * Returns true if auto save is enabled, otherwise false.
-	 * @returns {boolean}
-	 */
-	getAutoSave() {
-		return this.auto.save;
-	}
+    /**
+     * Should linked entity be automatically saved once parent entity is saved? By default, linked entities will be automatically saved,
+     * after main entity was saved. Can be disabled, although not recommended since manual saving needs to be done in that case.
+     * @param autoSave
+     * @returns {EntityAttribute}
+     */
+    setAutoSave(autoSave = true) {
+        this.auto.save = autoSave;
+        return this;
+    }
 
-	/**
-	 * Should linked entity be automatically deleted once parent entity is deleted? By default, linked entities will be automatically
-	 * deleted, before main entity was deleted. Can be disabled, although not recommended since manual deletion needs to be done in that case.
-	 * @param autoDelete
-	 * @returns {EntityAttribute}
-	 */
-	setAutoDelete(autoDelete = true) {
-		this.auto.delete = autoDelete;
-		return this;
-	}
+    /**
+     * Returns true if auto save is enabled, otherwise false.
+     * @returns {boolean}
+     */
+    getAutoSave() {
+        return this.auto.save;
+    }
 
-	/**
-	 * Returns true if auto delete is enabled, otherwise false.
-	 * @returns {boolean}
-	 */
-	getAutoDelete() {
-		return this.auto.delete;
-	}
+    /**
+     * Should linked entity be automatically deleted once parent entity is deleted? By default, linked entities will be automatically
+     * deleted, before main entity was deleted. Can be disabled, although not recommended since manual deletion needs to be done in that case.
+     * @param autoDelete
+     * @returns {EntityAttribute}
+     */
+    setAutoDelete(autoDelete = true) {
+        this.auto.delete = autoDelete;
+        return this;
+    }
 
+    /**
+     * Returns true if auto delete is enabled, otherwise false.
+     * @returns {boolean}
+     */
+    getAutoDelete() {
+        return this.auto.delete;
+    }
 
-	getEntityClass() {
-		return this.classes.entity.class;
-	}
+    getEntityClass() {
+        return this.classes.entity.class;
+    }
 
-	/**
-	 * Only allowing EntityCollection or plain arrays
-	 * @param value
-	 * @returns {Promise<void>}
-	 */
-	setValue(value) {
-		this.value.load(() => {
-			if (!this.canSetValue()) {
-				return this;
-			}
+    /**
+     * Only allowing EntityCollection or plain arrays
+     * @param value
+     * @returns {Promise<void>}
+     */
+    setValue(value) {
+        this.value.load(() => {
+            if (!this.canSetValue()) {
+                return this;
+            }
 
-			switch (true) {
-				case value instanceof Entity:
-					this.value.setCurrent(value);
-					break;
-				case _.isObject(value):
-					let entity = this.getEntityClass();
-					this.value.setCurrent(new entity().populate(value));
-					break;
-				default:
-					this.value.setCurrent(value);
-			}
-		});
-	}
+            switch (true) {
+                case value instanceof Entity:
+                    this.value.setCurrent(value);
+                    break;
+                case _.isObject(value): {
+                    let entity = this.getEntityClass();
+                    this.value.setCurrent(new entity().populate(value));
+                    break;
+                }
+                default:
+                    this.value.setCurrent(value);
+            }
+        });
+    }
 
-	/**
-	 * Loads current entity if needed and returns it.
-	 * @returns {Promise<void>}
-	 */
-	async getValue() {
-		return this.value.load();
-	}
+    /**
+     * Loads current entity if needed and returns it.
+     * @returns {Promise<void>}
+     */
+    async getValue() {
+        return this.value.load();
+    }
 
-	/**
-	 * Returns storage value (entity ID or null).
-	 * @returns {Promise<*>}
-	 */
-	async getStorageValue() {
-		// Not using getValue method because it would load the entity without need.
-		let current = this.value.getCurrent();
+    /**
+     * Returns storage value (entity ID or null).
+     * @returns {Promise<*>}
+     */
+    async getStorageValue() {
+        // Not using getValue method because it would load the entity without need.
+        let current = this.value.getCurrent();
 
-		// But still, if the value is loading currently, let's wait for it to load completely, and then use that value.
-		if (this.value.isLoading()) {
-			current = await this.value.load();
-		}
+        // But still, if the value is loading currently, let's wait for it to load completely, and then use that value.
+        if (this.value.isLoading()) {
+            current = await this.value.load();
+        }
 
-		return current instanceof Entity ? current.id : this.value.getCurrent();
-	}
+        return current instanceof Entity ? current.id : current;
+    }
 
-	/**
-	 * Sets value received from storage.
-	 * @param value
-	 * @returns {EntityAttribute}
-	 */
-	setStorageValue(value) {
-		this.value.setCurrent(value, {skipDifferenceCheck: true}).setInitial(value);
-		return this;
-	}
+    /**
+     * Sets value received from storage.
+     * @param value
+     * @returns {EntityAttribute}
+     */
+    setStorageValue(value) {
+        this.value.setCurrent(value, { skipDifferenceCheck: true });
+        return this;
+    }
 
-	/**
-	 * Returns JSON value.
-	 * @returns {Promise<void>}
-	 */
-	async getJSONValue() {
-		const value = await this.getValue();
-		return value instanceof this.getEntityClass() ? value.toJSON() : value;
-	}
+    /**
+     * Returns JSON value.
+     * @returns {Promise<void>}
+     */
+    async getJSONValue() {
+        const value = await this.getValue();
+        return value instanceof this.getEntityClass() ? value.toJSON() : value;
+    }
 
-	/**
-	 * Validates current value - if it's not a valid ID or an instance of Entity class, an error will be thrown.
-	 */
-	validateType() {
-		if (this.getParentModel().getParentEntity().isId(this.value.getCurrent())) {
-			return;
-		}
-		if (this.value.getCurrent() instanceof this.getEntityClass()) {
-			return;
-		}
-		this.expected('instance of Entity class or a valid ID', typeof this.value.getCurrent());
-	}
+    /**
+     * Validates current value - if it's not a valid ID or an instance of Entity class, an error will be thrown.
+     */
+    validateType() {
+        if (
+            this.getParentModel()
+                .getParentEntity()
+                .isId(this.value.getCurrent())
+        ) {
+            return;
+        }
+        if (this.value.getCurrent() instanceof this.getEntityClass()) {
+            return;
+        }
+        this.expected("instance of Entity class or a valid ID", typeof this.value.getCurrent());
+    }
 
-	/**
-	 * Validates on attribute level and then on entity level (its attributes recursively).
-	 * @returns {Promise<void>}
-	 */
-	async validate(meta) {
-		// This validates on the attribute level.
-		await Attribute.prototype.validate.call(this);
+    /**
+     * Validates on attribute level and then on entity level (its attributes recursively).
+     * @returns {Promise<void>}
+     */
+    async validate(meta) {
+        // This validates on the attribute level.
+        await Attribute.prototype.validate.call(this);
 
-		// If validation was called within a delete context, entity must be loaded and validated. Validation will validate the data,
-		// but also call canDelete method, which will throw an error if something is blocking the delete.
-		// meta.context === 'delete' && await this.value.load();
+        // If validation was called within a delete context, entity must be loaded and validated. Validation will validate the data,
+        // but also call canDelete method, which will throw an error if something is blocking the delete.
+        // meta.context === 'delete' && await this.value.load();
 
-		// This validates on the entity level.
-		this.value.getCurrent() instanceof this.getEntityClass() && await this.value.getCurrent().validate(meta);
-	}
+        // This validates on the entity level.
+        this.value.getCurrent() instanceof this.getEntityClass() &&
+            (await this.value.getCurrent().validate(meta));
+    }
 }
 
 export default EntityAttribute;
