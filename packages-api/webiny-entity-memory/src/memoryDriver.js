@@ -1,121 +1,135 @@
-import {Driver, QueryResult} from 'webiny-entity';
-import _ from 'lodash';
-import mdbid from 'mdbid';
+// @flow
+import { Driver, QueryResult } from "webiny-entity";
+import _ from "lodash";
+import mdbid from "mdbid";
+import { Entity } from "webiny-entity";
 
+/**
+ * MemoryDriver is an implementation of in-memory entity driver.
+ * Its main purpose is to run tests without the need to mock the driver.
+ * Using this class you get the exact behavior of the entity storage as if using a real database, except it only exists as long as the process is running.
+ */
 class MemoryDriver extends Driver {
-	constructor() {
-		super();
-		this.data = {};
-	}
+    data: Object;
 
-	async save(entity, options) {
-		// Check if table exists.
-		if (!this.data[entity.classId]) {
-			this.data[entity.classId] = [];
-		}
+    constructor() {
+        super();
+        this.data = {};
+    }
 
-		if (entity.isExisting()) {
-			const storedItemIndex = _.findIndex(this.data[entity.classId], {id: entity.id});
-			this.data[entity.classId][storedItemIndex] = await entity.toStorage();
-			return;
-		}
+    // eslint-disable-next-line
+    async save(entity: Entity, params: Object): Promise<QueryResult> {
+        // Check if table exists.
+        if (!this.data[entity.classId]) {
+            this.data[entity.classId] = [];
+        }
 
-		entity.id = mdbid();
-		this.data[entity.classId].push(await entity.toStorage());
-	}
+        if (entity.isExisting()) {
+            const storedItemIndex = _.findIndex(this.data[entity.classId], { id: entity.id });
+            this.data[entity.classId][storedItemIndex] = await entity.toStorage();
+            return new QueryResult(true);
+        }
 
-	async delete(entity, options) {
-		if (!this.data[entity.classId]) {
-			return;
-		}
+        entity.id = mdbid();
+        this.data[entity.classId].push(await entity.toStorage());
+        return new QueryResult(true);
+    }
 
-		const index = _.findIndex(this.data[entity.classId], {id: entity.id});
-		if (index === -1) {
-			return;
-		}
+    // eslint-disable-next-line
+    async delete(entity: Entity, params: Object = {}): Promise<QueryResult> {
+        if (!this.data[entity.classId]) {
+            return new QueryResult(true);
+        }
 
-		this.data[entity.classId].splice(index, 1);
-	}
+        const index = _.findIndex(this.data[entity.classId], { id: entity.id });
+        if (index > -1) {
+            this.data[entity.classId].splice(index, 1);
+        }
+        return new QueryResult(true);
+    }
 
-	async count(entity, options) {
-		const results = await this.find(entity, options);
-		return new QueryResult(results.getResult().length);
-	}
+    // eslint-disable-next-line
+    async count(entity: Entity, params: {}): Promise<QueryResult> {
+        const results = await this.find(entity, params);
+        return new QueryResult(results.getResult().length);
+    }
 
-	async findById(entity, id, options) {
-		return new QueryResult(_.find(this.data[entity.classId], {id}));
-	}
+    // eslint-disable-next-line
+    async findById(entity: Entity, id: mixed, params: {}): Promise<QueryResult> {
+        return new QueryResult(_.find(this.data[entity.classId], { id }));
+    }
 
-	async findByIds(entity, ids, options) {
-		const cloned = _.cloneDeep(options);
-		cloned.query = {id: ids};
-		return this.find(entity, cloned);
-	}
+    async findByIds(entity: Entity, ids: Array<mixed>, params: {}): Promise<QueryResult> {
+        const cloned = _.cloneDeep(params);
+        cloned.query = { id: ids };
+        return this.find(entity, cloned);
+    }
 
-	async findOne(entity, options) {
-		return new QueryResult(_.find(this.data[entity.classId], options.query));
-	}
+    async findOne(entity: Entity, params: Object): Promise<QueryResult> {
+        return new QueryResult(_.find(this.data[entity.classId], params.query));
+    }
 
-	async find(entity, options) {
-		const records = this.data[entity.classId];
-		if (!records) {
-			return new QueryResult([]);
-		}
+    // eslint-disable-next-line
+    async find(entity: Entity, params: {}): Promise<QueryResult> {
+        const records = this.data[entity.classId];
+        if (!records) {
+            return new QueryResult([]);
+        }
 
-		const query = _.get(options, 'query', {});
-		if (_.isEmpty(query)) {
-			return new QueryResult(this.data[entity.classId])
-		}
+        const query = _.get(params, "query", {});
+        if (_.isEmpty(query)) {
+            return new QueryResult(this.data[entity.classId]);
+        }
 
-		const collection = [];
+        const collection = [];
 
-		this.data[entity.classId].forEach(record => {
-			for (const [key, value] of Object.entries(query)) {
-				if (_.isArray(value)) {
-					if (!value.includes(record[key])) {
-						return true;
-					}
-				} else if (record[key] !== value) {
-					return true;
-				}
-			}
-			collection.push(record);
-		});
+        this.data[entity.classId].forEach(record => {
+            for (const [key, value] of Object.entries(query)) {
+                if (value instanceof Array) {
+                    if (!value.includes(record[key])) {
+                        return true;
+                    }
+                } else if (record[key] !== value) {
+                    return true;
+                }
+            }
+            collection.push(record);
+        });
 
-		return new QueryResult(collection);
-	}
+        return new QueryResult(collection);
+    }
 
-	flush(classId) {
-		if (classId) {
-			_.has(this.data, classId) && delete this.data[classId];
-		} else {
-			this.data = {};
-		}
-		return this;
-	}
+    flush(classId: ?string) {
+        if (classId) {
+            _.has(this.data, classId) && delete this.data[classId];
+        } else {
+            this.data = {};
+        }
+        return this;
+    }
 
-	import(classId, data) {
-		data.forEach((item, index) => {
-			if (!item.id) {
-				throw Error('Failed importing data - missing ID for item on index ' + index + '.');
-			}
-		});
+    import(classId: string, data: Object) {
+        data.forEach((item, index) => {
+            if (!item.id) {
+                throw Error("Failed importing data - missing ID for item on index " + index + ".");
+            }
+        });
 
-		if (!this.data[classId]) {
-			this.data[classId] = [];
-		}
+        if (!this.data[classId]) {
+            this.data[classId] = [];
+        }
 
-		data.forEach(importedItem => {
-			const storedItemIndex = _.findIndex(this.data[classId], {id: importedItem.id});
-			if (storedItemIndex === -1) {
-				this.data[classId].push(importedItem);
-			} else {
-				this.data[classId][storedItemIndex] = importedItem;
-			}
-		});
+        data.forEach(importedItem => {
+            const storedItemIndex = _.findIndex(this.data[classId], { id: importedItem.id });
+            if (storedItemIndex === -1) {
+                this.data[classId].push(importedItem);
+            } else {
+                this.data[classId][storedItemIndex] = importedItem;
+            }
+        });
 
-		return this;
-	}
+        return this;
+    }
 }
 
 export default MemoryDriver;
