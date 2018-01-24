@@ -1,6 +1,7 @@
 import { assert } from "chai";
 import { Entity, QueryResult } from "../../../../src/index";
 import sinon from "sinon";
+import EntityCollection from "../../../../src/entityCollection";
 
 describe("attribute entities test", function() {
     class Entity1 extends Entity {
@@ -95,7 +96,8 @@ describe("attribute entities test", function() {
         mainEntity.attribute1 = null;
         const attribute1NullValue = await mainEntity.getAttribute("attribute1").getStorageValue();
         assert.isEmpty(attribute1NullValue);
-        assert.isNull(await mainEntity.attribute1);
+        assert.isEmpty(await mainEntity.attribute1);
+        assert.instanceOf(await mainEntity.attribute1, EntityCollection);
     });
 
     it("should correctly set storage value", async () => {

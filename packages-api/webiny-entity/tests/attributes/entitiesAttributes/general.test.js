@@ -14,20 +14,10 @@ describe("attribute entities test", function() {
 
     it("should fail - attributes should accept array of entities", async () => {
         entity.attribute1 = new Entity1();
-        assert.instanceOf(await entity.attribute1, Entity1);
+        assert.instanceOf(await entity.attribute1, EntityCollection);
 
         entity.attribute2 = new Entity1();
-        assert.instanceOf(await entity.attribute2, Entity1);
-
-        try {
-            await entity.validate();
-        } catch (e) {
-            assert.equal(e.data.invalidAttributes.attribute1.type, ModelError.INVALID_ATTRIBUTE);
-            assert.equal(e.data.invalidAttributes.attribute2.type, ModelError.INVALID_ATTRIBUTE);
-            return;
-        }
-
-        throw Error("Error should've been thrown.");
+        assert.instanceOf(await entity.attribute2, EntityCollection);
     });
 
     it("should pass - empty arrays set", async () => {

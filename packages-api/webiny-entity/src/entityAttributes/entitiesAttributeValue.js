@@ -115,6 +115,10 @@ class EntitiesAttributeValue extends AttributeValue {
     }
 
     async deleteInitial(): Promise<void> {
+        if (!this.hasInitial()) {
+            return;
+        }
+
         const currentEntitiesIds = this.current.map(entity => entity.id);
 
         for (let i = 0; i < this.getInitial().length; i++) {

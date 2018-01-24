@@ -1,102 +1,114 @@
-import {AttributeValue} from 'webiny-model'
-import _ from 'lodash';
+import { AttributeValue } from "webiny-model";
+import _ from "lodash";
 
 class EntityAttributeValue extends AttributeValue {
-	constructor(attribute) {
-		super(attribute);
-		this.loading = false;
-		this.queue = [];
+    constructor(attribute) {
+        super(attribute);
+        this.queue = [];
+        this.status = { loaded: false, loading: false };
 
-		// Contains initial value received upon loading from storage. If the current value becomes different from initial,
-		// upon save, old entity must be removed. This is only active when auto delete option on the attribute is enabled,
-		// which then represents a one to one relationship.
-		this.initial = null;
-	}
+        // Contains initial value received upon loading from storage. If the current value becomes different from initial,
+        // upon save, old entity must be removed. This is only active when auto delete option on the attribute is enabled,
+        // which then represents a one to one relationship.
+        this.initial = null;
+    }
 
-	/**
-	 * Ensures data is loaded correctly, and in the end returns current value.
-	 * @returns {Promise<*>}
-	 */
-	async load(callback) {
-		if (this.isLoaded()) {
-			_.isFunction(callback) && await callback();
-			return this.current;
-		}
+    /**
+     * Ensures data is loaded correctly, and in the end returns current value.
+     * @returns {Promise<*>}
+     */
+    async load(callback) {
+        if (this.isLoaded()) {
+            _.isFunction(callback) && (await callback());
+            return this.getCurrent();
+        }
 
-		if (this.isLoading()) {
-			return new Promise(resolve => {
-				this.queue.push(async () => {
-					_.isFunction(callback) && await callback();
-					resolve(this.current);
-				});
-			})
-		}
+        if (this.isLoading()) {
+            return new Promise(resolve => {
+                this.queue.push(async () => {
+                    _.isFunction(callback) && (await callback());
+                    resolve(this.getCurrent());
+                });
+            });
+        }
 
-		this.loading = true;
+        this.status.loading = true;
 
-		// Only if we have a valid ID set, we must load linked entity.
-		if (this.attribute.getParentModel().getParentEntity().isId(this.current)) {
-			this.current = await this.attribute.getEntityClass().findById(this.current);
-		}
+        // Only if we have a valid ID set, we must load linked entity.
+        if (
+            this.attribute
+                .getParentModel()
+                .getParentEntity()
+                .isId(this.getCurrent())
+        ) {
+            this.setCurrent(await this.attribute.getEntityClass().findById(this.getCurrent()));
+        }
 
-		_.isFunction(callback) && await callback();
+        // Set current entity as new initial value.
+        this.syncInitial();
 
-		this.loading = false;
+        _.isFunction(callback) && (await callback());
 
-		if (this.queue.length) {
-			for (let i = 0; i < this.queue.length; i++) {
-				await this.queue[i]();
-			}
-			this.queue = [];
-		}
+        this.status.loading = false;
+        this.status.loaded = true;
 
-		return this.current;
-	}
+        if (this.queue.length) {
+            for (let i = 0; i < this.queue.length; i++) {
+                await this.queue[i]();
+            }
+            this.queue = [];
+        }
 
-	isLoaded() {
-		return this.current instanceof this.attribute.getEntityClass();
-	}
+        return this.getCurrent();
+    }
 
-	isLoading() {
-		return this.loading;
-	}
+    async deleteInitial() {
+        if (!this.hasInitial()) {
+            return;
+        }
 
-	isDifferentFrom(value) {
-		return _.get(this.current, 'id', this.current) !== _.get(value, 'id', value);
-	}
+        // Initial value will always be an existing (already saved) Entity instance.
+        if (_.get(this.getInitial(), "id") !== _.get(this.getCurrent(), "id")) {
+            await this.getInitial().delete();
+        }
+    }
 
-	setInitial(value) {
-		this.initial = value;
-		return this;
-	}
+    syncInitial() {
+        this.setInitial(this.getCurrent());
+    }
 
-	getInitial() {
-		return this.initial;
-	}
+    isLoaded() {
+        return this.status.loaded;
+    }
 
-	currentIsDifferentFromInitial() {
-		return this.isDifferentFrom(this.initial);
-	}
+    isLoading() {
+        return this.status.loading;
+    }
 
-	async deleteInitial() {
-		if (this.currentIsDifferentFromInitial() && this.initial) {
-			const initial = await this.attribute.getEntityClass().findById(this.initial);
-			initial && await initial.delete();
-			this.setInitial(this.getCurrent())
-		}
-	}
+    setInitial(value) {
+        this.initial = value;
+        return this;
+    }
 
-	/**
-	 * Value cannot be set as clean if there is no ID present.
-	 * @returns {EntityAttributeValue}
-	 */
-	clean() {
-		if (_.get(this.current, 'id')) {
-			return super.clean();
-		}
+    getInitial() {
+        return this.initial;
+    }
 
-		return this;
-	}
+    hasInitial() {
+        return this.initial instanceof this.attribute.getEntityClass();
+    }
+
+    /**
+     * Value cannot be set as clean if there is no ID present.
+     * @returns {EntityAttributeValue}
+     */
+    clean() {
+        if (_.get(this.getCurrent(), "id")) {
+            return super.clean();
+        }
+
+        return this;
+    }
 }
 
 export default EntityAttributeValue;
