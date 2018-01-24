@@ -1,233 +1,273 @@
-import {MySQLModel} from './model'
-import {Driver, QueryResult} from 'webiny-entity'
-import queryBuilder from 'webiny-sql-query-builder';
-import _ from 'lodash';
+// @flow
+import _ from "lodash";
+import { Entity, Driver, QueryResult } from "webiny-entity";
+import queryBuilder from "webiny-sql-query-builder";
+import { MySQLModel } from "./model";
+import ConnectionClass from "mysql/lib/Connection";
+import PoolClass from "mysql/lib/Pool";
+import type { Connection, Pool } from "mysql";
+
+declare type MySQLDriverOptions = {
+    connection: Connection | Pool,
+    model: Class<MySQLModel>,
+    idGenerator: (entity: Entity, options: Object) => mixed,
+    tables: {
+        prefix: string,
+        naming: ?Function
+    }
+};
 
 class MySQLDriver extends Driver {
-	constructor(options) {
-		super();
-		this.connection = options.connection;
-		this.model = options.model || MySQLModel;
+    connection: Connection | Pool;
+    model: Class<MySQLModel>;
+    idGenerator: Function;
+    tables: {
+        prefix: string,
+        naming: ?Function
+    };
 
-		this.idGenerator = options.idGenerator || null;
+    constructor(options: MySQLDriverOptions) {
+        super();
+        this.connection = options.connection;
+        this.model = options.model || MySQLModel;
 
-		this.tables = _.merge({
-			prefix: '',
-			naming: null
-		}, options.tables);
-	}
+        this.idGenerator = options.idGenerator || null;
 
-	onEntityConstruct(entity) {
-		if (!_.isFunction(this.idGenerator)) {
-			entity.attr('id').integer().setValidators('gt:0');
-		}
-	}
+        this.tables = _.merge(
+            {
+                prefix: "",
+                naming: null
+            },
+            options.tables
+        );
+    }
 
-	getModelClass() {
-		return this.model;
-	}
+    onEntityConstruct(entity: Entity) {
+        if (!(typeof this.idGenerator === "function")) {
+            entity
+                .attr("id")
+                .integer()
+                .setValidators("gt:0");
+        }
+    }
 
-	async save(entity, options) {
-		if (!entity.isExisting() && _.isFunction(this.getIdGenerator())) {
-			entity.id = this.getIdGenerator()(entity, options);
-		}
+    getModelClass(): Class<MySQLModel> {
+        return this.model;
+    }
 
-		if (entity.isExisting()) {
-			return new Promise(async (resolve, reject) => {
-				const data = await entity.toStorage();
-				const sql = queryBuilder.build({
-					operation: 'update',
-					table: this.getTableName(entity),
-					data,
-					where: {id: data.id},
-					limit: 1
-				});
+    async save(entity: Entity, options: Object): Promise<QueryResult> {
+        const idGenerator = this.getIdGenerator();
+        if (!entity.isExisting() && typeof idGenerator === "function") {
+            entity.id = idGenerator(entity, options);
+        }
 
-				this.getConnection().query(sql, error => {
-					this.workingWithSingleConnection() && this.getConnection().end();
-					error ? reject(error) : resolve();
-				});
-			});
-		}
+        if (entity.isExisting()) {
+            return new Promise(async (resolve, reject) => {
+                const data = await entity.toStorage();
+                const sql = queryBuilder.build({
+                    operation: "update",
+                    table: this.getTableName(entity),
+                    data,
+                    where: { id: data.id },
+                    limit: 1
+                });
 
-		return new Promise(async (resolve, reject) => {
-			const data = await entity.toStorage();
-			const sql = queryBuilder.build({operation: 'insert', data, table: this.getTableName(entity)});
-			this.getConnection().query(sql, (error, results) => {
-				this.workingWithSingleConnection() && this.getConnection().end();
-				if (error) {
-					entity.id && entity.getAttribute('id').reset();
-					return reject(error);
-				}
+                this.connection.query(sql, error => {
+                    this.connection instanceof ConnectionClass && this.connection.end();
+                    error ? reject(error) : resolve();
+                });
+            });
+        }
 
-				if (!_.isFunction(this.getIdGenerator())) {
-					entity.id = results.insertId;
-				}
-				resolve();
-			});
-		});
-	}
+        return new Promise(async (resolve, reject) => {
+            const data = await entity.toStorage();
+            const sql = queryBuilder.build({
+                operation: "insert",
+                data,
+                table: this.getTableName(entity)
+            });
+            this.connection.query(sql, (error, results) => {
+                this.connection instanceof ConnectionClass && this.connection.end();
+                if (error) {
+                    entity.id && entity.getAttribute("id").reset();
+                    return reject(error);
+                }
 
-	async delete(entity, options) {
-		return new Promise(async (resolve, reject) => {
-			const id = await entity.getAttribute('id').getStorageValue();
-			const sql = queryBuilder.build({
-				operation: 'delete',
-				table: this.getTableName(entity),
-				where: {id},
-				limit: 1
-			});
+                if (!_.isFunction(this.getIdGenerator())) {
+                    entity.id = results.insertId;
+                }
+                resolve();
+            });
+        });
+    }
 
-			this.getConnection().query(sql, (error) => {
-				this.workingWithSingleConnection() && this.getConnection().end();
-				error ? reject(error) : resolve();
-			});
-		});
-	}
+    // eslint-disable-next-line
+    async delete(entity: Entity, options: Object): Promise<QueryResult> {
+        return new Promise(async (resolve, reject) => {
+            const id = await entity.getAttribute("id").getStorageValue();
+            const sql = queryBuilder.build({
+                operation: "delete",
+                table: this.getTableName(entity),
+                where: { id },
+                limit: 1
+            });
 
-	async findOne(entity, options) {
-		return new Promise(async (resolve, reject) => {
-			const sql = queryBuilder.build({
-				operation: 'select',
-				table: this.getTableName(entity),
-				where: options.query,
-				limit: 1
-			});
+            this.connection.query(sql, error => {
+                this.connection instanceof ConnectionClass && this.connection.end();
+                // TODO: affected rows
+                error ? reject(error) : resolve(new QueryResult(true, { affectedRows: 0 }));
+            });
+        });
+    }
 
-			this.getConnection().query(sql, (error, results) => {
-				this.workingWithSingleConnection() && this.getConnection().end();
-				error ? reject(error) : resolve(new QueryResult(results[0]));
-			});
-		});
-	}
+    async findOne(entity: Entity, options: Object): Promise<QueryResult> {
+        return new Promise(async (resolve, reject) => {
+            const sql = queryBuilder.build({
+                operation: "select",
+                table: this.getTableName(entity),
+                where: options.query,
+                limit: 1
+            });
 
-	async findById(entity, id, options) {
-		return this.findOne(entity, {table: this.getTableName(entity), where: {id}});
-	}
+            this.connection.query(sql, (error, results) => {
+                this.connection instanceof ConnectionClass && this.connection.end();
+                error ? reject(error) : resolve(new QueryResult(results[0]));
+            });
+        });
+    }
 
-	async findByIds(entity, ids, options) {
-		const cloned = _.cloneDeep(options);
-		cloned.where = {id: ids};
-		return this.find(entity, cloned);
-	}
+    // eslint-disable-next-line
+    async findById(entity: Entity, id: mixed, options: Object): Promise<QueryResult> {
+        return this.findOne(entity, { table: this.getTableName(entity), where: { id } });
+    }
 
-	async find(entity, options) {
-		return new Promise(async (resolve, reject) => {
-			const clonedOptions = _.merge({}, options, {table: this.getTableName(entity), operation: 'select'});
-			if (_.has(clonedOptions, 'query')) {
-				clonedOptions.where = clonedOptions.query;
-				delete  clonedOptions.query;
-			}
+    async findByIds(entity: Entity, ids: Array<mixed>, options: Object): Promise<QueryResult> {
+        const cloned = _.cloneDeep(options);
+        cloned.where = { id: ids };
+        return this.find(entity, cloned);
+    }
 
-			const sql = queryBuilder.build(clonedOptions);
+    async find(entity: Entity, options: Object): Promise<QueryResult> {
+        return new Promise(async (resolve, reject) => {
+            const clonedOptions = _.merge({}, options, {
+                table: this.getTableName(entity),
+                operation: "select"
+            });
+            if (_.has(clonedOptions, "query")) {
+                clonedOptions.where = clonedOptions.query;
+                delete clonedOptions.query;
+            }
 
-			if (this.workingWithConnectionPool()) {
-				this.getConnection().getConnection((error, connection) => {
-					if (error) {
-						reject(error);
-						return;
-					}
+            const sql = queryBuilder.build(clonedOptions);
 
-					connection.query(sql, (error, results) => {
-						if (error) {
-							connection.release();
-							return reject(error);
-						}
+            if (this.connection instanceof PoolClass) {
+                return this.connection.getConnection((error, connection) => {
+                    if (error) {
+                        reject(error);
+                        return;
+                    }
 
-						connection.query("SELECT FOUND_ROWS() as count", (error, result) => {
-							connection.release();
-							error ? reject(error) : resolve(new QueryResult(results, {count: result[0].count}));
-						});
-					});
-				});
-			}
+                    connection.query(sql, (error, results) => {
+                        if (error) {
+                            connection.release();
+                            return reject(error);
+                        }
 
+                        connection.query("SELECT FOUND_ROWS() as count", (error, result) => {
+                            connection.release();
+                            error
+                                ? reject(error)
+                                : resolve(new QueryResult(results, { count: result[0].count }));
+                        });
+                    });
+                });
+            }
 
-			this.getConnection().query(sql, (error, results) => {
-				if (error) {
-					this.getConnection().end();
-					return reject(error);
-				}
+            this.connection.query(sql, (error, results) => {
+                if (error) {
+                    this.connection.end();
+                    return reject(error);
+                }
 
-				this.getConnection().query("SELECT FOUND_ROWS() as count", (err, result) => {
-					this.getConnection().end();
-					error ? reject(error) : resolve(new QueryResult(results, {count: result[0].count}));
-				});
+                this.connection.query("SELECT FOUND_ROWS() as count", (err, result) => {
+                    this.connection.end();
+                    error
+                        ? reject(error)
+                        : resolve(new QueryResult(results, { count: result[0].count }));
+                });
+            });
+        });
+    }
 
-			});
-		});
-	}
+    async count(entity: Entity, options: Object): Promise<QueryResult> {
+        return new Promise(async (resolve, reject) => {
+            const sql = queryBuilder.build(
+                _.merge({}, options, { table: this.getTableName(entity), operation: "count" })
+            );
+            this.connection.query(sql, (error, results) => {
+                this.connection instanceof ConnectionClass && this.connection.end();
+                error ? reject(error) : resolve(new QueryResult(results[0].count));
+            });
+        });
+    }
 
-	async count(entity, options) {
-		return new Promise(async (resolve, reject) => {
-			const sql = queryBuilder.build(_.merge({}, options, {table: this.getTableName(entity), operation: 'count'}));
-			this.getConnection().query(sql, (error, results) => {
-				this.workingWithSingleConnection() && this.getConnection().end();
-				error ? reject(error) : resolve(new QueryResult(results[0].count));
-			});
-		});
-	}
+    // eslint-disable-next-line
+    isId(entity: Entity, value: mixed, options: Object): boolean {
+        if (typeof this.idGenerator === "function") {
+            return typeof value === "string";
+        }
+        return typeof value === "number" && value > 0;
+    }
 
-	isId(entity, value, options) {
-		return _.isFunction(this.idGenerator) ? _.isString(value) : _.isNumber(value) && value > 0;
-	}
+    getConnection(): ConnectionClass | PoolClass {
+        return this.connection;
+    }
 
-	getConnection() {
-		return this.connection;
-	}
+    setIdGenerator(idGenerator: Function): this {
+        this.idGenerator = idGenerator;
+        return this;
+    }
 
-	workingWithConnectionPool() {
-		return _.isFunction(this.connection.getConnection);
-	}
+    getIdGenerator(): ?Function {
+        return this.idGenerator;
+    }
 
-	workingWithSingleConnection() {
-		return !this.workingWithConnectionPool();
-	}
+    setTablePrefix(tablePrefix: string): this {
+        this.tables.prefix = tablePrefix;
+        return this;
+    }
 
-	setIdGenerator(idGenerator) {
-		this.idGenerator = idGenerator;
-		return this;
-	}
+    getTablePrefix(): string {
+        return this.tables.prefix;
+    }
 
-	getIdGenerator() {
-		return this.idGenerator;
-	}
+    setTableNaming(tableNameGenerator: Function): this {
+        this.tables.naming = tableNameGenerator;
+        return this;
+    }
 
-	setTablePrefix(tablePrefix) {
-		this.tables.prefix = tablePrefix;
-		return this;
-	}
+    getTableNaming(): ?Function {
+        return this.tables.naming;
+    }
 
-	getTablePrefix() {
-		return this.tables.prefix;
-	}
+    getTableName(entity: Entity): string {
+        const isClass = typeof entity === "function";
+        const params = {
+            classId: isClass ? entity.classId : entity.constructor.classId,
+            tableName: isClass ? entity.tableName : entity.constructor.tableName
+        };
 
-	setTableNaming(tableNameGenerator) {
-		this.tables.naming = tableNameGenerator;
-		return this;
-	}
+        const getTableName = this.getTableNaming();
+        if (typeof getTableName === "function") {
+            return getTableName({ entity, ...params, driver: this });
+        }
 
-	getTableNaming() {
-		return this.tables.naming;
-	}
+        if (params.tableName) {
+            return this.tables.prefix + params.tableName;
+        }
 
-	getTableName(entity) {
-		const isClass = typeof entity === 'function';
-		const params = {
-			classId: isClass ? entity.classId : entity.constructor.classId,
-			tableName: isClass ? entity.tableName : entity.constructor.tableName
-		};
-
-		if (_.isFunction(this.getTableNaming())) {
-			return this.getTableNaming()({entity, ...params, driver: this});
-		}
-
-		if (params.tableName) {
-			return this.tables.prefix + params.tableName;
-		}
-
-		return this.tables.prefix + params.classId;
-	}
+        return this.tables.prefix + params.classId;
+    }
 }
 
 export default MySQLDriver;

@@ -1,3 +1,4 @@
+// @flow
 import { EntityAttributesContainer } from "webiny-entity";
 import {
     BooleanAttribute,
@@ -12,31 +13,31 @@ import {
  * and then be set as a new attributes container as the default one.
  */
 class MySQLAttributesContainer extends EntityAttributesContainer {
-    boolean() {
+    boolean(): BooleanAttribute {
         const model = this.getParentModel();
         model.setAttribute(this.name, new BooleanAttribute(this.name, this));
         return model.getAttribute(this.name);
     }
 
-    date() {
+    date(): DateAttribute {
         const model = this.getParentModel();
         model.setAttribute(this.name, new DateAttribute(this.name, this));
         return model.getAttribute(this.name);
     }
 
-    model(model) {
+    model(model: IModel): ModelAttribute {
         const parent = this.getParentModel();
         parent.setAttribute(this.name, new ModelAttribute(this.name, this, model));
         return parent.getAttribute(this.name);
     }
 
-    models(model) {
+    models(model: IModel): ModelsAttribute {
         const parent = this.getParentModel();
         parent.setAttribute(this.name, new ModelsAttribute(this.name, this, model));
         return parent.getAttribute(this.name);
     }
 
-    entities(entity, attribute = null) {
+    entities(entity: Class<Entity>, attribute: ?string = null) {
         const parent = this.getParentModel();
         parent.setAttribute(this.name, new EntitiesAttribute(this.name, this, entity, attribute));
         return parent.getAttribute(this.name);

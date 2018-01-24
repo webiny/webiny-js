@@ -47,7 +47,7 @@
     "build": "lerna exec -- babel src -d lib --source-maps --copy-files",
     "changelog": "conventional-changelog -p angular -s -i CHANGELOG.md",
     "commit": "yarn lint-staged && git-cz",
-    "coverage": "nyc --reporter=text yarn test:all",
+    "coverage": "nyc --reporter=text yarn test",
     "flow": "flow",
     "lint-staged": "lint-staged",
     "mocha": "mocha --require source-map-support/register --require babel-core/register",
@@ -58,11 +58,11 @@
     "test:utils": "yarn mocha \"packages-utils/**/tests/**/*.test.js\"",
     "test:webiny-api": "yarn mocha \"packages-api/webiny-api/tests/**/*.test.js\"",
     "test:webiny-data-extractor": "yarn mocha \"packages-utils/webiny-data-extractor/tests/**/*.test.js\"",
+    "test:webiny-entity": "yarn mocha \"packages-api/webiny-entity/tests/**/*.test.js\"",
+    "test:webiny-entity-memory": "yarn mocha \"packages-api/webiny-entity-memory/tests/**/*.test.js\"",
+    "test:webiny-entity-mysql": "yarn mocha \"packages-api/webiny-entity-mysql/tests/**/*.test.js\"",
     "test:webiny-model": "yarn mocha \"packages-api/webiny-model/tests/**/*.test.js\"",
     "test:webiny-sql-query-builder": "yarn mocha \"packages-api/webiny-sql-query-builder/tests/**/*.test.js\"",
-    "test:webiny-entity": "yarn mocha \"packages-api/webiny-entity/tests/**/*.test.js\"",
-    "test:webiny-entity-mysql": "yarn mocha \"packages-api/webiny-entity-mysql/tests/**/*.test.js\"",
-    "test:webiny-entity-memory": "yarn mocha \"packages-api/webiny-entity-memory/tests/**/*.test.js\"",
     "test:webiny-validation": "yarn mocha \"packages-utils/webiny-validation/tests/**/*.test.js\""
   },
   "pre-commit": [

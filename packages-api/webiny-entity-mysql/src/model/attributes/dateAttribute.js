@@ -7,9 +7,11 @@ class DateAttribute extends BaseDateAttribute {
             return super.setValue(value);
         }
 
-        return super.setStorageValue(
-            value instanceof Date ? value : fecha.parse(value, "YYYY-MM-DD HH:mm:ss")
-        );
+        if (value instanceof Date) {
+            return super.setStorageValue(value);
+        }
+
+        return super.setStorageValue(fecha.parse(value, "YYYY-MM-DD HH:mm:ss"));
     }
 
     async getStorageValue() {

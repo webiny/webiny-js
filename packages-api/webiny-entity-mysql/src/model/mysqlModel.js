@@ -1,9 +1,10 @@
+// @flow
 import { EntityModel } from "webiny-entity";
-import AttributesContainer from "./mysqlAttributesContainer";
+import MySQLAttributesContainer from "./mysqlAttributesContainer";
 
 class MySQLModel extends EntityModel {
-    createAttributesContainer() {
-        return new AttributesContainer(this);
+    createAttributesContainer(): MySQLAttributesContainer {
+        return new MySQLAttributesContainer(this);
     }
 }
 
