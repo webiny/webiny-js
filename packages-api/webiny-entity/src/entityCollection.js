@@ -6,14 +6,17 @@ class EntityCollection extends Array<Entity> {
 
     constructor(values: Array<Entity> = []) {
         super();
-        if (!values.forEach) {
-            values = [];
-        }
-        values.forEach(v => this.push(v));
-        this.entityCollection = {
-            params: null,
-            meta: null
-        };
+        this.entityCollection = { params: null, meta: null };
+        values.forEach &&
+            values.forEach(item => {
+                if (item instanceof Entity) {
+                    this.push(item);
+                    return true;
+                }
+                throw Error(
+                    "EntityCollection cannot accept a value that is not an instance of Entity."
+                );
+            });
     }
 
     setParams(params: Object): this {
