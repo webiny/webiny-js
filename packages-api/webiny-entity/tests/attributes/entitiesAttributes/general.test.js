@@ -6,7 +6,7 @@ import {
     Entity2,
     MainSetOnceEntity
 } from "../../entities/entitiesAttributeEntities";
-import { assert } from "chai";
+import { assert, expect } from "chai";
 import sinon from "sinon";
 import { One } from "../../entities/oneTwoThree";
 
@@ -284,5 +284,25 @@ describe("attribute entities test", function() {
 
         assert.instanceOf(attribute1, EntityCollection);
         assert.lengthOf(attribute1, 0);
+    });
+
+    it("should throw an exception", async () => {
+        const mainEntity = new MainEntity();
+
+        const entityPopulate = sinon
+            .stub(mainEntity.getAttribute("attribute1").value, "setCurrent")
+            .callsFake(() => {
+                throw Error("Error was thrown.");
+            });
+
+        let error = null;
+        try {
+            await mainEntity.set("attribute1", []);
+        } catch (e) {
+            error = e;
+        }
+
+        assert.instanceOf(error, Error);
+        entityPopulate.restore();
     });
 });
