@@ -261,7 +261,7 @@ validation.validate(10, 'gte:100').then(() => {
 
 ### in
 
-"In array" validator. This validator checks if the given values is greater than or equal to the `min` value.
+"In array" validator. This validator checks if the given value is in given array of values.
 
 **Parameters**
 
