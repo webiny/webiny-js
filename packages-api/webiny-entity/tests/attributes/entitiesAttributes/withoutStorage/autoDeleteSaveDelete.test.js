@@ -533,11 +533,4 @@ describe("save and delete entities attribute test", () => {
         entityFind.restore();
         entityDelete.restore();
     });
-
-    it("should add an entity to the list of entities", async () => {});
-
-    it("should delete entities that are not part of the array anymore", async () => {});
-
-    // 2. autoDelete	da/ne
-    // 3. using class	da/ne
 });

@@ -1,11 +1,11 @@
-import { QueryResult, EntityCollection } from "../../../../src/index";
+import { QueryResult, EntityCollection } from "../../../src/index";
 import { ModelError } from "webiny-model";
 import {
     MainEntity,
     Entity1,
     Entity2,
     MainSetOnceEntity
-} from "../../../entities/entitiesAttributeEntities";
+} from "../../entities/entitiesAttributeEntities";
 import { assert } from "chai";
 import sinon from "sinon";
 
@@ -144,18 +144,27 @@ describe("attribute entities test", function() {
         assert.isEmpty(await mainSetOnceEntity.attribute2);
     });
 
-    it("should correctly validate instances in the attribute", async () => {
+    it("should correctly validate instances in the attribute and throw errors appropriately", async () => {
         const mainEntity = new MainEntity();
-        mainEntity.attribute1 = [
-            null,
-            10,
-            { id: "A", name: "Enlai", type: "dog" },
-            new Entity2().populate({
-                firstName: "Foo",
-                lastName: "bar"
-            })
-        ];
-        mainEntity.attribute2 = [null, "AA", { id: "B", firstName: "John", lastName: "Doe" }];
+
+        let error = null;
+        try {
+            await mainEntity.set("attribute1", [
+                null,
+                10,
+                { id: "A", name: "Enlai", type: "dog" },
+                new Entity2().populate({
+                    firstName: "Foo",
+                    lastName: "bar"
+                })
+            ]);
+        } catch (e) {
+            error = e;
+        }
+
+        assert.instanceOf(error, Error);
+
+        mainEntity.attribute2 = [{ id: "B", firstName: "John", lastName: "Doe" }];
 
         sinon
             .stub(entity.getDriver(), "findById")
@@ -168,15 +177,7 @@ describe("attribute entities test", function() {
                 return { id: "AA", firstName: "Foo", lastName: "Bar" };
             });
 
-        let error = null;
-        try {
-            await mainEntity.getAttribute("attribute1").validate();
-        } catch (e) {
-            error = e;
-        }
-
-        assert.instanceOf(error, ModelError);
-
+        await mainEntity.getAttribute("attribute1").validate();
         await mainEntity.getAttribute("attribute2").validate();
 
         entity.getDriver().findById.restore();
@@ -185,83 +186,7 @@ describe("attribute entities test", function() {
         await mainEntity.getAttribute("attribute1").validate();
     });
 
-    it("should return correct storage values", async () => {
-        const mainEntity = new MainEntity();
-        mainEntity.attribute1 = [
-            null,
-            10,
-            { id: "A", name: "Enlai", type: "dog" },
-            { id: "B", name: "Rocky", type: "dog" },
-            {
-                id: "C",
-                name: "Lina",
-                type: "bird"
-            }
-        ];
-        mainEntity.attribute2 = [
-            null,
-            "AA",
-            { id: "X", firstName: "John", lastName: "Doe" },
-            { id: "Y", firstName: "Jane", lastName: "Doe" }
-        ];
-
-        sinon
-            .stub(entity.getDriver(), "findById")
-            .onCall(0)
-            .callsFake(() => {
-                return new QueryResult({ id: 10, name: "Bucky", type: "dog" });
-            })
-            .onCall(1)
-            .callsFake(() => {
-                return new QueryResult({ id: "AA", firstName: "Foo", lastName: "Bar" });
-            });
-
-        const attribute1 = await mainEntity.attribute1;
-        assert.lengthOf(attribute1, 5);
-        assert.isNull(attribute1[0]);
-        assert.equal(attribute1[1], 10);
-        assert.instanceOf(attribute1[2], Entity1);
-        assert.instanceOf(attribute1[3], Entity1);
-        assert.instanceOf(attribute1[4], Entity1);
-
-        const attribute2 = await mainEntity.attribute2;
-        assert.lengthOf(await attribute2, 4);
-        assert.isNull(attribute2[0]);
-        assert.equal(attribute2[1], "AA");
-        assert.instanceOf(attribute2[2], Entity2);
-        assert.instanceOf(attribute2[3], Entity2);
-
-        const attribute1Value = await mainEntity.getAttribute("attribute1").getStorageValue();
-        assert.lengthOf(attribute1Value, 3);
-        assert.equal(attribute1Value[0], "A");
-        assert.equal(attribute1Value[1], "B");
-        assert.equal(attribute1Value[2], "C");
-
-        const attribute2Value = await mainEntity.getAttribute("attribute2").getStorageValue();
-        assert.lengthOf(attribute2Value, 3);
-        assert.equal(attribute2Value[0], "AA");
-        assert.equal(attribute2Value[1], "X");
-        assert.equal(attribute2Value[2], "Y");
-
-        entity.getDriver().findById.restore();
-
-        mainEntity.attribute1 = null;
-        const attribute1NullValue = await mainEntity.getAttribute("attribute1").getStorageValue();
-        assert.isEmpty(attribute1NullValue);
-        assert.isNull(await mainEntity.attribute1);
-    });
-
-    it("should not set anything as values since setToStorage is not enabled by default", async () => {
-        const mainEntity = new MainEntity();
-
-        mainEntity.populateFromStorage({
-            attribute1: ["A", "B"],
-            attribute2: ["C"]
-        });
-
-        assert.isArray(mainEntity.getAttribute("attribute1").value.getCurrent());
-        assert.isArray(mainEntity.getAttribute("attribute2").value.getCurrent());
-    });
+    it("should accept null value", async () => {});
 
     it("should lazy load any of the accessed linked entities", async () => {
         const entityFind = sinon

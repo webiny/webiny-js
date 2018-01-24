@@ -1,3 +1,5 @@
+import { Entity } from ".";
+
 class EntityCollection extends Array {
     constructor(values = []) {
         super();
@@ -27,6 +29,14 @@ class EntityCollection extends Array {
 
     getMeta() {
         return this.entityCollection.meta;
+    }
+
+    push(value) {
+        if (value instanceof Entity) {
+            return super.push(value);
+        }
+
+        throw Error("Trying to push a value that is not an instance of Entity.");
     }
 }
 
