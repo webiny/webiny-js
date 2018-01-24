@@ -8,6 +8,7 @@ import {
 } from "../../entities/entitiesAttributeEntities";
 import { assert } from "chai";
 import sinon from "sinon";
+import { One } from "../../entities/oneTwoThree";
 
 describe("attribute entities test", function() {
     const entity = new MainEntity();
@@ -223,5 +224,65 @@ describe("attribute entities test", function() {
         assert.instanceOf(attribute2[0], Entity2);
 
         entitiesFind.restore();
+    });
+
+    it("should set internal loaded flag to true when called for the first time, and no findById calls should be made", async () => {
+        const entityFind = sinon
+            .stub(MainEntity.getDriver(), "findById")
+            .onCall(0)
+            .callsFake(() => {
+                return new QueryResult({ id: 10 });
+            });
+
+        const mainEntity = await MainEntity.findById(123);
+        entityFind.restore();
+
+        const entitiesFind = sinon.spy(entity.getDriver(), "find");
+
+        assert.instanceOf(
+            mainEntity.getAttribute("attribute1").value.getCurrent(),
+            EntityCollection
+        );
+        assert.lengthOf(mainEntity.getAttribute("attribute1").value.getCurrent(), 0);
+
+        mainEntity.attribute1;
+        mainEntity.attribute1;
+        await mainEntity.attribute1;
+        await mainEntity.attribute1;
+        assert.equal(entitiesFind.callCount, 1);
+
+        const attribute1 = await mainEntity.attribute1;
+        assert.equal(entitiesFind.callCount, 1);
+
+        entitiesFind.restore();
+        entityFind.restore();
+
+        assert.instanceOf(attribute1, EntityCollection);
+        assert.lengthOf(attribute1, 0);
+    });
+
+    it("on new entities, no find calls should be made", async () => {
+        const mainEntity = new MainEntity();
+
+        const entitiesFind = sinon.spy(entity.getDriver(), "find");
+        assert.instanceOf(
+            mainEntity.getAttribute("attribute1").value.getCurrent(),
+            EntityCollection
+        );
+        assert.lengthOf(mainEntity.getAttribute("attribute1").value.getCurrent(), 0);
+
+        mainEntity.attribute1;
+        mainEntity.attribute1;
+        await mainEntity.attribute1;
+        await mainEntity.attribute1;
+        assert.equal(entitiesFind.callCount, 0);
+
+        const attribute1 = await mainEntity.attribute1;
+        assert.equal(entitiesFind.callCount, 0);
+
+        entitiesFind.restore();
+
+        assert.instanceOf(attribute1, EntityCollection);
+        assert.lengthOf(attribute1, 0);
     });
 });

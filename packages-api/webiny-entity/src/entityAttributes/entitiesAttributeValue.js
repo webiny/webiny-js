@@ -52,11 +52,13 @@ class EntitiesAttributeValue extends AttributeValue {
                 .isExisting()
         ) {
             if (this.attribute.getToStorage()) {
-                if (classes.using.class) {
-                    // TODO: finish this.
-                    this.current = await classes.using.class.findByIds(this.current);
-                } else {
-                    this.current = await classes.entities.class.findByIds(this.current);
+                if (this.hasCurrent()) {
+                    if (classes.using.class) {
+                        // TODO: finish this.
+                        this.current = await classes.using.class.findByIds(this.current);
+                    } else {
+                        this.current = await classes.entities.class.findByIds(this.current);
+                    }
                 }
             } else {
                 let id = await this.attribute
@@ -112,6 +114,10 @@ class EntitiesAttributeValue extends AttributeValue {
 
     hasInitial(): boolean {
         return this.initial.length > 0;
+    }
+
+    hasCurrent(): boolean {
+        return this.current.length > 0;
     }
 
     async deleteInitial(): Promise<void> {
