@@ -5,6 +5,7 @@ import { Entity, QueryResult } from "../../../src/index";
 import { User, Company, Image } from "../../entities/userCompanyImage";
 import { One } from "../../entities/oneTwoThree";
 import sinon from "sinon";
+import { MainEntity } from "../../entities/entitiesAttributeEntities";
 
 describe("entity attribute test", function() {
     it("should fail because an invalid instance was set", async () => {
@@ -364,5 +365,25 @@ describe("entity attribute test", function() {
         assert.deepEqual(one.getAttribute("two").value.status, { loaded: true, loading: false });
 
         findById.restore();
+    });
+
+    it("should throw an exception", async () => {
+        const mainEntity = new One();
+
+        const entityPopulate = sinon
+            .stub(mainEntity.getAttribute("two").value, "setCurrent")
+            .callsFake(() => {
+                throw Error("Error was thrown.");
+            });
+
+        let error = null;
+        try {
+            await mainEntity.set("two", []);
+        } catch (e) {
+            error = e;
+        }
+
+        assert.instanceOf(error, Error);
+        entityPopulate.restore();
     });
 });

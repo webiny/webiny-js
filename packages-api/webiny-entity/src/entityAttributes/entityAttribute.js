@@ -131,23 +131,31 @@ class EntityAttribute extends Attribute {
      * @returns {Promise<void>}
      */
     setValue(value) {
-        this.value.load(() => {
-            if (!this.canSetValue()) {
-                return this;
-            }
-
-            switch (true) {
-                case value instanceof Entity:
-                    this.value.setCurrent(value);
-                    break;
-                case _.isObject(value): {
-                    let entity = this.getEntityClass();
-                    this.value.setCurrent(new entity().populate(value));
-                    break;
+        return new Promise((resolve, reject) => {
+            this.value.load(() => {
+                if (!this.canSetValue()) {
+                    resolve();
+                    return this;
                 }
-                default:
-                    this.value.setCurrent(value);
-            }
+
+                try {
+                    switch (true) {
+                        case value instanceof Entity:
+                            this.value.setCurrent(value);
+                            break;
+                        case _.isObject(value): {
+                            let entity = this.getEntityClass();
+                            this.value.setCurrent(new entity().populate(value));
+                            break;
+                        }
+                        default:
+                            this.value.setCurrent(value);
+                    }
+                    resolve();
+                } catch (e) {
+                    reject(e);
+                }
+            });
         });
     }
 
