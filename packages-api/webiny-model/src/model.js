@@ -20,7 +20,7 @@ class Model implements IModel {
         }
 
         return new Proxy((this: Object), {
-            set: (instance: Model, key: string, value: any) => {
+            set: (instance: Model, key: string, value: mixed) => {
                 const attr = instance.getAttribute(key);
                 if (attr) {
                     attr.setValue(value);
@@ -159,7 +159,7 @@ class Model implements IModel {
         return path ? await extractor.get(json, path) : json;
     }
 
-    async get(path: string | Array<string> = "", defaultValue: any) {
+    async get(path: string | Array<string> = "", defaultValue: mixed = null): Promise<mixed> {
         const steps = typeof path === "string" ? path.split(".") : path;
         let value: Object = this;
         for (let i = 0; i < steps.length; i++) {
@@ -173,12 +173,17 @@ class Model implements IModel {
         return typeof value === "undefined" ? defaultValue : value;
     }
 
-    async set(path: string, value: any) {
+    async set(path: string, value: mixed): Promise<void> {
         const steps = path.split(".");
         const lastStep = steps.pop();
 
         const model = await this.get(steps);
-        return model.getAttribute(lastStep).setValue(value);
+        if (model && model.getAttribute) {
+            const attribute = model.getAttribute(lastStep);
+            if (attribute) {
+                return attribute.setValue(value);
+            }
+        }
     }
 
     /**

@@ -25,7 +25,7 @@ class ModelsAttribute extends Attribute {
         this.value.set = true;
 
         // Even if the value is invalid (eg. a string), we allow it here, but calling validate() will fail.
-        if (!_.isArray(values)) {
+        if (!(values instanceof Array)) {
             this.value.setCurrent(values);
             return;
         }
@@ -48,13 +48,16 @@ class ModelsAttribute extends Attribute {
             return;
         }
 
-        if (!_.isArray(this.value.getCurrent())) {
+        const attrValue = this.value.getCurrent();
+        if (!(attrValue instanceof Array)) {
             this.expected("array", typeof this.value.getCurrent());
         }
 
         const errors = [];
-        for (let i = 0; i < this.value.getCurrent().length; i++) {
-            if (!(this.value.getCurrent()[i] instanceof this.getModelClass())) {
+        const currentValue = ((attrValue: any): Array<Model>);
+
+        for (let i = 0; i < currentValue.length; i++) {
+            if (!(currentValue[i] instanceof this.getModelClass())) {
                 errors.push({
                     type: ModelError.INVALID_ATTRIBUTE,
                     data: {
@@ -65,7 +68,7 @@ class ModelsAttribute extends Attribute {
                 continue;
             }
             try {
-                await this.value.getCurrent()[i].validate();
+                await currentValue[i].validate();
             } catch (e) {
                 errors.push({
                     type: e.getType(),
@@ -82,16 +85,23 @@ class ModelsAttribute extends Attribute {
         }
     }
 
-    async getJSONValue(): Promise<any> {
+    getValue(): Array<Model> | null {
+        return (super.getValue(): any);
+    }
+
+    async getJSONValue(): Promise<mixed> {
         if (this.isEmpty()) {
             return null;
         }
 
         const json = [];
-        for (let i = 0; i < this.getValue().length; i++) {
-            const item = this.getValue()[i];
-            json.push(await item.toJSON());
+        const value = this.getValue();
+        if (value instanceof Array) {
+            for (let i = 0; i < value.length; i++) {
+                json.push(await value[i].toJSON());
+            }
         }
+
         return json;
     }
 

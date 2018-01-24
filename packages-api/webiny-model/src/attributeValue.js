@@ -2,7 +2,7 @@
 
 class AttributeValue {
     attribute: IAttribute;
-    current: any;
+    current: mixed;
     dirty: boolean;
     set: boolean;
 
@@ -13,7 +13,7 @@ class AttributeValue {
         this.set = false;
     }
 
-    setCurrent(value: any, options: Object = {}): this {
+    setCurrent(value: mixed, options: Object = {}): this {
         this.set = true;
 
         if (!options.skipDifferenceCheck) {
@@ -26,11 +26,11 @@ class AttributeValue {
         return this;
     }
 
-    getCurrent(): any {
+    getCurrent(): mixed {
         return this.current;
     }
 
-    isDifferentFrom(value: any): boolean {
+    isDifferentFrom(value: mixed): boolean {
         return this.current !== value;
     }
 

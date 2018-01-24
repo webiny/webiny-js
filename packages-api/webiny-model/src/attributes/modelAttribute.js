@@ -16,7 +16,7 @@ class ModelAttribute extends Attribute {
         return this.modelClass;
     }
 
-    setValue(value: any) {
+    setValue(value: mixed) {
         if (!this.canSetValue()) {
             return;
         }
@@ -32,12 +32,15 @@ class ModelAttribute extends Attribute {
         this.value.setCurrent(newValue);
     }
 
-    async getJSONValue(): Object {
+    async getJSONValue(): Promise<mixed> {
         if (this.isEmpty()) {
             return null;
         }
 
-        return this.getValue().toJSON();
+        const model = this.getValue();
+        if (model instanceof Model) {
+            return model.toJSON();
+        }
     }
 
     async getStorageValue(): Object {
@@ -59,8 +62,9 @@ class ModelAttribute extends Attribute {
         await Attribute.prototype.validate.call(this);
 
         // This validates on the model level.
-        if (this.value.getCurrent() instanceof this.getModelClass()) {
-            await this.value.getCurrent().validate();
+        const currentValue = this.value.getCurrent();
+        if (currentValue instanceof this.getModelClass()) {
+            await currentValue.validate();
         }
     }
 }

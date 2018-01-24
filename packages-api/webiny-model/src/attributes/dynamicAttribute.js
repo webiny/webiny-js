@@ -16,7 +16,7 @@ class DynamicAttribute extends Attribute {
     }
 
     // eslint-disable-next-line
-    getValue(params: Array<any> = [], processCallbacks: boolean = true): any {
+    getValue(params: Array<mixed> = [], processCallbacks: boolean = true): mixed {
         return this.callback.call(this.getParentModel(), { model: this.getParentModel() });
     }
 }

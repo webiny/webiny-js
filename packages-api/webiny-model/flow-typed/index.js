@@ -6,8 +6,8 @@ declare interface IAttributesContainer {
     getParentModel(): IModel;
 }
 
-declare type AttributeValidator = (value: any, attr: IAttribute) => Promise<void>;
-declare type AttributeValueCallback = (value: any) => any;
+declare type AttributeValidator = (value: mixed, attr: IAttribute) => Promise<void>;
+declare type AttributeValueCallback = (value: mixed) => mixed;
 
 declare interface IAttribute {
     name: string;
@@ -16,7 +16,7 @@ declare interface IAttribute {
     once: boolean;
     toStorage: boolean;
     skipOnPopulate: boolean;
-    defaultValue: any;
+    defaultValue: mixed;
     validators: string | AttributeValidator;
     onSetCallback: AttributeValueCallback;
     onGetCallback: AttributeValueCallback;
@@ -49,27 +49,27 @@ declare interface IAttribute {
 
     canSetValue(): boolean;
 
-    setValue(value: any): void;
+    setValue(value: any): void | Promise<void>;
 
-    getValue(): any;
+    getValue(): mixed;
 
     onSet(callback: AttributeValueCallback): IAttribute;
 
     onGet(callback: AttributeValueCallback): IAttribute;
 
-    getJSONValue(): Promise<any>;
+    getJSONValue(): Promise<mixed>;
 
     setToStorage(flag: boolean): IAttribute;
 
     getToStorage(): boolean;
 
-    getStorageValue(): Promise<any>;
+    getStorageValue(): Promise<mixed>;
 
-    setStorageValue(value: any): IAttribute;
+    setStorageValue(value: mixed): IAttribute;
 
-    setDefaultValue(defaultValue: any): IAttribute;
+    setDefaultValue(defaultValue: mixed): IAttribute;
 
-    getDefaultValue(): any;
+    getDefaultValue(): mixed;
 
     setOnce(flag: boolean): IAttribute;
 
@@ -101,9 +101,9 @@ declare interface IModel {
 
     toJSON(path: ?string): Promise<{}>;
 
-    get(path: string | Array<string>, defaultValue: any): Promise<any>;
+    get(path: string | Array<string>, defaultValue: mixed): Promise<mixed>;
 
-    set(path: string, value: any): Promise<void>;
+    set(path: string, value: mixed): Promise<void>;
 
     toStorage(): Promise<{}>;
 

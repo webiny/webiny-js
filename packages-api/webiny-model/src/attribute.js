@@ -11,7 +11,7 @@ class Attribute implements IAttribute {
     once: boolean;
     toStorage: boolean;
     skipOnPopulate: boolean;
-    defaultValue: any;
+    defaultValue: mixed;
     validators: string | AttributeValidator;
     onSetCallback: AttributeValueCallback;
     onGetCallback: AttributeValueCallback;
@@ -30,7 +30,7 @@ class Attribute implements IAttribute {
         /**
          * Attribute's current value.
          */
-        this.value = new AttributeValue((this: any));
+        this.value = new AttributeValue((this: Attribute));
 
         /**
          * If true - updating will be disabled.
@@ -201,8 +201,12 @@ class Attribute implements IAttribute {
 
     /**
      * Sets attribute's value.
+     * Some attributes may require async behaviour, that is why we annotate both sync and async return values.
+     *
+     * @param {any} value A value can be anything, depending on the attribute implementation.
+     * @returns {void|Promise<void>}
      */
-    setValue(value: any): any {
+    setValue(value: any): void | Promise<void> {
         if (!this.canSetValue()) {
             return;
         }
@@ -213,7 +217,7 @@ class Attribute implements IAttribute {
     /**
      * Returns attribute's value.
      */
-    getValue(): any {
+    getValue(): mixed {
         if (this.isEmpty()) {
             this.value.setCurrent(this.getDefaultValue());
         }
@@ -234,7 +238,7 @@ class Attribute implements IAttribute {
         return this;
     }
 
-    async getJSONValue(): Promise<any> {
+    async getJSONValue(): Promise<mixed> {
         return this.getValue();
     }
 
@@ -247,11 +251,11 @@ class Attribute implements IAttribute {
         return this.toStorage;
     }
 
-    async getStorageValue(): any {
+    async getStorageValue(): Promise<mixed> {
         return this.getValue();
     }
 
-    setStorageValue(value: any): this {
+    setStorageValue(value: mixed): this {
         // We don't want to mark value as dirty.
         this.value.setCurrent(value, { skipDifferenceCheck: true });
         return this;
@@ -260,7 +264,7 @@ class Attribute implements IAttribute {
     /**
      * Sets default attribute value.
      */
-    setDefaultValue(defaultValue: any = null): this {
+    setDefaultValue(defaultValue: mixed = null): this {
         this.defaultValue = defaultValue;
         return this;
     }
@@ -270,7 +274,7 @@ class Attribute implements IAttribute {
      */
     getDefaultValue() {
         let defaultValue = this.defaultValue;
-        return _.isFunction(defaultValue) ? defaultValue() : defaultValue;
+        return typeof defaultValue === "function" ? defaultValue() : defaultValue;
     }
 
     /**
