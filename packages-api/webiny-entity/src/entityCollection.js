@@ -1,7 +1,10 @@
+// @flow
 import { Entity } from ".";
 
-class EntityCollection extends Array {
-    constructor(values = []) {
+class EntityCollection extends Array<Entity> {
+    entityCollection: { params: ?Object, meta: ?Object };
+
+    constructor(values: Array<Entity> = []) {
         super();
         if (!values.forEach) {
             values = [];
@@ -13,30 +16,30 @@ class EntityCollection extends Array {
         };
     }
 
-    setParams(params) {
+    setParams(params: Object): this {
         this.entityCollection.params = params;
         return this;
     }
 
-    getParams() {
+    getParams(): ?Object {
         return this.entityCollection.params;
     }
 
-    setMeta(meta) {
+    setMeta(meta: ?Object): this {
         this.entityCollection.meta = meta;
         return this;
     }
 
-    getMeta() {
+    getMeta(): ?Object {
         return this.entityCollection.meta;
     }
 
-    push(value) {
+    push(value: Entity) {
         if (value instanceof Entity) {
             return super.push(value);
         }
 
-        throw Error("Trying to push a value that is not an instance of Entity.");
+        throw Error("EntityCollection cannot accept a value that is not an instance of Entity.");
     }
 }
 

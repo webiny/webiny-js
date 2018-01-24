@@ -11,5 +11,8 @@
     "dependencies": {
         "babel-runtime": "^6.26.0",
         "lodash": "^4.17.4"
+    },
+    "scripts": {
+        "documentation": "documentation build --config documentation.yml src/** flow-typed/** -f md > DOCUMENTATION.md"
     }
 }

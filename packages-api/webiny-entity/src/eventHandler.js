@@ -1,12 +1,18 @@
+// @flow
 class EventHandler {
-    constructor(name, callback) {
+    name: string;
+    callback: Function;
+    executed: boolean;
+    once: boolean;
+
+    constructor(name: string, callback: Function) {
         this.name = name;
         this.callback = callback;
         this.executed = false;
         this.once = false;
     }
 
-    execute(params) {
+    execute(params: Object): any {
         if (this.getOnce() && this.executed) {
             return;
         }
@@ -15,20 +21,20 @@ class EventHandler {
         return this.getCallback()(params);
     }
 
-    getName() {
+    getName(): string {
         return this.name;
     }
 
-    getCallback() {
+    getCallback(): Function {
         return this.callback;
     }
 
-    setOnce(flag = true) {
+    setOnce(flag: boolean = true): this {
         this.once = flag;
         return this;
     }
 
-    getOnce() {
+    getOnce(): boolean {
         return this.once;
     }
 }

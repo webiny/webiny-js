@@ -4,15 +4,15 @@ import Model from "./../model";
 import { AttributesContainer } from "../index";
 
 class ModelAttribute extends Attribute {
-    modelClass: Model.constructor;
+    modelClass: Class<Model>;
 
-    constructor(name: string, attributesContainer: AttributesContainer, model: Model.constructor) {
+    constructor(name: string, attributesContainer: AttributesContainer, model: Class<Model>) {
         super(name, attributesContainer);
         this.modelClass = model;
         this.defaultValue = () => new this.modelClass();
     }
 
-    getModelClass(): Model.constructor {
+    getModelClass(): Class<Model> {
         return this.modelClass;
     }
 

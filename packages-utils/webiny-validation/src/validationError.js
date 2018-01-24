@@ -1,9 +1,17 @@
 // @flow
+
+/**
+ * This class is used by validators to throw an error when value validation fails.
+ * @class ValidationError
+ * @param {string} message Error message
+ * @param {string} validator Validator that triggered this error
+ * @param {any} value Value that triggered this error
+ */
 class ValidationError extends Error {
-    validator: string;
+    validator: ?string;
     value: any;
 
-    constructor(message: string, validator: string, value: any) {
+    constructor(message: string, validator: ?string, value: any) {
         super();
         this.message = message;
         this.validator = validator;
@@ -20,7 +28,7 @@ class ValidationError extends Error {
     /**
      * Returns the name of validator that resulted with an error.
      */
-    getValidator(): string {
+    getValidator(): ?string {
         return this.validator;
     }
 

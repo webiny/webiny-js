@@ -1,13 +1,48 @@
+// @flow
+import _ from "lodash";
 import Driver from "./driver";
 import EventHandler from "./eventHandler";
 import EntityCollection from "./entityCollection";
-import _ from "lodash";
+import EntityModel from "./entityModel";
+import EntityAttributesContainer from "./entityAttributesContainer";
+import { Attribute } from "webiny-model";
+
+declare type EntitySaveParams = {
+    validation?: boolean,
+    events?: {
+        save?: boolean,
+        beforeSave?: boolean,
+        beforeUpdate?: boolean,
+        beforeCreate?: boolean,
+        afterSave?: boolean,
+        afterUpdate?: boolean,
+        afterCreate?: boolean
+    }
+};
+
+declare type EntityDeleteParams = {
+    validation?: boolean,
+    events?: {
+        delete?: boolean,
+        beforeDelete?: boolean,
+        afterDelete?: boolean
+    }
+};
 
 class Entity {
-    constructor() {
-        const proxy = new Proxy(this, {
+    static classId: ?string;
+    static driver: Driver;
+    static listeners: {};
+
+    model: EntityModel;
+    listeners: {};
+    existing: boolean;
+    processing: ?string;
+
+    constructor(): Entity {
+        const proxy = new Proxy((this: Object), {
             set: (instance, key, value) => {
-                const attr = instance.getModel().getAttribute(key);
+                const attr: ?Attribute = instance.getModel().getAttribute(key);
                 if (attr) {
                     attr.setValue(value);
                     return true;
@@ -21,7 +56,7 @@ class Entity {
                     return instance.constructor[key];
                 }
 
-                const attr = instance.getModel().getAttribute(key);
+                const attr: ?Attribute = instance.getModel().getAttribute(key);
                 if (attr) {
                     return attr.getValue();
                 }
@@ -30,8 +65,8 @@ class Entity {
             }
         });
 
-        this.model = this.getDriver().getModelClass();
-        this.model = new this.model().setParentEntity(proxy);
+        const modelClass = this.getDriver().getModelClass();
+        this.model = new modelClass().setParentEntity(proxy);
 
         if (!this.model) {
             throw Error("Entity model is missing.");
@@ -58,52 +93,44 @@ class Entity {
 
     /**
      * Returns instance of entity's model.
-     * @returns {*}
      */
-    getModel() {
+    getModel(): EntityModel {
         return this.model;
     }
 
     /**
      * Returns instance of used driver.
-     * @returns {Driver}
      */
-    static getDriver() {
+    static getDriver(): Driver {
         return this.driver;
     }
 
     /**
      * Returns instance of used driver.
-     * @returns {Driver}
      */
-    getDriver() {
+    getDriver(): Driver {
         return this.constructor.driver;
     }
 
     /**
      * Sets whether entity is existing or not.
-     * @param flag
-     * @returns {Entity}
      */
-    setExisting(flag = true) {
+    setExisting(flag: boolean = true): this {
         this.existing = flag;
         return this;
     }
 
     /**
      * Returns true if entity exists or in other words, is already saved in storage. Otherwise returns false.
-     * @returns {boolean|*}
      */
-    isExisting() {
+    isExisting(): boolean {
         return this.existing;
     }
 
     /**
      * Creates new attribute with name.
-     * @param name
-     * @returns {*}
      */
-    attr(name) {
+    attr(name: string): EntityAttributesContainer {
         return this.getModel()
             .getAttributesContainer()
             .attr(name);
@@ -111,51 +138,44 @@ class Entity {
 
     /**
      * Returns single attribute by given name.
-     * @param name
-     * @returns {*|string}
      */
-    getAttribute(name) {
+    getAttribute(name: string): Attribute {
         return this.getModel().getAttribute(name);
     }
 
     /**
      * Returns all entity's attributes.
-     * @returns {*}
      */
-    getAttributes() {
+    getAttributes(): { [string]: Attribute } {
         return this.getModel().getAttributes();
     }
 
-    async get(path = "", defaultValue) {
+    async get(path: string | Array<string> = "", defaultValue: any = null) {
         return this.getModel().get(path, defaultValue);
     }
 
-    async set(path, value) {
+    async set(path: string, value: any) {
         return this.getModel().set(path, value);
     }
 
     /**
      * Returns entity's JSON representation.
-     * @param path
-     * @returns {Promise<void>}
      */
-    async toJSON(path = null) {
+    async toJSON(path: ?string): Promise<{}> {
         return this.getModel().toJSON(path);
     }
 
     /**
      * Returns data suitable for storage.
-     * @returns {Promise<Promise<*>|*|Promise<{}>>}
      */
-    async toStorage() {
+    async toStorage(): Promise<{}> {
         return this.getModel().toStorage();
     }
 
     /**
      * Validates current entity and throws exception that contains all invalid attributes.
-     * @returns {Promise<void>}
      */
-    async validate() {
+    async validate(): Promise<void> {
         await this.emit("beforeValidate");
         await this.getModel().validate();
         await this.emit("afterValidate");
@@ -163,10 +183,8 @@ class Entity {
 
     /**
      * Used to populate entity with given data.
-     * @param data
-     * @returns {Entity}
      */
-    populate(data) {
+    populate(data: Object): this {
         this.getModel().populate(data);
         return this;
     }
@@ -174,9 +192,8 @@ class Entity {
     /**
      * Used when populating entity with data from storage.
      * @param data
-     * @returns {Entity}
      */
-    populateFromStorage(data) {
+    populateFromStorage(data: Object): this {
         this.getModel().populateFromStorage(data);
         return this;
     }
@@ -184,9 +201,8 @@ class Entity {
     /**
      * Saves current and all linked entities (if autoSave on the attribute was enabled).
      * @param params
-     * @returns {Promise<*>}
      */
-    async save(params = {}) {
+    async save(params: EntitySaveParams & Object = {}) {
         if (this.processing) {
             return;
         }
@@ -228,9 +244,8 @@ class Entity {
     /**
      * Deletes current and all linked entities (if autoDelete on the attribute was enabled).
      * @param params
-     * @returns {Promise<*>}
      */
-    async delete(params = {}) {
+    async delete(params: EntityDeleteParams & Object = {}) {
         if (this.processing) {
             return;
         }
@@ -255,9 +270,8 @@ class Entity {
      * Tells us whether a given ID is valid or not.
      * @param id
      * @param params
-     * @returns {*}
      */
-    isId(id, params = {}) {
+    isId(id: any, params: Object = {}): boolean {
         return this.getDriver().isId(this, id, _.cloneDeep(params));
     }
 
@@ -265,9 +279,8 @@ class Entity {
      * Tells us whether a given ID is valid or not.
      * @param id
      * @param params
-     * @returns {*}
      */
-    static isId(id, params = {}) {
+    static isId(id: any, params: Object = {}): boolean {
         return this.getDriver().isId(this, id, _.cloneDeep(params));
     }
 
@@ -275,9 +288,8 @@ class Entity {
      * Finds a single entity matched by given ID.
      * @param id
      * @param params
-     * @returns {Promise<*>}
      */
-    static async findById(id, params = {}) {
+    static async findById(id: string, params: Object = {}): Promise<null | Entity> {
         const paramsClone = _.cloneDeep(params);
         await this.emit("query", { type: "findById", id, params: paramsClone });
         if (!id) {
@@ -295,9 +307,8 @@ class Entity {
      * Finds one or more entities matched by given IDs.
      * @param ids
      * @param params
-     * @returns {Promise<*>}
      */
-    static async findByIds(ids, params = {}) {
+    static async findByIds(ids: Array<string>, params: Object = {}): Promise<EntityCollection> {
         const paramsClone = _.cloneDeep(params);
         await this.emit("query", { type: "findByIds", params: paramsClone });
 
@@ -319,9 +330,8 @@ class Entity {
     /**
      * Finds one entity matched by given query parameters.
      * @param params
-     * @returns {Promise<*>}
      */
-    static async findOne(params = {}) {
+    static async findOne(params: Object = {}): Promise<null | Entity> {
         const paramsClone = _.cloneDeep(params);
         await this.emit("query", { type: "findOne", params: paramsClone });
 
@@ -335,9 +345,8 @@ class Entity {
     /**
      * Finds one or more entities matched by given query parameters.
      * @param params
-     * @returns {Promise<*>}
      */
-    static async find(params = {}) {
+    static async find(params: Object = {}): Promise<EntityCollection> {
         const paramsClone = _.cloneDeep(params);
         await this.emit("query", { type: "find", params: paramsClone });
 
@@ -362,9 +371,8 @@ class Entity {
     /**
      * Counts total number of entities matched by given query parameters.
      * @param params
-     * @returns {Promise<*>}
      */
-    static async count(params = {}) {
+    static async count(params: Object = {}): Promise<number> {
         const paramsClone = _.cloneDeep(params);
         await this.emit("query", { type: "count", params: paramsClone });
 
@@ -376,9 +384,8 @@ class Entity {
      * Registers a listener that will be triggered only on current entity instance.
      * @param name
      * @param callback
-     * @returns {EventHandler}
      */
-    on(name, callback) {
+    on(name: string, callback: Function): EventHandler {
         const eventHandler = new EventHandler(name, callback);
         if (!this.listeners[eventHandler.getName()]) {
             this.listeners[eventHandler.getName()] = [];
@@ -391,9 +398,8 @@ class Entity {
      * Registers a listener that will be triggered on all entity instances of current class.
      * @param name
      * @param callback
-     * @returns {EventHandler}
      */
-    static on(name, callback) {
+    static on(name: string, callback: Function): EventHandler {
         if (!this.listeners) {
             this.listeners = {};
         }
@@ -410,9 +416,8 @@ class Entity {
      * Emits an event, which will trigger both static and instance listeners.
      * @param name
      * @param data
-     * @returns {Promise<Entity>}
      */
-    async emit(name, data) {
+    async emit(name: string, data: Object = {}): Promise<this> {
         if (this.listeners[name]) {
             for (let i = 0; i < this.listeners[name].length; i++) {
                 await this.listeners[name][i].execute({ ...data, entity: this });
@@ -433,9 +438,8 @@ class Entity {
      * Emits an event, which will trigger static event listeners.
      * @param name
      * @param data
-     * @returns {Promise<void>}
      */
-    static async emit(name, data) {
+    static async emit(name: string, data: Object = {}): Promise<void> {
         if (_.get(this, "listeners.name")) {
             for (let i = 0; i < this.listeners[name].length; i++) {
                 await this.listeners[name][i].execute({ ...data, entity: this });
