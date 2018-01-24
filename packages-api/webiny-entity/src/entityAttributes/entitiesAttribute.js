@@ -57,13 +57,13 @@ class EntitiesAttribute extends Attribute {
 
                     // If initial is empty, that means nothing was ever loaded (attribute was not accessed) and there is nothing to do.
                     // Otherwise, deleteInitial method will internally delete only entities that are not needed anymore.
-                    if (this.getAutoSave() && this.value.hasInitial()) {
+                    if (this.getAutoSave() && this.getAutoDelete()) {
                         await this.value.deleteInitial();
-
-                        // Set current entities as new initial values.
-                        this.value.syncInitialCurrent();
                     }
                 }
+
+                // Set current entities as new initial values.
+                this.value.syncInitialCurrent();
             });
 
         this.getParentModel()
@@ -197,7 +197,7 @@ class EntitiesAttribute extends Attribute {
                         return;
                     }
 
-                    this.value.setCurrent(value);
+                    this.value.setCurrent(new EntityCollection());
                     resolve();
                 } catch (e) {
                     reject(e);

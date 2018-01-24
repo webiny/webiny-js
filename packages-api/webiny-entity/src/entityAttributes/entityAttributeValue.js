@@ -67,6 +67,7 @@ class EntityAttributeValue extends AttributeValue {
             return;
         }
 
+        // Initial value will always be an existing (already saved) Entity instance.
         if (_.get(this.getInitial(), "id") !== _.get(this.getCurrent(), "id")) {
             await this.getInitial().delete();
         }

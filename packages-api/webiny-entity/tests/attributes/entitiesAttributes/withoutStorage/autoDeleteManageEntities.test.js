@@ -3,8 +3,8 @@ import { MainEntity, Entity1, Entity2 } from "../../../entities/entitiesAttribut
 import { assert } from "chai";
 import sinon from "sinon";
 
-describe("save and delete entities attribute test", () => {
-    it("should replace entities if direct assign was made or correctly update the list otherwise", async () => {
+describe("entity attribute current / initial values syncing", function() {
+    it("should delete previous initial values since auto save and auto delete are both enabled", async () => {
         let entityDelete = sinon
             .stub(MainEntity.getDriver(), "delete")
             .callsFake(() => new QueryResult());

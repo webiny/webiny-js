@@ -51,11 +51,11 @@ class EntityAttribute extends Attribute {
                     // Otherwise, deleteInitial method will internally delete only entities that are not needed anymore.
                     if (this.getAutoSave() && this.getAutoDelete()) {
                         await this.value.deleteInitial();
-
-                        // Set current entities as new initial values.
-                        this.value.syncInitial();
                     }
                 }
+
+                // Set current entities as new initial values.
+                this.value.syncInitial();
             });
 
         this.getParentModel()
