@@ -2,8 +2,11 @@ import { assert } from "chai";
 import { Entity, QueryResult } from "../../../../src/index";
 import sinon from "sinon";
 import EntityCollection from "../../../../src/entityCollection";
+const sandbox = sinon.sandbox.create();
 
 describe("attribute entities test", function() {
+    afterEach(() => sandbox.restore());
+
     class Entity1 extends Entity {
         constructor() {
             super();
@@ -60,7 +63,7 @@ describe("attribute entities test", function() {
             { id: "Y", firstName: "Jane", lastName: "Doe" }
         ];
 
-        sinon
+        sandbox
             .stub(entity.getDriver(), "findById")
             .onCall(0)
             .callsFake(() => {
@@ -112,7 +115,7 @@ describe("attribute entities test", function() {
         assert.equal(mainEntity.getAttribute("attribute1").value.getCurrent()[1], "B");
         assert.equal(mainEntity.getAttribute("attribute2").value.getCurrent()[0], "C");
 
-        sinon
+        sandbox
             .stub(entity.getDriver(), "findByIds")
             .onCall(0)
             .callsFake(() => {

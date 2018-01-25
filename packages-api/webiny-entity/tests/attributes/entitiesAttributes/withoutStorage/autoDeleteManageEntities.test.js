@@ -2,16 +2,19 @@ import { QueryResult } from "../../../../src";
 import { MainEntity, Entity1, Entity2 } from "../../../entities/entitiesAttributeEntities";
 import { assert } from "chai";
 import sinon from "sinon";
+const sandbox = sinon.sandbox.create();
 
 describe("entity attribute current / initial values syncing", function() {
+    afterEach(() => sandbox.restore());
+
     it("should delete previous initial values since auto save and auto delete are both enabled", async () => {
-        let entityDelete = sinon
+        let entityDelete = sandbox
             .stub(MainEntity.getDriver(), "delete")
             .callsFake(() => new QueryResult());
-        let entityFindById = sinon
+        let entityFindById = sandbox
             .stub(MainEntity.getDriver(), "findById")
             .callsFake(() => new QueryResult({ id: "A" }));
-        let entityFind = sinon.stub(Entity1.getDriver(), "find").callsFake(() => {
+        let entityFind = sandbox.stub(Entity1.getDriver(), "find").callsFake(() => {
             return new QueryResult([
                 { id: "B", name: "b", type: "dog", markedAsCannotDelete: false },
                 { id: "C", name: "c", type: "dog", markedAsCannotDelete: false }
@@ -26,7 +29,7 @@ describe("entity attribute current / initial values syncing", function() {
         assert.equal(mainEntity.getAttribute("attribute1").value.initial[0].id, "B");
         assert.equal(mainEntity.getAttribute("attribute1").value.initial[1].id, "C");
 
-        let entitySave = sinon
+        let entitySave = sandbox
             .stub(mainEntity.getDriver(), "save")
             .onCall(0)
             .callsFake(entity => {
@@ -48,7 +51,7 @@ describe("entity attribute current / initial values syncing", function() {
         entitySave.restore();
         entityFind.restore();
 
-        entityFind = sinon.stub(Entity1.getDriver(), "find").callsFake(() => {
+        entityFind = sandbox.stub(Entity1.getDriver(), "find").callsFake(() => {
             return new QueryResult([
                 {
                     id: "D",
@@ -95,7 +98,7 @@ describe("entity attribute current / initial values syncing", function() {
         assert.equal(mainEntity.getAttribute("attribute2").value.current[0].id, "D");
         assert.lengthOf(mainEntity.getAttribute("attribute2").value.current, 1);
 
-        entitySave = sinon
+        entitySave = sandbox
             .stub(mainEntity.getDriver(), "save")
             .onCall(0)
             .callsFake(entity => {

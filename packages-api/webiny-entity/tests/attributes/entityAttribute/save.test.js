@@ -5,13 +5,17 @@ import { User, Company } from "../../entities/userCompanyImage";
 import { One } from "../../entities/oneTwoThree";
 import sinon from "sinon";
 
+const sandbox = sinon.sandbox.create();
+
 describe("entity attribute test", function() {
+    afterEach(() => sandbox.restore());
+
     it("should return entity from storage", async () => {
         const entity = new User();
         entity.getAttribute("company").setStorageValue("A");
         assert.equal(entity.getAttribute("company").value.getCurrent(), "A");
 
-        sinon.stub(entity.getDriver(), "findById").callsFake(() => {
+        sandbox.stub(entity.getDriver(), "findById").callsFake(() => {
             return new QueryResult({ id: "A", name: "TestCompany" });
         });
 
@@ -28,7 +32,7 @@ describe("entity attribute test", function() {
         entity.getAttribute("company").setStorageValue(1);
         assert.equal(await entity.getAttribute("company").getStorageValue(), 1);
 
-        const findById = sinon
+        const findById = sandbox
             .stub(entity.getDriver(), "findById")
             .onCall(0)
             .callsFake(() => {
@@ -52,7 +56,7 @@ describe("entity attribute test", function() {
     it("it should auto save linked entity only if it is enabled", async () => {
         const user = new User();
 
-        let save = sinon.stub(user.getDriver(), "save").callsFake(entity => {
+        let save = sandbox.stub(user.getDriver(), "save").callsFake(entity => {
             entity.id = "A";
             return new QueryResult();
         });
@@ -86,7 +90,7 @@ describe("entity attribute test", function() {
         user.getAttribute("company").setAutoSave();
 
         // This time we should have an update on User entity, and insert on linked company entity
-        save = sinon
+        save = sandbox
             .stub(user.getDriver(), "save")
             .onCall(0)
             .callsFake(entity => {
@@ -117,7 +121,7 @@ describe("entity attribute test", function() {
         // This time we should have an update on User entity, update on company entity and insert on linked image entity.
         // Additionally, image entity has a createdBy attribute, but since it's empty, nothing must happen here.
 
-        save = sinon
+        save = sandbox
             .stub(user.getDriver(), "save")
             .onCall(0)
             .callsFake(entity => {
@@ -160,7 +164,7 @@ describe("entity attribute test", function() {
             }
         });
 
-        let save = sinon
+        let save = sandbox
             .stub(user.getDriver(), "save")
             .onCall(0)
             .callsFake(entity => {
@@ -203,7 +207,7 @@ describe("entity attribute test", function() {
         });
         await user.save();
 
-        let save = sinon
+        let save = sandbox
             .stub(user.getDriver(), "save")
             .onCall(0)
             .callsFake(entity => {
@@ -233,7 +237,7 @@ describe("entity attribute test", function() {
     });
 
     it("should not trigger save on linked entity since it was not loaded", async () => {
-        const findById = sinon
+        const findById = sandbox
             .stub(One.getDriver(), "findById")
             .onCall(0)
             .callsFake(() => {
@@ -243,7 +247,7 @@ describe("entity attribute test", function() {
         const one = await One.findById("one");
         findById.restore();
 
-        const save = sinon
+        const save = sandbox
             .stub(one.getDriver(), "save")
             .onCall(0)
             .callsFake(() => {
@@ -257,7 +261,7 @@ describe("entity attribute test", function() {
     });
 
     it("should create new entity and save links correctly", async () => {
-        const findById = sinon
+        const findById = sandbox
             .stub(One.getDriver(), "findById")
             .onCall(0)
             .callsFake(() => {
@@ -269,7 +273,7 @@ describe("entity attribute test", function() {
 
         one.two = { name: "two", three: { name: "three" } };
 
-        const save = sinon
+        const save = sandbox
             .stub(one.getDriver(), "save")
             .onCall(0)
             .callsFake(entity => {
@@ -304,7 +308,7 @@ describe("entity attribute test", function() {
     });
 
     it("should delete existing entity once new one was assigned and main entity saved", async () => {
-        let entityFindById = sinon
+        let entityFindById = sandbox
             .stub(One.getDriver(), "findById")
             .onCall(0)
             .callsFake(() => {
@@ -341,7 +345,7 @@ describe("entity attribute test", function() {
         // This is what will happen once we execute save method on One entity
 
         // 1. recursively call save method on all child entities.
-        let entitySave = sinon
+        let entitySave = sandbox
             .stub(One.getDriver(), "save")
             .onCall(0)
             .callsFake(entity => {
@@ -371,14 +375,14 @@ describe("entity attribute test", function() {
         // 2. Once the save is done, deletes will start because main entity has a different entity on attribute 'two'. Before deletions,
         // findById method will be executed to recursively load entities and then of course delete them. At this point, we only need
         // to load entity 'three' on initial entity 'two'. After that, deletes will start, it will delete entity three and entity two.
-        entityFindById = sinon
+        entityFindById = sandbox
             .stub(One.getDriver(), "findById")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({ id: "three", name: "Three" });
             });
 
-        let entityDelete = sinon.stub(One.getDriver(), "delete").callsFake(() => {
+        let entityDelete = sandbox.stub(One.getDriver(), "delete").callsFake(() => {
             new QueryResult();
         });
 

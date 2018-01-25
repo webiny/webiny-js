@@ -3,14 +3,17 @@ import { MainEntity, Entity1 } from "../../entities/entitiesAttributeEntities";
 
 import { assert } from "chai";
 import sinon from "sinon";
+const sandbox = sinon.sandbox.create();
 
 describe("save and delete entities attribute test", () => {
+    afterEach(() => sandbox.restore());
+
     it("should replace entities if direct assign was made or correctly update the list otherwise", async () => {
-        let entityDelete = sinon.spy(MainEntity.getDriver(), "delete");
-        let entityFindById = sinon
+        let entityDelete = sandbox.spy(MainEntity.getDriver(), "delete");
+        let entityFindById = sandbox
             .stub(MainEntity.getDriver(), "findById")
             .callsFake(() => new QueryResult({ id: "A" }));
-        let entityFind = sinon.stub(Entity1.getDriver(), "find").callsFake(() => {
+        let entityFind = sandbox.stub(Entity1.getDriver(), "find").callsFake(() => {
             return new QueryResult([
                 { id: "B", name: "b", type: "dog", markedAsCannotDelete: false },
                 { id: "C", name: "c", type: "dog", markedAsCannotDelete: false }
@@ -26,7 +29,7 @@ describe("save and delete entities attribute test", () => {
         assert.equal(mainEntity.getAttribute("attribute1").value.initial[1].id, "C");
         assert.equal(mainEntity.getAttribute("attribute1").value.current[0].name, "x");
 
-        let entitySave = sinon
+        let entitySave = sandbox
             .stub(mainEntity.getDriver(), "save")
             .onCall(0)
             .callsFake(entity => {
@@ -57,7 +60,7 @@ describe("save and delete entities attribute test", () => {
         assert.equal(mainEntity.getAttribute("attribute1").value.current[0].name, "y");
         assert.equal(mainEntity.getAttribute("attribute1").value.current[1].name, "z");
 
-        entitySave = sinon
+        entitySave = sandbox
             .stub(mainEntity.getDriver(), "save")
             .onCall(0)
             .callsFake(entity => {

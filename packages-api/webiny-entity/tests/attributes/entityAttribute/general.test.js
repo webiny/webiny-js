@@ -10,9 +10,7 @@ import { UsersGroups } from "../../entities/entitiesUsing";
 const sandbox = sinon.sandbox.create();
 
 describe("entity attribute test", function() {
-    afterEach(function() {
-        sandbox.restore();
-    });
+    afterEach(() => sandbox.restore());
 
     it("should fail because an invalid instance was set", async () => {
         const user = new User();
@@ -209,7 +207,7 @@ describe("entity attribute test", function() {
     it("should throw an exception", async () => {
         const mainEntity = new One();
 
-        const entityPopulate = sinon
+        const entityPopulate = sandbox
             .stub(mainEntity.getAttribute("two").value, "setCurrent")
             .callsFake(() => {
                 throw Error("Error was thrown.");
@@ -286,7 +284,7 @@ describe("entity attribute test", function() {
     });
 
     it("should lazy load any of the accessed linked entities", async () => {
-        let findById = sinon
+        let findById = sandbox
             .stub(One.getDriver(), "findById")
             .onCall(0)
             .callsFake(() => {
@@ -361,7 +359,7 @@ describe("entity attribute test", function() {
     });
 
     it("should set internal loaded flag to true when called for the first time, and no findById calls should be made", async () => {
-        let findById = sinon
+        let findById = sandbox
             .stub(One.getDriver(), "findById")
             .onCall(0)
             .callsFake(() => {
@@ -374,7 +372,7 @@ describe("entity attribute test", function() {
         assert.equal(one.getAttribute("two").value.getCurrent(), null);
         assert.deepEqual(one.getAttribute("two").value.status, { loaded: false, loading: false });
 
-        findById = sinon.spy(One.getDriver(), "findById");
+        findById = sandbox.spy(One.getDriver(), "findById");
         one.two;
         one.two;
         await one.two;

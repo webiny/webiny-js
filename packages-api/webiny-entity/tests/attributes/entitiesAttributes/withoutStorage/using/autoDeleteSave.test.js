@@ -6,9 +6,7 @@ import { QueryResult } from "../../../../../src";
 const sandbox = sinon.sandbox.create();
 
 describe("attribute entities (using an additional aggregation class) - saving test", function() {
-    afterEach(function() {
-        sandbox.restore();
-    });
+    afterEach(() => sandbox.restore());
 
     it("should assign existing values correctly and track links that need to be deleted on consequent save method calls", async () => {
         let entityFindById = sandbox
@@ -60,7 +58,7 @@ describe("attribute entities (using an additional aggregation class) - saving te
         expect(user.getAttribute("groups").value.links.current[1].id).to.equal("2nd");
         expect(user.getAttribute("groups").value.links.current[2].id).to.equal("3rd");
 
-        let entitySave = sinon
+        let entitySave = sandbox
             .stub(user.getDriver(), "save")
             .onCall(0)
             .callsFake(entity => {
@@ -115,7 +113,7 @@ describe("attribute entities (using an additional aggregation class) - saving te
         groups.push(new Group().populate({ name: "Group J" }));
         groups.push(new Group().populate({ id: "I", name: "Group I" }));
 
-        entitySave = sinon
+        entitySave = sandbox
             .stub(user.getDriver(), "save")
             .callsFake(() => new QueryResult())
             .onCall(5)
@@ -175,8 +173,8 @@ describe("attribute entities (using an additional aggregation class) - saving te
         groups.pop();
         groups.shift();
 
-        const entityDelete = sinon.spy(user.getDriver(), "delete");
-        entitySave = sinon.stub(user.getDriver(), "save");
+        const entityDelete = sandbox.spy(user.getDriver(), "delete");
+        entitySave = sandbox.stub(user.getDriver(), "save");
         await user.save();
 
         expect(entitySave.callCount).to.equal(7);

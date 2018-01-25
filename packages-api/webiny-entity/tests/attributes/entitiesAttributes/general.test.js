@@ -9,8 +9,11 @@ import {
 import { assert, expect } from "chai";
 import sinon from "sinon";
 import { One } from "../../entities/oneTwoThree";
+const sandbox = sinon.sandbox.create();
 
 describe("attribute entities test", function() {
+    afterEach(() => sandbox.restore());
+
     const entity = new MainEntity();
 
     it("should fail - attributes should accept array of entities", async () => {
@@ -157,7 +160,7 @@ describe("attribute entities test", function() {
 
         mainEntity.attribute2 = [{ id: "B", firstName: "John", lastName: "Doe" }];
 
-        sinon
+        sandbox
             .stub(entity.getDriver(), "findById")
             .onCall(0)
             .callsFake(() => {
@@ -180,7 +183,7 @@ describe("attribute entities test", function() {
     it("should accept null value", async () => {});
 
     it("should lazy load any of the accessed linked entities", async () => {
-        const entityFind = sinon
+        const entityFind = sandbox
             .stub(MainEntity.getDriver(), "findById")
             .onCall(0)
             .callsFake(() => {
@@ -190,7 +193,7 @@ describe("attribute entities test", function() {
         const mainEntity = await MainEntity.findById(123);
         entityFind.restore();
 
-        const entitiesFind = sinon
+        const entitiesFind = sandbox
             .stub(entity.getDriver(), "find")
             .onCall(0)
             .callsFake(() => {
@@ -227,7 +230,7 @@ describe("attribute entities test", function() {
     });
 
     it("should set internal loaded flag to true when called for the first time, and no findById calls should be made", async () => {
-        const entityFind = sinon
+        const entityFind = sandbox
             .stub(MainEntity.getDriver(), "findById")
             .onCall(0)
             .callsFake(() => {
@@ -237,7 +240,7 @@ describe("attribute entities test", function() {
         const mainEntity = await MainEntity.findById(123);
         entityFind.restore();
 
-        const entitiesFind = sinon.spy(entity.getDriver(), "find");
+        const entitiesFind = sandbox.spy(entity.getDriver(), "find");
 
         assert.instanceOf(
             mainEntity.getAttribute("attribute1").value.getCurrent(),
@@ -264,7 +267,7 @@ describe("attribute entities test", function() {
     it("on new entities, no find calls should be made", async () => {
         const mainEntity = new MainEntity();
 
-        const entitiesFind = sinon.spy(entity.getDriver(), "find");
+        const entitiesFind = sandbox.spy(entity.getDriver(), "find");
         assert.instanceOf(
             mainEntity.getAttribute("attribute1").value.getCurrent(),
             EntityCollection
@@ -289,7 +292,7 @@ describe("attribute entities test", function() {
     it("should throw an exception", async () => {
         const mainEntity = new MainEntity();
 
-        const entityPopulate = sinon
+        const entityPopulate = sandbox
             .stub(mainEntity.getAttribute("attribute1").value, "setCurrent")
             .callsFake(() => {
                 throw Error("Error was thrown.");

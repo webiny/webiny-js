@@ -6,9 +6,7 @@ import sinon from "sinon";
 const sandbox = sinon.sandbox.create();
 
 describe("save and delete entities attribute test", () => {
-    afterEach(function() {
-        sandbox.restore();
-    });
+    afterEach(() => sandbox.restore());
 
     it("should recursively trigger validation and save all entities if data is valid", async () => {
         const mainEntity = new MainEntity();

@@ -6,9 +6,7 @@ import { QueryResult } from "../../../../../src";
 const sandbox = sinon.sandbox.create();
 
 describe("attribute entities (using an additional aggregation class) - loading test", function() {
-    afterEach(function() {
-        sandbox.restore();
-    });
+    afterEach(() => sandbox.restore());
 
     it("should correctly set entity and link (class and attributes)", async () => {
         const user = new User();

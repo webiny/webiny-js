@@ -4,10 +4,14 @@ import { QueryResult } from "../../../src/index";
 import { One, Two } from "../../entities/oneTwoThree";
 import sinon from "sinon";
 
+const sandbox = sinon.sandbox.create();
+
 describe("entity attribute current / initial values syncing", function() {
+    afterEach(() => sandbox.restore());
+
     it("should correctly sync current and initial values", async () => {
-        let entityDelete = sinon.spy(One.getDriver(), "delete");
-        let entityFindById = sinon
+        let entityDelete = sandbox.spy(One.getDriver(), "delete");
+        let entityFindById = sandbox
             .stub(One.getDriver(), "findById")
             .onCall(0)
             .callsFake(() => {
@@ -27,7 +31,7 @@ describe("entity attribute current / initial values syncing", function() {
 
         entityFindById.restore();
 
-        let entitySave = sinon
+        let entitySave = sandbox
             .stub(One.getDriver(), "save")
             .onCall(0)
             .callsFake(entity => {
@@ -50,8 +54,8 @@ describe("entity attribute current / initial values syncing", function() {
     });
 
     it("should correctly sync initial and current value when null is present", async () => {
-        let entityDelete = sinon.spy(One.getDriver(), "delete");
-        let entityFindById = sinon
+        let entityDelete = sandbox.spy(One.getDriver(), "delete");
+        let entityFindById = sandbox
             .stub(One.getDriver(), "findById")
             .onCall(0)
             .callsFake(() => {
@@ -70,7 +74,7 @@ describe("entity attribute current / initial values syncing", function() {
         assert.equal(one.getAttribute("two").value.getCurrent().name, "Another Two");
         assert.equal(one.getAttribute("two").value.getInitial(), null);
 
-        let entitySave = sinon
+        let entitySave = sandbox
             .stub(One.getDriver(), "save")
             .onCall(0)
             .callsFake(entity => {

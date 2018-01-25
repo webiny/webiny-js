@@ -1,28 +1,41 @@
-import {assert} from 'chai';
-import sinon from 'sinon';
-import SimpleEntity from './entities/simpleEntity'
+import { assert } from "chai";
+import sinon from "sinon";
+import SimpleEntity from "./entities/simpleEntity";
+const sandbox = sinon.sandbox.create();
 
-describe('findOne test', function () {
-    it('findOne - should find previously inserted entity', async () => {
-        sinon.stub(SimpleEntity.getDriver().getConnection(), 'query').callsFake((query, callback) => {
-            callback(null, [
-                {
-                    "id": 1,
-                    "name": "This is a test",
-                    "slug": "thisIsATest",
-                    "enabled": 1
-                }
-            ], null);
-        });
-		sinon.stub(SimpleEntity.getDriver().getConnection(), 'end').callsFake(() => {});
+describe("findOne test", function() {
+    afterEach(() => sandbox.restore());
 
-        const simpleEntity = await SimpleEntity.findOne({query: {id: 1}});
-		SimpleEntity.getDriver().getConnection().query.restore();
-		SimpleEntity.getDriver().getConnection().end.restore();
+    it("findOne - should find previously inserted entity", async () => {
+        sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake((query, callback) => {
+                callback(
+                    null,
+                    [
+                        {
+                            id: 1,
+                            name: "This is a test",
+                            slug: "thisIsATest",
+                            enabled: 1
+                        }
+                    ],
+                    null
+                );
+            });
+        sandbox.stub(SimpleEntity.getDriver().getConnection(), "end").callsFake(() => {});
 
-		assert.equal(simpleEntity.id, 1);
-        assert.equal(simpleEntity.name, 'This is a test');
-        assert.equal(simpleEntity.slug, 'thisIsATest');
+        const simpleEntity = await SimpleEntity.findOne({ query: { id: 1 } });
+        SimpleEntity.getDriver()
+            .getConnection()
+            .query.restore();
+        SimpleEntity.getDriver()
+            .getConnection()
+            .end.restore();
+
+        assert.equal(simpleEntity.id, 1);
+        assert.equal(simpleEntity.name, "This is a test");
+        assert.equal(simpleEntity.slug, "thisIsATest");
         assert.isTrue(simpleEntity.enabled);
     });
 });
