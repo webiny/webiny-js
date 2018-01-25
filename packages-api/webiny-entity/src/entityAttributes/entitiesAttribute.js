@@ -20,15 +20,12 @@ class EntitiesAttribute extends Attribute {
         this.classes = {
             parent: this.getParentModel().getParentEntity().constructor.name,
             entities: { class: entity, attribute: attributeName },
-            using: { class: null, attribute: null }
+            using: { class: null, attribute: _.camelCase(_.get(entity, "name")) }
         };
-
-        // By default, we will be using a camel case version of parent entity's class name.
-        this.classes.using.attribute = _.camelCase(this.classes.parent);
 
         // We will use the same value here to (when loading entities without a middle aggregation entity).
         if (!this.classes.entities.attribute) {
-            this.classes.entities.attribute = this.classes.using.attribute;
+            this.classes.entities.attribute = _.camelCase(this.classes.parent);
         }
 
         /**
@@ -65,7 +62,7 @@ class EntitiesAttribute extends Attribute {
 
                 // Do we have to manage entities?
                 // If so, this will ensure that newly set or unset entities and its link entities are synced.
-                this.value.isLoaded() && (await this.value.syncLinks());
+                this.value.isLoaded() && (await this.value.syncInitialLinks());
             });
 
         /**
@@ -101,10 +98,10 @@ class EntitiesAttribute extends Attribute {
                         }
                     }
 
-                    // If initial is empty, that means nothing was ever loaded (attribute was not accessed) and there is nothing to do.
-                    // Otherwise, deleteInitial method will internally delete only entities that are not needed anymore.
                     if (this.getAutoDelete()) {
-                        await this.value.deleteInitial();
+                        this.getUsingClass()
+                            ? await this.value.deleteInitialLinks()
+                            : await this.value.deleteInitial();
                     }
                 }
 
@@ -116,10 +113,16 @@ class EntitiesAttribute extends Attribute {
             .getParentEntity()
             .on("delete", async () => {
                 if (this.getAutoDelete()) {
-                    const entities = await this.getValue();
-                    for (let i = 0; i < entities.length; i++) {
-                        if (entities[i] instanceof this.getEntitiesClass()) {
-                            await entities[i].emit("delete");
+                    await this.value.load();
+                    const entities = {
+                        current: this.getUsingClass()
+                            ? this.value.getCurrentLinks()
+                            : this.value.getCurrent(),
+                        class: this.getUsingClass() || this.getEntitiesClass()
+                    };
+                    for (let i = 0; i < entities.current.length; i++) {
+                        if (entities.current[i] instanceof entities.class) {
+                            await entities.current[i].emit("delete");
                         }
                     }
                 }
@@ -129,10 +132,17 @@ class EntitiesAttribute extends Attribute {
             .getParentEntity()
             .on("beforeDelete", async () => {
                 if (this.getAutoDelete()) {
-                    const entities = await this.getValue();
-                    for (let i = 0; i < entities.length; i++) {
-                        if (entities[i] instanceof this.getEntitiesClass()) {
-                            await entities[i].delete({ events: { delete: false } });
+                    await this.value.load();
+                    const entities = {
+                        current: this.getUsingClass()
+                            ? this.value.getCurrentLinks()
+                            : this.value.getCurrent(),
+                        class: this.getUsingClass() || this.getEntitiesClass()
+                    };
+
+                    for (let i = 0; i < entities.current.length; i++) {
+                        if (entities.current[i] instanceof entities.class) {
+                            await entities.current[i].delete({ events: { delete: false } });
                         }
                     }
                 }
@@ -145,6 +155,14 @@ class EntitiesAttribute extends Attribute {
 
     getUsingClass(): ?Class<Entity> {
         return this.classes.using.class;
+    }
+
+    getEntitiesAttribute(): string {
+        return this.classes.entities.attribute;
+    }
+
+    getUsingAttribute(): string {
+        return this.classes.using.attribute;
     }
 
     setUsing(entityClass: Class<Entity>, entityAttribute: ?string = undefined) {

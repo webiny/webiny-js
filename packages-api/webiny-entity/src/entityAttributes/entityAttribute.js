@@ -136,7 +136,7 @@ class EntityAttribute extends Attribute {
      */
     setValue(value) {
         return new Promise((resolve, reject) => {
-            this.value.load(() => {
+            return this.value.load(() => {
                 if (!this.canSetValue()) {
                     resolve();
                     return this;

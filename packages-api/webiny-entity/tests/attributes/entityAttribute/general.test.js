@@ -1,13 +1,19 @@
-import { assert } from "chai";
+import { assert, expect } from "chai";
 
 import { ModelError } from "webiny-model";
 import { Entity, QueryResult } from "../../../src/index";
 import { User, Company, Image } from "../../entities/userCompanyImage";
 import { One } from "../../entities/oneTwoThree";
 import sinon from "sinon";
-import { MainEntity } from "../../entities/entitiesAttributeEntities";
+import { UsersGroups } from "../../entities/entitiesUsing";
+
+const sandbox = sinon.sandbox.create();
 
 describe("entity attribute test", function() {
+    afterEach(function() {
+        sandbox.restore();
+    });
+
     it("should fail because an invalid instance was set", async () => {
         const user = new User();
 
@@ -200,6 +206,26 @@ describe("entity attribute test", function() {
         assert.equal(secondary.name, "secondary1");
     });
 
+    it("should throw an exception", async () => {
+        const mainEntity = new One();
+
+        const entityPopulate = sinon
+            .stub(mainEntity.getAttribute("two").value, "setCurrent")
+            .callsFake(() => {
+                throw Error("Error was thrown.");
+            });
+
+        let error = null;
+        try {
+            await mainEntity.set("two", []);
+        } catch (e) {
+            error = e;
+        }
+
+        assert.instanceOf(error, Error);
+        entityPopulate.restore();
+    });
+
     it("should set entity only once using setter and populate methods", async () => {
         class Primary extends Entity {
             constructor() {
@@ -367,23 +393,26 @@ describe("entity attribute test", function() {
         findById.restore();
     });
 
-    it("should throw an exception", async () => {
+    it("should not load if values are already set", async () => {
         const mainEntity = new One();
+        const entitySave = sandbox.spy(UsersGroups.getDriver(), "save");
+        const entityFind = sandbox.spy(UsersGroups.getDriver(), "find");
+        const entityFindById = sandbox.spy(UsersGroups.getDriver(), "findById");
 
-        const entityPopulate = sinon
-            .stub(mainEntity.getAttribute("two").value, "setCurrent")
-            .callsFake(() => {
-                throw Error("Error was thrown.");
-            });
+        await mainEntity.two;
 
-        let error = null;
-        try {
-            await mainEntity.set("two", []);
-        } catch (e) {
-            error = e;
-        }
+        expect(entitySave.callCount).to.equal(0);
+        expect(entityFind.callCount).to.equal(0);
+        expect(entityFindById.callCount).to.equal(0);
 
-        assert.instanceOf(error, Error);
-        entityPopulate.restore();
+        await mainEntity.two;
+
+        expect(entitySave.callCount).to.equal(0);
+        expect(entityFind.callCount).to.equal(0);
+        expect(entityFindById.callCount).to.equal(0);
+
+        entitySave.restore();
+        entityFind.restore();
+        entityFindById.restore();
     });
 });

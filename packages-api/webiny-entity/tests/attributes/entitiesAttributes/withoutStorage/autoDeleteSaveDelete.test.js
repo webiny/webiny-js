@@ -3,7 +3,13 @@ import { MainEntity, Entity1 } from "../../../entities/entitiesAttributeEntities
 import { assert } from "chai";
 import sinon from "sinon";
 
+const sandbox = sinon.sandbox.create();
+
 describe("save and delete entities attribute test", () => {
+    afterEach(function() {
+        sandbox.restore();
+    });
+
     it("should recursively trigger validation and save all entities if data is valid", async () => {
         const mainEntity = new MainEntity();
         mainEntity.attribute1 = [
@@ -148,7 +154,7 @@ describe("save and delete entities attribute test", () => {
 
         await mainEntity.set("attribute2.0.entity1Entities.2.type", "dog");
 
-        let entitySave = sinon
+        let entitySave = sandbox
             .stub(mainEntity.getDriver(), "save")
             .onCall(0)
             .callsFake(entity => {
@@ -220,7 +226,7 @@ describe("save and delete entities attribute test", () => {
             new Entity1().populate({ id: null, name: "Bucky", type: "dog" })
         ];
 
-        let entitySave = sinon
+        let entitySave = sandbox
             .stub(mainEntity.getDriver(), "save")
             .onCall(0)
             .callsFake(entity => {
@@ -238,7 +244,7 @@ describe("save and delete entities attribute test", () => {
                 return new QueryResult();
             });
 
-        let entityFind = sinon.stub(mainEntity.getDriver(), "find");
+        let entityFind = sandbox.stub(mainEntity.getDriver(), "find");
 
         await mainEntity.save();
 
@@ -277,7 +283,7 @@ describe("save and delete entities attribute test", () => {
             }
         ];
 
-        let entitySave = sinon
+        let entitySave = sandbox
             .stub(mainEntity.getDriver(), "save")
             .onCall(0)
             .callsFake(entity => {
@@ -330,7 +336,7 @@ describe("save and delete entities attribute test", () => {
         assert.equal(entitySave.callCount, 9);
         entitySave.restore();
 
-        let entityDelete = sinon.stub(mainEntity.getDriver(), "delete");
+        let entityDelete = sandbox.stub(mainEntity.getDriver(), "delete");
         let error = null;
         try {
             await mainEntity.delete();
@@ -410,13 +416,13 @@ describe("save and delete entities attribute test", () => {
     });
 
     it("should properly delete linked entity even though they are not loaded", async () => {
-        let entityFindById = sinon.stub(MainEntity.getDriver(), "findById").callsFake(() => {
+        let entityFindById = sandbox.stub(MainEntity.getDriver(), "findById").callsFake(() => {
             return new QueryResult({ id: "A" });
         });
         const mainEntity = await MainEntity.findById(123);
         entityFindById.restore();
 
-        let entityFind = sinon
+        let entityFind = sandbox
             .stub(MainEntity.getDriver(), "find")
             .onCall(0)
             .callsFake(() => {
@@ -457,7 +463,7 @@ describe("save and delete entities attribute test", () => {
                 ]);
             });
 
-        let entityDelete = sinon
+        let entityDelete = sandbox
             .stub(MainEntity.getDriver(), "delete")
             .callsFake(() => new QueryResult());
 

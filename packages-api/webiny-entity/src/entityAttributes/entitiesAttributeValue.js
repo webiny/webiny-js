@@ -2,7 +2,6 @@
 import { AttributeValue } from "webiny-model";
 import Entity from "./../entity";
 import EntityCollection from "./../entityCollection";
-import _ from "lodash";
 
 class EntitiesAttributeValue extends AttributeValue {
     initial: EntityCollection;
@@ -14,11 +13,11 @@ class EntitiesAttributeValue extends AttributeValue {
         this.initial = new EntityCollection();
 
         this.links = {
+            dirty: false,
+            set: false,
             current: new EntityCollection(),
             initial: new EntityCollection()
         };
-
-        this.set = false;
 
         this.status = {
             loading: false,
@@ -66,7 +65,12 @@ class EntitiesAttributeValue extends AttributeValue {
                         this.current = await classes.entities.class.findByIds(this.current);
                     }
                 }
-            } else {
+            } else if (
+                this.attribute
+                    .getParentModel()
+                    .getParentEntity()
+                    .isExisting()
+            ) {
                 let id = await this.attribute
                     .getParentModel()
                     .getAttribute("id")
@@ -79,9 +83,7 @@ class EntitiesAttributeValue extends AttributeValue {
 
                     this.current = new EntityCollection();
                     for (let i = 0; i < this.links.current.length; i++) {
-                        // TODO: HC Ovo je krivo!
-                        // this.current.push(await this.links.current[i][classes.using.attribute]);
-                        this.current.push(await this.links.current[i]["group"]);
+                        this.current.push(await this.links.current[i][classes.using.attribute]);
                     }
                 } else {
                     this.current = await classes.entities.class.find({
@@ -127,49 +129,27 @@ class EntitiesAttributeValue extends AttributeValue {
     }
 
     hasInitial(): boolean {
-        return this.initial.length > 0;
+        return this.getInitial().length > 0;
     }
 
     hasCurrent(): boolean {
-        return this.current.length > 0;
-    }
-
-    hasInitialLinks(): boolean {
-        return this.links.initial.length > 0;
-    }
-
-    hasCurrentLinks(): boolean {
-        return this.links.current.length > 0;
-    }
-
-    getCurrentLinks(): EntityCollection {
-        return this.links.current;
-    }
-
-    setCurrentLinks(value: mixed, options: Object = {}): this {
-        this.links.set = true;
-
-        if (!options.skipDifferenceCheck) {
-            if (this.isDifferentFrom(value)) {
-                this.links.dirty = true;
-            }
-        }
-
-        this.links.current = value;
-        return this;
+        return this.getCurrent().length > 0;
     }
 
     async deleteInitial(): Promise<void> {
+        // If initial is empty, that means nothing was ever loaded (attribute was not accessed) and there is nothing to do.
+        // Otherwise, deleteInitial method will internally delete only entities that are not needed anymore.
         if (!this.hasInitial()) {
             return;
         }
 
-        const currentEntitiesIds = this.current.map(entity => entity.id);
+        const initial = this.getInitial(),
+            currentEntitiesIds = this.getCurrent().map(entity => entity.id);
 
-        for (let i = 0; i < this.getInitial().length; i++) {
-            const initial = this.getInitial()[i];
-            if (!currentEntitiesIds.includes(initial.id)) {
-                await initial.delete();
+        for (let i = 0; i < initial.length; i++) {
+            const currentInitial = initial[i];
+            if (!currentEntitiesIds.includes(currentInitial.id)) {
+                await currentInitial.delete();
             }
         }
     }
@@ -185,20 +165,83 @@ class EntitiesAttributeValue extends AttributeValue {
         }
     }
 
-    async syncLinks(): Promise<void> {
-        const links = [];
+    getInitialLinks(): EntityCollection {
+        return this.links.initial;
+    }
 
-        for (let i = 0; i < this.getCurrent().length; i++) {
-            const current = this.getCurrent()[i];
-            // TODO: HC
-            const link = _.find(this.getCurrentLinks(), link => link.group === current);
+    hasInitialLinks(): boolean {
+        return this.getInitialLinks().length > 0;
+    }
 
-            if (link) {
+    getCurrentLinks(): EntityCollection {
+        return this.links.current;
+    }
+
+    hasCurrentLinks(): boolean {
+        return this.getCurrentLinks().length > 0;
+    }
+
+    setCurrentLinks(value: mixed, options: Object = {}): this {
+        this.links.set = true;
+
+        if (!options.skipDifferenceCheck) {
+            if (this.isDifferentFrom(value)) {
+                this.links.dirty = true;
+            }
+        }
+
+        this.links.current = value;
+        return this;
+    }
+
+    async deleteInitialLinks(): Promise<void> {
+        // If initial is empty, that means nothing was ever loaded (attribute was not accessed) and there is nothing to do.
+        // Otherwise, deleteInitial method will internally delete only entities that are not needed anymore.
+        if (!this.hasInitialLinks()) {
+            return;
+        }
+
+        const initialLinks = this.getInitialLinks(),
+            currentLinksIds = this.getCurrentLinks().map(entity => entity.id);
+
+        for (let i = 0; i < initialLinks.length; i++) {
+            const initial = initialLinks[i];
+            if (!currentLinksIds.includes(initial.id)) {
+                await initial.delete();
+            }
+        }
+    }
+
+    async syncInitialLinks(): Promise<void> {
+        const links = [],
+            current = this.getCurrent(),
+            currentLinks = this.getCurrentLinks();
+
+        for (let i = 0; i < current.length; i++) {
+            const currentEntity = current[i];
+
+            // Following chunk actually represents: "_.find(currentLinks, link => link.group === current);".
+            // "for" loop used because of async operations.
+            let link = null;
+            for (let j = 0; j < currentLinks.length; j++) {
+                const linkedEntity = await currentLinks[j][this.attribute.getUsingAttribute()];
+                if (linkedEntity === currentEntity) {
+                    link = currentLinks[j];
+                    break;
+                }
+            }
+
+            // If entity has an already existing link instance, it will be used. Otherwise a new instance will be created.
+            // Links array cannot contain two same instances.
+            if (link && !links.includes(link)) {
                 links.push(link);
             } else {
                 const entity = new (this.attribute.getUsingClass())();
-                await entity.set("group", current);
-                await entity.set("user", this.attribute.getParentModel().getParentEntity());
+                await entity.set(this.attribute.getUsingAttribute(), currentEntity);
+                await entity.set(
+                    this.attribute.getEntitiesAttribute(),
+                    this.attribute.getParentModel().getParentEntity()
+                );
                 links.push(entity);
             }
         }
@@ -211,9 +254,10 @@ class EntitiesAttributeValue extends AttributeValue {
      * @returns {this}
      */
     clean(): this {
-        for (let i = 0; i < this.getCurrent().length; i++) {
-            if (this.current[i] instanceof Entity) {
-                if (!this.current[i].id) {
+        const current = this.getCurrent();
+        for (let i = 0; i < current.length; i++) {
+            if (current[i] instanceof Entity) {
+                if (!current[i].id) {
                     return this;
                 }
             }
