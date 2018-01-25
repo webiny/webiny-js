@@ -15,7 +15,7 @@ class EntitiesAttribute extends Attribute {
         entity: Entity,
         attributeName: ?string = null
     ) {
-        super(name, attributesContainer);
+        super(name, attributesContainer, entity, (attributeName = null));
 
         this.classes = {
             parent: this.getParentModel().getParentEntity().constructor.name,
@@ -55,24 +55,61 @@ class EntitiesAttribute extends Attribute {
          */
         this.getParentModel()
             .getParentEntity()
+            .on("save", async () => {
+                if (!this.getUsingClass()) {
+                    return;
+                }
+
+                // If loading is in progress, wait until loaded.
+                this.value.isLoading() && (await this.value.load());
+
+                // Do we have to manage entities?
+                // If so, this will ensure that newly set or unset entities and its link entities are synced.
+                this.value.isLoaded() && (await this.value.syncLinks());
+            });
+
+        /**
+         * Same as in EntityAttribute, entities present here were already validated when parent entity called the validate method.
+         * At this point, entities are ready to be saved (only loaded entities).
+         */
+        this.getParentModel()
+            .getParentEntity()
             .on("beforeSave", async () => {
-                if (this.getAutoSave() && (this.value.isLoading() || this.value.isLoaded())) {
-                    const entities = await this.getValue();
-                    for (let i = 0; i < entities.length; i++) {
-                        if (entities[i] instanceof this.getEntitiesClass()) {
-                            await entities[i].save({ validation: false });
+                // If loading is in progress, wait until loaded.
+                this.value.isLoading() && (await this.value.load());
+
+                if (!this.value.isLoaded()) {
+                    return;
+                }
+
+                if (this.getAutoSave()) {
+                    // If we are using an link class, we only need to save links, and child entities will be automatically
+                    // saved if they were loaded.
+                    if (this.getUsingClass()) {
+                        const entities = this.value.getCurrentLinks();
+                        for (let i = 0; i < entities.length; i++) {
+                            if (entities[i] instanceof this.getUsingClass()) {
+                                await entities[i].save({ validation: false });
+                            }
+                        }
+                    } else {
+                        const entities = await this.value.getCurrent();
+                        for (let i = 0; i < entities.length; i++) {
+                            if (entities[i] instanceof this.getEntitiesClass()) {
+                                await entities[i].save({ validation: false });
+                            }
                         }
                     }
 
                     // If initial is empty, that means nothing was ever loaded (attribute was not accessed) and there is nothing to do.
                     // Otherwise, deleteInitial method will internally delete only entities that are not needed anymore.
-                    if (this.getAutoSave() && this.getAutoDelete()) {
+                    if (this.getAutoDelete()) {
                         await this.value.deleteInitial();
                     }
                 }
 
                 // Set current entities as new initial values.
-                this.value.syncInitialCurrent();
+                this.value.syncInitial();
             });
 
         this.getParentModel()
@@ -110,9 +147,12 @@ class EntitiesAttribute extends Attribute {
         return this.classes.using.class;
     }
 
-    setUsing(entityClass: Class<Entity>, entityAttribute: ?string = null) {
+    setUsing(entityClass: Class<Entity>, entityAttribute: ?string = undefined) {
         this.classes.using.class = entityClass;
-        this.classes.using.attribute = entityAttribute;
+        if (typeof entityAttribute !== "undefined") {
+            this.classes.using.attribute = entityAttribute;
+        }
+
         return this;
     }
 
@@ -247,22 +287,41 @@ class EntitiesAttribute extends Attribute {
         return !_.isEmpty(this.value.getCurrent());
     }
 
+    /**
+     * Validates current value - if it's not an instance of EntityCollection, an error will be thrown.
+     */
+    validateType() {
+        if (this.value.getCurrent() instanceof EntityCollection) {
+            return;
+        }
+        this.expected("instance of EntityCollection", typeof this.value.getCurrent());
+    }
+
+    /**
+     * Validates on attribute level and then on entity level (its attributes recursively).
+     * If attribute has validators, we must unfortunately always load the attribute value. For example, if we had a 'required'
+     * validator, and entity not loaded, we cannot know if there is a value or not, and thus if the validator should fail.
+     * @returns {Promise<void>}
+     */
     async validate() {
-        if (this.isEmpty()) {
+        // If attribute has validators or loading is in progress, wait until loaded.
+        if (this.hasValidators() || this.value.isLoading()) {
+            await this.value.load();
+        }
+
+        if (!this.value.isLoaded()) {
             return;
         }
 
-        if (!_.isArray(this.value.getCurrent())) {
-            this.expected("array", typeof this.value.getCurrent());
-        }
+        // This validates on the attribute level.
+        await Attribute.prototype.validate.call(this);
 
         const errors = [];
-        for (let i = 0; i < this.value.getCurrent().length; i++) {
-            if (!(this.value.getCurrent()[i] instanceof Entity)) {
-                continue;
-            }
+        const value = this.getUsingClass() ? this.value.getCurrentLinks() : this.value.getCurrent();
+        const correctClass = this.getUsingClass() ? this.getUsingClass() : this.getEntitiesClass();
 
-            if (!(this.value.getCurrent()[i] instanceof this.getEntitiesClass())) {
+        for (let i = 0; i < value.length; i++) {
+            if (!(value[i] instanceof correctClass)) {
                 errors.push({
                     type: ModelError.INVALID_ATTRIBUTE,
                     data: {
@@ -270,10 +329,11 @@ class EntitiesAttribute extends Attribute {
                     },
                     message: `Validation failed, item at index ${i} not an instance of correct Entity class.`
                 });
+                continue;
             }
 
             try {
-                await this.value.getCurrent()[i].validate();
+                await value[i].validate();
             } catch (e) {
                 errors.push({
                     type: e.getType(),

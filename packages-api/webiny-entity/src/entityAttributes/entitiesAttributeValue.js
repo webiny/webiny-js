@@ -2,6 +2,7 @@
 import { AttributeValue } from "webiny-model";
 import Entity from "./../entity";
 import EntityCollection from "./../entityCollection";
+import _ from "lodash";
 
 class EntitiesAttributeValue extends AttributeValue {
     initial: EntityCollection;
@@ -11,6 +12,11 @@ class EntitiesAttributeValue extends AttributeValue {
 
         this.current = new EntityCollection();
         this.initial = new EntityCollection();
+
+        this.links = {
+            current: new EntityCollection(),
+            initial: new EntityCollection()
+        };
 
         this.set = false;
 
@@ -65,10 +71,18 @@ class EntitiesAttributeValue extends AttributeValue {
                     .getParentModel()
                     .getAttribute("id")
                     .getStorageValue();
+
                 if (classes.using.class) {
-                    this.current = await classes.using.class.find({
+                    this.links.current = await classes.using.class.find({
                         query: { [classes.using.attribute]: id }
                     });
+
+                    this.current = new EntityCollection();
+                    for (let i = 0; i < this.links.current.length; i++) {
+                        // TODO: HC Ovo je krivo!
+                        // this.current.push(await this.links.current[i][classes.using.attribute]);
+                        this.current.push(await this.links.current[i]["group"]);
+                    }
                 } else {
                     this.current = await classes.entities.class.find({
                         query: { [classes.entities.attribute]: id }
@@ -78,7 +92,7 @@ class EntitiesAttributeValue extends AttributeValue {
         }
 
         // Set current entities as new values.
-        this.syncInitialCurrent();
+        this.syncInitial();
 
         typeof callback === "function" && (await callback());
 
@@ -120,6 +134,31 @@ class EntitiesAttributeValue extends AttributeValue {
         return this.current.length > 0;
     }
 
+    hasInitialLinks(): boolean {
+        return this.links.initial.length > 0;
+    }
+
+    hasCurrentLinks(): boolean {
+        return this.links.current.length > 0;
+    }
+
+    getCurrentLinks(): EntityCollection {
+        return this.links.current;
+    }
+
+    setCurrentLinks(value: mixed, options: Object = {}): this {
+        this.links.set = true;
+
+        if (!options.skipDifferenceCheck) {
+            if (this.isDifferentFrom(value)) {
+                this.links.dirty = true;
+            }
+        }
+
+        this.links.current = value;
+        return this;
+    }
+
     async deleteInitial(): Promise<void> {
         if (!this.hasInitial()) {
             return;
@@ -138,8 +177,33 @@ class EntitiesAttributeValue extends AttributeValue {
     /**
      * Creates a new array that contains all currently loaded entities.
      */
-    syncInitialCurrent(): void {
+    syncInitial(): void {
         this.initial = this.getCurrent().map(entity => entity);
+
+        if (this.attribute.getUsingClass()) {
+            this.links.initial = this.getCurrentLinks().map(entity => entity);
+        }
+    }
+
+    async syncLinks(): Promise<void> {
+        const links = [];
+
+        for (let i = 0; i < this.getCurrent().length; i++) {
+            const current = this.getCurrent()[i];
+            // TODO: HC
+            const link = _.find(this.getCurrentLinks(), link => link.group === current);
+
+            if (link) {
+                links.push(link);
+            } else {
+                const entity = new (this.attribute.getUsingClass())();
+                await entity.set("group", current);
+                await entity.set("user", this.attribute.getParentModel().getParentEntity());
+                links.push(entity);
+            }
+        }
+
+        this.setCurrentLinks(links);
     }
 
     /**
@@ -147,7 +211,7 @@ class EntitiesAttributeValue extends AttributeValue {
      * @returns {this}
      */
     clean(): this {
-        for (let i = 0; i < this.current.length; i++) {
+        for (let i = 0; i < this.getCurrent().length; i++) {
             if (this.current[i] instanceof Entity) {
                 if (!this.current[i].id) {
                     return this;

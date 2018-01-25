@@ -4,6 +4,10 @@ import EntityAttributeValue from "./entityAttributeValue";
 import Entity from "./../entity";
 
 class EntityAttribute extends Attribute {
+    value: EntityAttributeValue;
+    classes: { parent: string, entity: { class: mixed } }; // TODO: class is not mixed.
+    auto: { save: boolean, delete: boolean };
+
     constructor(name, attributesContainer, entity) {
         super(name, attributesContainer);
 
@@ -188,7 +192,7 @@ class EntityAttribute extends Attribute {
      * @param value
      * @returns {EntityAttribute}
      */
-    setStorageValue(value) {
+    setStorageValue(value): this {
         this.value.setCurrent(value, { skipDifferenceCheck: true });
         return this;
     }
@@ -221,19 +225,26 @@ class EntityAttribute extends Attribute {
 
     /**
      * Validates on attribute level and then on entity level (its attributes recursively).
+     * If attribute has validators, we must unfortunately always load the attribute value. For example, if we had a 'required'
+     * validator, and entity not loaded, we cannot know if there is a value or not, and thus if the validator should fail.
      * @returns {Promise<void>}
      */
-    async validate(meta) {
+    async validate() {
+        // If attribute has validators or loading is in progress, wait until loaded.
+        if (this.hasValidators() || this.value.isLoading()) {
+            await this.value.load();
+        }
+
+        if (!this.value.isLoaded()) {
+            return;
+        }
+
         // This validates on the attribute level.
         await Attribute.prototype.validate.call(this);
 
-        // If validation was called within a delete context, entity must be loaded and validated. Validation will validate the data,
-        // but also call canDelete method, which will throw an error if something is blocking the delete.
-        // meta.context === 'delete' && await this.value.load();
-
         // This validates on the entity level.
         this.value.getCurrent() instanceof this.getEntityClass() &&
-            (await this.value.getCurrent().validate(meta));
+            (await this.value.getCurrent().validate());
     }
 }
 

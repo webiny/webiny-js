@@ -212,10 +212,10 @@ class Entity {
 
         const existing = this.isExisting();
         try {
-            params.validation !== false && (await this.validate());
-
             const events = params.events || {};
             events.save !== false && (await this.emit("save"));
+
+            params.validation !== false && (await this.validate());
 
             events.beforeSave !== false && (await this.emit("beforeSave"));
             if (existing) {
@@ -252,10 +252,10 @@ class Entity {
         }
 
         try {
-            params.validation !== false && (await this.validate());
-
             const events = params.events || {};
             events.delete !== false && (await this.emit("delete"));
+
+            params.validation !== false && (await this.validate());
 
             events.beforeDelete !== false && (await this.emit("beforeDelete"));
             await this.getDriver().delete(this, params);
