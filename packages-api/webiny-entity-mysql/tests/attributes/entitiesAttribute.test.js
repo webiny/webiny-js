@@ -7,8 +7,6 @@ import sinon from "sinon";
 const sandbox = sinon.sandbox.create();
 
 describe("entity attribute test", function() {
-    after(() => sandbox.restore());
-
     it("it must populate the attribute correctly", async () => {
         const entity = new ComplexEntity();
         assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.status, {
