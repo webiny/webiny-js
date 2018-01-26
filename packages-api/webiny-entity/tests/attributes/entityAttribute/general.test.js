@@ -13,30 +13,6 @@ describe("entity attribute test", function() {
     afterEach(() => sandbox.restore());
     beforeEach(() => User.getEntityPool().flush());
 
-    it("should fail because an invalid instance was set", async () => {
-        const user = new User();
-
-        user.firstName = "John";
-        user.lastName = "Doe";
-        user.company = {
-            name: "Company",
-            image: new Company()
-        };
-
-        let error = null;
-        try {
-            await user.validate();
-        } catch (e) {
-            error = e;
-        }
-
-        assert.instanceOf(error, ModelError);
-        assert.equal(
-            error.getData().invalidAttributes.company.data.invalidAttributes.image.type,
-            ModelError.INVALID_ATTRIBUTE
-        );
-    });
-
     it("should set root and nested values correctly", async () => {
         const user = new User();
 
@@ -92,73 +68,6 @@ describe("entity attribute test", function() {
         assert.equal(company.name, "Company");
         assert.equal(image.filename, "image.jpg");
         assert.equal(image.size, 123.45);
-    });
-
-    it("should validate root and nested values ", async () => {
-        const user = new User();
-        user.populate({
-            firstName: "John",
-            lastName: "Doe",
-            company: {
-                image: {
-                    size: 123.45
-                }
-            }
-        });
-
-        let error = null;
-        try {
-            await user.validate();
-        } catch (e) {
-            error = e;
-        }
-
-        assert.instanceOf(error, ModelError);
-        assert.equal(error.getType(), ModelError.INVALID_ATTRIBUTES);
-        let invalid = error.getData().invalidAttributes.company.data.invalidAttributes;
-
-        assert.hasAllKeys(invalid, ["name", "image"]);
-        assert.equal(invalid.name.data.validator, "required");
-
-        assert.hasAllKeys(invalid.image.data.invalidAttributes, ["filename"]);
-        assert.equal(invalid.image.data.invalidAttributes.filename.data.validator, "required");
-
-        user.populate({
-            company: {
-                image: {
-                    filename: "image.jpg"
-                }
-            }
-        });
-
-        error = null;
-        try {
-            await user.validate();
-        } catch (e) {
-            error = e;
-        }
-
-        assert.instanceOf(error, ModelError);
-        assert.equal(error.getType(), ModelError.INVALID_ATTRIBUTES);
-        invalid = error.getData().invalidAttributes.company.data.invalidAttributes;
-
-        assert.hasAllKeys(invalid, ["name"]);
-        assert.equal(invalid.name.data.validator, "required");
-
-        user.populate({
-            company: {
-                name: "Company"
-            }
-        });
-
-        error = null;
-        try {
-            await user.validate();
-        } catch (e) {
-            error = e;
-        }
-
-        assert.isNull(error);
     });
 
     it("should set entity only once using setter and populate methods", async () => {
