@@ -1,36 +1,17 @@
-import { assert } from "chai";
+import { assert, expect } from "chai";
 
 import { ModelError } from "webiny-model";
 import { Entity, QueryResult } from "../../../src/index";
 import { User, Company, Image } from "../../entities/userCompanyImage";
 import { One } from "../../entities/oneTwoThree";
 import sinon from "sinon";
-import { MainEntity } from "../../entities/entitiesAttributeEntities";
+import { UsersGroups } from "../../entities/entitiesUsing";
+
+const sandbox = sinon.sandbox.create();
 
 describe("entity attribute test", function() {
-    it("should fail because an invalid instance was set", async () => {
-        const user = new User();
-
-        user.firstName = "John";
-        user.lastName = "Doe";
-        user.company = {
-            name: "Company",
-            image: new Company()
-        };
-
-        let error = null;
-        try {
-            await user.validate();
-        } catch (e) {
-            error = e;
-        }
-
-        assert.instanceOf(error, ModelError);
-        assert.equal(
-            error.getData().invalidAttributes.company.data.invalidAttributes.image.type,
-            ModelError.INVALID_ATTRIBUTE
-        );
-    });
+    afterEach(() => sandbox.restore());
+    beforeEach(() => User.getEntityPool().flush());
 
     it("should set root and nested values correctly", async () => {
         const user = new User();
@@ -89,73 +70,6 @@ describe("entity attribute test", function() {
         assert.equal(image.size, 123.45);
     });
 
-    it("should validate root and nested values ", async () => {
-        const user = new User();
-        user.populate({
-            firstName: "John",
-            lastName: "Doe",
-            company: {
-                image: {
-                    size: 123.45
-                }
-            }
-        });
-
-        let error = null;
-        try {
-            await user.validate();
-        } catch (e) {
-            error = e;
-        }
-
-        assert.instanceOf(error, ModelError);
-        assert.equal(error.getType(), ModelError.INVALID_ATTRIBUTES);
-        let invalid = error.getData().invalidAttributes.company.data.invalidAttributes;
-
-        assert.hasAllKeys(invalid, ["name", "image"]);
-        assert.equal(invalid.name.data.validator, "required");
-
-        assert.hasAllKeys(invalid.image.data.invalidAttributes, ["filename"]);
-        assert.equal(invalid.image.data.invalidAttributes.filename.data.validator, "required");
-
-        user.populate({
-            company: {
-                image: {
-                    filename: "image.jpg"
-                }
-            }
-        });
-
-        error = null;
-        try {
-            await user.validate();
-        } catch (e) {
-            error = e;
-        }
-
-        assert.instanceOf(error, ModelError);
-        assert.equal(error.getType(), ModelError.INVALID_ATTRIBUTES);
-        invalid = error.getData().invalidAttributes.company.data.invalidAttributes;
-
-        assert.hasAllKeys(invalid, ["name"]);
-        assert.equal(invalid.name.data.validator, "required");
-
-        user.populate({
-            company: {
-                name: "Company"
-            }
-        });
-
-        error = null;
-        try {
-            await user.validate();
-        } catch (e) {
-            error = e;
-        }
-
-        assert.isNull(error);
-    });
-
     it("should set entity only once using setter and populate methods", async () => {
         class Primary extends Entity {
             constructor() {
@@ -198,6 +112,26 @@ describe("entity attribute test", function() {
         secondary = await primary.secondary;
         assert.equal(primary.name, "primary");
         assert.equal(secondary.name, "secondary1");
+    });
+
+    it("should throw an exception", async () => {
+        const mainEntity = new One();
+
+        const entityPopulate = sandbox
+            .stub(mainEntity.getAttribute("two").value, "setCurrent")
+            .callsFake(() => {
+                throw Error("Error was thrown.");
+            });
+
+        let error = null;
+        try {
+            await mainEntity.set("two", []);
+        } catch (e) {
+            error = e;
+        }
+
+        assert.instanceOf(error, Error);
+        entityPopulate.restore();
     });
 
     it("should set entity only once using setter and populate methods", async () => {
@@ -260,7 +194,7 @@ describe("entity attribute test", function() {
     });
 
     it("should lazy load any of the accessed linked entities", async () => {
-        let findById = sinon
+        let findById = sandbox
             .stub(One.getDriver(), "findById")
             .onCall(0)
             .callsFake(() => {
@@ -335,7 +269,7 @@ describe("entity attribute test", function() {
     });
 
     it("should set internal loaded flag to true when called for the first time, and no findById calls should be made", async () => {
-        let findById = sinon
+        let findById = sandbox
             .stub(One.getDriver(), "findById")
             .onCall(0)
             .callsFake(() => {
@@ -348,7 +282,7 @@ describe("entity attribute test", function() {
         assert.equal(one.getAttribute("two").value.getCurrent(), null);
         assert.deepEqual(one.getAttribute("two").value.status, { loaded: false, loading: false });
 
-        findById = sinon.spy(One.getDriver(), "findById");
+        findById = sandbox.spy(One.getDriver(), "findById");
         one.two;
         one.two;
         await one.two;
@@ -367,23 +301,26 @@ describe("entity attribute test", function() {
         findById.restore();
     });
 
-    it("should throw an exception", async () => {
+    it("should not load if values are already set", async () => {
         const mainEntity = new One();
+        const entitySave = sandbox.spy(UsersGroups.getDriver(), "save");
+        const entityFind = sandbox.spy(UsersGroups.getDriver(), "find");
+        const entityFindById = sandbox.spy(UsersGroups.getDriver(), "findById");
 
-        const entityPopulate = sinon
-            .stub(mainEntity.getAttribute("two").value, "setCurrent")
-            .callsFake(() => {
-                throw Error("Error was thrown.");
-            });
+        await mainEntity.two;
 
-        let error = null;
-        try {
-            await mainEntity.set("two", []);
-        } catch (e) {
-            error = e;
-        }
+        expect(entitySave.callCount).to.equal(0);
+        expect(entityFind.callCount).to.equal(0);
+        expect(entityFindById.callCount).to.equal(0);
 
-        assert.instanceOf(error, Error);
-        entityPopulate.restore();
+        await mainEntity.two;
+
+        expect(entitySave.callCount).to.equal(0);
+        expect(entityFind.callCount).to.equal(0);
+        expect(entityFindById.callCount).to.equal(0);
+
+        entitySave.restore();
+        entityFind.restore();
+        entityFindById.restore();
     });
 });

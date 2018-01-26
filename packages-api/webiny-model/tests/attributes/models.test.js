@@ -135,4 +135,69 @@ describe("attribute models test", function() {
             assert.equal(attr1.data.items[0].data.invalidAttributes.type.data.validator, "in");
         }
     });
+
+    it("should fail on validation since an item is not an object of any type", async () => {
+        const newModel = new Model(function() {
+            this.attr("attribute1").models(Model1);
+        });
+
+        newModel.attribute1 = [{ name: "Enlai", type: "dog" }, { name: "Rocky", type: "dog" }, 123];
+
+        try {
+            await newModel.validate();
+        } catch (e) {
+            assert.equal(e.type, "invalidAttributes");
+            assert.deepEqual(e.data, {
+                invalidAttributes: {
+                    attribute1: {
+                        type: "invalidAttribute",
+                        data: {
+                            items: [
+                                {
+                                    type: "invalidAttribute",
+                                    data: {
+                                        index: 2
+                                    },
+                                    message:
+                                        "Validation failed, item at index 2 not an instance of Model class."
+                                }
+                            ]
+                        },
+                        message: "Validation failed."
+                    }
+                }
+            });
+            return;
+        }
+
+        throw Error("Error should've been thrown.");
+    });
+
+    it("should not set value if setOnce is enabled", async () => {
+        const newModel = new Model(function() {
+            this.attr("attribute1").models(Model1);
+        });
+
+        newModel.attribute1 = [
+            { name: "Enlai", type: "dog" },
+            { name: "Rocky", type: "dog" },
+            { name: "Lina", type: "bird" }
+        ];
+
+        newModel.getAttribute("attribute1").setOnce();
+
+        await newModel.set("attribute1", null);
+
+        assert.equal(await newModel.get("attribute1.0.name"), "Enlai");
+        assert.equal(await newModel.get("attribute1.1.name"), "Rocky");
+        assert.equal(await newModel.get("attribute1.2.name"), "Lina");
+    });
+
+    it("should return null as a default JSON value", async () => {
+        const newModel = new Model(function() {
+            this.attr("attribute1").models(Model1);
+        });
+
+        assert.isNull(await newModel.getAttribute("attribute1").getJSONValue());
+    });
 });

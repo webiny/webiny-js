@@ -6,7 +6,11 @@ import { One } from "../../entities/oneTwoThree";
 import { ClassA } from "../../entities/abc";
 import sinon from "sinon";
 
+const sandbox = sinon.sandbox.create();
+
 describe("entity delete test", function() {
+    afterEach(() => sandbox.restore());
+
     it("auto delete must be manually enabled and canDelete must stop deletion if error was thrown", async () => {
         const user = new User();
         user.populate({
@@ -24,7 +28,7 @@ describe("entity delete test", function() {
             }
         });
 
-        let entitySave = sinon
+        let entitySave = sandbox
             .stub(user.getDriver(), "save")
             .onCall(0)
             .callsFake(entity => {
@@ -47,7 +51,7 @@ describe("entity delete test", function() {
 
         let error = null;
 
-        let entityDelete = sinon.stub(user.getDriver(), "delete");
+        let entityDelete = sandbox.stub(user.getDriver(), "delete");
         try {
             await user.delete();
         } catch (e) {
@@ -91,7 +95,7 @@ describe("entity delete test", function() {
     });
 
     it("should properly delete linked entity even though they are not loaded (auto delete enabled)", async () => {
-        let findById = sinon
+        let findById = sandbox
             .stub(One.getDriver(), "findById")
             .onCall(0)
             .callsFake(() => {
@@ -131,7 +135,7 @@ describe("entity delete test", function() {
 
         const one = await One.findById("one");
 
-        let entityDelete = sinon.stub(one.getDriver(), "delete");
+        let entityDelete = sandbox.stub(one.getDriver(), "delete");
         await one.delete();
 
         assert.equal(entityDelete.callCount, 7);
@@ -141,7 +145,7 @@ describe("entity delete test", function() {
     });
 
     it("should not delete linked entities if main entity is deleted and auto delete is not enabled", async () => {
-        const entityFindById = sinon
+        const entityFindById = sandbox
             .stub(ClassA.getDriver(), "findById")
             .onCall(0)
             .callsFake(() => {
@@ -153,7 +157,7 @@ describe("entity delete test", function() {
 
         classA.classB = { name: "classB", classC: { name: "classC" } };
 
-        const entitySave = sinon
+        const entitySave = sandbox
             .stub(classA.getDriver(), "save")
             .onCall(0)
             .callsFake(entity => {
@@ -186,7 +190,7 @@ describe("entity delete test", function() {
         assert.equal(await classA.getAttribute("classB").getStorageValue(), "classB");
         assert.equal(await classB.getAttribute("classC").getStorageValue(), "classC");
 
-        const entityDelete = sinon
+        const entityDelete = sandbox
             .stub(ClassA.getDriver(), "delete")
             .onCall(0)
             .callsFake(() => {

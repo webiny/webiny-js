@@ -114,6 +114,14 @@ class Attribute implements IAttribute {
     }
 
     /**
+     * Returns true if attribute has one or more validators set.
+     * @returns {boolean}
+     */
+    hasValidators(): boolean {
+        return !_.isEmpty(this.validators);
+    }
+
+    /**
      * Resets attribute - empties value and resets value.set flag, which means setting value will again work in cases setOnce is present.
      */
     reset(): IAttribute {

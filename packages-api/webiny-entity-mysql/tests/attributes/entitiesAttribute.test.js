@@ -4,8 +4,12 @@ import { EntityCollection } from "webiny-entity";
 
 import { ComplexEntity, SimpleEntity } from "./../entities/complexEntity";
 import sinon from "sinon";
+import User from "../../../webiny-entity/tests/entities/user";
+const sandbox = sinon.sandbox.create();
 
-describe("entity attribute test", function() {
+describe("entities attribute test", function() {
+    beforeEach(() => User.getEntityPool().flush());
+
     it("it must populate the attribute correctly", async () => {
         const entity = new ComplexEntity();
         assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.status, {
@@ -148,7 +152,7 @@ describe("entity attribute test", function() {
     });
 
     it("should load entities from another table - only when the attribute is actually accessed", async () => {
-        sinon
+        sandbox
             .stub(ComplexEntity.getDriver().getConnection(), "query")
             .onCall(0)
             .callsFake((query, callback) => {
@@ -241,7 +245,7 @@ describe("entity attribute test", function() {
             ]
         });
 
-        sinon.stub(entity.getDriver().getConnection(), "query").callsFake((query, callback) => {
+        sandbox.stub(entity.getDriver().getConnection(), "query").callsFake((query, callback) => {
             callback(null, { insertId: 1 });
         });
 
@@ -269,7 +273,7 @@ describe("entity attribute test", function() {
         // Now let's try to save entity with auto save enabled on "simpleEntitiesLoadedFromTable" attribute.
         entity.getAttribute("simpleEntitiesLoadedFromTable").setAutoSave();
 
-        const entitySave = sinon
+        const entitySave = sandbox
             .stub(ComplexEntity.getDriver().getConnection(), "query")
             .onCall(0)
             .callsFake((query, callback) => {

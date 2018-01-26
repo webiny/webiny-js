@@ -2,8 +2,12 @@ import { assert } from "chai";
 import { User, Image } from "./entities/userCompanyImage";
 import sinon from "sinon";
 import { QueryResult } from "./../src";
+const sandbox = sinon.sandbox.create();
 
 describe("async get and set methods test", async function() {
+    afterEach(() => sandbox.restore());
+    beforeEach(() => User.getEntityPool().flush());
+
     it("should be able to get simple attributes", async () => {
         const user = new User();
         await user.set("firstName", "John");
@@ -14,7 +18,7 @@ describe("async get and set methods test", async function() {
     });
 
     it("should be able to get values from nested entities", async () => {
-        const findById = sinon
+        const findById = sandbox
             .stub(User.getDriver(), "findById")
             .onCall(0)
             .callsFake(() => {
@@ -55,7 +59,7 @@ describe("async get and set methods test", async function() {
     });
 
     it("should be able to directly set values into nested entities", async () => {
-        const findById = sinon
+        const findById = sandbox
             .stub(User.getDriver(), "findById")
             .onCall(0)
             .callsFake(() => {

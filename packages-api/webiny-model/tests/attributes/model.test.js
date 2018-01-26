@@ -126,7 +126,7 @@ describe("attribute model test", function() {
         });
     });
 
-    describe("getting values out of model test", () => {
+    it("getting values out of model test", () => {
         const user = new User();
         user.populate({
             company: {
@@ -151,5 +151,31 @@ describe("attribute model test", function() {
             assert.equal(user.company.image.file, "webiny.jpg");
             assert.equal(user.company.image.size.width, 12.5);
         });
+    });
+
+    it("should not set value if setOnce is enabled", async () => {
+        const user = new User();
+        user.populate({
+            company: {
+                name: "Webiny LTD",
+                city: "London",
+                image: {
+                    file: "webiny.jpg",
+                    size: { width: 12.5, height: 44 },
+                    visible: false
+                }
+            }
+        });
+
+        user.getAttribute("company").setOnce();
+
+        await user.set("company", null);
+
+        assert.equal(await user.get("company.image.size.width"), 12.5);
+    });
+
+    it("should return null as a default JSON value", async () => {
+        const user = new User();
+        assert.isNull(await user.getAttribute("company").getJSONValue());
     });
 });

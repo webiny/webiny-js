@@ -9,101 +9,12 @@ import {
 import { assert, expect } from "chai";
 import sinon from "sinon";
 import { One } from "../../entities/oneTwoThree";
+const sandbox = sinon.sandbox.create();
 
 describe("attribute entities test", function() {
+    afterEach(() => sandbox.restore());
+
     const entity = new MainEntity();
-
-    it("should fail - attributes should accept array of entities", async () => {
-        entity.attribute1 = new Entity1();
-        assert.instanceOf(await entity.attribute1, EntityCollection);
-
-        entity.attribute2 = new Entity1();
-        assert.instanceOf(await entity.attribute2, EntityCollection);
-    });
-
-    it("should pass - empty arrays set", async () => {
-        entity.attribute1 = [];
-        entity.attribute2 = [];
-        await entity.validate();
-    });
-
-    it("should fail - arrays with empty plain objects set - nested validation must be triggered", async () => {
-        entity.attribute1 = [{}, {}];
-        entity.attribute2 = [{}, {}, {}];
-        try {
-            await entity.validate();
-        } catch (e) {
-            const attr1 = e.data.invalidAttributes.attribute1;
-            assert.lengthOf(attr1.data.items, 2);
-            assert.equal(attr1.data.items[0].data.index, 0);
-            assert.equal(
-                attr1.data.items[0].data.invalidAttributes.name.type,
-                ModelError.INVALID_ATTRIBUTE
-            );
-            assert.equal(
-                attr1.data.items[0].data.invalidAttributes.name.data.validator,
-                "required"
-            );
-            assert.notExists(attr1.data.items[0].data.invalidAttributes.type);
-
-            const attr2 = e.data.invalidAttributes.attribute2;
-            assert.lengthOf(attr2.data.items, 3);
-            assert.equal(attr2.data.items[0].data.index, 0);
-            assert.equal(attr2.data.items[1].data.index, 1);
-            assert.equal(attr2.data.items[2].data.index, 2);
-
-            assert.equal(
-                attr2.data.items[0].data.invalidAttributes.firstName.type,
-                ModelError.INVALID_ATTRIBUTE
-            );
-            assert.equal(
-                attr2.data.items[0].data.invalidAttributes.lastName.type,
-                ModelError.INVALID_ATTRIBUTE
-            );
-            assert.notExists(attr2.data.items[0].data.invalidAttributes.enabled);
-
-            return;
-        }
-        throw Error("Error should've been thrown.");
-    });
-
-    it("should pass - valid data sent", async () => {
-        entity.attribute1 = [
-            { name: "Enlai", type: "dog" },
-            { name: "Rocky", type: "dog" },
-            { name: "Lina", type: "parrot" }
-        ];
-        entity.attribute2 = [
-            { firstName: "John", lastName: "Doe" },
-            { firstName: "Jane", lastName: "Doe" }
-        ];
-        await entity.validate();
-    });
-
-    it("should fail - all good except last item of attribute1", async () => {
-        entity.attribute1 = [
-            { name: "Enlai", type: "dog" },
-            { name: "Rocky", type: "dog" },
-            { name: "Lina", type: "bird" }
-        ];
-        entity.attribute2 = [
-            { firstName: "John", lastName: "Doe" },
-            { firstName: "Jane", lastName: "Doe" }
-        ];
-
-        try {
-            await entity.validate();
-        } catch (e) {
-            const attr1 = e.data.invalidAttributes.attribute1;
-            assert.lengthOf(attr1.data.items, 1);
-            assert.equal(attr1.data.items[0].data.index, 2);
-            assert.equal(
-                attr1.data.items[0].data.invalidAttributes.type.type,
-                ModelError.INVALID_ATTRIBUTE
-            );
-            assert.equal(attr1.data.items[0].data.invalidAttributes.type.data.validator, "in");
-        }
-    });
 
     it("should not change attribute1 since it has setOnce applied - attribute2 should be emptied", async () => {
         const mainSetOnceEntity = new MainSetOnceEntity();
@@ -135,52 +46,8 @@ describe("attribute entities test", function() {
         assert.isEmpty(await mainSetOnceEntity.attribute2);
     });
 
-    it("should correctly validate instances in the attribute and throw errors appropriately", async () => {
-        const mainEntity = new MainEntity();
-
-        let error = null;
-        try {
-            await mainEntity.set("attribute1", [
-                null,
-                10,
-                { id: "A", name: "Enlai", type: "dog" },
-                new Entity2().populate({
-                    firstName: "Foo",
-                    lastName: "bar"
-                })
-            ]);
-        } catch (e) {
-            error = e;
-        }
-
-        assert.instanceOf(error, Error);
-
-        mainEntity.attribute2 = [{ id: "B", firstName: "John", lastName: "Doe" }];
-
-        sinon
-            .stub(entity.getDriver(), "findById")
-            .onCall(0)
-            .callsFake(() => {
-                return { id: 10, name: "Bucky", type: "dog" };
-            })
-            .onCall(1)
-            .callsFake(() => {
-                return { id: "AA", firstName: "Foo", lastName: "Bar" };
-            });
-
-        await mainEntity.getAttribute("attribute1").validate();
-        await mainEntity.getAttribute("attribute2").validate();
-
-        entity.getDriver().findById.restore();
-
-        mainEntity.attribute1 = null;
-        await mainEntity.getAttribute("attribute1").validate();
-    });
-
-    it("should accept null value", async () => {});
-
     it("should lazy load any of the accessed linked entities", async () => {
-        const entityFind = sinon
+        const entityFind = sandbox
             .stub(MainEntity.getDriver(), "findById")
             .onCall(0)
             .callsFake(() => {
@@ -190,7 +57,7 @@ describe("attribute entities test", function() {
         const mainEntity = await MainEntity.findById(123);
         entityFind.restore();
 
-        const entitiesFind = sinon
+        const entitiesFind = sandbox
             .stub(entity.getDriver(), "find")
             .onCall(0)
             .callsFake(() => {
@@ -227,7 +94,7 @@ describe("attribute entities test", function() {
     });
 
     it("should set internal loaded flag to true when called for the first time, and no findById calls should be made", async () => {
-        const entityFind = sinon
+        const entityFind = sandbox
             .stub(MainEntity.getDriver(), "findById")
             .onCall(0)
             .callsFake(() => {
@@ -237,7 +104,7 @@ describe("attribute entities test", function() {
         const mainEntity = await MainEntity.findById(123);
         entityFind.restore();
 
-        const entitiesFind = sinon.spy(entity.getDriver(), "find");
+        const entitiesFind = sandbox.spy(entity.getDriver(), "find");
 
         assert.instanceOf(
             mainEntity.getAttribute("attribute1").value.getCurrent(),
@@ -264,7 +131,7 @@ describe("attribute entities test", function() {
     it("on new entities, no find calls should be made", async () => {
         const mainEntity = new MainEntity();
 
-        const entitiesFind = sinon.spy(entity.getDriver(), "find");
+        const entitiesFind = sandbox.spy(entity.getDriver(), "find");
         assert.instanceOf(
             mainEntity.getAttribute("attribute1").value.getCurrent(),
             EntityCollection
@@ -289,7 +156,7 @@ describe("attribute entities test", function() {
     it("should throw an exception", async () => {
         const mainEntity = new MainEntity();
 
-        const entityPopulate = sinon
+        const entityPopulate = sandbox
             .stub(mainEntity.getAttribute("attribute1").value, "setCurrent")
             .callsFake(() => {
                 throw Error("Error was thrown.");

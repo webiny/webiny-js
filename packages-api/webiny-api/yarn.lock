@@ -2509,15 +2509,15 @@ signal-exit@^3.0.0, signal-exit@^3.0.1, signal-exit@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
 
-sinon-express-mock@^1.3.1:
+sandbox-express-mock@^1.3.1:
   version "1.3.1"
-  resolved "https://registry.yarnpkg.com/sinon-express-mock/-/sinon-express-mock-1.3.1.tgz#06de0b0adb0be083123258d512361bd515b71aba"
+  resolved "https://registry.yarnpkg.com/sandbox-express-mock/-/sandbox-express-mock-1.3.1.tgz#06de0b0adb0be083123258d512361bd515b71aba"
   dependencies:
-    sinon "1.17.2"
+    sandbox "1.17.2"
 
-sinon@1.17.2:
+sandbox@1.17.2:
   version "1.17.2"
-  resolved "https://registry.yarnpkg.com/sinon/-/sinon-1.17.2.tgz#c1ea67b84a1e7b3350f6c4713efacef8e4ae8b71"
+  resolved "https://registry.yarnpkg.com/sandbox/-/sandbox-1.17.2.tgz#c1ea67b84a1e7b3350f6c4713efacef8e4ae8b71"
   dependencies:
     formatio "1.1.1"
     lolex "1.3.2"

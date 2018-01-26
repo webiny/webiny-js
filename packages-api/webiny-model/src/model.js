@@ -159,11 +159,15 @@ class Model implements IModel {
         return path ? await extractor.get(json, path) : json;
     }
 
-    async get(path: string | Array<string> = "", defaultValue: mixed = null): Promise<mixed> {
+    async get(path: string | Array<string> = "", defaultValue: ?mixed): Promise<mixed> {
         const steps = typeof path === "string" ? path.split(".") : path;
         let value: Object = this;
         for (let i = 0; i < steps.length; i++) {
             if (!_.isObject(value)) {
+                const madeItToTheEnd = steps.length - i === 1;
+                if (!madeItToTheEnd) {
+                    return undefined;
+                }
                 break;
             }
 

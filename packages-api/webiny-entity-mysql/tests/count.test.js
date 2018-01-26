@@ -1,16 +1,23 @@
-import {assert} from 'chai';
-import sinon from 'sinon';
-import SimpleEntity from './entities/simpleEntity'
+import { assert } from "chai";
+import sinon from "sinon";
+import SimpleEntity from "./entities/simpleEntity";
+const sandbox = sinon.sandbox.create();
 
-describe('count test', function () {
-	it('count - should count entities', async () => {
-		sinon.stub(SimpleEntity.getDriver().getConnection(), 'query').callsFake((query, callback) => {
-			callback(null, [{"count": 1}]);
-		});
+describe("count test", function() {
+    afterEach(() => sandbox.restore());
 
-		const count = await SimpleEntity.count();
-		SimpleEntity.getDriver().getConnection().query.restore();
+    it("count - should count entities", async () => {
+        sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake((query, callback) => {
+                callback(null, [{ count: 1 }]);
+            });
 
-		assert.equal(count, 1);
-	});
+        const count = await SimpleEntity.count();
+        SimpleEntity.getDriver()
+            .getConnection()
+            .query.restore();
+
+        assert.equal(count, 1);
+    });
 });
