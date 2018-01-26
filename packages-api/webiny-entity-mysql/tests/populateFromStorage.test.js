@@ -6,6 +6,7 @@ const sandbox = sinon.sandbox.create();
 
 describe("populateFromStorage test", function() {
     afterEach(() => sandbox.restore());
+    beforeEach(() => ComplexEntity.getEntityPool().flush());
 
     it("should populate entity correctly with data received from MySQL", async () => {
         sandbox

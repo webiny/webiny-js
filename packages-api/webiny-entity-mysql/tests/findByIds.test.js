@@ -6,6 +6,7 @@ const sandbox = sinon.sandbox.create();
 
 describe("findByIds test", function() {
     afterEach(() => sandbox.restore());
+    beforeEach(() => SimpleEntity.getEntityPool().flush());
 
     it("findByIds - should find previously inserted entities", async () => {
         sandbox

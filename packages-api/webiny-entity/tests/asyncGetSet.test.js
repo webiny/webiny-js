@@ -6,6 +6,7 @@ const sandbox = sinon.sandbox.create();
 
 describe("async get and set methods test", async function() {
     afterEach(() => sandbox.restore());
+    beforeEach(() => User.getEntityPool().flush());
 
     it("should be able to get simple attributes", async () => {
         const user = new User();

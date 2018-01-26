@@ -7,6 +7,7 @@ const sandbox = sinon.sandbox.create();
 
 describe("save and delete entities attribute test", () => {
     afterEach(() => sandbox.restore());
+    beforeEach(() => MainEntity.getEntityPool().flush());
 
     it("should recursively trigger validation and save all entities if data is valid", async () => {
         const mainEntity = new MainEntity();

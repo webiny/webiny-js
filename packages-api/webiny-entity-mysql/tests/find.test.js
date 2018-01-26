@@ -6,6 +6,7 @@ const sandbox = sinon.sandbox.create();
 
 describe("find test", function() {
     afterEach(() => sandbox.restore());
+    beforeEach(() => SimpleEntity.getEntityPool().flush());
 
     it("find - should find entities and total count", async () => {
         sandbox

@@ -9,6 +9,7 @@ const sandbox = sinon.sandbox.create();
 
 describe("entity attribute test", function() {
     afterEach(() => sandbox.restore());
+    beforeEach(() => User.getEntityPool().flush());
 
     it("should return entity from storage", async () => {
         const entity = new User();

@@ -2,6 +2,7 @@
 import _ from "lodash";
 import { Attribute } from "webiny-model";
 import Driver from "./driver";
+import EntityPool from "./entityPool";
 import EventHandler from "./eventHandler";
 import EntityCollection from "./entityCollection";
 import EntityModel from "./entityModel";
@@ -33,6 +34,7 @@ declare type EntityDeleteParams = {
 class Entity {
     static classId: ?string;
     static driver: Driver;
+    static pool: EntityPool;
     static listeners: {};
 
     model: EntityModel;
@@ -111,6 +113,20 @@ class Entity {
      */
     getDriver(): Driver {
         return this.constructor.driver;
+    }
+
+    /**
+     * Returns instance of used entity pool.
+     */
+    static getEntityPool(): EntityPool {
+        return this.pool;
+    }
+
+    /**
+     * Returns instance of used entity pool.
+     */
+    getEntityPool(): EntityPool {
+        return this.constructor.pool;
     }
 
     /**
@@ -200,6 +216,38 @@ class Entity {
     }
 
     /**
+     * Returns class name.
+     */
+    getClassName(): string {
+        return this.constructor.name;
+    }
+
+    /**
+     * Returns class name.
+     */
+    static getClassName(): string {
+        return this.name;
+    }
+
+    /**
+     * Tells us whether a given ID is valid or not.
+     * @param id
+     * @param params
+     */
+    isId(id: mixed, params: Object = {}): boolean {
+        return this.getDriver().isId(this, id, _.cloneDeep(params));
+    }
+
+    /**
+     * Tells us whether a given ID is valid or not.
+     * @param id
+     * @param params
+     */
+    static isId(id: mixed, params: Object = {}): boolean {
+        return this.getDriver().isId(this, id, _.cloneDeep(params));
+    }
+
+    /**
      * Saves current and all linked entities (if autoSave on the attribute was enabled).
      * @param params
      */
@@ -235,6 +283,8 @@ class Entity {
             }
 
             this.getModel().clean();
+
+            this.getEntityPool().add(this);
         } catch (e) {
             throw e;
         } finally {
@@ -260,29 +310,13 @@ class Entity {
             events.beforeDelete !== false && (await this.emit("beforeDelete"));
             await this.getDriver().delete(this, params);
             events.afterDelete !== false && (await this.emit("afterDelete"));
+
+            this.getEntityPool().remove(this);
         } catch (e) {
             throw e;
         } finally {
             this.processing = null;
         }
-    }
-
-    /**
-     * Tells us whether a given ID is valid or not.
-     * @param id
-     * @param params
-     */
-    isId(id: mixed, params: Object = {}): boolean {
-        return this.getDriver().isId(this, id, _.cloneDeep(params));
-    }
-
-    /**
-     * Tells us whether a given ID is valid or not.
-     * @param id
-     * @param params
-     */
-    static isId(id: mixed, params: Object = {}): boolean {
-        return this.getDriver().isId(this, id, _.cloneDeep(params));
     }
 
     /**
@@ -297,10 +331,17 @@ class Entity {
             return null;
         }
 
+        const pooled = this.getEntityPool().get(this, id);
+        if (pooled) {
+            return pooled;
+        }
+
         const queryResult = await this.getDriver().findById(this, id, paramsClone);
         const result = queryResult.getResult();
-        if (result && _.isPlainObject(result)) {
-            return new this().setExisting().populateFromStorage(((result: any): Object));
+        if (result && _.isObject(result)) {
+            const entity = new this().setExisting().populateFromStorage(((result: any): Object));
+            this.getEntityPool().add(entity);
+            return entity;
         }
         return null;
     }
@@ -314,14 +355,32 @@ class Entity {
         const paramsClone = _.cloneDeep(params);
         await this.emit("query", { type: "findByIds", params: paramsClone });
 
-        const queryResult: QueryResult = await this.getDriver().findByIds(this, ids, paramsClone);
-        const entityCollection = new EntityCollection()
-            .setParams(paramsClone)
-            .setMeta(queryResult.getMeta());
+        const entityCollection = new EntityCollection().setParams(paramsClone);
+
+        const nonPooledIds = [];
+        for (let i = 0; i < ids.length; i++) {
+            const pooled = this.getEntityPool().get(this, ids[i]);
+            pooled ? entityCollection.push(pooled) : nonPooledIds.push(ids[i]);
+        }
+
+        // If all pooled, just return the results.
+        if (ids.length === entityCollection.length) {
+            return entityCollection;
+        }
+
+        const queryResult: QueryResult = await this.getDriver().findByIds(
+            this,
+            nonPooledIds,
+            paramsClone
+        );
+
+        // These results are not pooled so we can immediately add each received result into the pool.
         const result: Array<Object> = (queryResult.getResult(): any);
         if (result instanceof Array) {
             for (let i = 0; i < result.length; i++) {
-                entityCollection.push(new this().setExisting().populateFromStorage(result[i]));
+                const entity = new this().setExisting().populateFromStorage(result[i]);
+                this.getEntityPool().add(entity);
+                entityCollection.push(entity);
             }
         }
 
@@ -338,8 +397,15 @@ class Entity {
 
         const queryResult = await this.getDriver().findOne(this, paramsClone);
         const result = queryResult.getResult();
-        if (_.isPlainObject(result)) {
-            return new this().setExisting().populateFromStorage(((result: any): Object));
+        if (_.isObject(result)) {
+            const pooled = this.getEntityPool().get(this, result.id);
+            if (pooled) {
+                return pooled;
+            }
+
+            const entity = new this().setExisting().populateFromStorage(((result: any): Object));
+            this.getEntityPool().add(entity);
+            return entity;
         }
         return null;
     }
@@ -359,12 +425,14 @@ class Entity {
         const result: Array<Object> = (queryResult.getResult(): any);
         if (result instanceof Array) {
             for (let i = 0; i < result.length; i++) {
-                entityCollection.push(
-                    await new this()
-                        .setExisting()
-                        .populateFromStorage(result[i])
-                        .emit("loaded")
-                );
+                const pooled = this.getEntityPool().get(this, result[i].id);
+                if (pooled) {
+                    entityCollection.push(pooled);
+                } else {
+                    const entity = new this().setExisting().populateFromStorage(result[i]);
+                    this.getEntityPool().add(entity);
+                    entityCollection.push(entity);
+                }
             }
         }
 
@@ -453,5 +521,6 @@ class Entity {
 
 Entity.classId = null;
 Entity.driver = new Driver();
+Entity.pool = new EntityPool();
 
 export default Entity;

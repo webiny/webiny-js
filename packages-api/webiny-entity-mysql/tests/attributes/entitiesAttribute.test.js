@@ -4,9 +4,12 @@ import { EntityCollection } from "webiny-entity";
 
 import { ComplexEntity, SimpleEntity } from "./../entities/complexEntity";
 import sinon from "sinon";
+import User from "../../../webiny-entity/tests/entities/user";
 const sandbox = sinon.sandbox.create();
 
-describe("entity attribute test", function() {
+describe("entities attribute test", function() {
+    beforeEach(() => User.getEntityPool().flush());
+
     it("it must populate the attribute correctly", async () => {
         const entity = new ComplexEntity();
         assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.status, {

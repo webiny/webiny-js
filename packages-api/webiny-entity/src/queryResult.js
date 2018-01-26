@@ -8,12 +8,12 @@ class QueryResult {
         this.meta = meta;
     }
 
-    setResult(result: mixed): this {
+    setResult(result: any): this {
         this.result = result;
         return this;
     }
 
-    getResult(): mixed {
+    getResult(): any {
         return this.result;
     }
 
