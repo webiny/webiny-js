@@ -17,7 +17,7 @@ class ModelsAttribute extends Attribute {
         return this.modelClass;
     }
 
-    setValue(values: Array<Model> = []) {
+    setValue(values: Array<Model>) {
         if (!this.canSetValue()) {
             return;
         }

@@ -3,8 +3,6 @@ import SimpleEntity from "./entities/simpleEntity";
 const sandbox = sinon.sandbox.create();
 
 describe("count error test", function() {
-    afterEach(() => sandbox.restore());
-
     it("count - an error must be thrown", async () => {
         sandbox
             .stub(SimpleEntity.getDriver().getConnection(), "query")

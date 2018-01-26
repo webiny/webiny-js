@@ -414,7 +414,7 @@ describe("save and delete entities attribute test", () => {
         entityDelete.restore();
     });
 
-    it("should properly delete linked entity even though they are not loaded", async () => {
+    it("should properly delete linked entities even though they are not loaded", async () => {
         let entityFindById = sandbox.stub(MainEntity.getDriver(), "findById").callsFake(() => {
             return new QueryResult({ id: "A" });
         });

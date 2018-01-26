@@ -14,7 +14,9 @@ class AttributeValue {
     }
 
     setCurrent(value: mixed, options: Object = {}): this {
-        this.set = true;
+        if (!options.skipMarkAsSet) {
+            this.set = true;
+        }
 
         if (!options.skipDifferenceCheck) {
             if (this.isDifferentFrom(value)) {
