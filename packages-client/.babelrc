@@ -1,11 +1,11 @@
 {
     "presets": [
-        "babel-preset-react",
         ["babel-preset-env", {
             "targets": {
                 "browsers": ["last 2 versions", "safari >= 7"]
             }
-        }]
+        }],
+        "babel-preset-react"
     ],
     "plugins": [
         ["babel-plugin-transform-object-rest-spread", {"useBuiltIns": true}],
@@ -17,3 +17,4 @@
         }]
     ]
 }
+
