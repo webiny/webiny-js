@@ -159,7 +159,7 @@ describe("attribute entities test", function() {
                 return new QueryResult({ id: "mainEntity", name: "MainEntity" });
             });
 
-        let find = sandbox
+        sandbox
             .stub(MainEntity.getDriver(), "find")
             .onCall(0)
             .callsFake(() => {
@@ -183,5 +183,44 @@ describe("attribute entities test", function() {
         mainEntity.attribute1 = [{ type: "test" }];
 
         mainEntity.save().should.be.rejectedWith(ModelError);
+    });
+
+    it("should validate on attribute level and recursively on entity level", async () => {
+        let findById = sandbox
+            .stub(MainEntity.getDriver(), "findById")
+            .onCall(0)
+            .callsFake(() => {
+                return new QueryResult({ id: "mainEntity", name: "MainEntity" });
+            });
+
+        const mainEntity = await MainEntity.findById("mainEntity");
+        findById.restore();
+
+        mainEntity
+            .attr("requiredEntity")
+            .entities(Entity1)
+            .setValidators("required,minLength:2");
+
+        let error = null;
+        try {
+            await mainEntity.validate();
+        } catch (e) {
+            error = e;
+        }
+
+        assert.equal(error.data.invalidAttributes.requiredEntity.type, "invalidAttribute");
+        assert.equal(error.data.invalidAttributes.requiredEntity.data.validator, "required");
+
+        mainEntity.requiredEntity = [{ name: "requiredEntity" }];
+
+        error = null;
+        try {
+            await mainEntity.validate();
+        } catch (e) {
+            error = e;
+        }
+
+        assert.equal(error.data.invalidAttributes.requiredEntity.type, "invalidAttribute");
+        assert.equal(error.data.invalidAttributes.requiredEntity.data.validator, "minLength");
     });
 });

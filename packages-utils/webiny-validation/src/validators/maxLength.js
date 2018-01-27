@@ -1,15 +1,22 @@
-import _ from 'lodash';
-import ValidationError from './../validationError';
+import _ from "lodash";
+import ValidationError from "./../validationError";
 
-export default (value, length) => {
+export default (value, params) => {
     if (!value) return;
 
-	if (_.isObject(value)) {
-		value = _.keys(value);
-	}
+    let lengthOfValue = null;
+    if (_.has(value, "length")) {
+        lengthOfValue = value.length;
+    } else if (_.isObject(value)) {
+        lengthOfValue = _.keys(value).length;
+    }
 
-	if (value.length && value.length <= length) {
-		return true;
-	}
-	throw new ValidationError('Value requires ' + length + ' characters at most.');
+    if (lengthOfValue === null || lengthOfValue <= params[0]) {
+        return true;
+    }
+
+    if (_.isString(value)) {
+        throw new ValidationError("Value requires " + params[0] + " characters at most.");
+    }
+    throw new ValidationError("Value requires " + params[0] + " items at most.");
 };

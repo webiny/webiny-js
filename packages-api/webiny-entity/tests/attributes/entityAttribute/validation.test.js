@@ -1,7 +1,7 @@
 import { ModelError } from "webiny-model";
 import { QueryResult } from "../../../src/index";
 import { User, Company } from "../../entities/userCompanyImage";
-import { One } from "../../entities/oneTwoThree";
+import { One, Two } from "../../entities/oneTwoThree";
 import sinon from "sinon";
 
 const sandbox = sinon.sandbox.create();
@@ -126,5 +126,46 @@ describe("entity attribute test", function() {
         one.two = 123;
 
         one.save().should.be.rejectedWith(ModelError);
+    });
+
+    it("should validate on attribute level and recursively on entity level", async () => {
+        let findById = sandbox
+            .stub(One.getDriver(), "findById")
+            .onCall(0)
+            .callsFake(() => {
+                return new QueryResult({ id: "one", name: "One" });
+            });
+
+        const one = await One.findById("one");
+        findById.restore();
+
+        one
+            .attr("requiredEntity")
+            .entity(Two)
+            .setValidators("required");
+
+        let error = null;
+        try {
+            await one.validate();
+        } catch (e) {
+            error = e;
+        }
+
+        assert.deepEqual(error.data, {
+            invalidAttributes: {
+                requiredEntity: {
+                    type: "invalidAttribute",
+                    data: {
+                        message: "Value is required.",
+                        value: null,
+                        validator: "required"
+                    },
+                    message: "Invalid attribute."
+                }
+            }
+        });
+
+        one.requiredEntity = { name: "two" };
+        await one.validate();
     });
 });
