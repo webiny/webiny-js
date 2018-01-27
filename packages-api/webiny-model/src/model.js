@@ -130,11 +130,19 @@ class Model implements IModel {
                 try {
                     await attribute.validate();
                 } catch (e) {
-                    invalidAttributes[name] = {
-                        type: e.getType(),
-                        data: e.getData(),
-                        message: e.getMessage()
-                    };
+                    if (e instanceof ModelError) {
+                        invalidAttributes[name] = {
+                            type: e.getType(),
+                            data: e.getData(),
+                            message: e.getMessage()
+                        };
+                    } else {
+                        invalidAttributes[name] = {
+                            type: ModelError.INVALID_ATTRIBUTE,
+                            data: null,
+                            message: e.message
+                        };
+                    }
                 }
             })
         );

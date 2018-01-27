@@ -239,9 +239,6 @@ class Attribute implements IAttribute {
     }
 
     onGet(callback: AttributeValueCallback) {
-        if (typeof callback !== "function") {
-            callback = value => value;
-        }
         this.onGetCallback = callback;
         return this;
     }
@@ -300,15 +297,11 @@ class Attribute implements IAttribute {
         return this.once;
     }
 
-    expected(expecting: string, got: string, returnError: boolean = false): ModelError {
+    expected(expecting: string, got: string): ModelError {
         const error = new ModelError(
             `Validation failed, received ${got}, expecting ${expecting}.`,
             ModelError.INVALID_ATTRIBUTE
         );
-        if (returnError) {
-            return error;
-        }
-
         throw error;
     }
 }
