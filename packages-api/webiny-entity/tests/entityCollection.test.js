@@ -1,4 +1,4 @@
-import { assert, expect } from "chai";
+import { expect } from "chai";
 import User from "./entities/user";
 import { EntityCollection } from "./..";
 
@@ -37,5 +37,17 @@ describe("EntityCollection test", function() {
         expect(() => {
             new EntityCollection([new User(), new User(), { id: 123 }]);
         }).to.throw(Error);
+    });
+
+    it("setParams/getParams methods must work correctly", async () => {
+        const collection = new EntityCollection();
+        collection.setParams({ a: 123 });
+        expect(collection.getParams().a).to.equal(123);
+    });
+
+    it("setMeta/getMeta methods must work correctly", async () => {
+        const collection = new EntityCollection();
+        collection.setMeta({ a: 123 });
+        expect(collection.getMeta().a).to.equal(123);
     });
 });
