@@ -5,6 +5,7 @@ import { EntityCollection } from "webiny-entity";
 import { ComplexEntity, SimpleEntity } from "./../entities/complexEntity";
 import sinon from "sinon";
 import User from "../../../webiny-entity/tests/entities/user";
+
 const sandbox = sinon.sandbox.create();
 
 describe("entities attribute test", function() {
@@ -155,42 +156,41 @@ describe("entities attribute test", function() {
         sandbox
             .stub(ComplexEntity.getDriver().getConnection(), "query")
             .onCall(0)
-            .callsFake((query, callback) => {
-                callback(null, [
+            .callsFake(() => {
+                return [
                     {
                         id: 1,
                         name: "This is a test",
                         slug: "thisIsATest",
                         enabled: 1
                     }
-                ]);
+                ];
             })
             .onCall(1)
-            .callsFake((query, callback) => {
-                callback(null, [
-                    {
-                        id: 2,
-                        name: "This is a test B",
-                        slug: "thisIsATestB",
-                        enabled: 1
-                    },
-                    {
-                        id: 3,
-                        name: "This is a test C",
-                        slug: "thisIsATestC",
-                        enabled: 1
-                    },
-                    {
-                        id: 4,
-                        name: "This is a test D",
-                        slug: "thisIsATestD",
-                        enabled: 1
-                    }
-                ]);
-            })
-            .onCall(2)
-            .callsFake((query, callback) => {
-                callback(null, [{ count: 3 }]);
+            .callsFake(() => {
+                return [
+                    [
+                        {
+                            id: 2,
+                            name: "This is a test B",
+                            slug: "thisIsATestB",
+                            enabled: 1
+                        },
+                        {
+                            id: 3,
+                            name: "This is a test C",
+                            slug: "thisIsATestC",
+                            enabled: 1
+                        },
+                        {
+                            id: 4,
+                            name: "This is a test D",
+                            slug: "thisIsATestD",
+                            enabled: 1
+                        }
+                    ],
+                    [{ count: 3 }]
+                ];
             });
 
         const entity = await ComplexEntity.findOne();
@@ -245,8 +245,8 @@ describe("entities attribute test", function() {
             ]
         });
 
-        sandbox.stub(entity.getDriver().getConnection(), "query").callsFake((query, callback) => {
-            callback(null, { insertId: 1 });
+        sandbox.stub(entity.getDriver().getConnection(), "query").callsFake(() => {
+            return { insertId: 1 };
         });
 
         await entity.save();
@@ -276,20 +276,20 @@ describe("entities attribute test", function() {
         const entitySave = sandbox
             .stub(ComplexEntity.getDriver().getConnection(), "query")
             .onCall(0)
-            .callsFake((query, callback) => {
-                callback(null, { insertId: 4 });
+            .callsFake(() => {
+                return { insertId: 4 };
             })
             .onCall(1)
-            .callsFake((query, callback) => {
-                callback(null, { insertId: 3 });
+            .callsFake(() => {
+                return { insertId: 3 };
             })
             .onCall(2)
-            .callsFake((query, callback) => {
-                callback(null, { insertId: 2 });
+            .callsFake(() => {
+                return { insertId: 2 };
             })
             .onCall(3)
-            .callsFake((query, callback) => {
-                callback(null, {});
+            .callsFake(() => {
+                return {};
             });
 
         await entity.save();

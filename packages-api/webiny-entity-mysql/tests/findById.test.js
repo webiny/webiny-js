@@ -7,27 +7,19 @@ describe("findById test", function() {
     afterEach(() => sandbox.restore());
 
     it("findById - should find previously inserted entity", async () => {
-        sandbox
-            .stub(SimpleEntity.getDriver().getConnection(), "query")
-            .callsFake((query, callback) => {
-                callback(null, [
-                    {
-                        id: 1,
-                        name: "This is a test",
-                        slug: "thisIsATest",
-                        enabled: 1
-                    }
-                ]);
-            });
-        sandbox.stub(SimpleEntity.getDriver().getConnection(), "end").callsFake(() => {});
+        sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => [
+            {
+                id: 1,
+                name: "This is a test",
+                slug: "thisIsATest",
+                enabled: 1
+            }
+        ]);
 
         const simpleEntity = await SimpleEntity.findById(1);
         SimpleEntity.getDriver()
             .getConnection()
             .query.restore();
-        SimpleEntity.getDriver()
-            .getConnection()
-            .end.restore();
 
         assert.equal(simpleEntity.id, 1);
         assert.equal(simpleEntity.name, "This is a test");

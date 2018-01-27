@@ -8,11 +8,9 @@ describe("save error test", function() {
     afterEach(() => sandbox.restore());
 
     it("should save new entity but an exception must be thrown", async () => {
-        sandbox
-            .stub(SimpleEntity.getDriver().getConnection(), "query")
-            .callsFake((query, callback) => {
-                callback(new Error("This is an error."));
-            });
+        sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
+            throw Error("This is an error.");
+        });
 
         const simpleEntity = new SimpleEntity();
         try {
@@ -28,11 +26,9 @@ describe("save error test", function() {
     });
 
     it("should update existing entity but an exception must be thrown", async () => {
-        sandbox
-            .stub(SimpleEntity.getDriver().getConnection(), "query")
-            .callsFake((query, callback) => {
-                callback(null, { insertId: 1 });
-            });
+        sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
+            return { insertId: 1 };
+        });
 
         const simpleEntity = new SimpleEntity();
         await simpleEntity.save();
@@ -61,11 +57,9 @@ describe("save error test", function() {
     });
 
     it("should save new entity into database (with hash IDs enabled), but an exception must be thrown", async () => {
-        sandbox
-            .stub(SimpleEntity.getDriver().getConnection(), "query")
-            .callsFake((query, callback) => {
-                callback(new Error("This is an error."));
-            });
+        sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
+            throw Error("This is an error.");
+        });
 
         SimpleEntity.getDriver().setIdGenerator(() => mdbid());
         const simpleEntity = new SimpleEntity();
@@ -75,10 +69,12 @@ describe("save error test", function() {
         } catch (e) {
             return;
         } finally {
+            assert.equal(simpleEntity.id, null);
             SimpleEntity.getDriver()
                 .getConnection()
                 .query.restore();
         }
+
         throw Error(`Error should've been thrown.`);
     });
 });

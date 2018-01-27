@@ -9,38 +9,32 @@ describe("find test", function() {
     beforeEach(() => SimpleEntity.getEntityPool().flush());
 
     it("find - should find entities and total count", async () => {
-        sandbox
-            .stub(SimpleEntity.getDriver().getConnection(), "query")
-            .callsFake((query, callback) => {
-                callback(
-                    null,
-                    [
-                        {
-                            id: 1,
-                            name: "This is a test",
-                            slug: "thisIsATest",
-                            enabled: 1
-                        },
-                        {
-                            id: 2,
-                            name: "This is a test 222",
-                            slug: "thisIsATest222",
-                            enabled: 0
-                        }
-                    ],
-                    null
-                );
-            });
-
-        sandbox.stub(SimpleEntity.getDriver().getConnection(), "end").callsFake(() => {});
+        sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => [
+            [
+                {
+                    id: 1,
+                    name: "This is a test",
+                    slug: "thisIsATest",
+                    enabled: 1
+                },
+                {
+                    id: 2,
+                    name: "This is a test 222",
+                    slug: "thisIsATest222",
+                    enabled: 0
+                }
+            ],
+            [
+                {
+                    count: 2
+                }
+            ]
+        ]);
 
         const entities = await SimpleEntity.find();
         SimpleEntity.getDriver()
             .getConnection()
             .query.restore();
-        SimpleEntity.getDriver()
-            .getConnection()
-            .end.restore();
 
         assert.isArray(entities);
         assert.lengthOf(entities, 2);

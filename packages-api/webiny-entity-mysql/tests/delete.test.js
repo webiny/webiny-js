@@ -27,11 +27,9 @@ describe("delete test", function() {
     });
 
     it("should delete entity", async () => {
-        sandbox
-            .stub(SimpleEntity.getDriver().getConnection(), "query")
-            .callsFake((query, callback) => {
-                callback(null, { insertId: 1 });
-            });
+        sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
+            return { insertId: 1 };
+        });
 
         const simpleEntity = new SimpleEntity();
         simpleEntity.name = "This is a test";
@@ -40,11 +38,7 @@ describe("delete test", function() {
             .getConnection()
             .query.restore();
 
-        sandbox
-            .stub(SimpleEntity.getDriver().getConnection(), "query")
-            .callsFake((query, callback) => {
-                callback();
-            });
+        sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {});
 
         await simpleEntity.delete();
         SimpleEntity.getDriver()

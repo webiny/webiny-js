@@ -7,11 +7,9 @@ describe("count test", function() {
     afterEach(() => sandbox.restore());
 
     it("count - should count entities", async () => {
-        sandbox
-            .stub(SimpleEntity.getDriver().getConnection(), "query")
-            .callsFake((query, callback) => {
-                callback(null, [{ count: 1 }]);
-            });
+        sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
+            return [{ count: 1 }];
+        });
 
         const count = await SimpleEntity.count();
         SimpleEntity.getDriver()

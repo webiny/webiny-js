@@ -9,20 +9,18 @@ describe("populateFromStorage test", function() {
     beforeEach(() => ComplexEntity.getEntityPool().flush());
 
     it("should populate entity correctly with data received from MySQL", async () => {
-        sandbox
-            .stub(ComplexEntity.getDriver().getConnection(), "query")
-            .callsFake((query, callback) => {
-                callback(null, [
-                    {
-                        firstName: "test",
-                        lastName: "tester",
-                        verification: `{"verified":true,"documentType":"driversLicense"}`,
-                        tags: `[{"slug":"no-name","label":"No Name"},{"slug":"adult-user","label":"Adult User"}]`,
-                        simpleEntity: 1,
-                        simpleEntities: "[22, 33, 44]"
-                    }
-                ]);
-            });
+        sandbox.stub(ComplexEntity.getDriver().getConnection(), "query").callsFake(() => {
+            return [
+                {
+                    firstName: "test",
+                    lastName: "tester",
+                    verification: `{"verified":true,"documentType":"driversLicense"}`,
+                    tags: `[{"slug":"no-name","label":"No Name"},{"slug":"adult-user","label":"Adult User"}]`,
+                    simpleEntity: 1,
+                    simpleEntities: "[22, 33, 44]"
+                }
+            ];
+        });
 
         let user = new ComplexEntity();
         assert.isFalse(user.getAttribute("simpleEntity").value.isLoading());
@@ -48,8 +46,8 @@ describe("populateFromStorage test", function() {
 
         assert.equal(user.getAttribute("simpleEntity").value.getCurrent(), 1);
 
-        sandbox.stub(user.getDriver().getConnection(), "query").callsFake((query, callback) => {
-            callback(null, [{ id: 1, name: "Test-1" }]);
+        sandbox.stub(user.getDriver().getConnection(), "query").callsFake(() => {
+            return [{ id: 1, name: "Test-1" }];
         });
 
         const simpleEntity = await user.simpleEntity;
@@ -68,16 +66,15 @@ describe("populateFromStorage test", function() {
         sandbox
             .stub(user.getDriver().getConnection(), "query")
             .onCall(0)
-            .callsFake((query, callback) => {
-                callback(null, [
-                    { id: 2, name: "Test-2" },
-                    { id: 3, name: "Test-3" },
-                    { id: 4, name: "Test-4" }
-                ]);
-            })
-            .onCall(1)
-            .callsFake((query, callback) => {
-                callback(null, [{ count: 3 }]);
+            .callsFake(() => {
+                return [
+                    [
+                        { id: 2, name: "Test-2" },
+                        { id: 3, name: "Test-3" },
+                        { id: 4, name: "Test-4" }
+                    ],
+                    [{ count: 3 }]
+                ];
             });
 
         assert.lengthOf(await user.simpleEntities, 3);

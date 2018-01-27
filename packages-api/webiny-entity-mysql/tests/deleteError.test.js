@@ -6,11 +6,9 @@ describe("delete error test", function() {
     afterEach(() => sandbox.restore());
 
     it("should throw an error", async () => {
-        sandbox
-            .stub(SimpleEntity.getDriver().getConnection(), "query")
-            .callsFake((query, callback) => {
-                callback(null, { insertId: 1 });
-            });
+        sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
+            return { insertId: 1 };
+        });
 
         const simpleEntity = new SimpleEntity();
         simpleEntity.name = "This is a test";
