@@ -1,8 +1,8 @@
 {
-    "name": "webiny-file-storage-local",
-    "description": "Local file-system storage driver for webiny-file-storage library",
+    "name": "webiny-file-storage-s3",
+    "description": "AWS S3 file-system storage driver for webiny-file-storage library",
     "version": "1.0.0",
-    "main": "lib/index.js",
+    "main": "src/index.js",
     "contributors": [
         "Pavel Denisjuk <pavel@webiny.com>",
         "Sven Al Hamad <sven@webiny.com>",
@@ -10,12 +10,16 @@
     ],
     "license": "MIT",
     "dependencies": {
+        "aws-sdk": "^2.188.0",
         "babel-runtime": "^6.26.0",
+        "documentation": "^5.3.5",
         "fecha": "^2.3.2",
-        "fs-extra": "^5.0.0",
-        "globby": "^7.1.1",
-        "lodash": "^4.17.4",
-        "mime-types": "^2.1.17",
-        "minimatch": "^3.0.4"
+        "lodash": "^4.17.4"
+    },
+    "devDependencies": {
+        "sinon": "^4.2.0"
+    },
+    "scripts": {
+      "documentation": "documentation readme --section=Documentation --config documentation.yml src/** --github"
     }
 }

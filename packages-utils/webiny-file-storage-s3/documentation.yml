@@ -6,13 +6,19 @@ toc:
   - name: Get started
     description: |
       The S3 driver takes a config object defined by `S3StorageDriverConfig` flow type.
-  - name: S3StorageDriver
+      The `S3StorageDriverConfig` takes the following parameters:
+      ```
+      S3StorageDriverConfig = {
+          bucket: string,             /* required */
+          accessKeyId: string,        /* required */
+          secretAccessKey: string,    /* required */
+          region: string,             /* required */
+          endpoint: string,           /* required */
+          createDatePrefix: boolean,
+          directory: string,
+          publicUrl: string
+      };
+      ```
+  - name: Classes
     children:
-        - S3StorageDriver
-  - name: Flow types
-    description: |
-      The following are Flow types used in this package:
-    children:
-    - IFileStorageDriver
-    - IFileData
-    - S3StorageDriverConfig
+      - S3StorageDriver
