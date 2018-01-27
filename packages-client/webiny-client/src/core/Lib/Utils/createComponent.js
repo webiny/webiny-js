@@ -3,9 +3,9 @@ import _ from "lodash";
 import { Webiny } from "./../../../index";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import { Map } from "immutable";
-import LazyLoad from "./Ui/LazyLoad";
-import WebinyComponent from "./Core/Component";
-import ModalComponent from "./Core/ModalComponent";
+import LazyLoad from "./../Ui/LazyLoad";
+import WebinyComponent from "./../Core/Component";
+import ModalComponent from "./../Core/ModalComponent";
 
 /**
  * This function creates a wrapper class around given component to allow component styling and lazy loading of dependencies

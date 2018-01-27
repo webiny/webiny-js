@@ -1,7 +1,7 @@
 {
     "name": "webiny-client",
     "version": "1.0.0",
-    "main": "src/index.js",
+    "main": "lib/index.js",
     "contributors": [
         "Pavel Denisjuk <pavel@webiny.com>",
         "Sven Al Hamad <sven@webiny.com>",
@@ -15,7 +15,6 @@
         "bluebird": "^3.5.1",
         "blueimp-md5": "^2.10.0",
         "bootstrap-sass": "^3.3.7",
-        "browser-sync": "^2.23.5",
         "classnames": "^2.2.5",
         "console-polyfill": "^0.3.0",
         "fecha": "^2.3.2",

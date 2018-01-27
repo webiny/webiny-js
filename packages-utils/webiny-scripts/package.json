@@ -38,15 +38,16 @@
     "react-hot-loader": "^3.1.3",
     "resolve-url-loader": "^2.2.1",
     "sass-loader": "^6.0.6",
+    "snyk": "^1.69.1",
     "style-loader": "^0.19.1",
     "webpack": "^3.10.0",
+    "webpack-config-utils": "^2.3.0",
     "webpack-dev-middleware": "^2.0.4",
     "webpack-dev-server": "^2.11.1",
     "webpack-hot-middleware": "^2.21.0",
     "webpack-visualizer-plugin": "^0.1.11",
     "write-file-webpack-plugin": "^4.2.0",
-    "yargs": "^10.1.1",
-    "snyk": "^1.69.1"
+    "yargs": "^10.1.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0"

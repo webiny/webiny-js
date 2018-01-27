@@ -1,10 +1,10 @@
-const path = require('path');
-const webpack = require('webpack');
-const _ = require('lodash');
-const browserSync = require('browser-sync').create();
-const devMiddleware = require('webpack-dev-middleware');
-const hotMiddleware = require('webpack-hot-middleware');
-const WriteFilePlugin = require('write-file-webpack-plugin');
+const path = require("path");
+const webpack = require("webpack");
+const _ = require("lodash");
+const browserSync = require("browser-sync").create();
+const devMiddleware = require("webpack-dev-middleware");
+const hotMiddleware = require("webpack-hot-middleware");
+const WriteFilePlugin = require("write-file-webpack-plugin");
 
 module.exports = ({ routes, port, domain }) => {
     return ({ config, projectRoot }) => {
@@ -27,17 +27,17 @@ module.exports = ({ routes, port, domain }) => {
         const compiler = webpack(config);
 
         const devMiddlewareOptions = {
-            publicPath: '/',
+            publicPath: "/",
             noInfo: false,
             stats: statsConfig
         };
 
         // Run browser-sync server
-        const baseDir = path.join(projectRoot, 'dist', 'development');
+        const baseDir = path.join(projectRoot, "dist", process.env.NODE_ENV);
         const browserSyncConfig = {
             ui: false,
             open: false,
-            logPrefix: 'Webiny',
+            logPrefix: "Webiny",
             online: false,
             port,
             socket: {
@@ -55,26 +55,24 @@ module.exports = ({ routes, port, domain }) => {
 
                         _.each(routes, (file, url) => {
                             if (req.url.startsWith(url)) {
-                                req.url = '/' + _.trim(file, '/');
+                                req.url = "/" + _.trim(file, "/");
                                 return false;
                             }
                         });
                         return next();
                     },
                     (req, res, next) => {
-                        res.setHeader('Access-Control-Allow-Origin', '*');
+                        res.setHeader("Access-Control-Allow-Origin", "*");
                         next();
                     }
                 ]
             },
             watchOptions: {
                 ignoreInitial: true,
-                ignored: '*.{html,js,json}'
+                ignored: "*.{html,js,json}"
             },
             // Files being watched for changes (add CSS of apps selected for build)
-            files: [
-                config.output.path + '/*.css'
-            ]
+            files: [config.output.path + "/*.css"]
         };
 
         browserSync.init(browserSyncConfig);

@@ -1,7 +1,7 @@
-const path = require('path');
+const path = require("path");
 
-module.exports = ({ config, env }) => {
-    config.output.path = path.join(__dirname, '/../dist', env, 'themes/default');
+module.exports = ({ config }) => {
+    config.output.path = path.join(__dirname, "/../dist", process.env.NODE_ENV, "themes/default");
 
     return config;
 };

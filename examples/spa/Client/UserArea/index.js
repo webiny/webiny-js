@@ -1,4 +1,4 @@
-import App from './App';
-import {renderApp} from 'webiny-client';
+import App from "./App";
+import { render } from "webiny-client";
 
-renderApp(new App(), document.getElementById('root'), module);
+render(new App(), document.getElementById("root"), module);
