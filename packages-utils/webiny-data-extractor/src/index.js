@@ -1,5 +1,5 @@
 // @flow
-import _ from 'lodash';
+import _ from "lodash";
 
 declare type ExtractedData = {
     output: Object,
@@ -10,78 +10,84 @@ declare type ProcessParams = {
     data: Object,
     keys: string,
     output?: Object,
-    initialTrajectory?: Array<string>
+    initialPath?: Array<string>
 };
 
 declare type ModifyParams = {
     data: Object,
     key: string,
     output: Object,
-    trajectory: Array<string>
+    path: Array<string>
 };
 
 class DataExtractor {
-    async get(data: Object, keys: string): Object {
+    async get(data: Object, keys: string = ""): Object {
         // First we remove all breaks from the string.
-        keys = keys.replace(/\s/g, '').trim();
+        keys = keys.replace(/\s/g, "").trim();
 
         // Recursively processes all root and nested keys.
         return this.__process({ data, keys }).then(({ output }) => output);
     }
 
     async __process(params: ProcessParams): Promise<ExtractedData> {
-        const { data, keys = '', output = {}, initialTrajectory = [] } = params;
-        let key: string = '', characters: number = 0, currentTrajectory: Array<string> = initialTrajectory.slice(0);
-        outerLoop:
-            for (let i = 0; i <= keys.length; i++) {
-                const current = keys[i];
+        const { data, keys = "", output = {}, initialPath = [] } = params;
+        let key: string = "",
+            characters: number = 0,
+            currentPath: Array<string> = initialPath.slice(0);
+        outerLoop: for (let i = 0; i <= keys.length; i++) {
+            const current = keys[i];
+            if (typeof current !== "undefined") {
                 characters++;
-                switch (true) {
-                    case current === ',':
-                    case current === undefined:
-                        key && await this.__modifyOutput({ output, key, data, trajectory: currentTrajectory });
-                        key = '';
-                        currentTrajectory = initialTrajectory.slice(0);
-                        break;
-                    case current === ']':
-                        key && await this.__modifyOutput({ output, key, data, trajectory: currentTrajectory });
-                        break outerLoop;
-                    case current === '[':
-                        const trajectory = currentTrajectory.splice(0);
-                        trajectory.push(key);
-                        const nested: ExtractedData = await this.__process({
-                            data,
-                            initialTrajectory: trajectory,
-                            keys: keys.substr(i + 1),
-                            output
-                        });
-                        characters += nested.processed.characters;
-                        i += nested.processed.characters;
-                        key = '';
-                        break;
-                    case current === '.':
-                        currentTrajectory.push(key);
-                        key = '';
-                        break;
-                    default:
-                        key += current;
-                }
             }
+            switch (true) {
+                case current === ",":
+                case current === undefined: {
+                    key && (await this.__modifyOutput({ output, key, data, path: currentPath }));
+                    key = "";
+                    currentPath = initialPath.slice(0);
+                    break;
+                }
+                case current === "]": {
+                    key && (await this.__modifyOutput({ output, key, data, path: currentPath }));
+                    break outerLoop;
+                }
+                case current === "[": {
+                    const path = currentPath.splice(0);
+                    path.push(key);
+                    const nested: ExtractedData = await this.__process({
+                        data,
+                        initialPath: path,
+                        keys: keys.substr(i + 1),
+                        output
+                    });
+                    characters += nested.processed.characters;
+                    i += nested.processed.characters;
+                    key = "";
+                    break;
+                }
+                case current === ".":
+                    currentPath.push(key);
+                    key = "";
+                    break;
+                default:
+                    key += current;
+            }
+        }
 
         return {
             output,
             processed: { characters }
-        }
+        };
     }
 
     async __modifyOutput(params: ModifyParams): Promise<void> {
-        const { output, data = {}, key = '', trajectory = [] } = params;
+        const { output, data = {}, key = "", path = [] } = params;
         const fragments = { output, data };
 
-        if (trajectory.length === 0) {
+        if (path.length === 0) {
             const value = await fragments.data[key];
 
-            if (typeof(value) === 'undefined') {
+            if (typeof value === "undefined") {
                 // Don't assign the key then, since undefined is not a part of JSON standard.
             } else {
                 fragments.output[key] = await fragments.data[key];
@@ -90,22 +96,22 @@ class DataExtractor {
             return;
         }
 
-        for (let i = 0; i < trajectory.length; i++) {
-            const step = trajectory[i];
+        for (let i = 0; i < path.length; i++) {
+            const step = path[i];
 
-            if (typeof(fragments.output[step]) === 'undefined') {
+            if (typeof fragments.output[step] === "undefined") {
                 fragments.output[step] = _.isArray(fragments.data[step]) ? [] : {}; // TODO: Check, is this the case really?
             }
 
             if (_.isArray(fragments.data[step])) {
                 for (let j = 0; j < fragments.data[step].length; j++) {
-                    if (typeof(fragments.output[step][j]) === 'undefined') {
+                    if (typeof fragments.output[step][j] === "undefined") {
                         fragments.output[step][j] = {}; // TODO: Check, is this the case really?
                     }
 
                     await this.__modifyOutput({
                         output: fragments.output[step][j],
-                        trajectory: trajectory.slice(i + 1),
+                        path: path.slice(i + 1),
                         key,
                         data: fragments.data[step][j]
                     });
@@ -120,7 +126,7 @@ class DataExtractor {
             await this.__modifyOutput({
                 output: fragments.output,
                 data: fragments.data,
-                trajectory: trajectory.slice(i + 1),
+                path: path.slice(i + 1),
                 key
             });
         }

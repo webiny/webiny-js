@@ -1,5 +1,6 @@
 import { assert } from "chai";
 import Model from "./../src/model";
+import ModelError from "./../src/modelError";
 
 describe("ModelError class test", function() {
     it("should correctly set / get values", async () => {
@@ -27,5 +28,12 @@ describe("ModelError class test", function() {
 
         assert.equal(error.setData("changed_data"));
         assert.equal(error.getData(), "changed_data");
+    });
+
+    it("should correctly set default on instantiation", async () => {
+        const error = new ModelError();
+        assert.equal(error.getType(), "");
+        assert.equal(error.getMessage(), "");
+        assert.deepEqual(error.getData(), {});
     });
 });

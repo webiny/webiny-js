@@ -1,5 +1,11 @@
+// @flow
+
 class ApiResponse {
-    constructor(data, message = '', statusCode = 200) {
+    data: mixed;
+    message: string;
+    statusCode: number;
+
+    constructor(data: mixed = null, message: string = "", statusCode: number = 200) {
         this.data = data;
         this.message = message;
         this.statusCode = statusCode;
@@ -9,35 +15,35 @@ class ApiResponse {
         return this.statusCode;
     }
 
-    setStatusCode(statusCode) {
+    setStatusCode(statusCode: number): this {
         this.statusCode = statusCode;
         return this;
     }
 
-    getData(format = true) {
+    getData(format: boolean = true): Object | mixed {
         return format ? this.formatResponse() : this.data;
     }
 
-    setData(data) {
+    setData(data: mixed): mixed {
         this.data = data;
         return this;
     }
 
-    getMessage() {
+    getMessage(): string {
         return this.message;
     }
 
-    setMessage(message) {
+    setMessage(message: string): this {
         this.message = message;
         return this;
     }
 
-    toJSON() {
+    toJSON(): Object {
         return this.formatResponse();
     }
 
-    formatResponse() {
-        const data = {
+    formatResponse(): { data: mixed, message?: string } {
+        const data: { data: mixed, message?: string } = {
             data: this.data
         };
 
