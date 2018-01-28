@@ -3,7 +3,10 @@ import QueryResult from "./queryResult";
 import EntityModel from "./entityModel";
 
 class Driver {
-    constructor() {}
+    connection: mixed;
+    constructor() {
+        this.connection = null;
+    }
 
     // eslint-disable-next-line
     onEntityConstruct(entity: Entity) {}
@@ -45,6 +48,10 @@ class Driver {
     // eslint-disable-next-line
     async count(entity: Entity, params: {}): Promise<QueryResult> {
         return new QueryResult(0);
+    }
+
+    getConnection(): mixed {
+        return this.connection;
     }
 
     // eslint-disable-next-line

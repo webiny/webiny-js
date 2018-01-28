@@ -51,6 +51,7 @@
     "commit": "git-cz",
     "precommit": "yarn lint-staged && yarn test",
     "coverage": "nyc --reporter=text yarn test",
+    "coverage:html": "nyc --reporter=html yarn test",
     "flow": "flow",
     "lint-staged": "lint-staged",
     "mocha": "mocha --require source-map-support/register --require babel-core/register",

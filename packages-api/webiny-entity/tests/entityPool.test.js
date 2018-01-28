@@ -16,17 +16,17 @@ describe("entity pool test", function() {
             return new QueryResult();
         });
 
-        expect(User.getEntityPool().has(user)).to.be.false;
-        expect(User.getEntityPool().get(user)).to.be.undefined;
+        expect(User.getEntityPool().has(user)).to.equal(false);
+        expect(User.getEntityPool().get(user)).to.equal(undefined);
         await user.save();
         expect(User.getEntityPool().get(user)).to.be.instanceOf(User);
-        expect(User.getEntityPool().has(user)).to.be.true;
+        expect(User.getEntityPool().has(user)).to.equal(true);
 
         sandbox.stub(user.getDriver(), "delete").callsFake(() => new QueryResult());
         await user.delete();
 
-        expect(User.getEntityPool().has(user)).to.be.false;
-        expect(User.getEntityPool().get(user)).to.be.undefined;
+        expect(User.getEntityPool().has(user)).to.equal(false);
+        expect(User.getEntityPool().get(user)).to.equal(undefined);
     });
 
     it("has and get methods should return true / false correctly (whether is called with a entity class or an instance)", async () => {
@@ -36,11 +36,11 @@ describe("entity pool test", function() {
             return new QueryResult();
         });
 
-        expect(User.getEntityPool().has(user)).to.be.false;
-        expect(User.getEntityPool().has(User, "A")).to.be.false;
+        expect(User.getEntityPool().has(user)).to.equal(false);
+        expect(User.getEntityPool().has(User, "A")).to.equal(false);
         await user.save();
-        expect(User.getEntityPool().has(user)).to.be.true;
-        expect(User.getEntityPool().has(User, "A")).to.be.true;
+        expect(User.getEntityPool().has(user)).to.equal(true);
+        expect(User.getEntityPool().has(User, "A")).to.equal(true);
     });
 
     it("findById must add to the pool and consequent findById calls must utilize it", async () => {
@@ -48,9 +48,9 @@ describe("entity pool test", function() {
             return new QueryResult({ id: "A" });
         });
 
-        expect(User.getEntityPool().has(User, "A")).to.be.false;
+        expect(User.getEntityPool().has(User, "A")).to.equal(false);
         const user1 = await User.findById("A");
-        expect(User.getEntityPool().has(User, "A")).to.be.true;
+        expect(User.getEntityPool().has(User, "A")).to.equal(true);
         expect(entityFindById.callCount).to.equal(1);
 
         const user2 = await User.findById("A");
@@ -64,13 +64,13 @@ describe("entity pool test", function() {
             return new QueryResult([{ id: "A" }, { id: "B" }, { id: "C" }]);
         });
 
-        expect(User.getEntityPool().has(User, "A")).to.be.false;
-        expect(User.getEntityPool().has(User, "B")).to.be.false;
-        expect(User.getEntityPool().has(User, "C")).to.be.false;
+        expect(User.getEntityPool().has(User, "A")).to.equal(false);
+        expect(User.getEntityPool().has(User, "B")).to.equal(false);
+        expect(User.getEntityPool().has(User, "C")).to.equal(false);
         const users1 = await User.find({});
-        expect(User.getEntityPool().has(User, "A")).to.be.true;
-        expect(User.getEntityPool().has(User, "B")).to.be.true;
-        expect(User.getEntityPool().has(User, "C")).to.be.true;
+        expect(User.getEntityPool().has(User, "A")).to.equal(true);
+        expect(User.getEntityPool().has(User, "B")).to.equal(true);
+        expect(User.getEntityPool().has(User, "C")).to.equal(true);
 
         expect(entityFind.callCount).to.equal(1);
         const users2 = await User.find({});
@@ -84,13 +84,13 @@ describe("entity pool test", function() {
             return new QueryResult([{ id: "A" }, { id: "B" }, { id: "C" }]);
         });
 
-        expect(User.getEntityPool().has(User, "A")).to.be.false;
-        expect(User.getEntityPool().has(User, "B")).to.be.false;
-        expect(User.getEntityPool().has(User, "C")).to.be.false;
+        expect(User.getEntityPool().has(User, "A")).to.equal(false);
+        expect(User.getEntityPool().has(User, "B")).to.equal(false);
+        expect(User.getEntityPool().has(User, "C")).to.equal(false);
         await User.findByIds(["A", "B", "C"]);
-        expect(User.getEntityPool().has(User, "A")).to.be.true;
-        expect(User.getEntityPool().has(User, "B")).to.be.true;
-        expect(User.getEntityPool().has(User, "C")).to.be.true;
+        expect(User.getEntityPool().has(User, "A")).to.equal(true);
+        expect(User.getEntityPool().has(User, "B")).to.equal(true);
+        expect(User.getEntityPool().has(User, "C")).to.equal(true);
         expect(entityFindByIds.callCount).to.equal(1);
 
         entityFindByIds.restore();
@@ -100,14 +100,14 @@ describe("entity pool test", function() {
             .onCall(0)
             .callsFake(() => new QueryResult([{ id: "D" }, { id: "E" }]));
 
-        expect(User.getEntityPool().has(User, "D")).to.be.false;
-        expect(User.getEntityPool().has(User, "E")).to.be.false;
+        expect(User.getEntityPool().has(User, "D")).to.equal(false);
+        expect(User.getEntityPool().has(User, "E")).to.equal(false);
         await User.findByIds(["A", "B", "C", "D", "E"]);
-        expect(User.getEntityPool().has(User, "A")).to.be.true;
-        expect(User.getEntityPool().has(User, "B")).to.be.true;
-        expect(User.getEntityPool().has(User, "C")).to.be.true;
-        expect(User.getEntityPool().has(User, "D")).to.be.true;
-        expect(User.getEntityPool().has(User, "E")).to.be.true;
+        expect(User.getEntityPool().has(User, "A")).to.equal(true);
+        expect(User.getEntityPool().has(User, "B")).to.equal(true);
+        expect(User.getEntityPool().has(User, "C")).to.equal(true);
+        expect(User.getEntityPool().has(User, "D")).to.equal(true);
+        expect(User.getEntityPool().has(User, "E")).to.equal(true);
 
         const nonPooledIds = entityFindByIds.getCall(0).args[1];
         expect(nonPooledIds).to.deep.equal(["D", "E"]);
@@ -118,15 +118,21 @@ describe("entity pool test", function() {
         expect(entityFindByIds.callCount).to.equal(1);
     });
 
+    it("remove method must exist if class was not inserted before", async () => {
+        expect(User.getEntityPool().pool).to.be.empty;
+        User.getEntityPool().remove(new User());
+        expect(User.getEntityPool().pool).to.be.empty;
+    });
+
     it("flush method must empty the pool", async () => {
         sandbox.stub(User.getDriver(), "findByIds").callsFake(() => {
             return new QueryResult([{ id: "A" }, { id: "B" }, { id: "C" }]);
         });
 
         await User.findByIds(["A", "B", "C"]);
-        expect(User.getEntityPool().has(User, "A")).to.be.true;
-        expect(User.getEntityPool().has(User, "B")).to.be.true;
-        expect(User.getEntityPool().has(User, "C")).to.be.true;
+        expect(User.getEntityPool().has(User, "A")).to.equal(true);
+        expect(User.getEntityPool().has(User, "B")).to.equal(true);
+        expect(User.getEntityPool().has(User, "C")).to.equal(true);
 
         User.getEntityPool().flush();
         expect(User.getEntityPool().pool).to.be.empty;
@@ -137,9 +143,9 @@ describe("entity pool test", function() {
             return new QueryResult({ id: "A" });
         });
 
-        expect(User.getEntityPool().has(User, "A")).to.be.false;
+        expect(User.getEntityPool().has(User, "A")).to.equal(false);
         const foundUser = await User.findOne({});
-        expect(User.getEntityPool().has(User, "A")).to.be.true;
+        expect(User.getEntityPool().has(User, "A")).to.equal(true);
         expect(entityFindOne.callCount).to.equal(1);
 
         const againFoundUser = await User.findOne({});

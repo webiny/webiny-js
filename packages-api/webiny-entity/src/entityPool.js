@@ -30,7 +30,7 @@ class EntityPool {
 
     remove(entity: Entity): this {
         if (!this.pool[entity.constructor.name]) {
-            this.pool[entity.constructor.name] = {};
+            return this;
         }
 
         delete this.pool[entity.constructor.name][entity.id];
