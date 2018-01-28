@@ -1,28 +1,28 @@
-import { app, Endpoint, ApiResponse, ApiErrorResponse, AuthError } from 'webiny-api/src';
-import User from './entities/user';
+import { app, Endpoint, ApiResponse, ApiErrorResponse, AuthError } from "webiny-api/src";
+import User from "./entities/user";
 
 class Users extends Endpoint {
     init(api) {
-        api.get('/me', async function () {
+        api.get("/me", async function() {
             const user = await app.getAuth().getUser();
             if (!user) {
-                return new ApiErrorResponse({}, 'Invalid user', 'WBY_NOT_AUTHENTICATED', 401);
+                return new ApiErrorResponse({}, "Invalid user", "WBY_NOT_AUTHENTICATED", 401);
             }
         });
 
-        api.post('/', async function ({ req }) {
+        api.post("/", async function({ req }) {
             const user = new User();
             user.populate(req.body);
             await user.save();
-            const data = await user.toJSON('id,email');
+            const data = await user.toJSON("id,email");
             return new ApiResponse(data);
         });
 
-        api.post('/login', async function ({ req }) {
+        api.post("/login", async function({ req }) {
             try {
                 const token = await app.getAuth().processLogin(req.body.email, req.body.password);
                 const user = await app.getAuth().getUser();
-                const userData = await user.toJSON('id,email');
+                const userData = await user.toJSON("id,email");
                 const data = {
                     token,
                     user: userData
@@ -30,24 +30,25 @@ class Users extends Endpoint {
                 return new ApiResponse(data);
             } catch (e) {
                 if (e instanceof AuthError) {
-                    return new ApiErrorResponse({}, e.getMessage(), 'WBY_INVALID_CREDENTIALS');
+                    return new ApiErrorResponse({}, e.getMessage(), "WBY_INVALID_CREDENTIALS");
                 }
 
                 return new ApiErrorResponse({}, e.message);
             }
         });
 
-        api.get('/', async function () {
+        api.get("/", async function() {
             const user = await app.getAuth().getUser();
             if (!user) {
-                return new ApiErrorResponse({}, 'Invalid user', 'WBY_NOT_AUTHENTICATED');
+                return new ApiErrorResponse({}, "Invalid user", "WBY_NOT_AUTHENTICATED");
             }
 
-            const users = await Promise.all((await User.find()).map(u => u.toJSON('email')));
+            const users = await Promise.all((await User.find()).map(u => u.toJSON("email")));
             return new ApiResponse(users);
         });
     }
 }
 
-Users.classId = 'Authentication.Users';
+Users.version = "1.0.0";
+Users.classId = "Authentication.Users";
 export default Users;

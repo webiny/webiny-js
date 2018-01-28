@@ -1,26 +1,30 @@
 // @flow
-import ApiContainer from './apiContainer';
-import App from './../etc/app';
+import _ from "lodash";
+import ApiContainer from "./apiContainer";
+import App from "./../etc/app";
 
 // Container for ApiContainer instances
 // The definition of an Endpoint class stays the same no matter how many instances we create so we only need one copy of ApiContainer per endpoint.
-const apiContainers: { [key: string]: ApiContainer } = {};
+const apiContainers: { [classId: string]: { [version: string]: ApiContainer } } = {};
 
 class Endpoint {
     static classId: string;
+    static version: string;
 
+    // eslint-disable-next-line
     init(api: ApiContainer) {
         // Override to define your custom API methods
         // NOTE: don't forget to call `super.init(api)`
     }
 
     getApi(): ApiContainer {
-        const { app } = require('./../index');
-        const className = this.constructor.name;
-        let apiContainer = apiContainers[className] || null;
+        const { app } = require("./../index");
+        const classId = this.constructor.classId;
+        const version = this.constructor.version;
+        let apiContainer = _.get(apiContainers, [classId, version]);
         if (!apiContainer) {
             apiContainer = new ApiContainer(this);
-            apiContainers[className] = apiContainer;
+            _.set(apiContainers, [classId, version], apiContainer);
             this.init(apiContainer);
             app.getApps().map((appInstance: App) => {
                 appInstance.applyEndpointExtensions(this);
