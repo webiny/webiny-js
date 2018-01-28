@@ -1,5 +1,6 @@
 // @flow
 import { Entity } from ".";
+import EntityCollectionError from "./entityCollectionError";
 
 class EntityCollection extends Array<Entity> {
     entityCollection: { params: ?Object, meta: ?Object };
@@ -13,7 +14,7 @@ class EntityCollection extends Array<Entity> {
                     this.push(item);
                     return true;
                 }
-                throw Error(
+                throw new EntityCollectionError(
                     "EntityCollection cannot accept a value that is not an instance of Entity."
                 );
             });
@@ -42,7 +43,9 @@ class EntityCollection extends Array<Entity> {
             return super.push(value);
         }
 
-        throw Error("EntityCollection cannot accept a value that is not an instance of Entity.");
+        throw new EntityCollectionError(
+            "EntityCollection cannot accept a value that is not an instance of Entity."
+        );
     }
 }
 

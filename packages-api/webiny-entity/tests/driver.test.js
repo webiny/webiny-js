@@ -1,5 +1,6 @@
 import { assert } from "chai";
 import User from "./entities/user";
+import { EntityError } from "../src";
 
 describe("default driver test", function() {
     it("save method should return the same user instance", async () => {
@@ -18,7 +19,8 @@ describe("default driver test", function() {
             error = e;
         }
 
-        assert.instanceOf(error, Error);
+        assert.instanceOf(error, EntityError);
+        assert.equal(error.getType(), EntityError.CANNOT_DELETE_NO_ID);
 
         user.id = "ABC";
         assert.isUndefined(await user.delete());

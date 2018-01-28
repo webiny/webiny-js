@@ -8,6 +8,7 @@ import EntityCollection from "./entityCollection";
 import EntityModel from "./entityModel";
 import EntityAttributesContainer from "./entityAttributesContainer";
 import QueryResult from "./queryResult";
+import { EntityError } from "./index";
 
 declare type EntitySaveParams = {
     validation?: boolean,
@@ -69,11 +70,11 @@ class Entity {
         });
 
         const modelClass = this.getDriver().getModelClass();
-        this.model = new modelClass().setParentEntity(proxy);
-
-        if (!this.model) {
-            throw Error("Entity model is missing.");
+        if (!modelClass) {
+            throw new EntityError("Entity model is missing.", EntityError.MODEL_MISSING);
         }
+
+        this.model = new modelClass().setParentEntity(proxy);
 
         this.listeners = {};
         this.existing = false;
@@ -87,7 +88,10 @@ class Entity {
 
         this.on("delete", () => {
             if (this.getAttribute("id").isEmpty()) {
-                throw Error("Entity cannot be deleted because it was not previously saved.");
+                throw new EntityError(
+                    "Entity cannot be deleted because it was not previously saved.",
+                    EntityError.CANNOT_DELETE_NO_ID
+                );
             }
         });
 

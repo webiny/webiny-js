@@ -1,5 +1,6 @@
 import { Entity, Driver } from "./../src";
 import { assert } from "chai";
+import { EntityError } from "../src";
 
 class ExtendedEntityDriver extends Driver {
     constructor() {
@@ -24,6 +25,7 @@ describe("entity model missing test", function() {
             error = e;
         }
 
-        assert.instanceOf(error, Error);
+        assert.instanceOf(error, EntityError);
+        assert.equal(error.getType(), EntityError.MODEL_MISSING);
     });
 });
