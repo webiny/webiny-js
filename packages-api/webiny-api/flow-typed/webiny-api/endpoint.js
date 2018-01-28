@@ -1,5 +1,13 @@
 import { express$Request, express$Response } from "../../../flow-typed/npm/express_v4.x.x";
-import { Endpoint } from './../..';
+import { Endpoint } from "./../..";
+
+declare type EndpointsMap = {
+    [url: string]: {
+        classId: string,
+        versions: { [version: string]: Class<Endpoint> },
+        latest: string
+    }
+};
 
 declare interface IApiResponse {
     getStatusCode(): number;
@@ -22,14 +30,19 @@ declare interface IApiMethod {
 
     getRegex(): RegExp;
 
-    exec(req: express$Request, res: express$Response, params: Object, context: Endpoint): IApiResponse;
+    exec(
+        req: express$Request,
+        res: express$Response,
+        params: Object,
+        context: Endpoint
+    ): IApiResponse;
 
     addCallback(callable: Function): void;
 }
 
 declare type IApiMethods = {
-    [key: string]: { [key: string]: IApiMethod };
-}
+    [key: string]: { [key: string]: IApiMethod }
+};
 
 declare interface IMatchedApiMethod {
     getApiMethod(): IApiMethod;

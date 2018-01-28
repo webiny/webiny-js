@@ -1,11 +1,11 @@
 // @flow
-import { Endpoint, ApiContainer } from './../endpoint';
+import { Endpoint, ApiContainer } from "./../endpoint";
 
 type ExtensionCallback = ({ id: string, api: ApiContainer }) => void;
 
 class App {
     name: string;
-    endpoints: Array<Endpoint>;
+    endpoints: Array<Class<Endpoint>>;
     endpointExtensions: { [key: string]: Array<ExtensionCallback> };
 
     constructor(name: string) {
@@ -14,7 +14,7 @@ class App {
         this.endpointExtensions = {};
     }
 
-    getEndpoints(): Array<Endpoint> {
+    getEndpoints(): Array<Class<Endpoint>> {
         return this.endpoints;
     }
 

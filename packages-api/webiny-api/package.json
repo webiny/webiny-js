@@ -18,7 +18,8 @@
     "koa-compose": "^4.0.0",
     "lodash": "^4.17.4",
     "mdbid": "^1.0.0",
-    "node-uuid": "^1.4.8"
+    "node-uuid": "^1.4.8",
+    "semver": "^5.5.0"
   },
   "devDependencies": {
     "supertest": "^3.0.0"
