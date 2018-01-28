@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import sinon from "sinon";
 import SimpleEntity from "./entities/simpleEntity";
-import mdbid from "mdbid";
+import CustomIdEntity from "./entities/customIdEntity";
 const sandbox = sinon.sandbox.create();
 
 describe("save error test", function() {
@@ -57,20 +57,19 @@ describe("save error test", function() {
     });
 
     it("should save new entity into database (with hash IDs enabled), but an exception must be thrown", async () => {
-        sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
+        sandbox.stub(CustomIdEntity.getDriver().getConnection(), "query").callsFake(() => {
             throw Error("This is an error.");
         });
 
-        SimpleEntity.getDriver().setIdGenerator(() => mdbid());
-        const simpleEntity = new SimpleEntity();
+        const customIdEntity = new CustomIdEntity();
 
         try {
-            await simpleEntity.save();
+            await customIdEntity.save();
         } catch (e) {
             return;
         } finally {
-            assert.equal(simpleEntity.id, null);
-            SimpleEntity.getDriver()
+            assert.equal(customIdEntity.id, null);
+            CustomIdEntity.getDriver()
                 .getConnection()
                 .query.restore();
         }

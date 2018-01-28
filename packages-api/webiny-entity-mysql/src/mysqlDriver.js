@@ -9,7 +9,7 @@ import MySQLConnection from "./mysqlConnection";
 declare type MySQLDriverOptions = {
     connection: Connection | Pool,
     model: Class<MySQLModel>,
-    idGenerator: (entity: Entity, options: Object) => mixed,
+    id: { attribute?: Function, value?: Function },
     tables: {
         prefix: string,
         naming: ?Function
@@ -19,7 +19,7 @@ declare type MySQLDriverOptions = {
 class MySQLDriver extends Driver {
     connection: MySQLConnection;
     model: Class<MySQLModel>;
-    idGenerator: Function;
+    id: { validator: ?Function, value: ?Function };
     tables: {
         prefix: string,
         naming: ?Function
@@ -30,7 +30,10 @@ class MySQLDriver extends Driver {
         this.connection = new MySQLConnection(options.connection);
         this.model = options.model || MySQLModel;
 
-        this.idGenerator = options.idGenerator || null;
+        this.id = { validator: null, value: null };
+        if (options.id) {
+            this.id = _.merge(this.id, options.id);
+        }
 
         this.tables = _.merge(
             {
@@ -42,12 +45,17 @@ class MySQLDriver extends Driver {
     }
 
     onEntityConstruct(entity: Entity) {
-        if (!(typeof this.idGenerator === "function")) {
-            entity
-                .attr("id")
-                .integer()
-                .setValidators("gt:0");
+        if (typeof this.id.value === "function") {
+            entity.attr("id").char();
+        } else {
+            entity.attr("id").integer();
         }
+
+        entity
+            .getAttribute("id")
+            .setValidators((value, attribute) =>
+                this.isId(attribute.getParentModel().getParentEntity(), value)
+            );
     }
 
     getModelClass(): Class<MySQLModel> {
@@ -55,9 +63,8 @@ class MySQLDriver extends Driver {
     }
 
     async save(entity: Entity, options: Object): Promise<QueryResult> {
-        const idGenerator = this.getIdGenerator();
-        if (!entity.isExisting() && typeof idGenerator === "function") {
-            entity.id = idGenerator(entity, options);
+        if (!entity.isExisting() && typeof this.id.value === "function") {
+            entity.id = this.id.value(entity, options);
         }
 
         if (entity.isExisting()) {
@@ -82,7 +89,7 @@ class MySQLDriver extends Driver {
 
         try {
             const results = await this.getConnection().query(sql);
-            if (!_.isFunction(this.getIdGenerator())) {
+            if (!_.isFunction(this.id.value)) {
                 entity.id = results.insertId;
             }
         } catch (e) {
@@ -158,24 +165,15 @@ class MySQLDriver extends Driver {
     }
 
     // eslint-disable-next-line
-    isId(entity: Entity, value: mixed, options: Object): boolean {
-        if (typeof this.idGenerator === "function") {
-            return typeof value === "string";
+    isId(entity: Entity, value: mixed, options: ?Object): boolean {
+        if (typeof this.id.validator === "function") {
+            return this.id.validator(entity, value, options);
         }
         return typeof value === "number" && value > 0;
     }
 
     getConnection(): MySQLConnection {
         return this.connection;
-    }
-
-    setIdGenerator(idGenerator: Function): this {
-        this.idGenerator = idGenerator;
-        return this;
-    }
-
-    getIdGenerator(): ?Function {
-        return this.idGenerator;
     }
 
     setTablePrefix(tablePrefix: string): this {
@@ -187,8 +185,8 @@ class MySQLDriver extends Driver {
         return this.tables.prefix;
     }
 
-    setTableNaming(tableNameGenerator: Function): this {
-        this.tables.naming = tableNameGenerator;
+    setTableNaming(tableNameValue: Function): this {
+        this.tables.naming = tableNameValue;
         return this;
     }
 

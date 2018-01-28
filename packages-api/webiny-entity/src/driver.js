@@ -55,7 +55,7 @@ class Driver {
     }
 
     // eslint-disable-next-line
-    isId(entity: Entity, id: mixed, params: {}): boolean {
+    isId(entity: Entity, id: mixed, params: ?Object): boolean {
         return typeof id === "string";
     }
 }

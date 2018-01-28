@@ -151,10 +151,16 @@ class Entity {
     /**
      * Creates new attribute with name.
      */
-    attr(name: string): EntityAttributesContainer {
+    attr(attribute: string | Attribute): EntityAttributesContainer | Attribute {
+        if (attribute instanceof Attribute) {
+            return this.getModel()
+                .setAttribute(attribute)
+                .getAttribute(attribute.getName());
+        }
+
         return this.getModel()
             .getAttributesContainer()
-            .attr(name);
+            .attr(attribute);
     }
 
     /**
