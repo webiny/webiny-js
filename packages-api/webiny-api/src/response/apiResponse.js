@@ -42,7 +42,7 @@ class ApiResponse {
         return this.formatResponse();
     }
 
-    formatResponse(): { data: mixed, message?: string } {
+    formatResponse(): Object {
         const data: { data: mixed, message?: string } = {
             data: this.data
         };
