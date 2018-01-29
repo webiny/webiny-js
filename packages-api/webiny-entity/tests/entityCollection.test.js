@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import User from "./entities/user";
 import { EntityCollection } from "./..";
+import EntityCollectionError from "../src/entityCollectionError";
 
 const getEntities = () => [
     new User().populate({ age: 30 }),
@@ -49,5 +50,30 @@ describe("EntityCollection test", function() {
         const collection = new EntityCollection();
         collection.setMeta({ a: 123 });
         expect(collection.getMeta().a).to.equal(123);
+    });
+
+    it("toJSON must throw an error if fields are not specified", async () => {
+        const collection = new EntityCollection();
+
+        try {
+            await collection.toJSON();
+        } catch (e) {
+            expect(e).to.be.instanceOf(EntityCollectionError);
+            return;
+        }
+
+        throw Error(`Error should've been thrown.`);
+    });
+
+    it("toJSON must return array consisting of JSON representations of each entity", async () => {
+        const collection = new EntityCollection(getEntities());
+
+        const json = await collection.toJSON("firstName,age");
+
+        expect(json).to.deep.equal([
+            { firstName: null, age: 30 },
+            { firstName: null, age: 35 },
+            { firstName: null, age: 40 }
+        ]);
     });
 });

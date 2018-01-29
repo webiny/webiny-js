@@ -47,6 +47,16 @@ class EntityCollection extends Array<Entity> {
             "EntityCollection cannot accept a value that is not an instance of Entity."
         );
     }
+
+    async toJSON(fields: string) {
+        if (!fields) {
+            throw new EntityCollectionError(
+                "toJSON must receive fields (eg. 'id,name,createdOn')."
+            );
+        }
+
+        return Promise.all(this.map(async (entity: Entity) => await entity.toJSON(fields)));
+    }
 }
 
 export default EntityCollection;
