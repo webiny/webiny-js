@@ -101,7 +101,7 @@ class QueryBuilder {
         return " WHERE " + operatorsProcessor.execute(options.where);
     }
 
-    _getOrder(options: QueryOptions): string {
+    _getOrder(options: { order?: Array<OrderTuple> }): string {
         if (!options.order || !options.order.length) {
             return "";
         }
