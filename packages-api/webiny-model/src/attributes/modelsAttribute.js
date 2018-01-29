@@ -71,9 +71,9 @@ class ModelsAttribute extends Attribute {
                 await currentValue[i].validate();
             } catch (e) {
                 errors.push({
-                    type: e.getType(),
-                    data: { index: i, ...e.getData() },
-                    message: e.getMessage()
+                    type: e.type,
+                    data: { index: i, ...e.data },
+                    message: e.message
                 });
             }
         }

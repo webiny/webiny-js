@@ -45,7 +45,7 @@ describe("attribute model test", function() {
             }
 
             assert.instanceOf(error, ModelError);
-            assert.equal(error.getType(), ModelError.INVALID_ATTRIBUTES);
+            assert.equal(error.type, ModelError.INVALID_ATTRIBUTES);
         });
 
         it("attribute2 shouldn't accept Model1 (ModelError must be thrown", async () => {
@@ -58,7 +58,7 @@ describe("attribute model test", function() {
             }
 
             assert.instanceOf(error, ModelError);
-            assert.equal(error.getType(), ModelError.INVALID_ATTRIBUTES);
+            assert.equal(error.type, ModelError.INVALID_ATTRIBUTES);
         });
     });
 

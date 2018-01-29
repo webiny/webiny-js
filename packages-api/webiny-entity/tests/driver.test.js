@@ -20,7 +20,7 @@ describe("default driver test", function() {
         }
 
         assert.instanceOf(error, EntityError);
-        assert.equal(error.getType(), EntityError.CANNOT_DELETE_NO_ID);
+        assert.equal(error.type, EntityError.CANNOT_DELETE_NO_ID);
 
         user.id = "ABC";
         assert.isUndefined(await user.delete());

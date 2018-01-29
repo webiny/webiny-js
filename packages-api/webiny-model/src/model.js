@@ -132,9 +132,9 @@ class Model implements IModel {
                 } catch (e) {
                     if (e instanceof ModelError) {
                         invalidAttributes[name] = {
-                            type: e.getType(),
-                            data: e.getData(),
-                            message: e.getMessage()
+                            type: e.type,
+                            data: e.data,
+                            message: e.message
                         };
                     } else {
                         invalidAttributes[name] = {

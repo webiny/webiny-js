@@ -35,7 +35,7 @@ describe("entity attribute test", function() {
 
         assert.instanceOf(error, ModelError);
         assert.equal(
-            error.getData().invalidAttributes.company.data.invalidAttributes.image.type,
+            error.data.invalidAttributes.company.data.invalidAttributes.image.type,
             ModelError.INVALID_ATTRIBUTE
         );
     });
@@ -60,8 +60,8 @@ describe("entity attribute test", function() {
         }
 
         assert.instanceOf(error, ModelError);
-        assert.equal(error.getType(), ModelError.INVALID_ATTRIBUTES);
-        let invalid = error.getData().invalidAttributes.company.data.invalidAttributes;
+        assert.equal(error.type, ModelError.INVALID_ATTRIBUTES);
+        let invalid = error.data.invalidAttributes.company.data.invalidAttributes;
 
         assert.hasAllKeys(invalid, ["name", "image"]);
         assert.equal(invalid.name.data.validator, "required");
@@ -85,8 +85,8 @@ describe("entity attribute test", function() {
         }
 
         assert.instanceOf(error, ModelError);
-        assert.equal(error.getType(), ModelError.INVALID_ATTRIBUTES);
-        invalid = error.getData().invalidAttributes.company.data.invalidAttributes;
+        assert.equal(error.type, ModelError.INVALID_ATTRIBUTES);
+        invalid = error.data.invalidAttributes.company.data.invalidAttributes;
 
         assert.hasAllKeys(invalid, ["name"]);
         assert.equal(invalid.name.data.validator, "required");

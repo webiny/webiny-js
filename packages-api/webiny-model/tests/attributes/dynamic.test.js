@@ -9,7 +9,6 @@ const model = new Model(function() {
     this.attr("amount1").integer();
     this.attr("amount2").integer();
 
-    // TODO: proxy fali ovdje
     this.attr("sum").dynamic(({ model }) => {
         return model.getAttribute("amount1").getValue() + model.getAttribute("amount2").getValue();
     });

@@ -32,7 +32,7 @@ describe("attribute char test", function() {
             }
 
             assert.instanceOf(error, ModelError);
-            assert.equal(error.getType(), ModelError.INVALID_ATTRIBUTES);
+            assert.equal(error.type, ModelError.INVALID_ATTRIBUTES);
         });
     });
 
