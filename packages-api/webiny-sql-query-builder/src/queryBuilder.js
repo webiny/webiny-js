@@ -101,15 +101,16 @@ class QueryBuilder {
         return " WHERE " + operatorsProcessor.execute(options.where);
     }
 
-    _getOrder(options: { order?: { [string]: number } }): string {
-        if (_.isEmpty(options.order)) {
+    _getOrder(options: QueryOptions): string {
+        if (!options.order || !options.order.length) {
             return "";
         }
 
         let query = [];
-        for (const [sort, order] of Object.entries(options.order)) {
-            query.push(`${sort} ${order === 1 ? "ASC" : "DESC"}`);
-        }
+
+        options.order.forEach(order => {
+            query.push(`${order[0]} ${order[1] === 1 ? "ASC" : "DESC"}`);
+        });
 
         return " ORDER BY " + query.join(", ");
     }
