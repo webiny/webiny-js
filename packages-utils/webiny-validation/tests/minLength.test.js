@@ -37,4 +37,8 @@ describe("minLength test", () => {
     it("should fail - object has less than 5 keys", () => {
         return validation.validate({ a: null, b: null, c: null }, "minLength:5").should.be.rejected;
     });
+
+    it("should fail - invalid value so no validation is made", () => {
+        return validation.validate(true, "minLength:5").should.be.fulfilled;
+    });
 });

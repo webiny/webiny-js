@@ -47,4 +47,8 @@ describe("maxLength test", () => {
             .validate({ a: null, b: null, c: null }, "maxLength:5")
             .should.become(true);
     });
+
+    it("should fail - invalid value so no validation is made", () => {
+        return validation.validate(true, "maxLength:5").should.be.fulfilled;
+    });
 });
