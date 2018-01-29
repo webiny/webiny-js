@@ -1,3 +1,5 @@
+declare type OrderTuple = [string, number];
+
 declare type EntityFindParams = {
     query?: Object,
     page?: number,
@@ -5,7 +7,7 @@ declare type EntityFindParams = {
     order?: Array<OrderTuple>
 };
 
-declare type EntityCountParams = {
+declare type EntityFindOneParams = {
     query?: Object
 };
 

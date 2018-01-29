@@ -62,7 +62,7 @@ class MySQLDriver extends Driver {
         return this.model;
     }
 
-    async save(entity: Entity, options: Object): Promise<QueryResult> {
+    async save(entity: Entity, options: EntitySaveParams & {}): Promise<QueryResult> {
         if (!entity.isExisting() && typeof this.id.value === "function") {
             entity.id = this.id.value(entity, options);
         }
@@ -101,7 +101,7 @@ class MySQLDriver extends Driver {
     }
 
     // eslint-disable-next-line
-    async delete(entity: Entity, options: Object): Promise<QueryResult> {
+    async delete(entity: Entity, options: EntityDeleteParams & {}): Promise<QueryResult> {
         const id = await entity.getAttribute("id").getStorageValue();
         const sql = queryBuilder.build({
             operation: "delete",
@@ -114,10 +114,12 @@ class MySQLDriver extends Driver {
         return new QueryResult(true);
     }
 
-    async find(entity: Entity, options: Object): Promise<QueryResult> {
+    async find(entity: Entity, options: EntityFindParams & {}): Promise<QueryResult> {
         const clonedOptions = _.merge({}, options, {
             table: this.getTableName(entity),
-            operation: "select"
+            operation: "select",
+            limit: 10,
+            offset: 0
         });
 
         if (_.has(clonedOptions, "query")) {
@@ -125,14 +127,24 @@ class MySQLDriver extends Driver {
             delete clonedOptions.query;
         }
 
+        if (_.has(clonedOptions, "perPage")) {
+            clonedOptions.limit = clonedOptions.perPage;
+            delete clonedOptions.perPage;
+        }
+
+        if (_.has(clonedOptions, "page")) {
+            clonedOptions.offset = clonedOptions.limit * (clonedOptions.page - 1);
+            delete clonedOptions.page;
+        }
+
         const sql = queryBuilder.build(clonedOptions);
 
         const results = await this.getConnection().query([sql, "SELECT FOUND_ROWS() as count"]);
 
-        return new QueryResult(results[0], results[1][0].count);
+        return new QueryResult(results[0], { count: results[1][0].count });
     }
 
-    async findOne(entity: Entity, options: Object): Promise<QueryResult> {
+    async findOne(entity: Entity, options: EntityFindOneParams & Object): Promise<QueryResult> {
         const sql = queryBuilder.build({
             operation: "select",
             table: this.getTableName(entity),
@@ -155,7 +167,7 @@ class MySQLDriver extends Driver {
         return this.find(entity, cloned);
     }
 
-    async count(entity: Entity, options: Object): Promise<QueryResult> {
+    async count(entity: Entity, options: EntityFindParams & {}): Promise<QueryResult> {
         const sql = queryBuilder.build(
             _.merge({}, options, { table: this.getTableName(entity), operation: "count" })
         );

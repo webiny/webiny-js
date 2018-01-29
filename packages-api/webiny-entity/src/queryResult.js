@@ -1,9 +1,9 @@
 // @flow
 class QueryResult {
     result: mixed;
-    meta: ?Object;
+    meta: Object;
 
-    constructor(result: mixed, meta: ?Object) {
+    constructor(result: mixed, meta: Object = {}) {
         this.result = result;
         this.meta = meta;
     }
@@ -22,8 +22,17 @@ class QueryResult {
         return this;
     }
 
-    getMeta(): ?Object {
+    getMeta(): Object {
         return this.meta;
+    }
+
+    setCount(count: number): this {
+        this.meta.count = count;
+        return this;
+    }
+
+    getCount(): number {
+        return this.meta.count;
     }
 }
 

@@ -18,7 +18,7 @@ class MemoryDriver extends Driver {
     }
 
     // eslint-disable-next-line
-    async save(entity: Entity, params: Object): Promise<QueryResult> {
+    async save(entity: Entity, params: EntitySaveParams & {}): Promise<QueryResult> {
         // Check if table exists.
         if (!this.data[entity.classId]) {
             this.data[entity.classId] = [];
@@ -36,7 +36,7 @@ class MemoryDriver extends Driver {
     }
 
     // eslint-disable-next-line
-    async delete(entity: Entity, params: Object = {}): Promise<QueryResult> {
+    async delete(entity: Entity, params: EntityDeleteParams & {}): Promise<QueryResult> {
         if (!this.data[entity.classId]) {
             return new QueryResult(true);
         }
@@ -49,7 +49,7 @@ class MemoryDriver extends Driver {
     }
 
     // eslint-disable-next-line
-    async count(entity: Entity, params: {}): Promise<QueryResult> {
+    async count(entity: Entity, params: EntityFindParams): Promise<QueryResult> {
         const results = await this.find(entity, params);
         return new QueryResult(results.getResult().length);
     }
@@ -65,12 +65,12 @@ class MemoryDriver extends Driver {
         return this.find(entity, cloned);
     }
 
-    async findOne(entity: Entity, params: Object): Promise<QueryResult> {
+    async findOne(entity: Entity, params: EntityFindOneParams & {}): Promise<QueryResult> {
         return new QueryResult(_.find(this.data[entity.classId], params.query));
     }
 
     // eslint-disable-next-line
-    async find(entity: Entity, params: {}): Promise<QueryResult> {
+    async find(entity: Entity, params: EntityFindParams & Object): Promise<QueryResult> {
         const records = this.data[entity.classId];
         if (!records) {
             return new QueryResult([]);
@@ -96,7 +96,7 @@ class MemoryDriver extends Driver {
             collection.push(record);
         });
 
-        return new QueryResult(collection);
+        return new QueryResult(collection, { count: collection.length });
     }
 
     flush(classId: ?string) {

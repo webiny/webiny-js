@@ -5,14 +5,14 @@ import { QueryResult } from "../src";
 describe("entity pool entry test", function() {
     it("setEntity/getEntity methods must work correctly", async () => {
         const entityPoolEntry = new QueryResult();
-        expect(entityPoolEntry.getResult()).to.be.undefined;
+        expect(entityPoolEntry.getResult()).to.equal(undefined);
         entityPoolEntry.setResult(new User());
         expect(entityPoolEntry.getResult()).to.be.instanceOf(User);
     });
 
     it("setEntity/getEntity methods must work correctly", async () => {
         const entityPoolEntry = new QueryResult();
-        expect(entityPoolEntry.getMeta()).to.be.undefined;
+        expect(entityPoolEntry.getMeta()).to.deep.equal({});
         entityPoolEntry.setMeta(5);
         expect(entityPoolEntry.getMeta()).to.be.equal(5);
     });

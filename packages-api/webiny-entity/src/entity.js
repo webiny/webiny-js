@@ -425,7 +425,7 @@ class Entity {
      * Counts total number of entities matched by given query parameters.
      * @param params
      */
-    static async count(params: EntityCountParams & Object = {}): Promise<number> {
+    static async count(params: EntityFindParams & Object = {}): Promise<number> {
         const paramsClone = _.cloneDeep(params);
         await this.emit("query", { type: "count", params: paramsClone });
 
