@@ -7,6 +7,7 @@ declare type ExtractedData = {
 };
 
 declare type ProcessParams = {
+    callback: ?Function,
     data: Object,
     keys: string,
     output?: Object,
@@ -14,6 +15,7 @@ declare type ProcessParams = {
 };
 
 declare type ModifyParams = {
+    callback: ?Function,
     data: Object,
     key: string,
     output: Object,
@@ -21,16 +23,16 @@ declare type ModifyParams = {
 };
 
 class DataExtractor {
-    async get(data: Object, keys: string = ""): Object {
+    async get(data: Object, keys: string = "", callback: ?Function): Object {
         // First we remove all breaks from the string.
         keys = keys.replace(/\s/g, "").trim();
 
         // Recursively processes all root and nested keys.
-        return this.__process({ data, keys }).then(({ output }) => output);
+        return this.__process({ data, keys, callback }).then(({ output }) => output);
     }
 
     async __process(params: ProcessParams): Promise<ExtractedData> {
-        const { data, keys = "", output = {}, initialPath = [] } = params;
+        const { data, keys = "", output = {}, initialPath = [], callback = null } = params;
         let key: string = "",
             characters: number = 0,
             currentPath: Array<string> = initialPath.slice(0);
@@ -42,13 +44,27 @@ class DataExtractor {
             switch (true) {
                 case current === ",":
                 case current === undefined: {
-                    key && (await this.__modifyOutput({ output, key, data, path: currentPath }));
+                    key &&
+                        (await this.__modifyOutput({
+                            output,
+                            key,
+                            data,
+                            path: currentPath,
+                            callback
+                        }));
                     key = "";
                     currentPath = initialPath.slice(0);
                     break;
                 }
                 case current === "]": {
-                    key && (await this.__modifyOutput({ output, key, data, path: currentPath }));
+                    key &&
+                        (await this.__modifyOutput({
+                            output,
+                            key,
+                            data,
+                            path: currentPath,
+                            callback
+                        }));
                     break outerLoop;
                 }
                 case current === "[": {
@@ -58,7 +74,8 @@ class DataExtractor {
                         data,
                         initialPath: path,
                         keys: keys.substr(i + 1),
-                        output
+                        output,
+                        callback
                     });
                     characters += nested.processed.characters;
                     i += nested.processed.characters;
@@ -81,16 +98,16 @@ class DataExtractor {
     }
 
     async __modifyOutput(params: ModifyParams): Promise<void> {
-        const { output, data = {}, key = "", path = [] } = params;
+        const { output, data = {}, key = "", path = [], callback = null } = params;
         const fragments = { output, data };
 
         if (path.length === 0) {
-            const value = await fragments.data[key];
+            const value = await this.__read(fragments.data, key, callback);
 
             if (typeof value === "undefined") {
                 // Don't assign the key then, since undefined is not a part of JSON standard.
             } else {
-                fragments.output[key] = await fragments.data[key];
+                fragments.output[key] = value;
             }
 
             return;
@@ -113,7 +130,8 @@ class DataExtractor {
                         output: fragments.output[step][j],
                         path: path.slice(i + 1),
                         key,
-                        data: fragments.data[step][j]
+                        data: fragments.data[step][j],
+                        callback
                     });
                 }
 
@@ -127,9 +145,17 @@ class DataExtractor {
                 output: fragments.output,
                 data: fragments.data,
                 path: path.slice(i + 1),
+                callback,
                 key
             });
         }
+    }
+
+    async __read(data: Object, key: string, callback: ?Function): mixed {
+        if (typeof callback === "function") {
+            return callback(data, key);
+        }
+        return data[key];
     }
 }
 
