@@ -10,28 +10,6 @@ import EntityAttributesContainer from "./entityAttributesContainer";
 import QueryResult from "./queryResult";
 import { EntityError } from "./index";
 
-declare type EntitySaveParams = {
-    validation?: boolean,
-    events?: {
-        save?: boolean,
-        beforeSave?: boolean,
-        beforeUpdate?: boolean,
-        beforeCreate?: boolean,
-        afterSave?: boolean,
-        afterUpdate?: boolean,
-        afterCreate?: boolean
-    }
-};
-
-declare type EntityDeleteParams = {
-    validation?: boolean,
-    events?: {
-        delete?: boolean,
-        beforeDelete?: boolean,
-        afterDelete?: boolean
-    }
-};
-
 class Entity {
     static classId: ?string;
     static driver: Driver;
@@ -418,7 +396,7 @@ class Entity {
      * Finds one or more entities matched by given query parameters.
      * @param params
      */
-    static async find(params: Object = {}): Promise<EntityCollection> {
+    static async find(params: EntityFindParams & Object = {}): Promise<EntityCollection> {
         const paramsClone = _.cloneDeep(params);
         await this.emit("query", { type: "find", params: paramsClone });
 
@@ -447,7 +425,7 @@ class Entity {
      * Counts total number of entities matched by given query parameters.
      * @param params
      */
-    static async count(params: Object = {}): Promise<number> {
+    static async count(params: EntityCountParams & Object = {}): Promise<number> {
         const paramsClone = _.cloneDeep(params);
         await this.emit("query", { type: "count", params: paramsClone });
 
