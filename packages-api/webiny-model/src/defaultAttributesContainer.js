@@ -1,6 +1,7 @@
 // @flow
 import AttributesContainer from "./attributesContainer";
 import {
+    ArrayAttribute,
     CharAttribute,
     BooleanAttribute,
     IntegerAttribute,
@@ -19,6 +20,12 @@ class DefaultAttributesContainer extends AttributesContainer {
     attr(attribute: string): DefaultAttributesContainer {
         super.attr(attribute);
         return this;
+    }
+
+    array(): ArrayAttribute {
+        const model = this.getParentModel();
+        model.setAttribute(this.name, new ArrayAttribute(this.name, this));
+        return model.getAttribute(this.name);
     }
 
     char(): CharAttribute {

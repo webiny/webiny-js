@@ -1,3 +1,4 @@
+export { default as ArrayAttribute } from "./arrayAttribute";
 export { default as CharAttribute } from "./charAttribute";
 export { default as BooleanAttribute } from "./booleanAttribute";
 export { default as IntegerAttribute } from "./integerAttribute";
