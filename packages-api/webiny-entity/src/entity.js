@@ -521,7 +521,7 @@ class Entity {
      * @param data
      */
     static async emit(name: string, data: Object = {}): Promise<void> {
-        if (_.get(this, "listeners.name")) {
+        if (_.get(this, "listeners." + name)) {
             for (let i = 0; i < this.listeners[name].length; i++) {
                 await this.listeners[name][i].execute({ ...data, entity: this });
             }

@@ -166,9 +166,9 @@ class Attribute implements IAttribute {
                 return await validation.validate(this.value.getCurrent(), validators);
             } catch (e) {
                 throw new ModelError("Invalid attribute.", ModelError.INVALID_ATTRIBUTE, {
-                    message: e.getMessage(),
-                    value: e.getValue(),
-                    validator: e.getValidator()
+                    message: e.message,
+                    value: e.value,
+                    validator: e.validator
                 });
             }
         }
