@@ -16,4 +16,10 @@ describe("entity pool entry test", function() {
         entityPoolEntry.setMeta(5);
         expect(entityPoolEntry.getMeta()).to.be.equal(5);
     });
+
+    it("setCount/getCount methods must work correctly", async () => {
+        const collection = new QueryResult();
+        collection.setCount(444);
+        expect(collection.getCount()).to.equal(444);
+    });
 });

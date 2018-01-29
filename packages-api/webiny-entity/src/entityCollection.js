@@ -3,11 +3,11 @@ import { Entity } from ".";
 import EntityCollectionError from "./entityCollectionError";
 
 class EntityCollection extends Array<Entity> {
-    entityCollection: { params: ?Object, meta: ?Object };
+    __entityCollection: { params: Object, meta: Object };
 
     constructor(values: Array<Entity> = []) {
         super();
-        this.entityCollection = { params: null, meta: null };
+        this.__entityCollection = { params: {}, meta: {} };
         values.forEach &&
             values.forEach(item => {
                 if (item instanceof Entity) {
@@ -21,21 +21,21 @@ class EntityCollection extends Array<Entity> {
     }
 
     setParams(params: Object): this {
-        this.entityCollection.params = params;
+        this.__entityCollection.params = params;
         return this;
     }
 
-    getParams(): ?Object {
-        return this.entityCollection.params;
+    getParams(): Object {
+        return this.__entityCollection.params;
     }
 
-    setMeta(meta: ?Object): this {
-        this.entityCollection.meta = meta;
+    setMeta(meta: Object): this {
+        this.__entityCollection.meta = meta;
         return this;
     }
 
-    getMeta(): ?Object {
-        return this.entityCollection.meta;
+    getMeta(): Object {
+        return this.__entityCollection.meta;
     }
 
     push(value: Entity) {
@@ -56,6 +56,15 @@ class EntityCollection extends Array<Entity> {
         }
 
         return Promise.all(this.map(async (entity: Entity) => await entity.toJSON(fields)));
+    }
+
+    setCount(count: number): this {
+        this.__entityCollection.meta.count = count;
+        return this;
+    }
+
+    getCount(): ?number {
+        return this.__entityCollection.meta.count;
     }
 }
 
