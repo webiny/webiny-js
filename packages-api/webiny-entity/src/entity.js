@@ -149,7 +149,7 @@ class Entity {
         return this.getModel().getAttributes();
     }
 
-    async get(path: string | Array<string> = "", defaultValue: mixed = null) {
+    async get(path: string | Array<string> = "", defaultValue?: mixed) {
         return this.getModel().get(path, defaultValue);
     }
 
@@ -160,7 +160,7 @@ class Entity {
     /**
      * Returns entity's JSON representation.
      */
-    async toJSON(path: ?string): Promise<{}> {
+    async toJSON(path: string): Promise<JSON> {
         return this.getModel().toJSON(path);
     }
 

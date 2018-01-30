@@ -2,6 +2,7 @@ import { assert } from "chai";
 import { User, Image } from "./entities/userCompanyImage";
 import sinon from "sinon";
 import { QueryResult } from "./../src";
+
 const sandbox = sinon.sandbox.create();
 
 describe("async get and set methods test", async function() {
@@ -15,6 +16,33 @@ describe("async get and set methods test", async function() {
 
         assert.equal(await user.get("firstName"), "John");
         assert.equal(await user.get("lastName"), "Doe");
+    });
+
+    it("should be able to get simple attributes", async () => {
+        const user = new User();
+        await user.set("firstName", "John");
+        await user.set("lastName", "Doe");
+
+        assert.equal(await user.get("firstName"), "John");
+        assert.equal(await user.get("lastName"), "Doe");
+    });
+
+    it("should return empty object if path not set", async () => {
+        const user = new User();
+        await user.set("firstName", "John");
+        await user.set("lastName", "Doe");
+
+        assert.isUndefined(await user.get());
+    });
+
+    it("should return default value properly", async () => {
+        const user = new User();
+        await user.set("firstName", "John");
+        await user.set("lastName", "Doe");
+
+        assert.equal(await user.get("firstName", "Test"), "John");
+        assert.isUndefined(await user.get("firstName1"));
+        assert.equal(await user.get("firstName1", "Test"), "Test");
     });
 
     it("should be able to get values from nested entities", async () => {

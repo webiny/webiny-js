@@ -1,6 +1,6 @@
-import {assert} from 'chai';
-import {Entity, Driver, EntityModel, QueryResult} from './../src'
-import _ from 'lodash';
+import { assert } from "chai";
+import { Entity, Driver, EntityModel, QueryResult } from "./../src";
+import _ from "lodash";
 
 class CustomDriver extends Driver {
     constructor() {
@@ -9,14 +9,15 @@ class CustomDriver extends Driver {
     }
 
     getModelClass() {
-		return EntityModel;
-	}
+        return EntityModel;
+    }
 
     async save(entity, params) {
         const isUpdate = entity.id;
         if (!isUpdate) {
-            entity.id = Math.random().toString(36).substring(2);
-            await entity.emit('onBeforeCreate');
+            entity.id = Math.random()
+                .toString(36)
+                .substring(2);
         }
 
         await entity.validate();
@@ -26,11 +27,7 @@ class CustomDriver extends Driver {
             this.data[entity.classId] = {};
         }
 
-        this.data[entity.classId][entity.id] = await entity.toJSON();
-
-        if (!isUpdate) {
-            await entity.emit('onAfterCreate');
-        }
+        this.data[entity.classId][entity.id] = await entity.toStorage();
     }
 
     async delete(entity, params) {
@@ -51,7 +48,7 @@ class CustomDriver extends Driver {
     }
 
     async findById(entity, id, params) {
-        return new QueryResult(_.find(this.data[entity.classId], {id}));
+        return new QueryResult(_.find(this.data[entity.classId], { id }));
     }
 
     async findOne(entity, params) {
@@ -66,84 +63,89 @@ class CustomDriver extends Driver {
 
         const collection = [];
 
-        recordsLoop:
-            for (const [id, record] of Object.entries(this.data[entity.classId])) {
-                for (const [key, value] of Object.entries(_.get(params, 'query', {}))) {
-                    if (record[key] !== value) {
-                        continue recordsLoop;
-                    }
+        recordsLoop: for (const [id, record] of Object.entries(this.data[entity.classId])) {
+            for (const [key, value] of Object.entries(_.get(params, "query", {}))) {
+                if (record[key] !== value) {
+                    continue recordsLoop;
                 }
-                collection.push(record);
             }
+            collection.push(record);
+        }
 
         return new QueryResult(collection);
     }
 }
 
-class CustomEntity extends Entity {
-}
+class CustomEntity extends Entity {}
 
 CustomEntity.driver = new CustomDriver();
-CustomEntity.classId = 'customEntity';
+CustomEntity.classId = "customEntity";
 
 class User extends CustomEntity {
     constructor() {
         super();
-        this.attr('firstName').char().setValidators('required');
-        this.attr('lastName').char().setValidators('required');
-        this.attr('age').integer();
-        this.attr('enabled').boolean().setDefaultValue(true);
+        this.attr("firstName")
+            .char()
+            .setValidators("required");
+        this.attr("lastName")
+            .char()
+            .setValidators("required");
+        this.attr("age").integer();
+        this.attr("enabled")
+            .boolean()
+            .setDefaultValue(true);
     }
 }
 
-describe('custom driver test', function () {
-    it('should have CustomDriver set as driver driver', async () => {
+describe("custom driver test", function() {
+    it("should have CustomDriver set as driver driver", async () => {
         const user = new User();
-        assert.instanceOf(user.driver, CustomDriver)
+        assert.instanceOf(user.driver, CustomDriver);
     });
 
-    it('should save entities and then find them', async () => {
+    it("should save entities and then find them", async () => {
         const user1 = new User();
-        user1.populate({firstName: 'John', lastName: 'Doe', age: 30});
+        user1.populate({ firstName: "John", lastName: "Doe", age: 30 });
         await user1.save();
 
         const user2 = new User();
-        user2.populate({firstName: 'Jane', lastName: 'Doe', age: 25});
+        user2.populate({ firstName: "Jane", lastName: "Doe", age: 25 });
         await user2.save();
 
         const user3 = new User();
-        user3.populate({firstName: 'Foo', lastName: 'Bar', age: 100, enabled: false});
+        user3.populate({ firstName: "Foo", lastName: "Bar", age: 100, enabled: false });
         await user3.save();
 
+        const aa = User.getDriver();
         const users = await User.find();
         assert.lengthOf(users, 3);
+        const usa = [users[0], users[0].age];
         assert.equal(users[0].age, 30);
         assert.equal(users[1].age, 25);
         assert.equal(users[2].age, 100);
     });
 
-
-    it('should return only one user', async () => {
+    it("should return only one user", async () => {
         const user1 = new User();
-        user1.populate({firstName: 'John', lastName: 'Doe', age: 250});
+        user1.populate({ firstName: "John", lastName: "Doe", age: 250 });
         await user1.save();
 
         const user2 = new User();
-        user2.populate({firstName: 'John Old', lastName: 'Doe Old', age: 350});
+        user2.populate({ firstName: "John Old", lastName: "Doe Old", age: 350 });
         await user2.save();
 
-        const users1 = await User.find({query: {age: 250}});
+        const users1 = await User.find({ query: { age: 250 } });
         assert.lengthOf(users1, 1);
-        assert.equal(users1[0].firstName, 'John');
+        assert.equal(users1[0].firstName, "John");
 
-        const users2 = await User.find({query: {age: 350}});
+        const users2 = await User.find({ query: { age: 350 } });
         assert.lengthOf(users2, 1);
-        assert.equal(users2[0].firstName, 'John Old');
+        assert.equal(users2[0].firstName, "John Old");
     });
 
-    it('should find by given ID correctly', async () => {
+    it("should find by given ID correctly", async () => {
         const user1 = new User();
-        user1.populate({firstName: 'John', lastName: 'Doe', age: 250});
+        user1.populate({ firstName: "John", lastName: "Doe", age: 250 });
         await user1.save();
 
         const noUser = await User.findById();
@@ -153,36 +155,36 @@ describe('custom driver test', function () {
         assert.equal(foundUser.id, user1.id);
     });
 
-    it('should delete entity', async () => {
+    it("should delete entity", async () => {
         const user1 = new User();
-        user1.populate({firstName: 'John Older', lastName: 'Doe Older', age: 500});
+        user1.populate({ firstName: "John Older", lastName: "Doe Older", age: 500 });
         await user1.save();
 
         const user2 = new User();
-        user2.populate({firstName: 'John Oldest', lastName: 'Doe Oldest', age: 1000});
+        user2.populate({ firstName: "John Oldest", lastName: "Doe Oldest", age: 1000 });
         await user2.save();
 
-        const user1Find = await User.findOne({query: {age: 500}});
+        const user1Find = await User.findOne({ query: { age: 500 } });
         await user1Find.delete();
 
-        const user1FindAgain = await User.findOne({query: {age: 500}});
+        const user1FindAgain = await User.findOne({ query: { age: 500 } });
         assert.isNull(user1FindAgain);
     });
 
-    it('should count entities', async () => {
+    it("should count entities", async () => {
         const currentCount = await User.count();
         assert.isNumber(currentCount);
 
         const user1 = new User();
-        user1.populate({firstName: 'John Older', lastName: 'Doe Older', age: 5000});
+        user1.populate({ firstName: "John Older", lastName: "Doe Older", age: 5000 });
         await user1.save();
 
         const user2 = new User();
-        user2.populate({firstName: 'John Oldest', lastName: 'Doe Oldest', age: 10000});
+        user2.populate({ firstName: "John Oldest", lastName: "Doe Oldest", age: 10000 });
         await user2.save();
 
         assert.equal(await User.count(), currentCount + 2);
-        assert.equal(await User.count({query: {age: 5000}}), 1);
-        assert.equal(await User.count({query: {age: 10000}}), 1);
+        assert.equal(await User.count({ query: { age: 5000 } }), 1);
+        assert.equal(await User.count({ query: { age: 10000 } }), 1);
     });
 });

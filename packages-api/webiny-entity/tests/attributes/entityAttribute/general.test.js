@@ -323,4 +323,9 @@ describe("entity attribute test", function() {
         entityFind.restore();
         entityFindById.restore();
     });
+
+    it("getJSONValue method must return value - we don't do any processing toJSON on it", async () => {
+        const user = new User();
+        assert.isNull(await user.getAttribute("company").getJSONValue(), null);
+    });
 });

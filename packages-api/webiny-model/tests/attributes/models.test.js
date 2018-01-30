@@ -193,11 +193,11 @@ describe("attribute models test", function() {
         assert.equal(await newModel.get("attribute1.2.name"), "Lina");
     });
 
-    it("should return null as a default JSON value", async () => {
+    it("getJSONValue method must return value - we don't do any processing toJSON on it", async () => {
         const newModel = new Model(function() {
             this.attr("attribute1").models(Model1);
         });
 
-        assert.isNull(await newModel.getAttribute("attribute1").getJSONValue());
+        assert.deepEqual(await newModel.getAttribute("attribute1").getJSONValue(), []);
     });
 });

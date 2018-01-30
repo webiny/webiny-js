@@ -9,6 +9,9 @@ class ModelAttribute extends Attribute {
     constructor(name: string, attributesContainer: AttributesContainer, model: Class<Model>) {
         super(name, attributesContainer);
         this.modelClass = model;
+
+        // This has to be set - it enables setting nested values, even if the current value of the attribute is null.
+        // Eg. user.company.image - this will automatically set empty models as values, and enable setting nested values.
         this.defaultValue = () => new this.modelClass();
     }
 
@@ -39,12 +42,19 @@ class ModelAttribute extends Attribute {
 
         const model = this.getValue();
         if (model instanceof Model) {
-            return model.toJSON();
+            return await model.toJSON();
         }
     }
 
-    async getStorageValue(): Object {
-        return this.getJSONValue();
+    async getStorageValue(): Promise<mixed> {
+        if (this.isEmpty()) {
+            return null;
+        }
+
+        const model = this.getValue();
+        if (model instanceof Model) {
+            return await model.toStorage();
+        }
     }
 
     /**

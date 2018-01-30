@@ -10,6 +10,8 @@ class ModelsAttribute extends Attribute {
 
     constructor(name: string, attributesContainer: AttributesContainer, model: Class<Model>) {
         super(name, attributesContainer);
+
+        this.value.setCurrent([]);
         this.modelClass = model;
     }
 
@@ -89,9 +91,9 @@ class ModelsAttribute extends Attribute {
         return (super.getValue(): any);
     }
 
-    async getJSONValue(): Promise<mixed> {
+    async getJSONValue(): Promise<Array<Object>> {
         if (this.isEmpty()) {
-            return null;
+            return [];
         }
 
         const json = [];
@@ -105,8 +107,20 @@ class ModelsAttribute extends Attribute {
         return json;
     }
 
-    async getStorageValue(): Promise<{}> {
-        return this.getJSONValue();
+    async getStorageValue(): Promise<Array<Object>> {
+        if (this.isEmpty()) {
+            return [];
+        }
+
+        const json = [];
+        const value = this.getValue();
+        if (value instanceof Array) {
+            for (let i = 0; i < value.length; i++) {
+                json.push(await value[i].toStorage());
+            }
+        }
+
+        return json;
     }
 }
 

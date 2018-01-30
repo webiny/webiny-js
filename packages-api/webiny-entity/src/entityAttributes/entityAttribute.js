@@ -198,15 +198,6 @@ class EntityAttribute extends Attribute {
     }
 
     /**
-     * Returns JSON value.
-     * @returns {Promise<void>}
-     */
-    async getJSONValue() {
-        const value = await this.getValue();
-        return value instanceof this.getEntityClass() ? value.toJSON() : value;
-    }
-
-    /**
      * Validates current value - if it's not a valid ID or an instance of Entity class, an error will be thrown.
      */
     validateType() {

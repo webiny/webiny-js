@@ -10,6 +10,7 @@ class Attribute implements IAttribute {
     value: AttributeValue;
     once: boolean;
     toStorage: boolean;
+    toJSON: boolean;
     skipOnPopulate: boolean;
     defaultValue: mixed;
     validators: string | AttributeValidator;
@@ -43,6 +44,12 @@ class Attribute implements IAttribute {
          * @var bool
          */
         this.toStorage = true;
+
+        /**
+         * Marks whether or not this attribute must be included in results of toJSON method call, when specific fields are note set.
+         * @var bool
+         */
+        this.toJSON = false;
 
         /**
          * If true - mass populate will skip this attribute
@@ -243,6 +250,15 @@ class Attribute implements IAttribute {
         return this;
     }
 
+    setToJSON(flag: boolean): this {
+        this.toJSON = flag;
+        return this;
+    }
+
+    getToJSON(): boolean {
+        return this.toJSON;
+    }
+
     async getJSONValue(): Promise<mixed> {
         return this.getValue();
     }
@@ -298,11 +314,10 @@ class Attribute implements IAttribute {
     }
 
     expected(expecting: string, got: string): ModelError {
-        const error = new ModelError(
+        throw new ModelError(
             `Validation failed, received ${got}, expecting ${expecting}.`,
             ModelError.INVALID_ATTRIBUTE
         );
-        throw error;
     }
 }
 

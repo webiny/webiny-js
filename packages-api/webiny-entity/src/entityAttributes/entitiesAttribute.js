@@ -279,7 +279,7 @@ class EntitiesAttribute extends Attribute {
      * It will return only valid IDs, other values will be ignored because they must not enter storage.
      * @returns {Promise<*>}
      */
-    async getStorageValue(): mixed {
+    async getStorageValue(): Promise<mixed> {
         if (_.isArray(this.value.getCurrent())) {
             // Not using getValue method because it would load the entity without need.
             const storageValue = [];
@@ -366,6 +366,22 @@ class EntitiesAttribute extends Attribute {
                 items: errors
             });
         }
+    }
+
+    async getJSONValue(): Promise<Array<Object>> {
+        const value = await this.getValue();
+        if (this.isEmpty()) {
+            return [];
+        }
+
+        const json = [];
+        if (value instanceof Array) {
+            for (let i = 0; i < value.length; i++) {
+                json.push(await value[i].toJSON());
+            }
+        }
+
+        return json;
     }
 }
 

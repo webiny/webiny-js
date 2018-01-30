@@ -1,5 +1,4 @@
 import { QueryResult, EntityCollection } from "../../../src/index";
-import { ModelError } from "webiny-model";
 import {
     MainEntity,
     Entity1,
@@ -8,7 +7,6 @@ import {
 } from "../../entities/entitiesAttributeEntities";
 import { assert, expect } from "chai";
 import sinon from "sinon";
-import { One } from "../../entities/oneTwoThree";
 const sandbox = sinon.sandbox.create();
 
 describe("attribute entities test", function() {

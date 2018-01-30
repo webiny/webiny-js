@@ -39,18 +39,22 @@ describe("extracting values test", () => {
         });
     });
 
-    it("should return whole objects if nested keys aren't set", async () => {
+    it("should return whole object if nested nested keys aren't set", async () => {
         const extracted = await extractor.get(mock, `company[name,city,image]`);
-
-        assert.equal(extracted.company.name, "Webiny LTD");
-        assert.equal(extracted.company.city, "London");
-        assert.equal(extracted.company.image.file, "webiny.jpg");
-        assert.equal(extracted.company.image.size.width, 12.5);
-        assert.equal(extracted.company.image.size.height, 44);
-        assert.equal(extracted.company.image.visible, false);
-        assert.hasAllKeys(extracted.company, ["name", "city", "image"]);
-        assert.hasAllKeys(extracted.company.image, ["file", "size", "visible"]);
-        assert.hasAllKeys(extracted.company.image.size, ["width", "height"]);
+        assert.deepEqual(extracted, {
+            company: {
+                name: "Webiny LTD",
+                city: "London",
+                image: {
+                    file: "webiny.jpg",
+                    size: {
+                        width: 12.5,
+                        height: 44
+                    },
+                    visible: false
+                }
+            }
+        });
     });
 
     it("if a key is an array and no nested keys are set, it should be returned completely", async () => {
@@ -111,8 +115,8 @@ describe("extracting values test", () => {
                 }
             },
             subscription: {
-                commitment: {},
-                name: "Free"
+                name: "Free",
+                commitment: {}
             }
         });
     });

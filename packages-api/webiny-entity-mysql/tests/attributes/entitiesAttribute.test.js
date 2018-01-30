@@ -127,7 +127,7 @@ describe("entities attribute test", function() {
             firstName: null,
             lastName: null,
             verification: null,
-            tags: null,
+            tags: "[]",
             simpleEntity: null,
             simpleEntities: null
         };
@@ -140,7 +140,7 @@ describe("entities attribute test", function() {
             firstName: null,
             lastName: null,
             verification: null,
-            tags: null,
+            tags: "[]",
             simpleEntity: null,
             simpleEntities: null
         };

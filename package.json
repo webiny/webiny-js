@@ -52,7 +52,7 @@
         "precommit": "yarn lint-staged && yarn test",
         "coverage": "nyc --reporter=text yarn test",
         "coverage:html": "nyc --reporter=html yarn test",
-        "coverage:check": "nyc check-coverage --lines 97 --functions 96 --branches 91 yarn test",
+        "coverage:check": "nyc check-coverage --lines 97 --functions 96 --branches 92 yarn test",
         "flow": "flow",
         "lint-staged": "lint-staged",
         "mocha": "mocha --require source-map-support/register --require babel-core/register",

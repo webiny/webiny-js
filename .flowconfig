@@ -5,6 +5,7 @@
 [libs]
 packages-api/webiny-api/flow-typed
 packages-api/webiny-entity/flow-typed
+packages-api/webiny-data-extractor/flow-typed
 packages-api/webiny-sql-query-builder/flow-typed
 packages-api/webiny-model/flow-typed
 packages-api/webiny-entity-mysql/flow-typed

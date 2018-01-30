@@ -156,15 +156,26 @@ class Model implements IModel {
         }
     }
 
-    async toJSON(path: ?string): Promise<{}> {
-        const json = {};
-        let name;
-
-        for (name in this.attributes) {
-            json[name] = await this.attributes[name].getJSONValue();
+    async toJSON(fields: ?string): Promise<Object> {
+        if (!fields) {
+            const output = {};
+            for (let name in this.getAttributes()) {
+                const attribute = this.getAttribute(name);
+                if (attribute && attribute.getToJSON()) {
+                    output[name] = await attribute.getJSONValue();
+                }
+            }
+            return output;
         }
 
-        return path ? await extractor.get(json, path) : json;
+        return await extractor.get(this, fields, {
+            onRead: async (data, key) => {
+                if (data instanceof Model) {
+                    return await data.getAttribute(key).getJSONValue();
+                }
+                return await data[key];
+            }
+        });
     }
 
     async get(path: string | Array<string> = "", defaultValue: ?mixed): Promise<mixed> {
@@ -205,10 +216,12 @@ class Model implements IModel {
      */
     async toStorage(): Promise<{}> {
         const json = {};
-        let name;
-        for (name in this.attributes) {
-            if (this.attributes[name].getToStorage()) {
-                json[name] = await this.attributes[name].getStorageValue();
+        for (let name in this.getAttributes()) {
+            const attribute = this.getAttribute(name);
+            if (attribute) {
+                if (attribute.getToStorage()) {
+                    json[name] = await attribute.getStorageValue();
+                }
             }
         }
 
@@ -224,9 +237,13 @@ class Model implements IModel {
         }
 
         let name;
-        for (name in this.attributes) {
-            const attribute: IAttribute = this.attributes[name];
-            _.has(data, name) && attribute.getToStorage() && attribute.setStorageValue(data[name]);
+        for (name in this.getAttributes()) {
+            const attribute: ?IAttribute = this.getAttribute(name);
+            if (attribute) {
+                _.has(data, name) &&
+                    attribute.getToStorage() &&
+                    attribute.setStorageValue(data[name]);
+            }
         }
 
         return this;

@@ -174,8 +174,8 @@ describe("attribute model test", function() {
         assert.equal(await user.get("company.image.size.width"), 12.5);
     });
 
-    it("should return null as a default JSON value", async () => {
+    it("getJSONValue method must return value - we don't do any processing toJSON on it", async () => {
         const user = new User();
-        assert.isNull(await user.getAttribute("company").getJSONValue());
+        assert.isNull(await user.getAttribute("company").getJSONValue(), null);
     });
 });

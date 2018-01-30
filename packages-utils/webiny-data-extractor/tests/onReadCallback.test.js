@@ -4,7 +4,7 @@ import _ from "lodash";
 import extractor from "./../src";
 import mock from "./mock";
 
-const callback = (data, key) => {
+const onRead = (data, key) => {
     if (_.isObject(data[key])) {
         return data[key];
     }
@@ -13,7 +13,7 @@ const callback = (data, key) => {
 
 describe("custom callback test", () => {
     it("should return root keys", async () => {
-        let extracted = await extractor.get(mock, "firstName,lastName,age", callback);
+        let extracted = await extractor.get(mock, "firstName,lastName,age", { onRead });
 
         assert.deepEqual(extracted, {
             firstName: "___John___",
@@ -26,7 +26,7 @@ describe("custom callback test", () => {
         const extracted = await extractor.get(
             mock,
             "subscription.name,subscription.price,subscription.commitment.expiresOn",
-            callback
+            { onRead: onRead }
         );
 
         assert.deepEqual(extracted, {
@@ -41,7 +41,7 @@ describe("custom callback test", () => {
     });
 
     it("should return nested keys in square brackets", async () => {
-        const extracted = await extractor.get(mock, "company[name,city]", callback);
+        const extracted = await extractor.get(mock, "company[name,city]", { onRead: onRead });
 
         assert.deepEqual(extracted, {
             company: {
@@ -52,7 +52,7 @@ describe("custom callback test", () => {
     });
 
     it("if a key is an array and no nested keys are set, it should be returned completely", async () => {
-        const extracted = await extractor.get(mock, `age,meta.objects`, callback);
+        const extracted = await extractor.get(mock, `age,meta.objects`, { onRead: onRead });
         assert.deepEqual(extracted, {
             age: "___30___",
             meta: {

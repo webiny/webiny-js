@@ -69,7 +69,7 @@ describe("entity attribute test", function() {
             firstName: null,
             lastName: null,
             verification: null,
-            tags: null,
+            tags: "[]",
             simpleEntity: null,
             simpleEntities: `[1,2,3]`
         };
@@ -82,7 +82,7 @@ describe("entity attribute test", function() {
             firstName: null,
             lastName: null,
             verification: null,
-            tags: null,
+            tags: "[]",
             simpleEntity: null,
             simpleEntities: null
         };

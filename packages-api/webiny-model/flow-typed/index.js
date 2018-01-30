@@ -15,6 +15,7 @@ declare interface IAttribute {
     value: AttributeValue;
     once: boolean;
     toStorage: boolean;
+    toJSON: boolean;
     skipOnPopulate: boolean;
     defaultValue: mixed;
     validators: string | AttributeValidator;
@@ -59,6 +60,8 @@ declare interface IAttribute {
 
     getJSONValue(): Promise<mixed>;
 
+    getToJSON(): boolean;
+
     setToStorage(flag: boolean): IAttribute;
 
     getToStorage(): boolean;
@@ -99,7 +102,7 @@ declare interface IModel {
 
     validate(): Promise<void>;
 
-    toJSON(path: ?string): Promise<{}>;
+    toJSON(path: string): Promise<{}>;
 
     get(path: string | Array<string>, defaultValue: mixed): Promise<mixed>;
 
