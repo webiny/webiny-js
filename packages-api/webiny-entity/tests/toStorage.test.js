@@ -68,16 +68,16 @@ describe("toStorage test", function() {
         CustomEntity.driver = new CustomDriver();
         CustomEntity.classId = "customEntity";
 
-        const custonEntity1 = new CustomEntity();
-        custonEntity1.populate({
+        const customEntity1 = new CustomEntity();
+        customEntity1.populate({
             firstName: "A",
             lastName: "B",
             age: 10,
             enabled: true
         });
-        await custonEntity1.validate();
+        await customEntity1.validate();
 
-        const data1 = await custonEntity1.toStorage();
+        const data1 = await customEntity1.toStorage();
 
         assert.hasAllKeys(data1, ["id", "firstName", "lastName", "enabled", "age"]);
         assert.strictEqual(data1["firstName"], "A");

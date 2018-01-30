@@ -316,6 +316,23 @@ describe("extracting values test", () => {
         assert.deepEqual(extract5, expectedResult);
     });
 
+    it("should return undefined fields too, if includeUndefined flag was set", async () => {
+        const extract = await extractor.get(
+            {
+                firstName: "Tom",
+                lastName: "Doe",
+                age: 30
+            },
+            "firstName,llastName,ager",
+            { includeUndefined: true }
+        );
+
+        assert.deepEqual(extract, {
+            firstName: "Tom",
+            llastName: undefined,
+            ager: undefined
+        });
+    });
     it("should work even if empty data was sent", async () => {
         const extract = await extractor.get(null);
         assert.deepEqual(extract, {});
@@ -332,7 +349,7 @@ describe("extracting values test", () => {
     });
 
     it("__modifyOutput should be able to process empty data", async () => {
-        const extract = await extractor.__modifyOutput({});
+        const extract = await extractor.__modifyOutput();
         assert.isUndefined(extract);
     });
 });

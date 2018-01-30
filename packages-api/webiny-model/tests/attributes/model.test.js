@@ -178,4 +178,9 @@ describe("attribute model test", function() {
         const user = new User();
         assert.isNull(await user.getAttribute("company").getJSONValue(), null);
     });
+
+    it("getStorageValue method must return null", async () => {
+        const user = new User();
+        assert.isNull(await user.getAttribute("company").getStorageValue(), null);
+    });
 });

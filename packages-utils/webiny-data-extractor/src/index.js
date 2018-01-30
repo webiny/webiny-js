@@ -8,7 +8,6 @@ declare type ExtractedData = {
 
 declare type Options = {
     onRead?: Function,
-    onAccess?: Function,
     includeUndefined?: boolean
 };
 
@@ -134,7 +133,7 @@ class DataExtractor {
             }
 
             fragments.output = await fragments.output[step];
-            fragments.data = await this.__access(fragments.data, step, options.onAccess);
+            fragments.data = await fragments.data[step];
 
             await this.__modifyOutput(
                 {
@@ -151,13 +150,6 @@ class DataExtractor {
     async __read(data: Object, key: string, onRead: ?Function): Promise<mixed> {
         if (typeof onRead === "function") {
             return onRead(data, key);
-        }
-        return await data[key];
-    }
-
-    async __access(data: Object, key: string, onAccess: ?Function): Promise<mixed> {
-        if (typeof onAccess === "function") {
-            return onAccess(data, key);
         }
         return await data[key];
     }

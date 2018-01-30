@@ -11,7 +11,7 @@ class ModelsAttribute extends Attribute {
     constructor(name: string, attributesContainer: AttributesContainer, model: Class<Model>) {
         super(name, attributesContainer);
 
-        this.value.setCurrent([]);
+        this.value.current = [];
         this.modelClass = model;
     }
 

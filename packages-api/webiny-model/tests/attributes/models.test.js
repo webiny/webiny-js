@@ -193,11 +193,19 @@ describe("attribute models test", function() {
         assert.equal(await newModel.get("attribute1.2.name"), "Lina");
     });
 
-    it("getJSONValue method must return value - we don't do any processing toJSON on it", async () => {
+    it("getJSONValue must return an empty array if nothing was set", async () => {
         const newModel = new Model(function() {
             this.attr("attribute1").models(Model1);
         });
 
         assert.deepEqual(await newModel.getAttribute("attribute1").getJSONValue(), []);
+    });
+
+    it("getStorageValue method must return empty array if nothing is set", async () => {
+        const newModel = new Model(function() {
+            this.attr("attribute1").models(Model1);
+        });
+
+        assert.deepEqual(await newModel.getAttribute("attribute1").getStorageValue(), []);
     });
 });
