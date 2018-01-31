@@ -248,14 +248,52 @@ describe("attribute model test", function() {
         assert.equal(await user.get("company.image.size.width"), 12.5);
     });
 
+    it("should return empty JSON when getJSONValue is called", async () => {
+        const user = new User();
+        user.populate({
+            company: {
+                name: "Webiny LTD",
+                city: "London",
+                image: {
+                    file: "webiny.jpg",
+                    size: { width: 12.5, height: 44 },
+                    visible: false
+                }
+            }
+        });
+
+        assert.deepEqual(await user.getAttribute("company").getJSONValue(), {});
+    });
+
+    it("toStorage / toJSON should just return current value if not an instance of Model", async () => {
+        const user = new User();
+        user.populate({ company: 123 });
+
+        assert.equal(await user.getAttribute("company").getJSONValue(), 123);
+        assert.equal(await user.getAttribute("company").getStorageValue(), 123);
+    });
+
     it("getJSONValue method must return value - we don't do any processing toJSON on it", async () => {
         const user = new User();
-        assert.isNull(await user.getAttribute("company").getJSONValue(), null);
+        user.company = null;
+        assert.isObject(await user.getAttribute("company").getJSONValue());
     });
 
     it("getStorageValue method must return null", async () => {
         const user = new User();
-        assert.isNull(await user.getAttribute("company").getStorageValue(), null);
+        user.company = null;
+        assert.deepEqual(await user.getAttribute("company").getStorageValue(), {
+            name: null,
+            city: null,
+            image: {
+                file: null,
+                size: {
+                    height: null,
+                    width: null
+                },
+                visible: false
+            }
+        });
     });
 
     it("getStorageValue must iterate through all attributes and return its storage values", async () => {

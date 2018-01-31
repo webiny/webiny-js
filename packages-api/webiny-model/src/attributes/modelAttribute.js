@@ -1,6 +1,7 @@
 // @flow
 import Attribute from "./../attribute";
 import Model from "./../model";
+import _ from "lodash";
 import { AttributesContainer } from "../index";
 
 class ModelAttribute extends Attribute {
@@ -27,34 +28,30 @@ class ModelAttribute extends Attribute {
         let newValue = null;
         if (value instanceof Model) {
             newValue = value;
-        } else {
+        } else if (_.isObject(value)) {
             newValue = new this.modelClass();
             newValue.populate(value);
+        } else {
+            newValue = value;
         }
 
         this.value.setCurrent(newValue);
     }
 
     async getJSONValue(): Promise<mixed> {
-        if (this.isEmpty()) {
-            return null;
+        const value = this.getValue();
+        if (value instanceof Model) {
+            return {};
         }
-
-        const model = this.getValue();
-        if (model instanceof Model) {
-            return await model.toJSON();
-        }
+        return value;
     }
 
     async getStorageValue(): Promise<mixed> {
-        if (this.isEmpty()) {
-            return null;
+        const value = this.getValue();
+        if (value instanceof Model) {
+            return await value.toStorage();
         }
-
-        const model = this.getValue();
-        if (model instanceof Model) {
-            return await model.toStorage();
-        }
+        return value;
     }
 
     /**

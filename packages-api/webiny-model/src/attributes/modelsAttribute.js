@@ -10,7 +10,6 @@ class ModelsAttribute extends Attribute {
 
     constructor(name: string, attributesContainer: AttributesContainer, model: Class<Model>) {
         super(name, attributesContainer);
-
         this.value.current = [];
         this.modelClass = model;
     }
@@ -43,6 +42,34 @@ class ModelsAttribute extends Attribute {
             }
         }
         this.value.setCurrent(newValues);
+    }
+
+    getValue(): Array<Model> | null {
+        return (super.getValue(): any);
+    }
+
+    async getJSONValue(): Promise<Array<Object>> {
+        const value = this.getValue();
+        if (value instanceof Array) {
+            const json = [];
+            for (let i = 0; i < value.length; i++) {
+                json.push({});
+            }
+            return json;
+        }
+        return [];
+    }
+
+    async getStorageValue(): Promise<Array<Object>> {
+        const value = this.getValue();
+        if (value instanceof Array) {
+            const data = [];
+            for (let i = 0; i < value.length; i++) {
+                data.push(await value[i].toStorage());
+            }
+            return data;
+        }
+        return [];
     }
 
     /**
@@ -93,42 +120,6 @@ class ModelsAttribute extends Attribute {
                 items: errors
             });
         }
-    }
-
-    getValue(): Array<Model> | null {
-        return (super.getValue(): any);
-    }
-
-    async getJSONValue(): Promise<Array<Object>> {
-        if (this.isEmpty()) {
-            return [];
-        }
-
-        const json = [];
-        const value = this.getValue();
-        if (value instanceof Array) {
-            for (let i = 0; i < value.length; i++) {
-                json.push(await value[i].toJSON());
-            }
-        }
-
-        return json;
-    }
-
-    async getStorageValue(): Promise<Array<Object>> {
-        if (this.isEmpty()) {
-            return [];
-        }
-
-        const json = [];
-        const value = this.getValue();
-        if (value instanceof Array) {
-            for (let i = 0; i < value.length; i++) {
-                json.push(await value[i].toStorage());
-            }
-        }
-
-        return json;
     }
 }
 

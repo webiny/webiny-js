@@ -257,6 +257,15 @@ describe("attribute models test", function() {
         assert.deepEqual(await newModel.getAttribute("attribute1").getStorageValue(), []);
     });
 
+    it("getStorageValue method must return initially set value if it's not an array", async () => {
+        const newModel = new Model(function() {
+            this.attr("attribute1").models(Model1);
+        });
+
+        newModel.attribute1 = null;
+        assert.deepEqual(await newModel.getAttribute("attribute1").getStorageValue(), []);
+    });
+
     it("getStorageValue must iterate through all models and all of its attributes and return its storage values", async () => {
         const storageModel = new Model(function() {
             this.attr("attribute1").models(Model1);

@@ -377,7 +377,7 @@ class EntitiesAttribute extends Attribute {
         const json = [];
         if (value instanceof Array) {
             for (let i = 0; i < value.length; i++) {
-                json.push(await value[i].toJSON());
+                json.push({ id: value[i].id });
             }
         }
 

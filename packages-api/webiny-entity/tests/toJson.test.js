@@ -70,8 +70,8 @@ describe("toJSON test", function() {
 
         data = await mainEntity.toJSON("attribute1,attribute2");
         assert.deepEqual(data, {
-            attribute1: [{}, {}],
-            attribute2: [{}]
+            attribute1: [{ id: "AA" }, { id: 12 }],
+            attribute2: [{ id: 13 }]
         });
 
         data = await mainEntity.toJSON(
