@@ -174,6 +174,53 @@ describe("attribute models test", function() {
         throw Error("Error should've been thrown.");
     });
 
+    it("validation must be execute on both attribute and model level", async () => {
+        const newModel = new Model(function() {
+            this.attr("attribute1")
+                .models(Model1)
+                .setValidators("required,minLength:2");
+        });
+
+        let error = null;
+        try {
+            await newModel.validate();
+        } catch (e) {
+            error = e;
+        }
+
+        assert.instanceOf(error, ModelError);
+        assert.deepEqual(error.data, {
+            invalidAttributes: {
+                attribute1: {
+                    type: "invalidAttribute",
+                    data: {
+                        message: "Value is required.",
+                        value: [],
+                        validator: "required"
+                    },
+                    message: "Invalid attribute."
+                }
+            }
+        });
+
+        error = null;
+        try {
+            newModel.attribute1 = [{ name: "Enlai", type: "dog" }];
+            await newModel.validate();
+        } catch (e) {
+            error = e;
+        }
+
+        assert.instanceOf(error, ModelError);
+        assert.equal(error.data.invalidAttributes.attribute1.type, "invalidAttribute");
+        assert.equal(error.data.invalidAttributes.attribute1.data.validator, "minLength");
+        assert.lengthOf(error.data.invalidAttributes.attribute1.data.value, 1);
+        assert.instanceOf(error.data.invalidAttributes.attribute1.data.value[0], Model);
+
+        newModel.attribute1 = [{ name: "Enlai", type: "dog" }, { name: "Enlai", type: "dog" }];
+        await newModel.validate();
+    });
+
     it("should not set value if setOnce is enabled", async () => {
         const newModel = new Model(function() {
             this.attr("attribute1").models(Model1);

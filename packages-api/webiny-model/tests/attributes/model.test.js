@@ -126,6 +126,80 @@ describe("attribute model test", function() {
         });
     });
 
+    it("validation must be execute on both attribute and model level", async () => {
+        const user = new User();
+
+        let error = null;
+        try {
+            user.populate({
+                firstName: "John",
+                lastName: "Doe"
+            });
+            await user.validate();
+        } catch (e) {
+            error = e;
+        }
+
+        assert.instanceOf(error, ModelError);
+        assert.deepEqual(error.data, {
+            invalidAttributes: {
+                company: {
+                    type: "invalidAttribute",
+                    data: {
+                        message: "Value is required.",
+                        value: null,
+                        validator: "required"
+                    },
+                    message: "Invalid attribute."
+                }
+            }
+        });
+
+        error = null;
+        try {
+            user.populate({
+                firstName: "John",
+                lastName: "Doe",
+                company: {}
+            });
+            await user.validate();
+        } catch (e) {
+            error = e;
+        }
+
+        assert.instanceOf(error, ModelError);
+        assert.deepEqual(error.data, {
+            invalidAttributes: {
+                company: {
+                    type: "invalidAttributes",
+                    data: {
+                        invalidAttributes: {
+                            name: {
+                                type: "invalidAttribute",
+                                data: {
+                                    message: "Value is required.",
+                                    value: null,
+                                    validator: "required"
+                                },
+                                message: "Invalid attribute."
+                            },
+                            image: {
+                                type: "invalidAttribute",
+                                data: {
+                                    message: "Value is required.",
+                                    value: null,
+                                    validator: "required"
+                                },
+                                message: "Invalid attribute."
+                            }
+                        }
+                    },
+                    message: "Validation failed."
+                }
+            }
+        });
+    });
+
     it("getting values out of model test", () => {
         const user = new User();
         user.populate({

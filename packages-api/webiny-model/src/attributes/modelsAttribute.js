@@ -45,17 +45,25 @@ class ModelsAttribute extends Attribute {
         this.value.setCurrent(newValues);
     }
 
-    async validate(): Promise<void> {
-        if (!this.isSet()) {
+    /**
+     * If value is assigned (checked in the parent validate call), it must by an instance of Model.
+     */
+    validateType() {
+        const value = this.value.getCurrent();
+        if (value instanceof Array) {
             return;
         }
+        this.expected("array", typeof value);
+    }
 
-        const attrValue = this.value.getCurrent();
-        if (!(attrValue instanceof Array)) {
-            this.expected("array", typeof this.value.getCurrent());
-        }
+    async validate(): Promise<void> {
+        // This validates on the attribute level.
+        await Attribute.prototype.validate.call(this);
+
+        // This validates on all of the model's levels.
 
         const errors = [];
+        const attrValue = this.value.getCurrent();
         const currentValue = ((attrValue: any): Array<Model>);
 
         for (let i = 0; i < currentValue.length; i++) {

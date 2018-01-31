@@ -178,9 +178,7 @@ class Attribute implements IAttribute {
                     validator: e.validator
                 });
             }
-        }
-
-        if (typeof validators === "function") {
+        } else if (typeof validators === "function") {
             return validators(this.value.getCurrent(), this);
         }
     }
