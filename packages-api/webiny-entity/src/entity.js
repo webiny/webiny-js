@@ -14,12 +14,22 @@ class Entity {
     static classId: ?string;
     static driver: Driver;
     static pool: EntityPool;
+    static crud: {
+        logs?: boolean,
+        delete?: {
+            soft?: boolean
+        }
+    };
     static listeners: {};
 
     model: EntityModel;
     listeners: {};
     existing: boolean;
     processing: ?string;
+    createdOn: ?Date;
+    updatedOn: ?Date;
+    savedOn: ?Date;
+    deleted: ?boolean;
 
     constructor(): Entity {
         const proxy = new Proxy((this: Object), {
@@ -62,6 +72,26 @@ class Entity {
 
         if (!this.getAttribute("id")) {
             this.attr("id").char();
+        }
+
+        if (_.get(this, "constructor.crud.logs")) {
+            this.attr("savedOn").date();
+            this.attr("createdOn").date();
+            this.attr("updatedOn").date();
+        }
+
+        if (_.get(this, "constructor.crud.delete.soft")) {
+            this.attr("deleted")
+                .boolean()
+                .setDefaultValue(false);
+            this.on("query", ({ params }) => {
+                if (!_.get(params, "includeDeleted")) {
+                    _.set(params, "query.deleted", false);
+                }
+            });
+            this.on("beforeDelete", () => {
+                this.deleted = true;
+            });
         }
 
         this.on("delete", () => {
@@ -239,8 +269,9 @@ class Entity {
         }
 
         this.processing = "save";
-
         const existing = this.isExisting();
+        const logs = _.get(this, "constructor.crud.logs");
+
         try {
             const events = params.events || {};
             events.save !== false && (await this.emit("save"));
@@ -248,9 +279,18 @@ class Entity {
             params.validation !== false && (await this.validate());
 
             events.beforeSave !== false && (await this.emit("beforeSave"));
+
             if (existing) {
+                if (logs) {
+                    this.savedOn = new Date();
+                    this.updatedOn = new Date();
+                }
                 events.beforeUpdate !== false && (await this.emit("beforeUpdate"));
             } else {
+                if (logs) {
+                    this.savedOn = new Date();
+                    this.createdOn = new Date();
+                }
                 events.beforeCreate !== false && (await this.emit("beforeCreate"));
             }
 
@@ -283,6 +323,8 @@ class Entity {
             return;
         }
 
+        const soft = _.get(this, "constructor.crud.delete.soft");
+
         try {
             const events = params.events || {};
             events.delete !== false && (await this.emit("delete"));
@@ -290,7 +332,12 @@ class Entity {
             params.validation !== false && (await this.validate());
 
             events.beforeDelete !== false && (await this.emit("beforeDelete"));
-            await this.getDriver().delete(this, params);
+
+            if (soft) {
+                await this.getDriver().save(this, params);
+            } else {
+                await this.getDriver().delete(this, params);
+            }
             events.afterDelete !== false && (await this.emit("afterDelete"));
 
             this.getEntityPool().remove(this);
@@ -504,5 +551,11 @@ class Entity {
 Entity.classId = null;
 Entity.driver = new Driver();
 Entity.pool = new EntityPool();
+Entity.crud = {
+    logs: false,
+    delete: {
+        soft: false
+    }
+};
 
 export default Entity;

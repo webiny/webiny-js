@@ -4,11 +4,13 @@ declare type EntityFindParams = {
     query?: Object,
     page?: number,
     perPage?: number,
-    order?: Array<OrderTuple>
+    order?: Array<OrderTuple>,
+    includeDeleted?: boolean
 };
 
 declare type EntityFindOneParams = {
-    query?: Object
+    query?: Object,
+    includeDeleted?: boolean
 };
 
 declare type EntitySaveParams = {
