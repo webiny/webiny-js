@@ -21,7 +21,9 @@ class Image extends Model {
         this.attr("size")
             .model(Size)
             .setValidators("required");
-        this.attr("visible").boolean();
+        this.attr("visible")
+            .boolean()
+            .setDefaultValue(false);
     }
 }
 

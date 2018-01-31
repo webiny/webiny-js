@@ -51,6 +51,7 @@ describe("validation test", function() {
                 required1: "something",
                 required2: "something"
             });
+            await model.validate();
         } catch (e) {
             error = e;
         }
@@ -58,5 +59,56 @@ describe("validation test", function() {
         assert.isNull(error);
     });
 
-    // TODO: in ne radi!!!!!!!! mozda je u validationu greska ?!
+    it("should throw error because of 'in' validator", async () => {
+        const model = new ValidationTestModel();
+
+        let error = null;
+        try {
+            await model.populate({ type: "cat" });
+            await model.validate();
+        } catch (e) {
+            error = e;
+        }
+
+        assert.deepEqual(error.data, {
+            invalidAttributes: {
+                email: {
+                    type: "invalidAttribute",
+                    data: {
+                        message: "Value is required.",
+                        value: null,
+                        validator: "required"
+                    },
+                    message: "Invalid attribute."
+                },
+                required1: {
+                    type: "invalidAttribute",
+                    data: {
+                        message: "Value is required.",
+                        value: null,
+                        validator: "required"
+                    },
+                    message: "Invalid attribute."
+                },
+                required2: {
+                    type: "invalidAttribute",
+                    data: {
+                        message: "Value is required.",
+                        value: null,
+                        validator: "required"
+                    },
+                    message: "Invalid attribute."
+                },
+                type: {
+                    type: "invalidAttribute",
+                    data: {
+                        message: "Value must be one of the following: bird, dog, parrot.",
+                        value: "cat",
+                        validator: "in"
+                    },
+                    message: "Invalid attribute."
+                }
+            }
+        });
+    });
 });

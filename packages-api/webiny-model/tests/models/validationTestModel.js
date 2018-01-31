@@ -13,6 +13,9 @@ class ValidationTestModel extends Model {
         this.attr("required2")
             .char()
             .setValidators("required");
+        this.attr("type")
+            .char()
+            .setValidators("in:bird:dog:parrot");
     }
 }
 

@@ -183,4 +183,41 @@ describe("attribute model test", function() {
         const user = new User();
         assert.isNull(await user.getAttribute("company").getStorageValue(), null);
     });
+
+    it("getStorageValue must iterate through all attributes and return its storage values", async () => {
+        const user = new User();
+
+        user.populate({
+            firstName: "John",
+            lastName: "Doe",
+            company: {
+                name: "Webiny LTD",
+                city: "London",
+                image: {
+                    file: "webiny.jpg",
+                    size: { width: 12.5 }
+                }
+            }
+        });
+
+        const data = await user.toStorage();
+
+        assert.deepEqual(data, {
+            firstName: "John",
+            lastName: "Doe",
+            age: null,
+            company: {
+                name: "Webiny LTD",
+                city: "London",
+                image: {
+                    file: "webiny.jpg",
+                    size: {
+                        height: null,
+                        width: 12.5
+                    },
+                    visible: false
+                }
+            }
+        });
+    });
 });

@@ -1,6 +1,7 @@
 import { assert } from "chai";
 import Model from "./../../src/model";
 import ModelError from "./../../src/modelError";
+import { User } from "../models/userModels";
 
 describe("attribute models test", function() {
     class Model1 extends Model {
@@ -207,5 +208,55 @@ describe("attribute models test", function() {
         });
 
         assert.deepEqual(await newModel.getAttribute("attribute1").getStorageValue(), []);
+    });
+
+    it("getStorageValue must iterate through all models and all of its attributes and return its storage values", async () => {
+        const storageModel = new Model(function() {
+            this.attr("attribute1").models(Model1);
+            this.attr("attribute2").models(Model2);
+        });
+        storageModel.attribute1 = [
+            { name: "Enlai", type: "dog" },
+            { name: "Rocky", type: "dog" },
+            { name: "Lina", type: "parrot" }
+        ];
+        storageModel.attribute2 = [
+            { firstName: "John", lastName: "Doe" },
+            { firstName: "Jane", lastName: "Doe" }
+        ];
+
+        const data = await storageModel.toStorage();
+
+        assert.deepEqual(data, {
+            attribute1: [
+                {
+                    name: "Enlai",
+                    number: null,
+                    type: "dog"
+                },
+                {
+                    name: "Rocky",
+                    number: null,
+                    type: "dog"
+                },
+                {
+                    name: "Lina",
+                    number: null,
+                    type: "parrot"
+                }
+            ],
+            attribute2: [
+                {
+                    firstName: "John",
+                    lastName: "Doe",
+                    enabled: null
+                },
+                {
+                    firstName: "Jane",
+                    lastName: "Doe",
+                    enabled: null
+                }
+            ]
+        });
     });
 });
