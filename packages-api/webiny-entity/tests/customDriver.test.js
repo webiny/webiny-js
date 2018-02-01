@@ -47,10 +47,6 @@ class CustomDriver extends Driver {
         return new QueryResult(results.getResult().length);
     }
 
-    async findById(entity, id, params) {
-        return new QueryResult(_.find(this.data[entity.classId], { id }));
-    }
-
     async findOne(entity, params) {
         return new QueryResult(_.find(this.data[entity.classId], params.query));
     }

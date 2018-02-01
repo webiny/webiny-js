@@ -54,17 +54,6 @@ class MemoryDriver extends Driver {
         return new QueryResult(results.getResult().length);
     }
 
-    // eslint-disable-next-line
-    async findById(entity: Entity, id: mixed, params: {}): Promise<QueryResult> {
-        return new QueryResult(_.find(this.data[entity.classId], { id }));
-    }
-
-    async findByIds(entity: Entity, ids: Array<mixed>, params: {}): Promise<QueryResult> {
-        const cloned = _.cloneDeep(params);
-        cloned.query = { id: ids };
-        return this.find(entity, cloned);
-    }
-
     async findOne(entity: Entity, params: EntityFindOneParams & {}): Promise<QueryResult> {
         return new QueryResult(_.find(this.data[entity.classId], params.query));
     }

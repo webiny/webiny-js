@@ -6,13 +6,14 @@ const sandbox = sinon.sandbox.create();
 
 describe("entity attribute current / initial values syncing", function() {
     afterEach(() => sandbox.restore());
+    beforeEach(() => MainEntity.getEntityPool().flush());
 
     it("should delete previous initial values since auto save and auto delete are both enabled", async () => {
         let entityDelete = sandbox
             .stub(MainEntity.getDriver(), "delete")
             .callsFake(() => new QueryResult());
         let entityFindById = sandbox
-            .stub(MainEntity.getDriver(), "findById")
+            .stub(MainEntity.getDriver(), "findOne")
             .callsFake(() => new QueryResult({ id: "A" }));
         let entityFind = sandbox.stub(Entity1.getDriver(), "find").callsFake(() => {
             return new QueryResult([

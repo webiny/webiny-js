@@ -195,7 +195,7 @@ describe("entity attribute test", function() {
 
     it("should lazy load any of the accessed linked entities", async () => {
         let findById = sandbox
-            .stub(One.getDriver(), "findById")
+            .stub(One.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({ id: "one", name: "One", two: "two" });
@@ -270,7 +270,7 @@ describe("entity attribute test", function() {
 
     it("should set internal loaded flag to true when called for the first time, and no findById calls should be made", async () => {
         let findById = sandbox
-            .stub(One.getDriver(), "findById")
+            .stub(One.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({ id: "one", name: "One" });
@@ -282,7 +282,7 @@ describe("entity attribute test", function() {
         assert.equal(one.getAttribute("two").value.getCurrent(), null);
         assert.deepEqual(one.getAttribute("two").value.status, { loaded: false, loading: false });
 
-        findById = sandbox.spy(One.getDriver(), "findById");
+        findById = sandbox.spy(One.getDriver(), "findOne");
         one.two;
         one.two;
         await one.two;
@@ -305,7 +305,7 @@ describe("entity attribute test", function() {
         const mainEntity = new One();
         const entitySave = sandbox.spy(UsersGroups.getDriver(), "save");
         const entityFind = sandbox.spy(UsersGroups.getDriver(), "find");
-        const entityFindById = sandbox.spy(UsersGroups.getDriver(), "findById");
+        const entityFindById = sandbox.spy(UsersGroups.getDriver(), "findOne");
 
         await mainEntity.two;
 

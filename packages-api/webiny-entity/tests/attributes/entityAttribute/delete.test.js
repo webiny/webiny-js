@@ -96,7 +96,7 @@ describe("entity delete test", function() {
 
     it("should properly delete linked entity even though they are not loaded (auto delete enabled)", async () => {
         let findById = sandbox
-            .stub(One.getDriver(), "findById")
+            .stub(One.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({ id: "one", name: "One", two: "two" });
@@ -146,7 +146,7 @@ describe("entity delete test", function() {
 
     it("should not delete linked entities if main entity is deleted and auto delete is not enabled", async () => {
         const entityFindById = sandbox
-            .stub(ClassA.getDriver(), "findById")
+            .stub(ClassA.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({ id: "classA", name: "ClassA" });

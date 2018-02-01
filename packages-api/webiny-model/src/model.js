@@ -156,18 +156,7 @@ class Model implements IModel {
         }
     }
 
-    async toJSON(fields: ?string): Promise<Object> {
-        if (!fields) {
-            const output = {};
-            for (let name in this.getAttributes()) {
-                const attribute = this.getAttribute(name);
-                if (attribute && attribute.getToJSON()) {
-                    output[name] = await attribute.getJSONValue();
-                }
-            }
-            return output;
-        }
-
+    async toJSON(fields: string): Promise<Object> {
         return await extractor.get(this, fields, {
             onRead: async (data, key) => {
                 if (data instanceof Model) {

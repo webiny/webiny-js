@@ -42,7 +42,7 @@ describe("toJSON test", function() {
 
     it("should not return whole entities, just attributes", async () => {
         const entityFind = sandbox
-            .stub(MainEntity.getDriver(), "findById")
+            .stub(MainEntity.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({ id: 10 });

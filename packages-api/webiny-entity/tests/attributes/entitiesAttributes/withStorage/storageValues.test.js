@@ -64,7 +64,7 @@ describe("attribute entities test", function() {
         ];
 
         sandbox
-            .stub(entity.getDriver(), "findById")
+            .stub(entity.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({ id: 10, name: "Bucky", type: "dog" });
@@ -94,7 +94,7 @@ describe("attribute entities test", function() {
         assert.equal(attribute2Value[0], "X");
         assert.equal(attribute2Value[1], "Y");
 
-        entity.getDriver().findById.restore();
+        entity.getDriver().findOne.restore();
 
         mainEntity.attribute1 = null;
         const attribute1NullValue = await mainEntity.getAttribute("attribute1").getStorageValue();
@@ -116,7 +116,7 @@ describe("attribute entities test", function() {
         assert.equal(mainEntity.getAttribute("attribute2").value.getCurrent()[0], "C");
 
         sandbox
-            .stub(entity.getDriver(), "findByIds")
+            .stub(entity.getDriver(), "find")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult([
@@ -134,7 +134,7 @@ describe("attribute entities test", function() {
         const attribute1 = await mainEntity.attribute1;
         const attribute2 = await mainEntity.attribute2;
 
-        entity.getDriver().findByIds.restore();
+        entity.getDriver().find.restore();
 
         assert.lengthOf(attribute1, 2);
         assert.equal(attribute1[0].id, "A");

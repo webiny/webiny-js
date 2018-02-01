@@ -132,7 +132,7 @@ describe("attribute entities test", function() {
         mainEntity.attribute2 = [{ id: "B", firstName: "John", lastName: "Doe" }];
 
         sandbox
-            .stub(entity.getDriver(), "findById")
+            .stub(entity.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return { id: 10, name: "Bucky", type: "dog" };
@@ -145,7 +145,7 @@ describe("attribute entities test", function() {
         await mainEntity.getAttribute("attribute1").validate();
         await mainEntity.getAttribute("attribute2").validate();
 
-        entity.getDriver().findById.restore();
+        entity.getDriver().findOne.restore();
 
         mainEntity.attribute1 = null;
         await mainEntity.getAttribute("attribute1").validate();
@@ -153,7 +153,7 @@ describe("attribute entities test", function() {
 
     it("should validate if attribute is being loaded", async () => {
         let findById = sandbox
-            .stub(MainEntity.getDriver(), "findById")
+            .stub(MainEntity.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({ id: "mainEntity", name: "MainEntity" });
@@ -187,7 +187,7 @@ describe("attribute entities test", function() {
 
     it("should validate on attribute level and recursively on entity level", async () => {
         let findById = sandbox
-            .stub(MainEntity.getDriver(), "findById")
+            .stub(MainEntity.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({ id: "mainEntity", name: "MainEntity" });

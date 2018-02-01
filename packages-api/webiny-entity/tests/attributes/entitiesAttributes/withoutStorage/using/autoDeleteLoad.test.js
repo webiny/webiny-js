@@ -26,7 +26,7 @@ describe("attribute entities (using an additional aggregation class) - loading t
 
     it("should load links and entities correctly", async () => {
         let entityFindById = sandbox
-            .stub(User.getDriver(), "findById")
+            .stub(User.getDriver(), "findOne")
             .callsFake(() => new QueryResult({ id: "A" }));
         const user = await User.findById(123);
         entityFindById.restore();
@@ -43,7 +43,7 @@ describe("attribute entities (using an additional aggregation class) - loading t
         });
 
         entityFindById = sandbox
-            .stub(Group.getDriver(), "findById")
+            .stub(Group.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({ id: "X", name: "Group X" });
@@ -88,7 +88,7 @@ describe("attribute entities (using an additional aggregation class) - loading t
         const user = new User();
         const entitySave = sandbox.spy(UsersGroups.getDriver(), "save");
         const entityFind = sandbox.spy(UsersGroups.getDriver(), "find");
-        const entityFindById = sandbox.spy(UsersGroups.getDriver(), "findById");
+        const entityFindById = sandbox.spy(UsersGroups.getDriver(), "findOne");
 
         await user.groups;
 

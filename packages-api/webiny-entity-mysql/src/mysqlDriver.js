@@ -156,17 +156,6 @@ class MySQLDriver extends Driver {
         return new QueryResult(results[0]);
     }
 
-    // eslint-disable-next-line
-    async findById(entity: Entity, id: mixed, options: Object): Promise<QueryResult> {
-        return this.findOne(entity, { table: this.getTableName(entity), where: { id } });
-    }
-
-    async findByIds(entity: Entity, ids: Array<mixed>, options: Object): Promise<QueryResult> {
-        const cloned = _.cloneDeep(options);
-        cloned.where = { id: ids };
-        return this.find(entity, cloned);
-    }
-
     async count(entity: Entity, options: EntityFindParams & {}): Promise<QueryResult> {
         const sql = queryBuilder.build(
             _.merge({}, options, { table: this.getTableName(entity), operation: "count" })

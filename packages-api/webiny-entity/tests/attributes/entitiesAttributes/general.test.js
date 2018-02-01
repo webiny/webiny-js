@@ -11,8 +11,7 @@ const sandbox = sinon.sandbox.create();
 
 describe("attribute entities test", function() {
     afterEach(() => sandbox.restore());
-
-    const entity = new MainEntity();
+    beforeEach(() => MainEntity.getEntityPool().flush());
 
     it("should not change attribute1 since it has setOnce applied - attribute2 should be emptied", async () => {
         const mainSetOnceEntity = new MainSetOnceEntity();
@@ -45,18 +44,15 @@ describe("attribute entities test", function() {
     });
 
     it("should lazy load any of the accessed linked entities", async () => {
-        const entityFind = sandbox
-            .stub(MainEntity.getDriver(), "findById")
-            .onCall(0)
-            .callsFake(() => {
-                return new QueryResult({ id: 10 });
-            });
+        const entityFind = sandbox.stub(MainEntity.getDriver(), "findOne").callsFake(() => {
+            return new QueryResult({ id: 10 });
+        });
 
         const mainEntity = await MainEntity.findById(123);
         entityFind.restore();
 
         const entitiesFind = sandbox
-            .stub(entity.getDriver(), "find")
+            .stub(mainEntity.getDriver(), "find")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult([
@@ -93,7 +89,7 @@ describe("attribute entities test", function() {
 
     it("should set internal loaded flag to true when called for the first time, and no findById calls should be made", async () => {
         const entityFind = sandbox
-            .stub(MainEntity.getDriver(), "findById")
+            .stub(MainEntity.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({ id: 10 });
@@ -102,7 +98,7 @@ describe("attribute entities test", function() {
         const mainEntity = await MainEntity.findById(123);
         entityFind.restore();
 
-        const entitiesFind = sandbox.spy(entity.getDriver(), "find");
+        const entitiesFind = sandbox.spy(mainEntity.getDriver(), "find");
 
         assert.instanceOf(
             mainEntity.getAttribute("attribute1").value.getCurrent(),
@@ -129,7 +125,7 @@ describe("attribute entities test", function() {
     it("on new entities, no find calls should be made", async () => {
         const mainEntity = new MainEntity();
 
-        const entitiesFind = sandbox.spy(entity.getDriver(), "find");
+        const entitiesFind = sandbox.spy(mainEntity.getDriver(), "find");
         assert.instanceOf(
             mainEntity.getAttribute("attribute1").value.getCurrent(),
             EntityCollection

@@ -47,7 +47,7 @@ describe("async get and set methods test", async function() {
 
     it("should be able to get values from nested entities", async () => {
         const findById = sandbox
-            .stub(User.getDriver(), "findById")
+            .stub(User.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({
@@ -88,7 +88,7 @@ describe("async get and set methods test", async function() {
 
     it("should be able to directly set values into nested entities", async () => {
         const findById = sandbox
-            .stub(User.getDriver(), "findById")
+            .stub(User.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({

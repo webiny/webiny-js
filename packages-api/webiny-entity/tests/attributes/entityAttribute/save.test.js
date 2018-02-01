@@ -16,12 +16,12 @@ describe("entity attribute test", function() {
         entity.getAttribute("company").setStorageValue("A");
         assert.equal(entity.getAttribute("company").value.getCurrent(), "A");
 
-        sandbox.stub(entity.getDriver(), "findById").callsFake(() => {
+        sandbox.stub(entity.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({ id: "A", name: "TestCompany" });
         });
 
         const company = await entity.company;
-        entity.getDriver().findById.restore();
+        entity.getDriver().findOne.restore();
 
         assert.instanceOf(company, Company);
         entity.company.name = "TestCompany";
@@ -34,7 +34,7 @@ describe("entity attribute test", function() {
         assert.equal(await entity.getAttribute("company").getStorageValue(), 1);
 
         const findById = sandbox
-            .stub(entity.getDriver(), "findById")
+            .stub(entity.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({ id: 1, name: "TestCompany" });
@@ -239,7 +239,7 @@ describe("entity attribute test", function() {
 
     it("should not trigger save on linked entity since it was not loaded", async () => {
         const findById = sandbox
-            .stub(One.getDriver(), "findById")
+            .stub(One.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({ id: "one", name: "One", two: "two" });
@@ -263,7 +263,7 @@ describe("entity attribute test", function() {
 
     it("should create new entity and save links correctly", async () => {
         const findById = sandbox
-            .stub(One.getDriver(), "findById")
+            .stub(One.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({ id: "one", name: "One" });
@@ -310,7 +310,7 @@ describe("entity attribute test", function() {
 
     it("should delete existing entity once new one was assigned and main entity saved", async () => {
         let entityFindById = sandbox
-            .stub(One.getDriver(), "findById")
+            .stub(One.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({ id: "one", name: "One", two: "two" });
@@ -377,7 +377,7 @@ describe("entity attribute test", function() {
         // findById method will be executed to recursively load entities and then of course delete them. At this point, we only need
         // to load entity 'three' on initial entity 'two'. After that, deletes will start, it will delete entity three and entity two.
         entityFindById = sandbox
-            .stub(One.getDriver(), "findById")
+            .stub(One.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({ id: "three", name: "Three" });

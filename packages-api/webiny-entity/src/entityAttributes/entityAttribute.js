@@ -197,6 +197,14 @@ class EntityAttribute extends Attribute {
         return this;
     }
 
+    async getJSONValue(): Promise<mixed> {
+        const value = await this.getValue();
+        if (value instanceof Entity) {
+            return { id: value.id };
+        }
+        return value;
+    }
+
     /**
      * Validates current value - if it's not a valid ID or an instance of Entity class, an error will be thrown.
      */

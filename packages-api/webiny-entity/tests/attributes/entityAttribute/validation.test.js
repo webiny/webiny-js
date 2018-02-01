@@ -109,7 +109,7 @@ describe("entity attribute test", function() {
 
     it("should validate if attribute is being loaded", async () => {
         let findById = sandbox
-            .stub(One.getDriver(), "findById")
+            .stub(One.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({ id: "one", name: "One" });
@@ -130,7 +130,7 @@ describe("entity attribute test", function() {
 
     it("should validate on attribute level and recursively on entity level", async () => {
         let findById = sandbox
-            .stub(One.getDriver(), "findById")
+            .stub(One.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({ id: "one", name: "One" });

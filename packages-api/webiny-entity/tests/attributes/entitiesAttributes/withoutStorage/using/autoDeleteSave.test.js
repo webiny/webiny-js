@@ -10,7 +10,7 @@ describe("attribute entities (using an additional aggregation class) - saving te
 
     it("should assign existing values correctly and track links that need to be deleted on consequent save method calls", async () => {
         let entityFindById = sandbox
-            .stub(User.getDriver(), "findById")
+            .stub(User.getDriver(), "findOne")
             .callsFake(() => new QueryResult({ id: "A" }));
         const user = await User.findById(123);
         entityFindById.restore();
@@ -24,7 +24,7 @@ describe("attribute entities (using an additional aggregation class) - saving te
         });
 
         sandbox
-            .stub(Group.getDriver(), "findById")
+            .stub(Group.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({ id: "X", name: "Group X" });

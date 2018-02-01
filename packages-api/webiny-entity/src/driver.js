@@ -25,19 +25,6 @@ class Driver {
         return new QueryResult();
     }
 
-    // eslint-disable-next-line
-    async findById(entity: Entity | Class<Entity>, id: mixed, params: {}): Promise<QueryResult> {
-        return new QueryResult();
-    }
-
-    async findByIds(
-        entity: Entity | Class<Entity>,
-        ids: Array<mixed>,
-        params: {} // eslint-disable-line
-    ): Promise<QueryResult> {
-        return new QueryResult();
-    }
-
     async findOne(
         entity: Entity | Class<Entity>,
         params: EntityFindOneParams & {} // eslint-disable-line

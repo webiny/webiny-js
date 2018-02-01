@@ -46,12 +46,6 @@ class Attribute implements IAttribute {
         this.toStorage = true;
 
         /**
-         * Marks whether or not this attribute must be included in results of toJSON method call, when specific fields are note set.
-         * @var bool
-         */
-        this.toJSON = false;
-
-        /**
          * If true - mass populate will skip this attribute
          * @var bool
          */
@@ -246,15 +240,6 @@ class Attribute implements IAttribute {
     onGet(callback: AttributeValueCallback) {
         this.onGetCallback = callback;
         return this;
-    }
-
-    setToJSON(flag: boolean): this {
-        this.toJSON = flag;
-        return this;
-    }
-
-    getToJSON(): boolean {
-        return this.toJSON;
     }
 
     async getJSONValue(): Promise<mixed> {

@@ -3,16 +3,18 @@ import { assert } from "chai";
 import { QueryResult } from "../../../src/index";
 import { One, Two } from "../../entities/oneTwoThree";
 import sinon from "sinon";
+import { MainEntity } from "../../entities/entitiesAttributeEntities";
 
 const sandbox = sinon.sandbox.create();
 
 describe("entity attribute current / initial values syncing", function() {
     afterEach(() => sandbox.restore());
+    beforeEach(() => MainEntity.getEntityPool().flush());
 
     it("should correctly sync current and initial values", async () => {
         let entityDelete = sandbox.spy(One.getDriver(), "delete");
         let entityFindById = sandbox
-            .stub(One.getDriver(), "findById")
+            .stub(One.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({ id: "one", name: "One", two: "two" });
@@ -55,14 +57,13 @@ describe("entity attribute current / initial values syncing", function() {
 
     it("should correctly sync initial and current value when null is present", async () => {
         let entityDelete = sandbox.spy(One.getDriver(), "delete");
-        let entityFindById = sandbox
-            .stub(One.getDriver(), "findById")
-            .onCall(0)
-            .callsFake(() => {
-                return new QueryResult({ id: "one", name: "One", two: null });
-            });
+        let entityFindById = sandbox.stub(One.getDriver(), "findOne").callsFake(() => {
+            return new QueryResult({ id: "one", name: "One", two: null });
+        });
 
         const one = await One.findById("a");
+        entityFindById.restore();
+
         assert.equal(await one.getAttribute("two").getStorageValue(), null);
         assert.equal(one.getAttribute("two").value.getCurrent(), null);
         assert.equal(one.getAttribute("two").value.getInitial(), null);

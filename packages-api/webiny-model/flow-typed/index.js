@@ -60,8 +60,6 @@ declare interface IAttribute {
 
     getJSONValue(): Promise<mixed>;
 
-    getToJSON(): boolean;
-
     setToStorage(flag: boolean): IAttribute;
 
     getToStorage(): boolean;

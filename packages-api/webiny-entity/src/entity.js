@@ -68,12 +68,6 @@ class Entity {
         this.existing = false;
         this.processing = null;
 
-        this.getDriver().onEntityConstruct(proxy);
-
-        if (!this.getAttribute("id")) {
-            this.attr("id").char();
-        }
-
         if (_.get(this, "constructor.crud.logs")) {
             this.attr("savedOn").date();
             this.attr("createdOn").date();
@@ -84,14 +78,8 @@ class Entity {
             this.attr("deleted")
                 .boolean()
                 .setDefaultValue(false);
-            this.on("query", ({ params }) => {
-                if (!_.get(params, "includeDeleted")) {
-                    _.set(params, "query.deleted", false);
-                }
-            });
-            this.on("beforeDelete", () => {
-                this.deleted = true;
-            });
+
+            this.on("beforeDelete", () => (proxy.deleted = true));
         }
 
         this.on("delete", () => {
@@ -102,6 +90,12 @@ class Entity {
                 );
             }
         });
+
+        this.getDriver().onEntityConstruct(proxy);
+
+        if (!this.getAttribute("id")) {
+            this.attr("id").char();
+        }
 
         return proxy;
     }
@@ -354,8 +348,6 @@ class Entity {
      * @param params
      */
     static async findById(id: mixed, params: Object = {}): Promise<null | Entity> {
-        const paramsClone = _.cloneDeep(params);
-        await this.emit("query", { type: "findById", id, params: paramsClone });
         if (!id) {
             return null;
         }
@@ -365,14 +357,8 @@ class Entity {
             return pooled;
         }
 
-        const queryResult = await this.getDriver().findById(this, id, paramsClone);
-        const result = queryResult.getResult();
-        if (result && _.isObject(result)) {
-            const entity = new this().setExisting().populateFromStorage(((result: any): Object));
-            this.getEntityPool().add(entity);
-            return entity;
-        }
-        return null;
+        const newParams = _.merge(_.cloneDeep(params), { query: { id } });
+        return await this.findOne(newParams);
     }
 
     /**
@@ -381,50 +367,18 @@ class Entity {
      * @param params
      */
     static async findByIds(ids: Array<mixed>, params: Object = {}): Promise<EntityCollection> {
-        const paramsClone = _.cloneDeep(params);
-        await this.emit("query", { type: "findByIds", params: paramsClone });
-
-        const entityCollection = new EntityCollection().setParams(paramsClone);
-
-        const nonPooledIds = [];
-        for (let i = 0; i < ids.length; i++) {
-            const pooled = this.getEntityPool().get(this, ids[i]);
-            pooled ? entityCollection.push(pooled) : nonPooledIds.push(ids[i]);
-        }
-
-        // If all pooled, just return the results.
-        if (ids.length === entityCollection.length) {
-            return entityCollection;
-        }
-
-        const queryResult: QueryResult = await this.getDriver().findByIds(
-            this,
-            nonPooledIds,
-            paramsClone
-        );
-
-        // These results are not pooled so we can immediately add each received result into the pool.
-        const result: Array<Object> = (queryResult.getResult(): any);
-        if (result instanceof Array) {
-            for (let i = 0; i < result.length; i++) {
-                const entity = new this().setExisting().populateFromStorage(result[i]);
-                this.getEntityPool().add(entity);
-                entityCollection.push(entity);
-            }
-        }
-
-        return entityCollection;
+        return await this.find(_.merge(_.cloneDeep(params), { query: { id: ids } }));
     }
 
     /**
      * Finds one entity matched by given query parameters.
      * @param params
      */
-    static async findOne(params: Object = {}): Promise<null | Entity> {
-        const paramsClone = _.cloneDeep(params);
-        await this.emit("query", { type: "findOne", params: paramsClone });
+    static async findOne(params: EntityFindParams & Object = {}): Promise<null | Entity> {
+        const prepared = this.__prepareParams(params);
+        await this.emit("query", prepared);
 
-        const queryResult = await this.getDriver().findOne(this, paramsClone);
+        const queryResult = await this.getDriver().findOne(this, prepared);
         const result = queryResult.getResult();
         if (_.isObject(result)) {
             const pooled = this.getEntityPool().get(this, result.id);
@@ -444,12 +398,12 @@ class Entity {
      * @param params
      */
     static async find(params: EntityFindParams & Object = {}): Promise<EntityCollection> {
-        const paramsClone = _.cloneDeep(params);
-        await this.emit("query", { type: "find", params: paramsClone });
+        const prepared = this.__prepareParams(params);
+        await this.emit("query", prepared);
 
-        const queryResult: QueryResult = await this.getDriver().find(this, paramsClone);
+        const queryResult: QueryResult = await this.getDriver().find(this, prepared);
         const entityCollection = new EntityCollection()
-            .setParams(paramsClone)
+            .setParams(prepared)
             .setMeta(queryResult.getMeta());
         const result: Array<Object> = (queryResult.getResult(): any);
         if (result instanceof Array) {
@@ -473,10 +427,10 @@ class Entity {
      * @param params
      */
     static async count(params: EntityFindParams & Object = {}): Promise<number> {
-        const paramsClone = _.cloneDeep(params);
-        await this.emit("query", { type: "count", params: paramsClone });
+        const prepared = this.__prepareParams(params);
+        await this.emit("query", prepared);
 
-        const queryResult: QueryResult = await this.getDriver().count(this, paramsClone);
+        const queryResult: QueryResult = await this.getDriver().count(this, prepared);
         return ((queryResult.getResult(): any): number);
     }
 
@@ -545,6 +499,21 @@ class Entity {
                 await this.listeners[name][i].execute({ ...data, entity: this });
             }
         }
+    }
+
+    /**
+     * Creates a clone of given params first.
+     * If soft delete functionality is enabled, this will append "deleted = false" filter, meaning only non-deleted
+     * entities can be taken into consideration. If "deleted" flag was already set from the outside, it won't take any action.
+     * @param params
+     * @private
+     */
+    static __prepareParams(params: Object) {
+        const clone = _.cloneDeep(params);
+        if (_.get(this, "crud.delete.soft") === true) {
+            _.set(clone, "query.deleted", _.get(clone, "query.deleted", false));
+        }
+        return clone;
     }
 }
 

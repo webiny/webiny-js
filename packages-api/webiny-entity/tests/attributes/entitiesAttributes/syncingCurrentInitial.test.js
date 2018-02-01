@@ -11,7 +11,7 @@ describe("save and delete entities attribute test", () => {
     it("should replace entities if direct assign was made or correctly update the list otherwise", async () => {
         let entityDelete = sandbox.spy(MainEntity.getDriver(), "delete");
         let entityFindById = sandbox
-            .stub(MainEntity.getDriver(), "findById")
+            .stub(MainEntity.getDriver(), "findOne")
             .callsFake(() => new QueryResult({ id: "A" }));
         let entityFind = sandbox.stub(Entity1.getDriver(), "find").callsFake(() => {
             return new QueryResult([

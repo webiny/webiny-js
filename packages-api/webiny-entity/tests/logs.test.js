@@ -1,13 +1,9 @@
 import { EntityWithLogs, EntityWithoutLogs } from "./entities/entityWithLogs";
 import { DateAttribute } from "webiny-model";
 import { expect } from "chai";
-import sinon from "sinon";
-
-const sandbox = sinon.sandbox.create();
 
 describe("entity with logs enabled test", function() {
     beforeEach(() => EntityWithLogs.getEntityPool().flush());
-    afterEach(() => sandbox.restore());
 
     it("should not have createdOn, savedOn and updatedOn if logging is not enabled", async () => {
         const entity = new EntityWithoutLogs();
