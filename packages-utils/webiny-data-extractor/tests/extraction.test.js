@@ -333,9 +333,25 @@ describe("extracting values test", () => {
             ager: undefined
         });
     });
+
     it("should work even if empty data was sent", async () => {
         const extract = await extractor.get(null);
         assert.deepEqual(extract, {});
+    });
+
+    it("should work when getting values from arrays", async () => {
+        let extract = await extractor.get(mock, "simpleList");
+        assert.deepEqual(extract, { simpleList: ["one", "two", "three", "four"] });
+
+        extract = await extractor.get(mock, "simpleCollection.id,simpleCollection.name");
+        assert.deepEqual(extract, {
+            simpleCollection: [
+                { id: 1, name: "one" },
+                { id: 2, name: "two" },
+                { id: 3, name: "three" },
+                { id: 4, name: "four" }
+            ]
+        });
     });
 
     it("__process should be able to process empty data", async () => {
