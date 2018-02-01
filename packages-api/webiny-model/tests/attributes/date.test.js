@@ -19,7 +19,7 @@ describe("attribute boolean test", function() {
         assert.isNull(model.attribute);
     });
 
-    [1000, 0, 0.5, {}, [], "some string", true, false].forEach(value => {
+    [{}, [], true, false].forEach(value => {
         it(`shouldn't accept ${typeof value}`, async () => {
             let error = null;
             try {
@@ -32,5 +32,15 @@ describe("attribute boolean test", function() {
             assert.instanceOf(error, ModelError);
             assert.equal(error.type, ModelError.INVALID_ATTRIBUTES);
         });
+    });
+
+    it("should accept Date object and string/number should be converted into Date object", () => {
+        model.attribute = 1517520575917;
+        assert.instanceOf(model.attribute, Date);
+        assert.equal(+model.attribute, 1517520575917);
+
+        model.attribute = "2018-02-01T21:29:35.917Z";
+        assert.instanceOf(model.attribute, Date);
+        assert.equal(model.attribute.toISOString(), "2018-02-01T21:29:35.917Z");
     });
 });

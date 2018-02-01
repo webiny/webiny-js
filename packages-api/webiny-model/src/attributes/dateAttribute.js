@@ -9,7 +9,11 @@ class DateAttribute extends Attribute {
     }
 
     setValue(value: Date | string | number) {
-        this.value.setCurrent(value);
+        if (_.isNumber(value) || _.isString(value)) {
+            this.value.setCurrent(new Date(value));
+        } else {
+            this.value.setCurrent(value);
+        }
     }
 }
 
