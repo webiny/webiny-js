@@ -1,18 +1,9 @@
 // @flow
 import _ from "lodash";
-
-declare type ExtractedData = {
-    output: Object,
-    processed: { characters: number }
-};
-
-declare type Options = {
-    onRead?: Function,
-    includeUndefined?: boolean
-};
+import type { ExtractionOptions, ExtractedData } from "./../flow-typed";
 
 class DataExtractor {
-    async get(data: Object, keys: string = "", options: Options = {}) {
+    async get(data: Object, keys: string = "", options: ExtractionOptions = {}) {
         // First we remove all breaks from the string.
         keys = keys.replace(/\s/g, "").trim();
 
@@ -20,7 +11,7 @@ class DataExtractor {
         return this.__process({ data, keys }, options).then(({ output }) => output);
     }
 
-    async __process(params: Object, options: Options = {}): Promise<ExtractedData> {
+    async __process(params: Object, options: ExtractionOptions = {}): Promise<ExtractedData> {
         const { data, keys = "", output = {}, initialPath = [] } = params;
         let key: string = "",
             characters: number = 0,
@@ -82,7 +73,7 @@ class DataExtractor {
         };
     }
 
-    async __modifyOutput(params: Object = {}, options: Options = {}): Promise<void> {
+    async __modifyOutput(params: Object = {}, options: ExtractionOptions = {}): Promise<void> {
         const { output, data = {}, key = "", path = [] } = params;
         const fragments: { output: Object, data: Object } = { output, data };
 

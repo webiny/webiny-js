@@ -57,7 +57,7 @@
         "lint-staged": "lint-staged",
         "mocha": "mocha --require source-map-support/register --require babel-core/register",
         "prettier": "prettier --config .prettierrc --write",
-        "ci": "yarn ci:build && ci:test",
+        "ci": "yarn ci:build && yarn ci:test",
         "ci:build": "yarn build",
         "ci:test": "nyc --check-coverage --lines 97 --functions 97 --branches 92 yarn test && nyc report --reporter=text-lcov | coveralls",
         "test": "yarn mocha \"packages-*/**/tests/**/*.test.js\"",
