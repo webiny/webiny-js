@@ -126,7 +126,11 @@ class EntityAttribute extends Attribute {
     }
 
     getEntityClass() {
-        return this.classes.entity.class;
+        if (_.toString(this.classes.entity.class).startsWith("class")) {
+            return this.classes.entity.class;
+        }
+
+        return this.classes.entity.class();
     }
 
     /**
