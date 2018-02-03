@@ -149,12 +149,30 @@ class EntitiesAttribute extends Attribute {
             });
     }
 
-    getEntitiesClass(): Class<Entity> {
-        return this.classes.entities.class;
+    getEntitiesClass(): ?Class<Entity> {
+        const entitiesClass = this.classes.entities.class;
+        if (!entitiesClass) {
+            return null;
+        }
+
+        if (entitiesClass.name) {
+            return entitiesClass;
+        }
+
+        return entitiesClass();
     }
 
     getUsingClass(): ?Class<Entity> {
-        return this.classes.using.class;
+        const entitiesClass = this.classes.using.class;
+        if (!entitiesClass) {
+            return null;
+        }
+
+        if (entitiesClass.name) {
+            return entitiesClass;
+        }
+
+        return entitiesClass();
     }
 
     getEntitiesAttribute(): string {
@@ -172,10 +190,6 @@ class EntitiesAttribute extends Attribute {
         }
 
         return this;
-    }
-
-    getUsing(): { class: ?Class<Entity>, attribute: ?string } {
-        return this.classes.using;
     }
 
     /**

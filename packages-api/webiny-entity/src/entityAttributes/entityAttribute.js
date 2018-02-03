@@ -126,8 +126,9 @@ class EntityAttribute extends Attribute {
     }
 
     getEntityClass() {
-        if (_.toString(this.classes.entity.class).startsWith("class")) {
-            return this.classes.entity.class;
+        const entityClass = this.classes.entity.class;
+        if (entityClass.name) {
+            return entityClass;
         }
 
         return this.classes.entity.class();

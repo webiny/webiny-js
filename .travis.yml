@@ -7,7 +7,7 @@ cache: yarn
 install:
   - yarn install
 script:
-  - yarn test:travis
+  - yarn ci
 notifications:
   slack:
     on_success: change
