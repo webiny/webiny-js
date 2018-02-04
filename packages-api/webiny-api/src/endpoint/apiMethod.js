@@ -1,10 +1,11 @@
 // @flow
-import _ from 'lodash';
-import { Endpoint } from './../endpoint';
+import _ from "lodash";
+import { Endpoint } from "./../endpoint";
 
-let count = 0;
+import type { express$Request, express$Response } from "../../flow-typed/npm/express_v4.x.x";
 
 class ApiMethod {
+    name: string;
     httpMethod: string;
     context: Endpoint;
     pattern: string;
@@ -14,35 +15,36 @@ class ApiMethod {
     wildcardParam: RegExp;
     paramNames: Array<string>;
 
-    constructor(httpMethod: string, pattern: string, context: Endpoint) {
+    constructor(name: string, httpMethod: string, pattern: string, context: Endpoint) {
+        this.name = name;
         this.httpMethod = httpMethod;
         this.context = context;
-        this.pattern = pattern.startsWith('/') ? pattern : '/' + pattern;
+        this.pattern = pattern.startsWith("/") ? pattern : "/" + pattern;
         this.callbacks = [];
         this.namedParam = /:\w+/g;
         this.wildcardParam = /\*\w+/g;
         this.paramNames = [];
 
-        count++;
-
         // Extract params names
         const params = pattern.match(this.namedParam);
         if (params) {
             params.forEach(item => {
-                this.paramNames.push(item.replace(':', ''));
+                this.paramNames.push(item.replace(":", ""));
             });
         }
 
         const wildcardParams = pattern.match(this.wildcardParam);
         if (wildcardParams) {
             wildcardParams.forEach(item => {
-                this.paramNames.push(item.replace('*', ''));
+                this.paramNames.push(item.replace("*", ""));
             });
         }
 
         // Build route regex
-        const regex = pattern.replace(this.namedParam, '([^\/]+)').replace(this.wildcardParam, '(.*?)');
-        this.regex = new RegExp('^' + regex + '$');
+        const regex = pattern
+            .replace(this.namedParam, "([^/]+)")
+            .replace(this.wildcardParam, "(.*?)");
+        this.regex = new RegExp("^" + regex + "$");
     }
 
     getPattern(): string {
@@ -54,7 +56,7 @@ class ApiMethod {
     }
 
     exec(req: express$Request, res: express$Response, params: Object, context: Endpoint) {
-        if ((this.httpMethod === 'post' || this.httpMethod === 'patch')) {
+        if (this.httpMethod === "post" || this.httpMethod === "patch") {
             // TODO: this.validateBody(req.body);
         }
 
@@ -78,9 +80,9 @@ class ApiMethod {
 
     createParent(index: number, bindTo: Endpoint) {
         const $this = this;
-        return function (...params: Array<any>) {
+        return function(...params: Array<any>) {
             let callback = $this.callbacks[index];
-            if ($this.callbacks.length > (index + 1)) {
+            if ($this.callbacks.length > index + 1) {
                 params.push($this.createParent(index + 1, bindTo));
             }
 

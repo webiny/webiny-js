@@ -2,6 +2,13 @@
 import _ from "lodash";
 import ApiResponse from "./apiResponse";
 
+/**
+ * ApiErrorResponse class is used to return error responses from your endpoints
+ * @param {mixed} data
+ * @param {string} message
+ * @param {string} errorCode
+ * @param {string} statusCode
+ */
 class ApiErrorResponse extends ApiResponse {
     static ERROR_STATUS_CODE: number;
 

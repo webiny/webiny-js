@@ -1,4 +1,5 @@
 // @flow
+import type { express$Response } from "../../flow-typed/npm/express_v4.x.x";
 
 /**
  * This function creates a thin wrapper around the original Response object
@@ -25,7 +26,7 @@ export default (res: express$Response) => {
             }
 
             const origProperty = target[key];
-            if (typeof origProperty === 'function') {
+            if (typeof origProperty === "function") {
                 return (...args) => origProperty.apply(target, args);
             }
             return origProperty;

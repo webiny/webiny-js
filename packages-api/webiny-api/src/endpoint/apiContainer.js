@@ -1,12 +1,12 @@
 // @flow
-import _ from 'lodash';
-import ApiMethod from './apiMethod';
-import { Endpoint } from './../endpoint';
-import MatchedApiMethod from './matchedApiMethod';
+import _ from "lodash";
+import ApiMethod from "./apiMethod";
+import { Endpoint } from "./../endpoint";
+import MatchedApiMethod from "./matchedApiMethod";
 
 type ApiMethods = {
-    [key: string]: { [key: string]: ApiMethod };
-}
+    [name: string]: ApiMethod
+};
 
 class ApiContainer {
     context: Endpoint;
@@ -17,72 +17,76 @@ class ApiContainer {
         this.context = context;
     }
 
-    api(httpMethod: string, pattern: string, callable?: Function): ?ApiMethod {
-        if (!pattern.startsWith('/')) {
-            pattern = '/' + pattern;
-        }
-
-        httpMethod = httpMethod.toLowerCase();
-
-        if (callable && !_.has(this.apiMethods, httpMethod)) {
-            this.apiMethods[httpMethod] = {};
+    api(name: string, httpMethod: string, pattern: string, callable?: Function): ?ApiMethod {
+        if (!pattern.startsWith("/")) {
+            pattern = "/" + pattern;
         }
 
         let apiInstance: ApiMethod;
         if (callable) {
-            if (_.has(this.apiMethods, [httpMethod, pattern])) {
-                apiInstance = this.apiMethods[httpMethod][pattern];
+            if (_.has(this.apiMethods, name)) {
+                apiInstance = this.apiMethods[name];
             } else {
-                apiInstance = new ApiMethod(httpMethod, pattern, this.context);
+                apiInstance = new ApiMethod(name, httpMethod, pattern, this.context);
             }
 
             apiInstance.addCallback(callable);
-            this.apiMethods[httpMethod][pattern] = apiInstance;
+            this.apiMethods[name] = apiInstance;
         } else {
-            apiInstance = this.apiMethods[httpMethod][pattern] || null;
+            apiInstance = this.apiMethods[name] || null;
         }
 
         return apiInstance;
     }
 
-    get(pattern: string, fn?: Function): ?ApiMethod {
-        return this.api('get', pattern, fn);
+    extend(name: string, fn: Function): ApiMethod {
+        const apiMethod = this.apiMethods[name];
+        if (!apiMethod) {
+            throw new Error(`Method ${name} doesn't exist!`);
+        }
+        apiMethod.addCallback(fn);
+        return apiMethod;
     }
 
-    post(pattern: string, fn?: Function): ?ApiMethod {
-        return this.api('post', pattern, fn);
+    get(name: string, pattern: string, fn?: Function): ?ApiMethod {
+        return this.api(name, "get", pattern, fn);
     }
 
-    patch(pattern: string, fn?: Function): ?ApiMethod {
-        return this.api('patch', pattern, fn);
+    post(name: string, pattern: string, fn?: Function): ?ApiMethod {
+        return this.api(name, "post", pattern, fn);
     }
 
-    delete(pattern: string, fn?: Function): ?ApiMethod {
-        return this.api('delete', pattern, fn);
+    patch(name: string, pattern: string, fn?: Function): ?ApiMethod {
+        return this.api(name, "patch", pattern, fn);
     }
 
-    removeMethod(http: string, pattern: string): void {
-        delete this.apiMethods[http][pattern];
+    delete(name: string, pattern: string, fn?: Function): ?ApiMethod {
+        return this.api(name, "delete", pattern, fn);
+    }
+
+    removeMethod(name: string): void {
+        delete this.apiMethods[name];
     }
 
     getMethods(): ApiMethods {
         return this.apiMethods;
     }
 
-    getMethod(httpMethod: string, pattern: string): ?ApiMethod {
-        httpMethod = httpMethod.toLowerCase();
-        return _.get(this.apiMethods, [httpMethod, pattern]);
+    getMethod(name: string): ?ApiMethod {
+        return this.apiMethods[name];
     }
 
-    matchMethod(httpMethod: string, url: string): ?IMatchedApiMethod {
+    matchMethod(httpMethod: string, url: string): ?MatchedApiMethod {
+        httpMethod = httpMethod.toLowerCase();
         let matched = null;
-        const apiMethods = this.apiMethods[httpMethod.toLowerCase()];
 
-        if (!apiMethods) {
-            return null;
-        }
-
-        const methods = [...Object.values(apiMethods)];
+        const methods: Array<ApiMethod> = [];
+        Object.values(this.apiMethods).map(m => {
+            const method = ((m: any): ApiMethod);
+            if (method.httpMethod === httpMethod) {
+                methods.push(method);
+            }
+        });
 
         const length = arr => arr.filter(v => !_.isEmpty(v)).length;
 
@@ -93,12 +97,12 @@ class ApiContainer {
             const a: string = methodA.getPattern();
             const b: string = methodB.getPattern();
 
-            if (a.startsWith('/:') && !b.startsWith('/:')) {
+            if (a.startsWith("/:") && !b.startsWith("/:")) {
                 return 1;
             }
 
-            const al = length(a.split('/'));
-            const bl = length(b.split('/'));
+            const al = length(a.split("/"));
+            const bl = length(b.split("/"));
             let position = al !== bl ? (al > bl ? -1 : 1) : 0;
 
             if (position !== 0) {
@@ -111,7 +115,7 @@ class ApiContainer {
             return av !== bv ? (av > bv ? 1 : -1) : 0;
         });
 
-        _.each(methods, apiMethod => {
+        _.each(methods, (apiMethod: ApiMethod) => {
             if (!apiMethod.getRegex().test(url)) {
                 return;
             }

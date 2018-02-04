@@ -8,7 +8,19 @@ class Services {
         this.instances = {};
     }
 
-    add(name: string, factory: Function, singleton: boolean = true, tags: Array<string> = []): void {
+    /**
+     * Add service
+     * @param name
+     * @param factory
+     * @param singleton
+     * @param tags
+     */
+    add(
+        name: string,
+        factory: Function,
+        singleton: boolean = true,
+        tags: Array<string> = []
+    ): void {
         this.services[name] = {
             factory,
             singleton,
@@ -16,6 +28,11 @@ class Services {
         };
     }
 
+    /**
+     * Get service
+     * @param name
+     * @return {*}
+     */
     get(name: string): any {
         const service = this.services[name];
         let instance = this.instances[name];

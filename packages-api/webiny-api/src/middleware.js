@@ -2,18 +2,21 @@
 import _ from "lodash";
 import debug from "debug";
 import { createNamespace } from "cls-hooked";
-import Api from "./api";
-import { app } from ".";
+import { api } from "./index";
 import responseProxy from "./response/responseProxy";
+import type Api from "./api";
+
+import type { express$Request, express$Response } from "../flow-typed/npm/express_v4.x.x";
 
 let appInstance: Api;
 
 function initApp(config: Object) {
-    app.setConfig(config);
-    app.init();
-    appInstance = app;
+    api.setConfig(config);
+    api.init();
+    appInstance = api;
 }
 
+// TODO: create Flow object for config
 export default (config: Object) => {
     const log = debug("api:middleware");
     initApp(config);

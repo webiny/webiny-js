@@ -18,7 +18,7 @@ class Endpoint {
     }
 
     getApi(): ApiContainer {
-        const { app } = require("./../index");
+        const { api } = require("./../index");
         const classId = this.constructor.classId;
         const version = this.constructor.version;
         let apiContainer = _.get(apiContainers, [classId, version]);
@@ -26,7 +26,7 @@ class Endpoint {
             apiContainer = new ApiContainer(this);
             _.set(apiContainers, [classId, version], apiContainer);
             this.init(apiContainer);
-            app.getApps().map((appInstance: App) => {
+            api.getApps().map((appInstance: App) => {
                 appInstance.applyEndpointExtensions(this);
             });
         }

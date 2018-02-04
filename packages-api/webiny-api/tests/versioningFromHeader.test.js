@@ -1,6 +1,6 @@
 import request from "supertest";
 import express from "express";
-import { middleware, versionFromHeader } from "webiny-api/src";
+import { middleware, endpointMiddleware, versionFromHeader } from "webiny-api/src";
 import MiddlewareTestApp from "./apps/middleware/versioned/app";
 
 describe("Versioning from Header", () => {
@@ -12,7 +12,8 @@ describe("Versioning from Header", () => {
         app.use(
             middleware({
                 versioning: versionFromHeader("Api-Version"),
-                apps: [new MiddlewareTestApp()]
+                apps: [new MiddlewareTestApp()],
+                use: [endpointMiddleware()]
             })
         );
     });

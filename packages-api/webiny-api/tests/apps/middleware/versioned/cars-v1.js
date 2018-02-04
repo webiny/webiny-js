@@ -6,7 +6,7 @@ import { Endpoint, ApiResponse } from "webiny-api/src";
  */
 class Cars extends Endpoint {
     init(api) {
-        api.get("/", async function() {
+        api.get("ListCars", "/", async function() {
             return new ApiResponse([{ id: 1 }, { id: 2 }]);
         });
     }

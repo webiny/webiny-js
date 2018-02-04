@@ -2,16 +2,15 @@
 import _ from "lodash";
 import debug from "debug";
 import { getNamespace } from "cls-hooked";
-import koaCompose from "koa-compose";
+import compose from "webiny-compose";
 import semver from "semver";
-import { Auth } from "./auth";
 import { Entity } from "./entity";
 import { Endpoint } from "./endpoint";
 import App from "./etc/app";
-import Services from "./etc/services";
-import { EndpointMiddleware } from "./index";
+import type Services from "./etc/services";
 
-const defaultRequestMiddleware = () => [EndpointMiddleware];
+import type { EndpointsMap } from "../flow-typed/webiny-api";
+import type { express$Request, express$Response } from "../flow-typed/npm/express_v4.x.x";
 
 class Api {
     config: Object;
@@ -24,7 +23,7 @@ class Api {
         this.config = {};
         this.apps = [];
         this.endpoints = {};
-        this.requestMiddleware = _.noop;
+        this.requestMiddleware = () => Promise.resolve();
         this.serviceManager = services;
     }
 
@@ -40,10 +39,6 @@ class Api {
         this.config = config;
     }
 
-    getAuth(): IAuth {
-        return this.serviceManager.get("Auth");
-    }
-
     init(): void {
         // Prepare apps
         this.apps = this.config.apps;
@@ -53,15 +48,7 @@ class Api {
             this.config.versioning = () => "latest";
         }
 
-        // Assign default request middleware
-        if (!_.get(this.config, "middlewares.request")) {
-            _.set(this.config, "middlewares.request", defaultRequestMiddleware);
-        }
-
-        this.requestMiddleware = koaCompose(this.config.middlewares.request([]));
-
-        // Register `Auth` service
-        this.serviceManager.add("Auth", () => new Auth(this.config.auth), true);
+        this.requestMiddleware = compose(this.config.use);
 
         // Assign entity driver (if configured)
         if (this.config.entity) {
@@ -70,7 +57,8 @@ class Api {
     }
 
     handleRequest(req: express$Request, res: express$Response): Promise<void> {
-        return this.requestMiddleware({ req, res, versioning: this.config.versioning });
+        const params = { req, res, versioning: this.config.versioning };
+        return this.requestMiddleware(params);
     }
 }
 
