@@ -28,7 +28,7 @@ describe("overriding attributes container test", function() {
         assert.equal(model.getAttributesContainer().newAttribute(), 5);
     });
 
-    it("should register a new attribute using addAttribute method", async () => {
+    it("should be able to work with a custom attribute", async () => {
         class IdentityModel extends Model {
             constructor() {
                 super();

@@ -11,13 +11,20 @@ class Model implements IModel {
     validating: boolean;
     attributesContainer: DefaultAttributesContainer;
 
-    constructor(definition?: Function) {
+    constructor(params?: Function) {
         this.attributes = {};
         this.validating = false;
         this.attributesContainer = this.createAttributesContainer();
 
-        if (typeof definition === "function") {
-            definition.call(this);
+        if (params) {
+            if (typeof params === "function") {
+                params.call(this);
+            } else if (typeof params === "object") {
+                // Here, params can be an object, which may contain several options.
+                if (typeof params.definition === "function") {
+                    params.definition.call(this);
+                }
+            }
         }
 
         return new Proxy((this: Object), {

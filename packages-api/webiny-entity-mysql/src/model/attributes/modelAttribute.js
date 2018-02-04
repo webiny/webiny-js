@@ -2,8 +2,7 @@ import { ModelAttribute as BaseModelAttribute } from "webiny-model";
 
 class ModelAttribute extends BaseModelAttribute {
     setStorageValue(value) {
-        this.setValue(JSON.parse(value));
-        return this;
+        return super.setStorageValue(JSON.parse(value));
     }
 
     async getStorageValue() {

@@ -1,0 +1,60 @@
+import { assert } from "chai";
+import { Issue, User, Company } from "./../entities/customAttributeEntities";
+import sinon from "sinon";
+import { QueryResult } from "../..";
+const sandbox = sinon.sandbox.create();
+
+describe("custom attribute test", function() {
+    afterEach(() => sandbox.restore());
+
+    it("should be able to work with a custom attribute", async () => {
+        const user = new User();
+        user.populate({ firstName: "John", lastName: "Doe" });
+
+        const issue1 = new Issue();
+        issue1.populate({ title: "testing custom attribute", assignedTo: user });
+
+        const json1 = await issue1.toJSON("title,assignedTo[firstName,lastName]");
+        assert.deepEqual(json1, {
+            assignedTo: {
+                firstName: "John",
+                lastName: "Doe"
+            },
+            title: "testing custom attribute"
+        });
+
+        const company = new Company();
+        company.populate({ name: "Webiny" });
+
+        const issue2 = new Issue();
+        issue2.populate({ title: "testing custom attribute", assignedTo: company });
+
+        const json2 = await issue2.toJSON("title,assignedTo[name]");
+        assert.deepEqual(json2, {
+            assignedTo: {
+                name: "Webiny"
+            },
+            title: "testing custom attribute"
+        });
+    });
+
+    it("should load entities from database", async () => {
+        let entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
+            return new QueryResult({ id: "xyz", assignedTo: { classId: "User", identity: "abc" } });
+        });
+
+        const issue = await Issue.findById(1);
+        entityFind.restore();
+
+        assert.equal(issue.id, "xyz");
+
+        entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
+            return new QueryResult({ id: 1, firstName: "John", lastName: "Doe" });
+        });
+
+        assert.equal(await issue.get("assignedTo.firstName"), "John");
+        assert.equal(await issue.get("assignedTo.lastName"), "Doe");
+
+        entityFind.restore();
+    });
+});

@@ -54,6 +54,16 @@ class ModelAttribute extends Attribute {
         return value;
     }
 
+    setStorageValue(value: mixed): this {
+        if (value) {
+            // We don't want to mark value as dirty.
+            const newValue = new this.modelClass();
+            newValue.populate(value);
+            this.value.setCurrent(newValue, { skipDifferenceCheck: true });
+        }
+        return this;
+    }
+
     /**
      * If value is assigned (checked in the parent validate call), it must by an instance of Model.
      */

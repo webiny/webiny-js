@@ -12,13 +12,11 @@ class EntityAttribute extends Attribute {
         super(name, attributesContainer);
 
         this.classes = {
-            parent: this.getParentModel().getParentEntity().constructor.name,
             entity: { class: entity }
         };
 
         /**
          * Attribute's current value.
-         * @type {undefined}
          */
         this.value = new EntityAttributeValue(this);
 
