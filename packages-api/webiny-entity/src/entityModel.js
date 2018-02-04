@@ -1,7 +1,7 @@
 // @flow
 import { Model } from "webiny-model";
-import { Entity } from "webiny-entity";
 import EntityAttributesContainer from "./entityAttributesContainer";
+import type Entity from "./entity";
 
 class EntityModel extends Model {
     constructor(params: ?(Function | Object)) {

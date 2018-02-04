@@ -6,16 +6,18 @@ import {
     ModelAttribute,
     ModelsAttribute
 } from "./entityAttributes";
+
+import type Entity from "./entity";
 import type { IModel } from "webiny-model/flow-typed";
 
 class EntityAttributesContainer extends DefaultAttributesContainer {
-    entity(entity: Class<Entity>) {
+    entity(entity: Class<Entity>): EntityAttribute {
         const parent = this.getParentModel();
         parent.setAttribute(this.name, new EntityAttribute(this.name, this, entity));
         return parent.getAttribute(this.name);
     }
 
-    entities(entity: Class<Entity>, attribute: ?string = null) {
+    entities(entity: Class<Entity>, attribute: ?string = null): EntitiesAttribute {
         const parent = this.getParentModel();
         parent.setAttribute(this.name, new EntitiesAttribute(this.name, this, entity, attribute));
         return parent.getAttribute(this.name);

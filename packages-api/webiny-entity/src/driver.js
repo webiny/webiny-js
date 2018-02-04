@@ -1,9 +1,11 @@
 // @flow
 import QueryResult from "./queryResult";
 import EntityModel from "./entityModel";
+import type Entity from "./entity";
 
 class Driver {
     connection: mixed;
+
     constructor() {
         this.connection = null;
     }
@@ -25,6 +27,7 @@ class Driver {
         return new QueryResult();
     }
 
+    // eslint-disable-next-line
     async findOne(
         entity: Entity | Class<Entity>,
         params: EntityFindOneParams & {} // eslint-disable-line
@@ -32,6 +35,7 @@ class Driver {
         return new QueryResult();
     }
 
+    // eslint-disable-next-line
     async find(
         entity: Entity | Class<Entity>,
         params: EntityFindParams & {} // eslint-disable-line
@@ -40,7 +44,10 @@ class Driver {
     }
 
     // eslint-disable-next-line
-    async count(entity: Entity, params: EntityFindParams & {}): Promise<QueryResult> {
+    async count(
+        entity: Entity | Class<Entity>,
+        params: EntityFindParams & {} // eslint-disable-line
+    ): Promise<QueryResult> {
         return new QueryResult(0);
     }
 
@@ -49,7 +56,7 @@ class Driver {
     }
 
     // eslint-disable-next-line
-    isId(entity: Entity, id: mixed, params: ?Object): boolean {
+    isId(entity: Entity | Class<Entity>, id: mixed, params: ?Object): boolean {
         return typeof id === "string";
     }
 }
