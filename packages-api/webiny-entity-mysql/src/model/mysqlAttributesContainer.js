@@ -1,4 +1,5 @@
 // @flow
+import type { Entity } from "webiny-entity";
 import { EntityAttributesContainer } from "webiny-entity";
 import {
     BooleanAttribute,
