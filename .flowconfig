@@ -1,9 +1,8 @@
 [ignore]
-./packages-*/**/tests/**/*.js
 ./packages-*/**/lib/**/*.js
 [include]
 [libs]
-packages-api/webiny-api/flow-typed
+flow-typed
 packages-api/webiny-entity/flow-typed
 packages-api/webiny-sql-query-builder/flow-typed
 packages-api/webiny-entity-mysql/flow-typed

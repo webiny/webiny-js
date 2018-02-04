@@ -14,7 +14,6 @@
         "babel-cli": "^6.26.0",
         "babel-core": "^6.26.0",
         "babel-eslint": "^8.2.1",
-        "babel-plugin-syntax-dynamic-import": "^6.18.0",
         "babel-plugin-transform-builtin-extend": "^1.1.2",
         "babel-plugin-transform-object-rest-spread": "^6.26.0",
         "babel-plugin-transform-runtime": "^6.23.0",
@@ -64,6 +63,7 @@
         "test:api": "yarn mocha \"packages-api/**/tests/**/*.test.js\"",
         "test:utils": "yarn mocha \"packages-utils/**/tests/**/*.test.js\"",
         "test:webiny-api": "yarn mocha \"packages-api/webiny-api/tests/**/*.test.js\"",
+        "test:webiny-api-security": "yarn mocha \"packages-api/webiny-api-security/tests/**/*.test.js\"",
         "test:webiny-data-extractor": "yarn mocha \"packages-utils/webiny-data-extractor/tests/**/*.test.js\"",
         "test:webiny-entity": "yarn mocha \"packages-api/webiny-entity/tests/**/*.t est.js\"",
         "test:webiny-entity-memory": "yarn mocha \"packages-api/webiny-entity-memory/tests/**/*.test.js\"",
@@ -90,8 +90,8 @@
     },
     "lint-staged": {
         "**/*.js": [
-            "eslint --fix",
             "prettier --write",
+            "eslint --fix",
             "git add"
         ]
     }
