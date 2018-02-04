@@ -1,0 +1,15 @@
+{
+    "name": "webiny-compose",
+    "description": "This library composes a middleware for processing arbitrary data.",
+    "version": "1.0.0",
+    "main": "src/index.js",
+    "contributors": [
+        "Pavel Denisjuk <pavel@webiny.com>",
+        "Sven Al Hamad <sven@webiny.com>",
+        "Adrian Smijulj <adrian@webiny.com>"
+    ],
+    "license": "MIT",
+    "dependencies": {
+        "babel-runtime": "^6.26.0"
+    }
+}
