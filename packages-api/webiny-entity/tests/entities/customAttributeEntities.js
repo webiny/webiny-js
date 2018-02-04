@@ -1,6 +1,4 @@
-import { ModelAttribute } from "webiny-model";
-import { Entity, EntityModel } from "webiny-entity";
-import { assert } from "chai";
+import { ModelAttribute, Entity, EntityModel } from "webiny-entity";
 import { AttributesContainer } from "../../../webiny-model/src";
 
 export class User extends Entity {
@@ -38,37 +36,34 @@ export class IdentityAttribute extends ModelAttribute {
     }
 
     setValue(value) {
+        const modelInstance = this.getModelInstance();
         if (value instanceof Entity) {
-            const parentEntity = this.getParentModel().getParentEntity();
-            return this.value.setCurrent(
-                new this.modelClass({ parentEntity }).populate({
-                    classId: value.classId,
-                    identity: value
-                })
-            );
+            modelInstance.populate({
+                classId: value.classId,
+                identity: value
+            });
+            return this.value.setCurrent(modelInstance);
         }
 
-        if (typeof value === "object") {
-            const parentEntity = this.getParentModel().getParentEntity();
-            return this.value.setCurrent(new this.modelClass({ parentEntity }).populate(value));
-        }
-
-        super.setValue(value);
-    }
-
-    setStorageValue(value: mixed): this {
-        if (value) {
-            // We don't want to mark value as dirty.
-            const parentEntity = this.getParentModel().getParentEntity();
-            const newValue = new this.modelClass({ parentEntity });
-            newValue.populateFromStorage(value);
-            this.value.setCurrent(newValue, { skipMarkAsSet: true, skipDifferenceCheck: true });
-        }
-        return this;
+        modelInstance.populate(value);
+        this.value.setCurrent(modelInstance);
     }
 
     getValue() {
         return super.getValue().identity;
+    }
+
+    /**
+     * Returns storage value (entity ID or null).
+     * @returns {Promise<*>}
+     */
+    async getStorageValue() {
+        const value = this.value.getCurrent();
+        if (!value) {
+            return null;
+        }
+
+        return value.toStorage();
     }
 }
 

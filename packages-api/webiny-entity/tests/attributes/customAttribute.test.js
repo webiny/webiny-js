@@ -2,10 +2,12 @@ import { assert } from "chai";
 import { Issue, User, Company } from "./../entities/customAttributeEntities";
 import sinon from "sinon";
 import { QueryResult } from "../..";
+
 const sandbox = sinon.sandbox.create();
 
 describe("custom attribute test", function() {
     afterEach(() => sandbox.restore());
+    beforeEach(() => User.getEntityPool().flush());
 
     it("should be able to work with a custom attribute", async () => {
         const user = new User();
@@ -56,5 +58,43 @@ describe("custom attribute test", function() {
         assert.equal(await issue.get("assignedTo.lastName"), "Doe");
 
         entityFind.restore();
+    });
+
+    it("should return correct storage values", async () => {
+        let entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
+            return new QueryResult({ id: "xyz", assignedTo: { classId: "User", identity: "abc" } });
+        });
+
+        const issue = await Issue.findById(1);
+        entityFind.restore();
+
+        assert.equal(issue.id, "xyz");
+
+        let storage = await issue.toStorage();
+        assert.deepEqual(storage, {
+            id: "xyz",
+            title: null,
+            assignedTo: {
+                classId: "User",
+                identity: "abc"
+            }
+        });
+
+        entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
+            return new QueryResult({ id: "abc", firstName: "John", lastName: "Doe" });
+        });
+
+        await issue.assignedTo;
+        entityFind.restore();
+
+        storage = await issue.toStorage();
+        assert.deepEqual(storage, {
+            id: "xyz",
+            title: null,
+            assignedTo: {
+                classId: "User",
+                identity: "abc"
+            }
+        });
     });
 });

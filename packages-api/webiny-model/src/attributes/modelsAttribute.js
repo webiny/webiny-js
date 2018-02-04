@@ -18,6 +18,11 @@ class ModelsAttribute extends Attribute {
         return this.modelClass;
     }
 
+    getModelInstance() {
+        const modelClass = this.getModelClass();
+        return new modelClass();
+    }
+
     setValue(values: Array<Model>) {
         if (!this.canSetValue()) {
             return;
@@ -34,7 +39,7 @@ class ModelsAttribute extends Attribute {
         let newValues = [];
         for (let i = 0; i < values.length; i++) {
             if (_.isPlainObject(values[i])) {
-                const newValue = new this.modelClass();
+                const newValue = this.getModelInstance();
                 newValue.populate(_.clone(values[i]));
                 newValues.push(newValue);
             } else {
@@ -49,7 +54,7 @@ class ModelsAttribute extends Attribute {
     }
 
     async getJSONValue(): Promise<Array<Object>> {
-        const value = this.getValue();
+        const value = this.value.getCurrent();
         if (value instanceof Array) {
             const json = [];
             for (let i = 0; i < value.length; i++) {
@@ -70,6 +75,18 @@ class ModelsAttribute extends Attribute {
             return data;
         }
         return [];
+    }
+
+    setStorageValue(value: mixed): this {
+        const newValue = [];
+        if (Array.isArray(value)) {
+            value.forEach(item => {
+                newValue.push(this.getModelInstance().populateFromStorage(item));
+            });
+
+            this.value.setCurrent(newValue, { skipDifferenceCheck: true });
+        }
+        return this;
     }
 
     /**

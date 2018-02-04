@@ -1,6 +1,12 @@
 // @flow
 import { DefaultAttributesContainer } from "webiny-model";
-import { EntityAttribute, EntitiesAttribute } from "./entityAttributes";
+import {
+    EntityAttribute,
+    EntitiesAttribute,
+    ModelAttribute,
+    ModelsAttribute
+} from "./entityAttributes";
+import type { IModel } from "webiny-model/flow-typed";
 
 class EntityAttributesContainer extends DefaultAttributesContainer {
     entity(entity: Class<Entity>) {
@@ -12,6 +18,18 @@ class EntityAttributesContainer extends DefaultAttributesContainer {
     entities(entity: Class<Entity>, attribute: ?string = null) {
         const parent = this.getParentModel();
         parent.setAttribute(this.name, new EntitiesAttribute(this.name, this, entity, attribute));
+        return parent.getAttribute(this.name);
+    }
+
+    model(model: IModel): ModelAttribute {
+        const parent = this.getParentModel();
+        parent.setAttribute(this.name, new ModelAttribute(this.name, this, model));
+        return parent.getAttribute(this.name);
+    }
+
+    models(model: IModel): ModelsAttribute {
+        const parent = this.getParentModel();
+        parent.setAttribute(this.name, new ModelsAttribute(this.name, this, model));
         return parent.getAttribute(this.name);
     }
 }

@@ -13,11 +13,16 @@ class ModelAttribute extends Attribute {
 
         // This has to be set - it enables setting nested values, even if the current value of the attribute is null.
         // Eg. user.company.image - this will automatically set empty models as values, and enable setting nested values.
-        this.defaultValue = () => new this.modelClass();
+        this.defaultValue = () => this.getModelInstance();
     }
 
     getModelClass(): Class<Model> {
         return this.modelClass;
+    }
+
+    getModelInstance() {
+        const modelClass = this.getModelClass();
+        return new modelClass();
     }
 
     setValue(value: mixed) {
@@ -29,7 +34,7 @@ class ModelAttribute extends Attribute {
         if (value instanceof Model) {
             newValue = value;
         } else if (_.isObject(value)) {
-            newValue = new this.modelClass();
+            newValue = this.getModelInstance();
             newValue.populate(value);
         } else {
             newValue = value;
@@ -47,7 +52,7 @@ class ModelAttribute extends Attribute {
     }
 
     async getStorageValue(): Promise<mixed> {
-        const value = this.getValue();
+        const value = await this.value.getCurrent();
         if (value instanceof Model) {
             return await value.toStorage();
         }
@@ -57,8 +62,7 @@ class ModelAttribute extends Attribute {
     setStorageValue(value: mixed): this {
         if (value) {
             // We don't want to mark value as dirty.
-            const newValue = new this.modelClass();
-            newValue.populate(value);
+            const newValue = this.getModelInstance().populateFromStorage(value);
             this.value.setCurrent(newValue, { skipDifferenceCheck: true });
         }
         return this;

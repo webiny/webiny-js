@@ -281,19 +281,10 @@ describe("attribute model test", function() {
 
     it("getStorageValue method must return null", async () => {
         const user = new User();
+        assert.deepEqual(await user.getAttribute("company").getStorageValue(), null);
+
         user.company = null;
-        assert.deepEqual(await user.getAttribute("company").getStorageValue(), {
-            name: null,
-            city: null,
-            image: {
-                file: null,
-                size: {
-                    height: null,
-                    width: null
-                },
-                visible: false
-            }
-        });
+        assert.deepEqual(await user.getAttribute("company").getStorageValue(), null);
     });
 
     it("getStorageValue must iterate through all attributes and return its storage values", async () => {
