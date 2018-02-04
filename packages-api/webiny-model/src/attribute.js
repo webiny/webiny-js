@@ -4,6 +4,14 @@ import { validation } from "webiny-validation";
 import ModelError from "./modelError";
 import AttributeValue from "./attributeValue";
 
+import type {
+    IAttribute,
+    AttributeValueCallback,
+    IAttributesContainer,
+    IModel,
+    AttributeValidator
+} from "./../flow-typed";
+
 class Attribute implements IAttribute {
     name: string;
     attributesContainer: IAttributesContainer;

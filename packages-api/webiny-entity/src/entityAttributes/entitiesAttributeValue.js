@@ -3,6 +3,8 @@ import { AttributeValue } from "webiny-model";
 import Entity from "./../entity";
 import EntityCollection from "./../entityCollection";
 
+import { IAttribute } from "webiny-model/flow-typed";
+
 class EntitiesAttributeValue extends AttributeValue {
     initial: EntityCollection;
 

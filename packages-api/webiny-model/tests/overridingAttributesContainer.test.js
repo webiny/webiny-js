@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import Model from "./../src/model";
+import { Model, ModelAttribute } from "./../src";
 import DefaultAttributesContainer from "./../src/defaultAttributesContainer";
 
 class DefaultAttributesContainerOverride extends DefaultAttributesContainer {
@@ -26,5 +26,48 @@ describe("overriding attributes container test", function() {
     it("new method should work", () => {
         assert.isFunction(model.getAttributesContainer().newAttribute);
         assert.equal(model.getAttributesContainer().newAttribute(), 5);
+    });
+
+    it("should register a new attribute using addAttribute method", async () => {
+        class IdentityModel extends Model {
+            constructor() {
+                super();
+                this.attr("classId").char();
+                this.attr("identity").char();
+            }
+        }
+
+        class IdentityAttribute extends ModelAttribute {
+            constructor() {
+                super();
+                this.modelClass = IdentityModel;
+            }
+        }
+
+        class Issue extends Model {
+            constructor() {
+                super();
+                this.attr("title").char();
+                this.attr("assignedTo").custom(IdentityAttribute);
+            }
+        }
+
+        const issue = new Issue();
+        issue.populate({
+            title: "testing custom attribute",
+            assignedTo: {
+                classId: "User",
+                identity: 44
+            }
+        });
+
+        const json = await issue.toJSON("title,assignedTo[classId,identity]");
+        assert.deepEqual(json, {
+            title: "testing custom attribute",
+            assignedTo: {
+                classId: "User",
+                identity: 44
+            }
+        });
     });
 });

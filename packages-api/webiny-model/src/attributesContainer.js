@@ -1,4 +1,5 @@
 // @flow
+import type { IAttributesContainer, IModel, IAttribute } from "./../flow-typed";
 
 /**
  * Base AttributesContainer class, can be extended to implement new types of model attributes.
@@ -26,6 +27,12 @@ class AttributesContainer implements IAttributesContainer {
 
     getParentModel(): IModel {
         return this.parentModel;
+    }
+
+    custom(attribute: Class<IAttribute>) {
+        const model = this.getParentModel();
+        model.setAttribute(this.name, new attribute(this.name, this));
+        return model.getAttribute(this.name);
     }
 }
 

@@ -8,6 +8,8 @@ import {
     EntitiesAttribute
 } from "./attributes";
 
+import type { IModel } from "webiny-model/flow-typed";
+
 /**
  * Contains basic attributes. If needed, this class can be extended to add additional attributes,
  * and then be set as a new attributes container as the default one.

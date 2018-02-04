@@ -4,6 +4,7 @@ import extractor from "webiny-data-extractor";
 import DefaultAttributesContainer from "./defaultAttributesContainer";
 import ModelError from "./modelError";
 import Attribute from "./attribute";
+import type { IModel, IAttribute } from "../flow-typed";
 
 class Model implements IModel {
     attributes: { [string]: IAttribute };

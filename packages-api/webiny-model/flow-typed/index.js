@@ -1,15 +1,15 @@
 import AttributeValue from "../src/attributeValue";
 
-declare interface IAttributesContainer {
+export interface IAttributesContainer {
     attr(attribute: string): IAttributesContainer;
 
     getParentModel(): IModel;
 }
 
-declare type AttributeValidator = (value: mixed, attr: IAttribute) => Promise<void>;
-declare type AttributeValueCallback = (value: mixed) => mixed;
+export type AttributeValidator = (value: mixed, attr: IAttribute) => Promise<void>;
+export type AttributeValueCallback = (value: mixed) => mixed;
 
-declare interface IAttribute {
+export interface IAttribute {
     name: string;
     attributesContainer: IAttributesContainer;
     value: AttributeValue;
@@ -77,7 +77,7 @@ declare interface IAttribute {
     getOnce(): boolean;
 }
 
-declare interface IModel {
+export interface IModel {
     attr(attribute: string): IAttributesContainer;
 
     createAttributesContainer(): IAttributesContainer;

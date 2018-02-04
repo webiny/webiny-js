@@ -1,4 +1,5 @@
 // @flow
+import { IAttribute } from "../flow-typed";
 
 class AttributeValue {
     attribute: IAttribute;

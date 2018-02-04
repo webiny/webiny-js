@@ -1,4 +1,6 @@
 // @flow
+import type { IModel } from "./../flow-typed";
+
 import AttributesContainer from "./attributesContainer";
 import {
     ArrayAttribute,
