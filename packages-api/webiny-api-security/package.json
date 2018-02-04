@@ -1,0 +1,30 @@
+{
+  "name": "webiny-api-security",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "license": "MIT",
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "babel-runtime": "^6.26.0",
+    "bcryptjs": "^2.4.3",
+    "date-fns": "^1.29.0",
+    "jsonwebtoken": "^8.1.0",
+    "lodash": "^4.17.4",
+    "webiny-api": "^1.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "clean": "rm -rf lib/*",
+    "prepublish": "yarn build",
+    "prebuild": "yarn clean",
+    "build": "babel src -d lib",
+    "develop": "yarn test --watch tests src"
+  }
+}

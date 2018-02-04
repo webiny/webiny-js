@@ -1,0 +1,179 @@
+import { Entity } from "webiny-api";
+import { MemoryDriver } from "webiny-entity-memory";
+import Authentication from "../src/services/authentication";
+import MyUser from "./entities/myUser";
+import passwordAttr from "../src/attributes/password";
+import chai from "./chai";
+import credentialsStrategy from "../src/strategies/credentialsStrategy";
+import JwtToken from "../src/tokens/jwtToken";
+import AuthenticationError from "../src/services/authenticationError";
+
+const { expect } = chai;
+
+describe("Authentication test", () => {
+    let auth: Authentication = null;
+    let token: string = null;
+
+    const authConfig = {
+        token: new JwtToken({ secret: "MyS3cr3tK3Y" }),
+        strategies: {
+            credentials: credentialsStrategy({
+                credentials: req => {
+                    return { username: req.username, password: req.password };
+                }
+            })
+        },
+        identities: [
+            {
+                identity: MyUser,
+                authenticate: [
+                    {
+                        strategy: "credentials",
+                        apiMethod: {
+                            name: "Auth.MyUser.Login",
+                            pattern: "/login-user"
+                        }
+                    }
+                ]
+            }
+        ]
+    };
+
+    before(() => {
+        // Create Authentication service
+        auth = new Authentication(authConfig);
+        // Register password attribute
+        passwordAttr();
+        // Configure Memory entity driver
+        Entity.driver = new MemoryDriver();
+        // Insert test user
+        const user = new MyUser();
+        user.populate({ username: "admin@webiny.com", password: "dev" });
+        const user2 = new MyUser();
+        user2.populate({ username: "test@webiny.com", password: "admin" });
+        return Promise.all([user.save(), user2.save()]);
+    });
+
+    it("Should authenticate and return user instance", async () => {
+        const login = await auth.authenticate(
+            { username: "admin@webiny.com", password: "dev" },
+            MyUser,
+            "credentials"
+        );
+        expect(login).to.be.instanceof(MyUser);
+        expect(login.username).to.equal("admin@webiny.com");
+        expect(login.password).to.not.equal("dev");
+    });
+
+    it("Should create an authentication token", async () => {
+        const login = await auth.authenticate(
+            { username: "admin@webiny.com", password: "dev" },
+            MyUser,
+            "credentials"
+        );
+        token = await auth.createToken(login);
+
+        expect(token).to.be.a("string");
+        return auth.verifyToken(token).should.be.fulfilled.then(identity => {
+            expect(identity.id).to.equal(login.id);
+            expect(identity.classId).to.equal(MyUser.classId);
+        });
+    });
+
+    it("Should load identity from token", async () => {
+        const login = await auth.verifyToken(token);
+        expect(login).to.be.instanceof(MyUser);
+        expect(login.username).to.equal("admin@webiny.com");
+    });
+
+    it("Should throw INVALID_CREDENTIALS", async () => {
+        return auth
+            .authenticate(
+                {
+                    username: "wrong",
+                    password: "pass"
+                },
+                MyUser,
+                "credentials"
+            )
+            .should.be.rejectedWith(AuthenticationError)
+            .then(err => {
+                expect(err.type).to.equal(AuthenticationError.INVALID_CREDENTIALS);
+            });
+    });
+
+    it("Should throw INVALID_CREDENTIALS", async () => {
+        return auth
+            .authenticate(
+                {
+                    username: "admin@webiny.com",
+                    password: "pass"
+                },
+                MyUser,
+                "credentials"
+            )
+            .should.be.rejectedWith(AuthenticationError)
+            .then(err => {
+                expect(err.type).to.equal(AuthenticationError.INVALID_CREDENTIALS);
+            });
+    });
+
+    it("Should throw IDENTITY_INSTANCE_NOT_FOUND", async () => {
+        const login = await auth.authenticate(
+            {
+                username: "test@webiny.com",
+                password: "admin"
+            },
+            MyUser,
+            "credentials"
+        );
+        const token = await auth.createToken(login);
+        const user = await MyUser.findOne({ query: { username: "test@webiny.com" } });
+        await user.delete();
+
+        return auth
+            .verifyToken(token)
+            .should.be.rejectedWith(AuthenticationError)
+            .then(err => {
+                expect(err.type).to.equal(AuthenticationError.IDENTITY_INSTANCE_NOT_FOUND);
+            });
+    });
+
+    it("Should throw UNKNOWN_STRATEGY", async () => {
+        return auth
+            .authenticate(
+                {
+                    username: "wrong",
+                    password: "pass"
+                },
+                MyUser,
+                "uknown"
+            )
+            .should.be.rejectedWith(AuthenticationError)
+            .then(err => {
+                expect(err.type).to.equal(AuthenticationError.UNKNOWN_STRATEGY);
+            });
+    });
+
+    it("Should throw UNKNOWN_IDENTITY", async () => {
+        const tokenProvider = new JwtToken({
+            secret: "MyS3cr3tK3Y",
+            data: identity => {
+                return {
+                    identityId: identity.id,
+                    classId: "UnknownClass"
+                };
+            }
+        });
+
+        const user = MyUser.findOne({ query: { username: "admin@webiny.com" } });
+        const token = await tokenProvider.encode(user);
+
+        return auth
+            .verifyToken(token)
+            .should.be.rejectedWith(AuthenticationError)
+            .then(err => {
+                expect(err.type).to.equal(AuthenticationError.UNKNOWN_IDENTITY);
+            });
+    });
+});
