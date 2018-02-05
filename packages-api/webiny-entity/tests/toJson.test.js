@@ -4,6 +4,7 @@ import User from "./entities/user";
 import sinon from "sinon";
 import { MainEntity } from "./entities/entitiesAttributeEntities";
 import { QueryResult } from "../src";
+
 const sandbox = sinon.sandbox.create();
 
 describe("toJSON test", function() {
@@ -18,12 +19,12 @@ describe("toJSON test", function() {
         user.enabled = true;
 
         let data = await user.toJSON("firstName,age");
-        assert.hasAllKeys(data, ["firstName", "age"]);
+        assert.hasAllKeys(data, ["id", "firstName", "age"]);
         assert.equal(data.firstName, "John");
         assert.equal(data.age, 12);
 
         data = await user.toJSON();
-        assert.deepEqual(data, {});
+        assert.deepEqual(data, { id: null });
     });
 
     it("should return empty object", async () => {
@@ -35,7 +36,7 @@ describe("toJSON test", function() {
         user.enabled = true;
 
         const data = await user.toJSON("firstName,age");
-        assert.hasAllKeys(data, ["firstName", "age"]);
+        assert.hasAllKeys(data, ["id", "firstName", "age"]);
         assert.equal(data.firstName, "John");
         assert.equal(data.age, 12);
     });
@@ -66,10 +67,11 @@ describe("toJSON test", function() {
             });
 
         let data = await mainEntity.toJSON();
-        assert.deepEqual(data, {});
+        assert.deepEqual(data, { id: 10 });
 
         data = await mainEntity.toJSON("attribute1,attribute2");
         assert.deepEqual(data, {
+            id: 10,
             attribute1: [{ id: "AA" }, { id: 12 }],
             attribute2: [{ id: 13 }]
         });
@@ -79,6 +81,7 @@ describe("toJSON test", function() {
         );
 
         assert.deepEqual(data, {
+            id: 10,
             attribute1: [
                 {
                     id: "AA",
@@ -99,5 +102,28 @@ describe("toJSON test", function() {
         });
 
         entitiesFind.restore();
+    });
+
+    it("must always return 'id' field, no matter if it was specified or not", async () => {
+        const [entity1, entity2, entity3] = [
+            new User().populate({ id: "A", age: 30 }),
+            new User().populate({ id: null, age: 35 }),
+            new User().populate({ id: null, age: null })
+        ];
+
+        assert.deepEqual(await entity1.toJSON("id,age"), { id: "A", age: 30 });
+        assert.deepEqual(await entity1.toJSON("age"), { id: "A", age: 30 });
+        assert.deepEqual(await entity1.toJSON("id"), { id: "A" });
+        assert.deepEqual(await entity1.toJSON(), { id: "A" });
+
+        assert.deepEqual(await entity2.toJSON("id,age"), { id: null, age: 35 });
+        assert.deepEqual(await entity2.toJSON("age"), { id: null, age: 35 });
+        assert.deepEqual(await entity2.toJSON("id"), { id: null });
+        assert.deepEqual(await entity2.toJSON(), { id: null });
+
+        assert.deepEqual(await entity3.toJSON("id,age"), { id: null, age: null });
+        assert.deepEqual(await entity3.toJSON("age"), { id: null, age: null });
+        assert.deepEqual(await entity3.toJSON("id"), { id: null });
+        assert.deepEqual(await entity3.toJSON(), { id: null });
     });
 });

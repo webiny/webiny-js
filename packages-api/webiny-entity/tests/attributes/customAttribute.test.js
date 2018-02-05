@@ -18,6 +18,7 @@ describe("custom attribute test", function() {
 
         const json1 = await issue1.toJSON("title,assignedTo[firstName,lastName]");
         assert.deepEqual(json1, {
+            id: null,
             assignedTo: {
                 firstName: "John",
                 lastName: "Doe"
@@ -33,6 +34,7 @@ describe("custom attribute test", function() {
 
         const json2 = await issue2.toJSON("title,assignedTo[name]");
         assert.deepEqual(json2, {
+            id: null,
             assignedTo: {
                 name: "Webiny"
             },

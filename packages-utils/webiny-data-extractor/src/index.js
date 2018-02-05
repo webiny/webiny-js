@@ -100,13 +100,13 @@ class DataExtractor {
 
             const currentStepData = await fragments.data[step];
             if (typeof fragments.output[step] === "undefined") {
-                fragments.output[step] = _.isArray(currentStepData) ? [] : {}; // TODO: Check, is this the case really?
+                fragments.output[step] = _.isArray(currentStepData) ? [] : {};
             }
 
             if (_.isArray(currentStepData)) {
                 for (let j = 0; j < currentStepData.length; j++) {
                     if (typeof fragments.output[step][j] === "undefined") {
-                        fragments.output[step][j] = {}; // TODO: Check, is this the case really?
+                        fragments.output[step][j] = {};
                     }
 
                     await this.__modifyOutput(

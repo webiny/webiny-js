@@ -48,13 +48,7 @@ class EntityCollection extends Array<Entity> {
         );
     }
 
-    async toJSON(fields: string) {
-        if (!fields) {
-            throw new EntityCollectionError(
-                "toJSON must receive fields (eg. 'id,name,createdOn')."
-            );
-        }
-
+    async toJSON(fields: ?string) {
         return Promise.all(this.map(async (entity: Entity) => await entity.toJSON(fields)));
     }
 

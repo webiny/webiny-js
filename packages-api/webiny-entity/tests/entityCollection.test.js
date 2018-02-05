@@ -4,9 +4,9 @@ import { EntityCollection } from "./..";
 import EntityCollectionError from "../src/entityCollectionError";
 
 const getEntities = () => [
-    new User().populate({ age: 30 }),
-    new User().populate({ age: 35 }),
-    new User().populate({ age: 40 })
+    new User().populate({ id: "A", age: 30 }),
+    new User().populate({ id: "B", age: 35 }),
+    new User().populate({ id: "C", age: 40 })
 ];
 
 describe("EntityCollection test", function() {
@@ -58,17 +58,9 @@ describe("EntityCollection test", function() {
         expect(collection.getMeta().a).to.equal(123);
     });
 
-    it("toJSON must throw an error if fields are not specified", async () => {
+    it("toJSON must not throw an error if fields are not specified", async () => {
         const collection = new EntityCollection();
-
-        try {
-            await collection.toJSON();
-        } catch (e) {
-            expect(e).to.be.instanceOf(EntityCollectionError);
-            return;
-        }
-
-        throw Error(`Error should've been thrown.`);
+        await collection.toJSON();
     });
 
     it("toJSON must return array consisting of JSON representations of each entity", async () => {
@@ -77,9 +69,21 @@ describe("EntityCollection test", function() {
         const json = await collection.toJSON("firstName,age");
 
         expect(json).to.deep.equal([
-            { firstName: null, age: 30 },
-            { firstName: null, age: 35 },
-            { firstName: null, age: 40 }
+            { id: "A", firstName: null, age: 30 },
+            { id: "B", firstName: null, age: 35 },
+            { id: "C", firstName: null, age: 40 }
+        ]);
+    });
+
+    it("toJSON must always include ID, no matter if it was specified or not", async () => {
+        const collection = new EntityCollection(getEntities());
+
+        const json = await collection.toJSON("firstName,age");
+
+        expect(json).to.deep.equal([
+            { id: "A", firstName: null, age: 30 },
+            { id: "B", firstName: null, age: 35 },
+            { id: "C", firstName: null, age: 40 }
         ]);
     });
 });

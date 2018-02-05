@@ -185,7 +185,10 @@ class Entity {
      * Returns entity's JSON representation.
      */
     async toJSON(path: string): Promise<JSON> {
-        return this.getModel().toJSON(path);
+        return _.merge(
+            { id: this.getAttribute("id").getValue() },
+            await this.getModel().toJSON(path)
+        );
     }
 
     /**

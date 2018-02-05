@@ -203,7 +203,7 @@ class EntityAttribute extends Attribute {
     async getJSONValue(): Promise<mixed> {
         const value = await this.getValue();
         if (value instanceof Entity) {
-            return { id: value.id };
+            return await value.toJSON();
         }
         return value;
     }
