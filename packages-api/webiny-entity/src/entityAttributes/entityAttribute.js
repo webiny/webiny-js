@@ -219,6 +219,7 @@ class EntityAttribute extends Attribute {
         ) {
             return;
         }
+
         if (this.value.getCurrent() instanceof this.getEntityClass()) {
             return;
         }
