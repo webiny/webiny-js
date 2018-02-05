@@ -48,13 +48,18 @@ Data extractor support several ways to extract data, which are demonstrated in t
     		{id: 2, name: "two"},
     		{id: 3, name: "three"},
     		{id: 4, name: "four"}
-    	]
+    	],
+    	promised: new Promise(resolve => {
+    		setTimeout(() => {
+    			resolve(100);
+    		}, 5);
+    	})
     };
 
 ### Simple extraction
 
-    const extractor = require('webiny-data-extractor');
-    await extractor.get(data, 'firstName,lastName,age,company');
+    const extractor = require("webiny-data-extractor");
+    await extractor.get(data, "firstName,lastName,age,company");
 
 This will return the following result:
 
@@ -72,8 +77,8 @@ Notice how the company was returned completely with all nested keys. But we can 
 
 ### Nested keys with dot notation
 
-    const extractor = require('webiny-data-extractor');
-    await extractor.get(data, 'firstName,lastName,age,company.city');
+    const extractor = require("webiny-data-extractor");
+    await extractor.get(data, "firstName,lastName,age,company.city");
 
 This will return the following result:
 
@@ -88,8 +93,8 @@ This will return the following result:
 
 Another example:
 
-    const extractor = require('webiny-data-extractor');
-    await extractor.get(data, 'subscription.name,subscription.price,subscription.commitment');
+    const extractor = require("webiny-data-extractor");
+    await extractor.get(data, "subscription.name,subscription.price,subscription.commitment");
 
 This will return the following result:
 
@@ -110,15 +115,15 @@ This will return the following result:
 From the previous example, listing keys using `subscription.name,subscription.price,subscription.commitment` can become tiring. Alternatively,
 square brackets can be used.
 
-    const extractor = require('webiny-data-extractor');
-    await extractor.get(data, 'subscription[name,price,commitment]');
+    const extractor = require("webiny-data-extractor");
+    await extractor.get(data, "subscription[name,price,commitment]");
 
 This will return the same as in previous example.
 
 More advanced example:
 
-    const extractor = require('webiny-data-extractor');
-    await extractor.get(data, 'age,subscription[name,price,commitment[expiresOn,enabled]]');
+    const extractor = require("webiny-data-extractor");
+    await extractor.get(data, "age,subscription[name,price,commitment[expiresOn,enabled]]");
 
 This will return the following result:
 
@@ -134,10 +139,12 @@ This will return the following result:
         }
     }
 
-And finally, data extractor recognizes when a specified key is an array, in which case it will iterate and execute extraction over each item.
+### Extracting arrays
 
-    const extractor = require('webiny-data-extractor');
-    await extractor.get(data, 'simpleCollection[name]');
+Data extractor recognizes when a specified key is an array, in which case it will iterate and execute extraction over each item.
+
+    const extractor = require("webiny-data-extractor");
+    await extractor.get(data, "simpleCollection[name]");
 
 This will return the following result:
 
@@ -148,6 +155,19 @@ This will return the following result:
     		{name: "three"},
     		{name: "four"}
     	]
+    }
+
+### Extracting promises
+
+In case key in given data represents an unresolved promise, data extractor will make sure it is first resolved.
+
+    const extractor = require("webiny-data-extractor");
+    await extractor.get(data, "promised");
+
+This will return the following result:
+
+    {
+    	promised: 100
     }
 
 
