@@ -13,6 +13,10 @@
         "lodash": "^4.17.4"
     },
     "devDependencies": {
-        "flow-bin": "^0.63.1"
+        "flow-bin": "^0.63.1",
+        "documentation": "^5.3.5"
+    },
+    "scripts": {
+        "documentation": "documentation readme --section=Documentation --config documentation.yml src/** --github"
     }
 }

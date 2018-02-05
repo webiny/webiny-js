@@ -1,7 +1,4 @@
 toc:
-  - name: About
-    description: |
-      A small library for easy async data extraction, using dot and square brackets notation.
   - name: Installation
     description: |
       `yarn add webiny-data-extractor`
@@ -147,12 +144,12 @@ toc:
       This will return the following result:
       ```
       {
-      	simpleCollection: [
-      		{name: "one"},
-      		{name: "two"},
-      		{name: "three"},
-      		{name: "four"}
-      	]
+        simpleCollection: [
+            {name: "one"},
+            {name: "two"},
+            {name: "three"},
+            {name: "four"}
+        ]
       }
       ```
 
