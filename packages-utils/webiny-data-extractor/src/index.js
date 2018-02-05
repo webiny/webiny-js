@@ -21,6 +21,13 @@ class DataExtractor {
         return this.__process({ data, keys }, options).then(({ output }) => output);
     }
 
+    /**
+     *
+     * @param params
+     * @param options
+     * @returns {Promise<{output: {}, processed: {characters: number}}>}
+     * @private
+     */
     async __process(params: Object, options: ExtractionOptions = {}): Promise<ExtractedData> {
         const { data, keys = "", output = {}, initialPath = [] } = params;
         let key: string = "",

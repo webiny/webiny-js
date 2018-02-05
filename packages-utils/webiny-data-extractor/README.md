@@ -21,6 +21,8 @@ A small library for easy async data extraction, using dot and square brackets no
 
 ## Get started
 
+Data extractor support several ways to extract data, which are demonstrated in the following examples.
+
 ### Sample data
 
     const data = {
@@ -40,7 +42,13 @@ A small library for easy async data extraction, using dot and square brackets no
     			"startedOn": 2018,
     			"enabled": true
     		}
-    	}
+    	},
+    	"simpleCollection": [
+    		{id: 1, name: "one"},
+    		{id: 2, name: "two"},
+    		{id: 3, name: "three"},
+    		{id: 4, name: "four"}
+    	]
     };
 
 ### Simple extraction
@@ -124,6 +132,22 @@ This will return the following result:
                 "enabled": true
             }
         }
+    }
+
+And finally, data extractor recognizes when a specified key is an array, in which case it will iterate and execute extraction over each item.
+
+    const extractor = require('webiny-data-extractor');
+    await extractor.get(data, 'simpleCollection[name]');
+
+This will return the following result:
+
+    {
+    	simpleCollection: [
+    		{name: "one"},
+    		{name: "two"},
+    		{name: "three"},
+    		{name: "four"}
+    	]
     }
 
 

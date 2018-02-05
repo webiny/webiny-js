@@ -72,7 +72,7 @@
         "test:webiny-sql-query-builder": "yarn mocha \"packages-api/webiny-sql-query-builder/tests/**/*.test.js\"",
         "test:webiny-validation": "yarn mocha \"packages-utils/webiny-validation/tests/**/*.test.js\"",
 
-        "documentation:webiny-data-extractor": "yarn documentation build packages-utils/webiny-data-extractor/src/index.js -f md -o packages-utils/webiny-data-extractor/README.md --config packages-utils/webiny-data-extractor/documentation.yml"
+        "docs:webiny-data-extractor": "yarn documentation build packages-utils/webiny-data-extractor/src/index.js -f md -o packages-utils/webiny-data-extractor/README.md --config packages-utils/webiny-data-extractor/documentation.yml"
     },
     "pre-commit": [
         "flow",
