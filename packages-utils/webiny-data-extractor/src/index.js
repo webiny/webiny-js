@@ -2,7 +2,17 @@
 import _ from "lodash";
 import type { ExtractionOptions, ExtractedData } from "./../flow-typed";
 
+/**
+ * @class DataExtractor
+ */
 class DataExtractor {
+    /**
+     * Returns extracted data.
+     * @param data	Data on which the extraction will be executed.
+     * @param keys	Keys which need to be extracted.
+     * @param options	Extraction options.
+     * @returns {Promise<ExtractedData.output>}
+     */
     async get(data: Object, keys: string = "", options: ExtractionOptions = {}) {
         // First we remove all breaks from the string.
         keys = keys.replace(/\s/g, "").trim();
