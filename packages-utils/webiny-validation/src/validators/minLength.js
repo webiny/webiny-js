@@ -1,7 +1,8 @@
+// @flow
 import _ from "lodash";
 import ValidationError from "./../validationError";
 
-export default (value, params) => {
+export default (value: any, params: Array<string>) => {
     if (!value) return;
 
     let lengthOfValue = null;
@@ -12,7 +13,7 @@ export default (value, params) => {
     }
 
     if (lengthOfValue === null || lengthOfValue >= params[0]) {
-        return true;
+        return;
     }
 
     if (_.isString(value)) {

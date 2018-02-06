@@ -1,11 +1,12 @@
-import ValidationError from './../validationError';
+// @flow
+import ValidationError from "./../validationError";
 
-export default (value) => {
+export default (value: any) => {
     if (!value) return;
-    value = value + '';
+    value = value + "";
 
-	if (value.match(/^[-+0-9()/\s]+$/)) {
-		return true;
-	}
-	throw new ValidationError('Value must be a valid phone number.');
+    if (value.match(/^[-+0-9()/\s]+$/)) {
+        return;
+    }
+    throw new ValidationError("Value must be a valid phone number.");
 };

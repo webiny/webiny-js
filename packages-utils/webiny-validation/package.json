@@ -1,18 +1,25 @@
 {
-    "name": "webiny-validation",
-    "version": "1.0.0",
-    "main": "lib/index.js",
-    "contributors": [
-        "Pavel Denisjuk <pavel@webiny.com>",
-        "Sven Al Hamad <sven@webiny.com>",
-        "Adrian Smijulj <adrian@webiny.com>"
-    ],
-    "license": "MIT",
-    "dependencies": {
-        "babel-runtime": "^6.26.0",
-        "lodash": "^4.17.4"
-    },
-    "scripts": {
-        "documentation": "documentation build --config documentation.yml src/** flow-typed/** -f md > DOCUMENTATION.md"
-    }
+  "name": "webiny-validation",
+  "version": "1.0.0",
+  "main": "lib/index.js",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "files": [
+    "lib/",
+    "types.js"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "babel-runtime": "^6.26.0",
+    "lodash": "^4.17.4"
+  },
+  "scripts": {
+    "documentation": "documentation build --config documentation.yml src/** -f md > DOCUMENTATION.md",
+    "prepack": "yarn prepack:babel && yarn prepack:flow",
+    "prepack:babel": "babel src/ -d lib",
+    "prepack:flow": "flow-copy-source src lib"
+  }
 }
