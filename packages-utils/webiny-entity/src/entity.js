@@ -320,6 +320,8 @@ class Entity {
             return;
         }
 
+        this.processing = "delete";
+
         const soft = _.get(this, "constructor.crud.delete.soft");
 
         try {
