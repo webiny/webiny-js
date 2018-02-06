@@ -1,4 +1,4 @@
-# webiny-data-extractor
+# Data Extractor
 
 A small library for easy async data extraction, using dot and square brackets notation.
 
@@ -10,7 +10,6 @@ A small library for easy async data extraction, using dot and square brackets no
 
 -   [Installation](#installation)
 -   [Get started](#get-started)
--   [Get started](#get-started-1)
 -   [Classes](#classes)
     -   [DataExtractor](#dataextractor)
         -   [get](#get)
@@ -184,170 +183,6 @@ This will return the following result:
     }
 
 
-### Get started
-
-Data extractor support several ways to extract data, which are demonstrated in the following examples.
-
-#### Sample data
-
-    const data = {
-    	"firstName": "John",
-    	"lastName": "Doe",
-    	"age": 30,
-    	"enabled": true,
-    	"company": {
-    		"name": "Webiny LTD",
-    		"city": "London"
-    	},
-    	"subscription": {
-    		"name": "Free",
-    		"price": 0,
-    		"commitment": {
-    			"expiresOn": "never",
-    			"startedOn": 2018,
-    			"enabled": true
-    		}
-    	},
-    	"simpleCollection": [
-    		{id: 1, name: "one"},
-    		{id: 2, name: "two"},
-    		{id: 3, name: "three"},
-    		{id: 4, name: "four"}
-    	],
-    	promised: new Promise(resolve => {
-    		setTimeout(() => {
-    			resolve(100);
-    		}, 5);
-    	})
-    };
-
-#### Simple extraction
-
-    const extractor = require("webiny-data-extractor");
-    await extractor.get(data, "firstName,lastName,age,company");
-
-This will return the following result:
-
-    {
-        "firstName": "John",
-        "lastName": "Doe",
-        "age": 30,
-        "company": {
-            "name": "Webiny LTD",
-            "city": "London"
-        }
-    }
-
-Notice how the company was returned completely with all nested keys. But we can also return only specific nested keys.
-
-#### Nested keys with dot notation
-
-    const extractor = require("webiny-data-extractor");
-    await extractor.get(data, "firstName,lastName,age,company.city");
-
-This will return the following result:
-
-    {
-        "firstName": "John",
-        "lastName": "Doe",
-        "age": 30,
-        "company": {
-            "city": "London"
-        }
-    }
-
-Another example:
-
-    const extractor = require("webiny-data-extractor");
-    await extractor.get(data, "subscription.name,subscription.price,subscription.commitment");
-
-This will return the following result:
-
-    {
-        "subscription": {
-            "name": "Free",
-            "price": 0,
-            "commitment": {
-                "expiresOn": "never",
-                "startedOn": 2018,
-                "enabled": true
-            }
-        }
-    }
-
-#### Nested keys with square brackets notation
-
-From the previous example, listing keys using `subscription.name,subscription.price,subscription.commitment` can become tiring. Alternatively,
-square brackets can be used.
-
-    const extractor = require("webiny-data-extractor");
-    await extractor.get(data, "subscription[name,price,commitment]");
-
-This will return the same as in previous example.
-
-More advanced example:
-
-    const extractor = require("webiny-data-extractor");
-    await extractor.get(data, "age,subscription[name,price,commitment[expiresOn,enabled]]");
-
-This will return the following result:
-
-    {
-        "age": 30,
-        "subscription": {
-            "name": "Free",
-            "price": 0,
-            "commitment": {
-                "expiresOn": "never",
-                "enabled": true
-            }
-        }
-    }
-
-#### Multi-line supported
-
-When having many keys to extract, keys can be specified over multiple lines by using [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals). 
-This way the code becomes more readable by not having to specify all keys in one line.
-
-    const extractor = require("webiny-data-extractor");
-    await extractor.get(data, `
-        firstName,lastName,age,enabled,
-        subscription[name,price,commitment],
-        simpleCollection[id,name]
-    `);
-
-#### Extracting arrays
-
-Data extractor recognizes when a specified key is an array, in which case it will iterate and execute extraction over each item.
-
-    const extractor = require("webiny-data-extractor");
-    await extractor.get(data, "simpleCollection[name]");
-
-This will return the following result:
-
-    {
-        simpleCollection: [
-            {name: "one"},
-            {name: "two"},
-            {name: "three"},
-            {name: "four"}
-        ]
-    }
-
-#### Extracting promises
-
-In case key in given data represents an unresolved promise, data extractor will make sure it is first resolved.
-
-    const extractor = require("webiny-data-extractor");
-    await extractor.get(data, "promised");
-
-This will return the following result:
-
-    {
-        promised: 100
-    }
-
-
 ### Classes
 
 
@@ -355,13 +190,13 @@ This will return the following result:
 
 #### DataExtractor
 
-[packages-utils/webiny-data-extractor/src/index.js:8-186](https://github.com/Webiny/webiny-js/blob/2c0366019b9cc963d04a932bbfa6deb6f214207e/packages-utils/webiny-data-extractor/src/index.js#L8-L186 "Source code on GitHub")
+[packages-utils/webiny-data-extractor/src/index.js:8-190](https://github.com/Webiny/webiny-js/blob/c2aa30454ab97d05dd9694744828bfe925ae610e/packages-utils/webiny-data-extractor/src/index.js#L8-L190 "Source code on GitHub")
 
 Data extractor class.
 
 ##### get
 
-[packages-utils/webiny-data-extractor/src/index.js:21-27](https://github.com/Webiny/webiny-js/blob/2c0366019b9cc963d04a932bbfa6deb6f214207e/packages-utils/webiny-data-extractor/src/index.js#L21-L27 "Source code on GitHub")
+[packages-utils/webiny-data-extractor/src/index.js:21-27](https://github.com/Webiny/webiny-js/blob/c2aa30454ab97d05dd9694744828bfe925ae610e/packages-utils/webiny-data-extractor/src/index.js#L21-L27 "Source code on GitHub")
 
 Returns extracted data.
 

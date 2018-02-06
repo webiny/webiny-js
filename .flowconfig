@@ -3,9 +3,9 @@
 [include]
 [libs]
 flow-typed
-packages-api/webiny-entity/flow-typed
-packages-api/webiny-sql-query-builder/flow-typed
-packages-api/webiny-entity-mysql/flow-typed
+packages-utils/webiny-entity/flow-typed
+packages-utils/webiny-sql-query-builder/flow-typed
+packages-utils/webiny-entity-mysql/flow-typed
 packages-utils/webiny-file-storage/flow-typed
 [lints]
 
