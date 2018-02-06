@@ -8,12 +8,17 @@ import type { ExtractionOptions, ExtractedData, ExtractionParams } from "./../fl
 class DataExtractor {
     /**
      * Returns extracted data.
-     * @param data    Data on which the extraction will be performed.
-     * @param keys    Keys which need to be extracted.
-     * @param options    Additional extraction options.
+     * @param data    Data object on which the extraction will be performed.
+     * @param keys    Comma-separated keys which need to be extracted. For nested keys, dot and square brackets notation is available.
+     * @param options    Extraction options.
+     * @param options.includeUndefined
+     * Include keys of values that are undefined
+     * By default, if extracted value is undefined, the key will be omitted the final output. This can be prevented by setting this option to `true`.
+     * @param options.onRead
+     * A callback function, which gets triggered when data extractor tries to read a key from given data.
      * @returns {Promise<ExtractedData.output>}
      */
-    async get(data: Object, keys: string = "", options: ExtractionOptions = {}): {} {
+    async get(data: {}, keys: string = "", options: ExtractionOptions = {}): {} {
         // First we remove all breaks from the string.
         keys = keys.replace(/\s/g, "").trim();
 
@@ -94,7 +99,7 @@ class DataExtractor {
     }
 
     /**
-     *
+     * Modifies final output object with extracted data. Can be called recursively on nested data.
      * @param params
      * @param options
      * @returns {Promise<void>}
@@ -169,7 +174,7 @@ class DataExtractor {
     }
 
     /**
-     *
+     * Reads given key in given data directly or with a "onRead" callback.
      * @param data
      * @param key
      * @param onRead

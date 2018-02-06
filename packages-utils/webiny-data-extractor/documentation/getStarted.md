@@ -130,6 +130,18 @@ This will return the following result:
 }
 ```
 
+### Multi-line supported
+When having many keys to extract, keys can be specified over multiple lines by using [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals). 
+This way the code becomes more readable by not having to specify all keys in one line.
+```
+const extractor = require("webiny-data-extractor");
+await extractor.get(data, `
+    firstName,lastName,age,enabled,
+    subscription[name,price,commitment],
+    simpleCollection[id,name]
+`);
+```
+
 ### Extracting arrays
 Data extractor recognizes when a specified key is an array, in which case it will iterate and execute extraction over each item.
 ```
@@ -142,7 +154,6 @@ This will return the following result:
     simpleCollection: [
         {name: "one"},
         {name: "two"},
-        
         {name: "three"},
         {name: "four"}
     ]
