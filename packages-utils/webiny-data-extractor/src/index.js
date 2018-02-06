@@ -3,7 +3,7 @@ import _ from "lodash";
 import type { ExtractionOptions, ExtractedData } from "./../flow-typed";
 
 /**
- * @class DataExtractor
+ * Data extractor class.
  */
 class DataExtractor {
     /**

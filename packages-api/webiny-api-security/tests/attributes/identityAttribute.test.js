@@ -3,6 +3,7 @@ import { Company, User, Issue } from "./../entities/identityAttributeEntities";
 import IdentityModel from "../../src/attributes/identityAttribute/identityModel";
 import { QueryResult } from "webiny-entity";
 import sinon from "sinon";
+
 const sandbox = sinon.sandbox.create();
 
 describe("Identity attribute test", () => {
@@ -182,6 +183,50 @@ describe("Identity attribute test", () => {
                 classId: "User",
                 identity: "abc"
             }
+        });
+    });
+
+    it("should be able to save with or without attribute value", async () => {
+        const issue = new Issue();
+        let entitySave = sandbox.stub(User.getDriver(), "save").callsFake(entity => {
+            entity.id = "xyz";
+            new QueryResult();
+        });
+
+        issue.title = "Test";
+        await issue.save();
+        entitySave.restore();
+
+        const user = new User();
+        user.firstName = "John";
+        user.lastName = "Doe";
+
+        issue.assignedTo = user;
+
+        entitySave = sandbox
+            .stub(User.getDriver(), "save")
+            .onCall(1)
+            .callsFake(() => {
+                new QueryResult();
+            })
+            .onCall(0)
+            .callsFake(entity => {
+                entity.id = "abc";
+                new QueryResult();
+            });
+
+        let getIdentityClass = sandbox.stub(IdentityModel, "getIdentityClass").callsFake(() => {
+            return User;
+        });
+
+        await issue.save();
+        entitySave.restore();
+        getIdentityClass.restore();
+
+        assert.deepEqual(await user.toJSON("firstName,lastName"), {
+            id: "abc",
+            firstName: "John",
+            lastName: "Doe"
         });
     });
 });
