@@ -2,7 +2,7 @@
 <p align="center">
   <img src="https://s3.amazonaws.com/owler-image/logo/webiny_owler_20160228_232453_original.png" width="400" />
   <br/>
-  Web development made easy.
+  <strong>Web development made easy.</strong>
 </p>
 
 # 
@@ -46,19 +46,19 @@ A small library for easy async data extraction, using dot and square brackets no
 ### [Entity](https://github.com/Webiny/webiny-js/tree/master/packages-utils/webiny-entity) [![Known Vulnerabilities](https://snyk.io/test/github/webiny/webiny-js/badge.svg?targetFile=packages-utils%2Fwebiny-entity%2Fpackage.json)](https://snyk.io/test/github/webiny/webiny-js?targetFile=packages-utils%2Fwebiny-entity%2Fpackage.json)
 Entity layer which can work with various database / storage systems like MySQL, MongoDB and even IndexedDB or localStorage if needed.
 
-##### [Memory](https://github.com/Webiny/webiny-js/tree/master/packages-utils/webiny-entity-memory) [![Known Vulnerabilities](https://snyk.io/test/github/webiny/webiny-js/badge.svg?targetFile=packages-utils%2Fwebiny-entity-memory%2Fpackage.json)](https://snyk.io/test/github/webiny/webiny-js?targetFile=packages-utils%2Fwebiny-entity-memory%2Fpackage.json)
+#### [Memory](https://github.com/Webiny/webiny-js/tree/master/packages-utils/webiny-entity-memory) [![Known Vulnerabilities](https://snyk.io/test/github/webiny/webiny-js/badge.svg?targetFile=packages-utils%2Fwebiny-entity-memory%2Fpackage.json)](https://snyk.io/test/github/webiny/webiny-js?targetFile=packages-utils%2Fwebiny-entity-memory%2Fpackage.json)
 A in-memory driver for `webiny-entity`.
 
-##### [MySQL](https://github.com/Webiny/webiny-js/tree/master/packages-utils/webiny-entity-mysql) [![Known Vulnerabilities](https://snyk.io/test/github/webiny/webiny-js/badge.svg?targetFile=packages-utils%2Fwebiny-entity-mysql%2Fpackage.json)](https://snyk.io/test/github/webiny/webiny-js?targetFile=packages-utils%2Fwebiny-entity-mysql%2Fpackage.json)
+#### [MySQL](https://github.com/Webiny/webiny-js/tree/master/packages-utils/webiny-entity-mysql) [![Known Vulnerabilities](https://snyk.io/test/github/webiny/webiny-js/badge.svg?targetFile=packages-utils%2Fwebiny-entity-mysql%2Fpackage.json)](https://snyk.io/test/github/webiny/webiny-js?targetFile=packages-utils%2Fwebiny-entity-mysql%2Fpackage.json)
 A MySQL driver for `webiny-entity`.
 
 ### [File Storage](https://github.com/Webiny/webiny-js/tree/master/packages-utils/webiny-file-storage) [![Known Vulnerabilities](https://snyk.io/test/github/webiny/webiny-js/badge.svg?targetFile=packages-utils%2Fwebiny-file-storage%2Fpackage.json)](https://snyk.io/test/github/webiny/webiny-js?targetFile=packages-utils%2Fwebiny-file-storage%2Fpackage.json)
 A plugginable file storage package.
 
-##### [Amazon S3](https://github.com/Webiny/webiny-js/tree/master/packages-utils/webiny-file-storage-s3) [![Known Vulnerabilities](https://snyk.io/test/github/webiny/webiny-js/badge.svg?targetFile=packages-utils%2Fwebiny-file-storage-s3%2Fpackage.json)](https://snyk.io/test/github/webiny/webiny-js?targetFile=packages-utils%2Fwebiny-file-storage-s3%2Fpackage.json)
+#### [Amazon S3](https://github.com/Webiny/webiny-js/tree/master/packages-utils/webiny-file-storage-s3) [![Known Vulnerabilities](https://snyk.io/test/github/webiny/webiny-js/badge.svg?targetFile=packages-utils%2Fwebiny-file-storage-s3%2Fpackage.json)](https://snyk.io/test/github/webiny/webiny-js?targetFile=packages-utils%2Fwebiny-file-storage-s3%2Fpackage.json)
 AWS S3 driver for `webiny-file-storage` interface. 
 
-##### [Local Storage](https://github.com/Webiny/webiny-js/tree/master/packages-utils/webiny-file-storage-local) [![Known Vulnerabilities](https://snyk.io/test/github/webiny/webiny-js/badge.svg?targetFile=packages-utils%2Fwebiny-file-storage-local%2Fpackage.json)](https://snyk.io/test/github/webiny/webiny-js?targetFile=packages-utils%2Fwebiny-file-storage-local%2Fpackage.json)
+#### [Local Storage](https://github.com/Webiny/webiny-js/tree/master/packages-utils/webiny-file-storage-local) [![Known Vulnerabilities](https://snyk.io/test/github/webiny/webiny-js/badge.svg?targetFile=packages-utils%2Fwebiny-file-storage-local%2Fpackage.json)](https://snyk.io/test/github/webiny/webiny-js?targetFile=packages-utils%2Fwebiny-file-storage-local%2Fpackage.json)
 A local filesystem storage driver for `webiny-file-storage`.
 
 ### [Model](https://github.com/Webiny/webiny-js/tree/master/packages-utils/webiny-model) [![Known Vulnerabilities](https://snyk.io/test/github/webiny/webiny-js/badge.svg?targetFile=packages-utils%2Fwebiny-model%2Fpackage.json)](https://snyk.io/test/github/webiny/webiny-js?targetFile=packages-utils%2Fwebiny-model%2Fpackage.json)
