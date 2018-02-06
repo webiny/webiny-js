@@ -8,4 +8,11 @@ declare type ExtractionOptions = {
     includeUndefined?: boolean
 };
 
-export { ExtractedData, ExtractionOptions };
+declare type ExtractionParams = {
+    data?: {},
+    output?: {},
+    keys?: string,
+    initialPath?: []
+};
+
+export { ExtractedData, ExtractionOptions, ExtractionParams };

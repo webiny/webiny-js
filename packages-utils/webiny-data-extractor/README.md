@@ -99,7 +99,7 @@ Another example:
 This will return the following result:
 
     {
-       "subscription": {
+        "subscription": {
             "name": "Free",
             "price": 0,
             "commitment": {
@@ -107,7 +107,7 @@ This will return the following result:
                 "startedOn": 2018,
                 "enabled": true
             }
-       }
+        }
     }
 
 #### Nested keys with square brackets notation
@@ -149,12 +149,13 @@ Data extractor recognizes when a specified key is an array, in which case it wil
 This will return the following result:
 
     {
-      simpleCollection: [
-          {name: "one"},
-          {name: "two"},
-          {name: "three"},
-          {name: "four"}
-      ]
+        simpleCollection: [
+            {name: "one"},
+            {name: "two"},
+            
+            {name: "three"},
+            {name: "four"}
+        ]
     }
 
 #### Extracting promises
@@ -167,7 +168,7 @@ In case key in given data represents an unresolved promise, data extractor will 
 This will return the following result:
 
     {
-    	promised: 100
+        promised: 100
     }
 
 
@@ -178,18 +179,20 @@ This will return the following result:
 
 #### DataExtractor
 
-[packages-utils/webiny-data-extractor/src/index.js:8-164](https://github.com/Webiny/webiny-js/blob/2b0b08472d2eb6363a0e5a463e281a6f96fe76e4/packages-utils/webiny-data-extractor/src/index.js#L8-L164 "Source code on GitHub")
+[packages-utils/webiny-data-extractor/src/index.js:8-179](https://github.com/Webiny/webiny-js/blob/eb3b48b71b7e284ba0a655eaae1312b1c9996931/packages-utils/webiny-data-extractor/src/index.js#L8-L179 "Source code on GitHub")
+
+Data extractor class.
 
 ##### get
 
-[packages-utils/webiny-data-extractor/src/index.js:16-22](https://github.com/Webiny/webiny-js/blob/2b0b08472d2eb6363a0e5a463e281a6f96fe76e4/packages-utils/webiny-data-extractor/src/index.js#L16-L22 "Source code on GitHub")
+[packages-utils/webiny-data-extractor/src/index.js:16-22](https://github.com/Webiny/webiny-js/blob/eb3b48b71b7e284ba0a655eaae1312b1c9996931/packages-utils/webiny-data-extractor/src/index.js#L16-L22 "Source code on GitHub")
 
 Returns extracted data.
 
 **Parameters**
 
--   `data` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** Data on which the extraction will be executed.
+-   `data` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** Data on which the extraction will be performed.
 -   `keys` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Keys which need to be extracted.
--   `options` **ExtractionOptions** Extraction options.
+-   `options` **ExtractionOptions** Additional extraction options.
 
 Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;ExtractedData.output>** 

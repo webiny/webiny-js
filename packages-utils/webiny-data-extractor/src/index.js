@@ -1,6 +1,6 @@
 // @flow
 import _ from "lodash";
-import type { ExtractionOptions, ExtractedData } from "./../flow-typed";
+import type { ExtractionOptions, ExtractedData, ExtractionParams } from "./../flow-typed";
 
 /**
  * Data extractor class.
@@ -8,12 +8,12 @@ import type { ExtractionOptions, ExtractedData } from "./../flow-typed";
 class DataExtractor {
     /**
      * Returns extracted data.
-     * @param data	Data on which the extraction will be executed.
-     * @param keys	Keys which need to be extracted.
-     * @param options	Extraction options.
+     * @param data    Data on which the extraction will be performed.
+     * @param keys    Keys which need to be extracted.
+     * @param options    Additional extraction options.
      * @returns {Promise<ExtractedData.output>}
      */
-    async get(data: Object, keys: string = "", options: ExtractionOptions = {}) {
+    async get(data: Object, keys: string = "", options: ExtractionOptions = {}): {} {
         // First we remove all breaks from the string.
         keys = keys.replace(/\s/g, "").trim();
 
@@ -22,13 +22,16 @@ class DataExtractor {
     }
 
     /**
-     *
-     * @param params
-     * @param options
+     * Processes given params with given extraction options. Can be called recursively on nested data.
+     * @param params    Contains data, keys, initial path and output object.
+     * @param options    Various options, eg. onRead callback or ability to still include undefined keys.
      * @returns {Promise<{output: {}, processed: {characters: number}}>}
      * @private
      */
-    async __process(params: Object, options: ExtractionOptions = {}): Promise<ExtractedData> {
+    async __process(
+        params: ExtractionParams,
+        options: ExtractionOptions = {}
+    ): Promise<ExtractedData> {
         const { data, keys = "", output = {}, initialPath = [] } = params;
         let key: string = "",
             characters: number = 0,
@@ -40,7 +43,7 @@ class DataExtractor {
             }
             switch (true) {
                 case current === ",":
-                case current === undefined: {
+                case typeof current === "undefined": {
                     key &&
                         (await this.__modifyOutput(
                             { output, key, data, path: currentPath },
@@ -90,7 +93,17 @@ class DataExtractor {
         };
     }
 
-    async __modifyOutput(params: Object = {}, options: ExtractionOptions = {}): Promise<void> {
+    /**
+     *
+     * @param params
+     * @param options
+     * @returns {Promise<void>}
+     * @private
+     */
+    async __modifyOutput(
+        params: ExtractionParams = {},
+        options: ExtractionOptions = {}
+    ): Promise<void> {
         const { output, data = {}, key = "", path = [] } = params;
         const fragments: { output: Object, data: Object } = { output, data };
 
@@ -155,7 +168,15 @@ class DataExtractor {
         }
     }
 
-    async __read(data: Object, key: string, onRead: ?Function): Promise<mixed> {
+    /**
+     *
+     * @param data
+     * @param key
+     * @param onRead
+     * @returns {Promise<*>}
+     * @private
+     */
+    async __read(data: {}, key: string, onRead: ?Function): Promise<mixed> {
         if (typeof onRead === "function") {
             return onRead(data, key);
         }
