@@ -1,5 +1,4 @@
 // @flow
-import type { express$Response } from "../../flow-typed/npm/express_v4.x.x";
 
 /**
  * This function creates a thin wrapper around the original Response object

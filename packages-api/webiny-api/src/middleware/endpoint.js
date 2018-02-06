@@ -6,8 +6,6 @@ import semver from "semver";
 import { api, ApiResponse } from "./../index";
 import ApiErrorResponse from "../response/apiErrorResponse";
 
-import type { express$Request, express$Response } from "../../flow-typed/npm/express_v4.x.x";
-
 declare type EndpointMiddlewareOptions = {
     beforeApiMethod?: Array<Function>,
     afterApiMethod?: Array<Function>

@@ -9,7 +9,8 @@
   ],
   "license": "MIT",
   "files": [
-    "lib"
+    "lib/",
+    "flow-typed/"
   ],
   "dependencies": {
     "babel-runtime": "^6.26.0",

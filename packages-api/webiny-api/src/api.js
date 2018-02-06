@@ -1,7 +1,6 @@
 // @flow
 import _ from "lodash";
 import debug from "debug";
-import { getNamespace } from "cls-hooked";
 import compose from "webiny-compose";
 import semver from "semver";
 import { Entity } from "./entity";
@@ -9,8 +8,13 @@ import { Endpoint } from "./endpoint";
 import App from "./etc/app";
 import type Services from "./etc/services";
 
-import type { EndpointsMap } from "../flow-typed/webiny-api";
-import type { express$Request, express$Response } from "../flow-typed/npm/express_v4.x.x";
+type EndpointsMap = {
+    [url: string]: {
+        classId: string,
+        versions: { [version: string]: Class<Endpoint> },
+        latest: string
+    }
+};
 
 class Api {
     config: Object;
@@ -18,6 +22,7 @@ class Api {
     endpoints: EndpointsMap;
     requestMiddleware: Function;
     serviceManager: Services;
+    namespace: cls$Namespace;
 
     constructor(services: Services) {
         this.config = {};
@@ -32,14 +37,15 @@ class Api {
     }
 
     getRequest(): express$Request {
-        return getNamespace("webiny-api").get("req");
+        return this.namespace.get("req");
     }
 
     setConfig(config: Object) {
         this.config = config;
     }
 
-    init(): void {
+    init(namespace: Namespace): void {
+        this.namespace = namespace;
         // Prepare apps
         this.apps = this.config.apps;
         this.endpoints = prepareEndpoints.call(this);

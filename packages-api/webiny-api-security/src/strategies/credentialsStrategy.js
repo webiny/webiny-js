@@ -1,18 +1,29 @@
 // @flow
 import bcrypt from "bcryptjs";
 import type { Identity } from "../index";
-import type { express$Request } from "webiny-api/flow-typed/npm/express_v4.x.x";
 import AuthenticationError from "../services/authenticationError";
 
 /**
  * Credentials strategy factory
  * @return {function(express$Request, Class<Identity>)}
  */
-export default (config: { credentials: Function }) => {
+export default (options: { credentials?: Function } = {}) => {
     const error = new AuthenticationError(
         "Invalid credentials.",
         AuthenticationError.INVALID_CREDENTIALS
     );
+
+    const config = { ...options };
+
+    // Default credentials provider
+    if (typeof config.credentials !== "function") {
+        config.credentials = req => {
+            return {
+                username: req.body.username,
+                password: req.body.password
+            };
+        };
+    }
 
     /**
      * Credentials authentication strategy.

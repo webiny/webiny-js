@@ -1,26 +1,25 @@
 // @flow
 import _ from "lodash";
 import debug from "debug";
-import { createNamespace } from "cls-hooked";
 import { api } from "./index";
+import cls from "cls-hooked";
+
 import responseProxy from "./response/responseProxy";
 import type Api from "./api";
 
-import type { express$Request, express$Response } from "../flow-typed/npm/express_v4.x.x";
-
 let appInstance: Api;
 
-function initApp(config: Object) {
+function initApp(config: Object, namespace: cls$Namespace) {
     api.setConfig(config);
-    api.init();
+    api.init(namespace);
     appInstance = api;
 }
 
 // TODO: create Flow object for config
 export default (config: Object) => {
     const log = debug("api:middleware");
-    initApp(config);
-    const namespace = createNamespace("webiny-api");
+    const namespace: cls$Namespace = cls.createNamespace(Date.now().toString());
+    initApp(config, namespace);
 
     // Route request
     return async (req: express$Request, res: express$Response, next: Function) => {

@@ -1,9 +1,7 @@
 // @flow
 import { Identity } from "./../index";
 import AuthenticationError from "./authenticationError";
-
-import type { IAuthentication, IToken } from "./../../flow-typed";
-import type { express$Request } from "webiny-api/flow-typed/npm/express_v4.x.x";
+import type { IAuthentication, IToken } from "./../../types";
 
 class Authentication implements IAuthentication {
     config: {

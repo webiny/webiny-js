@@ -1,6 +1,6 @@
 declare type Context = Object;
 
-declare class Namespace {
+declare class cls$Namespace {
     active(): Context;
     set<T>(key: string, value: T): T;
     get(key: string): any;
@@ -11,13 +11,17 @@ declare class Namespace {
     createContext(): Context;
 }
 
-declare module "cls-hooked" {
-    //declare export type Namespace = Namespace;
+declare type cls$Storage = {
+    createNamespace(name: string): cls$Namespace,
 
-    declare module.exports: {
-        createNamespace(name: string): Namespace,
-        getNamespace(name: string): Namespace,
-        destroyNamespace(name: string): void,
-        reset(): void
-    };
+    getNamespace(name: string): cls$Namespace,
+
+    destroyNamespace(name: string): void,
+
+    reset(): void
+};
+
+declare module "cls-hooked" {
+    declare export default cls$Storage
+    declare export type Namespace = cls$Namespace;
 }

@@ -1,7 +1,7 @@
 // @flow
 import { Entity } from "webiny-api";
 import { Model } from "webiny-model";
-import type { IAuthorizable } from "../../flow-typed";
+import type { IAuthorizable } from "../../types";
 
 /**
  * Identity class is the base class for all identity classes.

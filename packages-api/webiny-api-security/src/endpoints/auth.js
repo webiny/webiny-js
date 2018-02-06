@@ -1,9 +1,9 @@
 // @flow
 import { ApiResponse, ApiErrorResponse, Endpoint } from "webiny-api";
-import type { IApiContainer } from "webiny-api/flow-typed/webiny-api";
+import type { ApiContainer } from "webiny-api";
 
 class Auth extends Endpoint {
-    init(api: IApiContainer) {
+    init(api: ApiContainer) {
         /**
          * Identity profile
          */
