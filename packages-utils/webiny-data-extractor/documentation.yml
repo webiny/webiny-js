@@ -3,8 +3,6 @@ toc:
     file: documentation/installation.md
   - name: Get started
     file: documentation/getStarted.md
-  - name: Get started
-    file: documentation/getStarted.md
   - name: Classes
     children:
       - DataExtractor
