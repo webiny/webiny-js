@@ -94,4 +94,10 @@ describe("data extraction test", async function() {
         const data = await user.toJSON();
         assert.deepEqual(data, {});
     });
+
+    it("should not return fields that does not exist", async () => {
+        const user = new User().populate({ id: "A", age: 30 });
+        const extract = await user.toJSON("age,username");
+        assert.deepEqual(extract, { age: 30 });
+    });
 });

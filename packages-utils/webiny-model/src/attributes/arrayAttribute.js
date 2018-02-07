@@ -18,10 +18,6 @@ class ArrayAttribute extends Attribute {
      * @returns {Promise<void>}
      */
     async validateValue(value: mixed): Promise<void> {
-        if (!Array.isArray(value)) {
-            return;
-        }
-
         const currentValue: Array<mixed> = (value: any);
 
         const errors = [];

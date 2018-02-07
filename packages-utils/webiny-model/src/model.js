@@ -168,6 +168,9 @@ class Model implements IModel {
         return await extractor.get(this, fields, {
             onRead: async (data, key) => {
                 if (data instanceof Model) {
+                    if (!data.getAttribute(key)) {
+                        return undefined;
+                    }
                     return await data.getAttribute(key).getJSONValue();
                 }
                 return await data[key];

@@ -126,4 +126,10 @@ describe("toJSON test", function() {
         assert.deepEqual(await entity3.toJSON("id"), { id: null });
         assert.deepEqual(await entity3.toJSON(), { id: null });
     });
+
+    it("should not return fields that does not exist", async () => {
+        const user = new User().populate({ id: "A", age: 30 });
+        const extract = await user.toJSON("age,username");
+        assert.deepEqual(extract, { id: "A", age: 30 });
+    });
 });
