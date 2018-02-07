@@ -22,9 +22,11 @@ class ArrayAttribute extends Attribute {
             return;
         }
 
+        const currentValue: Array<mixed> = (value: any);
+
         const errors = [];
-        for (let i = 0; i < value.length; i++) {
-            const current = value[i];
+        for (let i = 0; i < currentValue.length; i++) {
+            const current = currentValue[i];
             if (!this.__isPrimitiveValue(current)) {
                 errors.push({
                     type: ModelError.INVALID_ATTRIBUTE,

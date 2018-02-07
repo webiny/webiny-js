@@ -35,11 +35,13 @@ describe("multiple delete / save prevention test", async function() {
         const deleteOperation = sandbox.spy(User.getDriver(), "delete");
 
         const promise = user.delete();
+        const promise2 = await user.delete();
         await user.delete();
         await user.delete();
         await user.delete();
 
         await promise;
+        await promise2;
 
         expect(deleteOperation.callCount).to.equal(1);
 

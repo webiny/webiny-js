@@ -4,12 +4,10 @@ import EntityAttributesContainer from "./entityAttributesContainer";
 import type Entity from "./entity";
 
 class EntityModel extends Model {
-    constructor(params: ?(Function | Object)) {
+    constructor(params: ?Object) {
         super(params);
         if (params && typeof params === "object") {
-            if (params.parentEntity) {
-                this.setParentEntity(params.parentEntity);
-            }
+            this.setParentEntity(params.parentEntity);
         }
     }
 

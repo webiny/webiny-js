@@ -21,7 +21,7 @@ class Attribute implements IAttribute {
     toJSON: boolean;
     skipOnPopulate: boolean;
     defaultValue: mixed;
-    validators: string | AttributeValidator;
+    validators: ?(string | AttributeValidator);
     onSetCallback: AttributeValueCallback;
     onGetCallback: AttributeValueCallback;
 
@@ -69,7 +69,7 @@ class Attribute implements IAttribute {
          * Attribute validators
          * @var string
          */
-        this.validators = "";
+        this.validators = null;
 
         /**
          * Custom onSet callback
