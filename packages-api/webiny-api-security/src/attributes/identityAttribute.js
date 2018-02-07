@@ -45,6 +45,17 @@ export class IdentityAttribute extends ModelAttribute {
             return null;
         }
 
-        return value.toStorage();
+        const storage = await value.toStorage();
+        return storage.classId + ":" + storage.identity;
+    }
+
+    setStorageValue(value: mixed): this {
+        if (typeof value === "string") {
+            // We don't want to mark value as dirty.
+            const [classId, identity] = value.split(":");
+            const newValue = this.getModelInstance().populateFromStorage({ classId, identity });
+            this.value.setCurrent(newValue, { skipDifferenceCheck: true });
+        }
+        return this;
     }
 }

@@ -120,7 +120,7 @@ describe("Identity attribute test", () => {
 
     it("should load entities from database", async () => {
         let entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
-            return new QueryResult({ id: "xyz", assignedTo: { classId: "User", identity: "abc" } });
+            return new QueryResult({ id: "xyz", assignedTo: "User:abc" });
         });
 
         let getIdentityClass = sandbox.stub(IdentityModel, "getIdentityClass").callsFake(() => {
@@ -145,7 +145,7 @@ describe("Identity attribute test", () => {
 
     it("should return correct storage values", async () => {
         let entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
-            return new QueryResult({ id: "xyz", assignedTo: { classId: "User", identity: "abc" } });
+            return new QueryResult({ id: "xyz", assignedTo: "User:abc" });
         });
 
         let getIdentityClass = sandbox.stub(IdentityModel, "getIdentityClass").callsFake(() => {
@@ -161,10 +161,7 @@ describe("Identity attribute test", () => {
         assert.deepEqual(storage, {
             id: "xyz",
             title: null,
-            assignedTo: {
-                classId: "User",
-                identity: "abc"
-            }
+            assignedTo: "User:abc"
         });
 
         entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
@@ -179,10 +176,7 @@ describe("Identity attribute test", () => {
         assert.deepEqual(storage, {
             id: "xyz",
             title: null,
-            assignedTo: {
-                classId: "User",
-                identity: "abc"
-            }
+            assignedTo: "User:abc"
         });
     });
 
