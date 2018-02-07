@@ -2,6 +2,48 @@
 import _ from "lodash";
 import ValidationError from "./validationError";
 
+/**
+ * @typedef Validator
+ * @name Validator
+ * @description This type defines the validator function.
+ * @param {any} value This is the value being validated.
+ * @param {Array<string>} parameters (Optional) This represents an array validator parameters.
+ * @throws {ValidationError}
+ */
+export type Validator = (value: any, params: Array<string>) => void;
+
+/**
+ * @typedef ValidationErrorValue
+ * @name ValidationErrorValue
+ * @description This type defines a structure of validation error data object.
+ * @property {string} name Validator name.
+ * @property {string} message Error message.
+ * @property {any} value Value being validated.
+ */
+export type ValidationErrorValue = {
+    message: string,
+    name: string,
+    value: any
+};
+
+/**
+ * @typedef ValidateOptions
+ * @name ValidateOptions
+ * @description This is an object containing validation options.
+ * @property {boolean} throw Should validation throw on failure? Default: true.
+ */
+export type ValidateOptions = {
+    throw?: boolean
+};
+
+/**
+ * @private
+ * @typedef ParsedValidators
+ * @name ParsedValidators
+ * @description An object containing validators with parameters: `{ [string]: Array<string> }`.
+ */
+type ParsedValidators = { [string]: Array<string> };
+
 const entries = (validators: ParsedValidators): Array<[string, Array<string>]> => {
     return (Object.entries(validators): any);
 };
@@ -21,6 +63,9 @@ const invalidRules = "Validators must be specified as a string (eg. required,min
  * // From here you can either add new validators or use it as-is
  */
 class Validation {
+    /**
+     * @private
+     */
     validators: { [string]: Validator };
 
     constructor() {
@@ -29,6 +74,7 @@ class Validation {
 
     /**
      * Add new validator
+     * @memberOf Validation
      * @param name Validator name
      * @param callable Validator function which should throw a ValidationError if validation fails
      */
@@ -37,8 +83,10 @@ class Validation {
     }
 
     /**
-     * Get validator function by name
+     * Get validator function by name.
+     * @memberOf Validation
      * @param name Validator name
+     * @returns {Validator} A validator function.
      */
     getValidator(name: string): Validator {
         if (!this.validators[name]) {
@@ -48,9 +96,10 @@ class Validation {
     }
 
     /**
+     * @private
      * Parse a string of validators with parameters
      * @param rules A string of validators with parameters
-     * @private
+     * @returns {ParsedValidators}
      */
     parseValidateProperty(rules: string): ParsedValidators {
         let validate: Array<string> = rules.split(",");
@@ -69,6 +118,7 @@ class Validation {
      * @param value A value to validate
      * @param rules A string of validators with parameters
      * @param options (Optional) Validation options
+     * @returns {Promise<boolean | ValidationErrorValue>}
      */
     async validate(
         value: any,
@@ -104,6 +154,7 @@ class Validation {
      * @param value A value to validate
      * @param rules A string of validators with parameters
      * @param options (Optional) Validation options
+     * @returns {boolean | ValidationErrorValue}
      */
     validateSync(
         value: any,

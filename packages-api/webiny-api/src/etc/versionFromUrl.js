@@ -1,5 +1,4 @@
 // @flow
-import type { express$Request } from "../../flow-typed/npm/express_v4.x.x";
 
 /**
  * Creates a function to determine the api version from the headers

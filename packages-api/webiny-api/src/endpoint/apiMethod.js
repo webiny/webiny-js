@@ -2,8 +2,6 @@
 import _ from "lodash";
 import { Endpoint } from "./../endpoint";
 
-import type { express$Request, express$Response } from "../../flow-typed/npm/express_v4.x.x";
-
 class ApiMethod {
     name: string;
     httpMethod: string;

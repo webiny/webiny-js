@@ -1,12 +1,12 @@
+// @flow
 import type { ApiMethod } from "webiny-api";
-import type { Identity, Role } from "./../src";
-import type { express$Request } from "webiny-api/flow-typed/npm/express_v4.x.x";
+import type { Identity, Role } from "./src";
 
 /**
  * Implement this interface to allow objects to be passed to Authorization service.
  * To make users as flexible as possible we only require 2 methods to be implemented: hasRole() and getRoles().
  */
-declare interface IAuthorizable {
+export interface IAuthorizable {
     /**
      * Checks whether the user has the specified role.
      * @param {string} role
@@ -24,7 +24,7 @@ declare interface IAuthorizable {
 /**
  * Interface for Authentication service.
  */
-declare interface IAuthentication {
+export interface IAuthentication {
     /**
      * Authenticate request.
      * @param {express$Request} req
@@ -65,7 +65,7 @@ declare interface IAuthentication {
  * Interface for Authorization service.
  * Its only purpose is to determine whether user can execute an API method.
  */
-declare interface IAuthorization {
+export interface IAuthorization {
     /**
      * Checks whether user can execute an API method.
      * @param {ApiMethod} apiMethod
@@ -78,7 +78,7 @@ declare interface IAuthorization {
 /**
  * Interface for Token implementation.
  */
-declare interface IToken {
+export interface IToken {
     /**
      * Get time in seconds since epoch when token should expire.
      * @param {Identity} identity Identity instance to be encoded.

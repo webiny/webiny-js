@@ -2,7 +2,7 @@
 import addDays from "date-fns/add_days";
 import jwt from "jsonwebtoken";
 import type { Identity } from "./../index";
-import type { IToken } from "../../flow-typed";
+import type { IToken } from "../../types";
 import AuthenticationError from "../services/authenticationError";
 
 declare type JwtTokenConfig = {

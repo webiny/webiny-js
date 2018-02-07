@@ -16,11 +16,11 @@ export default (value, params) => {
 
     if (regex.test(value)) {
         if (!params.includes("noIp")) {
-            return true;
+            return;
         }
 
         if (!ipRegex.test(value)) {
-            return true;
+            return;
         }
     }
 

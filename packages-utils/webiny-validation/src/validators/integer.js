@@ -1,12 +1,13 @@
-import _ from 'lodash';
-import ValidationError from './../validationError';
+// @flow
+import _ from "lodash";
+import ValidationError from "./../validationError";
 
-export default (value) => {
+export default (value: any) => {
     if (!value) return;
 
     if (_.isInteger(value)) {
-        return true;
+        return;
     }
 
-    throw new ValidationError('Value needs to be an integer.');
+    throw new ValidationError("Value needs to be an integer.");
 };

@@ -15,12 +15,11 @@ import ValidationError from "./../validationError";
  *  // Invalid
  * });
  */
-
-export default (value: number, min: number) => {
+export default (value: any, params: Array<string>) => {
     if (!value) return;
 
-    if (parseFloat(value) >= parseFloat(min)) {
-        return true;
+    if (parseFloat(value) >= parseFloat(params[0])) {
+        return;
     }
-    throw new ValidationError("Value needs to be greater than or equal to " + min + ".");
+    throw new ValidationError("Value needs to be greater than or equal to " + params[0] + ".");
 };

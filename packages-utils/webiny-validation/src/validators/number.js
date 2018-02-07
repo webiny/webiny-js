@@ -12,7 +12,7 @@ export default (value: any) => {
     if (!value && !_.isNaN(value)) return;
 
     if (_.isNumber(value) && !_.isNaN(value)) {
-        return true;
+        return;
     }
 
     throw new ValidationError("Value needs to be a number.");

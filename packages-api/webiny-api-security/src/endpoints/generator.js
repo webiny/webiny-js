@@ -1,7 +1,7 @@
 // @flow
 import { ApiResponse, ApiErrorResponse } from "webiny-api";
 import type { ApiContainer, Endpoint } from "webiny-api";
-import type { IAuthentication } from "../../flow-typed";
+import type { IAuthentication } from "../../types";
 
 export default (BaseEndpoint: Class<Endpoint>, config: Object, authentication: IAuthentication) => {
     class Auth extends BaseEndpoint {

@@ -1,3 +1,4 @@
+// @flow
 import Validation from "./validation";
 import ValidationError from "./validationError";
 import creditCard from "./validators/creditCard";
@@ -35,4 +36,4 @@ validation.setValidator("phone", phone);
 validation.setValidator("required", required);
 validation.setValidator("url", url);
 
-module.exports = { validation, ValidationError };
+export { validation, Validation, ValidationError };
