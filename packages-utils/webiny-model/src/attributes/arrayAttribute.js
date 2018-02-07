@@ -1,44 +1,30 @@
 // @flow
 import Attribute from "./../attribute";
 import _ from "lodash";
-import Model from "./../model";
 import ModelError from "./../modelError";
-import { AttributesContainer } from "../index";
 
 class ArrayAttribute extends Attribute {
-    constructor(name: string, attributesContainer: AttributesContainer) {
-        super(name, attributesContainer);
+    /**
+     * If value is assigned (checked in the parent validate call), it must by an instance of array.
+     */
+    async validateType(value: mixed) {
+        if (Array.isArray(value)) {
+            return;
+        }
+        this.expected("array", typeof value);
     }
 
-    setValue(value: any) {
-        if (!this.canSetValue()) {
+    /**
+     * @returns {Promise<void>}
+     */
+    async validateValue(value: mixed): Promise<void> {
+        if (!Array.isArray(value)) {
             return;
-        }
-
-        // Even if the value is invalid (eg. a string), we allow it here, but calling validate() will fail.
-        if (!(value instanceof Array)) {
-            this.value.setCurrent(value);
-            return;
-        }
-
-        this.value.setCurrent(value);
-    }
-
-    async validate(): Promise<void> {
-        if (!this.isSet()) {
-            return;
-        }
-
-        const attrValue = this.value.getCurrent();
-        if (!(attrValue instanceof Array)) {
-            this.expected("array", typeof attrValue);
         }
 
         const errors = [];
-        const currentValue = ((attrValue: any): Array<Model>);
-
-        for (let i = 0; i < currentValue.length; i++) {
-            const current = currentValue[i];
+        for (let i = 0; i < value.length; i++) {
+            const current = value[i];
             if (!this.__isPrimitiveValue(current)) {
                 errors.push({
                     type: ModelError.INVALID_ATTRIBUTE,
@@ -55,10 +41,6 @@ class ArrayAttribute extends Attribute {
                 items: errors
             });
         }
-    }
-
-    getValue(): Array<string | number> | null {
-        return (super.getValue(): any);
     }
 
     __isPrimitiveValue(value: any): boolean {

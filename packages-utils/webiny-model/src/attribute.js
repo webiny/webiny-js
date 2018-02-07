@@ -130,6 +130,66 @@ class Attribute implements IAttribute {
         return !_.isEmpty(this.validators);
     }
 
+    async getValidationValue() {
+        return this.getValue();
+    }
+
+    /**
+     * Perform validation against currently assigned value.
+     * @throws AttributeValidationException
+     */
+    async validate(): Promise<void> {
+        const value = await this.getValidationValue();
+        const valueValidation = this.isSet() && !Attribute.isEmptyValue(value);
+
+        valueValidation && (await this.validateType(value));
+        await this.validateAttribute(value);
+        valueValidation && (await this.validateValue(value));
+    }
+
+    /**
+     * Only used for validating data type only (eg. string must not be send to an attribute that accepts numbers).
+     * Will be triggered before data validation by given validators.
+     */
+    // eslint-disable-next-line
+    async validateType(value: mixed): Promise<void> {
+        // Does nothing unless this class is extended and method overridden.
+        // Throw an error to signal that validation has failed.
+    }
+
+    /**
+     * Used to additionally check set data (eg. items in array or to additionally validate set value).
+     * Will be triggered after data validation by given validators.
+     * @returns {Promise<void>}
+     */
+    // eslint-disable-next-line
+    async validateValue(value: mixed): Promise<void> {
+        // Does nothing unless this class is extended and method overridden.
+        // Throw an error to signal that validation has failed.
+    }
+
+    /**
+     * Used to additionally check set data (eg. items in array or to additionally validate set value).
+     * Will be triggered after data validation by given validators.
+     * @returns {Promise<void>}
+     */
+    async validateAttribute(value: mixed) {
+        let validators = this.getValidators();
+        if (_.isString(validators)) {
+            try {
+                await validation.validate(value, validators);
+            } catch (e) {
+                throw new ModelError("Invalid attribute.", ModelError.INVALID_ATTRIBUTE, {
+                    message: e.message,
+                    value: e.value,
+                    validator: e.validator
+                });
+            }
+        } else if (typeof validators === "function") {
+            await validators(value, this);
+        }
+    }
+
     /**
      * Resets attribute - empties value and resets value.set flag, which means setting value will again work in cases setOnce is present.
      */
@@ -154,49 +214,12 @@ class Attribute implements IAttribute {
     }
 
     /**
-     * Only used for validating data type only (eg. string must not be send to an attribute that accepts numbers).
-     * Will be triggered before data validation by given validators.
+     * Checks if given value is empty or not.
+     * @param value
+     * @returns {boolean}
      */
-    validateType() {
-        // Does nothing unless this class is extended and method overridden
-        // Throw an error to signal that validation has failed
-    }
-
-    /**
-     * Perform validation against currently assigned value.
-     * @throws AttributeValidationException
-     */
-    async validate(): Promise<void> {
-        this.isSet() && this.hasValue() && this.validateType();
-
-        let validators = this.getValidators();
-        if (_.isString(validators)) {
-            try {
-                return await validation.validate(this.value.getCurrent(), validators);
-            } catch (e) {
-                throw new ModelError("Invalid attribute.", ModelError.INVALID_ATTRIBUTE, {
-                    message: e.message,
-                    value: e.value,
-                    validator: e.validator
-                });
-            }
-        } else if (typeof validators === "function") {
-            return validators(this.value.getCurrent(), this);
-        }
-    }
-
-    /**
-     * Tells us if current attribute has an assigned value.
-     */
-    hasValue(): boolean {
-        return this.value.getCurrent() !== null && this.value.getCurrent() !== undefined;
-    }
-
-    /**
-     * Opposite of `hasValue()`
-     */
-    isEmpty(): boolean {
-        return !this.hasValue();
+    static isEmptyValue(value: mixed): boolean {
+        return value === null || typeof value === "undefined";
     }
 
     /**
@@ -233,7 +256,8 @@ class Attribute implements IAttribute {
      * Returns attribute's value.
      */
     getValue(): mixed {
-        if (this.isEmpty()) {
+        const value = this.value.getCurrent();
+        if (Attribute.isEmptyValue(value)) {
             this.value.setCurrent(this.getDefaultValue());
         }
 

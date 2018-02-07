@@ -1,6 +1,7 @@
 import { assert } from "chai";
 import { Model, ModelAttribute } from "./../src";
 import DefaultAttributesContainer from "./../src/defaultAttributesContainer";
+import { AttributesContainer } from "../src";
 
 class DefaultAttributesContainerOverride extends DefaultAttributesContainer {
     newAttribute() {
@@ -38,9 +39,8 @@ describe("overriding attributes container test", function() {
         }
 
         class IdentityAttribute extends ModelAttribute {
-            constructor() {
-                super();
-                this.modelClass = IdentityModel;
+            constructor(name: string, attributesContainer: AttributesContainer) {
+                super(name, attributesContainer, IdentityModel);
             }
         }
 

@@ -6,10 +6,8 @@ class ModelAttribute extends BaseModelAttribute {
     }
 
     async getStorageValue() {
-        if (this.isEmpty()) {
-            return null;
-        }
-        return JSON.stringify(await BaseModelAttribute.prototype.getStorageValue.call(this));
+        const value = await BaseModelAttribute.prototype.getStorageValue.call(this);
+        return value ? JSON.stringify(value) : value;
     }
 }
 

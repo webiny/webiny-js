@@ -31,8 +31,7 @@ export class IdentityModel extends EntityModel {
 
 export class IdentityAttribute extends ModelAttribute {
     constructor(name: string, attributesContainer: AttributesContainer) {
-        super(name, attributesContainer);
-        this.modelClass = IdentityModel;
+        super(name, attributesContainer, IdentityModel);
     }
 
     setValue(value) {

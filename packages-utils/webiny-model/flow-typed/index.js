@@ -42,8 +42,6 @@ export interface IAttribute {
 
     validate(): Promise<void>;
 
-    hasValue(): boolean;
-
     isEmpty(): boolean;
 
     isSet(): boolean;

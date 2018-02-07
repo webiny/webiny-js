@@ -19,9 +19,9 @@ describe("multiple delete / save prevention test", async function() {
         const save = sandbox.spy(User.getDriver(), "save");
 
         const promise = user.save();
-        await user.save();
-        await user.save();
-        await user.save();
+        user.save();
+        user.save();
+        user.save();
 
         await promise;
 
@@ -40,6 +40,12 @@ describe("multiple delete / save prevention test", async function() {
         await user.delete();
 
         await promise;
+
+        expect(deleteOperation.callCount).to.equal(1);
+
+        user.processing = "delete";
+        await user.delete();
+        user.processing = null;
 
         expect(deleteOperation.callCount).to.equal(1);
     });

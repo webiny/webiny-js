@@ -83,7 +83,7 @@ class Entity {
         }
 
         this.on("delete", () => {
-            if (this.getAttribute("id").isEmpty()) {
+            if (!proxy.id) {
                 throw new EntityError(
                     "Entity cannot be deleted because it was not previously saved.",
                     EntityError.CANNOT_DELETE_NO_ID

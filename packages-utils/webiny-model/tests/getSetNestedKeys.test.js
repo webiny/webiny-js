@@ -28,7 +28,9 @@ describe("getting and setting nested keys test", function() {
     it("should set nested values correctly", async () => {
         const model1 = new Model1();
         model1.char = "char";
+        model1.model2 = {};
         model1.model2.integer = 123;
+        model1.model2.model3 = {};
         model1.model2.model3.boolean = true;
 
         assert.equal(model1.char, "char");

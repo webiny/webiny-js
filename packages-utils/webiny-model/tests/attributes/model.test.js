@@ -276,7 +276,7 @@ describe("attribute model test", function() {
     it("getJSONValue method must return value - we don't do any processing toJSON on it", async () => {
         const user = new User();
         user.company = null;
-        assert.isObject(await user.getAttribute("company").getJSONValue());
+        assert.isNull(await user.getAttribute("company").getJSONValue());
     });
 
     it("getStorageValue method must return null", async () => {

@@ -2,11 +2,11 @@
 import { ModelAttribute, Entity } from "webiny-entity";
 import { AttributesContainer } from "webiny-model";
 import IdentityModel from "./identityAttribute/identityModel";
+import Model from "../../../../packages-utils/webiny-model/src/model";
 
 export class IdentityAttribute extends ModelAttribute {
     constructor(name: string, attributesContainer: AttributesContainer) {
-        super(name, attributesContainer);
-        this.modelClass = IdentityModel;
+        super(name, attributesContainer, IdentityModel);
     }
 
     setValue(value: mixed) {
@@ -24,7 +24,15 @@ export class IdentityAttribute extends ModelAttribute {
     }
 
     getValue() {
-        return super.getValue().identity;
+        const value = super.getValue();
+        if (value instanceof Model) {
+            return value.identity;
+        }
+        return value;
+    }
+
+    async getValidationValue() {
+        return ModelAttribute.prototype.getValue.call(this);
     }
 
     /**

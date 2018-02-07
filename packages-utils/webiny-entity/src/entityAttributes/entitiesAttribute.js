@@ -315,18 +315,51 @@ class EntitiesAttribute extends Attribute {
         return [];
     }
 
-    hasValue() {
-        return !_.isEmpty(this.value.getCurrent());
-    }
-
     /**
      * Validates current value - if it's not an instance of EntityCollection, an error will be thrown.
      */
-    validateType() {
-        if (this.value.getCurrent() instanceof EntityCollection) {
+    async validateType(value: mixed) {
+        if (value instanceof EntityCollection) {
             return;
         }
-        this.expected("instance of EntityCollection", typeof this.value.getCurrent());
+        this.expected("instance of EntityCollection", typeof value);
+    }
+
+    async validateValue() {
+        const errors = [];
+        const entitiesToValidate = this.getUsingClass()
+            ? this.value.getCurrentLinks()
+            : this.value.getCurrent();
+        const correctClass = this.getUsingClass() || this.getEntitiesClass();
+
+        for (let i = 0; i < entitiesToValidate.length; i++) {
+            if (!(entitiesToValidate[i] instanceof correctClass)) {
+                errors.push({
+                    type: ModelError.INVALID_ATTRIBUTE,
+                    data: {
+                        index: i
+                    },
+                    message: `Validation failed, item at index ${i} not an instance of correct Entity class.`
+                });
+                continue;
+            }
+
+            try {
+                await entitiesToValidate[i].validate();
+            } catch (e) {
+                errors.push({
+                    type: e.type,
+                    data: { index: i, ...e.data },
+                    message: e.message
+                });
+            }
+        }
+
+        if (!_.isEmpty(errors)) {
+            throw new ModelError("Validation failed.", ModelError.INVALID_ATTRIBUTE, {
+                items: errors
+            });
+        }
     }
 
     /**
@@ -347,53 +380,15 @@ class EntitiesAttribute extends Attribute {
 
         // This validates on the attribute level.
         await Attribute.prototype.validate.call(this);
-
-        const errors = [];
-        const value = this.getUsingClass() ? this.value.getCurrentLinks() : this.value.getCurrent();
-        const correctClass = this.getUsingClass() ? this.getUsingClass() : this.getEntitiesClass();
-
-        for (let i = 0; i < value.length; i++) {
-            if (!(value[i] instanceof correctClass)) {
-                errors.push({
-                    type: ModelError.INVALID_ATTRIBUTE,
-                    data: {
-                        index: i
-                    },
-                    message: `Validation failed, item at index ${i} not an instance of correct Entity class.`
-                });
-                continue;
-            }
-
-            try {
-                await value[i].validate();
-            } catch (e) {
-                errors.push({
-                    type: e.type,
-                    data: { index: i, ...e.data },
-                    message: e.message
-                });
-            }
-        }
-
-        if (!_.isEmpty(errors)) {
-            throw new ModelError("Validation failed.", ModelError.INVALID_ATTRIBUTE, {
-                items: errors
-            });
-        }
     }
 
     async getJSONValue(): Promise<Array<Object>> {
         const value = await this.getValue();
-        if (this.isEmpty()) {
-            return [];
-        }
-
-        const json = [];
         if (value instanceof EntityCollection) {
             return value.toJSON();
         }
 
-        return json;
+        return value;
     }
 }
 

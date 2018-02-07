@@ -10,10 +10,6 @@ class ModelAttribute extends Attribute {
     constructor(name: string, attributesContainer: AttributesContainer, model: Class<Model>) {
         super(name, attributesContainer);
         this.modelClass = model;
-
-        // This has to be set - it enables setting nested values, even if the current value of the attribute is null.
-        // Eg. user.company.image - this will automatically set empty models as values, and enable setting nested values.
-        this.defaultValue = () => this.getModelInstance();
     }
 
     getModelClass(): Class<Model> {
@@ -52,7 +48,7 @@ class ModelAttribute extends Attribute {
     }
 
     async getStorageValue(): Promise<mixed> {
-        const value = await this.value.getCurrent();
+        const value = await this.getValue();
         if (value instanceof Model) {
             return await value.toStorage();
         }
@@ -71,21 +67,17 @@ class ModelAttribute extends Attribute {
     /**
      * If value is assigned (checked in the parent validate call), it must by an instance of Model.
      */
-    validateType() {
-        if (this.value.getCurrent() instanceof this.getModelClass()) {
+    async validateType(value: mixed) {
+        if (value instanceof this.getModelClass()) {
             return;
         }
-        this.expected("instance of Model class", typeof this.value.getCurrent());
+        this.expected("instance of Model class", typeof value);
     }
 
-    async validate(): Promise<void> {
-        // This validates on the attribute level.
-        await Attribute.prototype.validate.call(this);
-
+    async validateValue(value: mixed): Promise<void> {
         // This validates on the model level.
-        const currentValue = this.value.getCurrent();
-        if (currentValue instanceof this.getModelClass()) {
-            await currentValue.validate();
+        if (value instanceof this.getModelClass()) {
+            await value.validate();
         }
     }
 }

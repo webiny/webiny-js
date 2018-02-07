@@ -9,6 +9,7 @@ describe("attribute models test", function() {
 
     it("should fail - attributes should accept primitive values", async () => {
         model.attribute1 = {};
+        const a = model.attribute1;
         assert.isObject(model.attribute1);
 
         model.attribute2 = new Date();
@@ -130,5 +131,13 @@ describe("attribute models test", function() {
         });
 
         assert.isNull(await newModel.getAttribute("attribute1").getJSONValue());
+    });
+
+    it("should not throw validation error if it is empty", async () => {
+        const newModel = new Model(function() {
+            this.attr("attribute1").array();
+        });
+
+        await newModel.validate();
     });
 });

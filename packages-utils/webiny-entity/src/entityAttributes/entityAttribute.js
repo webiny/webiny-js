@@ -209,24 +209,6 @@ class EntityAttribute extends Attribute {
     }
 
     /**
-     * Validates current value - if it's not a valid ID or an instance of Entity class, an error will be thrown.
-     */
-    validateType() {
-        if (
-            this.getParentModel()
-                .getParentEntity()
-                .isId(this.value.getCurrent())
-        ) {
-            return;
-        }
-
-        if (this.value.getCurrent() instanceof this.getEntityClass()) {
-            return;
-        }
-        this.expected("instance of Entity class or a valid ID", typeof this.value.getCurrent());
-    }
-
-    /**
      * Validates on attribute level and then on entity level (its attributes recursively).
      * If attribute has validators, we must unfortunately always load the attribute value. For example, if we had a 'required'
      * validator, and entity not loaded, we cannot know if there is a value or not, and thus if the validator should fail.
@@ -242,12 +224,36 @@ class EntityAttribute extends Attribute {
             return;
         }
 
-        // This validates on the attribute level.
-        await Attribute.prototype.validate.call(this);
+        const value = await this.getValidationValue();
 
+        const valueValidation = this.isSet() && !Attribute.isEmptyValue(value);
+
+        valueValidation && (await this.validateType(value));
+        await this.validateAttribute(value);
+        valueValidation && (await this.validateValue(value));
+    }
+
+    /**
+     * Validates current value - if it's not a valid ID or an instance of Entity class, an error will be thrown.
+     */
+    async validateType(value) {
+        if (
+            this.getParentModel()
+                .getParentEntity()
+                .isId(value)
+        ) {
+            return;
+        }
+
+        if (value instanceof this.getEntityClass()) {
+            return;
+        }
+        this.expected("instance of Entity class or a valid ID", typeof value);
+    }
+
+    async validateValue(value) {
         // This validates on the entity level.
-        this.value.getCurrent() instanceof this.getEntityClass() &&
-            (await this.value.getCurrent().validate());
+        value instanceof this.getEntityClass() && (await value.validate());
     }
 }
 

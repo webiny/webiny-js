@@ -92,26 +92,24 @@ class ModelsAttribute extends Attribute {
     /**
      * If value is assigned (checked in the parent validate call), it must by an instance of Model.
      */
-    validateType() {
-        const value = this.value.getCurrent();
+    async validateType(value: mixed) {
         if (value instanceof Array) {
             return;
         }
         this.expected("array", typeof value);
     }
 
-    async validate(): Promise<void> {
-        // This validates on the attribute level.
-        await Attribute.prototype.validate.call(this);
+    async validateValue(value: mixed) {
+        if (!Array.isArray(value)) {
+            return;
+        }
 
         // This validates on all of the model's levels.
-
         const errors = [];
-        const attrValue = this.value.getCurrent();
-        const currentValue = ((attrValue: any): Array<Model>);
 
-        for (let i = 0; i < currentValue.length; i++) {
-            if (!(currentValue[i] instanceof this.getModelClass())) {
+        for (let i = 0; i < value.length; i++) {
+            const current = value[i];
+            if (!(current instanceof this.getModelClass())) {
                 errors.push({
                     type: ModelError.INVALID_ATTRIBUTE,
                     data: {
@@ -122,7 +120,7 @@ class ModelsAttribute extends Attribute {
                 continue;
             }
             try {
-                await currentValue[i].validate();
+                await current.validate();
             } catch (e) {
                 errors.push({
                     type: e.type,

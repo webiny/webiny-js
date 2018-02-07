@@ -129,7 +129,7 @@ describe("entities attribute test", function() {
             verification: null,
             tags: "[]",
             simpleEntity: null,
-            simpleEntities: null
+            simpleEntities: "[]"
         };
         assert.deepEqual(actual, expected);
 
@@ -142,7 +142,7 @@ describe("entities attribute test", function() {
             verification: null,
             tags: "[]",
             simpleEntity: null,
-            simpleEntities: null
+            simpleEntities: "[]"
         };
         assert.deepEqual(actual, expected);
     });

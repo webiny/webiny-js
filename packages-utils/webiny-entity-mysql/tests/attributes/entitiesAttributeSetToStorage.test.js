@@ -84,7 +84,7 @@ describe("entity attribute test", function() {
             verification: null,
             tags: "[]",
             simpleEntity: null,
-            simpleEntities: null
+            simpleEntities: "[]"
         };
         assert.deepEqual(actual, expected);
     });
