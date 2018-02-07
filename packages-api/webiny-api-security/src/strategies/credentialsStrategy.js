@@ -7,7 +7,7 @@ import AuthenticationError from "../services/authenticationError";
  * Credentials strategy factory
  * @return {function(express$Request, Class<Identity>)}
  */
-export default (options: { credentials?: Function } = {}) => {
+export default (options: { usernameAttribute?: string, credentials?: Function } = {}) => {
     const error = new AuthenticationError(
         "Invalid credentials.",
         AuthenticationError.INVALID_CREDENTIALS
@@ -25,6 +25,10 @@ export default (options: { credentials?: Function } = {}) => {
         };
     }
 
+    if (!config.usernameAttribute) {
+        config.usernameAttribute = "username";
+    }
+
     /**
      * Credentials authentication strategy.
      * @param req
@@ -33,7 +37,9 @@ export default (options: { credentials?: Function } = {}) => {
     return (req: express$Request, identity: Class<Identity>): Promise<Identity> => {
         return new Promise(async (resolve, reject) => {
             const { username, password } = config.credentials(req);
-            const instance = await identity.findOne({ query: { username } });
+            const instance = await identity.findOne({
+                query: { [config.usernameAttribute]: username }
+            });
 
             if (!instance) {
                 return reject(error);

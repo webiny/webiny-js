@@ -1,6 +1,7 @@
 // @flow
 import { Entity } from "webiny-api";
 import { Model } from "webiny-model";
+import type { EntityCollection } from "webiny-entity";
 import type { IAuthorizable } from "../../types";
 
 /**
@@ -24,18 +25,22 @@ export class Identity extends Entity implements IAuthorizable {
      * @returns {boolean}
      */
     // eslint-disable-next-line
-    hasRole(role: string): Promise<boolean> {
-        // TODO
-        return Promise.resolve(true);
+    async hasRole(role: string): Promise<boolean> {
+        const roles = await this.getRoles();
+        for (let i = 0; i < roles.length; i++) {
+            if (roles[i].slug === role) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
      * Returns all user's roles.
      * @returns {Array<Role>} All roles assigned to the user.
      */
-    getRoles(): Promise<Array<Role>> {
-        // TODO
-        return Promise.resolve([]);
+    getRoles(): Promise<Array<Role> | EntityCollection<Role>> {
+        return this.roles;
     }
 }
 
@@ -44,7 +49,7 @@ Identity.classId = "Security.Identity";
 export class Identity2Role extends Entity {
     constructor() {
         super();
-        this.attr("identity").entity(Identity);
+        this.attr("identity").identity();
         this.attr("role").entity(Role);
     }
 }
@@ -90,7 +95,7 @@ export class Permission extends Entity {
         this.attr("slug")
             .char()
             .setValidators("required");
-        this.attr("permissions").models(PermissionModel);
+        this.attr("rules").models(RuleModel);
         this.attr("roles")
             .entities(Role)
             .setUsing(Role2Permission);
@@ -126,13 +131,13 @@ export class Role2RoleGroup extends Entity {
 
 Role2RoleGroup.classId = "Security.Role2RoleGroup";
 
-class PermissionModel extends Model {
+class RuleModel extends Model {
     constructor() {
         super();
         this.attr("classId")
             .char()
             .setValidators("required");
-        this.attr("rules").models(
+        this.attr("methods").models(
             new Model(function() {
                 this.attr("method")
                     .char()

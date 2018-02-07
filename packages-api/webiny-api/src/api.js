@@ -44,7 +44,7 @@ class Api {
         this.config = config;
     }
 
-    init(namespace: Namespace): void {
+    init(namespace: cls$Namespace): void {
         this.namespace = namespace;
         // Prepare apps
         this.apps = this.config.apps;

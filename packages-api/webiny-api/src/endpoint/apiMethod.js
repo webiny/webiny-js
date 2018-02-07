@@ -1,6 +1,6 @@
 // @flow
 import _ from "lodash";
-import { Endpoint } from "./../endpoint";
+import type { Endpoint } from "./../endpoint";
 
 class ApiMethod {
     name: string;
@@ -43,6 +43,14 @@ class ApiMethod {
             .replace(this.namedParam, "([^/]+)")
             .replace(this.wildcardParam, "(.*?)");
         this.regex = new RegExp("^" + regex + "$");
+    }
+
+    getName(): string {
+        return this.name;
+    }
+
+    getEndpoint(): Endpoint {
+        return this.context;
     }
 
     getPattern(): string {

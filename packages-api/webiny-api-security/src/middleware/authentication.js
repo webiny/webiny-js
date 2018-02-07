@@ -1,3 +1,5 @@
+import { services } from "webiny-api";
+
 /**
  * Authentication middleware factory.
  * @param options
@@ -13,7 +15,7 @@ export default (options: { token: Function | string }) => {
      * @param next
      * @return {Promise<void>}
      */
-    return async ({ req, services }, next) => {
+    return async ({ req }, next) => {
         const token =
             typeof options.token === "function" ? options.token(req) : req.get(options.token);
         if (!token) {

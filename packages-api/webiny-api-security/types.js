@@ -1,5 +1,6 @@
 // @flow
 import type { ApiMethod } from "webiny-api";
+import type { EntityCollection } from "webiny-entity";
 import type { Identity, Role } from "./src";
 
 /**
@@ -18,7 +19,7 @@ export interface IAuthorizable {
      * Returns all user's roles.
      * @returns {Array<Role>} All roles assigned to the user.
      */
-    getRoles(): Promise<Array<Role>>;
+    getRoles(): Promise<Array<Role> | EntityCollection<Role>>;
 }
 
 /**
@@ -97,7 +98,7 @@ export interface IToken {
      * @param {number} expiresOn Seconds since epoch.
      * @returns {Promise<string>}
      */
-    encode: (identity: Identity, expiresOn: number) => Promise<string>;
+    encode: (identity: Identity, expiresOn: ?number) => Promise<string>;
     /**
      * Decode token.
      * @param {string} token

@@ -2,6 +2,7 @@
 import { ApiResponse, ApiErrorResponse } from "webiny-api";
 import type { ApiContainer, Endpoint } from "webiny-api";
 import type { IAuthentication } from "../../types";
+import AuthenticationError from "../services/authenticationError";
 
 export default (BaseEndpoint: Class<Endpoint>, config: Object, authentication: IAuthentication) => {
     class Auth extends BaseEndpoint {
@@ -24,12 +25,15 @@ export default (BaseEndpoint: Class<Endpoint>, config: Object, authentication: I
                                 identity: await identity.toJSON(req.query._fields)
                             });
                         } catch (e) {
-                            return new ApiErrorResponse(
-                                {},
-                                e.message,
-                                "WBY_INVALID_CREDENTIALS",
-                                401
-                            );
+                            const response = new ApiErrorResponse({}, e.message);
+                            if (e instanceof AuthenticationError) {
+                                response.type = "WBY_INVALID_CREDENTIALS";
+                                response.statusCode = 401;
+                            } else {
+                                response.type = "WBY_INTERNAL_ERROR";
+                                response.statusCode = 500;
+                            }
+                            return response;
                         }
                     });
                 });

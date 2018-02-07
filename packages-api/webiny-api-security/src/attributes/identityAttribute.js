@@ -4,7 +4,7 @@ import { AttributesContainer } from "webiny-model";
 import IdentityModel from "./identityAttribute/identityModel";
 import Model from "../../../../packages-utils/webiny-model/src/model";
 
-export class IdentityAttribute extends ModelAttribute {
+export default class IdentityAttribute extends ModelAttribute {
     constructor(name: string, attributesContainer: AttributesContainer) {
         super(name, attributesContainer, IdentityModel);
     }

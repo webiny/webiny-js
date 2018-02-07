@@ -2,7 +2,7 @@ import { Entity } from "webiny-api";
 import { MemoryDriver } from "webiny-entity-memory";
 import Authentication from "../src/services/authentication";
 import MyUser from "./entities/myUser";
-import passwordAttr from "../src/attributes/password";
+import passwordAttr from "../src/attributes/passwordAttribute";
 import chai from "./chai";
 import credentialsStrategy from "../src/strategies/credentialsStrategy";
 import JwtToken from "../src/tokens/jwtToken";

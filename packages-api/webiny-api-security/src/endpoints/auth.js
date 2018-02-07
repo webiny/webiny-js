@@ -7,7 +7,7 @@ class Auth extends Endpoint {
         /**
          * Identity profile
          */
-        api.get("Auth.Me", "/me", ({ req }) => {
+        api.get("Auth.Me", "/me", async ({ req }) => {
             if (!req.identity) {
                 return new ApiErrorResponse(
                     {},
@@ -16,7 +16,7 @@ class Auth extends Endpoint {
                     401
                 );
             }
-            return new ApiResponse(req.identity.toJSON(req.query._fields));
+            return new ApiResponse(await req.identity.toJSON(req.query._fields));
         });
     }
 }

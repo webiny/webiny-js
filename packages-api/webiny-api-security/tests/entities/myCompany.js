@@ -1,12 +1,14 @@
 import { Identity } from "../../src";
 
-export default class MyUser extends Identity {
+class MyCompany extends Identity {
     constructor() {
         super();
-        this.attr("username")
+        this.attr("companyId")
             .char()
             .setValidators("required");
         this.attr("password").password();
     }
 }
-MyUser.classId = "MyUser";
+
+MyCompany.classId = "MyCompany";
+export default MyCompany;
