@@ -164,9 +164,13 @@ describe("Identity attribute test", () => {
 
         let storage = await issue.toStorage();
         assert.deepEqual(storage, {
+            assignedTo: "User:abc",
+            createdOn: null,
+            deleted: false,
             id: "xyz",
+            savedOn: null,
             title: null,
-            assignedTo: "User:abc"
+            updatedOn: null
         });
 
         entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
@@ -180,7 +184,11 @@ describe("Identity attribute test", () => {
         assert.deepEqual(storage, {
             id: "xyz",
             title: null,
-            assignedTo: "User:abc"
+            assignedTo: "User:abc",
+            createdOn: null,
+            deleted: false,
+            savedOn: null,
+            updatedOn: null
         });
     });
 

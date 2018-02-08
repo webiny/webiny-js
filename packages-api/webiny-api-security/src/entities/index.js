@@ -16,7 +16,7 @@ export class Identity extends Entity implements IAuthorizable {
         super();
         this.attr("roles")
             .entities(Role, "identity", () => this.identityId)
-            .setUsing(Identity2Role, "identity");
+            .setUsing(Identity2Role);
 
         this.attr("identityId").dynamic(() => this.classId + ":" + this.id);
     }
