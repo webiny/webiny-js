@@ -6,6 +6,8 @@ import MyUser from "./entities/myUser";
 import passwordAttr from "../src/attributes/passwordAttribute";
 import chai from "./chai";
 import { Class1, Class2, Class3 } from "./authorization/endpoints";
+import IdentityAttribute from "../src/attributes/identityAttribute";
+import { EntityAttributesContainer } from "webiny-entity";
 
 const { expect } = chai;
 
@@ -20,6 +22,17 @@ describe("Authorization test", () => {
         // Configure Memory entity driver
         const memoryDriver = new MemoryDriver();
         Entity.driver = memoryDriver;
+
+        /**
+         * Identity attribute. Used to store a reference to an Identity.
+         * @package webiny-api-security
+         * @return {IdentityAttribute}
+         */
+        EntityAttributesContainer.prototype.identity = function() {
+            const model = this.getParentModel();
+            model.setAttribute(this.name, new IdentityAttribute(this.name, this));
+            return model.getAttribute(this.name);
+        };
 
         // Test data
         memoryDriver.import("MyUser", [
@@ -37,16 +50,16 @@ describe("Authorization test", () => {
             }
         ]);
 
-        memoryDriver.import("MyUser2Role", [
+        memoryDriver.import("Security.Identity2Role", [
             {
                 id: "1",
-                identity: "user1",
+                identity: "MyUser:user1",
                 role: "role1",
                 deleted: false
             },
             {
                 id: "2",
-                identity: "user1",
+                identity: "MyUser:user1",
                 role: "role2",
                 deleted: false
             }
@@ -208,20 +221,13 @@ describe("Authorization test", () => {
     });
 
     it("Should return collection of roles", async () => {
-        let user = null;
-
-        try {
-            user = await MyUser.findById("user1");
-        } catch (e) {
-            const a = 123;
-        }
-
-        const b = 123;
+        let user = await MyUser.findById("user1");
         const roles = await user.getRoles();
         expect(roles).to.be.instanceof(EntityCollection);
         console.log(await roles.toJSON("id,slug"));
     });
-    -it("Should confirm that identity has a role", async () => {
+
+    it("Should confirm that identity has a role", async () => {
         const user = await MyUser.findById("user1");
         expect(await user.hasRole("role1")).to.be.true;
     });

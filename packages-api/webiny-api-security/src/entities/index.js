@@ -1,6 +1,7 @@
 // @flow
 import { Entity } from "webiny-api";
 import { Model } from "webiny-model";
+
 import type { EntityCollection } from "webiny-entity";
 import type { IAuthorizable } from "../../types";
 
@@ -13,10 +14,11 @@ import type { IAuthorizable } from "../../types";
 export class Identity extends Entity implements IAuthorizable {
     constructor() {
         super();
-
         this.attr("roles")
-            .entities(Role)
-            .setUsing(Identity2Role);
+            .entities(Role, "identity", () => this.identityId)
+            .setUsing(Identity2Role, "identity");
+
+        this.attr("identityId").dynamic(() => this.classId + ":" + this.id);
     }
 
     /**

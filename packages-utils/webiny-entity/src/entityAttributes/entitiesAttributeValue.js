@@ -73,14 +73,19 @@ class EntitiesAttributeValue extends AttributeValue {
                     .getParentEntity()
                     .isExisting()
             ) {
-                let id = await this.attribute
-                    .getParentModel()
-                    .getAttribute("id")
-                    .getStorageValue();
+                let id = classes.entities.id;
+                if (typeof id === "function") {
+                    id = id();
+                } else {
+                    id = await this.attribute
+                        .getParentModel()
+                        .getAttribute("id")
+                        .getStorageValue();
+                }
 
                 if (classes.using.class) {
                     this.links.current = await classes.using.class.find({
-                        query: { [classes.using.attribute]: id }
+                        query: { [classes.entities.attribute]: id }
                     });
 
                     this.current = new EntityCollection();

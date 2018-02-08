@@ -13,14 +13,14 @@ class EntitiesAttribute extends Attribute {
         name: string,
         attributesContainer: EntityAttributesContainer,
         entity: Entity,
-        attributeName: ?string = null
+        attributeName: ?string = null,
+        id: ?Function = null
     ) {
-        super(name, attributesContainer, entity, (attributeName = null));
-
+        super(name, attributesContainer, entity);
         this.classes = {
             parent: this.getParentModel().getParentEntity().constructor.name,
-            entities: { class: entity, attribute: attributeName },
-            using: { class: null, attribute: _.camelCase(_.get(entity, "name")) }
+            entities: { class: entity, attribute: attributeName, id },
+            using: { class: null, attribute: null }
         };
 
         // We will use the same value here to (when loading entities without a middle aggregation entity).
@@ -183,9 +183,11 @@ class EntitiesAttribute extends Attribute {
         return this.classes.using.attribute;
     }
 
-    setUsing(entityClass: Class<Entity>, entityAttribute: ?string = undefined) {
+    setUsing(entityClass: Class<Entity>, entityAttribute: ?string) {
         this.classes.using.class = entityClass;
-        if (typeof entityAttribute !== "undefined") {
+        if (typeof entityAttribute === "undefined") {
+            this.classes.using.attribute = _.camelCase(this.classes.entities.class.name);
+        } else {
             this.classes.using.attribute = entityAttribute;
         }
 
