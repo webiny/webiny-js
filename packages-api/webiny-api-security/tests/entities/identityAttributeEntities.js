@@ -1,7 +1,7 @@
 import { Entity } from "webiny-entity";
-import IdentityAttribute from "./../../src/attributes/identityAttribute";
+import { Identity } from "../../src/entities";
 
-export class User extends Entity {
+export class User extends Identity {
     constructor() {
         super();
         this.attr("firstName").char();
@@ -11,7 +11,7 @@ export class User extends Entity {
 
 User.classId = "User";
 
-export class Company extends Entity {
+export class Company extends Identity {
     constructor() {
         super();
         this.attr("name").char();
@@ -24,7 +24,7 @@ export class Issue extends Entity {
     constructor() {
         super();
         this.attr("title").char();
-        this.attr("assignedTo").custom(IdentityAttribute);
+        this.attr("assignedTo").identity();
     }
 }
 

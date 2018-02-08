@@ -4,7 +4,7 @@ import BaseAuthEndpoint from "./endpoints/auth";
 import generateEndpoint from "./endpoints/generator";
 import AuthenticationService from "./services/authentication";
 import passwordAttr from "./attributes/passwordAttribute";
-import IdentityAttribute from "./attributes/identityAttribute";
+import identityAttributeFactory from "./attributes/identityAttribute";
 
 class Security extends App {
     constructor(config) {
@@ -22,6 +22,7 @@ class Security extends App {
         ];
 
         passwordAttr(config);
+        const IdentityAttribute = identityAttributeFactory(services.get("Authentication"));
 
         /**
          * Identity attribute. Used to store a reference to an Identity.

@@ -1,20 +1,40 @@
 import { assert } from "chai";
-import { Company, User, Issue } from "./../entities/identityAttributeEntities";
-import IdentityModel from "../../src/attributes/identityAttribute/identityModel";
-import { QueryResult } from "webiny-entity";
 import sinon from "sinon";
+import { EntityAttributesContainer, QueryResult } from "webiny-entity";
+
+import { Company, User, Issue } from "./entities/identityAttributeEntities";
+import identityAttributeFactory from "../src/attributes/identityAttribute";
+import Authentication from "../src/services/authentication";
 
 const sandbox = sinon.sandbox.create();
 
 describe("Identity attribute test", () => {
+    before(() => {
+        // Setup Authentication service
+        const authentication = new Authentication({
+            identities: [
+                {
+                    identity: User
+                },
+                {
+                    identity: Company
+                }
+            ]
+        });
+        // Create IdentityAttribute class using the configured service
+        const IdentityAttribute = identityAttributeFactory(authentication);
+
+        // Register identity() attribute
+        EntityAttributesContainer.prototype.identity = function() {
+            const model = this.getParentModel();
+            model.setAttribute(this.name, new IdentityAttribute(this.name, this));
+            return model.getAttribute(this.name);
+        };
+    });
     afterEach(() => sandbox.restore());
     beforeEach(() => Issue.getEntityPool().flush());
 
     it("should assign value correctly", async () => {
-        let getIdentityClass = sandbox.stub(IdentityModel, "getIdentityClass").callsFake(() => {
-            return User;
-        });
-
         const user = new User();
         user.populate({ firstName: "John", lastName: "Doe" });
 
@@ -55,11 +75,6 @@ describe("Identity attribute test", () => {
 
         identityAttribute = issue.getAttribute("assignedTo");
 
-        getIdentityClass.restore();
-        getIdentityClass = sandbox.stub(IdentityModel, "getIdentityClass").callsFake(() => {
-            return Company;
-        });
-
         issue.populate({
             title: "testing custom attribute",
             assignedTo: { classId: "Company", identity: { name: "Webiny" } }
@@ -82,7 +97,6 @@ describe("Identity attribute test", () => {
         );
 
         await issue.validate();
-        getIdentityClass.restore();
     });
 
     it("should be able to work with a custom attribute", async () => {
@@ -123,10 +137,6 @@ describe("Identity attribute test", () => {
             return new QueryResult({ id: "xyz", assignedTo: "User:abc" });
         });
 
-        let getIdentityClass = sandbox.stub(IdentityModel, "getIdentityClass").callsFake(() => {
-            return User;
-        });
-
         const issue = await Issue.findById(1);
         entityFind.restore();
 
@@ -140,16 +150,11 @@ describe("Identity attribute test", () => {
         assert.equal(await issue.get("assignedTo.lastName"), "Doe");
 
         entityFind.restore();
-        getIdentityClass.restore();
     });
 
     it("should return correct storage values", async () => {
         let entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({ id: "xyz", assignedTo: "User:abc" });
-        });
-
-        let getIdentityClass = sandbox.stub(IdentityModel, "getIdentityClass").callsFake(() => {
-            return User;
         });
 
         const issue = await Issue.findById(1);
@@ -170,7 +175,6 @@ describe("Identity attribute test", () => {
 
         await issue.assignedTo;
         entityFind.restore();
-        getIdentityClass.restore();
 
         storage = await issue.toStorage();
         assert.deepEqual(storage, {
@@ -209,13 +213,8 @@ describe("Identity attribute test", () => {
                 new QueryResult();
             });
 
-        let getIdentityClass = sandbox.stub(IdentityModel, "getIdentityClass").callsFake(() => {
-            return User;
-        });
-
         await issue.save();
         entitySave.restore();
-        getIdentityClass.restore();
 
         assert.deepEqual(await user.toJSON("firstName,lastName"), {
             id: "abc",
