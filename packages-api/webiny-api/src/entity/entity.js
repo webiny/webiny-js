@@ -1,5 +1,5 @@
 // @flow
-import { api } from "webiny-api";
+import api from "webiny-api";
 import { Entity as BaseEntity } from "webiny-entity";
 
 class Entity extends BaseEntity {

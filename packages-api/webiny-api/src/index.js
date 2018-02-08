@@ -1,10 +1,5 @@
 import Api from "./api";
-import Services from "./etc/services";
-
-const serviceManager = new Services();
-
-export const api: Api = new Api(serviceManager);
-export const services: Services = serviceManager;
+export default new Api();
 export { default as middleware } from "./middleware";
 export { default as versionFromUrl } from "./etc/versionFromUrl";
 export { default as versionFromHeader } from "./etc/versionFromHeader";

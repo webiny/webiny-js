@@ -12,6 +12,7 @@ class ApiMethod {
     namedParam: RegExp;
     wildcardParam: RegExp;
     paramNames: Array<string>;
+    public: boolean;
 
     constructor(name: string, httpMethod: string, pattern: string, context: Endpoint) {
         this.name = name;
@@ -22,6 +23,7 @@ class ApiMethod {
         this.namedParam = /:\w+/g;
         this.wildcardParam = /\*\w+/g;
         this.paramNames = [];
+        this.public = false;
 
         // Extract params names
         const params = pattern.match(this.namedParam);
@@ -43,6 +45,15 @@ class ApiMethod {
             .replace(this.namedParam, "([^/]+)")
             .replace(this.wildcardParam, "(.*?)");
         this.regex = new RegExp("^" + regex + "$");
+    }
+
+    setPublic(): this {
+        this.public = true;
+        return this;
+    }
+
+    isPublic(): boolean {
+        return this.public;
     }
 
     getName(): string {

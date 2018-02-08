@@ -3,7 +3,7 @@ import debug from "debug";
 import _ from "lodash";
 import compose from "webiny-compose";
 import semver from "semver";
-import { api, ApiResponse } from "./../index";
+import api, { ApiResponse } from "./../index";
 import ApiErrorResponse from "../response/apiErrorResponse";
 
 declare type EndpointMiddlewareOptions = {
@@ -62,9 +62,9 @@ export default (options: EndpointMiddlewareOptions = {}) => {
             log("Matched %o", matchedMethod.getApiMethod().getPattern());
 
             try {
-                await beforeApiMethodMiddleware({ matchedApiMethod: matchedMethod });
+                await beforeApiMethodMiddleware({ req, res, matchedApiMethod: matchedMethod });
             } catch (e) {
-                const ar = new ApiErrorResponse({}, e.message, "WBY_MATCHED_METHOD");
+                const ar = new ApiErrorResponse({}, e.message, e.type || "WBY_MATCHED_METHOD");
                 res.status(401);
                 res.setData(ar.toJSON());
                 break;
@@ -77,7 +77,7 @@ export default (options: EndpointMiddlewareOptions = {}) => {
             try {
                 await afterApiMethodMiddleware({ matchedApiMethod: matchedMethod, response });
             } catch (e) {
-                const ar = new ApiErrorResponse({}, e.message, "WBY_MATCHED_METHOD");
+                const ar = new ApiErrorResponse({}, e.message, e.type || "WBY_MATCHED_METHOD");
                 res.status(401);
                 res.setData(ar.toJSON());
                 break;

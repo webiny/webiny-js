@@ -2,6 +2,7 @@
 import _ from "lodash";
 import ApiContainer from "./apiContainer";
 import App from "./../etc/app";
+import api from "./../index";
 
 // Container for ApiContainer instances
 // The definition of an Endpoint class stays the same no matter how many instances we create so we only need one copy of ApiContainer per endpoint.
@@ -18,7 +19,6 @@ class Endpoint {
     }
 
     getApi(): ApiContainer {
-        const { api } = require("./../index");
         const classId = this.constructor.classId;
         const version = this.constructor.version;
         let apiContainer = _.get(apiContainers, [classId, version]);

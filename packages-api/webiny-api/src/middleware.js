@@ -1,7 +1,7 @@
 // @flow
 import _ from "lodash";
 import debug from "debug";
-import { api } from "./index";
+import api from "./index";
 import cls from "cls-hooked";
 
 import responseProxy from "./response/responseProxy";

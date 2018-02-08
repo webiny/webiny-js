@@ -6,7 +6,7 @@ import semver from "semver";
 import { Entity } from "./entity";
 import { Endpoint } from "./endpoint";
 import App from "./etc/app";
-import type Services from "./etc/services";
+import { ServiceManager } from "webiny-service-manager";
 
 type EndpointsMap = {
     [url: string]: {
@@ -21,15 +21,15 @@ class Api {
     apps: Array<App>;
     endpoints: EndpointsMap;
     requestMiddleware: Function;
-    serviceManager: Services;
+    serviceManager: ServiceManager;
     namespace: cls$Namespace;
 
-    constructor(services: Services) {
+    constructor() {
         this.config = {};
         this.apps = [];
         this.endpoints = {};
         this.requestMiddleware = () => Promise.resolve();
-        this.serviceManager = services;
+        this.serviceManager = new ServiceManager();
     }
 
     getApps(): Array<App> {
