@@ -65,6 +65,7 @@
     "test:utils": "yarn mocha \"packages-utils/**/tests/**/*.test.js\"",
     "test:webiny-api": "yarn mocha \"packages-api/webiny-api/tests/**/*.test.js\"",
     "test:webiny-api-security": "yarn mocha \"packages-api/webiny-api-security/tests/**/*.test.js\"",
+    "test:webiny-compose": "yarn mocha \"packages-utils/webiny-compose/tests/**/*.test.js\"",
     "test:webiny-data-extractor": "yarn mocha \"packages-utils/webiny-data-extractor/tests/**/*.test.js\"",
     "test:webiny-entity": "yarn mocha \"packages-api/webiny-entity/tests/**/*.t est.js\"",
     "test:webiny-entity-memory": "yarn mocha \"packages-api/webiny-entity-memory/tests/**/*.test.js\"",
