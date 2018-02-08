@@ -16,13 +16,17 @@ export default function(functions: Array<Function> = []): Function {
 
                 // Each function is a separate promise executed when the previous function called `next()`
                 chain = chain.then(() => {
-                    return new Promise((linkResolve, linkReject) => {
-                        middleware(params, linkResolve, res => {
-                            // Resolve top-level promise to return the result
-                            resolve(res);
-                            // Reject the chain
-                            linkReject();
-                        });
+                    return new Promise(async (linkResolve, linkReject) => {
+                        try {
+                            await middleware(params, linkResolve, res => {
+                                // Resolve top-level promise to return the result
+                                resolve(res);
+                                // Reject the chain
+                                linkReject();
+                            });
+                        } catch (e) {
+                            reject(e);
+                        }
                     });
                 });
             }
