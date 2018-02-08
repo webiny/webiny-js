@@ -13,29 +13,31 @@ export default (BaseEndpoint: Class<Endpoint>, config: Object, authentication: I
             config.identities.map(({ identity: Identity, authenticate }) => {
                 // Create api methods for each strategy
                 authenticate.map(({ strategy, apiMethod }) => {
-                    api.post(apiMethod.name, apiMethod.pattern, async ({ req }) => {
-                        try {
-                            const identity = await authentication.authenticate(
-                                req,
-                                Identity,
-                                strategy
-                            );
-                            return new ApiResponse({
-                                token: await authentication.createToken(identity),
-                                identity: await identity.toJSON(req.query._fields)
-                            });
-                        } catch (e) {
-                            const response = new ApiErrorResponse({}, e.message);
-                            if (e instanceof AuthenticationError) {
-                                response.type = "WBY_INVALID_CREDENTIALS";
-                                response.statusCode = 401;
-                            } else {
-                                response.type = "WBY_INTERNAL_ERROR";
-                                response.statusCode = 500;
+                    api
+                        .post(apiMethod.name, apiMethod.pattern, async ({ req }) => {
+                            try {
+                                const identity = await authentication.authenticate(
+                                    req,
+                                    Identity,
+                                    strategy
+                                );
+                                return new ApiResponse({
+                                    token: await authentication.createToken(identity),
+                                    identity: await identity.toJSON(req.query._fields)
+                                });
+                            } catch (e) {
+                                const response = new ApiErrorResponse({}, e.message);
+                                if (e instanceof AuthenticationError) {
+                                    response.type = "WBY_INVALID_CREDENTIALS";
+                                    response.statusCode = 401;
+                                } else {
+                                    response.type = "WBY_INTERNAL_ERROR";
+                                    response.statusCode = 500;
+                                }
+                                return response;
                             }
-                            return response;
-                        }
-                    });
+                        })
+                        .setPublic();
                 });
             });
         }

@@ -2,11 +2,11 @@ import { Entity } from "webiny-api";
 import { MemoryDriver } from "webiny-entity-memory";
 import Authentication from "../src/services/authentication";
 import MyUser from "./entities/myUser";
-import passwordAttr from "../src/attributes/passwordAttribute";
-import chai from "./chai";
+import chai from "./utils/chai";
 import credentialsStrategy from "../src/strategies/credentialsStrategy";
 import JwtToken from "../src/tokens/jwtToken";
 import AuthenticationError from "../src/services/authenticationError";
+import registerAttributes from "./../src/attributes/registerAttributes";
 
 const { expect } = chai;
 
@@ -42,8 +42,8 @@ describe("Authentication test", () => {
     before(() => {
         // Create Authentication service
         auth = new Authentication(authConfig);
-        // Register password attribute
-        passwordAttr();
+        // Register attributes
+        registerAttributes(auth);
         // Configure Memory entity driver
         Entity.driver = new MemoryDriver();
         // Insert test user

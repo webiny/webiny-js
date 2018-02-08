@@ -1,4 +1,5 @@
-import { services } from "webiny-api";
+// @flow
+import api from "webiny-api";
 
 /**
  * Authentication middleware factory.
@@ -15,13 +16,14 @@ export default (options: { token: Function | string }) => {
      * @param next
      * @return {Promise<void>}
      */
-    return async ({ req }, next) => {
+    return async (params: Object, next: Function) => {
+        const { req } = params;
         const token =
             typeof options.token === "function" ? options.token(req) : req.get(options.token);
         if (!token) {
             return next();
         }
-        req.identity = await services.get("Authentication").verifyToken(token);
+        req.identity = await api.serviceManager.get("Authentication").verifyToken(token);
         next();
     };
 };

@@ -7,7 +7,7 @@ import { MemoryDriver } from "webiny-entity-memory";
 import MyEntity from "./entities/myEntity";
 import JwtToken from "../src/tokens/jwtToken";
 import AuthenticationError from "../src/services/authenticationError";
-import chai from "./chai";
+import chai from "./utils/chai";
 
 const { expect } = chai;
 

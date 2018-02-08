@@ -39,10 +39,6 @@ export default (authentication: IAuthentication) => {
             return ModelAttribute.prototype.getValue.call(this);
         }
 
-        /**
-         * Returns storage value (entity ID or null).
-         * @returns {Promise<*>}
-         */
         async getStorageValue() {
             const value = this.value.getCurrent();
             if (!value) {

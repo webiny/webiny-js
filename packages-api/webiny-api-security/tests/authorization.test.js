@@ -4,11 +4,11 @@ import { EntityCollection } from "webiny-entity";
 import Authentication from "../src/services/authentication";
 import Authorization from "../src/services/authorization";
 import MyUser from "./entities/myUser";
-import passwordAttr from "../src/attributes/passwordAttribute";
-import chai from "./chai";
+import chai from "./utils/chai";
+import importData from "./utils/importData";
 import { Class1, Class2, Class3 } from "./authorization/endpoints";
-import identityAttributeFactory from "../src/attributes/identityAttribute";
-import { EntityAttributesContainer } from "webiny-entity";
+import registerAttributes from "./../src/attributes/registerAttributes";
+import AuthorizationError from "../src/services/authorizationError";
 
 const { expect } = chai;
 
@@ -18,226 +18,33 @@ describe("Authorization test", () => {
     before(() => {
         // Create Authentication service
         auth = new Authorization();
-        // Register password attribute
-        passwordAttr();
+
         // Configure Memory entity driver
         const memoryDriver = new MemoryDriver();
+        importData(memoryDriver);
         Entity.driver = memoryDriver;
 
         const authentication = new Authentication({
-            identities: [
-                {
-                    identity: MyUser
-                }
-            ]
+            identities: [{ identity: MyUser }]
         });
-        const IdentityAttribute = identityAttributeFactory(authentication);
 
-        /**
-         * Identity attribute. Used to store a reference to an Identity.
-         * @package webiny-api-security
-         * @return {IdentityAttribute}
-         */
-        EntityAttributesContainer.prototype.identity = function() {
-            const model = this.getParentModel();
-            model.setAttribute(this.name, new IdentityAttribute(this.name, this));
-            return model.getAttribute(this.name);
-        };
-
-        // Test data
-        memoryDriver.import("MyUser", [
-            {
-                id: "user1",
-                username: "user1",
-                password: "pass1",
-                deleted: false
-            },
-            {
-                id: "user2",
-                username: "user2",
-                password: "pass2",
-                deleted: false
-            }
-        ]);
-
-        memoryDriver.import("Security.Identity2Role", [
-            {
-                id: "1",
-                identity: "MyUser:user1",
-                role: "role1",
-                deleted: false
-            },
-            {
-                id: "2",
-                identity: "MyUser:user1",
-                role: "role2",
-                deleted: false
-            }
-        ]);
-
-        memoryDriver.import("Security.Role", [
-            {
-                id: "role1",
-                name: "role1",
-                slug: "role1",
-                deleted: false
-            },
-            {
-                id: "role2",
-                name: "role2",
-                slug: "role2",
-                deleted: false
-            }
-        ]);
-
-        // TODO: finish this in Identity class
-        memoryDriver.import("Security.RoleGroup", [
-            {
-                id: "roleGroup1",
-                name: "roleGroup1",
-                slug: "roleGroup1",
-                deleted: false
-            }
-        ]);
-
-        memoryDriver.import("Security.Permission", [
-            {
-                id: "perm1",
-                name: "perm1",
-                slug: "perm1",
-                deleted: false,
-                rules: [
-                    {
-                        classId: "class1",
-                        methods: [
-                            {
-                                method: "method1"
-                            },
-                            {
-                                method: "method2"
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                id: "perm2",
-                name: "perm2",
-                slug: "perm2",
-                deleted: false,
-                rules: [
-                    {
-                        classId: "class2",
-                        methods: [
-                            {
-                                method: "method1"
-                            },
-                            {
-                                method: "method3"
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                id: "perm3",
-                name: "perm3",
-                slug: "perm3",
-                deleted: false,
-                rules: [
-                    {
-                        classId: "class3",
-                        methods: [
-                            {
-                                method: "method4"
-                            },
-                            {
-                                method: "method5"
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                id: "perm4",
-                name: "perm4",
-                slug: "perm4",
-                deleted: false,
-                rules: [
-                    {
-                        classId: "class1",
-                        methods: [
-                            {
-                                method: "method2"
-                            }
-                        ]
-                    },
-                    {
-                        classId: "class3",
-                        methods: [
-                            {
-                                method: "method2"
-                            },
-                            {
-                                method: "method3"
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]);
-
-        memoryDriver.import("Security.Role2Permission", [
-            {
-                id: "1",
-                role: "role1",
-                roleGroup: "permission1",
-                deleted: false
-            },
-            {
-                id: "2",
-                role: "role1",
-                roleGroup: "permission4",
-                deleted: false
-            },
-            {
-                id: "3",
-                role: "role2",
-                roleGroup: "permission2",
-                deleted: false
-            },
-            {
-                id: "4",
-                role: "role2",
-                roleGroup: "permission3",
-                deleted: false
-            }
-        ]);
-
-        memoryDriver.import("Security.Role2RoleGroup", [
-            {
-                id: "1",
-                role: "role1",
-                roleGroup: "roleGroup1",
-                deleted: false
-            },
-            {
-                id: "2",
-                role: "role2",
-                roleGroup: "roleGroup1",
-                deleted: false
-            }
-        ]);
+        registerAttributes(authentication);
     });
 
-    it("Should return collection of roles", async () => {
+    it("Should return a collection of roles", async () => {
         let user = await MyUser.findById("user1");
         const roles = await user.getRoles();
         expect(roles).to.be.instanceof(EntityCollection);
-        console.log(await roles.toJSON("id,slug"));
     });
 
-    /*it("Should confirm that identity has a role", async () => {
+    it("Should return a collection of permissions", async () => {
+        let user = await MyUser.findById("user1");
+        const roles = await user.getRoles();
+        const permissions = await roles[0].permissions;
+        expect(permissions).to.be.instanceof(EntityCollection);
+    });
+
+    it("Should confirm that identity has a role", async () => {
         const user = await MyUser.findById("user1");
         expect(await user.hasRole("role1")).to.be.true;
     });
@@ -256,9 +63,9 @@ describe("Authorization test", () => {
         const apiMethod2 = endpoint2.getApi().getMethod("method2");
         const apiMethod5 = endpoint3.getApi().getMethod("method5");
         return Promise.all([
-            expect(auth.canExecute(apiMethod1, user)).to.become(true),
-            expect(auth.canExecute(apiMethod5, user)).to.become(true),
-            expect(auth.canExecute(apiMethod2, user)).to.become(false)
+            expect(auth.canExecute(apiMethod1, user)).to.be.fulfilled,
+            expect(auth.canExecute(apiMethod5, user)).to.be.fulfilled,
+            expect(auth.canExecute(apiMethod2, user)).to.be.rejectedWith(AuthorizationError)
         ]);
-    });*/
+    });
 });

@@ -1,17 +1,32 @@
+// @flow
 import type { IAuthorization, IAuthorizable } from "../../types";
 import type { ApiMethod } from "webiny-api";
-import _find from "lodash/fp/find";
+import AuthorizationError from "./authorizationError";
 
 class Authorization implements IAuthorization {
     /**
      * Checks whether user can execute an API method.
      * @param {ApiMethod} apiMethod
      * @param {IAuthorizable} authorizable
-     * @returns {boolean}
+     * @returns {Promise<boolean>}
      */
     async canExecute(apiMethod: ApiMethod, authorizable: IAuthorizable): Promise<boolean> {
-        const endpointClassId = apiMethod.getEndpoint().classId;
+        if (apiMethod.isPublic()) {
+            return true;
+        }
+
+        const endpointClassId = apiMethod.getEndpoint().constructor.classId;
         const method = apiMethod.getName();
+
+        const authorizationError = new AuthorizationError(
+            `Not authorized to execute ${method} on ${endpointClassId}`,
+            AuthorizationError.NOT_AUTHORIZED
+        );
+
+        if (!authorizable) {
+            throw authorizationError;
+        }
+
         const roles = await authorizable.getRoles();
         for (let i = 0; i < roles.length; i++) {
             const permissions = await roles[i].permissions;
@@ -19,13 +34,18 @@ class Authorization implements IAuthorization {
                 const { rules } = permissions[j];
                 for (let k = 0; k < rules.length; k++) {
                     const rule = rules[k];
-                    if (rule.classId === endpointClassId && _find(rule.methods, { method })) {
-                        return true;
+                    if (rule.classId === endpointClassId) {
+                        for (let l = 0; l < rule.methods.length; l++) {
+                            if (rule.methods[l].method === method) {
+                                return true;
+                            }
+                        }
                     }
                 }
             }
         }
-        return false;
+
+        throw authorizationError;
     }
 }
 

@@ -1,15 +1,15 @@
-// @flow
 import request from "supertest";
 import express from "express";
 import { expect } from "chai";
 import { MemoryDriver } from "webiny-entity-memory";
 import { middleware, endpointMiddleware, Entity } from "webiny-api";
-
-import authenticationMiddleware from "../src/middleware/authentication";
-import authorizationMiddleware from "../src/middleware/authorization";
-import credentialsStrategy from "./../src/strategies/credentialsStrategy";
-import SecurityApp from "../src/app";
-import JwtToken from "../src/tokens/jwtToken";
+import {
+    authenticationMiddleware,
+    authorizationMiddleware,
+    credentialsStrategy,
+    JwtToken,
+    SecurityApp
+} from "./../src";
 import MyUser from "./entities/myUser";
 import MyCompany from "./entities/myCompany";
 
@@ -71,9 +71,7 @@ describe("Security test", () => {
                 use: [
                     authenticationMiddleware({ token: req => req.get("Api-Token") }),
                     endpointMiddleware({
-                        beforeApiMethod: [
-                            //authorizationMiddleware()
-                        ]
+                        beforeApiMethod: [authorizationMiddleware()]
                     })
                 ]
             })
@@ -163,4 +161,6 @@ describe("Security test", () => {
                     });
             });
     });
+
+    // TODO: create user roles/permissions for Authorization and test API calls
 });

@@ -88,6 +88,29 @@ export class Role2Permission extends Entity {
 
 Role2Permission.classId = "Security.Role2Permission";
 
+export class RuleMethodModel extends Model {
+    constructor() {
+        super();
+        this.attr("method")
+            .char()
+            .setValidators("required");
+    }
+}
+
+RuleMethodModel.classId = "Security.RuleMethodModel";
+
+export class RuleModel extends Model {
+    constructor() {
+        super();
+        this.attr("classId")
+            .char()
+            .setValidators("required");
+        this.attr("methods").models(RuleMethodModel);
+    }
+}
+
+RuleModel.classId = "Security.RuleModel";
+
 export class Permission extends Entity {
     constructor() {
         super();
@@ -132,19 +155,3 @@ export class Role2RoleGroup extends Entity {
 }
 
 Role2RoleGroup.classId = "Security.Role2RoleGroup";
-
-class RuleModel extends Model {
-    constructor() {
-        super();
-        this.attr("classId")
-            .char()
-            .setValidators("required");
-        this.attr("methods").models(
-            new Model(function() {
-                this.attr("method")
-                    .char()
-                    .setValidators("required");
-            })
-        );
-    }
-}

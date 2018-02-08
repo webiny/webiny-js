@@ -1,3 +1,7 @@
+// @flow
+import api from "webiny-api";
+import type { MatchedApiMethod } from "webiny-api";
+
 export default () => {
     /**
      * Authorization middleware
@@ -9,8 +13,14 @@ export default () => {
      * @param next
      * @return {Promise<void>}
      */
-    return async ({ req, apiMethod, app }, next) => {
-        await app.getService("Authorization").canExecute(apiMethod, req.identity);
+    return async (
+        params: { req: express$Request, matchedApiMethod: MatchedApiMethod },
+        next: Function
+    ) => {
+        const { req, matchedApiMethod } = params;
+        await api.serviceManager
+            .get("Authorization")
+            .canExecute(matchedApiMethod.getApiMethod(), req.identity);
         next();
     };
 };

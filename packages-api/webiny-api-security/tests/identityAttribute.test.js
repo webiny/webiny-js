@@ -1,10 +1,10 @@
 import { assert } from "chai";
 import sinon from "sinon";
-import { EntityAttributesContainer, QueryResult } from "webiny-entity";
+import { QueryResult } from "webiny-entity";
 
 import { Company, User, Issue } from "./entities/identityAttributeEntities";
-import identityAttributeFactory from "../src/attributes/identityAttribute";
 import Authentication from "../src/services/authentication";
+import registerAttributes from "./../src/attributes/registerAttributes";
 
 const sandbox = sinon.sandbox.create();
 
@@ -12,25 +12,12 @@ describe("Identity attribute test", () => {
     before(() => {
         // Setup Authentication service
         const authentication = new Authentication({
-            identities: [
-                {
-                    identity: User
-                },
-                {
-                    identity: Company
-                }
-            ]
+            identities: [{ identity: User }, { identity: Company }]
         });
-        // Create IdentityAttribute class using the configured service
-        const IdentityAttribute = identityAttributeFactory(authentication);
 
-        // Register identity() attribute
-        EntityAttributesContainer.prototype.identity = function() {
-            const model = this.getParentModel();
-            model.setAttribute(this.name, new IdentityAttribute(this.name, this));
-            return model.getAttribute(this.name);
-        };
+        registerAttributes(authentication);
     });
+
     afterEach(() => sandbox.restore());
     beforeEach(() => Issue.getEntityPool().flush());
 
