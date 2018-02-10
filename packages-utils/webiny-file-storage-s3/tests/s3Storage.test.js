@@ -89,7 +89,7 @@ describe("S3StorageDriver class test", function() {
         AWS.S3.prototype.makeRequest.restore();
     });
 
-    it("should create a key that has a date and folder", async function() {
+    it("should create a key that has a date prefix", async function() {
         // create a new driver instance with different config
         let tempParams = Object.assign({}, params);
         tempParams.createDatePrefix = true;
@@ -105,7 +105,7 @@ describe("S3StorageDriver class test", function() {
                 expect(params.Bucket).to.equal("testBucket");
                 return {
                     promise: () => {
-                        return new Promise((resolve, reject) => {
+                        return new Promise(resolve => {
                             resolve(params.Key);
                         });
                     }
@@ -115,6 +115,8 @@ describe("S3StorageDriver class test", function() {
         const key = await tempDriver.setFile("testKey", { body: "fooBar" });
         expect(key).to.equal(expectedKey);
         expect(stub.calledOnce).to.be.true;
+        const newKey = await tempDriver.setFile(key, { body: "fooBar" });
+        expect(newKey).to.equal(key);
         AWS.S3.prototype.makeRequest.restore();
     });
 
@@ -202,7 +204,7 @@ describe("S3StorageDriver class test", function() {
     });
 
     it("should list all the objects inside an S3 bucket", function() {
-        const stub = sinon
+        sinon
             .stub(AWS.S3.prototype, "makeRequest")
             .withArgs("listObjectsV2")
             .callsFake((operation, params) => {
@@ -219,8 +221,64 @@ describe("S3StorageDriver class test", function() {
 
         return Promise.all([
             s3Driver.getKeys("dir1", "happy").should.eventually.contain("dir1/happyface.jpg"),
+            s3Driver
+                .getKeys("dir1")
+                .should.eventually.contain.members([
+                    "dir2/foo.jpg",
+                    "dir1/happyface.jpg",
+                    "dir1/test.jpg"
+                ]),
             s3Driver.getKeys().should.be.rejected
         ]).then(() => {
+            AWS.S3.prototype.makeRequest.restore();
+        });
+    });
+
+    it("should list all the objects inside an S3 bucket using continuation token", function() {
+        sinon
+            .stub(AWS.S3.prototype, "makeRequest")
+            .withArgs("listObjectsV2")
+            .onFirstCall()
+            .returns({
+                promise: () => {
+                    return new Promise(resolve => {
+                        resolve(s3MockResponses.listObjectsV2Truncate1.success);
+                    });
+                }
+            })
+            .onSecondCall()
+            .returns({
+                promise: () => {
+                    return new Promise(resolve => {
+                        resolve(s3MockResponses.listObjectsV2Truncate2.success);
+                    });
+                }
+            });
+
+        return Promise.all([
+            s3Driver
+                .getKeys("dir1")
+                .should.eventually.contain.members(["dir2/foo.jpg", "dir1/happyface.jpg"])
+        ]).then(() => {
+            AWS.S3.prototype.makeRequest.restore();
+        });
+    });
+
+    it("should return empty result in case Contents is not an Array", function() {
+        sinon
+            .stub(AWS.S3.prototype, "makeRequest")
+            .withArgs("listObjectsV2")
+            .callsFake(() => {
+                return {
+                    promise: () => {
+                        return new Promise(resolve => {
+                            resolve(s3MockResponses.listObjectsV2Empty.success);
+                        });
+                    }
+                };
+            });
+
+        return Promise.all([s3Driver.getKeys("dir1").should.eventually.be.empty]).then(() => {
             AWS.S3.prototype.makeRequest.restore();
         });
     });
@@ -326,7 +384,7 @@ describe("S3StorageDriver class test", function() {
     });
 
     it("should call S3 API and return the LastModified time of the object", async function() {
-        const stub = sinon
+        sinon
             .stub(AWS.S3.prototype, "makeRequest")
             .withArgs("headObject")
             .callsFake((operation, params) => {

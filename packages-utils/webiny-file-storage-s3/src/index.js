@@ -48,7 +48,10 @@ class S3StorageDriver implements IFileStorageDriver {
 
     constructor(config: S3StorageDriverConfig) {
         this.s3 = new AWS.S3(_.omit(config, ["createDatePrefix", "directory", "publicUrl"]));
-        this.config = config;
+        this.config = { ...config };
+        if (this.config.directory) {
+            this.config.directory = _.trim(this.config.directory, "/");
+        }
     }
 
     /**
@@ -92,14 +95,17 @@ class S3StorageDriver implements IFileStorageDriver {
 
         // date prepend
         if (this.config.createDatePrefix) {
-            if (!/^\d{4}\/\d{2}\/\d{2}\//.test(newKey)) {
+            // eslint-disable-next-line
+            const regex = new RegExp(`^${this.config.directory}\/\\d{4}\/\\d{2}\/\\d{2}\/`);
+            if (!regex.test(newKey)) {
                 newKey = fecha.format(Date.now(), "YYYY/MM/DD") + "/" + key;
             }
         }
 
         // directory prepend
-        if (this.config.directory !== "") {
-            newKey = _.trim(this.config.directory, "/") + "/" + newKey;
+        const prefix = this.config.directory + "/";
+        if (this.config.directory !== "" && !newKey.startsWith(prefix)) {
+            newKey = prefix + newKey;
         }
 
         // check if file metadata is set
@@ -195,9 +201,9 @@ class S3StorageDriver implements IFileStorageDriver {
         // get all objects matching the prefix
         do {
             newResult = await this.__listBucketContent(key, continuationToken);
-            if (newResult.items) {
-                result = _.concat(result, newResult.items);
-            }
+            result = _.concat(result, newResult.items || []);
+
+            continuationToken = newResult.continuationToken;
         } while (newResult.continuationToken);
 
         // filter the objects before returning
@@ -353,7 +359,7 @@ class S3StorageDriver implements IFileStorageDriver {
      * @returns {PromiseLike<T> | Promise<T>}
      * @private
      */
-    __listBucketContent(prefix?: string, continuationToken?: string): Promise<Object> {
+    __listBucketContent(prefix: string, continuationToken?: string): Promise<Object> {
         let params: {
             Bucket: string,
             FetchOwner: boolean,
@@ -366,9 +372,7 @@ class S3StorageDriver implements IFileStorageDriver {
             MaxKeys: 1000
         };
 
-        if (prefix) {
-            params.Prefix = prefix;
-        }
+        params.Prefix = prefix;
 
         if (continuationToken) {
             params.ContinuationToken = continuationToken;
