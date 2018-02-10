@@ -8,32 +8,37 @@
  */
 export default function(functions: Array<Function> = []): Function {
     return function(params: mixed): Promise<mixed> {
-        return new Promise((resolve, reject) => {
-            // Middleware chain
-            let chain = Promise.resolve();
-            for (let i = 0; i < functions.length; i++) {
-                const middleware = functions[i];
+        if (!functions.length) {
+            return Promise.resolve();
+        }
 
-                // Each function is a separate promise executed when the previous function called `next()`
-                chain = chain.then(() => {
-                    return new Promise(async (linkResolve, linkReject) => {
-                        try {
-                            await middleware(params, linkResolve, res => {
-                                // Resolve top-level promise to return the result
-                                resolve(res);
-                                // Reject the chain
-                                linkReject();
-                            });
-                        } catch (e) {
-                            reject(e);
-                        }
+        // Create a clone of function chain to prevent modifying the original array with `shift()`
+        const chain = [...functions];
+        return new Promise((parentResolve, parentReject) => {
+            const next = async () => {
+                const fn = chain.shift();
+                if (!fn) {
+                    return Promise.resolve();
+                }
+                return new Promise(async (resolve, reject) => {
+                    try {
+                        await fn(params, resolve, parentResolve);
+                    } catch (e) {
+                        reject(e);
+                    }
+                })
+                    .then(() => {
+                        return next();
+                    })
+                    .then(() => {
+                        parentResolve();
+                    })
+                    .catch(e => {
+                        parentReject(e);
                     });
-                });
-            }
+            };
 
-            chain.then(resolve).catch(error => {
-                error && reject(error);
-            });
+            return next();
         });
     };
 }
