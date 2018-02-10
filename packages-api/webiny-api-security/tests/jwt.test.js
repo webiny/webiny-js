@@ -21,7 +21,7 @@ describe("JWT token test", () => {
         return user.save();
     });
 
-    it("Should encode and decode a JWT token", async () => {
+    it("should encode and decode a JWT token", async () => {
         const token = new JwtToken({ secret: "MyS3cr3tK3Y" });
         // encode
         const expiresOn = Math.floor(addDays(new Date(), 1).getTime() / 1000);
@@ -35,7 +35,7 @@ describe("JWT token test", () => {
         });
     });
 
-    it("Should create tokens that expire in 1 day", async () => {
+    it("should create tokens that expire in 1 day", async () => {
         const in1Day = Math.floor(addDays(new Date(), 1).getTime() / 1000);
         const token = new JwtToken({
             secret: "MyS3cr3tK3Y",
@@ -49,7 +49,7 @@ describe("JWT token test", () => {
         });
     });
 
-    it("Should create tokens with custom data", async () => {
+    it("should create tokens with custom data", async () => {
         const token = new JwtToken({
             secret: "MyS3cr3tK3Y",
             data: (identity: MyEntity) => {
@@ -73,7 +73,7 @@ describe("JWT token test", () => {
         });
     });
 
-    it("Should reject with TOKEN_INVALID", async () => {
+    it("should reject with TOKEN_INVALID", async () => {
         const token = new JwtToken({ secret: "MyS3cr3tK3Y" });
         expect(token.decode("123"))
             .to.be.rejectedWith(AuthenticationError)
@@ -82,7 +82,7 @@ describe("JWT token test", () => {
             });
     });
 
-    it("Should reject with TOKEN_EXPIRED", async () => {
+    it("should reject with TOKEN_EXPIRED", async () => {
         const token = new JwtToken({ secret: "MyS3cr3tK3Y" });
         // encode
         const expiresOn = Math.floor(subDays(new Date(), 1).getTime() / 1000);

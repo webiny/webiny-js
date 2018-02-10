@@ -31,30 +31,30 @@ describe("Authorization test", () => {
         registerAttributes(authentication);
     });
 
-    it("Should return a collection of roles", async () => {
+    it("should return a collection of roles", async () => {
         let user = await MyUser.findById("user1");
         const roles = await user.getRoles();
         expect(roles).to.be.instanceof(EntityCollection);
     });
 
-    it("Should return a collection of permissions", async () => {
+    it("should return a collection of permissions", async () => {
         let user = await MyUser.findById("user1");
         const roles = await user.getRoles();
         const permissions = await roles[0].permissions;
         expect(permissions).to.be.instanceof(EntityCollection);
     });
 
-    it("Should confirm that identity has a role", async () => {
+    it("should confirm that identity has a role", async () => {
         const user = await MyUser.findById("user1");
         expect(await user.hasRole("role1")).to.be.true;
     });
 
-    it("Should confirm that identity doesn't have a role", async () => {
+    it("should confirm that identity doesn't have a role", async () => {
         const user = await MyUser.findById("user1");
         return expect(user.hasRole("no-role")).to.become(false);
     });
 
-    it("Should correctly check execution permissions", async () => {
+    it("should correctly check execution permissions", async () => {
         const user = await MyUser.findById("user1");
         const endpoint1 = new Class1();
         const endpoint2 = new Class2();

@@ -87,7 +87,7 @@ describe("Security test", () => {
         return Promise.all([user.save(), company.save()]);
     });
 
-    it("Should return error response", () => {
+    it("should return error response", () => {
         return request(app)
             .get("/security/auth/me")
             .expect(401)
@@ -96,7 +96,7 @@ describe("Security test", () => {
             });
     });
 
-    it("Should authenticate user identity", () => {
+    it("should authenticate user identity", () => {
         return request(app)
             .post("/security/auth/login-user")
             .query({ _fields: "id,username" })
@@ -109,7 +109,7 @@ describe("Security test", () => {
             });
     });
 
-    it("Should authenticate user identity using token", () => {
+    it("should authenticate user identity using token", () => {
         return request(app)
             .post("/security/auth/login-user")
             .query({ _fields: "id,username" })
@@ -128,7 +128,7 @@ describe("Security test", () => {
             });
     });
 
-    it("Should authenticate company identity", () => {
+    it("should authenticate company identity", () => {
         return request(app)
             .post("/security/auth/login-company")
             .query({ _fields: "id,companyId" })
@@ -144,7 +144,7 @@ describe("Security test", () => {
             });
     });
 
-    it("Should authenticate company identity using token", () => {
+    it("should authenticate company identity using token", () => {
         return request(app)
             .post("/security/auth/login-company")
             .send({ companyId: "ABC", password: "dev" })

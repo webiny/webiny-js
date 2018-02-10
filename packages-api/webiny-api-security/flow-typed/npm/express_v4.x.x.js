@@ -3,6 +3,7 @@
 
 import type { Server } from "http";
 import type { Socket } from "net";
+import type { Identity } from "./../../src";
 
 declare type express$RouterOptions = {
     caseSensitive?: boolean,
@@ -26,6 +27,7 @@ declare class express$Request extends http$IncomingMessage {
     connection: Socket;
     fresh: boolean;
     hostname: string;
+    identity: ?Identity;
     ip: string;
     ips: Array<string>;
     method: string;
@@ -119,11 +121,15 @@ declare type express$Middleware =
           res: express$Response,
           next: express$NextFunction
       ) => mixed);
+
 declare interface express$RouteMethodType<T> {
     (middleware: express$Middleware): T;
+
     (...middleware: Array<express$Middleware>): T;
+
     (path: express$Path | express$Path[], ...middleware: Array<express$Middleware>): T;
 }
+
 declare class express$Route {
     all: express$RouteMethodType<this>;
     get: express$RouteMethodType<this>;

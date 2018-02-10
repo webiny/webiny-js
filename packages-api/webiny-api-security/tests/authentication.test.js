@@ -54,7 +54,7 @@ describe("Authentication test", () => {
         return Promise.all([user.save(), user2.save()]);
     });
 
-    it("Should authenticate and return user instance", async () => {
+    it("should authenticate and return user instance", async () => {
         const login = await auth.authenticate(
             { username: "admin@webiny.com", password: "dev" },
             MyUser,
@@ -65,7 +65,7 @@ describe("Authentication test", () => {
         expect(login.password).to.not.equal("dev");
     });
 
-    it("Should create an authentication token", async () => {
+    it("should create an authentication token", async () => {
         const login = await auth.authenticate(
             { username: "admin@webiny.com", password: "dev" },
             MyUser,
@@ -80,13 +80,13 @@ describe("Authentication test", () => {
         });
     });
 
-    it("Should load identity from token", async () => {
+    it("should load identity from token", async () => {
         const login = await auth.verifyToken(token);
         expect(login).to.be.instanceof(MyUser);
         expect(login.username).to.equal("admin@webiny.com");
     });
 
-    it("Should throw INVALID_CREDENTIALS", async () => {
+    it("should throw INVALID_CREDENTIALS", async () => {
         return auth
             .authenticate(
                 {
@@ -102,7 +102,7 @@ describe("Authentication test", () => {
             });
     });
 
-    it("Should throw INVALID_CREDENTIALS", async () => {
+    it("should throw INVALID_CREDENTIALS", async () => {
         return auth
             .authenticate(
                 {
@@ -118,7 +118,7 @@ describe("Authentication test", () => {
             });
     });
 
-    it("Should throw IDENTITY_INSTANCE_NOT_FOUND", async () => {
+    it("should throw IDENTITY_INSTANCE_NOT_FOUND", async () => {
         const login = await auth.authenticate(
             {
                 username: "test@webiny.com",
@@ -139,7 +139,7 @@ describe("Authentication test", () => {
             });
     });
 
-    it("Should throw UNKNOWN_STRATEGY", async () => {
+    it("should throw UNKNOWN_STRATEGY", async () => {
         return auth
             .authenticate(
                 {
@@ -155,7 +155,7 @@ describe("Authentication test", () => {
             });
     });
 
-    it("Should throw UNKNOWN_IDENTITY", async () => {
+    it("should throw UNKNOWN_IDENTITY", async () => {
         const tokenProvider = new JwtToken({
             secret: "MyS3cr3tK3Y",
             data: identity => {

@@ -5,7 +5,7 @@ import type { IAuthentication } from "../../types";
 import AuthenticationError from "../services/authenticationError";
 
 export default (BaseEndpoint: Class<Endpoint>, config: Object, authentication: IAuthentication) => {
-    class Auth extends BaseEndpoint {
+    return class Auth extends BaseEndpoint {
         init(api: ApiContainer) {
             super.init(api);
 
@@ -41,7 +41,5 @@ export default (BaseEndpoint: Class<Endpoint>, config: Object, authentication: I
                 });
             });
         }
-    }
-
-    return Auth;
+    };
 };

@@ -85,24 +85,24 @@ export interface IToken {
      * @param {Identity} identity Identity instance to be encoded.
      * @returns {Promise<number>}
      */
-    expiresOn: (identity: Identity) => Promise<number>;
+    expiresOn(identity: Identity): Promise<number>;
     /**
      * Get data to encode.
      * @param {Identity} identity Identity instance to be encoded.
      * @returns {Promise<Object>}
      */
-    data: (identity: Identity) => Promise<Object>;
+    data(identity: Identity): Promise<Object>;
     /**
      * Encode Identity instance.
      * @param {Identity} identity Identity instance to encode.
      * @param {number} expiresOn Seconds since epoch.
      * @returns {Promise<string>}
      */
-    encode: (identity: Identity, expiresOn: ?number) => Promise<string>;
+    encode(identity: Identity, expiresOn: ?number): Promise<string>;
     /**
      * Decode token.
      * @param {string} token
      * @return {Object} Token data.
      */
-    decode: (token: string) => Promise<Object>;
+    decode(token: string): Promise<Object>;
 }

@@ -1,6 +1,7 @@
 // @flow
 class AuthorizationError extends Error {
     static NOT_AUTHORIZED: string;
+    type: string;
 
     constructor(message: string = "", type: string = "") {
         super();
