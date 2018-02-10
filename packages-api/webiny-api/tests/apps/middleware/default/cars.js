@@ -11,7 +11,7 @@ class Cars extends Endpoint {
         });
 
         api.get("GetCar", "/:id", function({ id }) {
-            return { data: { id: parseInt(id) } };
+            return new ApiResponse({ id: parseInt(id) });
         });
 
         api.get("GetCarRacesByYear", "/:id/races/:year", function({ id, year }) {
@@ -31,7 +31,11 @@ class Cars extends Endpoint {
         });
 
         api.get("GetArticle", "/article/*url", function({ url }) {
-            return { url };
+            return new ApiResponse({ url });
+        });
+
+        api.get("InvalidResponse", "/invalid", function() {
+            return { key: "invalid" };
         });
     }
 }

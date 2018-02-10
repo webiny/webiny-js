@@ -3,8 +3,7 @@ import debug from "debug";
 import _ from "lodash";
 import compose from "webiny-compose";
 import semver from "semver";
-import api, { ApiResponse } from "./../index";
-import ApiErrorResponse from "../response/apiErrorResponse";
+import api, { ApiErrorResponse } from "./../index";
 
 declare type EndpointMiddlewareOptions = {
     beforeApiMethod?: Array<Function>,
@@ -17,7 +16,12 @@ export default (options: EndpointMiddlewareOptions = {}) => {
     const afterApiMethodMiddleware = compose(_.get(options, "afterApiMethod", []));
 
     return async (
-        params: { req: express$Request, res: express$Response, versioning: Function },
+        params: {
+            req: express$Request,
+            res: express$Response,
+            versioning: Function,
+            response: Object
+        },
         next: Function
     ) => {
         const { req, res, versioning } = params;
@@ -26,12 +30,13 @@ export default (options: EndpointMiddlewareOptions = {}) => {
         const reqVersion = versioning(req);
 
         const versionPrefix = reqVersion !== "latest" ? "/v" + reqVersion : "";
-        const reqUrl = req.url
+        const reqUrl = req.path
             .replace(versionPrefix, "")
             .split("?")
             .shift();
 
         const urls = Object.keys(api.endpoints);
+
         for (let i = 0; i < urls.length; i++) {
             const baseUrl = urls[i];
             const definition = api.endpoints[baseUrl];
@@ -64,31 +69,35 @@ export default (options: EndpointMiddlewareOptions = {}) => {
             try {
                 await beforeApiMethodMiddleware({ req, res, matchedApiMethod: matchedMethod });
             } catch (e) {
-                const ar = new ApiErrorResponse({}, e.message, e.type || "WBY_MATCHED_METHOD");
-                res.status(401);
-                res.setData(ar.toJSON());
+                params.response = new ApiErrorResponse(
+                    {},
+                    e.message,
+                    e.type || "WBY_MATCHED_METHOD",
+                    401
+                );
                 break;
             }
 
             log("Matched %o", matchedMethod.getApiMethod().getPattern());
-            const params = matchedMethod.getParams();
-            const response = await matchedMethod.getApiMethod().exec(req, res, params, instance);
+            const methodParams = matchedMethod.getParams();
+            const response = await matchedMethod
+                .getApiMethod()
+                .exec(req, res, methodParams, instance);
 
             try {
                 await afterApiMethodMiddleware({ matchedApiMethod: matchedMethod, response });
             } catch (e) {
-                const ar = new ApiErrorResponse({}, e.message, e.type || "WBY_MATCHED_METHOD");
-                res.status(401);
-                res.setData(ar.toJSON());
+                params.response = new ApiErrorResponse(
+                    {},
+                    e.message,
+                    e.type || "WBY_MATCHED_METHOD",
+                    401
+                );
                 break;
             }
 
-            const endpointData = response instanceof ApiResponse ? response.toJSON() : response;
-
-            if (response instanceof ApiResponse) {
-                res.status(response.getStatusCode());
-            }
-            res.setData(_.merge({}, res.getData(), endpointData));
+            // Assign response to the params object so other middleware functions can access and modify it.
+            params.response = response;
             log(`Successfully fetched response!`);
         }
         next();

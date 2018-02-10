@@ -53,6 +53,15 @@ class ApiResponse {
 
         return data;
     }
+
+    /**
+     * Send output using the express response object
+     * @param res
+     */
+    send(res: express$Response) {
+        res.status(this.statusCode);
+        res.json(this.toJSON());
+    }
 }
 
 export default ApiResponse;

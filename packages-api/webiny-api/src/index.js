@@ -4,6 +4,7 @@ export { default as middleware } from "./middleware";
 export { default as versionFromUrl } from "./etc/versionFromUrl";
 export { default as versionFromHeader } from "./etc/versionFromHeader";
 export { default as App } from "./etc/app";
+export { default as requestUtils } from "./etc/requestUtils";
 export { Entity } from "./entity";
 export { ApiErrorResponse, ApiResponse } from "./response";
 export { Endpoint, EntityEndpoint, ApiContainer, ApiMethod, MatchedApiMethod } from "./endpoint";

@@ -3,9 +3,8 @@ import _ from "lodash";
 import debug from "debug";
 import api from "./index";
 import cls from "cls-hooked";
-
-import responseProxy from "./response/responseProxy";
 import type Api from "./api";
+import { ApiResponse } from "./index";
 
 let appInstance: Api;
 
@@ -26,19 +25,20 @@ export default (config: Object) => {
         log("Received new API request");
         namespace.run(async () => {
             return (async () => {
-                res = responseProxy(res);
                 namespace.set("req", req);
-                await appInstance.handleRequest(req, res);
+                const response = await appInstance.handleRequest(req, res);
 
                 if (res.finished) {
                     log("Request was finished before reaching the end of the cycle!");
                     return;
                 }
 
-                const responseData = res.getData();
-                if (!_.isEmpty(responseData)) {
+                if (!_.isEmpty(response)) {
                     log("Finished processing request");
-                    return res.json(responseData);
+
+                    if (response instanceof ApiResponse) {
+                        response.send(res);
+                    }
                 }
 
                 next();

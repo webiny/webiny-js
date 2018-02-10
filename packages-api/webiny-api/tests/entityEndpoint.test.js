@@ -23,7 +23,7 @@ describe("Entity endpoint test", () => {
         );
     });
 
-    it("Should return a list response", () => {
+    it("should return a list response", () => {
         return request(app)
             .get("/crud/users")
             .expect(200)
@@ -32,7 +32,7 @@ describe("Entity endpoint test", () => {
             });
     });
 
-    it("Should return validation error response", () => {
+    it("should return validation error response", () => {
         return request(app)
             .post("/crud/users")
             .send({ email: 123 })
@@ -43,7 +43,7 @@ describe("Entity endpoint test", () => {
             });
     });
 
-    it("Should create and return entity data", () => {
+    it("should create and return entity data", () => {
         return request(app)
             .post("/crud/users")
             .query({ _fields: "id,email" })
@@ -56,7 +56,7 @@ describe("Entity endpoint test", () => {
             });
     });
 
-    it("Should return entity response", () => {
+    it("should return entity response", () => {
         return request(app)
             .get("/crud/users/" + entityId)
             .query({ _fields: "id,email" })
@@ -67,7 +67,7 @@ describe("Entity endpoint test", () => {
             });
     });
 
-    it("Should return error response", () => {
+    it("should return error response", () => {
         return request(app)
             .get("/crud/users/12345")
             .expect(404)
@@ -76,7 +76,7 @@ describe("Entity endpoint test", () => {
             });
     });
 
-    it("Should update a record", () => {
+    it("should update a record", () => {
         return request(app)
             .patch("/crud/users/" + entityId)
             .query({ _fields: "id,email" })
@@ -88,7 +88,7 @@ describe("Entity endpoint test", () => {
             });
     });
 
-    it("Should delete a record", () => {
+    it("should delete a record", () => {
         return request(app)
             .delete("/crud/users/" + entityId)
             .expect(200)

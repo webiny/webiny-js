@@ -2,6 +2,7 @@
 import { ModelError } from "webiny-model";
 import { Entity, EntityCollection } from "webiny-entity";
 import Endpoint from "./endpoint";
+import requestUtils from "./../etc/requestUtils";
 import ApiContainer from "./apiContainer";
 import ApiResponse from "./../response/apiResponse";
 import ApiErrorResponse from "../response/apiErrorResponse";
@@ -40,7 +41,7 @@ class EntityEndpoint extends Endpoint {
         // CRUD List
         api.get(`List.${classId}`, "/", async ({ req }) => {
             const data: EntityCollection = await this.getEntityClass().find();
-            const response = await this.formatList(data, req.query._fields);
+            const response = await this.formatList(data, requestUtils(req).getFields());
             return new ApiResponse(response);
         });
 
@@ -50,7 +51,7 @@ class EntityEndpoint extends Endpoint {
             if (!entity) {
                 return createNotFoundResponse(id);
             }
-            const response = await this.formatEntity(entity, req.query._fields);
+            const response = await this.formatEntity(entity, requestUtils(req).getFields());
             return new ApiResponse(response);
         });
 
@@ -62,7 +63,7 @@ class EntityEndpoint extends Endpoint {
             } catch (e) {
                 return createValidationErrorResponse(e);
             }
-            const response = await this.formatEntity(entity, req.query._fields);
+            const response = await this.formatEntity(entity, requestUtils(req).getFields());
             return new ApiResponse(response);
         });
 
@@ -77,7 +78,7 @@ class EntityEndpoint extends Endpoint {
             } catch (e) {
                 return createValidationErrorResponse(e);
             }
-            const response = await this.formatEntity(entity, req.query._fields);
+            const response = await this.formatEntity(entity, requestUtils(req).getFields());
             return new ApiResponse(response);
         });
 

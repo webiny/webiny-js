@@ -3,10 +3,9 @@ import _ from "lodash";
 import debug from "debug";
 import compose from "webiny-compose";
 import semver from "semver";
-import { Entity } from "./entity";
-import { Endpoint } from "./endpoint";
-import App from "./etc/app";
+import { App, ApiResponse, Endpoint, Entity } from "./index";
 import { ServiceManager } from "webiny-service-manager";
+import ApiErrorResponse from "./response/apiErrorResponse";
 
 type EndpointsMap = {
     [url: string]: {
@@ -62,18 +61,51 @@ class Api {
         }
     }
 
-    handleRequest(req: express$Request, res: express$Response): Promise<void> {
-        const params = { req, res, versioning: this.config.versioning };
-        return this.requestMiddleware(params);
+    /**
+     * Handle request using middleware functions.
+     * Response can be returned in 2 ways:
+     * 1. set a `response` property of middleware `params` -> this will allow all functions to process the req/res.
+     * 2. call `finish` from your middleware function -> this will return the result immediately and abort the middleware chain.
+     * @param {express$Request} req
+     * @param {express$Response} res
+     * @returns {Promise<ApiResponse | typeof undefined>}
+     */
+    handleRequest(
+        req: express$Request,
+        res: express$Response
+    ): Promise<ApiResponse | typeof undefined> {
+        const params = { req, res, versioning: this.config.versioning, response: undefined };
+        return this.requestMiddleware(params).then(result => {
+            // If result was returned using `finish` callback return the returned result.
+            // If not - return the result stored in the params.
+            const apiResponse = typeof result !== "undefined" ? result : params.response;
+
+            if (typeof apiResponse !== "undefined" && !(apiResponse instanceof ApiResponse)) {
+                return new ApiErrorResponse(
+                    {},
+                    "Response must be an instance of ApiResponse",
+                    "WBY_INVALID_RESPONSE",
+                    500
+                );
+            }
+
+            return apiResponse;
+        });
     }
 }
 
+/**
+ * Get latest version.
+ * @param {Array<string>} versions
+ * @returns {string | undefined}
+ */
 function getLatestVersion(versions: Array<string>) {
     return versions.sort(semver.compare).pop();
 }
 
 /**
  * Traverse registered apps and construct endpoints map.
+ * @returns {EndpointsMap}
  */
 function prepareEndpoints(): EndpointsMap {
     const log = debug("api:endpoints");
@@ -97,7 +129,7 @@ function prepareEndpoints(): EndpointsMap {
             definition.latest = getLatestVersion(Object.keys(definition.versions));
 
             endpoints[url] = definition;
-            log("Registered endpoint %o (v%o)", url, endpoint.version);
+            log("Registered endpoint %o (%o)", url, "v" + endpoint.version);
         });
     });
 

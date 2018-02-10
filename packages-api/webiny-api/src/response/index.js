@@ -1,9 +1,4 @@
-import ApiResponse from './apiResponse';
-import ApiErrorResponse from './apiErrorResponse';
-import ResponseProxy from './responseProxy';
+import ApiResponse from "./apiResponse";
+import ApiErrorResponse from "./apiErrorResponse";
 
-export {
-    ApiResponse,
-    ApiErrorResponse,
-    ResponseProxy
-};
+export { ApiResponse, ApiErrorResponse };
