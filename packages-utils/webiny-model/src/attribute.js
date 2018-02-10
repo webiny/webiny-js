@@ -300,7 +300,7 @@ class Attribute implements IAttribute {
     /**
      * Sets default attribute value.
      */
-    setDefaultValue(defaultValue: mixed = null): this {
+    setDefaultValue(defaultValue: ?mixed): this {
         this.defaultValue = defaultValue;
         return this;
     }

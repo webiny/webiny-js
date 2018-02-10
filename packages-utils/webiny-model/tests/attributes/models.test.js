@@ -315,4 +315,71 @@ describe("attribute models test", function() {
             ]
         });
     });
+
+    it("setStorageValue must omit value if it is not an array", async () => {
+        const newModel = new Model(function() {
+            this.attr("attribute1").models(Model1);
+        });
+
+        newModel.getAttribute("attribute1").setStorageValue([{ name: "one" }, { name: "two" }]);
+        assert.deepEqual(await newModel.toJSON("attribute1[name]"), {
+            attribute1: [
+                {
+                    name: "one"
+                },
+                {
+                    name: "two"
+                }
+            ]
+        });
+
+        newModel.getAttribute("attribute1").setStorageValue({});
+        newModel.getAttribute("attribute1").setStorageValue(null);
+        newModel.getAttribute("attribute1").setStorageValue(123);
+        assert.deepEqual(await newModel.toJSON("attribute1[name]"), {
+            attribute1: [{ name: "one" }, { name: "two" }]
+        });
+    });
+
+    it("when toJSON is called, it must return values correctly", async () => {
+        const newModel = new Model(function() {
+            this.attr("attribute1").models(Model1);
+        });
+
+        newModel.attribute1 = [];
+        assert.deepEqual(await newModel.toJSON("attribute1.name"), {
+            attribute1: []
+        });
+
+        newModel.getAttribute("attribute1").setStorageValue([{ name: "one" }, { name: "two" }]);
+        assert.deepEqual(await newModel.toJSON("attribute1[name]"), {
+            attribute1: [{ name: "one" }, { name: "two" }]
+        });
+
+        newModel.attribute1 = null;
+        assert.deepEqual(await newModel.toJSON("attribute1.name"), {
+            attribute1: null
+        });
+    });
+
+    it("getJSONValue must return values correctly", async () => {
+        const newModel = new Model(function() {
+            this.attr("attribute1").models(Model1);
+        });
+
+        newModel.attribute1 = [];
+        assert.deepEqual(await newModel.getAttribute("attribute1").getJSONValue(), []);
+
+        newModel.attribute1 = 123;
+        assert.deepEqual(await newModel.getAttribute("attribute1").getJSONValue(), 123);
+    });
+
+    it("getJSONValue must return empty objects as items", async () => {
+        const newModel = new Model(function() {
+            this.attr("attribute1").models(Model1);
+        });
+
+        newModel.attribute1 = [{ name: 123, age: 123 }, { name: 234, age: 456 }];
+        assert.deepEqual(await newModel.getAttribute("attribute1").getJSONValue(), [{}, {}]);
+    });
 });

@@ -354,6 +354,23 @@ describe("extracting values test", () => {
         });
     });
 
+    it("should handle empty values correctly", async () => {
+        let extract = await extractor.get(null, "nullValue");
+        assert.deepEqual(extract, {});
+
+        extract = await extractor.get(true, "nullValue");
+        assert.deepEqual(extract, {});
+
+        extract = await extractor.get(false, "nullValue");
+        assert.deepEqual(extract, {});
+
+        extract = await extractor.get(null, "something.nullValue");
+        assert.deepEqual(extract, {});
+
+        extract = await extractor.get({ age: 30, nullValue: null }, "nullValue.empty,test,age");
+        assert.deepEqual(extract, { age: 30, nullValue: null });
+    });
+
     it("__process should be able to process empty data", async () => {
         const extract = await extractor.__process({});
         assert.deepEqual(extract, {
@@ -364,6 +381,10 @@ describe("extracting values test", () => {
         });
     });
 
+    it("__modifyOutput should be able to process empty data", async () => {
+        const extract = await extractor.__modifyOutput();
+        assert.isUndefined(extract);
+    });
     it("__modifyOutput should be able to process empty data", async () => {
         const extract = await extractor.__modifyOutput();
         assert.isUndefined(extract);

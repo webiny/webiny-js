@@ -183,11 +183,7 @@ class Model implements IModel {
         let value: Object = this;
         for (let i = 0; i < steps.length; i++) {
             if (!_.isObject(value)) {
-                const madeItToTheEnd = steps.length - i === 1;
-                if (!madeItToTheEnd) {
-                    return undefined;
-                }
-                break;
+                return;
             }
 
             value = await value[steps[i]];
@@ -218,10 +214,10 @@ class Model implements IModel {
         const json = {};
         for (let name in this.getAttributes()) {
             const attribute = this.getAttribute(name);
-            if (attribute) {
-                if (attribute.getToStorage()) {
-                    json[name] = await attribute.getStorageValue();
-                }
+            //$FlowFixMe - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
+            if (attribute.getToStorage()) {
+                //$FlowFixMe - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
+                json[name] = await attribute.getStorageValue();
             }
         }
 
@@ -238,12 +234,12 @@ class Model implements IModel {
 
         let name;
         for (name in this.getAttributes()) {
-            const attribute: ?IAttribute = this.getAttribute(name);
-            if (attribute) {
-                _.has(data, name) &&
-                    attribute.getToStorage() &&
-                    attribute.setStorageValue(data[name]);
-            }
+            const attribute = this.getAttribute(name);
+            _.has(data, name) &&
+                //$FlowFixMe - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
+                attribute.getToStorage() &&
+                //$FlowFixMe - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
+                attribute.setStorageValue(data[name]);
         }
 
         return this;

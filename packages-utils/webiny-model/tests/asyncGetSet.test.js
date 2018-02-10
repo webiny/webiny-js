@@ -57,6 +57,19 @@ describe("async get and set methods test", async function() {
         assert.equal(await user.get("age"), 30);
     });
 
+    it("should not set anything if key is invalid", async () => {
+        const newUser = new User();
+        await newUser.set("firstName12", "Jane");
+        await newUser.set("company", {});
+        await newUser.set("company.name123", "Facebook");
+        await newUser.set("compa.name123", "Facebook");
+
+        assert.isNull(newUser.firstName);
+        assert.isUndefined(newUser.firstName12);
+        assert.isNull(newUser.company.name);
+        assert.isUndefined(newUser.company.name123);
+    });
+
     it("should correctly return nested values", async () => {
         await user.set("company.name", "Facebook");
         await user.set("company.city", "San Francisco");

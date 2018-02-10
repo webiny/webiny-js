@@ -53,7 +53,7 @@ class ModelsAttribute extends Attribute {
         return (super.getValue(): any);
     }
 
-    async getJSONValue(): Promise<Array<Object>> {
+    async getJSONValue(): Promise<mixed> {
         const value = this.value.getCurrent();
         if (value instanceof Array) {
             const json = [];
@@ -62,7 +62,8 @@ class ModelsAttribute extends Attribute {
             }
             return json;
         }
-        return [];
+
+        return value;
     }
 
     async getStorageValue(): Promise<Array<Object>> {
@@ -100,15 +101,12 @@ class ModelsAttribute extends Attribute {
     }
 
     async validateValue(value: mixed) {
-        if (!Array.isArray(value)) {
-            return;
-        }
-
+        const arrayValue = ((value: any): Array<Model>);
         // This validates on all of the model's levels.
         const errors = [];
 
-        for (let i = 0; i < value.length; i++) {
-            const current = value[i];
+        for (let i = 0; i < arrayValue.length; i++) {
+            const current = arrayValue[i];
             if (!(current instanceof this.getModelClass())) {
                 errors.push({
                     type: ModelError.INVALID_ATTRIBUTE,

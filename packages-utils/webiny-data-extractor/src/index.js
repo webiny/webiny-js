@@ -110,9 +110,14 @@ class DataExtractor {
         options: ExtractionOptions = {}
     ): Promise<void> {
         const { output, data = {}, key = "", path = [] } = params;
-        const fragments: { output: Object, data: Object } = { output, data };
 
         if (_.isEmpty(key)) {
+            return;
+        }
+
+        const fragments: { output: Object, data: Object } = { output, data };
+
+        if (!_.isObject(fragments.data)) {
             return;
         }
 
@@ -135,7 +140,16 @@ class DataExtractor {
 
             const currentStepData = await fragments.data[step];
             if (typeof fragments.output[step] === "undefined") {
-                fragments.output[step] = _.isArray(currentStepData) ? [] : {};
+                switch (true) {
+                    case _.isArray(currentStepData):
+                        fragments.output[step] = [];
+                        break;
+                    case _.isObject(currentStepData):
+                        fragments.output[step] = {};
+                        break;
+                    default:
+                        fragments.output[step] = currentStepData;
+                }
             }
 
             if (_.isArray(currentStepData)) {
@@ -185,6 +199,7 @@ class DataExtractor {
         if (typeof onRead === "function") {
             return onRead(data, key);
         }
+
         return await data[key];
     }
 }
