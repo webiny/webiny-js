@@ -1,5 +1,6 @@
 // @flow
 import _ from "lodash";
+import type { Operator } from "./../../../../../types";
 
 const inOperator: Operator = {
     canProcess: ({ key, value }) => {

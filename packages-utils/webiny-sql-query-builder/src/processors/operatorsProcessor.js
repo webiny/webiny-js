@@ -1,6 +1,7 @@
 // @flow
 import SqlString from "sqlstring";
 import { logical, comparison } from "./operators/query";
+import type { Payload, Operator } from "./../../types";
 
 class OperatorsProcessor {
     operators: Array<Operator>;

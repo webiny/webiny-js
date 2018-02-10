@@ -1,7 +1,8 @@
 // @flow
 import _ from "lodash";
-import { OperatorsProcessor } from "./processors";
 import SqlString from "sqlstring";
+import { OperatorsProcessor } from "./processors";
+import type { QueryOptions } from "./../types";
 
 const operatorsProcessor = new OperatorsProcessor();
 
