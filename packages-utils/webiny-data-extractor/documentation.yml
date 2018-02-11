@@ -6,3 +6,8 @@ toc:
   - name: Classes
     children:
       - DataExtractor
+  - name: Flow types
+    description: |
+      The following are Flow types used in this package:
+    children:
+      - ExtractionOptions
