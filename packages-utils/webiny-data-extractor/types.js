@@ -15,7 +15,7 @@ export type ExtractedData = {
  * @name ExtractedData
  * @description This type defines a structure of extracted data.
  * @property {string} name Validator name.
- * @privatea
+ * @private
  */
 export type ExtractionOptions = {
     onRead?: Function,
