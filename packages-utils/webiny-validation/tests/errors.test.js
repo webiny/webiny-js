@@ -27,19 +27,21 @@ describe("disabling error throwing test", () => {
         assert.equal(error.value, "abc");
     });
 
-    it("should not throw errors when options' throw flag is set to false", () => {
+    it("should not throw errors when options' throw flag is set to false", async () => {
         // Sync
-        expect(validation.validateSync("", "required", { throw: false })).to.deep.equal({
-            message: "Value is required.",
-            name: "required",
-            value: ""
-        });
+        let results = validation.validateSync("", "required", { throw: false });
+        expect(results).to.be.instanceOf(ValidationError);
+
+        expect(results.message).to.equal("Value is required.");
+        expect(results.validator).to.equal("required");
+        expect(results.value).to.equal("");
 
         // Async
-        expect(validation.validate("", "required", { throw: false })).to.become({
-            message: "Value is required.",
-            name: "required",
-            value: ""
-        });
+        results = await validation.validate("", "required", { throw: false });
+        expect(results).to.be.instanceOf(ValidationError);
+
+        expect(results.message).to.equal("Value is required.");
+        expect(results.validator).to.equal("required");
+        expect(results.value).to.equal("");
     });
 });

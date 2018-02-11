@@ -80,8 +80,7 @@ validation.validateSync('fish', 'in:cat:dog:fish:parrot');
 ```
 
 ### Returning instead of throwing
-In some cases, returning an error might be more preferable than throwing, which requires `try` / `catch` statements.
-The following example shows how to just return an error, instead of throwing it:   
+The following example shows how to return an Error object instead of throwing it:   
 ```
 import { validation } from 'webiny-validation';
 const error = await validation.validate("", "required", { throw: false });

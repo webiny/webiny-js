@@ -1,13 +1,11 @@
 toc:
   - name: Installation
     file: documentation/installation.md
-  - name: Get started
+  - name: Get Started
     file: documentation/getStarted.md
   - name: Classes
     children:
       - Validation
-  - name: Flow types
-    description: |
-      The following are Flow types used in this package:
+  - name: Flow Types
     children:
       - ExtractionOptions

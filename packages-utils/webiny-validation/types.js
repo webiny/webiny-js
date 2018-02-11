@@ -9,20 +9,6 @@
 export type Validator = (value: any, params: Array<string>) => void;
 
 /**
- * @typedef ValidationErrorValue
- * @name ValidationErrorValue
- * @description This type defines a structure of validation error data object.
- * @property {string} name Validator name.
- * @property {string} message Error message.
- * @property {any} value Value being validated.
- */
-export type ValidationErrorValue = {
-    message: string,
-    name: string,
-    value: any
-};
-
-/**
  * @typedef ValidateOptions
  * @name ValidateOptions
  * @description This is an object containing validation options.
