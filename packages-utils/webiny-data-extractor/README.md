@@ -192,13 +192,13 @@ This will return the following result:
 
 #### DataExtractor
 
-[packages-utils/webiny-data-extractor/src/index.js:8-205](https://github.com/Webiny/webiny-js/blob/1187890684d79c98289d52401bb10b7781f3e73a/packages-utils/webiny-data-extractor/src/index.js#L8-L205 "Source code on GitHub")
+[packages-utils/webiny-data-extractor/src/index.js:8-200](https://github.com/Webiny/webiny-js/blob/7b3f1af0004cb70eee55347b17a88ddcef4800b8/packages-utils/webiny-data-extractor/src/index.js#L8-L200 "Source code on GitHub")
 
 Data extractor class.
 
 ##### get
 
-[packages-utils/webiny-data-extractor/src/index.js:21-27](https://github.com/Webiny/webiny-js/blob/1187890684d79c98289d52401bb10b7781f3e73a/packages-utils/webiny-data-extractor/src/index.js#L21-L27 "Source code on GitHub")
+[packages-utils/webiny-data-extractor/src/index.js:16-22](https://github.com/Webiny/webiny-js/blob/7b3f1af0004cb70eee55347b17a88ddcef4800b8/packages-utils/webiny-data-extractor/src/index.js#L16-L22 "Source code on GitHub")
 
 Returns extracted data.
 
@@ -207,11 +207,8 @@ Returns extracted data.
 -   `data` **{}** Data object on which the extraction will be performed.
 -   `keys` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Comma-separated keys which need to be extracted. For nested keys, dot and square brackets notation is available.
 -   `options` **[ExtractionOptions](#extractionoptions)** Extraction options.
-    -   `options.includeUndefined`  Include keys of values that are undefined
-        By default, if extracted value is undefined, the key will be omitted the final output. This can be prevented by setting this option to `true`.
-    -   `options.onRead`  A callback function, which gets triggered when data extractor tries to read a key from given data.
 
-Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;ExtractedData.output>** 
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;{}>** 
 
 ### Flow types
 
@@ -220,11 +217,11 @@ The following are Flow types used in this package:
 
 #### ExtractionOptions
 
-[packages-utils/webiny-data-extractor/types.js:8-11](https://github.com/Webiny/webiny-js/blob/1187890684d79c98289d52401bb10b7781f3e73a/packages-utils/webiny-data-extractor/types.js#L8-L11 "Source code on GitHub")
+[packages-utils/webiny-data-extractor/types.js:8-11](https://github.com/Webiny/webiny-js/blob/7b3f1af0004cb70eee55347b17a88ddcef4800b8/packages-utils/webiny-data-extractor/types.js#L8-L11 "Source code on GitHub")
 
-This type defines all possible data extraction options.
+All possible data extraction options.
 
 **Properties**
 
--   `includeUndefined` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** By default, if extracted value is undefined, the key will be omitted the final output. Set to `true` if this behavior is not desired.
--   `onRead` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** A callback function, which gets triggered when data extractor tries to read a key from given data.
+-   `includeUndefined` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** By default, if extracted value is undefined, its key will be omitted in the final output. Set to `true` if this behavior is not desired.
+-   `onRead` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)?** A callback function, which gets triggered when data extractor tries to read a key from given data.
