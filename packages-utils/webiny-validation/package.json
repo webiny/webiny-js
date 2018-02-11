@@ -16,8 +16,11 @@
     "babel-runtime": "^6.26.0",
     "lodash": "^4.17.4"
   },
+  "devDependencies": {
+    "documentation": "^5.3.5"
+  },
   "scripts": {
-    "documentation": "documentation build --config documentation.yml src/** -f md > DOCUMENTATION.md",
+    "documentation": "documentation readme --section=Documentation --config documentation.yml types.js src/** --github",
     "prepack": "yarn prepack:babel && yarn prepack:flow",
     "prepack:babel": "babel src/ -d lib",
     "prepack:flow": "flow-copy-source src lib"

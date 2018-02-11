@@ -1,24 +1,13 @@
 toc:
+  - name: Installation
+    file: documentation/installation.md
+  - name: Get started
+    file: documentation/getStarted.md
   - name: Classes
     children:
-    - Validation
-    - ValidationError
-  - name: Validators
-    description: |
-      The following validators come predefined with the library.
-      You can replace them with your own validators by setting your custom [Validator](#validator) object using the same name.
-    children:
-    - creditCard
-    - email
-    - eq
-    - gt
-    - gte
-    - in
-    - number
+      - Validation
   - name: Flow types
     description: |
       The following are Flow types used in this package:
     children:
-    - Validator
-    - ValidationErrorValue
-    - ValidateOptions
+      - ExtractionOptions
