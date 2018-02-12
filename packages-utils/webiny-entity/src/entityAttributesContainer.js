@@ -17,7 +17,11 @@ class EntityAttributesContainer extends DefaultAttributesContainer {
         return parent.getAttribute(this.name);
     }
 
-    entities(entity: Class<Entity>, attribute: ?string = null, id: ?Function): EntitiesAttribute {
+    entities(
+        entity: Class<Entity>,
+        attribute: ?string = null,
+        id: ?Function = null
+    ): EntitiesAttribute {
         const parent = this.getParentModel();
         parent.setAttribute(
             this.name,

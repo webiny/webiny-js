@@ -13,8 +13,8 @@ class EntitiesAttribute extends Attribute {
         name: string,
         attributesContainer: EntityAttributesContainer,
         entity: Entity,
-        attributeName: ?string = null,
-        id: ?Function = null
+        attributeName: ?string,
+        id: ?Function
     ) {
         super(name, attributesContainer, entity);
         this.classes = {
@@ -72,9 +72,10 @@ class EntitiesAttribute extends Attribute {
         this.getParentModel()
             .getParentEntity()
             .on("beforeSave", async () => {
-                // If loading is in progress, wait until loaded.
-                this.value.isLoading() && (await this.value.load());
+                // We don't have to do the following check here:
+                // this.value.isLoading() && (await this.value.load());
 
+                // ...it was already made in the 'save' handler above. Now we only check if not loaded.
                 if (!this.value.isLoaded()) {
                     return;
                 }
@@ -85,16 +86,12 @@ class EntitiesAttribute extends Attribute {
                     if (this.getUsingClass()) {
                         const entities = this.value.getCurrentLinks();
                         for (let i = 0; i < entities.length; i++) {
-                            if (entities[i] instanceof this.getUsingClass()) {
-                                await entities[i].save({ validation: false });
-                            }
+                            await entities[i].save({ validation: false });
                         }
                     } else {
                         const entities = await this.value.getCurrent();
                         for (let i = 0; i < entities.length; i++) {
-                            if (entities[i] instanceof this.getEntitiesClass()) {
-                                await entities[i].save({ validation: false });
-                            }
+                            await entities[i].save({ validation: false });
                         }
                     }
 
@@ -151,9 +148,6 @@ class EntitiesAttribute extends Attribute {
 
     getEntitiesClass(): ?Class<Entity> {
         const entitiesClass = this.classes.entities.class;
-        if (!entitiesClass) {
-            return null;
-        }
 
         if (entitiesClass.name) {
             return entitiesClass;
@@ -281,7 +275,7 @@ class EntitiesAttribute extends Attribute {
                         return;
                     }
 
-                    this.value.setCurrent(new EntityCollection());
+                    this.value.setCurrent(value);
                     resolve();
                 } catch (e) {
                     reject(e);

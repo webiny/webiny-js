@@ -56,11 +56,8 @@ class ModelAttribute extends Attribute {
     }
 
     setStorageValue(value: mixed): this {
-        if (value) {
-            // We don't want to mark value as dirty.
-            const newValue = this.getModelInstance().populateFromStorage(value);
-            this.value.setCurrent(newValue, { skipDifferenceCheck: true });
-        }
+        const newValue = this.getModelInstance().populateFromStorage(value);
+        this.value.setCurrent(newValue, { skipDifferenceCheck: true });
         return this;
     }
 
@@ -74,11 +71,15 @@ class ModelAttribute extends Attribute {
         this.expected("instance of Model class", typeof value);
     }
 
+    /**
+     * We can be sure that value is an instance of Model since otherwise this point would not be reached
+     * (because of the validateType method above).
+     * @param value
+     * @returns {Promise<void>}
+     */
     async validateValue(value: mixed): Promise<void> {
-        // This validates on the model level.
-        if (value instanceof this.getModelClass()) {
-            await value.validate();
-        }
+        const currentValue = ((value: any): Model);
+        await currentValue.validate();
     }
 }
 

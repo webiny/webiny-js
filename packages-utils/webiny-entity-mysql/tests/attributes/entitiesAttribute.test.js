@@ -83,7 +83,7 @@ describe("entities attribute test", function() {
         });
         entity.simpleEntitiesLoadedFromTable = null;
 
-        assert.instanceOf(await entity.simpleEntitiesLoadedFromTable, EntityCollection);
+        assert.isNull(await entity.simpleEntitiesLoadedFromTable);
         assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.status, {
             loading: false,
             loaded: true
@@ -105,8 +105,7 @@ describe("entities attribute test", function() {
         });
         assert.lengthOf(entity.getAttribute("simpleEntitiesLoadedFromTable").value.queue, 1);
 
-        assert.isEmpty(await entity.simpleEntitiesLoadedFromTable);
-        assert.instanceOf(await entity.simpleEntitiesLoadedFromTable, EntityCollection);
+        assert.isNull(await entity.simpleEntitiesLoadedFromTable);
         assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.status, {
             loading: false,
             loaded: true

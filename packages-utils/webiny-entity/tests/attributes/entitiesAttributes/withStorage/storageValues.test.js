@@ -99,8 +99,7 @@ describe("attribute entities test", function() {
         mainEntity.attribute1 = null;
         const attribute1NullValue = await mainEntity.getAttribute("attribute1").getStorageValue();
         assert.isEmpty(attribute1NullValue);
-        assert.isEmpty(await mainEntity.attribute1);
-        assert.instanceOf(await mainEntity.attribute1, EntityCollection);
+        assert.isNull(await mainEntity.attribute1);
     });
 
     it("should correctly set storage value", async () => {

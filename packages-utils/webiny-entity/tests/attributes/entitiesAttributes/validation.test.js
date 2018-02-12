@@ -19,10 +19,10 @@ describe("attribute entities test", function() {
 
     it("should set empty EntityCollection - attributes should accept array of entities", async () => {
         entity.attribute1 = new Entity1();
-        assert.instanceOf(await entity.attribute1, EntityCollection);
+        assert.instanceOf(await entity.attribute1, Entity1);
 
         entity.attribute2 = new Entity1();
-        assert.instanceOf(await entity.attribute2, EntityCollection);
+        assert.instanceOf(await entity.attribute2, Entity1);
     });
 
     it("should pass - empty arrays set", async () => {
@@ -222,5 +222,77 @@ describe("attribute entities test", function() {
 
         assert.equal(error.data.invalidAttributes.requiredEntity.type, "invalidAttribute");
         assert.equal(error.data.invalidAttributes.requiredEntity.data.validator, "minLength");
+    });
+
+    it("if an instance of another Entity class was assigned in EntityCollection, validation must fail", async () => {
+        const entity = new MainEntity();
+        entity.attribute1 = new EntityCollection([new Entity1(), new Entity2()]);
+
+        try {
+            await entity.validate();
+        } catch (e) {
+            assert.deepEqual(e.data, {
+                invalidAttributes: {
+                    attribute1: {
+                        type: "invalidAttribute",
+                        data: {
+                            items: [
+                                {
+                                    type: "invalidAttributes",
+                                    data: {
+                                        index: 0,
+                                        invalidAttributes: {
+                                            name: {
+                                                type: "invalidAttribute",
+                                                data: {
+                                                    message: "Value is required.",
+                                                    value: null,
+                                                    validator: "required"
+                                                },
+                                                message: "Invalid attribute."
+                                            }
+                                        }
+                                    },
+                                    message: "Validation failed."
+                                },
+                                {
+                                    type: "invalidAttribute",
+                                    data: {
+                                        index: 1
+                                    },
+                                    message:
+                                        "Validation failed, item at index 1 not an instance of correct Entity class."
+                                }
+                            ]
+                        },
+                        message: "Validation failed."
+                    }
+                }
+            });
+            return;
+        }
+
+        throw Error(`Error should've been thrown.`);
+    });
+
+    it("should fail validating if not an EntityCollection is assigned as value", async () => {
+        const entity = new MainEntity();
+        entity.attribute1 = 123;
+
+        try {
+            await entity.validate();
+        } catch (e) {
+            assert.deepEqual(e.data.invalidAttributes, {
+                attribute1: {
+                    type: "invalidAttribute",
+                    data: {},
+                    message:
+                        "Validation failed, received number, expecting instance of EntityCollection."
+                }
+            });
+            return;
+        }
+
+        throw Error(`Error should've been thrown.`);
     });
 });

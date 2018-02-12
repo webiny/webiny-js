@@ -92,7 +92,6 @@ describe("save and delete entities attribute test", () => {
         assert.equal(mainEntity.getAttribute("attribute1").value.initial[0].id, "Y");
         assert.equal(mainEntity.getAttribute("attribute1").value.initial[1].id, "Z");
 
-        assert.instanceOf(mainEntity.getAttribute("attribute1").value.current, EntityCollection);
-        assert.isEmpty(mainEntity.getAttribute("attribute1").value.current);
+        assert.isNull(mainEntity.getAttribute("attribute1").value.current);
     });
 });

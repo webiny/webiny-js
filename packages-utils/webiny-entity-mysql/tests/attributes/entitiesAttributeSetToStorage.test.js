@@ -44,15 +44,14 @@ describe("entity attribute test", function() {
         assert.equal(simpleEntities[2].name, "Test-3");
 
         entity.simpleEntities = null;
-        assert.instanceOf(await entity.simpleEntities, EntityCollection);
+        assert.isNull(await entity.simpleEntities);
     });
 
     it("it null is set, it should accept it", async () => {
         const entity = new ComplexEntity();
         entity.simpleEntities = [{ name: "Test-1" }, { name: "Test-2" }, { name: "Test-3" }];
         entity.simpleEntities = null;
-        assert.isEmpty(await entity.simpleEntities);
-        assert.instanceOf(await entity.simpleEntities, EntityCollection);
+        assert.isNull(await entity.simpleEntities);
     });
 
     it("it should return correct toStorage data", async () => {

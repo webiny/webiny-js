@@ -13,6 +13,21 @@ describe("attribute entities test", function() {
     afterEach(() => sandbox.restore());
     beforeEach(() => MainEntity.getEntityPool().flush());
 
+    it("if an instance of EntityCollection was passed, it should be directly assigned", async () => {
+        const entity = new MainEntity();
+        entity.attribute1 = new EntityCollection();
+
+        let value = await entity.attribute1;
+        assert.empty(value);
+        assert.instanceOf(value, EntityCollection);
+
+        entity.attribute1 = new EntityCollection([new Entity1(), new Entity1()]);
+
+        value = await entity.attribute1;
+        assert.lengthOf(value, 2);
+        assert.instanceOf(value, EntityCollection);
+    });
+
     it("should not change attribute1 since it has setOnce applied - attribute2 should be emptied", async () => {
         const mainSetOnceEntity = new MainSetOnceEntity();
         mainSetOnceEntity.attribute1 = [
@@ -165,5 +180,34 @@ describe("attribute entities test", function() {
 
         assert.instanceOf(error, Error);
         entityPopulate.restore();
+    });
+
+    it("setUsing method must set all passed parameters correctly", async () => {
+        const entity = new MainEntity();
+        entity
+            .attr("entitiesUsing")
+            .entities(Entity1)
+            .setUsing(Entity2, "customAttribute");
+
+        assert.deepEqual(entity.getAttribute("entitiesUsing").classes, {
+            entities: {
+                attribute: "mainEntity",
+                class: Entity1,
+                id: null
+            },
+            parent: "MainEntity",
+            using: {
+                attribute: "customAttribute",
+                class: Entity2
+            }
+        });
+    });
+
+    it("getJSONValue must return assigned value if not EntityCollection", async () => {
+        const entity = new MainEntity();
+        entity.attribute1 = 123;
+
+        const jsonValue = await entity.getAttribute("attribute1").getJSONValue();
+        assert.equal(jsonValue, 123);
     });
 });
