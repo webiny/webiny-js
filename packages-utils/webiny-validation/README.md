@@ -47,9 +47,9 @@ Validation of data is performed asynchronously by default, like in the following
         // Value is invalid
     });
 
-Validators are specified by its name and in this case, there are three - `required`, `number` and `gt:20`. 
+Validators are specified by its name and in this case, there are three - `required`, `number` and `gt`.
 Since value is not empty, it is a number and is greater than 20, code execution will proceed regularly. 
-On the other hand, if one of the validator was not satisfied, an instance of `ValidationError` will be thrown.
+On the other hand, if one of the validator was not satisfied, an instance of `ValidationError` would be thrown.
 
     import { validation } from 'webiny-validation';
 
@@ -58,6 +58,19 @@ On the other hand, if one of the validator was not satisfied, an instance of `Va
     });
 
 It is possible to provide as many validators as needed.
+
+#### Passing arguments
+
+As seen in previous section, validators can accept additional arguments, which are divided by colon.
+The following validator simply states that value must be greater than 50:
+
+    gt:20
+
+Some validators may even accept more than one arguments:
+
+    in:dog:cat:fish:bird
+
+There is no limit on the number of passed arguments.
 
 #### Built-in validators
 
@@ -84,7 +97,8 @@ More information about each can be found in the following sections.
 
 #### Adding custom validators
 
-Apart from built-in validators, there are cases where additional validators might be needed. The following example shows how to add a custom validator:
+Apart from built-in validators, there are cases where additional validators might be needed. The following example 
+shows how to add a custom validator:
 
     import { validation, ValidationError } from 'webiny-validation';
 
@@ -113,18 +127,12 @@ But if more suitable, it can also be performed synchronously:
 
 #### Returning instead of throwing
 
-The following example shows how to return an Error object instead of throwing it:   
+The following example shows how to force ValidationError to be returned, instead of thrown:
 
     import { validation } from 'webiny-validation';
     const error = await validation.validate("", "required", { throw: false });
 
-Once executed, following object will be assigned to the `error` constant:
-
-    {
-        "message": "Value is required.",
-        "name": "required",
-        "value": ""
-    }     
+Once executed, an instance of ValidationError will be assigned to the `error` constant.
 
 
 ### Classes
@@ -134,7 +142,7 @@ Once executed, following object will be assigned to the `error` constant:
 
 #### Validation
 
-[packages-utils/webiny-validation/src/validation.js:27-152](https://github.com/Webiny/webiny-js/blob/f8726dfbbe5c4f2c169b76649609057dccff3c96/packages-utils/webiny-validation/src/validation.js#L27-L152 "Source code on GitHub")
+[packages-utils/webiny-validation/src/validation.js:23-148](https://github.com/Webiny/webiny-js/blob/d48d320d653854e2ae18bc85dde4cb083d93d593/packages-utils/webiny-validation/src/validation.js#L23-L148 "Source code on GitHub")
 
 Main class of Validation library.
 Exported as a singleton instance, it offers methods for sync/async data validation and overwriting or adding new validators.
@@ -150,7 +158,7 @@ import { validation } from 'webiny-validation';
 
 ##### setValidator
 
-[packages-utils/webiny-validation/src/validation.js:44-47](https://github.com/Webiny/webiny-js/blob/f8726dfbbe5c4f2c169b76649609057dccff3c96/packages-utils/webiny-validation/src/validation.js#L44-L47 "Source code on GitHub")
+[packages-utils/webiny-validation/src/validation.js:40-43](https://github.com/Webiny/webiny-js/blob/d48d320d653854e2ae18bc85dde4cb083d93d593/packages-utils/webiny-validation/src/validation.js#L40-L43 "Source code on GitHub")
 
 Add new validator.
 
@@ -163,7 +171,7 @@ Returns **[Validation](#validation)**
 
 ##### getValidator
 
-[packages-utils/webiny-validation/src/validation.js:54-59](https://github.com/Webiny/webiny-js/blob/f8726dfbbe5c4f2c169b76649609057dccff3c96/packages-utils/webiny-validation/src/validation.js#L54-L59 "Source code on GitHub")
+[packages-utils/webiny-validation/src/validation.js:50-55](https://github.com/Webiny/webiny-js/blob/d48d320d653854e2ae18bc85dde4cb083d93d593/packages-utils/webiny-validation/src/validation.js#L50-L55 "Source code on GitHub")
 
 Get validator function by name.
 
@@ -175,7 +183,7 @@ Returns **[Validator](#validator)** A validator function.
 
 ##### validate
 
-[packages-utils/webiny-validation/src/validation.js:68-96](https://github.com/Webiny/webiny-js/blob/f8726dfbbe5c4f2c169b76649609057dccff3c96/packages-utils/webiny-validation/src/validation.js#L68-L96 "Source code on GitHub")
+[packages-utils/webiny-validation/src/validation.js:64-92](https://github.com/Webiny/webiny-js/blob/d48d320d653854e2ae18bc85dde4cb083d93d593/packages-utils/webiny-validation/src/validation.js#L64-L92 "Source code on GitHub")
 
 Asynchronously validates value.
 
@@ -189,7 +197,7 @@ Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 ##### validateSync
 
-[packages-utils/webiny-validation/src/validation.js:105-133](https://github.com/Webiny/webiny-js/blob/f8726dfbbe5c4f2c169b76649609057dccff3c96/packages-utils/webiny-validation/src/validation.js#L105-L133 "Source code on GitHub")
+[packages-utils/webiny-validation/src/validation.js:101-129](https://github.com/Webiny/webiny-js/blob/d48d320d653854e2ae18bc85dde4cb083d93d593/packages-utils/webiny-validation/src/validation.js#L101-L129 "Source code on GitHub")
 
 Synchronously validates value.
 
@@ -208,7 +216,7 @@ Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 ### ValidationError
 
-[packages-utils/webiny-validation/src/validationError.js:10-21](https://github.com/Webiny/webiny-js/blob/f8726dfbbe5c4f2c169b76649609057dccff3c96/packages-utils/webiny-validation/src/validationError.js#L10-L21 "Source code on GitHub")
+[packages-utils/webiny-validation/src/validationError.js:10-21](https://github.com/Webiny/webiny-js/blob/d48d320d653854e2ae18bc85dde4cb083d93d593/packages-utils/webiny-validation/src/validationError.js#L10-L21 "Source code on GitHub")
 
 This class is used by validators to throw an error when value validation fails.
 
@@ -220,7 +228,7 @@ This class is used by validators to throw an error when value validation fails.
 
 ### creditCard
 
-[packages-utils/webiny-validation/src/validators/creditCard.js:17-54](https://github.com/Webiny/webiny-js/blob/f8726dfbbe5c4f2c169b76649609057dccff3c96/packages-utils/webiny-validation/src/validators/creditCard.js#L17-L54 "Source code on GitHub")
+[packages-utils/webiny-validation/src/validators/creditCard.js:17-54](https://github.com/Webiny/webiny-js/blob/d48d320d653854e2ae18bc85dde4cb083d93d593/packages-utils/webiny-validation/src/validators/creditCard.js#L17-L54 "Source code on GitHub")
 
 Credit card validator. This validator will check if the given value is a credit card number.
 
@@ -243,7 +251,7 @@ validation.validate('notACreditCard', 'creditCard').then(() => {
 
 ### email
 
-[packages-utils/webiny-validation/src/validators/email.js:17-27](https://github.com/Webiny/webiny-js/blob/f8726dfbbe5c4f2c169b76649609057dccff3c96/packages-utils/webiny-validation/src/validators/email.js#L17-L27 "Source code on GitHub")
+[packages-utils/webiny-validation/src/validators/email.js:17-27](https://github.com/Webiny/webiny-js/blob/d48d320d653854e2ae18bc85dde4cb083d93d593/packages-utils/webiny-validation/src/validators/email.js#L17-L27 "Source code on GitHub")
 
 Email validator. This validator checks if the given value is a valid email address.
 
@@ -266,7 +274,7 @@ validation.validate('email@gmail.com', 'email').then(() => {
 
 ### eq
 
-[packages-utils/webiny-validation/src/validators/eq.js:18-27](https://github.com/Webiny/webiny-js/blob/f8726dfbbe5c4f2c169b76649609057dccff3c96/packages-utils/webiny-validation/src/validators/eq.js#L18-L27 "Source code on GitHub")
+[packages-utils/webiny-validation/src/validators/eq.js:18-27](https://github.com/Webiny/webiny-js/blob/d48d320d653854e2ae18bc85dde4cb083d93d593/packages-utils/webiny-validation/src/validators/eq.js#L18-L27 "Source code on GitHub")
 
 Equality validator. This validator checks if the given values are equal.
 
@@ -290,7 +298,7 @@ validation.validate('email@gmail.com', 'eq:another@gmail.com').then(() => {
 
 ### gt
 
-[packages-utils/webiny-validation/src/validators/gt.js:18-25](https://github.com/Webiny/webiny-js/blob/f8726dfbbe5c4f2c169b76649609057dccff3c96/packages-utils/webiny-validation/src/validators/gt.js#L18-L25 "Source code on GitHub")
+[packages-utils/webiny-validation/src/validators/gt.js:18-25](https://github.com/Webiny/webiny-js/blob/d48d320d653854e2ae18bc85dde4cb083d93d593/packages-utils/webiny-validation/src/validators/gt.js#L18-L25 "Source code on GitHub")
 
 "Greater than" validator. This validator checks if the given values is greater than the `min` value.
 
@@ -314,7 +322,7 @@ validation.validate(10, 'gt:100').then(() => {
 
 ### gte
 
-[packages-utils/webiny-validation/src/validators/gte.js:18-25](https://github.com/Webiny/webiny-js/blob/f8726dfbbe5c4f2c169b76649609057dccff3c96/packages-utils/webiny-validation/src/validators/gte.js#L18-L25 "Source code on GitHub")
+[packages-utils/webiny-validation/src/validators/gte.js:18-25](https://github.com/Webiny/webiny-js/blob/d48d320d653854e2ae18bc85dde4cb083d93d593/packages-utils/webiny-validation/src/validators/gte.js#L18-L25 "Source code on GitHub")
 
 "Greater than or equals" validator. This validator checks if the given values is greater than or equal to the `min` value.
 
@@ -338,7 +346,7 @@ validation.validate(10, 'gte:100').then(() => {
 
 ### in
 
-[packages-utils/webiny-validation/src/validators/in.js:18-27](https://github.com/Webiny/webiny-js/blob/f8726dfbbe5c4f2c169b76649609057dccff3c96/packages-utils/webiny-validation/src/validators/in.js#L18-L27 "Source code on GitHub")
+[packages-utils/webiny-validation/src/validators/in.js:18-27](https://github.com/Webiny/webiny-js/blob/d48d320d653854e2ae18bc85dde4cb083d93d593/packages-utils/webiny-validation/src/validators/in.js#L18-L27 "Source code on GitHub")
 
 "In array" validator. This validator checks if the given values is greater than or equal to the `min` value.
 
@@ -362,7 +370,7 @@ validation.validate(10, 'in:10:20:30').then(() => {
 
 ### number
 
-[packages-utils/webiny-validation/src/validators/number.js:11-19](https://github.com/Webiny/webiny-js/blob/f8726dfbbe5c4f2c169b76649609057dccff3c96/packages-utils/webiny-validation/src/validators/number.js#L11-L19 "Source code on GitHub")
+[packages-utils/webiny-validation/src/validators/number.js:11-19](https://github.com/Webiny/webiny-js/blob/d48d320d653854e2ae18bc85dde4cb083d93d593/packages-utils/webiny-validation/src/validators/number.js#L11-L19 "Source code on GitHub")
 
 This validator checks of the given value is a number
 
@@ -374,7 +382,7 @@ Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 ### Validator
 
-[packages-utils/webiny-validation/types.js:9-9](https://github.com/Webiny/webiny-js/blob/f8726dfbbe5c4f2c169b76649609057dccff3c96/packages-utils/webiny-validation/types.js#L9-L9 "Source code on GitHub")
+[packages-utils/webiny-validation/types.js:9-9](https://github.com/Webiny/webiny-js/blob/d48d320d653854e2ae18bc85dde4cb083d93d593/packages-utils/webiny-validation/types.js#L9-L9 "Source code on GitHub")
 
 This type defines the validator function.
 
@@ -388,7 +396,7 @@ This type defines the validator function.
 
 ### ValidateOptions
 
-[packages-utils/webiny-validation/types.js:17-19](https://github.com/Webiny/webiny-js/blob/f8726dfbbe5c4f2c169b76649609057dccff3c96/packages-utils/webiny-validation/types.js#L17-L19 "Source code on GitHub")
+[packages-utils/webiny-validation/types.js:17-19](https://github.com/Webiny/webiny-js/blob/d48d320d653854e2ae18bc85dde4cb083d93d593/packages-utils/webiny-validation/types.js#L17-L19 "Source code on GitHub")
 
 This is an object containing validation options.
 

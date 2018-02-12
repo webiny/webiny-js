@@ -11,9 +11,9 @@ validation.validate(123, 'required,number,gt:20').then(() => {
 });
 ```
 
-Validators are specified by its name and in this case, there are three - `required`, `number` and `gt:20`. 
+Validators are specified by its name and in this case, there are three - `required`, `number` and `gt`.
 Since value is not empty, it is a number and is greater than 20, code execution will proceed regularly. 
-On the other hand, if one of the validator was not satisfied, an instance of `ValidationError` will be thrown.
+On the other hand, if one of the validator was not satisfied, an instance of `ValidationError` would be thrown.
 
 ```
 import { validation } from 'webiny-validation';
@@ -25,6 +25,21 @@ validation.validate(10, 'required,number,gt:20').catch(e => {
 
 It is possible to provide as many validators as needed.
 
+### Passing arguments
+As seen in previous section, validators can accept additional arguments, which are divided by colon.
+The following validator simply states that value must be greater than 20:
+
+```
+gt:20
+```
+
+Some validators may even accept more than one arguments:
+```
+in:dog:cat:fish:bird
+```
+
+There is no limit on the number of passed arguments.
+ 
 ### Built-in validators
  
 The following is a complete list of built-in validators, ready to be used immediately:
@@ -49,7 +64,8 @@ More information about each can be found in the following sections.
 
 ### Adding custom validators 
 
-Apart from built-in validators, there are cases where additional validators might be needed. The following example shows how to add a custom validator:
+Apart from built-in validators, there are cases where additional validators might be needed. The following example 
+shows how to add a custom validator:
 
 ```
 import { validation, ValidationError } from 'webiny-validation';
@@ -80,20 +96,11 @@ validation.validateSync('fish', 'in:cat:dog:fish:parrot');
 ```
 
 ### Returning instead of throwing
-The following example shows how to return an Error object instead of throwing it:   
+The following example shows how to force ValidationError to be returned, instead of thrown:
+
 ```
 import { validation } from 'webiny-validation';
 const error = await validation.validate("", "required", { throw: false });
 ```
 
-Once executed, following object will be assigned to the `error` constant:
-```
-{
-    "message": "Value is required.",
-    "name": "required",
-    "value": ""
-}     
- ```
-
-
-
+Once executed, an instance of ValidationError will be assigned to the `error` constant.
