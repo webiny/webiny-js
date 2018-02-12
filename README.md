@@ -5,8 +5,8 @@
   <strong>Web development made easy.</strong>
 </p>
 <p align="center">
-
-[Official Website](https://www.webiny.com) | [Packages](/documentation/packages.md) 
+  <a href="https://www.webiny.com">Official Website</a> |
+  <a href="documentation/packages.md">Packages</a> 
 </p>
 
 #
