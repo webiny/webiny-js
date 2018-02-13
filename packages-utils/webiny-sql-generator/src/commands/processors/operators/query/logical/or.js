@@ -1,10 +1,10 @@
 // @flow
 import _ from "lodash";
-import type { Operator } from "./../../../../../types";
+import type { Operator } from "../../../../../../types";
 
-const and: Operator = {
+const or: Operator = {
     canProcess: ({ key }) => {
-        return key === "$and";
+        return key === "$or";
     },
     process: ({ value, processor }) => {
         let output = "";
@@ -15,7 +15,7 @@ const and: Operator = {
                         if (output === "") {
                             output = processor.process({ [andKey]: andValue });
                         } else {
-                            output += " AND " + processor.process({ [andKey]: andValue });
+                            output += " OR " + processor.process({ [andKey]: andValue });
                         }
                     }
                 });
@@ -25,16 +25,16 @@ const and: Operator = {
                     if (output === "") {
                         output = processor.process({ [andKey]: andValue });
                     } else {
-                        output += " AND " + processor.process({ [andKey]: andValue });
+                        output += " OR " + processor.process({ [andKey]: andValue });
                     }
                 }
                 break;
             default:
-                throw Error("$and operator must receive an object or an array.");
+                throw Error("$or operator must receive an object or an array.");
         }
 
         return "(" + output + ")";
     }
 };
 
-export default and;
+export default or;

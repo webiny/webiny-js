@@ -1,4 +1,4 @@
 // @flow
-import QueryBuilder from "./queryBuilder";
+import SqlGenerator from "./sqlGenerator";
 
-export default new QueryBuilder();
+export default new SqlGenerator();

@@ -1,6 +1,5 @@
 import { assert } from "chai";
-import { OperatorsProcessor } from "./../../../../src/processors";
-const operatorsProcessor = new OperatorsProcessor();
+import { operatorsProcessor } from "../../../../src/commands/processors";
 
 describe("regular and $eq equality comparison operator test", function() {
     it("should generate correct statement using regular equality operator", () => {

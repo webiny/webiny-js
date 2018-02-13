@@ -1,10 +1,11 @@
 #! /usr/bin/env node
 const glob = require("glob");
-const utils = require("./utils");
+const fs = require("fs");
+const sqlGenerator = require("webiny-sql-generator");
 
 class Sync {
     constructor() {
-        this.version = JSON.parse(utils.readFile(__dirname + "/../package.json")).version;
+        this.version = JSON.parse(this.__readFile(__dirname + "/../package.json")).version;
     }
 
     execute(options) {
@@ -13,24 +14,27 @@ class Sync {
                 return "Nema.";
             }
 
+            const output = [];
+
             files.forEach(path => {
                 switch (options.format) {
                     case "js":
                         break;
                     default: {
-                        const table = JSON.parse(utils.readFile(path));
-                        console.log(table);
+                        const definition = JSON.parse(this.__readFile(path));
+                        output.push({
+                            name: definition.name,
+                            sql: sqlGenerator.createTable(definition)
+                        });
                     }
                 }
             });
+            console.log(output);
         });
+    }
 
-        /*CREATE TABLE `ic_kiosk` (
-            `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-            `name` varchar(100) DEFAULT '0',
-            `status` enum('active','inactive') DEFAULT 'inactive',
-            PRIMARY KEY (`id`),
-    ) ENGINE=InnoDB*/
+    __readFile(path) {
+        return fs.readFileSync(path, "utf8");
     }
 }
 

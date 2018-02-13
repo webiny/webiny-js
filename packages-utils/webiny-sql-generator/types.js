@@ -19,3 +19,15 @@ export type Operator = {
     canProcess: ({ key: string, value: any, processor: OperatorsProcessor }) => boolean,
     process: ({ key: string, value: any, processor: OperatorsProcessor }) => string
 };
+
+// Table generation types.
+export type Table = {
+    name: string,
+    columns: { [string]: TableColumn }
+};
+
+export type TableColumn = {
+    type: "bigint" | "char" | "tinyint" | "bool" | "varchar" | "enum",
+    unsigned?: boolean,
+    allowNull?: boolean
+};

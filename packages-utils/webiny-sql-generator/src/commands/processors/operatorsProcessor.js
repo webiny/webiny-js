@@ -1,7 +1,7 @@
 // @flow
 import SqlString from "sqlstring";
-import { logical, comparison } from "./operators/query";
-import type { Payload, Operator } from "./../../types";
+import { logical, comparison } from "./operators/query/index";
+import type { Payload, Operator } from "../../../types";
 
 class OperatorsProcessor {
     operators: Array<Operator>;
@@ -36,4 +36,5 @@ class OperatorsProcessor {
     }
 }
 
-export default OperatorsProcessor;
+const operatorsProcessor = new OperatorsProcessor();
+export default operatorsProcessor;
