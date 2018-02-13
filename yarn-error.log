@@ -85,7 +85,7 @@ npm manifest:
           "test:webiny-entity-memory": "yarn mocha \"packages-api/webiny-entity-memory/tests/**/*.test.js\"",
           "test:webiny-entity-mysql": "yarn mocha \"packages-api/webiny-entity-mysql/tests/**/*.test.js\"",
           "test:webiny-model": "yarn mocha \"packages-api/webiny-model/tests/**/*.test.js\"",
-          "test:webiny-sql-query-builder": "yarn mocha \"packages-api/webiny-sql-query-builder/tests/**/*.test.js\"",
+          "test:webiny-sql-generator": "yarn mocha \"packages-api/webiny-sql-generator/tests/**/*.test.js\"",
           "test:webiny-validation": "yarn mocha \"packages-utils/webiny-validation/tests/**/*.test.js\""
   
           "main:webiny-data-extractor": "packages-utils/webiny-data-extractor/src/index.js",

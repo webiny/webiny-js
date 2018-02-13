@@ -1,7 +1,7 @@
 // @flow
 import _ from "lodash";
 import { Entity, Driver, QueryResult } from "webiny-entity";
-import queryBuilder from "webiny-sql-query-builder";
+import queryBuilder from "webiny-sql-generator";
 import { MySQLModel } from "./model";
 import type { Connection, Pool } from "mysql";
 import MySQLConnection from "./mysqlConnection";

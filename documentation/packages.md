@@ -35,8 +35,8 @@ Model, store and validate data using models.
 ### [Scripts](https://github.com/Webiny/webiny-js/tree/master/packages-utils/webiny-scripts) [![Known Vulnerabilities](https://snyk.io/test/github/webiny/webiny-js/badge.svg?targetFile=packages-utils%2Fwebiny-scripts%2Fpackage.json)](https://snyk.io/test/github/webiny/webiny-js?targetFile=packages-utils%2Fwebiny-scripts%2Fpackage.json)
 A set of utility scripts for development and production builds (currently used with `webiny-client` projects).
 
-### [SQL Builder](https://github.com/Webiny/webiny-js/tree/master/packages-utils/webiny-sql-query-builder) [![Known Vulnerabilities](https://snyk.io/test/github/webiny/webiny-js/badge.svg?targetFile=packages-utils%2Fwebiny-sql-query-builder%2Fpackage.json)](https://snyk.io/test/github/webiny/webiny-js?targetFile=packages-utils%2Fwebiny-sql-query-builder%2Fpackage.json)
-An SQL query builder.
+### [SQL Builder](https://github.com/Webiny/webiny-js/tree/master/packages-utils/webiny-sql-generator) [![Known Vulnerabilities](https://snyk.io/test/github/webiny/webiny-js/badge.svg?targetFile=packages-utils%2Fwebiny-sql-generator%2Fpackage.json)](https://snyk.io/test/github/webiny/webiny-js?targetFile=packages-utils%2Fwebiny-sql-generator%2Fpackage.json)
+SQL builder that can form SQL queries and other various commands.
 
 ### [Validation](https://github.com/Webiny/webiny-js/tree/master/packages-utils/webiny-validation) [![Known Vulnerabilities](https://snyk.io/test/github/webiny/webiny-js/badge.svg?targetFile=packages-utils%2Fwebiny-validation%2Fpackage.json)](https://snyk.io/test/github/webiny/webiny-js?targetFile=packages-utils%2Fwebiny-validation%2Fpackage.json)
 A simple, pluginable and async data validation library, packed with frequently used validators like `required`, `email`, `url`, `creditCard` etc.
