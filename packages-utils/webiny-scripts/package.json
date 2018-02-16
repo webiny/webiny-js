@@ -2,7 +2,11 @@
   "name": "webiny-scripts",
   "bin": "bin/webiny-scripts.js",
   "description": "A collection of utility scripts to use with client apps",
-  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "version": "0.0.0-semantically-released",
   "license": "MIT",
   "dependencies": {
     "autodll-webpack-plugin": "^0.3.8",
@@ -53,8 +57,9 @@
     "babel-cli": "^6.26.0"
   },
   "scripts": {
-    "snyk-protect": "snyk protect",
-    "prepublish": "npm run snyk-protect"
+    "build": "babel src -d lib --source-maps --copy-files",
+    "prepublish": "npm run snyk-protect",
+    "snyk-protect": "snyk protect"
   },
   "snyk": true
 }

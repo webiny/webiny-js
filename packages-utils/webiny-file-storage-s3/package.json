@@ -1,25 +1,30 @@
 {
-    "name": "webiny-file-storage-s3",
-    "description": "AWS S3 file-system storage driver for webiny-file-storage library",
-    "version": "1.0.0",
-    "main": "src/index.js",
-    "contributors": [
-        "Pavel Denisjuk <pavel@webiny.com>",
-        "Sven Al Hamad <sven@webiny.com>",
-        "Adrian Smijulj <adrian@webiny.com>"
-    ],
-    "license": "MIT",
-    "dependencies": {
-        "aws-sdk": "^2.188.0",
-        "babel-runtime": "^6.26.0",
-        "fecha": "^2.3.2",
-        "lodash": "^4.17.4"
-    },
-    "devDependencies": {
-        "sinon": "^4.2.0",
-        "documentation": "^5.3.5"
-    },
-    "scripts": {
-      "documentation": "documentation readme --section=Documentation --config documentation.yml src/** --github"
-    }
+  "name": "webiny-file-storage-s3",
+  "description": "AWS S3 file-system storage driver for webiny-file-storage library",
+  "version": "0.0.0-semantically-released",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.188.0",
+    "babel-runtime": "^6.26.0",
+    "fecha": "^2.3.2",
+    "lodash": "^4.17.4"
+  },
+  "devDependencies": {
+    "sinon": "^4.2.0",
+    "documentation": "^5.3.5"
+  },
+  "scripts": {
+    "build": "babel src -d lib --source-maps --copy-files",
+    "documentation": "documentation readme --section=Documentation --config documentation.yml src/** --github"
+  }
 }

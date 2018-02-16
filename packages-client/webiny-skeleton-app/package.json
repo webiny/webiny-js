@@ -1,13 +1,20 @@
 {
-    "name": "webiny-skeleton-app",
-    "version": "1.0.0",
-    "main": "lib/index.js",
-    "author": "Pavel Denisjuk",
-    "license": "MIT",
-    "dependencies": {
-        "webiny-ui": "^1"
-    },
-    "devDependencies": {
-        "babel-cli": "^6.26.0"
-    }
+  "name": "webiny-skeleton-app",
+  "version": "0.0.0-semantically-released",
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "author": "Pavel Denisjuk",
+  "license": "MIT",
+  "dependencies": {
+    "webiny-ui": "^1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0"
+  },
+  "scripts": {
+    "build": "babel src -d lib --source-maps --copy-files"
+  }
 }

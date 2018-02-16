@@ -192,13 +192,13 @@ This will return the following result:
 
 #### DataExtractor
 
-[packages-utils/webiny-data-extractor/src/index.js:8-200](https://github.com/Webiny/webiny-js/blob/7b3f1af0004cb70eee55347b17a88ddcef4800b8/packages-utils/webiny-data-extractor/src/index.js#L8-L200 "Source code on GitHub")
+[packages-utils/webiny-data-extractor/src/index.js:8-200](https://github.com/webiny/webiny-js/blob/7b3f1af0004cb70eee55347b17a88ddcef4800b8/packages-utils/webiny-data-extractor/src/index.js#L8-L200 "Source code on GitHub")
 
 Data extractor class.
 
 ##### get
 
-[packages-utils/webiny-data-extractor/src/index.js:16-22](https://github.com/Webiny/webiny-js/blob/7b3f1af0004cb70eee55347b17a88ddcef4800b8/packages-utils/webiny-data-extractor/src/index.js#L16-L22 "Source code on GitHub")
+[packages-utils/webiny-data-extractor/src/index.js:16-22](https://github.com/webiny/webiny-js/blob/7b3f1af0004cb70eee55347b17a88ddcef4800b8/packages-utils/webiny-data-extractor/src/index.js#L16-L22 "Source code on GitHub")
 
 Returns extracted data.
 
@@ -217,7 +217,7 @@ The following are Flow types used in this package:
 
 #### ExtractionOptions
 
-[packages-utils/webiny-data-extractor/types.js:8-11](https://github.com/Webiny/webiny-js/blob/7b3f1af0004cb70eee55347b17a88ddcef4800b8/packages-utils/webiny-data-extractor/types.js#L8-L11 "Source code on GitHub")
+[packages-utils/webiny-data-extractor/types.js:8-11](https://github.com/webiny/webiny-js/blob/7b3f1af0004cb70eee55347b17a88ddcef4800b8/packages-utils/webiny-data-extractor/types.js#L8-L11 "Source code on GitHub")
 
 All possible data extraction options.
 

@@ -1,13 +1,26 @@
 language: node_js
 sudo: false
 node_js:
-  - "node"
   - "6.10"
 cache: yarn
+branches:
+  only:
+    - master
+    - development
 install:
-  - yarn install
+  - yarn install --ignore-engines
 script:
   - yarn ci
+git:
+  depth: 1
+jobs:
+  include:
+    - stage: test
+      script: yarn ci
+    - stage: release
+      node_js: "8.9.4"
+      if: branch = master
+      script: yarn release
 notifications:
   slack:
     on_success: change

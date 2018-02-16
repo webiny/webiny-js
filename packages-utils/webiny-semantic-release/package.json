@@ -1,0 +1,20 @@
+{
+  "private": true,
+  "name": "webiny-semantic-release",
+  "description": "Webiny wrapper for semantic-release to be used in lerna environment.",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "bin": "./bin/webiny-semantic-release.js",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "lerna": "^2.9.0",
+    "semantic-release": "^12.4.1",
+    "yargs": "^11.0.0"
+  }
+}

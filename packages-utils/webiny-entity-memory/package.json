@@ -1,17 +1,24 @@
 {
-    "name": "webiny-entity-memory",
-    "version": "1.0.0",
-    "main": "src/index.js",
-    "contributors": [
-        "Pavel Denisjuk <pavel@webiny.com>",
-        "Sven Al Hamad <sven@webiny.com>",
-        "Adrian Smijulj <adrian@webiny.com>"
-    ],
-    "license": "MIT",
-    "dependencies": {
-        "babel-runtime": "^6.26.0",
-        "lodash": "^4.17.4",
-        "mdbid": "^1.0.0",
-        "webiny-entity": "^1"
-    }
+  "name": "webiny-entity-memory",
+  "version": "0.0.0-semantically-released",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "babel-runtime": "^6.26.0",
+    "lodash": "^4.17.4",
+    "mdbid": "^1.0.0",
+    "webiny-entity": "^1"
+  },
+  "scripts": {
+    "build": "babel src -d lib --source-maps --copy-files"
+  }
 }

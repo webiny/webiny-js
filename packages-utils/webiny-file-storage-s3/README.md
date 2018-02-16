@@ -55,7 +55,7 @@ The `S3StorageDriverConfig` takes the following parameters:
 
 #### S3StorageDriver
 
-[packages-utils/webiny-file-storage-s3/src/index.js:45-387](https://github.com/Webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L45-L387 "Source code on GitHub")
+[packages-utils/webiny-file-storage-s3/src/index.js:45-387](https://github.com/webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L45-L387 "Source code on GitHub")
 
 S3StorageDriver class instance is the AWS S3 driver for webiny-file-storage.
 
@@ -79,7 +79,7 @@ s3Storage.getFile("fileKey");
 
 ##### getFile
 
-[packages-utils/webiny-file-storage-s3/src/index.js:60-72](https://github.com/Webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L60-L72 "Source code on GitHub")
+[packages-utils/webiny-file-storage-s3/src/index.js:60-72](https://github.com/webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L60-L72 "Source code on GitHub")
 
 Returns the file and its content.
 
@@ -92,7 +92,7 @@ Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 ##### setFile
 
-[packages-utils/webiny-file-storage-s3/src/index.js:80-118](https://github.com/Webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L80-L118 "Source code on GitHub")
+[packages-utils/webiny-file-storage-s3/src/index.js:80-118](https://github.com/webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L80-L118 "Source code on GitHub")
 
 Writes the given file and returns final file key.
 
@@ -105,7 +105,7 @@ Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 ##### getMeta
 
-[packages-utils/webiny-file-storage-s3/src/index.js:125-137](https://github.com/Webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L125-L137 "Source code on GitHub")
+[packages-utils/webiny-file-storage-s3/src/index.js:125-137](https://github.com/webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L125-L137 "Source code on GitHub")
 
 Returns file meta information.
 
@@ -117,7 +117,7 @@ Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 ##### setMeta
 
-[packages-utils/webiny-file-storage-s3/src/index.js:145-153](https://github.com/Webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L145-L153 "Source code on GitHub")
+[packages-utils/webiny-file-storage-s3/src/index.js:145-153](https://github.com/webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L145-L153 "Source code on GitHub")
 
 Sets file meta information. Tne new meta information is merged with the existing meta information.
 
@@ -130,7 +130,7 @@ Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 ##### exists
 
-[packages-utils/webiny-file-storage-s3/src/index.js:160-166](https://github.com/Webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L160-L166 "Source code on GitHub")
+[packages-utils/webiny-file-storage-s3/src/index.js:160-166](https://github.com/webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L160-L166 "Source code on GitHub")
 
 Returns `true` if the file exists, otherwise false.
 
@@ -142,7 +142,7 @@ Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 ##### getKeys
 
-[packages-utils/webiny-file-storage-s3/src/index.js:177-212](https://github.com/Webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L177-L212 "Source code on GitHub")
+[packages-utils/webiny-file-storage-s3/src/index.js:177-212](https://github.com/webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L177-L212 "Source code on GitHub")
 
 Returns an array of all keys.
 In case of S3, the `key`  parameter is used as a `Prefix` filter. Once the results matching this filter have
@@ -157,7 +157,7 @@ Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 ##### delete
 
-[packages-utils/webiny-file-storage-s3/src/index.js:219-230](https://github.com/Webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L219-L230 "Source code on GitHub")
+[packages-utils/webiny-file-storage-s3/src/index.js:219-230](https://github.com/webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L219-L230 "Source code on GitHub")
 
 Delete the file.
 
@@ -169,7 +169,7 @@ Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 ##### rename
 
-[packages-utils/webiny-file-storage-s3/src/index.js:238-259](https://github.com/Webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L238-L259 "Source code on GitHub")
+[packages-utils/webiny-file-storage-s3/src/index.js:238-259](https://github.com/webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L238-L259 "Source code on GitHub")
 
 Rename the file.
 
@@ -182,7 +182,7 @@ Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 ##### getURL
 
-[packages-utils/webiny-file-storage-s3/src/index.js:270-276](https://github.com/Webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L270-L276 "Source code on GitHub")
+[packages-utils/webiny-file-storage-s3/src/index.js:270-276](https://github.com/webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L270-L276 "Source code on GitHub")
 
 Returns the public file url.
 In case the `publicUrl` param is defined in the `S3StorageDriverConfig` the public url will return `publicUrl+key`.
@@ -197,7 +197,7 @@ Returns **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/G
 
 ##### getSize
 
-[packages-utils/webiny-file-storage-s3/src/index.js:284-297](https://github.com/Webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L284-L297 "Source code on GitHub")
+[packages-utils/webiny-file-storage-s3/src/index.js:284-297](https://github.com/webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L284-L297 "Source code on GitHub")
 
 Get file size in bytes.
 
@@ -209,7 +209,7 @@ Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 ##### getTimeModified
 
-[packages-utils/webiny-file-storage-s3/src/index.js:305-316](https://github.com/Webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L305-L316 "Source code on GitHub")
+[packages-utils/webiny-file-storage-s3/src/index.js:305-316](https://github.com/webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L305-L316 "Source code on GitHub")
 
 Get file last modified time.
 
@@ -221,7 +221,7 @@ Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 ##### getContentType
 
-[packages-utils/webiny-file-storage-s3/src/index.js:324-332](https://github.com/Webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L324-L332 "Source code on GitHub")
+[packages-utils/webiny-file-storage-s3/src/index.js:324-332](https://github.com/webiny/webiny-js/blob/aff0cc278dafb7ed515810176cad4a931c5aebb1/packages-utils/webiny-file-storage-s3/src/index.js#L324-L332 "Source code on GitHub")
 
 Get file content type.
 
