@@ -23,7 +23,7 @@
     "date-fns": "^1.29.0",
     "jsonwebtoken": "^8.1.0",
     "lodash": "^4.17.4",
-    "webiny-api": "^1.0.0"
+    "webiny-api": "0.0.0-semantically-released"
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files"

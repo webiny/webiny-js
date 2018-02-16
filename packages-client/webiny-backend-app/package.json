@@ -13,7 +13,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "webiny-skeleton-app": "^1"
+    "webiny-skeleton-app": "0.0.0-semantically-released"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0"

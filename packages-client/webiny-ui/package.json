@@ -33,7 +33,7 @@
     "react-transition-group": "^2.2.1",
     "select2": "^4.0.6-rc.1",
     "simplemde": "^1.11.2",
-    "webiny-client": "^1"
+    "webiny-client": "0.0.0-semantically-released"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0"

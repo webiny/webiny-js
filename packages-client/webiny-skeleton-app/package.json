@@ -9,7 +9,7 @@
   "author": "Pavel Denisjuk",
   "license": "MIT",
   "dependencies": {
-    "webiny-ui": "^1"
+    "webiny-ui": "0.0.0-semantically-released"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0"

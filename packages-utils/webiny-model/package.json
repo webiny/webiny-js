@@ -15,8 +15,8 @@
   "dependencies": {
     "babel-runtime": "^6.26.0",
     "lodash": "^4.17.4",
-    "webiny-validation": "^1",
-    "webiny-data-extractor": "^1"
+    "webiny-validation": "0.0.0-semantically-released",
+    "webiny-data-extractor": "0.0.0-semantically-released"
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files"
