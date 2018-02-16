@@ -1,9 +1,9 @@
-import queryBuilder from "./../../../src";
+import sqlGenerator from "./../../../src";
 
 describe("missing operator error test", function() {
     it("should throw an error because operator is not recognized", async () => {
         try {
-            queryBuilder.build({
+            sqlGenerator.build({
                 operation: "select",
                 table: "TestTable",
                 where: { name: "Test", $unknownOperator: { test: 123 } }
@@ -17,7 +17,7 @@ describe("missing operator error test", function() {
 
     it("should throw an error because operator is not recognized", async () => {
         try {
-            queryBuilder.build({
+            sqlGenerator.build({
                 operation: "select",
                 table: "TestTable",
                 where: { name: "Test", enabled: { $unknownOperator: 123 } }

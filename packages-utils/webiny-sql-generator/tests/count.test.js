@@ -1,9 +1,9 @@
 import { assert } from "chai";
-import queryBuilder from "./../src";
+import { sqlGenerator } from "./..";
 
 describe("SELECT statement test", function() {
     it("should generate a SELECT statement", async () => {
-        const sql = queryBuilder.build({
+        const sql = sqlGenerator.build({
             operation: "count",
             table: "TestTable",
             where: { name: "Test", enabled: true, deletedOn: null },

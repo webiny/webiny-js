@@ -1,7 +1,7 @@
 // @flow
 import _ from "lodash";
 import { Entity, Driver, QueryResult } from "webiny-entity";
-import queryBuilder from "webiny-sql-generator";
+import { sqlGenerator } from "webiny-sql-generator";
 import { MySQLModel } from "./model";
 import type { Connection, Pool } from "mysql";
 import MySQLConnection from "./mysqlConnection";
@@ -69,7 +69,7 @@ class MySQLDriver extends Driver {
 
         if (entity.isExisting()) {
             const data = await entity.toStorage();
-            const sql = queryBuilder.build({
+            const sql = sqlGenerator.build({
                 operation: "update",
                 table: this.getTableName(entity),
                 data,
@@ -81,7 +81,7 @@ class MySQLDriver extends Driver {
         }
 
         const data = await entity.toStorage();
-        const sql = queryBuilder.build({
+        const sql = sqlGenerator.build({
             operation: "insert",
             data,
             table: this.getTableName(entity)
@@ -103,7 +103,7 @@ class MySQLDriver extends Driver {
     // eslint-disable-next-line
     async delete(entity: Entity, options: EntityDeleteParams & {}): Promise<QueryResult> {
         const id = await entity.getAttribute("id").getStorageValue();
-        const sql = queryBuilder.build({
+        const sql = sqlGenerator.build({
             operation: "delete",
             table: this.getTableName(entity),
             where: { id },
@@ -137,7 +137,7 @@ class MySQLDriver extends Driver {
             delete clonedOptions.page;
         }
 
-        const sql = queryBuilder.build(clonedOptions);
+        const sql = sqlGenerator.build(clonedOptions);
 
         const results = await this.getConnection().query([sql, "SELECT FOUND_ROWS() as count"]);
 
@@ -145,7 +145,7 @@ class MySQLDriver extends Driver {
     }
 
     async findOne(entity: Entity, options: EntityFindOneParams & Object): Promise<QueryResult> {
-        const sql = queryBuilder.build({
+        const sql = sqlGenerator.build({
             operation: "select",
             table: this.getTableName(entity),
             where: options.query,
@@ -157,7 +157,7 @@ class MySQLDriver extends Driver {
     }
 
     async count(entity: Entity, options: EntityFindParams & {}): Promise<QueryResult> {
-        const sql = queryBuilder.build(
+        const sql = sqlGenerator.build(
             _.merge({}, options, { table: this.getTableName(entity), operation: "count" })
         );
 

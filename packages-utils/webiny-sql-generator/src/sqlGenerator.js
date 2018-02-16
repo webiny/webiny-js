@@ -45,4 +45,4 @@ class SqlGenerator {
     }
 }
 
-export default SqlGenerator;
+export default new SqlGenerator();

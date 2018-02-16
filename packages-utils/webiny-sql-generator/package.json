@@ -1,7 +1,7 @@
 {
     "name": "webiny-sql-generator",
     "version": "1.0.0",
-    "main": "src/index.js",
+    "main": "src/main.js",
     "contributors": [
         "Pavel Denisjuk <pavel@webiny.com>",
         "Sven Al Hamad <sven@webiny.com>",

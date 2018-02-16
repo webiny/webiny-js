@@ -1,9 +1,9 @@
 import { assert } from "chai";
-import queryBuilder from "./../src";
+import { sqlGenerator } from "./..";
 
 describe("INSERT statement test", function() {
     it("should generate an INSERT statement", async () => {
-        const sql = queryBuilder.build({
+        const sql = sqlGenerator.build({
             operation: "insert",
             table: "TestTable",
             data: { name: "Test", enabled: 1 }
@@ -13,7 +13,7 @@ describe("INSERT statement test", function() {
     });
 
     it("should generate an INSERT statement and preserve false in query", async () => {
-        const sql = queryBuilder.build({
+        const sql = sqlGenerator.build({
             operation: "insert",
             table: "TestTable",
             data: { name: "Test", enabled: false }
@@ -23,7 +23,7 @@ describe("INSERT statement test", function() {
     });
 
     it('should generate an INSERT statement with ON DUPLICATE KEY UPDATE (aka "UPSERT")', async () => {
-        const sql = queryBuilder.build({
+        const sql = sqlGenerator.build({
             operation: "insert",
             onDuplicateKeyUpdate: true,
             table: "TestTable",

@@ -1,9 +1,9 @@
 import { assert } from "chai";
-import queryBuilder from "./../src";
+import { sqlGenerator } from "./..";
 
 describe("DELETE statement test", function() {
     it("should generate a DELETE statement", async () => {
-        const sql = queryBuilder.build({
+        const sql = sqlGenerator.build({
             operation: "delete",
             table: "TestTable",
             where: { name: "Test", enabled: true, deletedOn: null },

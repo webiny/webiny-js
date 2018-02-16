@@ -1,47 +1,47 @@
 // @flow
 import type Table from "./table";
-import IndexesContainer from "./indexesContainer";
+import ColumnsContainer from "./columnsContainer";
 
-class Index {
+class Column {
     name: string;
     type: string;
-    indexesContainer: IndexesContainer;
+    columnsContainer: ColumnsContainer;
     toJSON: {};
     autoIncrement: boolean;
     allowNull: boolean;
     default: mixed;
-    constructor(name: string, indexesContainer: IndexesContainer) {
+    constructor(name: string, columnsContainer: ColumnsContainer) {
         /**
-         * Index name.
+         * Column name.
          */
         this.name = name;
 
         /**
-         * Index's parent table instance.
+         * Column's parent table instance.
          */
-        this.indexesContainer = indexesContainer;
+        this.columnsContainer = columnsContainer;
 
         /**
-         * Index's default value.
+         * Column's default value.
          * @var null
          */
         this.default = null;
 
         /**
-         * Defines if index is auto incremented or not (most commonly used for 'id' index).
+         * Defines if column is auto incremented or not (most commonly used for 'id' column).
          * @var null
          */
         this.autoIncrement = false;
 
         /**
-         * Defines if index accept NULL values.
+         * Defines if column accept NULL values.
          * @var null
          */
         this.allowNull = true;
     }
 
     /**
-     * Returns name of index
+     * Returns name of column
      */
     getName(): string {
         return this.name;
@@ -52,18 +52,18 @@ class Index {
     }
 
     /**
-     * Returns parent table indexes container
+     * Returns parent table columns container
      */
 
-    getParentIndexesContainer(): IndexesContainer {
-        return this.indexesContainer;
+    getParentColumnsContainer(): ColumnsContainer {
+        return this.columnsContainer;
     }
 
     /**
      * Returns table
      */
     getParentTable(): Table {
-        return this.getParentIndexesContainer().getParentTable();
+        return this.getParentColumnsContainer().getParentTable();
     }
 
     getJSONValue(): {} {
@@ -74,7 +74,7 @@ class Index {
     }
 
     /**
-     * Sets default index value.
+     * Sets default column value.
      */
     setDefault(defaultValue: ?mixed): this {
         this.default = defaultValue;
@@ -82,7 +82,7 @@ class Index {
     }
 
     /**
-     * Returns default index value.
+     * Returns default column value.
      */
     getDefault() {
         return this.default;
@@ -107,4 +107,4 @@ class Index {
     }
 }
 
-export default Index;
+export default Column;

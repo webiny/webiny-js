@@ -1,9 +1,9 @@
 import { assert } from "chai";
-import queryBuilder from "./../src";
+import { sqlGenerator } from "./..";
 
 describe("UPDATE statement test", function() {
     it("should generate an UPDATE statement", () => {
-        const sql = queryBuilder.build({
+        const sql = sqlGenerator.build({
             operation: "update",
             table: "TestTable",
             data: { name: "Test", enabled: 1 }
@@ -13,7 +13,7 @@ describe("UPDATE statement test", function() {
     });
 
     it("should generate an UPDATE statement and preserve false in query", () => {
-        const sql = queryBuilder.build({
+        const sql = sqlGenerator.build({
             operation: "update",
             table: "TestTable",
             data: { name: "Test", enabled: false }
@@ -23,7 +23,7 @@ describe("UPDATE statement test", function() {
     });
 
     it("should generate an UPDATE statement with additional conditions", () => {
-        const sql = queryBuilder.build({
+        const sql = sqlGenerator.build({
             operation: "update",
             table: "TestTable",
             data: { name: "Test", enabled: false },

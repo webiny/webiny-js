@@ -1,9 +1,18 @@
 import { assert } from "chai";
-import { sqlGenerator } from "./..";
+import { UserTable, CompanyTable, ComplexTable } from "./tables";
 
-describe("INSERT statement test", function() {
-    it("should generate an INSERT statement", async () => {
-        const sql = sqlGenerator.createTable({
+describe("Table class test", function() {
+    it("should return basic toJSON correctly", async () => {
+        const userTable = new UserTable();
+
+        const companyTable = new CompanyTable();
+    });
+
+    it("should return complex toJSON correctly", async () => {
+        const userTable = new ComplexTable();
+
+        console.log(userTable.toJSON());
+        const JSON = {
             name: "TestTable",
             engine: "InnoDB",
             defaultCharset: "utf8",
@@ -77,50 +86,9 @@ describe("INSERT statement test", function() {
                 },
                 realField: {}
             }
-        });
+        };
 
-        console.log(sql);
-        assert.equal(
-            sql,
-            `CREATE TABLE \`TestTable\` (
-	\`id\` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-	\`iso\` char(2) NOT NULL,
-	\`iso3\` char(3) NOT NULL,
-	\`name\` varchar(80),
-	\`label\` varchar(160) DEFAULT 'Missing label.',
-	\`numcode\` smallint(6) DEFAULT '100',
-	\`type\` enum(active, inactive, pending, disabled) DEFAULT 'pending',
-	\`description\` text,
-	PRIMARY KEY  (\`id\`),
-	UNIQUE KEY isoIndex (\`iso\`),
-	UNIQUE KEY isoIso3Index (\`iso, iso3\`),
-	KEY labelIndex (\`label\`),
-	KEY typeIndex (\`type\`),
-	FULLTEXT KEY descriptionFullText (\`type\`),
-	KEY realField (\`realField\`)
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8 COLLATE=utf888 COMMENT="Nice test table..."`
-        );
-    });
-
-    it("should correctly gnenerate CREATE TABLE statement without additional params", async () => {
-        const sql = sqlGenerator.createTable({
-            name: "TestTable",
-            columns: {
-                id: {
-                    type: "bigint",
-                    length: 20,
-                    unsigned: true,
-                    notNull: true,
-                    autoIncrement: true
-                }
-            }
-        });
-
-        assert.equal(
-            sql,
-            `CREATE TABLE \`TestTable\` (
-	\`id\` bigint(20) unsigned NOT NULL AUTO_INCREMENT
-)`
-        );
+        // TODO: Finish!
+        // assert.equal(userTable.toJSON(), JSON)
     });
 });

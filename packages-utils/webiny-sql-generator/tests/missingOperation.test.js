@@ -1,9 +1,9 @@
-import queryBuilder from "./../src";
+import { sqlGenerator } from "./..";
 
 describe("missing operation error test", function() {
     it("should throw an error because operation does not exist", async () => {
         try {
-            queryBuilder.build({
+            sqlGenerator.build({
                 operation: "unknown-command",
                 table: "TestTable",
                 where: { name: "Test", $unknownOperator: { test: 123 } }
