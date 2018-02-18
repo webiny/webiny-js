@@ -1,0 +1,23 @@
+{
+  "name": "webiny-sql",
+  "version": "0.0.0-semantically-released",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "babel-runtime": "^6.26.0",
+    "lodash": "^4.17.4",
+    "sqlstring": "^2.3.0"
+  },
+  "scripts": {
+    "build": "babel src -d lib --source-maps --copy-files"
+  }
+}
