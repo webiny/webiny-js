@@ -5,21 +5,23 @@ class UserTable extends Table {
         super();
         this.column("id")
             .int(5)
+            .setAllowNull(false)
             .setUnsigned()
             .setAutoIncrement();
         this.column("total")
             .int(6)
-            .setUnsigned(false)
-            .setAutoIncrement(false);
+            .setUnsigned(false);
         this.column("totalViews")
             .int(7)
-            .setUnsigned(true)
-            .setAutoIncrement(true);
+            .setUnsigned(true);
         this.column("name").char(8);
 
         this.index("id").primary();
         this.index("name").unique();
+        this.index("totals").unique("total", "totalViews");
     }
 }
+
+UserTable.setName("Users");
 
 export default UserTable;

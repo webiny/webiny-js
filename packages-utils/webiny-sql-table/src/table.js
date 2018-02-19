@@ -3,6 +3,7 @@ import IndexesContainer from "./indexesContainer";
 import Column from "./column";
 import Index from "./index";
 import Driver from "./driver";
+import { CreateTable } from "webiny-sql";
 
 class Table {
     static engine: string;
@@ -110,6 +111,11 @@ class Table {
         }
 
         return json;
+    }
+
+    toSQL() {
+        const statement = new CreateTable(this.toObject());
+        return statement.generate();
     }
 
     static setDriver(driver): this {
