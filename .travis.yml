@@ -9,8 +9,6 @@ branches:
     - development
 install:
   - yarn install --ignore-engines
-script:
-  - yarn ci
 jobs:
   include:
     - stage: test
