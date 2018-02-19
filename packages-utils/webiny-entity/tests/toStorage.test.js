@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import User from "./entities/user";
-import { Entity, Driver, EntityModel, EntityAttributesContainer } from "./../src";
+import { Entity, Driver, EntityModel, EntityAttributesContainer } from "./../lib";
 import { BooleanAttribute } from "webiny-model";
 
 describe("toStorage test", function() {

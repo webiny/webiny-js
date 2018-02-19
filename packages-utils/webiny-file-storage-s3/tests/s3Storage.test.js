@@ -5,8 +5,8 @@ import AWS from "aws-sdk";
 import s3MockResponses from "./s3MockResponses";
 import sinon from "sinon";
 import fecha from "fecha";
-import S3StorageDriver from "./../src";
-import type { S3StorageDriverConfig } from "../src";
+import S3StorageDriver from "./../lib";
+import type { S3StorageDriverConfig } from "../lib";
 
 chai.use(chaiSubset);
 chai.use(chaiAsPromised);

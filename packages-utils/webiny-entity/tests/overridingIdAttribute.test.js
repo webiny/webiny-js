@@ -1,4 +1,4 @@
-import { Entity, Driver } from "./../src";
+import { Entity, Driver } from "./../lib";
 import { CharAttribute, IntegerAttribute } from "webiny-model";
 import { assert } from "chai";
 

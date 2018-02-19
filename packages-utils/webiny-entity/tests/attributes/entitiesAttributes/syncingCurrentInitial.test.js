@@ -1,4 +1,4 @@
-import { EntityCollection, QueryResult } from "../../../src";
+import { EntityCollection, QueryResult } from "../../../lib";
 import { MainEntity, Entity1 } from "../../entities/entitiesAttributeEntities";
 
 import { assert } from "chai";

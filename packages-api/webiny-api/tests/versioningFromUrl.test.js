@@ -1,6 +1,6 @@
 import request from "supertest";
 import express from "express";
-import { middleware, endpointMiddleware, versionFromUrl } from "webiny-api/src";
+import { middleware, endpointMiddleware, versionFromUrl } from "webiny-api";
 import MiddlewareTestApp from "./apps/middleware/versioned/app";
 
 describe("Versioning from URL", () => {

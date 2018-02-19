@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import Model from "./../../src/model";
+import Model from "./../../lib/model";
 
 const model = new Model(function() {
     this.attr("attribute").dynamic(() => {

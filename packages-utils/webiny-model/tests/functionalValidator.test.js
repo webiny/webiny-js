@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import Model from "./../src/model";
+import Model from "./../lib/model";
 
 describe("functional validator test", function() {
     it("should validate correctly using function as validator", async () => {

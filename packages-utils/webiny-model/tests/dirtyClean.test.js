@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import Model from "./../src/model";
+import Model from "./../lib/model";
 
 describe("dirty and clean test", function() {
     it("should make attributes dirty", async () => {

@@ -1,6 +1,6 @@
 // @flow
 import { assert } from "chai";
-import compose from "./../src";
+import compose from "./../lib";
 
 describe("middleware composition test", () => {
     it("should return a new function", () => {

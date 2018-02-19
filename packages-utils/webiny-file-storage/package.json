@@ -1,7 +1,7 @@
 {
   "name": "webiny-file-storage",
   "version": "0.0.0-semantically-released",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>",
     "Sven Al Hamad <sven@webiny.com>",

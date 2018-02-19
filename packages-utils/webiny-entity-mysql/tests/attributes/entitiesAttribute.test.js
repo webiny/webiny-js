@@ -1,10 +1,8 @@
 import { assert } from "chai";
-
 import { EntityCollection } from "webiny-entity";
-
 import { ComplexEntity, SimpleEntity } from "./../entities/complexEntity";
 import sinon from "sinon";
-import User from "../../../webiny-entity/tests/entities/user";
+import User from "webiny-entity/tests/entities/user";
 
 const sandbox = sinon.sandbox.create();
 

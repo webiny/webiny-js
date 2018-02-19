@@ -1,4 +1,4 @@
-import Storage from "../../src/storage";
+import type Storage from "../../src/storage";
 
 declare interface IFile {
     /**

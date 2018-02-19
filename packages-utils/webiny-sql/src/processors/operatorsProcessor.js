@@ -3,7 +3,7 @@ import SqlString from "sqlstring";
 import { logical, comparison } from "./operators/query/index";
 import type { Payload, Operator } from "../../types";
 
-class OperatorsProcessor {
+export class OperatorsProcessor {
     operators: Array<Operator>;
 
     constructor() {

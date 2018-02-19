@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { EntityError } from "./../src";
+import { EntityError } from "./../lib";
 
 describe("entity error test", function() {
     it("should set default entity error values", async () => {

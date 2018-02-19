@@ -1,5 +1,5 @@
 // @flow
-import { App } from "webiny-api/src";
+import { App } from "webiny-api";
 import CarsEndpoint from "./cars";
 
 class Middleware extends App {

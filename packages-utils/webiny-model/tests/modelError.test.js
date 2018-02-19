@@ -1,6 +1,6 @@
 import { assert } from "chai";
-import Model from "./../src/model";
-import ModelError from "./../src/modelError";
+import Model from "./../lib/model";
+import ModelError from "./../lib/modelError";
 
 describe("ModelError class test", function() {
     it("should correctly set / get values", async () => {

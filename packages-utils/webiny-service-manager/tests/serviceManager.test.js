@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { ServiceManager } from "./../src";
+import { ServiceManager } from "./../lib";
 
 let serviceManager;
 

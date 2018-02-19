@@ -1,7 +1,7 @@
 import request from "supertest";
 import express from "express";
 import { expect } from "chai";
-import { middleware, endpointMiddleware } from "webiny-api/src";
+import { middleware, endpointMiddleware } from "webiny-api";
 import MiddlewareTestApp from "./apps/middleware/default/app";
 
 describe("Endpoint test", () => {

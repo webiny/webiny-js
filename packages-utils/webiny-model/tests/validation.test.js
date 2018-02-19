@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import ModelError from "./../src/modelError";
+import ModelError from "./../lib/modelError";
 import ValidationTestModel from "./models/validationTestModel.js";
 
 describe("validation test", function() {

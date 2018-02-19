@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { operatorsProcessor } from "../../../../src/processors";
+import { operatorsProcessor } from "../../../../lib/processors";
 
 describe("$or logical operator test", function() {
     it("should generate correct statement with nested $or operators", () => {

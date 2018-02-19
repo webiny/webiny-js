@@ -1,4 +1,4 @@
-import { MySQLDriver } from "./../../src";
+import { MySQLDriver } from "./../..";
 import mysql from "mysql";
 import { Entity as BaseEntity } from "webiny-entity";
 

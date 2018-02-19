@@ -1,6 +1,6 @@
-import { Entity, Driver } from "./../src";
+import { Entity, Driver } from "./../lib";
 import { assert } from "chai";
-import { EntityError } from "../src";
+import { EntityError } from "../lib";
 
 class ExtendedEntityDriver extends Driver {
     constructor() {

@@ -1,7 +1,7 @@
 import { assert } from "chai";
-import { Entity, QueryResult } from "../../../../src/index";
+import { Entity, QueryResult } from "../../../../lib/index";
 import sinon from "sinon";
-import EntityCollection from "../../../../src/entityCollection";
+import EntityCollection from "../../../../lib/entityCollection";
 const sandbox = sinon.sandbox.create();
 
 describe("attribute entities test", function() {

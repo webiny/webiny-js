@@ -1,5 +1,5 @@
 import { ModelAttribute, Entity, EntityModel } from "webiny-entity";
-import { AttributesContainer } from "../../../webiny-model/src";
+import { AttributesContainer } from "webiny-model";
 
 export class User extends Entity {
     constructor() {

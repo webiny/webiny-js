@@ -1,6 +1,6 @@
 import { assert } from "chai";
 
-import { QueryResult } from "../../../src/index";
+import { QueryResult } from "../../../lib/index";
 import { One, Two } from "../../entities/oneTwoThree";
 import sinon from "sinon";
 import { MainEntity } from "../../entities/entitiesAttributeEntities";

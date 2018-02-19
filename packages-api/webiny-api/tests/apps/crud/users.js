@@ -1,4 +1,4 @@
-import { EntityEndpoint } from "webiny-api/src";
+import { EntityEndpoint } from "webiny-api";
 import User from "./entities/user";
 
 class Users extends EntityEndpoint {

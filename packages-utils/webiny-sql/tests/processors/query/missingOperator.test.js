@@ -1,12 +1,12 @@
-import {Select} from "./../../../src";
+import { Select } from "./../../../lib";
 
-describe("missing operator error test", function () {
+describe("missing operator error test", function() {
     it("should throw an error because operator is not recognized", async () => {
         try {
             new Select({
                 operation: "select",
                 table: "TestTable",
-                where: {name: "Test", $unknownOperator: {test: 123}}
+                where: { name: "Test", $unknownOperator: { test: 123 } }
             }).generate();
         } catch (e) {
             return;
@@ -20,7 +20,7 @@ describe("missing operator error test", function () {
             new Select({
                 operation: "select",
                 table: "TestTable",
-                where: {name: "Test", enabled: {$unknownOperator: 123}}
+                where: { name: "Test", enabled: { $unknownOperator: 123 } }
             }).generate();
         } catch (e) {
             return;

@@ -1,4 +1,4 @@
-import Entity from "./../../src/entity";
+import Entity from "./../../lib/entity";
 
 class EntityWithoutLogs extends Entity {
     constructor() {

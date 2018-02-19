@@ -1,4 +1,4 @@
-import { Endpoint, ApiResponse } from "webiny-api/src";
+import { Endpoint, ApiResponse } from "webiny-api";
 
 /**
  * Cars endpoint provides access to the Car entity.

@@ -3,8 +3,8 @@ import sinon from "sinon";
 import { QueryResult } from "webiny-entity";
 
 import { Company, User, Issue } from "./entities/identityAttributeEntities";
-import Authentication from "../src/services/authentication";
-import registerAttributes from "./../src/attributes/registerAttributes";
+import Authentication from "../lib/services/authentication";
+import registerAttributes from "./../lib/attributes/registerAttributes";
 
 const sandbox = sinon.sandbox.create();
 

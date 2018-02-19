@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { operatorsProcessor } from "../../../../src/processors";
+import { operatorsProcessor } from "../../../../lib/processors";
 
 describe("regular and $eq equality comparison operator test", function() {
     it("if array of values was passed, must use the IN operator", () => {

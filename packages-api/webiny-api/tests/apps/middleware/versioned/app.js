@@ -1,4 +1,4 @@
-import { App } from "webiny-api/src";
+import { App } from "webiny-api";
 import CarsEndpoint_v1 from "./cars-v1";
 import CarsEndpoint_v1_5 from "./cars-v1.5";
 import CarsEndpoint_v2 from "./cars-v2";

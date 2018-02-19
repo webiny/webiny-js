@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import Model from "./../src/model";
+import Model from "./../lib/model";
 
 describe("setOnce test", function() {
     it("shouldn't allow value change", async () => {

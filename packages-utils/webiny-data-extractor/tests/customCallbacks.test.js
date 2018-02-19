@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import _ from "lodash";
 
-import extractor from "./../src";
+import extractor from "./../lib";
 import mock from "./mock";
 
 const onRead = (data, key) => {

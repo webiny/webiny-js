@@ -1,7 +1,7 @@
 import { assert } from "chai";
 
 import { Entity } from "webiny-entity";
-import { MySQLDriver } from "./../src";
+import { MySQLDriver } from "./../lib";
 import mysql from "mysql";
 import _ from "lodash";
 

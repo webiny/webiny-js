@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import Model from "./../src/model";
+import Model from "./../lib/model";
 
 describe("skipOnPopulate test", function() {
     it("should set attr1 value, but not attr2 value", async () => {

@@ -1,4 +1,4 @@
-import Model from "./../../src/model";
+import Model from "./../../lib/model";
 
 class Size extends Model {
     constructor() {

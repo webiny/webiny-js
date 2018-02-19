@@ -1,7 +1,7 @@
 import { User, Group, UsersGroups } from "../../../../entities/entitiesUsing";
 import { expect } from "chai";
 import sinon from "sinon";
-import { QueryResult } from "../../../../../src";
+import { QueryResult } from "../../../../../lib";
 
 const sandbox = sinon.sandbox.create();
 

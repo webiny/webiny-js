@@ -1,7 +1,7 @@
 // @flow
 import _ from "lodash";
 import { ModelError, Attribute } from "webiny-model";
-import EntityCollection from "./../../src/entityCollection";
+import EntityCollection from "./../entityCollection";
 import Entity from "./../entity";
 import EntitiesAttributeValue from "./entitiesAttributeValue";
 import EntityAttributesContainer from "../entityAttributesContainer";

@@ -1,6 +1,5 @@
 import { assert } from "chai";
 import { ComplexEntity, SimpleEntity } from "./../entities/complexEntity";
-import { EntityCollection } from "webiny-entity";
 
 describe("entity attribute test", function() {
     it("it must populate the attribute correctly (setToStorage enabled)", async () => {

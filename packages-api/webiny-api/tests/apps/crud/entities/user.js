@@ -1,4 +1,4 @@
-import { Entity } from "webiny-api/src";
+import { Entity } from "webiny-api";
 
 class User extends Entity {
     constructor() {

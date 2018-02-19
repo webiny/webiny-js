@@ -3,7 +3,7 @@ import User from "./entities/user";
 
 import sinon from "sinon";
 import { MainEntity } from "./entities/entitiesAttributeEntities";
-import { QueryResult } from "../src";
+import { QueryResult } from "../lib";
 
 const sandbox = sinon.sandbox.create();
 

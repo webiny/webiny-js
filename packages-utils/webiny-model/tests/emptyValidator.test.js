@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import Model from "./../src/model";
+import Model from "./../lib/model";
 
 describe("empty validator test", function() {
     it("should validate correctly - no error should be thrown", async () => {

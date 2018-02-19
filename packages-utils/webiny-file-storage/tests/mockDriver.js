@@ -1,7 +1,7 @@
 // @flow
-import _ from 'lodash';
-import fecha from 'fecha';
-import StorageError from './../src/storageError';
+import _ from "lodash";
+import fecha from "fecha";
+import StorageError from "./../lib/storageError";
 
 class MockDriver implements IFileStorageDriver {
     fileSystem: { [string]: IFileData };
@@ -20,7 +20,7 @@ class MockDriver implements IFileStorageDriver {
      */
     getFile(key: string, options?: Object): Promise<IFileData> {
         if (!_.has(this.fileSystem, key)) {
-            return Promise.reject(new StorageError('File not found'));
+            return Promise.reject(new StorageError("File not found"));
         }
         return Promise.resolve(this.fileSystem[key]);
     }
@@ -32,7 +32,7 @@ class MockDriver implements IFileStorageDriver {
         let newKey = key;
         if (this.config.createDatePrefix) {
             if (!/^\/\d{4}\/\d{2}\/\d{2}\//.test(newKey)) {
-                newKey = '/' + fecha.format(Date.now(), 'YYYY/MM/DD') + key;
+                newKey = "/" + fecha.format(Date.now(), "YYYY/MM/DD") + key;
             }
         }
         this.fileSystem[newKey] = { ...file };
@@ -82,7 +82,7 @@ class MockDriver implements IFileStorageDriver {
      * Returns the last modified time
      */
     getTimeModified(key: string): Promise<number | null> {
-        return Promise.resolve(_.get(this.fileSystem[key], 'meta.timeModified', null));
+        return Promise.resolve(_.get(this.fileSystem[key], "meta.timeModified", null));
     }
 
     /**
@@ -106,21 +106,21 @@ class MockDriver implements IFileStorageDriver {
      * Returns public file URL
      */
     getURL(key: string): string {
-        return _.trim(this.config.cdnUrl, '/') + key;
+        return _.trim(this.config.cdnUrl, "/") + key;
     }
 
     /**
      * Get file size (if supported)
      */
     getSize(key: string): Promise<?number> {
-        return Promise.resolve(_.get(this.fileSystem[key], 'meta.size', null));
+        return Promise.resolve(_.get(this.fileSystem[key], "meta.size", null));
     }
 
     /**
      * Returns content type
      */
     getContentType(key: string): Promise<?string> {
-        return Promise.resolve(_.get(this.fileSystem[key], 'meta.type', null));
+        return Promise.resolve(_.get(this.fileSystem[key], "meta.type", null));
     }
 
     /**

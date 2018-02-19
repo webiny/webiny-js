@@ -1,5 +1,5 @@
 import { assert, expect } from "chai";
-import { operatorsProcessor } from "../../../../src/processors";
+import { operatorsProcessor } from "../../../../lib/processors";
 
 describe("$and logical operator test", function() {
     it("should generate correct statement", () => {

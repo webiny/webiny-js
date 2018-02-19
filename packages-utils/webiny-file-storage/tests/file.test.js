@@ -1,25 +1,28 @@
-import chai from 'chai';
-import sinon from 'sinon';
-import chaiAsPromised from 'chai-as-promised';
+import chai from "chai";
+import sinon from "sinon";
+import chaiAsPromised from "chai-as-promised";
 
 chai.use(chaiAsPromised);
 chai.should();
 const { assert } = chai;
 
-import { Storage, StorageError, File } from '../src';
-import MockDriver from './mockDriver';
+import { Storage, StorageError, File } from "../lib";
+import MockDriver from "./mockDriver";
 
-describe('File class test', function () {
-    const cdnUrl = 'https://cdn.webiny.com';
+describe("File class test", function() {
+    const cdnUrl = "https://cdn.webiny.com";
     const mockDriver = new MockDriver({ cdnUrl, createDatePrefix: true });
     const storage = new Storage(mockDriver);
 
     const file1 = {
-        key: '/path/1',
-        data: { body: 'file1', meta: { ext: 'jpg', size: 412, timeModified: Date.now(), type: 'text/plain' } }
+        key: "/path/1",
+        data: {
+            body: "file1",
+            meta: { ext: "jpg", size: 412, timeModified: Date.now(), type: "text/plain" }
+        }
     };
 
-    it('should store file body and meta', async function () {
+    it("should store file body and meta", async function() {
         const file = new File(file1.key, storage);
         file.setBody(file1.data.body);
         file.setMeta(file1.data.meta);
@@ -33,76 +36,76 @@ describe('File class test', function () {
         ]);
     });
 
-    it('should return storage instance', function () {
+    it("should return storage instance", function() {
         const file = new File(file1.key, storage);
         assert.equal(file.getStorage(), storage);
     });
 
-    it('should return file URL', function () {
+    it("should return file URL", function() {
         const file = new File(file1.key, storage);
         assert.equal(file.getUrl(), cdnUrl + file1.key);
     });
 
-    it('should return file body', function () {
+    it("should return file body", function() {
         const file = new File(file1.key, storage);
         return file.getBody().should.become(file1.data.body);
     });
 
-    it('should return already loaded file body', async function () {
-        const spy = sinon.spy(storage, 'getFile');
+    it("should return already loaded file body", async function() {
+        const spy = sinon.spy(storage, "getFile");
         const file = new File(file1.key, storage);
         await file.getBody();
         await file.getBody().should.become(file1.data.body);
         sinon.assert.calledOnce(spy);
     });
 
-    it('should return already loaded file meta', async function () {
-        const spy = sinon.spy(storage, 'getMeta');
+    it("should return already loaded file meta", async function() {
+        const spy = sinon.spy(storage, "getMeta");
         const file = new File(file1.key, storage);
         await file.getMeta();
         await file.getMeta().should.become(file1.data.meta);
         sinon.assert.calledOnce(spy);
     });
 
-    it('should return file meta', function () {
+    it("should return file meta", function() {
         const file = new File(file1.key, storage);
         return file.getMeta().should.become(file1.data.meta);
     });
 
-    it('should throw a StorageError exception', function () {
-        const file = new File('/missing/key', storage);
+    it("should throw a StorageError exception", function() {
+        const file = new File("/missing/key", storage);
         return file.getBody().should.be.rejectedWith(StorageError);
     });
 
-    it('should return time modified', function () {
+    it("should return time modified", function() {
         const file = new File(file1.key, storage);
         return file.getTimeModified().should.become(file1.data.meta.timeModified);
     });
 
-    it('should return file size', function () {
+    it("should return file size", function() {
         const file = new File(file1.key, storage);
         return file.getSize().should.become(file1.data.meta.size);
     });
 
-    it('should return file content type', function () {
+    it("should return file content type", function() {
         const file = new File(file1.key, storage);
         return file.getContentType(file1.key).should.become(file1.data.meta.type);
     });
 
-    it('should return absolute file path', function () {
+    it("should return absolute file path", function() {
         const file = new File(file1.key, storage);
         return file.getAbsolutePath().should.become(file1.key);
     });
 
-    it('should rename a file', async function () {
-        const newKey = '/new/path';
+    it("should rename a file", async function() {
+        const newKey = "/new/path";
         const file = new File(file1.key, storage);
         await file.rename(newKey);
         file1.key = newKey;
         return storage.getFile(file1.key).should.become(file1.data);
     });
 
-    it('should delete a file', async function () {
+    it("should delete a file", async function() {
         const file = new File(file1.key, storage);
         await file.delete();
         return storage.getFile(file1.key).should.be.rejectedWith(StorageError);

@@ -1,4 +1,4 @@
-import { validation } from "./../src";
+import { validation } from "./../lib";
 import "./chai";
 
 describe("maxLength test", () => {

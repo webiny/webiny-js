@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import ApiErrorResponse from "./../src/response/apiErrorResponse";
+import ApiErrorResponse from "./../lib/response/apiErrorResponse";
 
 describe("ApiErrorResponse class test", function() {
     it("on construct - data, message and statusCode must be correctly set", () => {

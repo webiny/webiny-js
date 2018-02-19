@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import _ from "lodash";
 
-import { Entity } from "./../src";
+import { Entity } from "./../lib";
 
 describe("ensure that static event listeners are properly registered among different classes", function() {
     it("should have listeners registered correctly", async () => {
