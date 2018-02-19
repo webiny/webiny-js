@@ -4,7 +4,7 @@ import { IntColumn, CharColumn } from "./tables/customDriver/columns";
 import { PrimaryIndex, UniqueIndex } from "./tables/customDriver/indexes";
 
 describe("columns and indexes test", function() {
-    it("should have columns set correctly", async () => {
+    it("should return columns and its properties correctly", async () => {
         const user = new UserTable();
         assert.instanceOf(user.getColumn("id"), IntColumn);
         assert.isTrue(user.getColumn("id").getUnsigned());
@@ -19,9 +19,29 @@ describe("columns and indexes test", function() {
         assert.instanceOf(user.getColumn("name"), CharColumn);
     });
 
-    it("should have indexes set correctly", async () => {
+    it("should return undefined because of an invalid column name", async () => {
+        const user = new UserTable();
+        assert.isUndefined(user.getColumn("id123"));
+    });
+
+    it("should return all columns", async () => {
+        const user = new UserTable();
+        assert.lengthOf(Object.keys(user.getColumns()), 4);
+    });
+
+    it("should return indexes correctly", async () => {
         const user = new UserTable();
         assert.instanceOf(user.getIndex("id"), PrimaryIndex);
         assert.instanceOf(user.getIndex("name"), UniqueIndex);
+    });
+
+    it("should return undefined because of an invalid index name", async () => {
+        const user = new UserTable();
+        assert.isUndefined(user.getIndex("id123"));
+    });
+
+    it("should return all indexes", async () => {
+        const user = new UserTable();
+        assert.lengthOf(Object.keys(user.getIndexes()), 2);
     });
 });

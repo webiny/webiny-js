@@ -77,11 +77,21 @@ class Table {
     }
 
     toObject(): { [string]: {} } {
-        const json = [];
+        const json = {
+            columns: [],
+            indexes: []
+        };
+
         for (let name in this.getColumns()) {
             const column = ((this.getColumn(name): any): Column);
-            json.push = column.getObjectValue();
+            json.columns.push(column.getObjectValue());
         }
+
+        for (let name in this.getIndexes()) {
+            const index = ((this.getIndex(name): any): Index);
+            json.indexes.push(index.getObjectValue());
+        }
+
         return json;
     }
 

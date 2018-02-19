@@ -90,7 +90,7 @@ class Column {
         return this.default;
     }
 
-    setAllowNull(allowNull: boolean): this {
+    setAllowNull(allowNull: boolean = true): this {
         this.allowNull = allowNull;
         return this;
     }

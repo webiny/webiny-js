@@ -12,6 +12,16 @@ class CharColumn extends Column {
     getType() {
         return "CHAR";
     }
+
+    getSize(): number {
+        return this.size;
+    }
+
+    getObjectValue() {
+        const output = super.getObjectValue();
+        output.size = this.getSize();
+        return output;
+    }
 }
 
 export default CharColumn;

@@ -25,6 +25,10 @@ class IntColumn extends Column {
         return "INT";
     }
 
+    getSize(): number {
+        return this.size;
+    }
+
     setUnsigned(unsigned: boolean = true): this {
         this.unsigned = unsigned;
         return this;
@@ -41,6 +45,14 @@ class IntColumn extends Column {
 
     getAutoIncrement(): boolean {
         return this.autoIncrement;
+    }
+
+    getObjectValue() {
+        const output = super.getObjectValue();
+        output.autoIncrement = this.getAutoIncrement();
+        output.unsigned = this.getUnsigned();
+        output.size = this.getSize();
+        return output;
     }
 }
 

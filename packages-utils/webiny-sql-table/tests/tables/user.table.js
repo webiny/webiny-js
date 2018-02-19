@@ -4,18 +4,18 @@ class UserTable extends Table {
     constructor() {
         super();
         this.column("id")
-            .int()
+            .int(5)
             .setUnsigned()
             .setAutoIncrement();
         this.column("total")
-            .int()
+            .int(6)
             .setUnsigned(false)
             .setAutoIncrement(false);
         this.column("totalViews")
-            .int()
+            .int(7)
             .setUnsigned(true)
             .setAutoIncrement(true);
-        this.column("name").char();
+        this.column("name").char(8);
 
         this.index("id").primary();
         this.index("name").unique();
