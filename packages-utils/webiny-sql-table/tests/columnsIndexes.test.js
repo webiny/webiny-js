@@ -11,10 +11,12 @@ describe("columns and indexes test", function() {
         assert.isTrue(user.getColumn("id").getAutoIncrement());
 
         assert.isFalse(user.getColumn("total").getUnsigned());
+        user.getColumn("total").setAutoIncrement(false);
         assert.isFalse(user.getColumn("total").getAutoIncrement());
 
         assert.isTrue(user.getColumn("totalViews").getUnsigned());
-        assert.isTrue(user.getColumn("totalViews").getAutoIncrement());
+        user.getColumn("totalViews").setUnsigned(true);
+        assert.isTrue(user.getColumn("totalViews").getUnsigned());
 
         assert.instanceOf(user.getColumn("name"), CharColumn);
     });
@@ -42,6 +44,6 @@ describe("columns and indexes test", function() {
 
     it("should return all indexes", async () => {
         const user = new UserTable();
-        assert.lengthOf(Object.keys(user.getIndexes()), 2);
+        assert.lengthOf(Object.keys(user.getIndexes()), 3);
     });
 });

@@ -8,7 +8,7 @@ describe("toObject test", function() {
 
         assert.deepEqual(user.toObject(), {
             autoIncrement: null,
-            name: null,
+            name: "Users",
             comment: null,
             engine: null,
             collate: null,
@@ -18,7 +18,7 @@ describe("toObject test", function() {
                     name: "id",
                     type: "INT",
                     default: null,
-                    allowNull: true,
+                    allowNull: false,
                     autoIncrement: true,
                     unsigned: true,
                     size: 5
@@ -28,7 +28,7 @@ describe("toObject test", function() {
                     type: "INT",
                     default: null,
                     allowNull: true,
-                    autoIncrement: false,
+                    autoIncrement: undefined,
                     unsigned: false,
                     size: 6
                 },
@@ -37,7 +37,7 @@ describe("toObject test", function() {
                     type: "INT",
                     default: null,
                     allowNull: true,
-                    autoIncrement: true,
+                    autoIncrement: undefined,
                     unsigned: true,
                     size: 7
                 },
@@ -56,8 +56,13 @@ describe("toObject test", function() {
                     type: "PRIMARY"
                 },
                 {
-                    columns: null,
+                    columns: [],
                     name: "name",
+                    type: "UNIQUE"
+                },
+                {
+                    columns: ["total", "totalViews"],
+                    name: "totals",
                     type: "UNIQUE"
                 }
             ]

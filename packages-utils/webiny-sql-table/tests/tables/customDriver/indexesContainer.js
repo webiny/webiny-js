@@ -11,7 +11,7 @@ class IndexesContainer extends BaseIndexesContainer {
 
     unique(): UniqueIndex {
         const table = this.getParentTable();
-        table.setIndex(this.name, new UniqueIndex(this.name, this));
+        table.setIndex(this.name, new UniqueIndex(this.name, this, Array.from(arguments)));
         return table.getIndex(this.name);
     }
 }

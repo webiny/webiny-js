@@ -1,7 +1,7 @@
-import {assert} from "chai";
-import {CreateTable} from "./..";
+import { assert } from "chai";
+import { CreateTable } from "./..";
 
-describe("INSERT statement test", function () {
+describe("INSERT statement test", function() {
     it("should generate an INSERT statement", async () => {
         const sql = new CreateTable({
             name: "TestTable",
@@ -10,73 +10,89 @@ describe("INSERT statement test", function () {
             autoIncrement: 50,
             comment: "Nice test table...",
             collate: "utf888",
-            columns: {
-                id: {
+            columns: [
+                {
+                    name: "id",
                     type: "bigint",
-                    length: 20,
+                    size: 20,
                     unsigned: true,
                     notNull: true,
                     autoIncrement: true
                 },
-                iso: {
+                {
+                    name: "iso",
                     type: "char",
-                    length: 2,
+                    size: 2,
                     notNull: true
                 },
-                iso3: {
+                {
+                    name: "iso3",
                     type: "char",
-                    length: 3,
+                    size: 3,
                     notNull: true
                 },
-                name: {
+                {
+                    name: "name",
                     type: "varchar",
-                    length: 80
+                    size: 80
                 },
-                label: {
+                {
+                    name: "label",
                     type: "varchar",
-                    length: 160,
+                    size: 160,
                     default: "Missing label."
                 },
-                numcode: {
+                {
+                    name: "numcode",
                     type: "smallint",
-                    length: 6,
+                    size: 6,
                     default: 100
                 },
-                type: {
+                {
+                    name: "type",
                     type: "enum",
                     params: ["active", "inactive", "pending", "disabled"],
                     default: "pending"
                 },
-                description: {
+                {
+                    name: "description",
                     type: "text"
                 }
-            },
-            indexes: {
-                idIndex: {
+            ],
+            indexes: [
+                {
+                    name: "idIndex",
                     type: "primary",
                     column: "id"
                 },
-                isoIndex: {
+                {
+                    name: "isoIndex",
                     type: "unique",
                     column: "iso"
                 },
-                isoIso3Index: {
+                {
+                    name: "isoIso3Index",
                     type: "unique",
                     columns: ["iso", "iso3"]
                 },
-                labelIndex: {
+                {
+                    name: "labelIndex",
                     column: "label"
                 },
-                typeIndex: {
+                {
+                    name: "typeIndex",
                     column: "type",
                     type: "key"
                 },
-                descriptionFullText: {
+                {
+                    name: "descriptionFullText",
                     column: "type",
                     type: "fullText"
                 },
-                realField: {}
-            }
+                {
+                    name: "realField"
+                }
+            ]
         }).generate();
 
         assert.equal(
@@ -92,7 +108,7 @@ describe("INSERT statement test", function () {
 	\`description\` text,
 	PRIMARY KEY  (\`id\`),
 	UNIQUE KEY isoIndex (\`iso\`),
-	UNIQUE KEY isoIso3Index (\`iso, iso3\`),
+	UNIQUE KEY isoIso3Index (\`iso\`, \`iso3\`),
 	KEY labelIndex (\`label\`),
 	KEY typeIndex (\`type\`),
 	FULLTEXT KEY descriptionFullText (\`type\`),
@@ -104,15 +120,16 @@ describe("INSERT statement test", function () {
     it("should correctly gnenerate CREATE TABLE statement without additional params", async () => {
         const sql = new CreateTable({
             name: "TestTable",
-            columns: {
-                id: {
+            columns: [
+                {
+                    name: "id",
                     type: "bigint",
-                    length: 20,
+                    size: 20,
                     unsigned: true,
                     notNull: true,
                     autoIncrement: true
                 }
-            }
+            ]
         }).generate();
 
         assert.equal(

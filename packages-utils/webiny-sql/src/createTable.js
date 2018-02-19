@@ -6,43 +6,43 @@ class CreateTable extends Statement {
         const options = this.options;
         let operation = `CREATE TABLE \`${options.name}\` (`;
 
-        const columns = Object.keys(this.options.columns);
-        columns.forEach(name => {
-            const column = this.options.columns[name];
+        if (Array.isArray(this.options.columns)) {
+            this.options.columns.forEach(column => {
+                operation += `\n\t\`${column.name}\` ${column.type}`;
 
-            operation += `\n\t\`${name}\` ${column.type}`;
+                if (column.params) {
+                    operation += `(${column.params.join(", ")})`;
+                } else if (column.size) {
+                    operation += `(${column.size})`;
+                }
 
-            if (column.params) {
-                operation += `(${column.params.join(", ")})`;
-            } else if (column.length) {
-                operation += `(${column.length})`;
-            }
+                if (column.unsigned === true) {
+                    operation += " unsigned";
+                }
 
-            if (column.unsigned === true) {
-                operation += " unsigned";
-            }
+                if (column.notNull === true) {
+                    operation += " NOT NULL";
+                }
 
-            if (column.notNull === true) {
-                operation += " NOT NULL";
-            }
+                if (typeof column.default !== "undefined") {
+                    if (column.default === null) {
+                        operation += ` DEFAULT NULL`;
+                    } else {
+                        operation += ` DEFAULT '${column.default}'`;
+                    }
+                }
 
-            if ("default" in column) {
-                operation += ` DEFAULT '${column.default}'`;
-            }
+                if (column.autoIncrement) {
+                    operation += ` AUTO_INCREMENT`;
+                }
 
-            if (column.autoIncrement) {
-                operation += ` AUTO_INCREMENT`;
-            }
+                // If last row, don't append comma at the end.
+                operation += ",";
+            });
+        }
 
-            // If last row, don't append comma at the end.
-            operation += ",";
-        });
-
-        if (this.options.indexes) {
-            const indexes = Object.keys(this.options.indexes);
-            indexes.forEach(name => {
-                const index = this.options.indexes[name];
-
+        if (Array.isArray(this.options.indexes)) {
+            this.options.indexes.forEach(index => {
                 let type = "";
                 if (index.type) {
                     type = index.type.toUpperCase();
@@ -58,19 +58,19 @@ class CreateTable extends Statement {
                 }
 
                 let columns = index.columns;
-                if (columns) {
-                    columns = columns.join(", ");
+                if (Array.isArray(columns) && columns.length) {
+                    columns = columns.map(item => `\`${item}\``).join(", ");
                 } else if (index.column) {
-                    columns = index.column;
+                    columns = `\`${index.column}\``;
                 } else {
-                    columns = name;
+                    columns = `\`${index.name}\``;
                 }
 
                 operation += `\n\t${type}`;
                 if (type) {
                     operation += " ";
                 }
-                operation += `KEY ${type === "PRIMARY" ? "" : name} (\`${columns}\`)`;
+                operation += `KEY ${type === "PRIMARY" ? "" : index.name} (${columns})`;
 
                 operation += `,`;
             });
