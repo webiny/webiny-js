@@ -21,6 +21,7 @@
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",
+    "build:watch": "babel src -d lib --source-maps --copy-files --watch",
     "documentation": "documentation readme --section=Documentation --config documentation.yml types.js src/** --github"
   }
 }

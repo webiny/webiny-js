@@ -58,6 +58,7 @@
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",
+    "build:watch": "babel src -d lib --source-maps --copy-files --watch",
     "prepublish": "npm run snyk-protect",
     "snyk-protect": "snyk protect"
   },

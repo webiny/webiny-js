@@ -1,7 +1,7 @@
 {
   "name": "webiny-validation",
   "version": "0.0.0-semantically-released",
-  "main": "lib/index.js",
+  "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -25,6 +25,7 @@
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",
+    "build:watch": "babel src -d lib --source-maps --copy-files --watch",
     "documentation": "documentation readme --section=Documentation --config documentation.yml types.js src/** --github"
   }
 }

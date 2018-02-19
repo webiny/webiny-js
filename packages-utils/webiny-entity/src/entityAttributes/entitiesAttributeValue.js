@@ -154,7 +154,7 @@ class EntitiesAttributeValue extends AttributeValue {
             currentEntitiesIds = this.getCurrent().map(entity => entity.id);
 
         for (let i = 0; i < initial.length; i++) {
-            const currentInitial = initial[i];
+            const currentInitial: Object = initial[i];
             if (!currentEntitiesIds.includes(currentInitial.id)) {
                 await currentInitial.delete();
             }
@@ -209,10 +209,12 @@ class EntitiesAttributeValue extends AttributeValue {
         }
 
         const initialLinks = this.getInitialLinks(),
+            // $FlowIgnore
             currentLinksIds = this.getCurrentLinks().map(entity => entity.id);
 
         for (let i = 0; i < initialLinks.length; i++) {
             const initial = initialLinks[i];
+            // $FlowIgnore
             if (!currentLinksIds.includes(initial.id)) {
                 await initial.delete();
             }
@@ -231,6 +233,7 @@ class EntitiesAttributeValue extends AttributeValue {
             // "for" loop used because of async operations.
             let link = null;
             for (let j = 0; j < currentLinks.length; j++) {
+                // $FlowIgnore
                 const linkedEntity = await currentLinks[j][this.attribute.getUsingAttribute()];
                 if (linkedEntity === currentEntity) {
                     link = currentLinks[j];

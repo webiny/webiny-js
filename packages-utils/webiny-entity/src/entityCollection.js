@@ -1,5 +1,5 @@
 // @flow
-import { Entity } from ".";
+import Entity from "./entity";
 import EntityCollectionError from "./entityCollectionError";
 
 class EntityCollection extends Array<Entity> {
@@ -8,8 +8,8 @@ class EntityCollection extends Array<Entity> {
     constructor(values: Array<Entity> = []) {
         super();
         this.__entityCollection = { params: {}, meta: {} };
-        values.forEach &&
-            values.forEach(item => {
+        if (Array.isArray(values)) {
+            values.map(item => {
                 if (item instanceof Entity) {
                     this.push(item);
                     return true;
@@ -18,6 +18,7 @@ class EntityCollection extends Array<Entity> {
                     "EntityCollection cannot accept a value that is not an instance of Entity."
                 );
             });
+        }
     }
 
     setParams(params: Object): this {

@@ -32,6 +32,7 @@
     "supertest": "^3.0.0"
   },
   "scripts": {
-    "build": "babel src -d lib --source-maps --copy-files"
+    "build": "babel src -d lib --source-maps --copy-files",
+    "build:watch": "babel src -d lib --source-maps --copy-files --watch"
   }
 }

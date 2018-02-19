@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import User from "./entities/user";
 import { EntityCollection } from "./..";
-import EntityCollectionError from "../src/entityCollectionError";
 
 const getEntities = () => [
     new User().populate({ id: "A", age: 30 }),

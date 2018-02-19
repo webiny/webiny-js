@@ -65,7 +65,6 @@ class Model implements IModel {
         if (_.has(this.attributes, attribute)) {
             return this.attributes[attribute];
         }
-        return undefined;
     }
 
     setAttribute(name: string, attribute: IAttribute): Model {
@@ -169,7 +168,7 @@ class Model implements IModel {
             onRead: async (data, key) => {
                 if (data instanceof Model) {
                     if (!data.getAttribute(key)) {
-                        return undefined;
+                        return;
                     }
                     return await data.getAttribute(key).getJSONValue();
                 }
@@ -214,9 +213,9 @@ class Model implements IModel {
         const json = {};
         for (let name in this.getAttributes()) {
             const attribute = this.getAttribute(name);
-            //$FlowFixMe - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
+            // $FlowIgnore - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
             if (attribute.getToStorage()) {
-                //$FlowFixMe - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
+                // $FlowIgnore - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
                 json[name] = await attribute.getStorageValue();
             }
         }
@@ -236,9 +235,9 @@ class Model implements IModel {
         for (name in this.getAttributes()) {
             const attribute = this.getAttribute(name);
             _.has(data, name) &&
-                //$FlowFixMe - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
+                // $FlowIgnore - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
                 attribute.getToStorage() &&
-                //$FlowFixMe - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
+                // $FlowIgnore - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
                 attribute.setStorageValue(data[name]);
         }
 

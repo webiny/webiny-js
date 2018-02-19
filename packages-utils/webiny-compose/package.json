@@ -17,6 +17,7 @@
     "babel-runtime": "^6.26.0"
   },
   "scripts": {
-    "build": "babel src -d lib --source-maps --copy-files"
+    "build": "babel src -d lib --source-maps --copy-files",
+    "build:watch": "babel src -d lib --source-maps --copy-files --watch"
   }
 }
