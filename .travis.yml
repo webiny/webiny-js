@@ -11,8 +11,6 @@ install:
   - yarn install --ignore-engines
 script:
   - yarn ci
-git:
-  depth: 1
 jobs:
   include:
     - stage: test
