@@ -4,7 +4,6 @@ import { UserTable, CompanyTable, ComplexTable } from "./tables";
 describe("Table class test", function() {
     it("should return basic toJSON correctly", async () => {
         const userTable = new UserTable();
-
         const companyTable = new CompanyTable();
     });
 

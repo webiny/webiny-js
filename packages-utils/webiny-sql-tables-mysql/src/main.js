@@ -5,4 +5,3 @@ export { default as ColumnsContainer } from "./columnsContainer";
 export { default as DefaultColumnsContainer } from "./defaultColumnsContainer";
 export { default as IndexsContainer } from "./indexesContainer";
 export { default as DefaultIndexsContainer } from "./defaultIndexesContainer";
-export { default as sqlGenerator } from "./sqlGenerator";

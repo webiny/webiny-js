@@ -4,6 +4,7 @@ import Column from "./column";
 import Index from "./index";
 
 class Table {
+    engine: string;
     columns: { [string]: Column };
     indexes: { [string]: Index };
     columnsContainer: DefaultColumnsContainer;

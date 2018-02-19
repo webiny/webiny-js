@@ -1,5 +1,5 @@
 {
-  "name": "webiny-sql-generator",
+  "name": "webiny-sql-tables",
   "version": "0.0.0-semantically-released",
   "main": "src/main.js",
   "repository": {
