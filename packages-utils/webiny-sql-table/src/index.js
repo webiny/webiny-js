@@ -3,11 +3,16 @@ import type Table from "./table";
 import IndexesContainer from "./indexesContainer";
 
 class Index {
-    name: string;
+    name: ?string;
     type: string;
+    columns: ?Array<string>;
     indexesContainer: IndexesContainer;
 
-    constructor(name: string, indexesContainer: IndexesContainer) {
+    constructor(
+        name: ?string = null,
+        indexesContainer: IndexesContainer,
+        columns: ?Array<string> = null
+    ) {
         /**
          * Index name.
          */
@@ -17,12 +22,18 @@ class Index {
          * Index's parent table instance.
          */
         this.indexesContainer = indexesContainer;
+
+        /**
+         * The maximum number of digits.
+         * @type {number}
+         */
+        this.columns = columns;
     }
 
     /**
      * Returns name of index
      */
-    getName(): string {
+    getName(): ?string {
         return this.name;
     }
 
@@ -44,10 +55,15 @@ class Index {
         return this.getParentIndexesContainer().getParentTable();
     }
 
+    getColumns() {
+        return this.columns;
+    }
+
     getObjectValue(): {} {
         return {
             name: this.getName(),
-            type: this.getType()
+            type: this.getType(),
+            columns: this.getColumns()
         };
     }
 }

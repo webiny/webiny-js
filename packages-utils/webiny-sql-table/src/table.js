@@ -5,13 +5,24 @@ import Index from "./index";
 import Driver from "./driver";
 
 class Table {
-    engine: string;
+    static engine: string;
+    static tableName: string;
+    static defaultCharset: string;
+    static collate: string;
+    static comment: ?string;
+    static autoIncrement: ?string;
     columns: { [string]: Column };
     indexes: { [string]: Index };
     columnsContainer: ColumnsContainer;
     indexesContainer: IndexesContainer;
 
     constructor() {
+        this.engine = null;
+        this.tableName = null;
+        this.defaultCharset = null;
+        this.collate = null;
+        this.comment = null;
+        this.autoIncrement = null;
         this.columns = {};
         this.indexes = {};
         this.columnsContainer = this.createColumnsContainer();
@@ -78,6 +89,12 @@ class Table {
 
     toObject(): { [string]: {} } {
         const json = {
+            autoIncrement: this.constructor.getAutoIncrement(),
+            name: this.constructor.getName(),
+            comment: this.constructor.getComment(),
+            engine: this.constructor.getEngine(),
+            collate: this.constructor.getCollate(),
+            defaultCharset: this.constructor.getDefaultCharset(),
             columns: [],
             indexes: []
         };
@@ -113,7 +130,68 @@ class Table {
     getDriver(): Driver {
         return this.constructor.driver;
     }
+
+    static setEngine(value) {
+        this.engine = value;
+        return this;
+    }
+
+    static getEngine() {
+        return this.engine;
+    }
+
+    static setDefaultCharset(defaultCharset) {
+        this.defaultCharset = defaultCharset;
+        return this;
+    }
+
+    static getDefaultCharset() {
+        return this.defaultCharset;
+    }
+
+    static setCollate(collate) {
+        this.collate = collate;
+        return this;
+    }
+
+    static getCollate() {
+        return this.collate;
+    }
+
+    static setName(name) {
+        this.tableName = name;
+        return this;
+    }
+
+    static getName() {
+        return this.tableName;
+    }
+
+    static setComment(comment) {
+        this.comment = comment;
+        return this;
+    }
+
+    static getComment() {
+        return this.comment;
+    }
+
+    static setAutoIncrement(autoIncrement: boolean = true) {
+        this.autoIncrement = autoIncrement;
+        return this;
+    }
+
+    static getAutoIncrement() {
+        return this.autoIncrement;
+    }
 }
+
+Table.engine = null;
+Table.tableName = null;
+Table.defaultCharset = null;
+Table.collate = null;
+Table.comment = null;
+Table.autoIncrement = null;
 
 Table.setDriver(new Driver());
 

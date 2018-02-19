@@ -7,40 +7,56 @@ describe("toObject test", function() {
         const user = new UserTable();
 
         assert.deepEqual(user.toObject(), {
+            autoIncrement: null,
+            name: null,
+            comment: null,
+            engine: null,
+            collate: null,
+            defaultCharset: null,
             columns: [
                 {
-                    autoIncrement: true,
                     name: "id",
-                    size: 5,
                     type: "INT",
-                    unsigned: true
-                },
-                {
-                    autoIncrement: false,
-                    name: "total",
-                    size: 6,
-                    type: "INT",
-                    unsigned: false
-                },
-                {
+                    default: null,
+                    allowNull: true,
                     autoIncrement: true,
-                    name: "totalViews",
-                    size: 7,
+                    unsigned: true,
+                    size: 5
+                },
+                {
+                    name: "total",
                     type: "INT",
-                    unsigned: true
+                    default: null,
+                    allowNull: true,
+                    autoIncrement: false,
+                    unsigned: false,
+                    size: 6
+                },
+                {
+                    name: "totalViews",
+                    type: "INT",
+                    default: null,
+                    allowNull: true,
+                    autoIncrement: true,
+                    unsigned: true,
+                    size: 7
                 },
                 {
                     name: "name",
-                    size: 8,
-                    type: "CHAR"
+                    type: "CHAR",
+                    default: null,
+                    allowNull: true,
+                    size: 8
                 }
             ],
             indexes: [
                 {
+                    columns: null,
                     name: "id",
                     type: "PRIMARY"
                 },
                 {
+                    columns: null,
                     name: "name",
                     type: "UNIQUE"
                 }

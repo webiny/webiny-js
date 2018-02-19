@@ -6,9 +6,9 @@ class Column {
     name: string;
     type: string;
     columnsContainer: ColumnsContainer;
-    autoIncrement: boolean;
     allowNull: boolean;
     default: mixed;
+
     constructor(name: string, columnsContainer: ColumnsContainer) {
         /**
          * Column name.
@@ -25,12 +25,6 @@ class Column {
          * @var null
          */
         this.default = null;
-
-        /**
-         * Defines if column is auto incremented or not (most commonly used for 'id' column).
-         * @var null
-         */
-        this.autoIncrement = false;
 
         /**
          * Defines if column accept NULL values.
@@ -71,7 +65,9 @@ class Column {
     getObjectValue(): {} {
         return {
             name: this.getName(),
-            type: this.getType()
+            type: this.getType(),
+            default: this.getDefault(),
+            allowNull: this.getAllowNull()
         };
     }
 

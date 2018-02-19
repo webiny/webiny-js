@@ -20,9 +20,4 @@ describe("default Driver test", function() {
         const driver = new Driver();
         assert.isNull(driver.getConnection());
     });
-
-    it("sync should return null", async () => {
-        const driver = new Driver();
-        assert.isNull(await driver.sync());
-    });
 });

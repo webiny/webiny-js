@@ -1,14 +1,9 @@
 // @flow
 import ColumnsContainer from "./columnsContainer";
 import IndexesContainer from "./indexesContainer";
+import { Driver } from "webiny-sql-table";
 
-class Driver {
-    connection: mixed;
-
-    constructor() {
-        this.connection = null;
-    }
-
+class MySQLDriver extends Driver {
     getColumnsClass(): Class<ColumnsContainer> {
         return ColumnsContainer;
     }
@@ -16,10 +11,6 @@ class Driver {
     getIndexesClass(): Class<IndexesContainer> {
         return IndexesContainer;
     }
-
-    getConnection(): mixed {
-        return this.connection;
-    }
 }
 
-export default Driver;
+export default MySQLDriver;
