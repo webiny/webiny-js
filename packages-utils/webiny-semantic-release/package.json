@@ -2,19 +2,40 @@
   "private": true,
   "name": "webiny-semantic-release",
   "description": "Webiny wrapper for semantic-release to be used in lerna environment.",
-  "version": "0.0.0",
+  "version": "0.0.0-semantically-released",
+  "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "bin": "./bin/webiny-semantic-release.js",
+  "bin": "./lib/bin.js",
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>"
   ],
   "license": "MIT",
-  "devDependencies": {
+  "dependencies": {
+    "@octokit/rest": "^14.0.9",
+    "@semantic-release/commit-analyzer": "^5.0.2",
+    "@semantic-release/release-notes-generator": "^6.0.6",
+    "aggregate-error": "^1.0.0",
+    "chalk": "^2.3.1",
+    "env-ci": "^1.4.1",
+    "execa": "^0.9.0",
+    "get-stream": "^3.0.0",
+    "git-log-parser": "^1.2.0",
     "lerna": "^2.9.0",
-    "semantic-release": "^12.4.1",
+    "lodash": "^4.17.5",
+    "p-locate": "^2.0.0",
+    "parse-github-url": "^1.0.2",
+    "semver": "^5.5.0",
+    "webiny-compose": "0.0.0-semantically-released",
     "yargs": "^11.0.0"
+  },
+  "scripts": {
+    "build": "babel src -d lib --source-maps --copy-files",
+    "build:watch": "babel src -d lib --source-maps --copy-files --watch"
+  },
+  "devDependencies": {
+    "fs-extra": "^5.0.0"
   }
 }
