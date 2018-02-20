@@ -16,7 +16,7 @@ jobs:
     - stage: release
       node_js: "8.9.4"
       if: branch = master
-      script: yarn release
+      script: yarn build && yarn release
 notifications:
   slack:
     on_success: change
