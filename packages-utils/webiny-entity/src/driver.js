@@ -2,6 +2,12 @@
 import QueryResult from "./queryResult";
 import EntityModel from "./entityModel";
 import type Entity from "./entity";
+import {
+    EntitySaveParams,
+    EntityFindParams,
+    EntityDeleteParams,
+    EntityFindOneParams
+} from "webiny-entity/types";
 
 class Driver {
     connection: mixed;

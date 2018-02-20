@@ -5,7 +5,7 @@ class UserTable extends Table {
         super();
         this.column("id")
             .int(5)
-            .setAllowNull(false)
+            .setNotNull(true)
             .setUnsigned()
             .setAutoIncrement();
         this.column("total")

@@ -1,13 +1,13 @@
-import {assert} from "chai";
+import { assert } from "chai";
 
-import {Select} from "./..";
+import { Select } from "../../src/statements";
 
-describe("SELECT statement test", function () {
+describe("SELECT statement test", function() {
     it("should generate a SELECT statement", async () => {
         const params = {
             operation: "select",
             table: "TestTable",
-            where: {name: "Test", enabled: true, deletedOn: null},
+            where: { name: "Test", enabled: true, deletedOn: null },
             limit: 10,
             offset: 0,
             order: [["name", -1], ["createdOn", 1]]

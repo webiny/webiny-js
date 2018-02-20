@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { Delete } from "./..";
+import { Delete } from "../../src/statements";
 
 describe("DELETE statement test", function() {
     it("should generate a DELETE statement", async () => {

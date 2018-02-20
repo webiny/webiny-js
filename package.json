@@ -77,7 +77,7 @@
     "test:webiny-entity-memory": "yarn mocha \"packages-utils/webiny-entity-memory/tests/**/*.test.js\"",
     "test:webiny-entity-mysql": "yarn mocha \"packages-utils/webiny-entity-mysql/tests/**/*.test.js\"",
     "test:webiny-model": "yarn mocha \"packages-utils/webiny-model/tests/**/*.test.js\"",
-    "test:webiny-sql": "yarn mocha \"packages-utils/webiny-sql/tests/**/*.test.js\"",
+    "test:webiny-sql-query": "yarn mocha \"packages-utils/webiny-sql-query/tests/**/*.test.js\"",
     "test:webiny-sql-table": "yarn mocha \"packages-utils/webiny-sql-table/tests/**/*.test.js\"",
     "test:webiny-sql-table-mysql": "yarn mocha \"packages-utils/webiny-sql-table-mysql/tests/**/*.test.js\"",
     "test:webiny-validation": "yarn mocha \"packages-utils/webiny-validation/tests/**/*.test.js\""
@@ -88,9 +88,9 @@
     "test"
   ],
   "nyc": {
-    "branches": 95,
-    "functions": 95,
-    "lines": 95,
+    "branches": 90,
+    "functions": 90,
+    "lines": 90,
     "include": [
       "packages-api/**/src",
       "packages-utils/**/src"

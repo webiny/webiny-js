@@ -3,161 +3,206 @@ export default {
     name: "Completes",
     comment: "Main Completes table...",
     engine: "InnoDB",
-    collate: "collate",
+    collate: "utf8_bin",
     defaultCharset: "utf8",
     columns: [
         {
             name: "blob",
-            type: "BLOB",
-            default: null,
-            allowNull: true
+            notNull: false,
+            autoIncrement: null,
+            unsigned: null,
+            type: "blob",
+            default: undefined,
+            arguments: []
         },
         {
             name: "char",
-            type: "CHAR",
-            default: null,
-            allowNull: true,
-            size: null
+            notNull: false,
+            autoIncrement: null,
+            unsigned: null,
+            type: "char",
+            default: undefined,
+            arguments: []
         },
         {
             name: "date",
-            type: "DATE",
-            default: null,
-            allowNull: true
+            notNull: false,
+            autoIncrement: null,
+            unsigned: null,
+            type: "date",
+            default: undefined,
+            arguments: []
         },
         {
             name: "dateTime",
-            type: "DATETIME",
-            default: null,
-            allowNull: true
+            notNull: false,
+            autoIncrement: null,
+            unsigned: null,
+            type: "datetime",
+            default: undefined,
+            arguments: []
         },
         {
             name: "decimal",
-            type: "DECIMAL",
-            default: null,
-            allowNull: true,
-            size: null,
-            d: null
+            notNull: false,
+            autoIncrement: null,
+            unsigned: null,
+            type: "decimal",
+            default: undefined,
+            arguments: []
         },
         {
             name: "double",
-            type: "DOUBLE",
-            default: null,
-            allowNull: true,
-            size: null,
-            d: null
+            notNull: false,
+            autoIncrement: null,
+            unsigned: null,
+            type: "double",
+            default: undefined,
+            arguments: []
         },
         {
             name: "enum",
-            type: "ENUM",
-            default: null,
-            allowNull: true,
-            values: []
+            notNull: false,
+            autoIncrement: null,
+            unsigned: null,
+            type: "enum",
+            default: undefined,
+            arguments: []
         },
         {
             name: "float",
-            type: "FLOAT",
-            default: null,
-            allowNull: true,
-            size: null,
-            d: null
+            notNull: false,
+            autoIncrement: null,
+            unsigned: null,
+            type: "float",
+            default: undefined,
+            arguments: []
         },
         {
             name: "int",
-            type: "INT",
-            default: null,
-            allowNull: true,
-            unsigned: false,
-            autoIncrement: false,
-            size: null
+            notNull: false,
+            type: "int",
+            default: undefined,
+            unsigned: null,
+            autoIncrement: null,
+            arguments: []
         },
         {
             name: "longBlob",
-            type: "LONGBLOB",
-            default: null,
-            allowNull: true
+            notNull: false,
+            autoIncrement: null,
+            unsigned: null,
+            type: "longblob",
+            default: undefined,
+            arguments: []
         },
         {
             name: "longText",
-            type: "LONGTEXT",
-            default: null,
-            allowNull: true
+            notNull: false,
+            autoIncrement: null,
+            unsigned: null,
+            type: "longtext",
+            default: undefined,
+            arguments: []
         },
         {
             name: "mediumBlob",
-            type: "MEDIUMBLOB",
-            default: null,
-            allowNull: true
+            notNull: false,
+            autoIncrement: null,
+            unsigned: null,
+            type: "mediumblob",
+            default: undefined,
+            arguments: []
         },
         {
             name: "mediumInt",
-            type: "MEDIUMINT",
-            default: null,
-            allowNull: true,
-            unsigned: false,
-            autoIncrement: false,
-            size: null
+            notNull: false,
+            type: "mediumint",
+            default: undefined,
+            unsigned: null,
+            autoIncrement: null,
+            arguments: []
         },
         {
             name: "mediumText",
-            type: "MEDIUMTEXT",
-            default: null,
-            allowNull: true
+            notNull: false,
+            autoIncrement: null,
+            unsigned: null,
+            type: "mediumtext",
+            default: undefined,
+            arguments: []
         },
         {
             name: "smallInt",
-            type: "SMALLINT",
-            default: null,
-            allowNull: true,
-            unsigned: false,
-            autoIncrement: false,
-            size: null
+            notNull: false,
+            type: "smallint",
+            default: undefined,
+            unsigned: null,
+            autoIncrement: null,
+            arguments: []
         },
         {
             name: "text",
-            type: "TEXT",
-            default: null,
-            allowNull: true
+            notNull: false,
+            autoIncrement: null,
+            unsigned: null,
+            type: "text",
+            default: undefined,
+            arguments: []
         },
         {
             name: "time",
-            type: "TIME",
-            default: null,
-            allowNull: true
+            notNull: false,
+            autoIncrement: null,
+            unsigned: null,
+            type: "time",
+            default: undefined,
+            arguments: []
         },
         {
             name: "timestamp",
-            type: "TIMESTAMP",
-            default: null,
-            allowNull: true
+            notNull: false,
+            autoIncrement: null,
+            unsigned: null,
+            type: "timestamp",
+            default: undefined,
+            arguments: []
         },
         {
             name: "tinyInt",
-            type: "TINYINT",
-            default: null,
-            allowNull: true,
-            unsigned: false,
-            autoIncrement: false,
-            size: null
+            notNull: false,
+            type: "tinyint",
+            default: undefined,
+            unsigned: null,
+            autoIncrement: null,
+            arguments: []
         },
         {
             name: "tinyText",
-            type: "TINYTEXT",
-            default: null,
-            allowNull: true
+            notNull: false,
+            autoIncrement: null,
+            unsigned: null,
+            type: "tinytext",
+            default: undefined,
+            arguments: []
         },
         {
             name: "varChar",
-            type: "VARCHAR",
-            default: null,
-            allowNull: true,
-            size: null
+            notNull: false,
+            autoIncrement: null,
+            unsigned: null,
+            type: "varchar",
+            default: undefined,
+            arguments: []
         },
         {
             name: "year",
-            type: "YEAR",
-            default: null,
-            allowNull: true
+            notNull: false,
+            autoIncrement: null,
+            unsigned: null,
+            type: "year",
+            default: undefined,
+            arguments: []
         }
     ],
     indexes: [
@@ -168,7 +213,7 @@ export default {
         },
         {
             name: "key",
-            type: "KEY",
+            type: "",
             columns: ["key"]
         },
         {

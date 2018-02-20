@@ -12,20 +12,20 @@ import {
 
 describe("toObject test", function() {
     it("should return simple toObject correctly", async () => {
-        const user = new UserTable();
-        assert.deepEqual(user.toObject(), userTableObject);
+        const userTable = new UserTable();
+        assert.deepEqual(userTable.toObject(), userTableObject);
     });
 
     it("should return complex toObject correctly", async () => {
-        const company = new CompanyTable();
-        assert.deepEqual(company.toObject(), companyTableObject);
+        const companyTable = new CompanyTable();
+        assert.deepEqual(companyTable.toObject(), companyTableObject);
 
-        const complex = new ComplexTable();
-        assert.deepEqual(complex.toObject(), complexTableObject);
+        const complexTable = new ComplexTable();
+        assert.deepEqual(complexTable.toObject(), complexTableObject);
     });
 
     it("should return complete toObject correctly", async () => {
-        const complex = new CompleteTable();
-        assert.deepEqual(complex.toObject(), completeTableObject);
+        const completeTable = new CompleteTable();
+        assert.deepEqual(completeTable.toObject(), completeTableObject);
     });
 });

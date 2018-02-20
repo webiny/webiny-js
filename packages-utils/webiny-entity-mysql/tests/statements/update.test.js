@@ -1,12 +1,12 @@
-import {assert} from "chai";
-import {Update} from "./..";
+import { assert } from "chai";
+import { Update } from "../../src/statements";
 
-describe("UPDATE statement test", function () {
+describe("UPDATE statement test", function() {
     it("should generate an UPDATE statement", () => {
         const sql = new Update({
             operation: "update",
             table: "TestTable",
-            data: {name: "Test", enabled: 1}
+            data: { name: "Test", enabled: 1 }
         }).generate();
 
         assert.equal(sql, `UPDATE TestTable SET name = 'Test', enabled = 1`);
@@ -16,7 +16,7 @@ describe("UPDATE statement test", function () {
         const sql = new Update({
             operation: "update",
             table: "TestTable",
-            data: {name: "Test", enabled: false}
+            data: { name: "Test", enabled: false }
         }).generate();
 
         assert.equal(sql, `UPDATE TestTable SET name = 'Test', enabled = false`);
@@ -26,8 +26,8 @@ describe("UPDATE statement test", function () {
         const sql = new Update({
             operation: "update",
             table: "TestTable",
-            data: {name: "Test", enabled: false},
-            where: {$or: {age: 30, deletedOn: {$ne: null}}}
+            data: { name: "Test", enabled: false },
+            where: { $or: { age: 30, deletedOn: { $ne: null } } }
         }).generate();
 
         assert.equal(

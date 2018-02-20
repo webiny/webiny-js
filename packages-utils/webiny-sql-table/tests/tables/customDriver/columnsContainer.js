@@ -8,15 +8,15 @@ class ColumnsContainer extends BaseColumnsContainer {
         return this;
     }
 
-    char(size: number): CharColumn {
+    char(): CharColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new CharColumn(this.name, this, size));
+        table.setColumn(this.name, new CharColumn(this.name, this, Array.from(arguments)));
         return table.getColumn(this.name);
     }
 
-    int(size: number): IntColumn {
+    int(): IntColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new IntColumn(this.name, this, size));
+        table.setColumn(this.name, new IntColumn(this.name, this, Array.from(arguments)));
         return table.getColumn(this.name);
     }
 }

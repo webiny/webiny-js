@@ -1,9 +1,10 @@
 import { assert } from "chai";
-import { DropTable } from "./../../src/statements";
+import { UserTable } from "./../tables";
+import { dropTable } from "./../../src/sql";
 
-describe("DROP TABLE statement test", function() {
-    it("should generate a DROP TABLE statement", async () => {
-        const sql = new DropTable({ name: "TestTable" }).generate();
-        assert.equal(sql, `DROP TABLE \`TestTable\``);
+describe("DROP TABLE SQL test", function() {
+    it("should drop statements correctly", async () => {
+        const userTable = new UserTable();
+        assert.equal(dropTable(userTable), "DROP TABLE `Users`");
     });
 });

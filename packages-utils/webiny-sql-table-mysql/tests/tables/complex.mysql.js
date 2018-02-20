@@ -1,4 +1,4 @@
-import Table from './table';
+import Table from "./table";
 
 class ComplexTable extends Table {
     constructor() {
@@ -7,7 +7,7 @@ class ComplexTable extends Table {
             .bigInt(20)
             .setUnsigned()
             .setAutoIncrement()
-            .setAllowNull();
+            .setNotNull(true);
         this.column("firstName").varChar(100);
         this.column("lastName").varChar(100);
         this.column("age").int(10);
@@ -25,10 +25,9 @@ class ComplexTable extends Table {
     }
 }
 
-ComplexTable
-    .setName('ComplexRecords')
-    .setComment('Main Complex records table...')
+ComplexTable.setName("ComplexRecords")
+    .setComment("Main Complex records table...")
     .setAutoIncrement(50)
-    .setCollate('utf888');
+    .setCollate("utf888");
 
 export default ComplexTable;

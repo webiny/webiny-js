@@ -3,53 +3,62 @@ export default {
     name: "Companies",
     comment: "Main Companies table...",
     engine: "InnoDB",
-    collate: "collate",
+    collate: "utf8_bin",
     defaultCharset: "utf8",
     columns: [
         {
             name: "id",
-            type: "BIGINT",
-            default: null,
-            allowNull: true,
+            type: "bigint",
+            default: undefined,
             unsigned: true,
             autoIncrement: true,
-            size: 20
+            arguments: [20],
+            notNull: true
         },
         {
             name: "firstName",
-            type: "VARCHAR",
-            default: null,
-            allowNull: true,
-            size: 100
+            type: "varchar",
+            default: undefined,
+            arguments: [100],
+            unsigned: null,
+            notNull: false,
+            autoIncrement: null
         },
         {
             name: "lastName",
-            type: "VARCHAR",
-            default: null,
-            allowNull: true,
-            size: 100
+            type: "varchar",
+            default: undefined,
+            arguments: [100],
+            unsigned: null,
+            notNull: false,
+            autoIncrement: null
         },
         {
             name: "age",
-            type: "INT",
-            default: null,
-            allowNull: true,
-            unsigned: false,
-            autoIncrement: false,
-            size: 10
+            type: "int",
+            default: undefined,
+            unsigned: null,
+            autoIncrement: null,
+            arguments: [10],
+            notNull: false
         },
         {
             name: "type",
-            type: "ENUM",
+            type: "enum",
             default: "professional",
-            allowNull: true,
-            values: ["professional", "shoplifter", "brandRepresentative"]
+            arguments: ["professional", "shoplifter", "brandRepresentative"],
+            unsigned: null,
+            notNull: false,
+            autoIncrement: null
         },
         {
             name: "createdOn",
-            type: "DATETIME",
+            type: "datetime",
             default: "NOW",
-            allowNull: true
+            arguments: [],
+            unsigned: null,
+            notNull: false,
+            autoIncrement: null
         }
     ],
     indexes: [
@@ -60,7 +69,7 @@ export default {
         },
         {
             name: "age",
-            type: "KEY",
+            type: "",
             columns: ["id"]
         },
         {

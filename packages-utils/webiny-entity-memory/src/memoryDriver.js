@@ -3,6 +3,12 @@ import { Driver, QueryResult } from "webiny-entity";
 import _ from "lodash";
 import mdbid from "mdbid";
 import { Entity } from "webiny-entity";
+import {
+    EntitySaveParams,
+    EntityFindParams,
+    EntityDeleteParams,
+    EntityFindOneParams
+} from "webiny-entity/types";
 
 /**
  * MemoryDriver is an implementation of in-memory entity driver.

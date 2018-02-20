@@ -20,6 +20,30 @@ class Driver {
     getConnection(): mixed {
         return this.connection;
     }
+
+    create() {
+        return null;
+    }
+
+    update() {
+        return null;
+    }
+
+    exists() {
+        return null;
+    }
+
+    sync() {
+        return null;
+    }
+
+    delete() {
+        return null;
+    }
+
+    empty() {
+        return null;
+    }
 }
 
 export default Driver;

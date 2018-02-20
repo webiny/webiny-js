@@ -5,9 +5,6 @@
 flow-typed
 packages-api/webiny-api/flow-typed/npm
 packages-api/webiny-api-security/flow-typed/npm
-packages-utils/webiny-entity/flow-typed
-packages-utils/webiny-sql/flow-typed
-packages-utils/webiny-entity-mysql/flow-typed
 packages-utils/webiny-file-storage/flow-typed
 [lints]
 

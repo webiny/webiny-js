@@ -1,4 +1,4 @@
-import Table from './table';
+import Table from "./table";
 
 class CompanyTable extends Table {
     constructor() {
@@ -7,11 +7,13 @@ class CompanyTable extends Table {
             .bigInt(20)
             .setUnsigned()
             .setAutoIncrement()
-            .setAllowNull();
+            .setNotNull(true);
         this.column("firstName").varChar(100);
         this.column("lastName").varChar(100);
         this.column("age").int(10);
-        this.column("type").enum("professional", "shoplifter", "brandRepresentative").setDefault("professional");
+        this.column("type")
+            .enum("professional", "shoplifter", "brandRepresentative")
+            .setDefault("professional");
         this.column("createdOn")
             .dateTime()
             .setDefault("NOW");
@@ -23,8 +25,6 @@ class CompanyTable extends Table {
     }
 }
 
-CompanyTable
-    .setName('Companies')
-    .setComment('Main Companies table...');
+CompanyTable.setName("Companies").setComment("Main Companies table...");
 
 export default CompanyTable;

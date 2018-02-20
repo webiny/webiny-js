@@ -1,7 +1,8 @@
 // @flow
 import SqlString from "sqlstring";
 import _ from "lodash";
-import { operatorsProcessor } from "./processors";
+import { query } from "webiny-sql-query";
+import { OrderTuple } from "webiny-entity/types";
 
 class Statement {
     options: {};
@@ -28,7 +29,7 @@ class Statement {
             return "";
         }
 
-        return " WHERE " + operatorsProcessor.execute(options.where);
+        return " WHERE " + query.execute(options.where);
     }
 
     getOrder(options: { order?: Array<OrderTuple> }): string {

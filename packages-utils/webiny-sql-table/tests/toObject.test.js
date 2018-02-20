@@ -1,12 +1,11 @@
 import { assert } from "chai";
 import UserTable from "./tables/user.table";
-import CustomDriver from "./tables/customDriver";
 
 describe("toObject test", function() {
     it("should return object representation of table", async () => {
-        const user = new UserTable();
+        const userTable = new UserTable();
 
-        assert.deepEqual(user.toObject(), {
+        assert.deepEqual(userTable.toObject(), {
             autoIncrement: null,
             name: "Users",
             comment: null,
@@ -16,37 +15,31 @@ describe("toObject test", function() {
             columns: [
                 {
                     name: "id",
-                    type: "INT",
-                    default: null,
-                    allowNull: false,
+                    type: "int",
                     autoIncrement: true,
                     unsigned: true,
-                    size: 5
+                    arguments: [5]
                 },
                 {
                     name: "total",
-                    type: "INT",
-                    default: null,
-                    allowNull: true,
-                    autoIncrement: undefined,
+                    type: "int",
+                    autoIncrement: null,
                     unsigned: false,
-                    size: 6
+                    arguments: [6]
                 },
                 {
                     name: "totalViews",
-                    type: "INT",
-                    default: null,
-                    allowNull: true,
-                    autoIncrement: undefined,
+                    type: "int",
+                    autoIncrement: null,
                     unsigned: true,
-                    size: 7
+                    arguments: [7]
                 },
                 {
                     name: "name",
-                    type: "CHAR",
-                    default: null,
-                    allowNull: true,
-                    size: 8
+                    type: "char",
+                    arguments: [8],
+                    autoIncrement: null,
+                    unsigned: null
                 }
             ],
             indexes: [

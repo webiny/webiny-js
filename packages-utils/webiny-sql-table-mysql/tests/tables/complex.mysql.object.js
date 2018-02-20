@@ -8,48 +8,57 @@ export default {
     columns: [
         {
             name: "id",
-            type: "BIGINT",
-            default: null,
-            allowNull: true,
+            type: "bigint",
+            default: undefined,
             unsigned: true,
             autoIncrement: true,
-            size: 20
+            notNull: true,
+            arguments: [20]
         },
         {
             name: "firstName",
-            type: "VARCHAR",
-            default: null,
-            allowNull: true,
-            size: 100
+            type: "varchar",
+            default: undefined,
+            unsigned: null,
+            autoIncrement: null,
+            notNull: false,
+            arguments: [100]
         },
         {
             name: "lastName",
-            type: "VARCHAR",
-            default: null,
-            allowNull: true,
-            size: 100
+            type: "varchar",
+            default: undefined,
+            unsigned: null,
+            autoIncrement: null,
+            notNull: false,
+            arguments: [100]
         },
         {
             name: "age",
-            type: "INT",
-            default: null,
-            allowNull: true,
-            unsigned: false,
-            autoIncrement: false,
-            size: 10
+            type: "int",
+            default: undefined,
+            unsigned: null,
+            autoIncrement: null,
+            notNull: false,
+            arguments: [10]
         },
         {
             name: "type",
-            type: "ENUM",
+            type: "enum",
             default: "professional",
-            allowNull: true,
-            values: ["professional", "shoplifter", "brandRepresentative"]
+            unsigned: null,
+            autoIncrement: null,
+            notNull: false,
+            arguments: ["professional", "shoplifter", "brandRepresentative"]
         },
         {
             name: "createdOn",
-            type: "DATETIME",
+            type: "datetime",
+            notNull: false,
             default: "NOW",
-            allowNull: true
+            unsigned: null,
+            autoIncrement: null,
+            arguments: []
         }
     ],
     indexes: [
@@ -60,7 +69,7 @@ export default {
         },
         {
             name: "age",
-            type: "KEY",
+            type: "",
             columns: ["id"]
         },
         {

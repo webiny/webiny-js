@@ -6,10 +6,12 @@ class Column {
     name: string;
     type: string;
     columnsContainer: ColumnsContainer;
-    allowNull: boolean;
-    default: mixed;
-
-    constructor(name: string, columnsContainer: ColumnsContainer) {
+    arguments: Array<string | number>;
+    constructor(
+        name: string,
+        columnsContainer: ColumnsContainer,
+        columnArguments: Array<string | number> = []
+    ) {
         /**
          * Column name.
          */
@@ -21,16 +23,10 @@ class Column {
         this.columnsContainer = columnsContainer;
 
         /**
-         * Column's default value.
-         * @var null
+         * Arguments that will set when generating SQL in parentheses, eg. "bigint(20)".
+         * @type {Array}
          */
-        this.default = null;
-
-        /**
-         * Defines if column accept NULL values.
-         * @var null
-         */
-        this.allowNull = true;
+        this.arguments = columnArguments;
     }
 
     /**
@@ -46,6 +42,10 @@ class Column {
      */
     getType(): string {
         return "";
+    }
+
+    getArguments(): Array<string | number> {
+        return this.arguments;
     }
 
     /**
@@ -66,33 +66,8 @@ class Column {
         return {
             name: this.getName(),
             type: this.getType(),
-            default: this.getDefault(),
-            allowNull: this.getAllowNull()
+            arguments: this.getArguments()
         };
-    }
-
-    /**
-     * Sets default column value.
-     */
-    setDefault(defaultValue: ?mixed): this {
-        this.default = defaultValue;
-        return this;
-    }
-
-    /**
-     * Returns default column value.
-     */
-    getDefault() {
-        return this.default;
-    }
-
-    setAllowNull(allowNull: boolean = true): this {
-        this.allowNull = allowNull;
-        return this;
-    }
-
-    getAllowNull(): boolean {
-        return this.allowNull;
     }
 }
 

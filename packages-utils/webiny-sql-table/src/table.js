@@ -3,7 +3,7 @@ import IndexesContainer from "./indexesContainer";
 import Column from "./column";
 import Index from "./index";
 import Driver from "./driver";
-import { CreateTable } from "webiny-sql";
+import _ from "lodash";
 
 class Table {
     static engine: string;
@@ -72,6 +72,10 @@ class Table {
         return this.columns;
     }
 
+    forEachColumn(callback) {
+        _.keys(this.getColumns()).forEach(name => callback(this.getColumn(name)));
+    }
+
     getIndex(index: string): ?Index {
         if (index in this.indexes) {
             return this.indexes[index];
@@ -86,6 +90,10 @@ class Table {
 
     getIndexes(): { [string]: Index } {
         return this.indexes;
+    }
+
+    forEachIndex(callback) {
+        _.keys(this.getIndexes()).forEach(name => callback(this.getIndex(name)));
     }
 
     toObject(): { [string]: {} } {
@@ -111,11 +119,6 @@ class Table {
         }
 
         return json;
-    }
-
-    toSQL() {
-        const statement = new CreateTable(this.toObject());
-        return statement.generate();
     }
 
     static setDriver(driver): this {
@@ -173,6 +176,10 @@ class Table {
         return this.tableName;
     }
 
+    getName() {
+        return this.constructor.getName();
+    }
+
     static setComment(comment) {
         this.comment = comment;
         return this;
@@ -182,6 +189,10 @@ class Table {
         return this.comment;
     }
 
+    getComment() {
+        return this.constructor.getComment();
+    }
+
     static setAutoIncrement(autoIncrement: boolean = true) {
         this.autoIncrement = autoIncrement;
         return this;
@@ -189,6 +200,37 @@ class Table {
 
     static getAutoIncrement() {
         return this.autoIncrement;
+    }
+
+    getAutoIncrement() {
+        return this.constructor.getAutoIncrement();
+    }
+
+    async create() {
+        return this.getDriver().create(this);
+    }
+
+    async update() {
+        return this.getDriver().update(this);
+    }
+
+    async exists() {
+        return this.getDriver().exists(this);
+    }
+
+    async sync() {
+        if (await this.exists()) {
+            return this.update(this);
+        }
+        return this.create(this);
+    }
+
+    async delete() {
+        return this.getDriver().delete(this);
+    }
+
+    async empty() {
+        return this.getDriver().empty(this);
     }
 }
 

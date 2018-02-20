@@ -1,5 +1,5 @@
 // @flow
-import type { OrderTuple } from "webiny-sql/types";
+import type { OrderTuple } from "webiny-entity/types";
 
 /**
  * Create utility getters for the specified request object.

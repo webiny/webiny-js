@@ -1,9 +1,10 @@
 import { assert } from "chai";
-import { TruncateTable } from "./../../src/statements";
+import { UserTable } from "./../tables";
+import { truncateTable } from "./../../src/sql";
 
-describe("TRUNCATE TABLE statement test", function() {
-    it("should generate a TRUNCATE TABLE statement", async () => {
-        const sql = new TruncateTable({ name: "TestTable" }).generate();
-        assert.equal(sql, `TRUNCATE TABLE \`TestTable\``);
+describe("TRUNCATE TABLE SQL test", function() {
+    it("should truncate statements correctly", async () => {
+        const userTable = new UserTable();
+        assert.equal(truncateTable(userTable), "TRUNCATE TABLE `Users`");
     });
 });

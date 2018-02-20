@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { Statement } from "./..";
+import { Statement } from "../../src/statements";
 
 describe("INSERT statement test", function() {
     it("should generate an INSERT statement", async () => {

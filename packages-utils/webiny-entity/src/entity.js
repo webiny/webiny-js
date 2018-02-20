@@ -9,6 +9,7 @@ import EntityModel from "./entityModel";
 import EntityAttributesContainer from "./entityAttributesContainer";
 import QueryResult from "./queryResult";
 import { EntityError } from "./index";
+import { EntitySaveParams, EntityFindParams, EntityDeleteParams } from "webiny-entity/types";
 
 class Entity {
     static classId: ?string;

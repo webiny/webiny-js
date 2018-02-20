@@ -3,38 +3,51 @@ export default {
     name: "Users",
     comment: "Main Users table...",
     engine: "InnoDB",
-    collate: "collate",
+    collate: "utf8_bin",
     defaultCharset: "utf8",
     columns: [
         {
             name: "id",
-            type: "BIGINT",
-            default: null,
-            allowNull: false,
+            type: "bigint",
+            default: undefined,
             unsigned: true,
             autoIncrement: true,
-            size: 20
+            arguments: [20],
+            notNull: true
         },
         {
             name: "name",
-            type: "VARCHAR",
-            default: null,
-            allowNull: true,
-            size: 100
+            type: "varchar",
+            default: undefined,
+            unsigned: null,
+            autoIncrement: null,
+            arguments: [100],
+            notNull: false
         },
         {
             name: "type",
-            type: "ENUM",
-            default: null,
-            allowNull: true,
-            values: ["IT", "Marketing", "Animals"]
+            type: "enum",
+            default: undefined,
+            unsigned: null,
+            autoIncrement: null,
+            arguments: ["IT", "Marketing", "Animals"],
+            notNull: false
         },
         {
+            arguments: [],
             name: "createdOn",
-            type: "DATETIME",
-            default: null,
-            allowNull: true
+            type: "datetime",
+            default: undefined,
+            unsigned: null,
+            autoIncrement: null,
+            notNull: false
         }
     ],
-    indexes: []
+    indexes: [
+        {
+            columns: ["id"],
+            name: null,
+            type: "PRIMARY"
+        }
+    ]
 };
