@@ -1,4 +1,4 @@
-import { Select } from "./../../../lib";
+import { Select } from "./../../../src";
 
 describe("missing operator error test", function() {
     it("should throw an error because operator is not recognized", async () => {

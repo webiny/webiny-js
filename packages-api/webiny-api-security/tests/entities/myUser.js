@@ -1,4 +1,4 @@
-import { Identity } from "../../lib";
+import { Identity } from "../../src";
 
 export default class MyUser extends Identity {
     constructor() {

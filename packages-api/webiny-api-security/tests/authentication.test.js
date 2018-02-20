@@ -1,12 +1,12 @@
 import { Entity } from "webiny-api";
 import { MemoryDriver } from "webiny-entity-memory";
-import Authentication from "../lib/services/authentication";
+import Authentication from "../src/services/authentication";
 import MyUser from "./entities/myUser";
 import chai from "./utils/chai";
-import credentialsStrategy from "../lib/strategies/credentialsStrategy";
-import JwtToken from "../lib/tokens/jwtToken";
-import AuthenticationError from "../lib/services/authenticationError";
-import registerAttributes from "./../lib/attributes/registerAttributes";
+import credentialsStrategy from "../src/strategies/credentialsStrategy";
+import JwtToken from "../src/tokens/jwtToken";
+import AuthenticationError from "../src/services/authenticationError";
+import registerAttributes from "./../src/attributes/registerAttributes";
 
 const { expect } = chai;
 

@@ -1,6 +1,6 @@
 /**
  * This file was borrowed from `semantic-release`.
- * https://github.com/semantic-release/semantic-release/blob/caribou/lib/git.js
+ * https://github.com/semantic-release/semantic-release/blob/caribou/src/git.js
  * Reason: we did not want to include the entire library as a dependency because of several scripts.
  */
 

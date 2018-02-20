@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import { User, Image } from "./entities/userCompanyImage";
 import sinon from "sinon";
-import { QueryResult } from "./../lib";
+import { QueryResult } from "./../src";
 
 const sandbox = sinon.sandbox.create();
 

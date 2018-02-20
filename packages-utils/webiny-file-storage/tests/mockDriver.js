@@ -1,7 +1,7 @@
 // @flow
 import _ from "lodash";
 import fecha from "fecha";
-import StorageError from "./../lib/storageError";
+import StorageError from "./../src/storageError";
 
 class MockDriver implements IFileStorageDriver {
     fileSystem: { [string]: IFileData };

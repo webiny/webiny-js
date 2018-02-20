@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { MemoryDriver } from "./../lib";
+import { MemoryDriver } from "./../src";
 const driver = new MemoryDriver();
 
 describe("import and flush memory test", function() {

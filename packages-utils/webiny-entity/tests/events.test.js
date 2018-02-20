@@ -1,6 +1,6 @@
 import { assert } from "chai";
 
-import { Entity } from "./../lib";
+import { Entity } from "./../src";
 
 class Invoice extends Entity {
     constructor() {

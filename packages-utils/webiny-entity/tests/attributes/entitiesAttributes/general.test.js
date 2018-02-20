@@ -1,4 +1,4 @@
-import { QueryResult, EntityCollection } from "../../../lib/index";
+import { QueryResult, EntityCollection } from "../../../src/index";
 import {
     MainEntity,
     Entity1,

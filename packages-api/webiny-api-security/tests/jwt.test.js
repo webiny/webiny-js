@@ -5,8 +5,8 @@ import subDays from "date-fns/sub_days";
 import { MemoryDriver } from "webiny-entity-memory";
 
 import MyEntity from "./entities/myEntity";
-import JwtToken from "../lib/tokens/jwtToken";
-import AuthenticationError from "../lib/services/authenticationError";
+import JwtToken from "../src/tokens/jwtToken";
+import AuthenticationError from "../src/services/authenticationError";
 import chai from "./utils/chai";
 
 const { expect } = chai;

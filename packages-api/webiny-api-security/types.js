@@ -1,7 +1,7 @@
 // @flow
 import type { ApiMethod } from "webiny-api";
 import type { EntityCollection } from "webiny-entity";
-import type { Identity, Role } from "./lib";
+import type { Identity, Role } from "./src";
 
 /**
  * Implement this interface to allow objects to be passed to Authorization service.

@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import User from "./entities/user";
-import { EntityError } from "../lib";
+import { EntityError } from "../src";
 
 describe("default driver test", function() {
     it("save method should return the same user instance", async () => {

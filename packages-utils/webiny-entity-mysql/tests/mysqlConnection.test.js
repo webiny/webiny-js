@@ -2,7 +2,7 @@ import { expect } from "chai";
 import sinon from "sinon";
 import _ from "lodash";
 import mysql from "mysql";
-import MySQLConnection from "../lib/mysqlConnection";
+import MySQLConnection from "../src/mysqlConnection";
 
 const sandbox = sinon.sandbox.create();
 

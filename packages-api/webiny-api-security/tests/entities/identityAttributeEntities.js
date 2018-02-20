@@ -1,5 +1,5 @@
 import { Entity } from "webiny-api";
-import { Identity } from "../../lib/entities";
+import { Identity } from "../../src/entities";
 
 export class User extends Identity {
     constructor() {

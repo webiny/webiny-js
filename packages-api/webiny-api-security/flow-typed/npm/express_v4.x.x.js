@@ -3,7 +3,7 @@
 
 import type { Server } from "http";
 import type { Socket } from "net";
-import type { Identity } from "./../../lib";
+import type { Identity } from "./../../src";
 
 declare type express$RouterOptions = {
     caseSensitive?: boolean,

@@ -1,6 +1,6 @@
 import User from "./entities/user";
 import { expect } from "chai";
-import { EntityPoolEntry } from "../lib";
+import { EntityPoolEntry } from "../src";
 
 describe("entity pool entry test", function() {
     it("setEntity/getEntity methods must work correctly", async () => {

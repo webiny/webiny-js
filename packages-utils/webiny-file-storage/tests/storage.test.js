@@ -5,7 +5,7 @@ chai.use(chaiAsPromised);
 chai.should();
 const expect = chai.expect;
 
-import Storage from "../lib/storage";
+import Storage from "../src/storage";
 import MockDriver from "./mockDriver";
 
 describe("Storage class test", function() {

@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import _ from "lodash";
 
-import { EventHandler, Entity } from "./../lib";
+import { EventHandler, Entity } from "./../src";
 
 class EventsEntity extends Entity {}
 

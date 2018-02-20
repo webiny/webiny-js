@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import Model from "./../lib/model";
+import Model from "./../src/model";
 
 describe("validateType / validateValue test", function() {
     it("empty validateType / validateValue should not do anything", async () => {

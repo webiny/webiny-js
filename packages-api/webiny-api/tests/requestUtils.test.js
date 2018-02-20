@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { requestUtils } from "./../lib";
+import { requestUtils } from "./../src";
 
 describe("Request utils test", () => {
     it("should return all query parameters", function() {

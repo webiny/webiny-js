@@ -9,7 +9,7 @@ import {
     credentialsStrategy,
     JwtToken,
     SecurityApp
-} from "./../lib";
+} from "./../src";
 import MyUser from "./entities/myUser";
 import MyCompany from "./entities/myCompany";
 

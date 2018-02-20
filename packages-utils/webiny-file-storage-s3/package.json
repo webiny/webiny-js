@@ -2,7 +2,7 @@
   "name": "webiny-file-storage-s3",
   "description": "AWS S3 file-system storage driver for webiny-file-storage library",
   "version": "0.0.0-semantically-released",
-  "main": "lib/index.js",
+  "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"

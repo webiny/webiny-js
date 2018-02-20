@@ -1,4 +1,4 @@
-import { Entity } from "./../../lib";
+import { Entity } from "./../../src";
 
 class ClassA extends Entity {
     constructor() {

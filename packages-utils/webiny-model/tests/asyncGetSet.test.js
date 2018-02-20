@@ -1,7 +1,7 @@
 import { assert } from "chai";
 
 import { User, Size } from "./models/userModels";
-import { Model } from "../lib";
+import { Model } from "../src";
 
 const user = new User();
 user.populate({

@@ -1,4 +1,4 @@
-import { QueryResult } from "../../../../lib";
+import { QueryResult } from "../../../../src";
 import { MainEntity, Entity1, Entity2 } from "../../../entities/entitiesAttributeEntities";
 import { assert } from "chai";
 import sinon from "sinon";

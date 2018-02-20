@@ -1,6 +1,6 @@
 import { assert } from "chai";
 
-import { QueryResult } from "../../../lib/index";
+import { QueryResult } from "../../../src/index";
 import { User, Company } from "../../entities/userCompanyImage";
 import { One } from "../../entities/oneTwoThree";
 import sinon from "sinon";
