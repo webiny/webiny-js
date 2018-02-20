@@ -1,13 +1,19 @@
 // @flow
 import _ from "lodash";
 import { Entity, Driver, QueryResult } from "webiny-entity";
-import { Insert, Update, Delete, Select } from "webiny-sql";
+import { Insert, Update, Delete, Select } from "./statements";
 import { MySQLModel } from "./model";
-import type { Connection, Pool } from "mysql";
-import MySQLConnection from "./mysqlConnection";
+import type { Connection, ConnectionOptions, Pool } from "mysql";
+import { MySQLConnection } from "webiny-mysql-connection";
+import {
+    EntitySaveParams,
+    EntityFindParams,
+    EntityDeleteParams,
+    EntityFindOneParams
+} from "webiny-entity/types";
 
 declare type MySQLDriverOptions = {
-    connection: Connection | Pool,
+    connection: Connection | Pool | ConnectionOptions,
     model: Class<MySQLModel>,
     id: { attribute?: Function, value?: Function },
     tables: {
@@ -76,7 +82,8 @@ class MySQLDriver extends Driver {
                 limit: 1
             }).generate();
 
-            return this.getConnection().query(sql);
+            await this.getConnection().query(sql);
+            return new QueryResult(true);
         }
 
         const data = await entity.toStorage();

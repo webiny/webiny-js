@@ -5,8 +5,17 @@ class MySQLTable extends Table {}
 
 MySQLTable.setEngine("InnoDB")
     .setDefaultCharset("utf8")
-    .setCollate("collate");
+    .setCollate("utf8_bin");
 
-MySQLTable.setDriver(new MySQLDriver());
+MySQLTable.setDriver(
+    new MySQLDriver({
+        connection: {
+            host: "localhost",
+            user: "root",
+            password: "dev",
+            database: "test1"
+        }
+    })
+);
 
 export default MySQLTable;

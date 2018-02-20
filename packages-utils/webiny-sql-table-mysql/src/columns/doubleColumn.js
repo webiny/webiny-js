@@ -3,7 +3,7 @@ import FloatColumn from "./floatColumn";
 
 class DoubleColumn extends FloatColumn {
     getType() {
-        return "DOUBLE";
+        return "double";
     }
 }
 

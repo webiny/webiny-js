@@ -1,4 +1,4 @@
-import Table from './table';
+import Table from "./table";
 
 class UserTable extends Table {
     constructor() {
@@ -7,15 +7,15 @@ class UserTable extends Table {
             .bigInt(20)
             .setUnsigned()
             .setAutoIncrement()
-            .setAllowNull(false);
+            .setNotNull();
         this.column("name").varChar(100);
         this.column("type").enum("IT", "Marketing", "Animals");
         this.column("createdOn").dateTime();
+
+        this.index().primary("id");
     }
 }
 
-UserTable
-    .setName('Users')
-    .setComment('Main Users table...');
+UserTable.setName("Users").setComment("Main Users table...");
 
 export default UserTable;

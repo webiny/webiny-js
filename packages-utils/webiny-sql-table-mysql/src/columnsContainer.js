@@ -1,5 +1,5 @@
 // @flow
-import {ColumnsContainer} from "webiny-sql-table";
+import { ColumnsContainer } from "webiny-sql-table";
 
 import {
     BigIntColumn,
@@ -37,45 +37,45 @@ class DefaultColumnsContainer extends ColumnsContainer {
         return this;
     }
 
-    bigInt(size: number): BigIntColumn {
+    bigInt(): BigIntColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new BigIntColumn(this.name, this, size));
+        table.setColumn(this.name, new BigIntColumn(this.name, this, Array.from(arguments)));
         return table.getColumn(this.name);
     }
 
     blob(): BlobColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new BlobColumn(this.name, this));
+        table.setColumn(this.name, new BlobColumn(this.name, this, Array.from(arguments)));
         return table.getColumn(this.name);
     }
 
-    char(size: number): CharColumn {
+    char(): CharColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new CharColumn(this.name, this, size));
+        table.setColumn(this.name, new CharColumn(this.name, this, Array.from(arguments)));
         return table.getColumn(this.name);
     }
 
     date(): DateColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new DateColumn(this.name, this));
+        table.setColumn(this.name, new DateColumn(this.name, this, Array.from(arguments)));
         return table.getColumn(this.name);
     }
 
     dateTime(): DateTimeColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new DateTimeColumn(this.name, this));
+        table.setColumn(this.name, new DateTimeColumn(this.name, this, Array.from(arguments)));
         return table.getColumn(this.name);
     }
 
-    decimal(size: number, d: number): DecimalColumn {
+    decimal(): DecimalColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new DecimalColumn(this.name, this), size, d);
+        table.setColumn(this.name, new DecimalColumn(this.name, this), Array.from(arguments));
         return table.getColumn(this.name);
     }
 
-    double(size: number, d: number): DoubleColumn {
+    double(): DoubleColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new DoubleColumn(this.name, this), size, d);
+        table.setColumn(this.name, new DoubleColumn(this.name, this), Array.from(arguments));
         return table.getColumn(this.name);
     }
 
@@ -85,93 +85,93 @@ class DefaultColumnsContainer extends ColumnsContainer {
         return table.getColumn(this.name);
     }
 
-    float(size: number, d: number): FloatColumn {
+    float(): FloatColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new FloatColumn(this.name, this), size, d);
+        table.setColumn(this.name, new FloatColumn(this.name, this), Array.from(arguments));
         return table.getColumn(this.name);
     }
 
-    int(size: number): IntColumn {
+    int(): IntColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new IntColumn(this.name, this, size));
+        table.setColumn(this.name, new IntColumn(this.name, this, Array.from(arguments)));
         return table.getColumn(this.name);
     }
 
     longBlob(): LongBlobColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new LongBlobColumn(this.name, this));
+        table.setColumn(this.name, new LongBlobColumn(this.name, this, Array.from(arguments)));
         return table.getColumn(this.name);
     }
 
     longText(): LongTextColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new LongTextColumn(this.name, this));
+        table.setColumn(this.name, new LongTextColumn(this.name, this, Array.from(arguments)));
         return table.getColumn(this.name);
     }
 
     mediumBlob(): MediumBlobColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new MediumBlobColumn(this.name, this));
+        table.setColumn(this.name, new MediumBlobColumn(this.name, this, Array.from(arguments)));
         return table.getColumn(this.name);
     }
 
-    mediumInt(size: number): MediumIntColumn {
+    mediumInt(): MediumIntColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new MediumIntColumn(this.name, this, size));
+        table.setColumn(this.name, new MediumIntColumn(this.name, this, Array.from(arguments)));
         return table.getColumn(this.name);
     }
 
     mediumText(): MediumTextColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new MediumTextColumn(this.name, this));
+        table.setColumn(this.name, new MediumTextColumn(this.name, this, Array.from(arguments)));
         return table.getColumn(this.name);
     }
 
-    smallInt(size: number): SmallIntColumn {
+    smallInt(): SmallIntColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new SmallIntColumn(this.name, this, size));
+        table.setColumn(this.name, new SmallIntColumn(this.name, this, Array.from(arguments)));
         return table.getColumn(this.name);
     }
 
     text(): TextColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new TextColumn(this.name, this));
+        table.setColumn(this.name, new TextColumn(this.name, this, Array.from(arguments)));
         return table.getColumn(this.name);
     }
 
     time(): TimeColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new TimeColumn(this.name, this));
+        table.setColumn(this.name, new TimeColumn(this.name, this, Array.from(arguments)));
         return table.getColumn(this.name);
     }
 
     timestamp(): TimestampColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new TimestampColumn(this.name, this));
+        table.setColumn(this.name, new TimestampColumn(this.name, this, Array.from(arguments)));
         return table.getColumn(this.name);
     }
 
-    tinyInt(size: number): TinyIntColumn {
+    tinyInt(): TinyIntColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new TinyIntColumn(this.name, this, size));
+        table.setColumn(this.name, new TinyIntColumn(this.name, this, Array.from(arguments)));
         return table.getColumn(this.name);
     }
 
     tinyText(): TinyTextColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new TinyTextColumn(this.name, this));
+        table.setColumn(this.name, new TinyTextColumn(this.name, this, Array.from(arguments)));
         return table.getColumn(this.name);
     }
 
-    varChar(size: number): VarCharColumn {
+    varChar(): VarCharColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new VarCharColumn(this.name, this, size));
+        table.setColumn(this.name, new VarCharColumn(this.name, this, Array.from(arguments)));
         return table.getColumn(this.name);
     }
 
     year(): YearColumn {
         const table = this.getParentTable();
-        table.setColumn(this.name, new YearColumn(this.name, this));
+        table.setColumn(this.name, new YearColumn(this.name, this, Array.from(arguments)));
         return table.getColumn(this.name);
     }
 }

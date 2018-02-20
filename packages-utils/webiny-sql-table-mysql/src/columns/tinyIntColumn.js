@@ -3,7 +3,7 @@ import IntColumn from "./intColumn";
 
 class TinyIntColumn extends IntColumn {
     getType() {
-        return "TINYINT";
+        return "tinyint";
     }
 }
 

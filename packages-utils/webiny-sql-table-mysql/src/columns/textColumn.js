@@ -1,9 +1,9 @@
 // @flow
-import {Column} from "webiny-sql-table";
+import Column from "./column";
 
 class TextColumn extends Column {
     getType() {
-        return "TEXT";
+        return "text";
     }
 }
 
