@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { operatorsProcessor } from "../../../../lib/processors";
+import { operatorsProcessor } from "../../../../src/processors";
 
 describe("regular and $ne equality comparison operator test", function() {
     it("should generate correct statement using $ne equality operator", () => {

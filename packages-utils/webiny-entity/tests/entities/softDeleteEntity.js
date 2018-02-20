@@ -1,4 +1,4 @@
-import Entity from "./../../lib/entity";
+import Entity from "./../../src/entity";
 
 class EntityWithoutSoftDeletes extends Entity {
     constructor() {

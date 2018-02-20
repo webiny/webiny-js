@@ -51,20 +51,19 @@
   },
   "scripts": {
     "build": "lerna run --parallel build",
-    "ci": "yarn ci:build && yarn ci:test",
-    "ci:build": "yarn build",
-    "ci:test": "nyc --check-coverage --branches 95 --functions 98 --lines 98 yarn test && nyc report --reporter=text-lcov | coveralls",
+    "ci": "yarn ci:test",
+    "ci:test": "nyc --check-coverage yarn test && nyc report --reporter=text-lcov | coveralls",
     "commit": "git-cz",
     "commit:check": "yarn flow && yarn lint-staged && yarn test",
     "coverage": "nyc --reporter=text yarn test",
     "coverage:html": "nyc --reporter=html yarn test",
-    "coverage:check": "nyc check-coverage --branches 95 --functions 98 --lines 98 yarn test",
+    "coverage:check": "nyc check-coverage yarn test",
     "flow": "flow",
     "lint-staged": "lint-staged",
     "mocha": "mocha --require source-map-support/register --require babel-core/register",
     "prettier": "prettier --config .prettierrc.js --write",
-    "release": "webiny-semantic-release --preset=webiny-sr-preset-webiny",
-    "release:dry": "webiny-semantic-release --preset=webiny-sr-preset-webiny --dry-run --branch=development",
+    "release": "webiny-semantic-release --preset=webiny-sr-preset-webiny --require=babel-register",
+    "release:dry": "webiny-semantic-release --preset=webiny-sr-preset-webiny --dry-run --branch=development --require=babel-register",
     "test": "yarn mocha \"packages-*/**/tests/**/*.test.js\"",
     "test:api": "yarn mocha \"packages-api/**/tests/**/*.test.js\"",
     "test:utils": "yarn mocha \"packages-utils/**/tests/**/*.test.js\"",
@@ -87,6 +86,9 @@
     "test"
   ],
   "nyc": {
+    "branches": 95,
+    "functions": 95,
+    "lines": 95,
     "include": [
       "packages-api/**/src",
       "packages-utils/**/src"

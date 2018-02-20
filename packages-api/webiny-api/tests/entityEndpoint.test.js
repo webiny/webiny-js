@@ -2,7 +2,7 @@ import { expect } from "chai";
 import request from "supertest";
 import express from "express";
 import { MemoryDriver } from "webiny-entity-memory";
-import { middleware, endpointMiddleware } from "./../lib";
+import { middleware, endpointMiddleware } from "./../src";
 import CrudApp from "./apps/crud/app";
 
 describe("Entity endpoint test", () => {

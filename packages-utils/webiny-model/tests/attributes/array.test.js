@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import Model from "./../../lib/model";
+import Model from "./../../src/model";
 
 describe("attribute models test", function() {
     const model = new Model(function() {

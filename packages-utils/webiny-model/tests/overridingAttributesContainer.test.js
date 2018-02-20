@@ -1,7 +1,7 @@
 import { assert } from "chai";
-import { Model, ModelAttribute } from "./../lib";
-import DefaultAttributesContainer from "./../lib/defaultAttributesContainer";
-import { AttributesContainer } from "../lib";
+import { Model, ModelAttribute } from "./../src";
+import DefaultAttributesContainer from "./../src/defaultAttributesContainer";
+import { AttributesContainer } from "../src";
 
 class DefaultAttributesContainerOverride extends DefaultAttributesContainer {
     newAttribute() {

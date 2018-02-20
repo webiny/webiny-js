@@ -1,9 +1,11 @@
 #!/usr/bin/env node
-import yargs from "yargs";
-import semanticRelease from "./index";
-import getLernaPackages from "./utils/getLernaPackages";
+const { argv } = require("yargs");
+if (argv.require) {
+    require(argv.require);
+}
 
-const { argv } = yargs;
+const { default: semanticRelease } = require("./index");
+const { default: getLernaPackages } = require("./utils/getLernaPackages");
 
 /**
  * By default we handle packages using Lerna and only allow release from `master` branch.

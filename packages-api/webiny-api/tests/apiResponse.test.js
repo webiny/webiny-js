@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import ApiResponse from "./../lib/response/apiResponse";
+import ApiResponse from "./../src/response/apiResponse";
 
 describe("ApiResponse class test", function() {
     it("setMessage/getMessage must work correctly", () => {

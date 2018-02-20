@@ -1,4 +1,4 @@
-import { Identity } from "../../lib";
+import { Identity } from "../../src";
 
 class MyCompany extends Identity {
     constructor() {

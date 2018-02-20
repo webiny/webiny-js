@@ -1,12 +1,12 @@
 import path from "path";
 import fs from "fs";
-import githubPublish from "webiny-semantic-release/lib/plugins/github/publish";
-import npmVerify from "webiny-semantic-release/lib/plugins/npm/verify";
-import updatePackageJson from "webiny-semantic-release/lib/plugins/updatePackageJson";
-import npmPublish from "webiny-semantic-release/lib/plugins/npm/publish";
-import releaseNotes from "webiny-semantic-release/lib/plugins/releaseNotesGenerator";
-import analyzeCommits from "webiny-semantic-release/lib/plugins/analyzeCommits";
-import githubVerify from "webiny-semantic-release/lib/plugins/github/verify";
+import githubPublish from "webiny-semantic-release/src/plugins/github/publish";
+import npmVerify from "webiny-semantic-release/src/plugins/npm/verify";
+import updatePackageJson from "webiny-semantic-release/src/plugins/updatePackageJson";
+import npmPublish from "webiny-semantic-release/src/plugins/npm/publish";
+import releaseNotes from "webiny-semantic-release/src/plugins/releaseNotesGenerator";
+import analyzeCommits from "webiny-semantic-release/src/plugins/analyzeCommits";
+import githubVerify from "webiny-semantic-release/src/plugins/github/verify";
 
 export const plugins = [
     // Verify tokens

@@ -6,7 +6,7 @@ chai.use(chaiAsPromised);
 chai.should();
 const { assert } = chai;
 
-import { Storage, StorageError, File } from "../lib";
+import { Storage, StorageError, File } from "../src";
 import MockDriver from "./mockDriver";
 
 describe("File class test", function() {

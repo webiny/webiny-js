@@ -1,6 +1,6 @@
 import { assert } from "chai";
 
-import extractor from "./../lib";
+import extractor from "./../src";
 import mock from "./mock";
 
 describe("extracting values test", () => {

@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { Entity, Driver, EntityModel, QueryResult } from "./../lib";
+import { Entity, Driver, EntityModel, QueryResult } from "./../src";
 import _ from "lodash";
 
 class CustomDriver extends Driver {

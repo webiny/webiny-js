@@ -1,6 +1,6 @@
 import { assert } from "chai";
-import Model from "./../../lib/model";
-import ModelError from "./../../lib/modelError";
+import Model from "./../../src/model";
+import ModelError from "./../../src/modelError";
 import { User } from "../models/userModels";
 
 describe("attribute models test", function() {

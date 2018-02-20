@@ -8,7 +8,7 @@ chai.should();
 const expect = chai.expect;
 
 import { Storage } from "webiny-file-storage";
-import LocalDriver from "./../lib";
+import LocalDriver from "./../src";
 
 describe("LocalStorageDriver class test", function() {
     const publicUrl = "https://cdn.domain.com";

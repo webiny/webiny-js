@@ -1,4 +1,4 @@
-import type { OperatorsProcessor } from "./../lib/processors";
+import type { OperatorsProcessor } from "./../src/processors";
 
 export type OrderTuple = [string, number];
 

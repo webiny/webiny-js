@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import User from "./entities/user";
-import { Driver, Entity } from "./../lib";
+import { Driver, Entity } from "./../src";
 
 describe("driver override test", function() {
     it("should use basic driver", async () => {

@@ -1,5 +1,5 @@
 // @flow
-import Model from "./../../lib/model";
+import Model from "./../../src/model";
 
 class BasicModel extends Model {
     constructor() {

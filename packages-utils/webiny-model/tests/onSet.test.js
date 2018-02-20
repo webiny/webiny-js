@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import Model from "./../lib/model";
+import Model from "./../src/model";
 
 describe("onSet test", function() {
     it("should increment the value by 3 on set", async () => {

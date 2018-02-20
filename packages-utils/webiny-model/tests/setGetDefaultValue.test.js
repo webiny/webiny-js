@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import Model from "./../lib/model";
+import Model from "./../src/model";
 
 describe("setDefaultValue test", function() {
     it("should set/get default values", async () => {
