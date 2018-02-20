@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import ValidationError from "./../lib/validationError";
+import ValidationError from "./../src/validationError";
 
 describe("ValidationError class test", function() {
     it("set / get message must work correctly", () => {

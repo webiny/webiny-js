@@ -1,4 +1,4 @@
-import { validation, ValidationError } from "./../lib";
+import { validation, ValidationError } from "./../src";
 import chai from "./chai";
 
 const { assert, expect } = chai;

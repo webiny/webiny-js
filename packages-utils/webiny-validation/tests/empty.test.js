@@ -1,4 +1,4 @@
-import { validation } from "./../lib";
+import { validation } from "./../src";
 import "./chai";
 import { expect } from "chai";
 
