@@ -11,7 +11,7 @@ class Table {
     static defaultCharset: string;
     static collate: string;
     static comment: ?string;
-    static autoIncrement: ?string;
+    static autoIncrement: ?number;
     columns: { [string]: Column };
     indexes: { [string]: Index };
     columnsContainer: ColumnsContainer;
@@ -193,7 +193,7 @@ class Table {
         return this.constructor.getComment();
     }
 
-    static setAutoIncrement(autoIncrement: boolean = true) {
+    static setAutoIncrement(autoIncrement: number) {
         this.autoIncrement = autoIncrement;
         return this;
     }
