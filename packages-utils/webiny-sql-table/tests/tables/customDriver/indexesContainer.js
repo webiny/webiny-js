@@ -4,15 +4,15 @@ import { PrimaryIndex, UniqueIndex } from "./indexes";
 
 class IndexesContainer extends BaseIndexesContainer {
     primary(): PrimaryIndex {
-        const table = this.getParentTable();
-        table.setIndex(this.name, new PrimaryIndex(this.name, this));
-        return table.getIndex(this.name);
+        const index = new PrimaryIndex(this.newIndexName, this, Array.from(arguments));
+        this.indexes.push(index);
+        return index;
     }
 
     unique(): UniqueIndex {
-        const table = this.getParentTable();
-        table.setIndex(this.name, new UniqueIndex(this.name, this, Array.from(arguments)));
-        return table.getIndex(this.name);
+        const index = new UniqueIndex(this.newIndexName, this, Array.from(arguments));
+        this.indexes.push(index);
+        return index;
     }
 }
 

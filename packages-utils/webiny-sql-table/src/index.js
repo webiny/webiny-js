@@ -5,18 +5,15 @@ import IndexesContainer from "./indexesContainer";
 class Index {
     name: ?string;
     type: string;
-    columns: ?Array<string>;
+    columns: Array<string>;
     indexesContainer: IndexesContainer;
 
-    constructor(
-        name: ?string = null,
-        indexesContainer: IndexesContainer,
-        columns: ?Array<string> = null
-    ) {
+    constructor(name: ?string, indexesContainer: IndexesContainer, columns: Array<string> = []) {
         /**
-         * Index name.
+         * If name is missing, let's automatically generate one - based on passed columns.
+         * @type {string}
          */
-        this.name = name;
+        this.name = name || columns.join("_");
 
         /**
          * Index's parent table instance.
@@ -55,7 +52,7 @@ class Index {
         return this.getParentIndexesContainer().getParentTable();
     }
 
-    getColumns() {
+    getColumns(): Array<string> {
         return this.columns;
     }
 

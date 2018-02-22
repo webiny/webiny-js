@@ -16,9 +16,10 @@ class UserTable extends Table {
             .setUnsigned(true);
         this.column("name").char(8);
 
-        this.index("id").primary();
-        this.index("name").unique();
+        this.index().primary("id");
+        this.index("name").unique("name");
         this.index("totals").unique("total", "totalViews");
+        this.index().unique("name", "total", "totalViews");
     }
 }
 

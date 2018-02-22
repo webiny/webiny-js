@@ -1,11 +1,11 @@
 export default table => {
     const columns = [];
-    table.forEachColumn(column => {
+    table.getColumns().forEach(column => {
         columns.push(column.getSQLValue());
     });
 
     const indexes = [];
-    table.forEachIndex(index => {
+    table.getIndexes().forEach(index => {
         indexes.push(index.getSQLValue());
     });
 

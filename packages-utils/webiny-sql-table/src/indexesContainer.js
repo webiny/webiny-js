@@ -1,25 +1,42 @@
 // @flow
 import type Table from "./table";
+import type Index from "./index";
+import _ from "lodash";
 
 class IndexesContainer {
     parentTable: Table;
-    name: string;
+    newIndexName: ?string;
+    indexes: Array<Index>;
 
     constructor(table: Table) {
+        /**
+         * Contains all registered indexes.
+         * @type {Array}
+         */
+        this.indexes = [];
+
         /**
          * Parent parentTable - instance of Table class.
          */
         this.parentTable = table;
 
         /**
-         * Name of current index
+         * Temporary stored name that will be assigned to newly created index.
          */
-        this.name = "";
+        this.newIndexName = "";
     }
 
-    index(index: string): IndexesContainer {
-        this.name = index;
+    index(newIndexName: ?string): IndexesContainer {
+        this.newIndexName = newIndexName;
         return this;
+    }
+
+    getIndexes(): Array<Index> {
+        return this.indexes;
+    }
+
+    getIndex(name: string): ?Index {
+        return _.find(this.indexes, { name });
     }
 
     getParentTable(): Table {

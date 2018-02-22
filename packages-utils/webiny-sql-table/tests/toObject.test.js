@@ -44,18 +44,23 @@ describe("toObject test", function() {
             ],
             indexes: [
                 {
-                    columns: null,
-                    name: "id",
+                    columns: ["id"],
+                    name: null,
                     type: "PRIMARY"
                 },
                 {
-                    columns: [],
+                    columns: ["name"],
                     name: "name",
                     type: "UNIQUE"
                 },
                 {
                     columns: ["total", "totalViews"],
                     name: "totals",
+                    type: "UNIQUE"
+                },
+                {
+                    columns: ["name", "total", "totalViews"],
+                    name: "name_total_totalViews",
                     type: "UNIQUE"
                 }
             ]

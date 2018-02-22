@@ -1,25 +1,42 @@
 // @flow
 import type Table from "./table";
+import type Column from "./column";
+import _ from "lodash";
 
 class ColumnsContainer {
     parentTable: Table;
-    name: string;
+    newColumnName: ?string;
+    columns: Array<Column>;
 
     constructor(table: Table) {
+        /**
+         * Contains all registered columns.
+         * @type {Array}
+         */
+        this.columns = [];
+
         /**
          * Parent parentTable - instance of Table class.
          */
         this.parentTable = table;
 
         /**
-         * Name of current column
+         * Temporary stored name that will be assigned to newly created column.
          */
-        this.name = "";
+        this.newColumnName = "";
     }
 
-    column(column: string): ColumnsContainer {
-        this.name = column;
+    column(newColumnName: ?string): ColumnsContainer {
+        this.newColumnName = newColumnName;
         return this;
+    }
+
+    getColumns(): Array<Column> {
+        return this.columns;
+    }
+
+    getColumn(name: string): ?Column {
+        return _.find(this.columns, { name });
     }
 
     getParentTable(): Table {

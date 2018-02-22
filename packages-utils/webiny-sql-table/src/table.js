@@ -3,7 +3,6 @@ import IndexesContainer from "./indexesContainer";
 import Column from "./column";
 import Index from "./index";
 import Driver from "./driver";
-import _ from "lodash";
 
 class Table {
     static engine: string;
@@ -30,12 +29,12 @@ class Table {
         this.indexesContainer = this.createIndexesContainer();
     }
 
-    column(column: string): ColumnsContainer {
-        return this.getColumnsContainer().column(column);
+    column(name: string): ColumnsContainer {
+        return this.getColumnsContainer().column(name);
     }
 
-    index(index: string): IndexesContainer {
-        return this.getIndexesContainer().index(index);
+    index(name: string): IndexesContainer {
+        return this.getIndexesContainer().index(name);
     }
 
     createColumnsContainer(): ColumnsContainer {
@@ -56,11 +55,8 @@ class Table {
         return this.indexesContainer;
     }
 
-    getColumn(column: string): ?Column {
-        if (column in this.columns) {
-            return this.columns[column];
-        }
-        return undefined;
+    getColumn(name: string): ?Column {
+        return this.getColumnsContainer().getColumn(name);
     }
 
     setColumn(name: string, column: Column): this {
@@ -69,18 +65,11 @@ class Table {
     }
 
     getColumns(): { [string]: Column } {
-        return this.columns;
+        return this.getColumnsContainer().getColumns();
     }
 
-    forEachColumn(callback) {
-        _.keys(this.getColumns()).forEach(name => callback(this.getColumn(name)));
-    }
-
-    getIndex(index: string): ?Index {
-        if (index in this.indexes) {
-            return this.indexes[index];
-        }
-        return undefined;
+    getIndex(name: string): ?Index {
+        return this.getIndexesContainer().getIndex(name);
     }
 
     setIndex(name: string, index: Index): this {
@@ -89,11 +78,7 @@ class Table {
     }
 
     getIndexes(): { [string]: Index } {
-        return this.indexes;
-    }
-
-    forEachIndex(callback) {
-        _.keys(this.getIndexes()).forEach(name => callback(this.getIndex(name)));
+        return this.getIndexesContainer().getIndexes();
     }
 
     toObject(): { [string]: {} } {
@@ -108,15 +93,13 @@ class Table {
             indexes: []
         };
 
-        for (let name in this.getColumns()) {
-            const column = ((this.getColumn(name): any): Column);
+        this.getColumns().forEach(column => {
             json.columns.push(column.getObjectValue());
-        }
+        });
 
-        for (let name in this.getIndexes()) {
-            const index = ((this.getIndex(name): any): Index);
+        this.getIndexes().forEach(index => {
             json.indexes.push(index.getObjectValue());
-        }
+        });
 
         return json;
     }

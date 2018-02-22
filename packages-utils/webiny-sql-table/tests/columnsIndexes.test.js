@@ -44,6 +44,6 @@ describe("columns and indexes test", function() {
 
     it("should return all indexes", async () => {
         const user = new UserTable();
-        assert.lengthOf(Object.keys(user.getIndexes()), 3);
+        assert.lengthOf(user.getIndexes(), 4);
     });
 });
