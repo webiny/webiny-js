@@ -99,11 +99,7 @@ describe("entity attribute current / initial values syncing", function() {
         assert.equal(one.getAttribute("two").value.getCurrent(), null);
         assert.equal(one.getAttribute("two").value.getInitial().id, "anotherTwo");
 
-        try {
-            await one.save();
-        } catch (e) {
-            const aaa = 123;
-        }
+        await one.save();
 
         assert.equal(await one.getAttribute("two").getStorageValue(), null);
         assert.equal(one.getAttribute("two").value.getCurrent(), null);

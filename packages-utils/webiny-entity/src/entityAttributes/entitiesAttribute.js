@@ -243,18 +243,20 @@ class EntitiesAttribute extends Attribute {
                     return;
                 }
 
+                const finalValue = this.onSetCallback(value);
+
                 // Even if the value is invalid (eg. a string), we allow it here, but calling validate() will fail.
-                if (value instanceof EntityCollection) {
-                    this.value.setCurrent(value);
+                if (finalValue instanceof EntityCollection) {
+                    this.value.setCurrent(finalValue);
                     resolve();
                     return;
                 }
 
                 try {
-                    if (_.isArray(value)) {
+                    if (Array.isArray(finalValue)) {
                         const collection = new EntityCollection();
-                        for (let i = 0; i < value.length; i++) {
-                            const current = value[i];
+                        for (let i = 0; i < finalValue.length; i++) {
+                            const current = finalValue[i];
 
                             switch (true) {
                                 case current instanceof Entity:
@@ -275,7 +277,7 @@ class EntitiesAttribute extends Attribute {
                         return;
                     }
 
-                    this.value.setCurrent(value);
+                    this.value.setCurrent(finalValue);
                     resolve();
                 } catch (e) {
                     reject(e);

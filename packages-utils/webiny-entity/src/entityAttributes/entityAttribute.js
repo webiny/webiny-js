@@ -145,18 +145,20 @@ class EntityAttribute extends Attribute {
                     return this;
                 }
 
+                const finalValue = this.onSetCallback(value);
+
                 try {
                     switch (true) {
-                        case value instanceof Entity:
-                            this.value.setCurrent(value);
+                        case finalValue instanceof Entity:
+                            this.value.setCurrent(finalValue);
                             break;
-                        case _.isObject(value): {
+                        case _.isObject(finalValue): {
                             let entity = this.getEntityClass();
-                            this.value.setCurrent(new entity().populate(value));
+                            this.value.setCurrent(new entity().populate(finalValue));
                             break;
                         }
                         default:
-                            this.value.setCurrent(value);
+                            this.value.setCurrent(finalValue);
                     }
                     resolve();
                 } catch (e) {
