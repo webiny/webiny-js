@@ -17,14 +17,6 @@ describe("mysql connection test", async function() {
         const instance2 = new MySQLConnection(mysql.createConnection({}));
         expect(instance2.isConnectionPool()).to.equal(false);
         expect(instance2.isConnection()).to.equal(true);
-
-        const instance3 = new MySQLConnection({ pool: true });
-        expect(instance3.isConnectionPool()).to.equal(true);
-        expect(instance3.isConnection()).to.equal(false);
-
-        const instance4 = new MySQLConnection({});
-        expect(instance4.isConnectionPool()).to.equal(false);
-        expect(instance4.isConnection()).to.equal(true);
     });
 
     it("should correctly query using pool of connections", async () => {
@@ -54,7 +46,71 @@ describe("mysql connection test", async function() {
         queryWithConnectionStub.restore();
     });
 
-    it("should correctly more SQL queries using pool of connections", async () => {
+    it("should correctly execute more than one SQL query using a single connection", async () => {
+        const instance = new MySQLConnection(mysql.createConnection({}));
+
+        const queryStub = sandbox
+            .stub(instance.getInstance(), "query")
+            .onCall(0)
+            .callsFake((sql, callback) => {
+                return callback(null, [{ id: 1 }, { id: 2 }]);
+            })
+            .onCall(1)
+            .callsFake((sql, callback) => {
+                return callback(null, [{ count: 1 }]);
+            });
+
+        const endConnectionStub = sandbox
+            .stub(instance.getInstance(), "end")
+            .onCall(0)
+            .callsFake(callback => callback());
+
+        const results = await instance.query([
+            "SELECT * FROM users",
+            "SELECT FOUND_ROWS() as count"
+        ]);
+
+        expect(queryStub.callCount).to.equal(2);
+
+        expect(results).to.be.lengthOf(2);
+        expect(results[0][0].id).to.be.equal(1);
+        expect(results[0][1].id).to.be.equal(2);
+        expect(results[1][0].count).to.be.equal(1);
+
+        queryStub.restore();
+        endConnectionStub.restore();
+    });
+
+    it("should return an error when using a single connection", async () => {
+        const instance = new MySQLConnection(mysql.createConnection({}));
+
+        const queryStub = sandbox
+            .stub(instance.getInstance(), "query")
+            .onCall(0)
+            .callsFake((sql, callback) => {
+                return callback("Something went wrong.", null);
+            });
+
+        const endConnectionStub = sandbox
+            .stub(instance.getInstance(), "end")
+            .onCall(0)
+            .callsFake(callback => {
+                callback();
+            });
+
+        try {
+            await instance.query(["SELECT * FROM users", "SELECT FOUND_ROWS() as count"]);
+        } catch (e) {
+            return;
+        } finally {
+            queryStub.restore();
+            endConnectionStub.restore();
+        }
+
+        throw Error(`Error should've been thrown.`);
+    });
+
+    it("should correctly execute more than one SQL query using pool of connections", async () => {
         const instance = new MySQLConnection(mysql.createPool({}));
 
         const getConnectionStub = sandbox
@@ -91,6 +147,31 @@ describe("mysql connection test", async function() {
 
         getConnectionStub.restore();
         queryWithConnectionStub.restore();
+    });
+
+    it("should return an error when using a pool of connections", async () => {
+        const instance = new MySQLConnection(mysql.createPool({}));
+
+        const getConnectionStub = sandbox
+            .stub(instance.getInstance(), "getConnection")
+            .callsFake(callback =>
+                callback(null, {
+                    query: (sql, callback) => {
+                        return callback("Something went wrong.", null);
+                    },
+                    release: callback => {}
+                })
+            );
+
+        try {
+            await instance.query(["SELECT * FROM users", "SELECT FOUND_ROWS() as count"]);
+        } catch (e) {
+            return;
+        } finally {
+            getConnectionStub.restore();
+        }
+
+        throw Error(`Error should've been thrown.`);
     });
 
     it("should throw an error on connection error", async () => {
@@ -143,7 +224,9 @@ describe("mysql connection test", async function() {
     it("should correctly query using single connection", async () => {
         const instance = new MySQLConnection(mysql.createConnection({}));
 
-        const endStub = sandbox.stub(instance.getInstance(), "end").callsFake(_.noop);
+        const endStub = sandbox
+            .stub(instance.getInstance(), "end")
+            .callsFake(callback => callback());
         const queryStub = sandbox
             .stub(instance.getInstance(), "query")
             .callsFake((sql, callback) => {
@@ -157,13 +240,15 @@ describe("mysql connection test", async function() {
 
         expect(results.insertId).to.be.equal(1);
         expect(queryStub.callCount).to.equal(1);
-        expect(endStub.callCount).to.equal(1);
+        expect(endStub.callCount).to.equal(0);
     });
 
     it("should correctly more SQL queries using single connection", async () => {
         const instance = new MySQLConnection(mysql.createConnection({}));
 
-        const endStub = sandbox.stub(instance.getInstance(), "end").callsFake(_.noop);
+        const endStub = sandbox
+            .stub(instance.getInstance(), "end")
+            .callsFake(callback => callback());
         const queryStub = sandbox
             .stub(instance.getInstance(), "query")
             .onCall(0)
@@ -189,13 +274,15 @@ describe("mysql connection test", async function() {
         expect(results[1][0].count).to.be.equal(1);
 
         expect(queryStub.callCount).to.equal(2);
-        expect(endStub.callCount).to.equal(1);
+        expect(endStub.callCount).to.equal(0);
     });
 
     it("should throw an error on query error", async () => {
         const instance = new MySQLConnection(mysql.createConnection({}));
 
-        const endStub = sandbox.stub(instance.getInstance(), "end").callsFake(_.noop);
+        const endStub = sandbox
+            .stub(instance.getInstance(), "end")
+            .callsFake(callback => callback());
         const queryStub = sandbox
             .stub(instance.getInstance(), "query")
             .callsFake((sql, callback) => {
@@ -211,7 +298,7 @@ describe("mysql connection test", async function() {
             endStub.restore();
 
             expect(queryStub.callCount).to.equal(1);
-            expect(endStub.callCount).to.equal(1);
+            expect(endStub.callCount).to.equal(0);
         }
 
         throw Error(`Error should've been thrown.`);

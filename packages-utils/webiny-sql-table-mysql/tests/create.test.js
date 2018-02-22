@@ -1,13 +1,20 @@
-/*
-import {assert} from "chai";
-import {
-    UserTable, userTableSql
-} from "./tables";
+import { assert } from "chai";
+import { UserTable } from "./tables";
 
-describe("create table test", function () {
+describe("create table test", function() {
+    after(() => {
+        UserTable.getDriver()
+            .getConnection()
+            .getInstance()
+            .end();
+    });
+
     it("should create table correctly", async () => {
         const userTable = new UserTable();
-        assert.equal(await userTable.create(), userTableSql)
+        try {
+            await userTable.create();
+        } catch (e) {
+            await userTable.delete();
+        }
     });
 });
-*/

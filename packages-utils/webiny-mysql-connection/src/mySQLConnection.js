@@ -1,21 +1,16 @@
 // @flow
 import PoolClass from "mysql/lib/Pool";
 import ConnectionClass from "mysql/lib/Connection";
-import mysql from "mysql";
 
 class MySQLConnection {
     instance: PoolClass | ConnectionClass;
 
-    constructor(connection: PoolClass | ConnectionClass | Object) {
+    constructor(connection: PoolClass | ConnectionClass) {
         this.instance = connection;
         // We don't need to do anything, if an already created MySQL connection or pool instance was passed.
         // Otherwise, MySQL params were received, need to instantiate a new instance of connection or connection pool.
         if (!(this.isConnectionPool() || this.isConnection())) {
-            if (connection.pool) {
-                this.instance = mysql.createPool(connection);
-            } else {
-                this.instance = mysql.createConnection(connection);
-            }
+            throw Error("A valid MySQL connection or pool must be passed.");
         }
     }
 
@@ -32,7 +27,6 @@ class MySQLConnection {
     }
 
     query(sql: string | Array<any>): Promise<any> {
-        console.log(sql);
         let results: Array<mixed> = [],
             queries: Array<string> = sql instanceof Array ? sql : [sql];
 
@@ -44,27 +38,24 @@ class MySQLConnection {
                         return;
                     }
 
+                    // We don't need to do release manually because it is handled by the mysql lib already.
                     try {
                         results = await this.__executeQueriesWithConnection(connection, queries);
                     } catch (e) {
                         return reject(e);
-                    } finally {
-                        connection.release();
                     }
 
                     queries.length === 1 ? resolve(results[0]) : resolve(results);
                 });
             }
 
+            // We don't close the passed connection, because it might be used outside of the scope of entity.
             try {
                 results = await this.__executeQueriesWithConnection(this.getInstance(), queries);
+                queries.length === 1 ? resolve(results[0]) : resolve(results);
             } catch (e) {
-                return reject(e);
-            } finally {
-                this.getInstance().end();
+                reject(e);
             }
-
-            queries.length === 1 ? resolve(results[0]) : resolve(results);
         });
     }
 

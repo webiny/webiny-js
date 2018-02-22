@@ -1,5 +1,6 @@
 import { Table } from "webiny-sql-table";
 import { MySQLDriver } from "./../..";
+import mysql from "mysql";
 
 class MySQLTable extends Table {}
 
@@ -9,12 +10,12 @@ MySQLTable.setEngine("InnoDB")
 
 MySQLTable.setDriver(
     new MySQLDriver({
-        connection: {
+        connection: mysql.createConnection({
             host: "localhost",
             user: "root",
             password: "dev",
             database: "test1"
-        }
+        })
     })
 );
 
