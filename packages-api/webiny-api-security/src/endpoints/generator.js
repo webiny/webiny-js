@@ -28,10 +28,10 @@ export default (BaseEndpoint: Class<Endpoint>, config: Object, authentication: I
                             } catch (e) {
                                 const response = new ApiErrorResponse({}, e.message);
                                 if (e instanceof AuthenticationError) {
-                                    response.type = "WBY_INVALID_CREDENTIALS";
+                                    response.errorCode = "WBY_INVALID_CREDENTIALS";
                                     response.statusCode = 401;
                                 } else {
-                                    response.type = "WBY_INTERNAL_ERROR";
+                                    response.errorCode = "WBY_INTERNAL_ERROR";
                                     response.statusCode = 500;
                                 }
                                 return response;

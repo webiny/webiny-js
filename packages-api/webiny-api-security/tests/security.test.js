@@ -1,8 +1,9 @@
 import request from "supertest";
 import express from "express";
 import { expect } from "chai";
+import sinon from "sinon";
 import { MemoryDriver } from "webiny-entity-memory";
-import { middleware, endpointMiddleware, Entity } from "webiny-api";
+import api, { middleware, endpointMiddleware, Entity } from "webiny-api";
 import {
     authenticationMiddleware,
     authorizationMiddleware,
@@ -70,6 +71,8 @@ describe("Security test", () => {
                 ],
                 use: [
                     authenticationMiddleware({ token: req => req.get("Api-Token") }),
+                    // Create a second middleware which should do the same thing but using a fixed header name
+                    authenticationMiddleware({ token: "Api-Token" }),
                     endpointMiddleware({
                         beforeApiMethod: [authorizationMiddleware()]
                     })
@@ -87,12 +90,44 @@ describe("Security test", () => {
         return Promise.all([user.save(), company.save()]);
     });
 
-    it("should return error response", () => {
+    it("should return error response with WBY_NOT_AUTHENTICATED", () => {
         return request(app)
             .get("/security/auth/me")
             .expect(401)
             .then(({ body }) => {
                 expect(body).to.have.property("code", "WBY_NOT_AUTHENTICATED");
+            });
+    });
+
+    it("should return error response with WBY_INVALID_CREDENTIALS", () => {
+        return request(app)
+            .post("/security/auth/login-user")
+            .query({ _fields: "id,username" })
+            .send({ username: "admin@webiny.com", password: "wrong" })
+            .expect(401)
+            .then(({ body }) => {
+                expect(body).to.have.property("code", "WBY_INVALID_CREDENTIALS");
+            });
+    });
+
+    it("should return error response with WBY_INTERNAL_ERROR", () => {
+        const authService = api.serviceManager.get("Authentication");
+        sinon.stub(authService, "authenticate").callsFake(() => {
+            return {
+                promise: () => {
+                    return Promise.reject(new Error("Arbitrary error"));
+                }
+            };
+        });
+
+        return request(app)
+            .post("/security/auth/login-user")
+            .query({ _fields: "id,username" })
+            .send({ username: "admin@webiny.com", password: "wrong" })
+            .expect(500)
+            .then(({ body }) => {
+                expect(body).to.have.property("code", "WBY_INTERNAL_ERROR");
+                authService.authenticate.restore();
             });
     });
 

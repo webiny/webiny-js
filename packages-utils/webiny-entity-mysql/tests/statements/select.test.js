@@ -16,7 +16,7 @@ describe("SELECT statement test", function() {
         let sql = new Select(params).generate();
         assert.equal(
             sql,
-            `SELECT * FROM TestTable WHERE (name = 'Test' AND enabled = true AND deletedOn IS NULL) ORDER BY name DESC, createdOn ASC LIMIT 10`
+            "SELECT * FROM `TestTable` WHERE (name = 'Test' AND enabled = true AND deletedOn IS NULL) ORDER BY name DESC, createdOn ASC LIMIT 10"
         );
 
         params.columns = ["name", "enabled"];
@@ -24,7 +24,7 @@ describe("SELECT statement test", function() {
 
         assert.equal(
             sql,
-            `SELECT name, enabled FROM TestTable WHERE (name = 'Test' AND enabled = true AND deletedOn IS NULL) ORDER BY name DESC, createdOn ASC LIMIT 10`
+            "SELECT name, enabled FROM `TestTable` WHERE (name = 'Test' AND enabled = true AND deletedOn IS NULL) ORDER BY name DESC, createdOn ASC LIMIT 10"
         );
     });
 });

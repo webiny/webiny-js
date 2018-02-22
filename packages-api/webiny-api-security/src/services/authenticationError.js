@@ -9,7 +9,7 @@ class AuthenticationError extends Error {
     type: string;
     data: Object;
 
-    constructor(message: string = "", type: string = "", data: Object = {}) {
+    constructor(message: string, type: string, data: Object = {}) {
         super();
         this.name = "AuthenticationError";
         this.message = message;

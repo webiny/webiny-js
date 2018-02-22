@@ -20,7 +20,7 @@ class KeyIndex extends Index {
         }
 
         if (this.getName()) {
-            sql += ` ${this.getName()}`;
+            sql += ` \`${this.getName()}\``;
         }
 
         sql += ` (${columns})`;

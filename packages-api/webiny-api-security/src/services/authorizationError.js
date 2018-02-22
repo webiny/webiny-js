@@ -3,7 +3,7 @@ class AuthorizationError extends Error {
     static NOT_AUTHORIZED: string;
     type: string;
 
-    constructor(message: string = "", type: string = "") {
+    constructor(message: string, type: string) {
         super();
         this.name = "AuthorizationError";
         this.message = message;

@@ -1,6 +1,6 @@
-declare type OrderTuple = [string, number];
+export type OrderTuple = [string, number];
 
-declare type EntityFindParams = {
+export type EntityFindParams = {
     query?: Object,
     page?: number,
     perPage?: number,
@@ -8,12 +8,12 @@ declare type EntityFindParams = {
     includeDeleted?: boolean
 };
 
-declare type EntityFindOneParams = {
+export type EntityFindOneParams = {
     query?: Object,
     includeDeleted?: boolean
 };
 
-declare type EntitySaveParams = {
+export type EntitySaveParams = {
     validation?: boolean,
     events?: {
         save?: boolean,
@@ -26,7 +26,7 @@ declare type EntitySaveParams = {
     }
 };
 
-declare type EntityDeleteParams = {
+export type EntityDeleteParams = {
     validation?: boolean,
     events?: {
         delete?: boolean,

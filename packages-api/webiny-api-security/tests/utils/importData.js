@@ -45,12 +45,20 @@ export default memoryDriver => {
         }
     ]);
 
-    // TODO: finish this in Identity class
     memoryDriver.import("Security.RoleGroup", [
         {
             id: "roleGroup1",
             name: "roleGroup1",
             slug: "roleGroup1",
+            deleted: false
+        }
+    ]);
+
+    memoryDriver.import("Security.Identity2RoleGroup", [
+        {
+            id: "1",
+            identity: "MyUser:user1",
+            roleGroup: "roleGroup1",
             deleted: false
         }
     ]);

@@ -1,3 +1,4 @@
+// @flow
 import { Entity } from "webiny-api";
 import { MemoryDriver } from "webiny-entity-memory";
 import { EntityCollection } from "webiny-entity";
@@ -13,7 +14,7 @@ import AuthorizationError from "../src/services/authorizationError";
 const { expect } = chai;
 
 describe("Authorization test", () => {
-    let auth: Authorization = null;
+    let auth: Authorization;
 
     before(() => {
         // Create Authentication service
@@ -34,7 +35,7 @@ describe("Authorization test", () => {
     it("should return a collection of roles", async () => {
         let user = await MyUser.findById("user1");
         const roles = await user.getRoles();
-        expect(roles).to.be.instanceof(EntityCollection);
+        expect(roles).to.be.instanceof(Array);
     });
 
     it("should return a collection of permissions", async () => {
@@ -67,5 +68,12 @@ describe("Authorization test", () => {
             expect(auth.canExecute(apiMethod5, user)).to.be.fulfilled,
             expect(auth.canExecute(apiMethod2, user)).to.be.rejectedWith(AuthorizationError)
         ]);
+    });
+
+    it("should throw if passed an invalid `authorizable`", async () => {
+        const endpoint1 = new Class1();
+        const apiMethod1 = endpoint1.getApi().getMethod("method1");
+        // $FlowIgnore
+        expect(auth.canExecute(apiMethod1, false)).to.be.rejectedWith(AuthorizationError);
     });
 });

@@ -1,0 +1,183 @@
+// https://codesandbox.io/s/1874okpm5l
+
+import React from "react";
+import { render } from "react-dom";
+
+const View = () => {
+    return (
+        <div className="container">
+            <Form>
+                <Input label="Email" name="email" />
+                <Input
+                    label="City"
+                    name="city"
+                    renderLabel={function() {
+                        return <label>[Custom] {this.props.label}</label>;
+                    }}
+                />
+            </Form>
+        </div>
+    );
+};
+
+class Form extends React.Component {
+    constructor() {
+        super();
+        this.inputs = {};
+        this.state = {
+            model: {}
+        };
+    }
+
+    render() {
+        return React.Children.map(this.props.children, child => {
+            return React.cloneElement(child, {
+                validateInput(component) {
+                    console.log("Validate", component.props.name);
+                    if (component.props.name === "city") {
+                        component.setState({
+                            isValid: false,
+                            validationMessage: "Something is wrong",
+                            validationResults: false
+                        });
+                        return Promise.resolve(false);
+                    }
+                    return Promise.resolve(true);
+                }
+            });
+        });
+    }
+}
+
+// Webiny Form component
+class FormComponent extends React.Component {
+    constructor() {
+        super();
+        this.component = null;
+    }
+
+    componentWillUnmount() {
+        if (this.props.detachFromForm) {
+            this.props.detachFromForm(this.component);
+        }
+    }
+
+    render() {
+        const $this = this;
+        const props = { ...this.props };
+        return React.cloneElement(this.props.children, {
+            showValidationMessage: true,
+            renderLabel() {
+                return <label>{this.props.label}</label>;
+            },
+            renderValidationMessage() {
+                let success = false;
+                const { state } = this;
+                console.log(state);
+                if (state.isValid === true || state.isValid === null) {
+                    success = true;
+                }
+
+                if (!this.props.showValidationMessage) {
+                    return null;
+                }
+
+                return success ? null : <span>{state.validationMessage}</span>;
+            },
+            // a generic validation function
+            validate() {
+                return this.props.validateInput(this);
+            },
+            ...props,
+            attachToForm(instance) {
+                $this.component = instance;
+                props.attachForm && props.attachToForm(instance);
+            }
+        });
+    }
+}
+
+function createFormComponent(BaseComponent) {
+    return props => {
+        return (
+            <FormComponent {...props}>
+                <BaseComponent />
+            </FormComponent>
+        );
+    };
+}
+
+// Creating custom components
+// import { createComponent, createFormComponent } from "webiny-client";
+// import { i18n, I18n} from "webiny-i18n/lib/client";
+
+class InputComponent extends React.Component {
+    constructor() {
+        super();
+        this.state = {
+            isValid: null
+        };
+    }
+    componentWillMount() {
+        this.props.attachToForm(this);
+    }
+    render() {
+        return (
+            <div className="form-group">
+                {this.props.renderLabel.call(this)}
+                <input className="form-control" value={this.props.name} />
+                <button onClick={this.props.validate.bind(this)}>Validate</button>
+                {this.props.renderValidationMessage.call(this)}
+            </div>
+        );
+    }
+}
+
+export class InputComponent;
+export default createFormComponent(InputComponent, { modules: ['Icon', {data: () => Promise.resolve(true)}]});
+
+
+
+/**
+ * For testing:
+ * - always export a named class and a default export which is a Webiny component
+ * - dependencies need to be mocked or imported manually
+ * - styles object needs to be proxied to return the name of the class
+ */
+render(<View />, document.getElementById("root"));
+
+const render = (Cmp) => { };
+
+import { Icon } from "webiny-ui/lib/components/Icon";
+
+render(<Input Icon={null} />)
+
+
+/** Composition */
+import { FormComponent, ApiComponent, OptionComponent} from "webiny-client";
+import { Model } from "webiny-client";
+
+class Select {}
+
+export default createComponent([Select, ApiComponent, FormComponent, OptionComponent], {modules: {}})
+
+<Select api="/cars" name="cars"/>
+
+    <ComponentWrapper>
+    <ApiComponent>
+    <FormComponent>
+    <OptionComponent>
+    <Select/>
+    </OptionComponent>
+</FormComponent>
+</ApiComponent>
+</ComponentWrapper>
+
+const apiMock = new ApiMock({
+    get() {
+    return {deleted: true}
+},
+    delete() {
+    return {data: true};
+}
+});
