@@ -18,24 +18,24 @@ export default table => {
     output += `\n)`;
 
     // Table options.
-    if (table.engine) {
-        output += ` ENGINE=${table.engine}`;
+    if (table.getEngine()) {
+        output += ` ENGINE=${table.getEngine()}`;
     }
 
-    if (table.autoIncrement) {
-        output += ` AUTO_INCREMENT=${table.autoIncrement}`;
+    if (table.getAutoIncrement()) {
+        output += ` AUTO_INCREMENT=${table.getAutoIncrement()}`;
     }
 
-    if (table.defaultCharset) {
-        output += ` DEFAULT CHARSET=${table.defaultCharset}`;
+    if (table.getDefaultCharset()) {
+        output += ` DEFAULT CHARSET=${table.getDefaultCharset()}`;
     }
 
-    if (table.collate) {
-        output += ` COLLATE=${table.collate}`;
+    if (table.getCollate()) {
+        output += ` COLLATE=${table.getCollate()}`;
     }
 
-    if (table.comment) {
-        output += ` COMMENT='${table.comment}'`;
+    if (table.getComment()) {
+        output += ` COMMENT='${table.getComment()}'`;
     }
 
     return output;

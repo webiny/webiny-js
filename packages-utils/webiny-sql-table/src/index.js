@@ -25,6 +25,9 @@ class Index {
          * @type {number}
          */
         this.columns = columns;
+        if (!this.columns.length) {
+            throw Error(`Columns not defined for index "${this.name}".`);
+        }
     }
 
     /**

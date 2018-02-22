@@ -132,6 +132,10 @@ class Table {
         return this.engine;
     }
 
+    getEngine() {
+        return this.constructor.engine;
+    }
+
     static setDefaultCharset(defaultCharset) {
         this.defaultCharset = defaultCharset;
         return this;
@@ -141,6 +145,10 @@ class Table {
         return this.defaultCharset;
     }
 
+    getDefaultCharset() {
+        return this.constructor.defaultCharset;
+    }
+
     static setCollate(collate) {
         this.collate = collate;
         return this;
@@ -148,6 +156,10 @@ class Table {
 
     static getCollate() {
         return this.collate;
+    }
+
+    getCollate() {
+        return this.constructor.collate;
     }
 
     static setName(name) {

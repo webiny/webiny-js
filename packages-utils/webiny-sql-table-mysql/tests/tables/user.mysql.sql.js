@@ -4,4 +4,4 @@ export default `CREATE TABLE \`Users\` (
 	\`type\` enum('IT', 'Marketing', 'Animals'),
 	\`createdOn\` datetime,
 	PRIMARY KEY (\`id\`)
-)`;
+) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Main Users table...'`;

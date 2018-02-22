@@ -1,5 +1,5 @@
 export default {
-    autoIncrement: null,
+    autoIncrement: 1000,
     name: "Users",
     comment: "Main Users table...",
     engine: "InnoDB",

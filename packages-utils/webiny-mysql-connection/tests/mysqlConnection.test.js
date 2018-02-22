@@ -9,7 +9,7 @@ const sandbox = sinon.sandbox.create();
 describe("mysql connection test", async function() {
     afterEach(() => sandbox.restore());
 
-    it("should correctly differentiate between instances of pool, connection or plain object with connection options", async () => {
+    it("should correctly differentiate between instances of pool, connection", async () => {
         const instance1 = new MySQLConnection(mysql.createPool({}));
         expect(instance1.isConnectionPool()).to.equal(true);
         expect(instance1.isConnection()).to.equal(false);
@@ -17,6 +17,15 @@ describe("mysql connection test", async function() {
         const instance2 = new MySQLConnection(mysql.createConnection({}));
         expect(instance2.isConnectionPool()).to.equal(false);
         expect(instance2.isConnection()).to.equal(true);
+    });
+
+    it("should not accept other than Connection / Pool instances as connection argument", async () => {
+        try {
+            const instance = new MySQLConnection({});
+        } catch (e) {
+            return;
+        }
+        throw Error(`Error should've been thrown.`);
     });
 
     it("should correctly query using pool of connections", async () => {

@@ -1,5 +1,5 @@
 export default {
-    autoIncrement: null,
+    autoIncrement: 1000,
     name: "Completes",
     comment: "Main Completes table...",
     engine: "InnoDB",
