@@ -2,7 +2,7 @@ import execa from "execa";
 
 export default () => {
     return async ({ logger, config }, next) => {
-        if (config.dryRun) {
+        if (config.preview) {
             return next();
         }
 

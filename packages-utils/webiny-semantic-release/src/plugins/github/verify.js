@@ -5,7 +5,7 @@ import GitHubApi from "@octokit/rest";
 
 export default () => {
     return async ({ logger, config }, next) => {
-        if (config.dryRun) {
+        if (config.preview) {
             return next();
         }
 

@@ -24,7 +24,7 @@ export default () => {
                 body: pkg.releaseNotes
             };
 
-            if (config.dryRun) {
+            if (config.preview) {
                 logger.log(
                     "GitHub release data for %s:\n%s",
                     pkg.name,
