@@ -10,12 +10,7 @@ MySQLTable.setEngine("InnoDB")
 
 MySQLTable.setDriver(
     new MySQLDriver({
-        connection: mysql.createConnection({
-            host: "localhost",
-            user: "root",
-            password: "dev",
-            database: "test1"
-        })
+        connection: mysql.createConnection({})
     })
 );
 
