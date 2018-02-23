@@ -1,0 +1,39 @@
+import { assert } from "chai";
+import { UserTable, Table } from "./tables";
+import sinon from "sinon";
+import mysql from "mysql";
+import { Table as BaseTable } from "webiny-sql-table";
+import { MySQLDriver } from "./..";
+
+const sandbox = sinon.sandbox.create();
+
+describe("drop table test", function() {
+    afterEach(() => {
+        sandbox.restore();
+    });
+
+    it("should drop table correctly", async () => {
+        const userTable = new UserTable();
+
+        const sqlQueries = {
+            drop: ""
+        };
+
+        const dropStub = sandbox.stub(userTable.getDriver().getMySQL(), "query").callsFake(sql => {
+            sqlQueries.drop = sql;
+        });
+
+        await userTable.drop();
+        dropStub.restore();
+
+        assert.deepEqual(sqlQueries, {
+            drop: "DROP TABLE `Users`"
+        });
+    });
+
+    it("should return only SQL when setting returnSQL option to true", async () => {
+        const userTable = new UserTable();
+        const sql = await userTable.drop({ returnSQL: true });
+        assert.equal(sql, "DROP TABLE `Users`");
+    });
+});

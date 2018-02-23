@@ -21,7 +21,7 @@ describe("create table test", function() {
         };
 
         const createStub = sandbox
-            .stub(userTable.getDriver().getConnection(), "query")
+            .stub(userTable.getDriver().getMySQL(), "query")
             .onCall(0)
             .callsFake(sql => {
                 sqlQueries.create = sql;
@@ -32,7 +32,7 @@ describe("create table test", function() {
             });
 
         await userTable.create();
-        await userTable.delete();
+        await userTable.drop();
         createStub.restore();
 
         console.log(sqlQueries.create);
@@ -48,7 +48,7 @@ describe("create table test", function() {
 
         MySQLTable.setDriver(
             new MySQLDriver({
-                connection: mysql.createConnection({})
+                mySQL: mysql.createConnection({})
             })
         );
 
@@ -61,7 +61,7 @@ describe("create table test", function() {
         };
 
         const createStub = sandbox
-            .stub(blankTable.getDriver().getConnection(), "query")
+            .stub(blankTable.getDriver().getMySQL(), "query")
             .onCall(0)
             .callsFake(sql => {
                 sqlQueries.create = sql;
@@ -72,13 +72,27 @@ describe("create table test", function() {
             });
 
         await blankTable.create();
-        await blankTable.delete();
+        await blankTable.drop();
         createStub.restore();
 
-        console.log(sqlQueries.create);
         assert.deepEqual(sqlQueries, {
             create: "CREATE TABLE `blankTable` (\n\n)",
             drop: "DROP TABLE `blankTable`"
         });
+    });
+
+    it("should return only SQL when setting returnSQL option to true", async () => {
+        const userTable = new UserTable();
+        const sql = await userTable.create({ returnSQL: true });
+        assert.equal(
+            "CREATE TABLE `Users` (\n" +
+                "\t`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,\n" +
+                "\t`name` varchar(100),\n" +
+                "\t`type` enum('IT', 'Marketing', 'Animals'),\n" +
+                "\t`createdOn` datetime,\n" +
+                "\tPRIMARY KEY (`id`)\n" +
+                ") ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Main Users table...'",
+            sql
+        );
     });
 });

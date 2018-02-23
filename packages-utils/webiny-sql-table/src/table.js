@@ -1,30 +1,23 @@
+// @flow
 import ColumnsContainer from "./columnsContainer";
 import IndexesContainer from "./indexesContainer";
 import Column from "./column";
 import Index from "./index";
 import Driver from "./driver";
+import type { CommandOptions } from "../types";
 
 class Table {
-    static engine: string;
-    static tableName: string;
-    static defaultCharset: string;
-    static collate: string;
+    static engine: ?string;
+    static tableName: ?string;
+    static defaultCharset: ?string;
+    static collate: ?string;
     static comment: ?string;
     static autoIncrement: ?number;
-    columns: { [string]: Column };
-    indexes: { [string]: Index };
+    static driver: Driver;
     columnsContainer: ColumnsContainer;
     indexesContainer: IndexesContainer;
 
     constructor() {
-        this.engine = null;
-        this.tableName = null;
-        this.defaultCharset = null;
-        this.collate = null;
-        this.comment = null;
-        this.autoIncrement = null;
-        this.columns = {};
-        this.indexes = {};
         this.columnsContainer = this.createColumnsContainer();
         this.indexesContainer = this.createIndexesContainer();
     }
@@ -59,12 +52,7 @@ class Table {
         return this.getColumnsContainer().getColumn(name);
     }
 
-    setColumn(name: string, column: Column): this {
-        this.columns[name] = column;
-        return this;
-    }
-
-    getColumns(): { [string]: Column } {
+    getColumns(): Array<Column> {
         return this.getColumnsContainer().getColumns();
     }
 
@@ -72,16 +60,11 @@ class Table {
         return this.getIndexesContainer().getIndex(name);
     }
 
-    setIndex(name: string, index: Index): this {
-        this.indexes[name] = index;
-        return this;
-    }
-
-    getIndexes(): { [string]: Index } {
+    getIndexes(): Array<Index> {
         return this.getIndexesContainer().getIndexes();
     }
 
-    toObject(): { [string]: {} } {
+    toObject(): {} {
         const json = {
             autoIncrement: this.constructor.getAutoIncrement(),
             name: this.constructor.getName(),
@@ -104,87 +87,94 @@ class Table {
         return json;
     }
 
-    static setDriver(driver): this {
+    /**
+     * Sets table driver.
+     * @param driver
+     * @returns {Table}
+     */
+    static setDriver(driver: Driver): Class<Table> {
         this.driver = driver;
         return this;
     }
 
     /**
-     * Returns instance of set driver.
+     * Returns set driver.
+     * @returns {Driver}
      */
     static getDriver(): Driver {
         return this.driver;
     }
 
     /**
-     * Returns instance of set driver.
+     * Returns set driver.
+     * @returns {Driver}
      */
     getDriver(): Driver {
         return this.constructor.driver;
     }
 
-    static setEngine(value) {
+    static setEngine(value: string): Class<Table> {
         this.engine = value;
         return this;
     }
 
-    static getEngine() {
+    static getEngine(): ?string {
         return this.engine;
     }
 
-    getEngine() {
+    getEngine(): ?string {
         return this.constructor.engine;
     }
 
-    static setDefaultCharset(defaultCharset) {
+    static setDefaultCharset(defaultCharset: string): Class<Table> {
         this.defaultCharset = defaultCharset;
         return this;
     }
 
-    static getDefaultCharset() {
+    static getDefaultCharset(): ?string {
         return this.defaultCharset;
     }
 
-    getDefaultCharset() {
+    getDefaultCharset(): ?string {
         return this.constructor.defaultCharset;
     }
 
-    static setCollate(collate) {
+    static setCollate(collate: string): Class<Table> {
         this.collate = collate;
         return this;
     }
 
-    static getCollate() {
+    static getCollate(): ?string {
         return this.collate;
     }
 
-    getCollate() {
+    getCollate(): ?string {
         return this.constructor.collate;
     }
 
-    static setName(name) {
+    static setName(name: string): Class<Table> {
         this.tableName = name;
         return this;
     }
 
-    static getName() {
+    static getName(): ?string {
         return this.tableName;
     }
 
-    getName() {
+    getName(): ?string {
         return this.constructor.getName();
     }
 
-    static setComment(comment) {
+    static setComment(comment: string): Class<Table> {
         this.comment = comment;
         return this;
     }
 
-    static getComment() {
+    static getComment(): ?string {
         return this.comment;
     }
 
-    getComment() {
+    getComment(): ?string {
         return this.constructor.getComment();
     }
 
@@ -193,39 +183,48 @@ class Table {
         return this;
     }
 
-    static getAutoIncrement() {
+    static getAutoIncrement(): ?number {
         return this.autoIncrement;
     }
 
-    getAutoIncrement() {
+    getAutoIncrement(): ?number {
         return this.constructor.getAutoIncrement();
     }
 
-    async create() {
-        return this.getDriver().create(this);
-    }
-
-    async update() {
-        return this.getDriver().update(this);
-    }
-
-    async exists() {
-        return this.getDriver().exists(this);
-    }
-
-    async sync() {
-        if (await this.exists()) {
-            return this.update(this);
+    async create(options: CommandOptions = {}): Promise<mixed> {
+        const sql = this.getDriver().create(this, options);
+        if (options.returnSQL) {
+            return sql;
         }
-        return this.create(this);
+
+        return this.getDriver().execute(sql);
     }
 
-    async delete() {
-        return this.getDriver().delete(this);
+    async alter(options: CommandOptions = {}): Promise<mixed> {
+        const sql = this.getDriver().alter(this, options);
+        if (options.returnSQL) {
+            return sql;
+        }
+
+        return this.getDriver().execute(sql);
     }
 
-    async empty() {
-        return this.getDriver().empty(this);
+    async drop(options: CommandOptions = {}): Promise<mixed> {
+        const sql = this.getDriver().drop(this, options);
+        if (options.returnSQL) {
+            return sql;
+        }
+
+        return this.getDriver().execute(sql);
+    }
+
+    async truncate(options: CommandOptions = {}): Promise<mixed> {
+        const sql = this.getDriver().truncate(this, options);
+        if (options.returnSQL) {
+            return sql;
+        }
+
+        return this.getDriver().execute(sql);
     }
 }
 
@@ -235,7 +234,6 @@ Table.defaultCharset = null;
 Table.collate = null;
 Table.comment = null;
 Table.autoIncrement = null;
-
-Table.setDriver(new Driver());
+Table.driver = new Driver();
 
 export default Table;

@@ -5,13 +5,12 @@ import ConnectionClass from "mysql/lib/Connection";
 class MySQLConnection {
     instance: PoolClass | ConnectionClass;
 
-    constructor(connection: PoolClass | ConnectionClass) {
-        this.instance = connection;
-        // We don't need to do anything, if an already created MySQL connection or pool instance was passed.
-        // Otherwise, MySQL params were received, need to instantiate a new instance of connection or connection pool.
-        if (!(this.isConnectionPool() || this.isConnection())) {
-            throw Error("A valid MySQL connection or pool must be passed.");
-        }
+    constructor(instance: PoolClass | ConnectionClass) {
+        // Will throw an error if an invalid instance was passed.
+        this.constructor.validateMySQLInstance(instance);
+
+        // If everything went okay, let's assign and continue.
+        this.instance = instance;
     }
 
     getInstance(): PoolClass | ConnectionClass {
@@ -24,6 +23,13 @@ class MySQLConnection {
 
     isConnection(): boolean {
         return this.getInstance() instanceof ConnectionClass;
+    }
+
+    static validateMySQLInstance(instance: mixed): void {
+        if (instance instanceof PoolClass || instance instanceof ConnectionClass) {
+            return;
+        }
+        throw Error("A valid MySQL connection or pool must be passed.");
     }
 
     query(sql: string | Array<any>): Promise<any> {

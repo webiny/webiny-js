@@ -1,4 +1,7 @@
-export default table => {
+// @flow
+import type { Table } from "webiny-sql-table";
+
+export default (table: Table): string => {
     const columns = [];
     table.getColumns().forEach(column => {
         columns.push(column.getSQLValue());

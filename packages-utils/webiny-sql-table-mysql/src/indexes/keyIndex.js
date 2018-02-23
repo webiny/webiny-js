@@ -8,21 +8,14 @@ class KeyIndex extends Index {
 
     getSQLValue() {
         let columns = this.getColumns();
-        if (Array.isArray(columns) && columns.length) {
-            columns = columns.map(item => `\`${item}\``).join(", ");
-        } else {
-            columns = `\`${this.getName()}\``;
-        }
+        columns = columns.map(item => `\`${item}\``).join(", ");
 
         let sql = "KEY";
         if (this.getType()) {
             sql = this.getType() + " KEY";
         }
 
-        if (this.getName()) {
-            sql += ` \`${this.getName()}\``;
-        }
-
+        sql += ` \`${this.getName()}\``;
         sql += ` (${columns})`;
         return sql;
     }

@@ -3,19 +3,26 @@ import ColumnsContainer from "./columnsContainer";
 import IndexesContainer from "./indexesContainer";
 import { Driver, Table } from "webiny-sql-table";
 import { MySQLConnection } from "webiny-mysql-connection";
-import { createTable, alterTable, truncateTable, dropTable, tableExists } from "./sql";
-import type { Connection, ConnectionOptions, Pool } from "mysql";
-
-declare type MySQLDriverOptions = {
-    connection: Connection | Pool | ConnectionOptions
-};
+import { createTable, alterTable, truncateTable, dropTable } from "./sql";
+import { MySQLDriverOptions, MySQL } from "./../types";
+import type { CommandOptions } from "webiny-sql-table/types";
 
 class MySQLDriver extends Driver {
-    connection: Connection | Pool | ConnectionOptions;
+    mySQL: ?MySQLConnection;
 
     constructor(options: MySQLDriverOptions) {
         super();
-        this.connection = new MySQLConnection(options.connection);
+        this.mySQL = null;
+        options.mySQL && this.setMySQL(options.mySQL);
+    }
+
+    getMySQL(): MySQL {
+        return this.mySQL;
+    }
+
+    setMySQL(mySQL: MySQL): MySQLDriver {
+        this.mySQL = new MySQLConnection(mySQL);
+        return this;
     }
 
     getColumnsClass(): Class<ColumnsContainer> {
@@ -26,29 +33,31 @@ class MySQLDriver extends Driver {
         return IndexesContainer;
     }
 
-    async create(table: Table) {
-        const sql = createTable(table);
-        return await this.getConnection().query(sql);
+    // eslint-disable-next-line
+    create(table: Table, options: CommandOptions): string {
+        return createTable(table);
     }
 
-    async update(table: Table) {
-        const sql = alterTable(table);
-        return await this.getConnection().query(sql);
+    // eslint-disable-next-line
+    alter(table: Table, options: CommandOptions): string {
+        return alterTable(table);
     }
 
-    async exists(table: Table): Promise<boolean> {
-        const sql = tableExists(table);
-        return await this.getConnection().query(sql);
+    // eslint-disable-next-line
+    drop(table: Table, options: CommandOptions): string {
+        return dropTable(table);
     }
 
-    async delete(table: Table) {
-        const sql = dropTable(table);
-        return await this.getConnection().query(sql);
+    // eslint-disable-next-line
+    truncate(table: Table, options: CommandOptions): string {
+        return truncateTable(table);
     }
 
-    async empty(table: Table) {
-        const sql = truncateTable(table);
-        return await this.getConnection().query(sql);
+    async execute(sql: string) {
+        if (!this.getMySQL()) {
+            throw Error("MySQL instance not set.");
+        }
+        return await this.getMySQL().query(sql);
     }
 }
 

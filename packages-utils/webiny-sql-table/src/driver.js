@@ -1,14 +1,10 @@
 // @flow
 import ColumnsContainer from "./columnsContainer";
 import IndexesContainer from "./indexesContainer";
+import type { CommandOptions } from "../types";
+import type Table from "./table";
 
 class Driver {
-    connection: mixed;
-
-    constructor() {
-        this.connection = null;
-    }
-
     getColumnsClass(): Class<ColumnsContainer> {
         return ColumnsContainer;
     }
@@ -17,31 +13,28 @@ class Driver {
         return IndexesContainer;
     }
 
-    getConnection(): mixed {
-        return this.connection;
+    // eslint-disable-next-line
+    create(table: Table, options: CommandOptions): string {
+        return "";
     }
 
-    create() {
-        return null;
+    // eslint-disable-next-line
+    alter(table: Table, options: CommandOptions): string {
+        return "";
     }
 
-    update() {
-        return null;
+    // eslint-disable-next-line
+    drop(table: Table, options: CommandOptions): string {
+        return "";
     }
 
-    exists() {
-        return null;
+    // eslint-disable-next-line
+    truncate(table: Table, options: CommandOptions): string {
+        return "";
     }
 
-    sync() {
-        return null;
-    }
-
-    delete() {
-        return null;
-    }
-
-    empty() {
+    // eslint-disable-next-line
+    async execute(sql: string): Promise<mixed> {
         return null;
     }
 }

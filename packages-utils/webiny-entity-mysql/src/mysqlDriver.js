@@ -3,7 +3,7 @@ import _ from "lodash";
 import { Entity, Driver, QueryResult } from "webiny-entity";
 import { Insert, Update, Delete, Select } from "./statements";
 import { MySQLModel } from "./model";
-import type { Connection, ConnectionOptions, Pool } from "mysql";
+import type { Connection, Pool } from "mysql";
 import { MySQLConnection } from "webiny-mysql-connection";
 import {
     EntitySaveParams,
@@ -13,7 +13,7 @@ import {
 } from "webiny-entity/types";
 
 declare type MySQLDriverOptions = {
-    connection: Connection | Pool | ConnectionOptions,
+    connection: Connection | Pool,
     model: Class<MySQLModel>,
     id: { attribute?: Function, value?: Function },
     tables: {
