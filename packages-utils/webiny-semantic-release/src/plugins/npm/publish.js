@@ -15,7 +15,7 @@ export default () => {
                 pkg.name,
                 pkg.nextRelease.version
             );
-            if (config.dryRun) {
+            if (config.preview) {
                 logger.log(`DRY: %s`, `npm publish ${pkg.location}`);
                 logger.log(`DRY: package.json\n%s`, JSON.stringify(pkg.packageJSON, null, 2));
             } else {

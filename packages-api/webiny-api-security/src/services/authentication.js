@@ -35,7 +35,11 @@ class Authentication implements IAuthentication {
         let identity = this.getIdentityClass(decoded.data.classId);
 
         if (!identity) {
-            throw new AuthenticationError("Unknown identity", AuthenticationError.UNKNOWN_IDENTITY);
+            throw new AuthenticationError(
+                "Unknown identity",
+                AuthenticationError.UNKNOWN_IDENTITY,
+                { classId: decoded.data.classId }
+            );
         }
 
         const identityId = decoded.data.identityId;
@@ -67,7 +71,8 @@ class Authentication implements IAuthentication {
             return Promise.reject(
                 new AuthenticationError(
                     `Strategy "${strategy}" not found!`,
-                    AuthenticationError.UNKNOWN_STRATEGY
+                    AuthenticationError.UNKNOWN_STRATEGY,
+                    { strategy }
                 )
             );
         }

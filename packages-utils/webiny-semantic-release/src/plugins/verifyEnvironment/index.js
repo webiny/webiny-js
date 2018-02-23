@@ -6,11 +6,11 @@ export default () => {
     return async ({ packages, config, logger }, next, finish) => {
         const { isCi, branch, isPr } = envCi();
 
-        if (!isCi && !config.dryRun && config.ci) {
+        if (!isCi && !config.preview && config.ci) {
             logger.log(
                 "This run was not triggered in a known CI environment, running in dry-run mode."
             );
-            config.dryRun = true;
+            config.preview = true;
         }
 
         if (isCi && isPr && config.ci) {

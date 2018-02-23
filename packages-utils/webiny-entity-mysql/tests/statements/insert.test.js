@@ -9,7 +9,7 @@ describe("INSERT statement test", function() {
             data: { name: "Test", enabled: 1 }
         }).generate();
 
-        assert.equal(sql, `INSERT INTO TestTable (name, enabled) VALUES ('Test', 1)`);
+        assert.equal(sql, "INSERT INTO `TestTable` (name, enabled) VALUES ('Test', 1)");
     });
 
     it("should generate an INSERT statement and preserve false in query", async () => {
@@ -19,7 +19,7 @@ describe("INSERT statement test", function() {
             data: { name: "Test", enabled: false }
         }).generate();
 
-        assert.equal(sql, `INSERT INTO TestTable (name, enabled) VALUES ('Test', false)`);
+        assert.equal(sql, "INSERT INTO `TestTable` (name, enabled) VALUES ('Test', false)");
     });
 
     it('should generate an INSERT statement with ON DUPLICATE KEY UPDATE (aka "UPSERT")', async () => {
@@ -32,7 +32,7 @@ describe("INSERT statement test", function() {
 
         assert.equal(
             sql,
-            `INSERT INTO TestTable (name, enabled) VALUES ('Test', false) ON DUPLICATE KEY UPDATE name = 'Test', enabled = false`
+            "INSERT INTO `TestTable` (name, enabled) VALUES ('Test', false) ON DUPLICATE KEY UPDATE name = 'Test', enabled = false"
         );
     });
 });

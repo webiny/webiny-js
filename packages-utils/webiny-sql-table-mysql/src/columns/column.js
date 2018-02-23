@@ -82,7 +82,7 @@ class Column extends BaseColumn {
     /**
      * Sets default column value.
      */
-    setDefault(defaultValue: string | number | null): this {
+    setDefault(defaultValue: string | number | null): Column {
         this.default = defaultValue;
         return this;
     }
@@ -98,7 +98,7 @@ class Column extends BaseColumn {
         return typeof this.default !== "undefined";
     }
 
-    setNotNull(notNull: boolean = true): this {
+    setNotNull(notNull: boolean = true): Column {
         this.notNull = notNull;
         return this;
     }
@@ -107,7 +107,7 @@ class Column extends BaseColumn {
         return this.notNull;
     }
 
-    setArguments(receivedArguments: Array<string | number> = []): this {
+    setArguments(receivedArguments: Array<string | number> = []): Column {
         this.arguments = receivedArguments;
         return this;
     }
@@ -120,7 +120,7 @@ class Column extends BaseColumn {
         return Array.isArray(this.arguments) && this.arguments.length > 0;
     }
 
-    setUnsigned(unsigned: boolean = true): this {
+    setUnsigned(unsigned: boolean = true): Column {
         this.unsigned = unsigned;
         return this;
     }
@@ -129,7 +129,7 @@ class Column extends BaseColumn {
         return this.unsigned;
     }
 
-    setAutoIncrement(autoIncrement: boolean = true): this {
+    setAutoIncrement(autoIncrement: boolean = true): Column {
         this.autoIncrement = autoIncrement;
         return this;
     }

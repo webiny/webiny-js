@@ -3,7 +3,7 @@ import { template } from "lodash";
 import commitAnalyzer from "@semantic-release/commit-analyzer";
 import getCommits from "./../../utils/getCommits";
 import getLastReleaseFactory from "./../../utils/getLastRelease";
-import { gitHead } from "./../../utils/git";
+import { unshallow, gitHead } from "./../../utils/git";
 import getRelevantCommits from "./relevantCommits";
 
 export default () => {
@@ -15,13 +15,15 @@ export default () => {
 
         const getLastRelease = getLastReleaseFactory({ logger });
 
+        // Fetch all commits and tags
+        await unshallow();
+
         // Detect next version for all packages
         for (let i = 0; i < packages.length; i++) {
             const pkg = packages[i];
             const tagFormat = config.tagFormat(pkg);
 
             logger.log(`======== Processing %s ========`, pkg.name);
-            // TODO: we could separate last release into a plugin of its own
             const lastRelease = await getLastRelease(tagFormat);
             const commits = await getCommits(lastRelease.gitHead, config.branch, logger);
             const relevantCommits = getRelevantCommits(commits, pkg);

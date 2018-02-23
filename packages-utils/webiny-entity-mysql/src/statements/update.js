@@ -8,7 +8,7 @@ class Update extends Statement {
             values.push(key + " = " + this.escape(value));
         }
 
-        let output = `UPDATE ${options.table} SET ${values.join(", ")}`;
+        let output = `UPDATE \`${options.table}\` SET ${values.join(", ")}`;
         output += this.getWhere(options);
         output += this.getOrder(options);
         output += this.getLimit(options);

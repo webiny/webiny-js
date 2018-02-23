@@ -65,7 +65,7 @@ describe("find test", function() {
         });
 
         assert.deepEqual(querySpy.getCall(0).args[0], [
-            "SELECT * FROM SimpleEntity WHERE (age = 30) ORDER BY createdOn DESC, id ASC LIMIT 7 OFFSET 14",
+            "SELECT * FROM `SimpleEntity` WHERE (age = 30) ORDER BY createdOn DESC, id ASC LIMIT 7 OFFSET 14",
             "SELECT FOUND_ROWS() as count"
         ]);
 

@@ -1,8 +1,8 @@
 // @flow
 import { Entity } from "webiny-api";
 import { Model } from "webiny-model";
+import onSetFactory from "./onSetFactory";
 
-import type { EntityCollection } from "webiny-entity";
 import type { IAuthorizable } from "../../types";
 
 /**
@@ -10,13 +10,20 @@ import type { IAuthorizable } from "../../types";
  * It is used to create your API user classes.
  *
  * @property {EntityCollection<Role>} roles
+ * @property {EntityCollection<RoleGroup>} roleGroups
  */
 export class Identity extends Entity implements IAuthorizable {
     constructor() {
         super();
         this.attr("roles")
             .entities(Role, "identity", () => this.identityId)
-            .setUsing(Identity2Role);
+            .setUsing(Identity2Role)
+            .onSet(onSetFactory(Role));
+
+        this.attr("roleGroups")
+            .entities(RoleGroup, "identity", () => this.identityId)
+            .setUsing(Identity2RoleGroup)
+            .onSet(onSetFactory(RoleGroup));
 
         this.attr("identityId").dynamic(() => this.classId + ":" + this.id);
     }
@@ -41,8 +48,15 @@ export class Identity extends Entity implements IAuthorizable {
      * Returns all user's roles.
      * @returns {Array<Role>} All roles assigned to the user.
      */
-    getRoles(): Promise<Array<Role> | EntityCollection<Role>> {
-        return this.roles;
+    async getRoles(): Promise<Array<Role>> {
+        const roles = [...(await this.roles)];
+        const groups = await this.roleGroups;
+        for (let i = 0; i < groups.length; i++) {
+            const group = groups[i];
+            roles.concat(...(await group.roles));
+        }
+
+        return roles;
     }
 }
 
@@ -57,6 +71,16 @@ export class Identity2Role extends Entity {
 }
 
 Identity2Role.classId = "Security.Identity2Role";
+
+export class Identity2RoleGroup extends Entity {
+    constructor() {
+        super();
+        this.attr("identity").identity();
+        this.attr("roleGroup").entity(RoleGroup);
+    }
+}
+
+Identity2RoleGroup.classId = "Security.Identity2RoleGroup";
 
 export class Role extends Entity {
     constructor() {
@@ -77,6 +101,7 @@ export class Role extends Entity {
 }
 
 Role.classId = "Security.Role";
+Role.tableName = "Security.Roles";
 
 export class Role2Permission extends Entity {
     constructor() {
@@ -128,6 +153,7 @@ export class Permission extends Entity {
 }
 
 Permission.classId = "Security.Permission";
+Permission.tableName = "Security.Permissions";
 
 export class RoleGroup extends Entity {
     constructor() {

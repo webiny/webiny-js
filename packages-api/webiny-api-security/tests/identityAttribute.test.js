@@ -27,6 +27,9 @@ describe("Identity attribute test", () => {
 
         const issue = new Issue();
         let identityAttribute = issue.getAttribute("assignedTo");
+        assert.equal(null, identityAttribute.getValue());
+        identityAttribute.setStorageValue(null);
+        assert.equal(null, await identityAttribute.getStorageValue());
 
         issue.populate({ title: "testing custom attribute", assignedTo: user });
 

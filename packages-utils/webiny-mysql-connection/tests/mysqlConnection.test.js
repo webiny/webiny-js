@@ -21,7 +21,7 @@ describe("mysql connection test", async function() {
 
     it("should not accept other than Connection / Pool instances as connection argument", async () => {
         try {
-            const instance = new MySQLConnection({});
+            new MySQLConnection({});
         } catch (e) {
             return;
         }

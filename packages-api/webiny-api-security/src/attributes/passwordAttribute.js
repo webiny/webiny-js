@@ -10,7 +10,7 @@ export default () => {
                 if (value) {
                     return bcrypt.hashSync(value, bcrypt.genSaltSync(10));
                 }
-                return this.password;
+                return this.value.getCurrent();
             });
         }
     };

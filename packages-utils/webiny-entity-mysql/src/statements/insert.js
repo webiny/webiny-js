@@ -10,7 +10,7 @@ class Insert extends Statement {
             .join(", ");
 
         if (!options.onDuplicateKeyUpdate) {
-            return `INSERT INTO ${options.table} (${columns}) VALUES (${insertValues})`;
+            return `INSERT INTO \`${options.table}\` (${columns}) VALUES (${insertValues})`;
         }
 
         const updateValues = [];
@@ -18,9 +18,11 @@ class Insert extends Statement {
             updateValues.push(key + " = " + this.escape(value));
         }
 
-        return `INSERT INTO ${
+        return `INSERT INTO \`${
             options.table
-        } (${columns}) VALUES (${insertValues}) ON DUPLICATE KEY UPDATE ${updateValues.join(", ")}`;
+        }\` (${columns}) VALUES (${insertValues}) ON DUPLICATE KEY UPDATE ${updateValues.join(
+            ", "
+        )}`;
     }
 }
 

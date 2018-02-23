@@ -10,6 +10,13 @@ import debugFactory from "debug";
 const debug = debugFactory("WSR:GIT");
 
 /**
+ * Unshallow the git repository (fetch all commits and tags).
+ */
+async function unshallow() {
+    await execa("git", ["fetch", "--unshallow", "--tags"], { reject: false });
+}
+
+/**
  * Get the commit sha for a given tag.
  *
  * @param {string} tagName Tag name for which to retrieve the commit sha.
@@ -104,4 +111,14 @@ async function verifyTagName(tagName) {
     }
 }
 
-export { gitTagHead, gitTags, isRefInHistory, gitHead, repoUrl, tag, push, verifyTagName };
+export {
+    unshallow,
+    gitTagHead,
+    gitTags,
+    isRefInHistory,
+    gitHead,
+    repoUrl,
+    tag,
+    push,
+    verifyTagName
+};
