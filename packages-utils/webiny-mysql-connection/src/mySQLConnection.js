@@ -44,13 +44,14 @@ class MySQLConnection {
                         return;
                     }
 
-                    // We don't need to do release manually because it is handled by the mysql lib already.
                     try {
                         results = await this.__executeQueriesWithConnection(connection, queries);
                     } catch (e) {
+                        connection.release();
                         return reject(e);
                     }
 
+                    connection.release();
                     queries.length === 1 ? resolve(results[0]) : resolve(results);
                 });
             }

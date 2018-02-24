@@ -10,7 +10,7 @@ MySQLTable.setEngine("InnoDB")
     .setAutoIncrement(1000)
     .setDriver(
         new MySQLDriver({
-            mySQL: mysql.createConnection({})
+            connection: mysql.createConnection({})
         })
     );
 

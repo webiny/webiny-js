@@ -25,6 +25,24 @@ export default {
             notNull: false
         },
         {
+            arguments: [100],
+            autoIncrement: null,
+            default: null,
+            name: "default",
+            notNull: false,
+            type: "varchar",
+            unsigned: null
+        },
+        {
+            arguments: [],
+            autoIncrement: null,
+            default: false,
+            name: "enabled",
+            notNull: false,
+            type: "tinyint",
+            unsigned: null
+        },
+        {
             name: "type",
             type: "enum",
             default: undefined,

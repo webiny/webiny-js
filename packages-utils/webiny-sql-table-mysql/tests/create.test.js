@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { UserTable, Table } from "./tables";
+import { UserTable, userTableSql, Table } from "./tables";
 import sinon from "sinon";
 import mysql from "mysql";
 import { Table as BaseTable } from "webiny-sql-table";
@@ -21,7 +21,7 @@ describe("create table test", function() {
         };
 
         const createStub = sandbox
-            .stub(userTable.getDriver().getMySQL(), "query")
+            .stub(userTable.getDriver().getConnection(), "query")
             .onCall(0)
             .callsFake(sql => {
                 sqlQueries.create = sql;
@@ -35,10 +35,8 @@ describe("create table test", function() {
         await userTable.drop();
         createStub.restore();
 
-        console.log(sqlQueries.create);
         assert.deepEqual(sqlQueries, {
-            create:
-                "CREATE TABLE `Users` (\n\t`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,\n\t`name` varchar(100),\n\t`type` enum('IT', 'Marketing', 'Animals'),\n\t`createdOn` datetime,\n\tPRIMARY KEY (`id`)\n) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Main Users table...'",
+            create: userTableSql,
             drop: "DROP TABLE `Users`"
         });
     });
@@ -48,7 +46,7 @@ describe("create table test", function() {
 
         MySQLTable.setDriver(
             new MySQLDriver({
-                mySQL: mysql.createConnection({})
+                connection: mysql.createConnection({})
             })
         );
 
@@ -61,7 +59,7 @@ describe("create table test", function() {
         };
 
         const createStub = sandbox
-            .stub(blankTable.getDriver().getMySQL(), "query")
+            .stub(blankTable.getDriver().getConnection(), "query")
             .onCall(0)
             .callsFake(sql => {
                 sqlQueries.create = sql;
@@ -88,6 +86,8 @@ describe("create table test", function() {
             "CREATE TABLE `Users` (\n" +
                 "\t`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,\n" +
                 "\t`name` varchar(100),\n" +
+                "\t`default` varchar(100) DEFAULT NULL,\n" +
+                "\t`enabled` tinyint DEFAULT 'false',\n" +
                 "\t`type` enum('IT', 'Marketing', 'Animals'),\n" +
                 "\t`createdOn` datetime,\n" +
                 "\tPRIMARY KEY (`id`)\n" +

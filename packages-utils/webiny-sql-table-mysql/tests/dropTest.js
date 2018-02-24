@@ -19,9 +19,11 @@ describe("drop table test", function() {
             drop: ""
         };
 
-        const dropStub = sandbox.stub(userTable.getDriver().getMySQL(), "query").callsFake(sql => {
-            sqlQueries.drop = sql;
-        });
+        const dropStub = sandbox
+            .stub(userTable.getDriver().getConnection(), "query")
+            .callsFake(sql => {
+                sqlQueries.drop = sql;
+            });
 
         await userTable.drop();
         dropStub.restore();

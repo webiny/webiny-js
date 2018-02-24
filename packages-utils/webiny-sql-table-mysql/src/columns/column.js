@@ -3,7 +3,7 @@ import { Column as BaseColumn } from "webiny-sql-table";
 import ColumnsContainer from "../columnsContainer";
 
 class Column extends BaseColumn {
-    default: ?string | number;
+    default: mixed;
     notNull: boolean;
     unsigned: ?boolean;
     autoIncrement: ?boolean;
@@ -63,12 +63,14 @@ class Column extends BaseColumn {
             sql += " NOT NULL";
         }
 
-        if (this.hasDefault()) {
+        if (typeof this.getDefault() !== "undefined") {
             const value = this.getDefault();
-            if (value) {
-                sql += ` DEFAULT '${value}'`;
+            if (typeof value === "number") {
+                sql += ` DEFAULT ${value}`;
             } else if (value === null) {
                 sql += ` DEFAULT NULL`;
+            } else {
+                sql += ` DEFAULT '${String(value)}'`;
             }
         }
 
@@ -82,7 +84,7 @@ class Column extends BaseColumn {
     /**
      * Sets default column value.
      */
-    setDefault(defaultValue: string | number | null): Column {
+    setDefault(defaultValue: mixed): Column {
         this.default = defaultValue;
         return this;
     }
@@ -90,12 +92,8 @@ class Column extends BaseColumn {
     /**
      * Returns default column value.
      */
-    getDefault(): ?string | number {
+    getDefault(): mixed {
         return this.default;
-    }
-
-    hasDefault(): boolean {
-        return typeof this.default !== "undefined";
     }
 
     setNotNull(notNull: boolean = true): Column {
@@ -105,11 +103,6 @@ class Column extends BaseColumn {
 
     getNotNull(): boolean {
         return this.notNull;
-    }
-
-    setArguments(receivedArguments: Array<string | number> = []): Column {
-        this.arguments = receivedArguments;
-        return this;
     }
 
     getArguments(): Array<string | number> {

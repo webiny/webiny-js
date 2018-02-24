@@ -8,20 +8,20 @@ import { MySQLDriverOptions, MySQL } from "./../types";
 import type { CommandOptions } from "webiny-sql-table/types";
 
 class MySQLDriver extends Driver {
-    mySQL: ?MySQLConnection;
+    connection: ?MySQLConnection;
 
-    constructor(options: MySQLDriverOptions) {
+    constructor(options: MySQLDriverOptions = {}) {
         super();
-        this.mySQL = null;
-        options.mySQL && this.setMySQL(options.mySQL);
+        this.connection = null;
+        options.connection && this.setConnection(options.connection);
     }
 
-    getMySQL(): MySQL {
-        return this.mySQL;
+    getConnection(): ?MySQLConnection {
+        return this.connection;
     }
 
-    setMySQL(mySQL: MySQL): MySQLDriver {
-        this.mySQL = new MySQLConnection(mySQL);
+    setConnection(connection: MySQL): MySQLDriver {
+        this.connection = new MySQLConnection(connection);
         return this;
     }
 
@@ -54,10 +54,12 @@ class MySQLDriver extends Driver {
     }
 
     async execute(sql: string) {
-        if (!this.getMySQL()) {
-            throw Error("MySQL instance not set.");
+        const connection = this.getConnection();
+        if (connection instanceof MySQLConnection) {
+            return await connection.query(sql);
         }
-        return await this.getMySQL().query(sql);
+
+        throw Error("MySQL instance not set.");
     }
 }
 

@@ -20,7 +20,7 @@ describe("truncate table test", function() {
         };
 
         const truncateStub = sandbox
-            .stub(userTable.getDriver().getMySQL(), "query")
+            .stub(userTable.getDriver().getConnection(), "query")
             .callsFake(sql => {
                 sqlQueries.truncate = sql;
             });

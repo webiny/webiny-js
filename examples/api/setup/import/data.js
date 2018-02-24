@@ -8,6 +8,7 @@ export default [
             {
                 name: "perm1",
                 slug: "perm1",
+                description: "Description for permission 'perm1'.",
                 rules: [
                     {
                         classId: "class1",
@@ -25,6 +26,7 @@ export default [
             {
                 name: "perm2",
                 slug: "perm2",
+                description: "Description for permission 'perm2'.",
                 rules: [
                     {
                         classId: "class2",
@@ -42,6 +44,7 @@ export default [
             {
                 name: "perm3",
                 slug: "perm3",
+                description: "Description for permission 'perm3'.",
                 rules: [
                     {
                         classId: "class3",
@@ -59,6 +62,7 @@ export default [
             {
                 name: "perm4",
                 slug: "perm4",
+                description: "Description for permission 'perm4'.",
                 rules: [
                     {
                         classId: "class1",

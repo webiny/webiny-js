@@ -9,6 +9,12 @@ class UserTable extends Table {
             .setAutoIncrement()
             .setNotNull();
         this.column("name").varChar(100);
+        this.column("default")
+            .varChar(100)
+            .setDefault(null);
+        this.column("enabled")
+            .tinyInt()
+            .setDefault(false);
         this.column("type").enum("IT", "Marketing", "Animals");
         this.column("createdOn").dateTime();
 
