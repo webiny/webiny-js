@@ -88,7 +88,7 @@
     "test"
   ],
   "nyc": {
-    "branches": 94,
+    "branches": 95,
     "functions": 98,
     "lines": 98,
     "include": [

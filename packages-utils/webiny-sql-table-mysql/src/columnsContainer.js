@@ -39,7 +39,7 @@ class DefaultColumnsContainer extends ColumnsContainer {
     }
 
     blob(): BlobColumn {
-        const column = new BlobColumn(this.newColumnName, this, Array.from(arguments));
+        const column = new BlobColumn(this.newColumnName, this);
         this.columns.push(column);
         return column;
     }
@@ -51,13 +51,13 @@ class DefaultColumnsContainer extends ColumnsContainer {
     }
 
     date(): DateColumn {
-        const column = new DateColumn(this.newColumnName, this, Array.from(arguments));
+        const column = new DateColumn(this.newColumnName, this);
         this.columns.push(column);
         return column;
     }
 
     dateTime(): DateTimeColumn {
-        const column = new DateTimeColumn(this.newColumnName, this, Array.from(arguments));
+        const column = new DateTimeColumn(this.newColumnName, this);
         this.columns.push(column);
         return column;
     }
@@ -93,19 +93,19 @@ class DefaultColumnsContainer extends ColumnsContainer {
     }
 
     longBlob(): LongBlobColumn {
-        const column = new LongBlobColumn(this.newColumnName, this, Array.from(arguments));
+        const column = new LongBlobColumn(this.newColumnName, this);
         this.columns.push(column);
         return column;
     }
 
     longText(): LongTextColumn {
-        const column = new LongTextColumn(this.newColumnName, this, Array.from(arguments));
+        const column = new LongTextColumn(this.newColumnName, this);
         this.columns.push(column);
         return column;
     }
 
     mediumBlob(): MediumBlobColumn {
-        const column = new MediumBlobColumn(this.newColumnName, this, Array.from(arguments));
+        const column = new MediumBlobColumn(this.newColumnName, this);
         this.columns.push(column);
         return column;
     }
@@ -117,7 +117,7 @@ class DefaultColumnsContainer extends ColumnsContainer {
     }
 
     mediumText(): MediumTextColumn {
-        const column = new MediumTextColumn(this.newColumnName, this, Array.from(arguments));
+        const column = new MediumTextColumn(this.newColumnName, this);
         this.columns.push(column);
         return column;
     }
@@ -129,19 +129,19 @@ class DefaultColumnsContainer extends ColumnsContainer {
     }
 
     text(): TextColumn {
-        const column = new TextColumn(this.newColumnName, this, Array.from(arguments));
+        const column = new TextColumn(this.newColumnName, this);
         this.columns.push(column);
         return column;
     }
 
     time(): TimeColumn {
-        const column = new TimeColumn(this.newColumnName, this, Array.from(arguments));
+        const column = new TimeColumn(this.newColumnName, this);
         this.columns.push(column);
         return column;
     }
 
     timestamp(): TimestampColumn {
-        const column = new TimestampColumn(this.newColumnName, this, Array.from(arguments));
+        const column = new TimestampColumn(this.newColumnName, this);
         this.columns.push(column);
         return column;
     }
@@ -153,7 +153,7 @@ class DefaultColumnsContainer extends ColumnsContainer {
     }
 
     tinyText(): TinyTextColumn {
-        const column = new TinyTextColumn(this.newColumnName, this, Array.from(arguments));
+        const column = new TinyTextColumn(this.newColumnName, this);
         this.columns.push(column);
         return column;
     }
@@ -165,7 +165,7 @@ class DefaultColumnsContainer extends ColumnsContainer {
     }
 
     year(): YearColumn {
-        const column = new YearColumn(this.newColumnName, this, Array.from(arguments));
+        const column = new YearColumn(this.newColumnName, this);
         this.columns.push(column);
         return column;
     }
