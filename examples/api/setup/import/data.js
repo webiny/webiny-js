@@ -3,19 +3,6 @@ import { Permission } from "webiny-api-security";
 
 export default [
     {
-        entity: User,
-        data: [
-            {
-                email: "user1",
-                password: "pass1"
-            },
-            {
-                email: "user2",
-                password: "pass2"
-            }
-        ]
-    },
-    {
         entity: Permission,
         data: [
             {
@@ -93,6 +80,19 @@ export default [
                         ]
                     }
                 ]
+            }
+        ]
+    },
+    {
+        entity: User,
+        data: [
+            {
+                email: "user1@webiny.com",
+                password: "pass1"
+            },
+            {
+                email: "user2@webiny.com",
+                password: "pass2"
             }
         ]
     }

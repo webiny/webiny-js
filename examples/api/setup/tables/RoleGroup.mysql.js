@@ -12,6 +12,6 @@ class RoleGroup extends MySQLTable {
     }
 }
 
-RoleGroup.setName("Security.RoleGroups");
+RoleGroup.setName("Security_RoleGroups");
 
 export default RoleGroup;

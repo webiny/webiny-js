@@ -16,6 +16,6 @@ class Role2Permission extends MySQLTable {
     }
 }
 
-Role2Permission.setName("Security.Role2Permission");
+Role2Permission.setName("Security_Role2Permission");
 
 export default Role2Permission;

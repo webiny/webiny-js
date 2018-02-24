@@ -1,14 +1,10 @@
-export {
-    Identity,
-    Role,
-    Role2RoleGroup,
-    RoleGroup,
-    Role2Permission,
-    Permission,
-    Identity2Role,
-    RuleMethodModel,
-    RuleModel
-} from "./entities";
+export { default as Identity } from "./entities/identity";
+export { default as Role } from "./entities/role";
+export { default as Role2RoleGroup } from "./entities/role2RoleGroup";
+export { default as RoleGroup } from "./entities/roleGroup";
+export { default as Role2Permission } from "./entities/role2Permission";
+export { default as Permission } from "./entities/permission";
+export { default as Identity2Role } from "./entities/identity2Role";
 
 export { default as AuthorizationService } from "./services/authorization";
 export { default as AuthorizationError } from "./services/authorizationError";

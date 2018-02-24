@@ -6,6 +6,9 @@ class Permission extends MySQLTable {
         this.column("name")
             .varChar(50)
             .setNotNull();
+        this.column("description")
+            .varChar(200)
+            .setNotNull();
         this.column("slug")
             .varChar(50)
             .setNotNull();
@@ -13,6 +16,6 @@ class Permission extends MySQLTable {
     }
 }
 
-Permission.setName("Security.Permissions");
+Permission.setName("Security_Permissions");
 
 export default Permission;

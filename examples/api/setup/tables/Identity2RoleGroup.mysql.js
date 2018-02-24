@@ -15,6 +15,6 @@ class Identity2RoleGroupTable extends MySQLTable {
     }
 }
 
-Identity2RoleGroupTable.setName("Security.Identity2RoleGroup");
+Identity2RoleGroupTable.setName("Security_Identity2RoleGroup");
 
 export default Identity2RoleGroupTable;

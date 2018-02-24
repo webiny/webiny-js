@@ -1,12 +1,11 @@
 import { Entity } from "webiny-api";
-import { Permission } from "webiny-api-security";
 import registerAttributes from "webiny-api-security/src/attributes/registerAttributes";
 import data from "./import/data";
-import connectionData from "./../connection";
+import { entityConnection } from "./../connection";
 import { MySQLDriver } from "webiny-entity-mysql";
 
 export default async () => {
-    Entity.driver = new MySQLDriver(connectionData);
+    Entity.driver = new MySQLDriver(entityConnection);
 
     registerAttributes(null);
 
@@ -23,9 +22,6 @@ export default async () => {
             }
         }
     }
-
-    // Check JSON data
-    const permissions = await Permission.find();
-    const json = await permissions.toJSON("id,name,slug,rules[classId,methods[method]");
-    console.log(JSON.stringify(json, null, 2));
+    console.log("Finished importing!");
+    return true;
 };

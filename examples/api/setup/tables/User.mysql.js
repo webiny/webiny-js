@@ -10,8 +10,15 @@ class UserTable extends MySQLTable {
         this.column("password")
             .char(60)
             .setNotNull();
+        this.column("firstName").char(20);
+        this.column("lastName").char(20);
+        this.column("enabled")
+            .smallInt(1)
+            .setDefault(1);
+        this.column("lastActive").date();
+        this.column("lastLogin").date();
 
-        this.index("email").unique();
+        this.index().unique("email");
     }
 }
 

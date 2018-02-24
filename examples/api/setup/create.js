@@ -23,10 +23,6 @@ import MySQLTable from "./MySQLTable";
 
     for (let i = 0; i < tables.length; i++) {
         const table: MySQLTable = tables[i];
-        table
-            .column("deleted")
-            .smallInt(1)
-            .setDefault(0);
 
         try {
             await table.create();
@@ -38,9 +34,6 @@ import MySQLTable from "./MySQLTable";
     return import("./import")
         .then(({ default: importer }) => {
             return importer();
-        })
-        .catch(e => {
-            console.log(e);
         })
         .then(() => {
             process.exit(0);

@@ -6,10 +6,6 @@ class Entity extends BaseEntity {
     constructor() {
         super();
 
-        this.attr("deleted")
-            .boolean()
-            .setDefaultValue(false);
-
         api.apps.map(app => {
             app.applyEntityExtensions(this);
         });
