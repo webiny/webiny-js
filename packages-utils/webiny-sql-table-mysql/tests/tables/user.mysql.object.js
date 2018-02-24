@@ -43,6 +43,15 @@ export default {
             unsigned: null
         },
         {
+            arguments: [],
+            autoIncrement: null,
+            default: 50,
+            name: "age",
+            notNull: false,
+            type: "tinyint",
+            unsigned: null
+        },
+        {
             name: "type",
             type: "enum",
             default: undefined,

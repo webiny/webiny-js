@@ -15,6 +15,9 @@ class UserTable extends Table {
         this.column("enabled")
             .tinyInt()
             .setDefault(false);
+        this.column("age")
+            .tinyInt()
+            .setDefault(50);
         this.column("type").enum("IT", "Marketing", "Animals");
         this.column("createdOn").dateTime();
 

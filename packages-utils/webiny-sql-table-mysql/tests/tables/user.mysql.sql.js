@@ -3,6 +3,7 @@ export default `CREATE TABLE \`Users\` (
 	\`name\` varchar(100),
 	\`default\` varchar(100) DEFAULT NULL,
 	\`enabled\` tinyint DEFAULT 'false',
+	\`age\` tinyint DEFAULT 50,
 	\`type\` enum('IT', 'Marketing', 'Animals'),
 	\`createdOn\` datetime,
 	PRIMARY KEY (\`id\`)

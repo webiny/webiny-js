@@ -88,6 +88,7 @@ describe("create table test", function() {
                 "\t`name` varchar(100),\n" +
                 "\t`default` varchar(100) DEFAULT NULL,\n" +
                 "\t`enabled` tinyint DEFAULT 'false',\n" +
+                "\t`age` tinyint DEFAULT 50,\n" +
                 "\t`type` enum('IT', 'Marketing', 'Animals'),\n" +
                 "\t`createdOn` datetime,\n" +
                 "\tPRIMARY KEY (`id`)\n" +

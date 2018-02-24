@@ -88,9 +88,9 @@
     "test"
   ],
   "nyc": {
-    "branches": 93,
-    "functions": 97,
-    "lines": 97,
+    "branches": 94,
+    "functions": 98,
+    "lines": 98,
     "include": [
       "packages-api/**/src",
       "packages-utils/**/src"
