@@ -23,7 +23,9 @@
     "express": "^4.16.2",
     "fs-extra": "^5.0.0",
     "webiny-compose": "0.0.0-semantically-released",
+    "webiny-entity": "0.0.0-semantically-released",
     "webiny-service-manager": "0.0.0-semantically-released",
+    "webiny-sql-table-mysql": "0.0.0-semantically-released",
     "lodash": "^4.17.4",
     "mdbid": "^1.0.0",
     "semver": "^5.5.0"

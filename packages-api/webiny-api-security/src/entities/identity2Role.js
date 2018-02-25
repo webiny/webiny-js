@@ -10,5 +10,6 @@ export class Identity2Role extends Entity {
 }
 
 Identity2Role.classId = "Security.Identity2Role";
+Identity2Role.tableName = "Security_Identity2Role";
 
 export default Identity2Role;

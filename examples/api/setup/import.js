@@ -1,13 +1,19 @@
 import { Entity } from "webiny-api";
+import { AuthenticationService } from "webiny-api-security";
 import registerAttributes from "webiny-api-security/src/attributes/registerAttributes";
 import data from "./import/data";
 import { connection } from "./../connection";
+import User from "./../entities/User";
 import { MySQLDriver } from "webiny-entity-mysql";
 
 export default async () => {
     Entity.driver = new MySQLDriver({ connection });
 
-    registerAttributes(null);
+    const authentication = new AuthenticationService({
+        identities: [{ identity: User }]
+    });
+
+    registerAttributes(authentication);
 
     console.log("Importing data...");
     for (let i = 0; i < data.length; i++) {
