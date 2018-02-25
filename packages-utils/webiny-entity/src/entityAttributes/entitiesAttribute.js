@@ -46,10 +46,6 @@ class EntitiesAttribute extends Attribute {
          */
         this.toStorage = false;
 
-        /**
-         * Same as in EntityAttribute, entities present here were already validated when parent entity called the validate method.
-         * At this point, entities are ready to be saved (only loaded entities).
-         */
         this.getParentModel()
             .getParentEntity()
             .on("save", async () => {
@@ -71,7 +67,7 @@ class EntitiesAttribute extends Attribute {
          */
         this.getParentModel()
             .getParentEntity()
-            .on("beforeSave", async () => {
+            .on("afterSave", async () => {
                 // We don't have to do the following check here:
                 // this.value.isLoading() && (await this.value.load());
 

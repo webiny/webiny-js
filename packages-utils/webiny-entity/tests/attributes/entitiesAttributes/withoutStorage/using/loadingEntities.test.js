@@ -42,31 +42,30 @@ describe("save and delete entities attribute test", () => {
 
         // This action is async, and following save should wait until the attribute is fully loaded.
         user.groups = [{ name: "Group P" }, { name: "Group Q" }];
-
         let entitySave = sandbox
             .stub(user.getDriver(), "save")
             .onCall(0)
-            .callsFake(entity => {
-                entity.id = "P";
+            .callsFake(() => {
                 return new QueryResult();
             })
             .onCall(1)
             .callsFake(entity => {
-                entity.id = "4th";
+                entity.id = "P";
                 return new QueryResult();
             })
             .onCall(2)
             .callsFake(entity => {
-                entity.id = "Q";
+                entity.id = "4th";
                 return new QueryResult();
             })
             .onCall(3)
             .callsFake(entity => {
-                entity.id = "5th";
+                entity.id = "Q";
                 return new QueryResult();
             })
             .onCall(4)
-            .callsFake(() => {
+            .callsFake(entity => {
+                entity.id = "5th";
                 return new QueryResult();
             });
 

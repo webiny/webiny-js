@@ -31,12 +31,12 @@ describe("save and delete entities attribute test", () => {
 
         let entitySave = sandbox
             .stub(mainEntity.getDriver(), "save")
-            .onCall(0)
+            .onCall(1)
             .callsFake(entity => {
                 entity.id = "X";
                 return new QueryResult();
             })
-            .onCall(1)
+            .onCall(0)
             .callsFake(() => new QueryResult());
 
         await mainEntity.save();
@@ -62,17 +62,17 @@ describe("save and delete entities attribute test", () => {
 
         entitySave = sandbox
             .stub(mainEntity.getDriver(), "save")
-            .onCall(0)
+            .onCall(1)
             .callsFake(entity => {
                 entity.id = "Y";
                 return new QueryResult();
             })
-            .onCall(1)
+            .onCall(2)
             .callsFake(entity => {
                 entity.id = "Z";
                 return new QueryResult();
             })
-            .onCall(2)
+            .onCall(0)
             .callsFake(() => new QueryResult());
 
         await mainEntity.save();

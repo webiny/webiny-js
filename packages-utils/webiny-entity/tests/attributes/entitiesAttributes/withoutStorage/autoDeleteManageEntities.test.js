@@ -32,12 +32,12 @@ describe("entity attribute current / initial values syncing", function() {
 
         let entitySave = sandbox
             .stub(mainEntity.getDriver(), "save")
-            .onCall(0)
+            .onCall(1)
             .callsFake(entity => {
                 entity.id = "X";
                 return new QueryResult();
             })
-            .onCall(1)
+            .onCall(0)
             .callsFake(() => new QueryResult());
 
         await mainEntity.save();

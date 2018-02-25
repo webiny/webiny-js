@@ -1,6 +1,8 @@
 // @flow
 import type { SyncOptions } from "../types";
 import SyncResult from "./syncResult";
+import SyncResults from "./syncResults";
+
 import { Table } from "webiny-sql-table";
 
 class Sync {
@@ -10,10 +12,12 @@ class Sync {
     }
 
     async execute() {
-        const results = new SyncResult();
+        const results = new SyncResults();
         for (let i = 0; i < this.options.tables.length; i++) {
-            // const table = this.options.tables[i];
-            // results = await this.__sync(new table());
+            const result = new SyncResult();
+
+            const table = this.options.tables[i];
+            results = await this.__sync(new table());
         }
         return results;
     }

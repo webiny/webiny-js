@@ -273,19 +273,19 @@ describe("entities attribute test", function() {
 
         const entitySave = sandbox
             .stub(ComplexEntity.getDriver().getConnection(), "query")
-            .onCall(0)
+            .onCall(1)
             .callsFake(() => {
                 return { insertId: 4 };
             })
-            .onCall(1)
+            .onCall(2)
             .callsFake(() => {
                 return { insertId: 3 };
             })
-            .onCall(2)
+            .onCall(3)
             .callsFake(() => {
                 return { insertId: 2 };
             })
-            .onCall(3)
+            .onCall(0)
             .callsFake(() => {
                 return {};
             });

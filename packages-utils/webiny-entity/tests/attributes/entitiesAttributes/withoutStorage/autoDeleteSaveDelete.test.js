@@ -23,9 +23,9 @@ describe("save and delete entities attribute test", () => {
                 lastName: "Doe",
                 markedAsCannotDelete: true,
                 entity1Entities: [
-                    { id: null, name: "dd", type: "dog", markedAsCannotDelete: true },
                     { id: null, name: "ee", type: "dog", markedAsCannotDelete: true },
-                    { id: null, name: "ff", type: "invalid", markedAsCannotDelete: false }
+                    { id: null, name: "ff", type: "dog", markedAsCannotDelete: true },
+                    { id: null, name: "gg", type: "invalid", markedAsCannotDelete: false }
                 ]
             },
             {
@@ -34,7 +34,7 @@ describe("save and delete entities attribute test", () => {
                 lastName: "Doe",
                 markedAsCannotDelete: true,
                 entity1Entities: [
-                    { id: null, name: "gg", type: "invalid", markedAsCannotDelete: true }
+                    { id: null, name: "ii", type: "invalid", markedAsCannotDelete: true }
                 ]
             }
         ];
@@ -155,47 +155,47 @@ describe("save and delete entities attribute test", () => {
 
         let entitySave = sandbox
             .stub(mainEntity.getDriver(), "save")
-            .onCall(0)
+            .onCall(1)
             .callsFake(entity => {
                 entity.id = "BB";
                 return new QueryResult();
             })
-            .onCall(1)
+            .onCall(2)
             .callsFake(entity => {
                 entity.id = "CC";
                 return new QueryResult();
             })
-            .onCall(2)
+            .onCall(3)
             .callsFake(entity => {
                 entity.id = "DD";
                 return new QueryResult();
             })
-            .onCall(3)
+            .onCall(4)
             .callsFake(entity => {
                 entity.id = "EE";
                 return new QueryResult();
             })
-            .onCall(4)
+            .onCall(5)
             .callsFake(entity => {
                 entity.id = "FF";
                 return new QueryResult();
             })
-            .onCall(5)
+            .onCall(6)
             .callsFake(entity => {
                 entity.id = "GG";
                 return new QueryResult();
             })
-            .onCall(6)
+            .onCall(7)
             .callsFake(entity => {
                 entity.id = "HH";
                 return new QueryResult();
             })
-            .onCall(7)
+            .onCall(8)
             .callsFake(entity => {
                 entity.id = "II";
                 return new QueryResult();
             })
-            .onCall(8)
+            .onCall(0)
             .callsFake(entity => {
                 entity.id = "AA";
                 return new QueryResult();
@@ -208,12 +208,12 @@ describe("save and delete entities attribute test", () => {
         assert.equal(await mainEntity.get("id"), "AA");
         assert.equal(await mainEntity.get("attribute1.0.id"), "BB");
         assert.equal(await mainEntity.get("attribute1.1.id"), "CC");
-        assert.equal(await mainEntity.get("attribute2.0.entity1Entities.0.id"), "DD");
-        assert.equal(await mainEntity.get("attribute2.0.entity1Entities.1.id"), "EE");
-        assert.equal(await mainEntity.get("attribute2.0.entity1Entities.2.id"), "FF");
-        assert.equal(await mainEntity.get("attribute2.0.id"), "GG");
-        assert.equal(await mainEntity.get("attribute2.1.entity1Entities.0.id"), "HH");
-        assert.equal(await mainEntity.get("attribute2.1.id"), "II");
+        assert.equal(await mainEntity.get("attribute2.0.entity1Entities.0.id"), "EE");
+        assert.equal(await mainEntity.get("attribute2.0.entity1Entities.1.id"), "FF");
+        assert.equal(await mainEntity.get("attribute2.0.entity1Entities.2.id"), "GG");
+        assert.equal(await mainEntity.get("attribute2.0.id"), "DD");
+        assert.equal(await mainEntity.get("attribute2.1.entity1Entities.0.id"), "II");
+        assert.equal(await mainEntity.get("attribute2.1.id"), "HH");
 
         entitySave.restore();
     });

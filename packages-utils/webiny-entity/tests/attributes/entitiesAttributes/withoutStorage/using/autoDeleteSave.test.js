@@ -61,27 +61,27 @@ describe("attribute entities (using an additional aggregation class) - saving te
         let entitySave = sandbox
             .stub(user.getDriver(), "save")
             .onCall(0)
-            .callsFake(entity => {
-                entity.id = "P";
+            .callsFake(() => {
                 return new QueryResult();
             })
             .onCall(1)
             .callsFake(entity => {
-                entity.id = "4th";
+                entity.id = "P";
                 return new QueryResult();
             })
             .onCall(2)
             .callsFake(entity => {
-                entity.id = "Q";
+                entity.id = "4th";
                 return new QueryResult();
             })
             .onCall(3)
             .callsFake(entity => {
-                entity.id = "5th";
+                entity.id = "Q";
                 return new QueryResult();
             })
             .onCall(4)
-            .callsFake(() => {
+            .callsFake(entity => {
+                entity.id = "5th";
                 return new QueryResult();
             });
 
@@ -116,22 +116,22 @@ describe("attribute entities (using an additional aggregation class) - saving te
         entitySave = sandbox
             .stub(user.getDriver(), "save")
             .callsFake(() => new QueryResult())
-            .onCall(5)
+            .onCall(6)
             .callsFake(entity => {
                 entity.id = "6th";
                 return new QueryResult();
             })
-            .onCall(6)
+            .onCall(7)
             .callsFake(entity => {
                 entity.id = "J";
                 return new QueryResult();
             })
-            .onCall(7)
+            .onCall(8)
             .callsFake(entity => {
                 entity.id = "7th";
                 return new QueryResult();
             })
-            .onCall(9)
+            .onCall(10)
             .callsFake(entity => {
                 entity.id = "8th";
                 return new QueryResult();
