@@ -1,5 +1,5 @@
 import User from "./../../entities/User";
-import { Permission } from "webiny-api-security";
+import { Permission, Role } from "webiny-api-security";
 
 export default [
     {
@@ -88,15 +88,27 @@ export default [
         ]
     },
     {
+        entity: Role,
+        data: [
+            {
+                name: "Administrator",
+                slug: "administrator",
+                description: "Administrator account"
+            }
+        ]
+    },
+    {
         entity: User,
         data: [
             {
                 email: "user1@webiny.com",
-                password: "pass1"
+                password: "pass1",
+                roles: ["administrator"]
             },
             {
                 email: "user2@webiny.com",
-                password: "pass2"
+                password: "pass2",
+                roles: ["administrator"]
             }
         ]
     }

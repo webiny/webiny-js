@@ -1,11 +1,11 @@
 import { Entity } from "webiny-api";
 import registerAttributes from "webiny-api-security/src/attributes/registerAttributes";
 import data from "./import/data";
-import { entityConnection } from "./../connection";
+import { connection } from "./../connection";
 import { MySQLDriver } from "webiny-entity-mysql";
 
 export default async () => {
-    Entity.driver = new MySQLDriver(entityConnection);
+    Entity.driver = new MySQLDriver({ connection });
 
     registerAttributes(null);
 
@@ -18,7 +18,10 @@ export default async () => {
             try {
                 await instance.populate(obj).save();
             } catch (e) {
-                console.log(e.message);
+                console.log(e);
+                if (e.data) {
+                    console.log(e.data.invalidAttributes);
+                }
             }
         }
     }

@@ -6,26 +6,30 @@
  * @param EntityClass
  * @returns {function(*=)}
  */
+import { EntityCollection } from "webiny-entity";
+
 export default EntityClass => {
     return async entities => {
         if (Array.isArray(entities)) {
             for (let i = 0; i < entities.length; i++) {
                 let value = entities[i];
+                let query = { id: value };
                 // If not DB ids - load entities by slugs
                 if (!EntityClass.isId(value)) {
                     if (typeof value === "string") {
-                        value = await EntityClass.findOne({ query: { slug: value } });
+                        query = { slug: value };
                     } else if (value.id) {
-                        value = value.id;
+                        query = { id: value.id };
                     } else if (value.slug) {
-                        value = await EntityClass.findOne({ query: { slug: value.slug } });
+                        query = { slug: value.slug };
                     }
                 }
 
-                entities[i] = value;
+                // TODO: ne bi htio loadati entitet tu jer to je samo populate
+                entities[i] = await EntityClass.findOne({ query });
             }
 
-            entities = entities.filter(Boolean);
+            return new EntityCollection(entities.filter(Boolean));
         }
 
         return entities;

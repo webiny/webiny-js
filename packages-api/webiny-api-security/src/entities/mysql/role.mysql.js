@@ -1,4 +1,4 @@
-import MySQLTable from "./../MySQLTable";
+import { MySQLTable } from "webiny-api";
 
 class Role extends MySQLTable {
     constructor() {

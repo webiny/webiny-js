@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "md5": "^2.2.1"
+    "md5": "^2.2.1",
+    "webiny-api-security": "0.0.0-semantically-released"
   }
 }

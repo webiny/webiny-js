@@ -1,6 +1,5 @@
 import { Table } from "webiny-sql-table";
 import { MySQLDriver } from "webiny-sql-table-mysql";
-import { sqlConnection } from "./../connection";
 
 class MySQLTable extends Table {
     constructor() {
@@ -26,6 +25,6 @@ MySQLTable.setEngine("InnoDB")
     .setDefaultCharset("utf8")
     .setCollate("utf8_bin");
 
-MySQLTable.setDriver(new MySQLDriver(sqlConnection));
+MySQLTable.setDriver(new MySQLDriver());
 
 export default MySQLTable;

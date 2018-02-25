@@ -19,5 +19,6 @@ class Role extends Entity {
 }
 
 Role.classId = "Security.Role";
+Role.tableName = "Security_Roles";
 
 export default Role;

@@ -9,3 +9,4 @@ export { Entity } from "./entity";
 export { ApiErrorResponse, ApiResponse } from "./response";
 export { Endpoint, EntityEndpoint, ApiContainer, ApiMethod, MatchedApiMethod } from "./endpoint";
 export { default as endpointMiddleware } from "./middleware/endpoint";
+export { default as MySQLTable } from "./tables/mySQL";

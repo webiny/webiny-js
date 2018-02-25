@@ -1,4 +1,4 @@
-import MySQLTable from "./../MySQLTable";
+import { MySQLTable } from "webiny-api";
 
 class Identity2RoleGroupTable extends MySQLTable {
     constructor() {

@@ -16,6 +16,7 @@ class Permission extends Entity {
 }
 
 Permission.classId = "Security.Permission";
+Permission.tableName = "Security_Permissions";
 
 export default Permission;
 

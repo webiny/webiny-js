@@ -1,18 +1,13 @@
 import mysql from "mysql";
 
-const pool = mysql.createPool({
+const connection = mysql.createPool({
     host: "localhost",
     port: 32768,
     user: "root",
     password: "dev",
     database: "webiny",
-    timezone: "Z"
+    timezone: "Z",
+    connectionLimit: 100
 });
 
-const sqlConnection = {
-    mySQL: pool
-};
-
-const entityConnection = { connection: pool };
-
-export { sqlConnection, entityConnection };
+export { connection };

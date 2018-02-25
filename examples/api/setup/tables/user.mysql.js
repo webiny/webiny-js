@@ -1,7 +1,7 @@
 // @flow
-import MySQLTable from "./../MySQLTable";
+import IdentityTable from "webiny-api-security/src/entities/mysql/identity.mysql";
 
-class UserTable extends MySQLTable {
+class UserTable extends IdentityTable {
     constructor() {
         super();
         this.column("email")
@@ -15,8 +15,6 @@ class UserTable extends MySQLTable {
         this.column("enabled")
             .smallInt(1)
             .setDefault(1);
-        this.column("lastActive").date();
-        this.column("lastLogin").date();
 
         this.index().unique("email");
     }

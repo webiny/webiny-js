@@ -20,8 +20,6 @@ class User extends Identity {
         this.attr("enabled")
             .boolean()
             .setDefaultValue(true);
-        this.attr("lastActive").date();
-        this.attr("lastLogin").date();
         // this.attr("meta").object();
         // TODO: 2FactorAuth
     }
