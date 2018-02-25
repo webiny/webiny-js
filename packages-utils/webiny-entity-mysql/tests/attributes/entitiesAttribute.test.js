@@ -53,6 +53,7 @@ describe("entities attribute test", function() {
         simpleEntity3.name = "Test-3";
 
         entity.simpleEntitiesLoadedFromTable = [simpleEntity1, simpleEntity2, simpleEntity3];
+        await entity.simpleEntitiesLoadedFromTable;
         assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.status, {
             loading: false,
             loaded: true

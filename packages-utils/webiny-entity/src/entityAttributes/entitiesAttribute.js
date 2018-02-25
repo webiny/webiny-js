@@ -237,13 +237,13 @@ class EntitiesAttribute extends Attribute {
      */
     setValue(value: Array<{}> | EntityCollection): Promise<void> {
         return new Promise((resolve, reject) => {
-            this.value.load(() => {
+            this.value.load(async () => {
                 if (!this.canSetValue()) {
                     resolve();
                     return;
                 }
 
-                const finalValue = this.onSetCallback(value);
+                const finalValue = await this.onSetCallback(value);
 
                 // Even if the value is invalid (eg. a string), we allow it here, but calling validate() will fail.
                 if (finalValue instanceof EntityCollection) {

@@ -26,30 +26,33 @@ describe("Identity attribute test", () => {
         user.populate({ firstName: "John", lastName: "Doe" });
 
         const issue = new Issue();
-        let identityAttribute = issue.getAttribute("assignedTo");
-        assert.equal(null, identityAttribute.getValue());
-        identityAttribute.setStorageValue(null);
-        assert.equal(null, await identityAttribute.getStorageValue());
+        let issueIdentityAttribute = issue.getAttribute("assignedTo");
+        assert.equal(null, issueIdentityAttribute.getValue());
+        issueIdentityAttribute.setStorageValue(null);
+        assert.equal(null, await issueIdentityAttribute.getStorageValue());
 
         issue.populate({ title: "testing custom attribute", assignedTo: user });
 
         assert.equal(issue.getAttribute("assignedTo").value.getCurrent().classId, "User");
+
+        await issue.assignedTo;
+
         assert.equal(
-            identityAttribute.value
+            issueIdentityAttribute.value
                 .getCurrent()
                 .getAttribute("identity")
                 .value.getCurrent().firstName,
             "John"
         );
         assert.equal(
-            identityAttribute.value
+            issueIdentityAttribute.value
                 .getCurrent()
                 .getAttribute("identity")
                 .value.getCurrent().lastName,
             "Doe"
         );
         assert.instanceOf(
-            identityAttribute.value
+            issueIdentityAttribute.value
                 .getCurrent()
                 .getAttribute("identity")
                 .value.getCurrent(),
@@ -63,23 +66,25 @@ describe("Identity attribute test", () => {
 
         await issue.validate();
 
-        identityAttribute = issue.getAttribute("assignedTo");
+        issueIdentityAttribute = issue.getAttribute("assignedTo");
 
         issue.populate({
             title: "testing custom attribute",
             assignedTo: { classId: "Company", identity: { name: "Webiny" } }
         });
 
-        assert.equal(identityAttribute.value.getCurrent().classId, "Company");
+        await issue.assignedTo;
+
+        assert.equal(issueIdentityAttribute.value.getCurrent().classId, "Company");
         assert.instanceOf(
-            identityAttribute.value
+            issueIdentityAttribute.value
                 .getCurrent()
                 .getAttribute("identity")
                 .value.getCurrent(),
             Company
         );
         assert.equal(
-            identityAttribute.value
+            issueIdentityAttribute.value
                 .getCurrent()
                 .getAttribute("identity")
                 .value.getCurrent().name,

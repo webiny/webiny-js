@@ -97,6 +97,7 @@ describe("attribute entities test", function() {
         entity.getDriver().findOne.restore();
 
         mainEntity.attribute1 = null;
+        await mainEntity.attribute1;
         const attribute1NullValue = await mainEntity.getAttribute("attribute1").getStorageValue();
         assert.isEmpty(attribute1NullValue);
         assert.isNull(await mainEntity.attribute1);

@@ -1,5 +1,5 @@
 {
-  "name": "webiny-mysql-connection",
+  "name": "webiny-sql-table-sync",
   "version": "0.0.0-semantically-released",
   "main": "src/index.js",
   "repository": {
@@ -14,7 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "babel-runtime": "^6.26.0",
-    "mysql": "^2.15.0"
+    "webiny-sql-table": "0.0.0-semantically-released"
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",

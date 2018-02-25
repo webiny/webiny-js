@@ -46,9 +46,11 @@ describe("entity attribute test", function() {
             });
 
         entity.company = { id: 5, name: "Test-1" };
+        await entity.company;
         assert.equal(await entity.getAttribute("company").getStorageValue(), 5);
 
         entity.company = null;
+        await entity.company;
         assert.equal(await entity.getAttribute("company").getStorageValue(), null);
 
         findById.restore();
@@ -75,6 +77,9 @@ describe("entity attribute test", function() {
         });
 
         user.getAttribute("company").setAutoSave(false);
+
+        await user.get("company.image");
+
         user
             .getAttribute("company")
             .value.getCurrent()

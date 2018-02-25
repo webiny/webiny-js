@@ -18,11 +18,6 @@ class EntityAttributeValue extends AttributeValue {
      * @returns {Promise<*>}
      */
     async load(callback) {
-        if (this.isLoaded()) {
-            _.isFunction(callback) && (await callback());
-            return this.getCurrent();
-        }
-
         if (this.isLoading()) {
             return new Promise(resolve => {
                 this.queue.push(async () => {
@@ -30,6 +25,16 @@ class EntityAttributeValue extends AttributeValue {
                     resolve(this.getCurrent());
                 });
             });
+        }
+
+        if (this.isLoaded()) {
+            this.status.loading = true;
+            _.isFunction(callback) && (await callback());
+            this.status.loading = false;
+
+            await this.__executeQueue();
+
+            return this.getCurrent();
         }
 
         this.status.loading = true;
@@ -52,12 +57,7 @@ class EntityAttributeValue extends AttributeValue {
         this.status.loading = false;
         this.status.loaded = true;
 
-        if (this.queue.length) {
-            for (let i = 0; i < this.queue.length; i++) {
-                await this.queue[i]();
-            }
-            this.queue = [];
-        }
+        await this.__executeQueue();
 
         return this.getCurrent();
     }
@@ -108,6 +108,15 @@ class EntityAttributeValue extends AttributeValue {
         }
 
         return this;
+    }
+
+    async __executeQueue() {
+        if (this.queue.length) {
+            for (let i = 0; i < this.queue.length; i++) {
+                await this.queue[i]();
+            }
+            this.queue = [];
+        }
     }
 }
 

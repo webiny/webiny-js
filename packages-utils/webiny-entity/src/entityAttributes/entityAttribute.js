@@ -139,13 +139,13 @@ class EntityAttribute extends Attribute {
      */
     setValue(value) {
         return new Promise((resolve, reject) => {
-            return this.value.load(() => {
+            return this.value.load(async () => {
                 if (!this.canSetValue()) {
                     resolve();
                     return this;
                 }
 
-                const finalValue = this.onSetCallback(value);
+                const finalValue = await this.onSetCallback(value);
 
                 try {
                     switch (true) {
