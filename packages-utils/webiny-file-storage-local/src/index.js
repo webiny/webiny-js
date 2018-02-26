@@ -1,11 +1,12 @@
 // @flow
-import _ from 'lodash';
-import fecha from 'fecha';
-import fs from 'fs-extra';
-import path from 'path';
-import globby from 'globby';
-import mime from 'mime-types';
-import { StorageError } from 'webiny-file-storage';
+import _ from "lodash";
+import fecha from "fecha";
+import fs from "fs-extra";
+import path from "path";
+import globby from "globby";
+import mime from "mime-types";
+import { StorageError } from "webiny-file-storage";
+import type { IFileData, IFileStorageDriver } from "webiny-file-storage/types";
 
 declare type LocalStorageDriverConfig = {
     createDatePrefix: boolean,
@@ -18,7 +19,7 @@ class LocalStorageDriver implements IFileStorageDriver {
 
     constructor(config: LocalStorageDriverConfig) {
         if (config.publicUrl) {
-            config.publicUrl = _.trimEnd(config.publicUrl, '/');
+            config.publicUrl = _.trimEnd(config.publicUrl, "/");
         }
 
         this.config = config;
@@ -41,9 +42,7 @@ class LocalStorageDriver implements IFileStorageDriver {
                     return reject(new StorageError(err.message));
                 }
 
-                fs.stat(filePath, (err, stats) => {
-                    resolve({ body: data });
-                });
+                resolve({ body: data });
             });
         });
     }
@@ -53,17 +52,17 @@ class LocalStorageDriver implements IFileStorageDriver {
      */
     setFile(key: string, file: IFileData): Promise<string> {
         if (file.body === null) {
-            return Promise.reject(new StorageError('File body must be a string or a Buffer'));
+            return Promise.reject(new StorageError("File body must be a string or a Buffer"));
         }
 
         let newKey = key;
         if (this.config.createDatePrefix) {
             if (!/^\d{4}\/\d{2}\/\d{2}\//.test(newKey)) {
-                newKey = path.join(fecha.format(Date.now(), 'YYYY/MM/DD'), key);
+                newKey = path.join(fecha.format(Date.now(), "YYYY/MM/DD"), key);
             }
         }
 
-        newKey = _.trimStart(newKey, '/');
+        newKey = _.trimStart(newKey, "/");
 
         const filePath = path.join(this.config.directory, newKey);
         const content: string | Buffer = file.body;
@@ -73,6 +72,7 @@ class LocalStorageDriver implements IFileStorageDriver {
     /**
      * Get meta data
      */
+    // eslint-disable-next-line
     getMeta(key: string): Promise<?Object> {
         return Promise.resolve(null);
     }
@@ -80,6 +80,7 @@ class LocalStorageDriver implements IFileStorageDriver {
     /**
      * Set meta data
      */
+    // eslint-disable-next-line
     setMeta(key: string, meta: Object): Promise<boolean> {
         return Promise.resolve(true);
     }
@@ -100,7 +101,7 @@ class LocalStorageDriver implements IFileStorageDriver {
      * @param filter    (Optional) Glob pattern to filter returned file keys
      */
     getKeys(key?: string, filter?: string): Promise<Array<string>> {
-        const pattern = path.join(key || '', filter || '*');
+        const pattern = path.join(key || "", filter || "*");
 
         const options = {
             cwd: this.config.directory,
@@ -108,7 +109,7 @@ class LocalStorageDriver implements IFileStorageDriver {
         };
 
         return globby(pattern, options).then(arr => {
-            return arr.map(file => _.trimStart(file.replace(this.config.directory, ''), '/'));
+            return arr.map(file => _.trimStart(file.replace(this.config.directory, ""), "/"));
         });
     }
 

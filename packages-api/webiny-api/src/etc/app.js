@@ -1,6 +1,6 @@
 // @flow
 import type { Endpoint, ApiContainer } from "./../endpoint";
-import type { Entity } from "./../entity";
+import type { Entity } from "./../";
 
 type EndpointExtensionCallback = ({ id: string, api: ApiContainer }) => void;
 type EntityExtensionCallback = ({ id: string, entity: Entity }) => void;

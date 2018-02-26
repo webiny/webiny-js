@@ -1,5 +1,6 @@
 // @flow
-import Storage from './storage';
+import Storage from "./storage";
+import type { IFile, IFileData } from "../types";
 
 export default class File implements IFile {
     key: string;
@@ -11,7 +12,7 @@ export default class File implements IFile {
     constructor(key: string, storage: Storage) {
         this.key = key;
         this.storage = storage;
-        this.file = { body: '' };
+        this.file = { body: "" };
         this.bodyLoaded = false;
         this.metaLoaded = false;
     }

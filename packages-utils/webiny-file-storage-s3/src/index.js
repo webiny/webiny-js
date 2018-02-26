@@ -3,20 +3,8 @@ import _ from "lodash";
 import AWS from "aws-sdk";
 import fecha from "fecha";
 import { StorageError } from "webiny-file-storage";
-
-// s3 config, for additional params check: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#constructor-property
-declare type S3StorageDriverConfig = {
-    // s3 config keys
-    bucket: string,
-    accessKeyId: string,
-    secretAccessKey: string,
-    region: string,
-    endpoint: string,
-    // driver config keys
-    createDatePrefix: boolean,
-    directory: string,
-    publicUrl: string
-};
+import type { IFileData, IFileStorageDriver } from "webiny-file-storage/types";
+import type { S3StorageDriverConfig } from "../types";
 
 // lock down AWS API versions
 AWS.config.apiVersions = {

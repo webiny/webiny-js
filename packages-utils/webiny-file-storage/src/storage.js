@@ -1,4 +1,6 @@
 // @flow
+import type { IFileStorageDriver, IFileData } from "../types";
+
 class Storage {
     driver: IFileStorageDriver;
 

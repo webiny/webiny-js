@@ -70,6 +70,7 @@
     "test:api": "yarn mocha \"packages-api/**/tests/**/*.test.js\"",
     "test:utils": "yarn mocha \"packages-utils/**/tests/**/*.test.js\"",
     "test:webiny-api": "yarn mocha \"packages-api/webiny-api/tests/**/*.test.js\"",
+    "test:file": "yarn mocha \"packages-api/webiny-api/tests/fileAttribute.test.js\"",
     "test:webiny-api-security": "nyc --reporter=html --reporter=text --include=packages-api/webiny-api-security/src yarn mocha \"packages-api/webiny-api-security/tests/**/*.test.js\"",
     "test:webiny-compose": "yarn mocha \"packages-utils/webiny-compose/tests/**/*.test.js\"",
     "test:webiny-data-extractor": "yarn mocha \"packages-utils/webiny-data-extractor/tests/**/*.test.js\"",

@@ -1,8 +1,8 @@
 // @flow
 import _ from "lodash";
 import fecha from "fecha";
-import StorageError from "./../src/storageError";
-import type { IFileStorageDriver, IFileData } from "./../types";
+import { StorageError } from "webiny-file-storage";
+import type { IFileStorageDriver, IFileData } from "webiny-file-storage/types";
 
 class MockDriver implements IFileStorageDriver {
     fileSystem: { [string]: IFileData };
@@ -11,7 +11,7 @@ class MockDriver implements IFileStorageDriver {
         createDatePrefix: boolean
     };
 
-    constructor(config: Object) {
+    constructor(config: Object = {}) {
         this.config = config;
         this.fileSystem = {};
     }
@@ -107,7 +107,7 @@ class MockDriver implements IFileStorageDriver {
      * Returns public file URL
      */
     getURL(key: string): string {
-        return _.trim(this.config.cdnUrl, "/") + key;
+        return _.trim(this.config.cdnUrl, "/") + "/" + key;
     }
 
     /**

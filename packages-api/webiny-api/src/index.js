@@ -5,7 +5,7 @@ export { default as versionFromUrl } from "./etc/versionFromUrl";
 export { default as versionFromHeader } from "./etc/versionFromHeader";
 export { default as App } from "./etc/app";
 export { default as requestUtils } from "./etc/requestUtils";
-export { Entity } from "./entity";
+export { Entity, File } from "./entities";
 export { ApiErrorResponse, ApiResponse } from "./response";
 export { Endpoint, EntityEndpoint, ApiContainer, ApiMethod, MatchedApiMethod } from "./endpoint";
 export { default as endpointMiddleware } from "./middleware/endpoint";
