@@ -9,3 +9,7 @@ export type SyncOptions = {
     preview?: boolean,
     logging?: LogOptions
 };
+
+export type SyncResultData = {
+    sql: string
+};

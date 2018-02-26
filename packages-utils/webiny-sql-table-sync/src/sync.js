@@ -14,16 +14,19 @@ class Sync {
     async execute() {
         const results = new SyncResults();
         for (let i = 0; i < this.options.tables.length; i++) {
-            const result = new SyncResult();
-
             const table = this.options.tables[i];
-            results = await this.__sync(new table());
+            results.push(await this.__sync(new table()));
         }
         return results;
     }
 
-    async __sync(table: Table) {
-        await table.create();
+    async __sync(table: Table): Promise<SyncResult> {
+        const sql = await table.create({ returnSQL: true });
+        if (this.options.preview) {
+            console.log("asd");
+            console.log(sql);
+        }
+        return new SyncResult({ sql });
     }
 }
 

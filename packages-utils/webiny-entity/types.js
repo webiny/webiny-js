@@ -28,6 +28,7 @@ export type EntitySaveParams = {
 
 export type EntityDeleteParams = {
     validation?: boolean,
+    permanent?: boolean,
     events?: {
         delete?: boolean,
         beforeDelete?: boolean,

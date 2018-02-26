@@ -261,7 +261,7 @@ class Entity {
      * Saves current and all linked entities (if autoSave on the attribute was enabled).
      * @param params
      */
-    async save(params: EntitySaveParams & Object = {}) {
+    async save(params: EntitySaveParams & Object = {}): Promise<void> {
         if (this.processing) {
             return;
         }
@@ -316,7 +316,7 @@ class Entity {
      * Deletes current and all linked entities (if autoDelete on the attribute was enabled).
      * @param params
      */
-    async delete(params: EntityDeleteParams & Object = {}) {
+    async delete(params: EntityDeleteParams & Object = {}): Promise<void> {
         if (this.processing) {
             return;
         }
@@ -333,7 +333,7 @@ class Entity {
 
             events.beforeDelete !== false && (await this.emit("beforeDelete"));
 
-            if (soft) {
+            if (soft && !params.permanent) {
                 await this.getDriver().save(this, params);
             } else {
                 await this.getDriver().delete(this, params);
