@@ -1,10 +1,12 @@
-// @flow
+//@flow
+
+import { Driver } from "webiny-sql-table";
 import ColumnsContainer from "./columnsContainer";
 import IndexesContainer from "./indexesContainer";
-import type { CommandOptions } from "../types";
-import type Table from "./table";
+import type { CommandOptions } from "webiny-sql-table/types";
+import { Table } from "webiny-sql-table";
 
-class Driver {
+class CustomDriver extends Driver {
     getColumnsClass(): Class<ColumnsContainer> {
         return ColumnsContainer;
     }
@@ -15,33 +17,32 @@ class Driver {
 
     // eslint-disable-next-line
     create(table: Table, options: CommandOptions): string {
-        return "";
+        return "CREATE TABLE " + table.getName() + " (...)";
     }
 
     // eslint-disable-next-line
     alter(table: Table, options: CommandOptions): string {
-        return "";
+        return "ALTER TABLE " + table.getName() + " (...)";
     }
 
     // eslint-disable-next-line
     drop(table: Table, options: CommandOptions): string {
-        return "";
+        return "DROP TABLE " + table.getName() + " (...)";
     }
 
     // eslint-disable-next-line
     truncate(table: Table, options: CommandOptions): string {
-        return "";
+        return "TRUNCATE TABLE " + table.getName() + " (...)";
     }
 
     // eslint-disable-next-line
     sync(table: Table, options: CommandOptions): string {
-        return "";
+        return [this.drop(table, options), this.create(table, options)].join("\n");
     }
 
-    // eslint-disable-next-line
-    async execute(sql: string): Promise<mixed> {
-        return null;
+    async execute(sql: string) {
+        return true;
     }
 }
 
-export default Driver;
+export default CustomDriver;

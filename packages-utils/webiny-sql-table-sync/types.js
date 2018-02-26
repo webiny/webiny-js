@@ -1,15 +1,10 @@
 import type { Table } from "webiny-sql-table";
-
-export type LogOptions = {
-    log: 1
-};
+import type { Log } from ".";
 
 export type SyncOptions = {
     tables: Array<Table>,
-    preview?: boolean,
-    logging?: LogOptions
+    execute?: boolean,
+    logClass?: Log
 };
 
-export type SyncResultData = {
-    sql: string
-};
+export type LogType = "success" | "info" | "warning" | "error";

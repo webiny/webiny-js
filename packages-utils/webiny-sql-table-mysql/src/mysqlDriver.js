@@ -3,7 +3,7 @@ import ColumnsContainer from "./columnsContainer";
 import IndexesContainer from "./indexesContainer";
 import { Driver, Table } from "webiny-sql-table";
 import { MySQLConnection } from "webiny-mysql-connection";
-import { createTable, alterTable, truncateTable, dropTable } from "./sql";
+import { createTable, alterTable, truncateTable, dropTable, syncTable } from "./sql";
 import { MySQLDriverOptions, MySQL } from "./../types";
 import type { CommandOptions } from "webiny-sql-table/types";
 
@@ -53,13 +53,18 @@ class MySQLDriver extends Driver {
         return truncateTable(table);
     }
 
+    // eslint-disable-next-line
+    sync(table: Table, options: CommandOptions): string {
+        return syncTable(table);
+    }
+
     async execute(sql: string) {
         const connection = this.getConnection();
         if (connection instanceof MySQLConnection) {
             return await connection.query(sql);
         }
 
-        throw Error("MySQL instance not set.");
+        throw Error("MySQL connection not set.");
     }
 }
 

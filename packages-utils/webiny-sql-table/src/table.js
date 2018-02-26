@@ -218,6 +218,15 @@ class Table {
         return this.getDriver().execute(sql);
     }
 
+    async sync(options: CommandOptions = {}): Promise<mixed> {
+        const sql = this.getDriver().sync(this, options);
+        if (options.returnSQL) {
+            return sql;
+        }
+
+        return this.getDriver().execute(sql);
+    }
+
     async truncate(options: CommandOptions = {}): Promise<mixed> {
         const sql = this.getDriver().truncate(this, options);
         if (options.returnSQL) {

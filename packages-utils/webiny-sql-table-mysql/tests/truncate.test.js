@@ -1,9 +1,6 @@
 import { assert } from "chai";
 import { UserTable, Table } from "./tables";
 import sinon from "sinon";
-import mysql from "mysql";
-import { Table as BaseTable } from "webiny-sql-table";
-import { MySQLDriver } from "./..";
 
 const sandbox = sinon.sandbox.create();
 
