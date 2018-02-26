@@ -21,6 +21,7 @@ describe("soft delete test", function() {
 
     it("should have delete set to true if delete was called", async () => {
         const entity = new EntityWithSoftDeletes();
+        const deleteSpy = sandbox.spy(EntityWithoutSoftDeletes.getDriver(), "delete");
 
         expect(entity.deleted).to.equal(false);
         await entity.save();
@@ -28,6 +29,20 @@ describe("soft delete test", function() {
 
         await entity.delete();
         expect(entity.deleted).to.equal(true);
+        expect(deleteSpy.callCount).to.equal(0);
+    });
+
+    it("should permanently delete entity if 'permanent' flag was set to true", async () => {
+        const entity = new EntityWithSoftDeletes();
+        const deleteSpy = sandbox.spy(EntityWithoutSoftDeletes.getDriver(), "delete");
+
+        expect(entity.deleted).to.equal(false);
+        await entity.save();
+        entity.id = "123";
+
+        await entity.delete({ permanent: true });
+
+        expect(deleteSpy.callCount).to.equal(1);
     });
 
     it("should not append 'deleted' into query when doing finds/count in entity that does not have soft deletes enabled", async () => {

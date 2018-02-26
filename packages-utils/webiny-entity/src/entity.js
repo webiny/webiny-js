@@ -333,7 +333,7 @@ class Entity {
 
             events.beforeDelete !== false && (await this.emit("beforeDelete"));
 
-            if (soft && !params.permanent) {
+            if (soft && params.permanent !== true) {
                 await this.getDriver().save(this, params);
             } else {
                 await this.getDriver().delete(this, params);
