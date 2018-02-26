@@ -24,7 +24,7 @@ class Attribute implements IAttribute {
     validators: ?(string | AttributeValidator);
     onSetCallback: AttributeValueCallback;
     onGetCallback: AttributeValueCallback;
-
+    onGetJSONValueCallback: AttributeValueCallback;
     constructor(name: string, attributesContainer: IAttributesContainer) {
         /**
          * Attribute name.
@@ -80,6 +80,11 @@ class Attribute implements IAttribute {
          * Custom onGet callback
          */
         this.onGetCallback = value => value;
+
+        /**
+         * Custom onGetJSONValue callback
+         */
+        this.onGetJSONValueCallback = value => value;
     }
 
     /**
@@ -274,8 +279,13 @@ class Attribute implements IAttribute {
         return this;
     }
 
+    onGetJSONValue(callback: AttributeValueCallback) {
+        this.onGetJSONValueCallback = callback;
+        return this;
+    }
+
     async getJSONValue(): Promise<mixed> {
-        return this.getValue();
+        return this.onGetJSONValueCallback(await this.getValue());
     }
 
     setToStorage(flag: boolean = true): this {

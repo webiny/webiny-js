@@ -21,6 +21,7 @@ export interface IAttribute {
     validators: string | AttributeValidator;
     onSetCallback: AttributeValueCallback;
     onGetCallback: AttributeValueCallback;
+    onGetJSONValueCallback: AttributeValueCallback;
 
     getName(): string;
 

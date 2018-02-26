@@ -55,7 +55,11 @@ class MySQLDriver extends Driver {
 
     // eslint-disable-next-line
     sync(table: Table, options: CommandOptions): string {
-        return syncTable(table);
+        const sql = {
+            tableExists: `SHOW TABLES LIKE ${table.getName()};`,
+            tableObject: `DESCRIBE '${table.getName()}';`
+        };
+        return syncTable(table, sql);
     }
 
     async execute(sql: string) {
