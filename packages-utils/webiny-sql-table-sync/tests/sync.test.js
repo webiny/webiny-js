@@ -24,7 +24,7 @@ describe("sync test", function() {
 
         const syncSpy = sandbox.spy(TableA.getDriver(), "sync");
         await sync.execute();
-        assert.equal(syncSpy.callCount, 2);
+        assert.equal(syncSpy.callCount, 4);
     });
 
     it("should log a warning - no tables passed", async () => {
@@ -33,7 +33,7 @@ describe("sync test", function() {
         await sync.execute();
         const log = sync.getLog();
         assert.lengthOf(log, 1);
-        assert.equal(log[0].type, "warning");
+        assert.equal(log[0].tags.includes("warning"), true);
     });
 
     it("must log errors", async () => {
@@ -51,8 +51,7 @@ describe("sync test", function() {
         syncSpy.restore();
 
         const log = sync.getLog();
-        assert.equal(log[4].type, "error");
-        assert.equal(log[4].message, "Sync error!");
-        assert.equal(log[4].data.message, "Error.");
+        assert.isTrue(log[4].tags.includes("error"));
+        assert.equal(log[4].data.error.message, "Error.");
     });
 });

@@ -192,7 +192,7 @@ class Table {
     }
 
     async create(options: CommandOptions = {}): Promise<mixed> {
-        const sql = this.getDriver().create(this, options);
+        const sql = await this.getDriver().create(this, options);
         if (options.returnSQL) {
             return sql;
         }
@@ -201,7 +201,7 @@ class Table {
     }
 
     async alter(options: CommandOptions = {}): Promise<mixed> {
-        const sql = this.getDriver().alter(this, options);
+        const sql = await this.getDriver().alter(this, options);
         if (options.returnSQL) {
             return sql;
         }
@@ -210,16 +210,7 @@ class Table {
     }
 
     async drop(options: CommandOptions = {}): Promise<mixed> {
-        const sql = this.getDriver().drop(this, options);
-        if (options.returnSQL) {
-            return sql;
-        }
-
-        return this.getDriver().execute(sql);
-    }
-
-    async sync(options: CommandOptions = {}): Promise<mixed> {
-        const sql = this.getDriver().sync(this, options);
+        const sql = await this.getDriver().drop(this, options);
         if (options.returnSQL) {
             return sql;
         }
@@ -228,7 +219,16 @@ class Table {
     }
 
     async truncate(options: CommandOptions = {}): Promise<mixed> {
-        const sql = this.getDriver().truncate(this, options);
+        const sql = await this.getDriver().truncate(this, options);
+        if (options.returnSQL) {
+            return sql;
+        }
+
+        return this.getDriver().execute(sql);
+    }
+
+    async sync(options: CommandOptions = {}): Promise<mixed> {
+        const sql = await this.getDriver().sync(this, options);
         if (options.returnSQL) {
             return sql;
         }

@@ -25,4 +25,4 @@ export default `CREATE TABLE \`Completes\` (
 	KEY \`key\` (\`key\`),
 	UNIQUE KEY \`unique\` (\`one\`, \`two\`, \`three\`, \`four\`),
 	FULLTEXT KEY \`fullText\` (\`someSearchField\`)
-) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Main Completes table...'`;
+) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Main Completes table...';`;

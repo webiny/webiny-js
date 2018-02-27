@@ -26,13 +26,13 @@ describe("drop table test", function() {
         dropStub.restore();
 
         assert.deepEqual(sqlQueries, {
-            drop: "DROP TABLE `Users`"
+            drop: "DROP TABLE IF EXISTS `Users`;"
         });
     });
 
     it("should return only SQL when setting returnSQL option to true", async () => {
         const userTable = new UserTable();
         const sql = await userTable.drop({ returnSQL: true });
-        assert.equal(sql, "DROP TABLE `Users`");
+        assert.equal(sql, "DROP TABLE IF EXISTS `Users`;");
     });
 });

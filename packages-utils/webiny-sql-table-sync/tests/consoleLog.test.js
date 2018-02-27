@@ -3,7 +3,7 @@ import { assert } from "chai";
 import sinon from "sinon";
 import { Sync } from "./..";
 import { TableA, TableB } from "./tables";
-import { ConsoleLog } from "../src/consoleLog";
+import { ConsoleLog } from "..";
 
 const sandbox = sinon.sandbox.create();
 
@@ -17,6 +17,6 @@ describe("ConsoleLog test", function() {
 
         const syncSpy = sandbox.spy(ConsoleLog, "output");
         await sync.execute();
-        assert.equal(syncSpy.callCount, 5);
+        assert.equal(syncSpy.callCount, 10);
     });
 });

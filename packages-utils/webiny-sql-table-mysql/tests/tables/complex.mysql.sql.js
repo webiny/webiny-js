@@ -9,4 +9,4 @@ export default `CREATE TABLE \`ComplexRecords\` (
 	KEY \`age\` (\`id\`),
 	UNIQUE KEY \`firstNameLastName\` (\`firstName\`, \`lastName\`),
 	FULLTEXT KEY \`searchIndex\` (\`someSearchField\`)
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8 COLLATE=utf888 COMMENT='Main Complex records table...'`;
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8 COLLATE=utf888 COMMENT='Main Complex records table...';`;

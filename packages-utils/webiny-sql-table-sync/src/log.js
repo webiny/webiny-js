@@ -1,23 +1,22 @@
 // @flow
-import type { LogType } from "../types";
 
 class Log {
     message: string;
-    type: LogType;
-    data: ?{};
+    tags: Array<string>;
+    data: {};
 
-    constructor(message: string, type: LogType, data: ?{}) {
+    constructor(message: string, data: {}, tags: Array<string> = []) {
         this.message = message;
         this.data = data;
-        this.type = type;
+        this.tags = tags;
     }
 
     getMessage(): string {
         return this.message;
     }
 
-    getType(): LogType {
-        return this.type;
+    getTags(): Array<string> {
+        return this.tags;
     }
 
     getData(): ?{} {

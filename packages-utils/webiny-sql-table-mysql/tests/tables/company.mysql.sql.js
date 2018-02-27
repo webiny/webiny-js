@@ -9,4 +9,4 @@ export default `CREATE TABLE \`Companies\` (
 	KEY \`age\` (\`id\`),
 	UNIQUE KEY \`firstNameLastName\` (\`firstName\`, \`lastName\`),
 	FULLTEXT KEY \`searchIndex\` (\`someSearchField\`)
-) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Main Companies table...'`;
+) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Main Companies table...';`;

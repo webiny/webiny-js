@@ -14,27 +14,27 @@ class Driver {
     }
 
     // eslint-disable-next-line
-    create(table: Table, options: CommandOptions): string {
+    async create(table: Table, options: CommandOptions): Promise<string> {
         return "";
     }
 
     // eslint-disable-next-line
-    alter(table: Table, options: CommandOptions): string {
+    async alter(table: Table, options: CommandOptions): Promise<string> {
         return "";
     }
 
     // eslint-disable-next-line
-    drop(table: Table, options: CommandOptions): string {
+    async drop(table: Table, options: CommandOptions): Promise<string> {
         return "";
     }
 
     // eslint-disable-next-line
-    truncate(table: Table, options: CommandOptions): string {
+    async truncate(table: Table, options: CommandOptions): Promise<string> {
         return "";
     }
 
     // eslint-disable-next-line
-    sync(table: Table, options: CommandOptions): string {
+    async sync(table: Table, options: CommandOptions): Promise<string> {
         return "";
     }
 

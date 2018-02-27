@@ -4,9 +4,9 @@ import { Log, Sync } from "..";
 
 describe("Log test", function() {
     it("must set/get data correctly", async () => {
-        const log = new Log("Message.", "warning", { key: "value" });
+        const log = new Log("Message.", { key: "value" }, ["warning"]);
         assert.equal(log.getMessage(), "Message.");
-        assert.equal(log.getType(), "warning");
+        assert.isTrue(log.tags.includes("warning"));
         assert.deepEqual(log.getData(), { key: "value" });
     });
 
@@ -19,10 +19,10 @@ describe("Log test", function() {
         sync.__log(undefined, "warning");
 
         const log = sync.getLog();
-        assert.equal(log[0].type, "info");
-        assert.equal(log[1].type, "warning");
-        assert.equal(log[2].type, "error");
-        assert.equal(log[3].type, "success");
-        assert.equal(log[4].type, "warning");
+        assert.isTrue(log[0].tags.includes("info"));
+        assert.isTrue(log[1].tags.includes("warning"));
+        assert.isTrue(log[2].tags.includes("error"));
+        assert.isTrue(log[3].tags.includes("success"));
+        assert.isFalse(log[4].tags.includes("warning"));
     });
 });

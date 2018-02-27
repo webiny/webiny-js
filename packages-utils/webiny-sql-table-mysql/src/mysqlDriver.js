@@ -3,7 +3,7 @@ import ColumnsContainer from "./columnsContainer";
 import IndexesContainer from "./indexesContainer";
 import { Driver, Table } from "webiny-sql-table";
 import { MySQLConnection } from "webiny-mysql-connection";
-import { createTable, alterTable, truncateTable, dropTable, syncTable } from "./sql";
+import { createTable, alterTable, truncateTable, dropTable } from "./sql";
 import { MySQLDriverOptions, MySQL } from "./../types";
 import type { CommandOptions } from "webiny-sql-table/types";
 
@@ -34,35 +34,39 @@ class MySQLDriver extends Driver {
     }
 
     // eslint-disable-next-line
-    create(table: Table, options: CommandOptions): string {
+    async create(table: Table, options: CommandOptions) {
         return createTable(table);
     }
 
     // eslint-disable-next-line
-    alter(table: Table, options: CommandOptions): string {
+    async alter(table: Table, options: CommandOptions) {
         return alterTable(table);
     }
 
     // eslint-disable-next-line
-    drop(table: Table, options: CommandOptions): string {
+    async drop(table: Table, options: CommandOptions) {
         return dropTable(table);
     }
 
     // eslint-disable-next-line
-    truncate(table: Table, options: CommandOptions): string {
+    async truncate(table: Table, options: CommandOptions) {
         return truncateTable(table);
     }
 
     // eslint-disable-next-line
-    sync(table: Table, options: CommandOptions): string {
-        const sql = {
-            tableExists: `SHOW TABLES LIKE ${table.getName()};`,
-            tableObject: `DESCRIBE '${table.getName()}';`
-        };
-        return syncTable(table, sql);
+    async sync(table: Table, options: CommandOptions) {
+        const hasTable = await this.execute(`SHOW TABLES LIKE '${table.getName()}'`);
+        if (hasTable.length) {
+            // Table exist, we must alter the table.
+            // const tableStructure = await this.execute(`DESCRIBE ${table.getName()}`);
+            return "";
+        }
+
+        // Table does not exist, we can safely return SQL for new table creation create a new table.
+        return this.create(table, options);
     }
 
-    async execute(sql: string) {
+    async execute(sql: string): Promise<mixed> {
         const connection = this.getConnection();
         if (connection instanceof MySQLConnection) {
             return await connection.query(sql);
