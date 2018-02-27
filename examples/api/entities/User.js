@@ -1,5 +1,6 @@
 // @flow
 import { Identity } from "webiny-api-security";
+import webiny from "webiny-api";
 
 class User extends Identity {
     constructor() {
@@ -15,7 +16,11 @@ class User extends Identity {
         this.attr("lastName").char();
         this.attr("gravatar").dynamic(() => import("md5").then(md5 => md5(this.email)));
         // TODO
-        // this.attr('avatar').file().setTags('user', 'avatar').setOnDelete('cascade');
+        const storage = webiny.serviceManager.get("MyStorage");
+        this.attr("avatar")
+            .file()
+            .setTags("user", "avatar")
+            .setStorage(storage);
         // this.attr("passwordRecoveryCode").char();
         this.attr("enabled")
             .boolean()

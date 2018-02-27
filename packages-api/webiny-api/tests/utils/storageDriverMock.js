@@ -11,6 +11,10 @@ class MockDriver implements IFileStorageDriver {
         createDatePrefix: boolean
     };
 
+    flush() {
+        this.fileSystem = {};
+    }
+
     constructor(config: Object = {}) {
         this.config = config;
         this.fileSystem = {};
@@ -107,7 +111,7 @@ class MockDriver implements IFileStorageDriver {
      * Returns public file URL
      */
     getURL(key: string): string {
-        return _.trim(this.config.cdnUrl, "/") + "/" + key;
+        return _.trim(this.config.cdnUrl, "/") + "/" + _.trim(key, "/");
     }
 
     /**
