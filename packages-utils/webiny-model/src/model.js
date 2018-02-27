@@ -166,7 +166,7 @@ class Model implements IModel {
     async toJSON(fields: string): Promise<Object> {
         return await extractor.get(this, fields, {
             onRead: async (data, key) => {
-                if (data instanceof Model) {
+                if ("getAttribute" in data && typeof data.getAttribute === "function") {
                     if (!data.getAttribute(key)) {
                         return;
                     }

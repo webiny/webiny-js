@@ -7,7 +7,6 @@ import mdbid from "mdbid";
 import type { IFileData } from "webiny-file-storage/types";
 
 class File extends Entity {
-    static DEFAULT_STORAGE: string;
     storage: Storage;
     storageFolder: string;
     tags: Array<string>;
@@ -25,7 +24,9 @@ class File extends Entity {
         this.attr("size").integer();
         this.attr("type").char();
         this.attr("ext").char();
-        this.attr("src").char();
+        this.attr("src")
+            .char()
+            .onGetJSONValue(() => this.getURL());
         this.attr("tags").array();
         this.attr("ref").char();
         this.attr("order")
@@ -33,19 +34,7 @@ class File extends Entity {
             .setDefaultValue(0);
     }
 
-    async toJSON(path: ?string) {
-        const data = await Entity.prototype.toJSON.call(this, path);
-        const { src } = data;
-        if (typeof src === "string") {
-            if (!src.includes("http://") && !src.includes("https://") && !src.startsWith("//")) {
-                data.src = this.getUrl();
-            }
-        }
-
-        return data;
-    }
-
-    getUrl() {
+    getURL() {
         this.ensureStorage();
         return this.storage.getURL(this.src);
     }
@@ -99,11 +88,9 @@ class File extends Entity {
     /**
      * @inheritDoc
      */
-    async delete(params: EntityDeleteParams & Object = {}) {
+    async delete(params: EntityDeleteParams & Object = { permanent: true }) {
         await Entity.prototype.delete.call(this, params);
-        if (params.permanent) {
-            await this.deleteFileFromStorage();
-        }
+        await this.deleteFileFromStorage();
     }
 
     /**
@@ -127,7 +114,9 @@ class File extends Entity {
      * @return this
      */
     setStorageFolder(folder: string) {
-        this.storageFolder = folder;
+        if (folder) {
+            this.storageFolder = folder;
+        }
 
         return this;
     }
@@ -179,6 +168,6 @@ class File extends Entity {
     }
 }
 
-File.DEFAULT_STORAGE = "DefaultFileStorage";
+File.classId = "File";
 
 export default File;

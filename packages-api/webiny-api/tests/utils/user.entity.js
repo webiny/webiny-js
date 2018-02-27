@@ -3,7 +3,8 @@ import { Entity } from "webiny-api";
 import type { Storage } from "webiny-file-storage";
 
 declare type Config = {
-    documentStorage: Storage
+    documentStorage: Storage,
+    documentFolder: string
 };
 
 export default (config: Config) => {
@@ -15,6 +16,12 @@ export default (config: Config) => {
             this.attr("document")
                 .file()
                 .setTags(["user"])
+                .setFolder(config.documentFolder)
+                .setStorage(config.documentStorage);
+            this.attr("documents")
+                .files()
+                .setTags(["user"])
+                .setFolder(config.documentFolder)
                 .setStorage(config.documentStorage);
         }
     }

@@ -50,7 +50,7 @@ describe("File entity test", () => {
 
     it("should get file URL", async function() {
         const file = await File.findOne({ query: { name: "File1.jpeg" } });
-        expect(file.getUrl()).to.equal("https://cdn.webiny.com/" + file.src);
+        expect(file.getURL()).to.equal("https://cdn.webiny.com/" + file.src);
     });
 
     it("should contain storage folder", async function() {
@@ -116,22 +116,9 @@ describe("File entity test", () => {
         expect(fileBody).to.equal(jpegBase64.split(",").pop());
     });
 
-    it("should soft delete file entity", async function() {
-        const file1 = await File.findOne({ query: { name: "File1.jpeg" } });
-        await file1.delete();
-
-        let file = await File.findOne({ query: { name: "File1.jpeg" } });
-        expect(file).to.be.null;
-
-        file = await File.findOne({ query: { name: "File1.jpeg", deleted: true } });
-        expect(file).to.be.instanceof(File);
-    });
-
     it("should permanently delete file entity", async function() {
         const file1 = await File.findOne({ query: { name: "File1.jpeg" } });
-        await file1.delete({ permanent: true });
-
-        expect(() => file1.getFile()).to.throw;
+        await file1.delete();
 
         let file = await File.findOne({ query: { name: "File1.jpeg", deleted: true } });
         expect(file).to.be.null;

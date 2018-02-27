@@ -6,11 +6,11 @@ import type { Storage } from "webiny-file-storage";
 
 class FileAttribute extends EntityAttribute {
     storage: Storage;
+    storageFolder: string;
+    tags: Array<string>;
 
     constructor(name: string, attributesContainer: EntityAttributesContainer) {
         super(name, attributesContainer, File);
-        // TODO: @adrian onSetNull:delete ?
-        // mozda onSet, koji ce provjeriti dobiveni value, i ako je null, registrirati event onAfterSave, koji ce obrisati file ?
     }
 
     /**
@@ -55,7 +55,6 @@ class FileAttribute extends EntityAttribute {
     async getValue() {
         let value = await EntityAttribute.prototype.getValue.call(this);
         if (value instanceof this.getEntityClass()) {
-            value = _.uniqWith(value.tags.concat(this.tags), _.isEqual);
             if (this.storage) {
                 value.setStorage(this.storage).setStorageFolder(this.storageFolder);
             }
@@ -69,12 +68,20 @@ class FileAttribute extends EntityAttribute {
         const currentValue = await this.getValue();
         await EntityAttribute.prototype.setValue.call(this, value);
 
-        // If new files is being assigned and there is an existing file - delete the existing file after a successful save
-        if (currentValue && currentValue.id !== (await this.getValue()).id) {
+        const newValue = await this.getValue();
+        if (newValue instanceof this.getEntityClass()) {
+            newValue.tags = _.uniqWith(this.tags.concat(newValue.tags), _.isEqual);
+            if (this.storage) {
+                newValue.setStorage(this.storage).setStorageFolder(this.storageFolder);
+            }
+        }
+
+        // If new value is being assigned and there is an existing file - delete the existing file after a successful save
+        if (currentValue && (!newValue || currentValue.id !== newValue.id)) {
             this.getParentModel()
                 .getParentEntity()
                 .on("afterSave", async () => {
-                    await currentValue.delete();
+                    await currentValue.delete({ permanent: true });
                 })
                 .setOnce();
         }

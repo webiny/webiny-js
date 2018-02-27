@@ -12,7 +12,7 @@ class EntitiesAttribute extends Attribute {
     constructor(
         name: string,
         attributesContainer: EntityAttributesContainer,
-        entity: Entity,
+        entity: Class<Entity>,
         attributeName: ?string,
         id: ?Function
     ) {
