@@ -1,12 +1,14 @@
 import chalk from "chalk";
 import Log from "./log";
 
-export default class ConsoleLog extends Log {
+class ConsoleLog extends Log {
     constructor(message: string, data: {}, tags: Array<string>) {
         super(message, data, tags);
         ConsoleLog.output(message, data, tags);
     }
 
+    // TODO: complete tests!
+    // Not completely tested because formatting could maybe still change - once finished, update tests too!
     static output(message, data, tags) {
         const type = ConsoleLog.__getTypeFromTags(tags);
         let color = ConsoleLog.__getColorFromType(type);
@@ -33,15 +35,15 @@ export default class ConsoleLog extends Log {
     static __getColorFromType(type): string {
         switch (type) {
             case "error":
-                return "red";
+                return ConsoleLog.COLOR_ERROR;
             case "warning":
-                return "yellow";
+                return ConsoleLog.COLOR_WARNING;
             case "success":
-                return "green";
+                return ConsoleLog.COLOR_SUCCESS;
             case "info":
-                return "blue";
+                return ConsoleLog.COLOR_INFO;
             default:
-                return "default";
+                return ConsoleLog.COLOR_DEFAULT;
         }
     }
 
@@ -68,3 +70,11 @@ export default class ConsoleLog extends Log {
         return output;
     }
 }
+
+ConsoleLog.COLOR_ERROR = "red";
+ConsoleLog.COLOR_WARNING = "yellow";
+ConsoleLog.COLOR_SUCCESS = "green";
+ConsoleLog.COLOR_INFO = "blue";
+ConsoleLog.COLOR_DEFAULT = "default";
+
+export default ConsoleLog;

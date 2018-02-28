@@ -10,6 +10,11 @@ describe("Log test", function() {
         assert.deepEqual(log.getData(), { key: "value" });
     });
 
+    it("must return tags", async () => {
+        const log = new Log("Message.", { key: "value" }, ["warning"]);
+        assert.deepEqual(log.getTags(), ["warning"]);
+    });
+
     it("log methods must work with default values", async () => {
         const sync = new Sync();
         sync.logInfo();

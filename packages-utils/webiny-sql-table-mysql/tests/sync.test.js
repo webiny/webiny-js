@@ -6,21 +6,9 @@ import sinon from "sinon";
 
 const sandbox = sinon.sandbox.create();
 
-/*const connection = mysql.createPool({
-    host: "localhost",
-    port: 32768,
-    user: "root",
-    password: "dev",
-    database: "webiny",
-    timezone: "Z",
-    connectionLimit: 100
-});*/
-
 describe("sync table test", function() {
     afterEach(() => sandbox.restore());
     it("create table - should return only SQL when setting returnSQL option to true", async () => {
-        // UserTable.getDriver().setConnection(connection);
-
         const connectionStub = sandbox.stub(UserTable.getDriver(), "execute").callsFake(() => []);
 
         const userTable = new UserTable();
@@ -32,8 +20,6 @@ describe("sync table test", function() {
     });
 
     it("create table - should execute SQL", async () => {
-        // UserTable.getDriver().setConnection(connection);
-
         const connectionStub = sandbox.stub(UserTable.getDriver(), "execute").callsFake(() => []);
 
         const userTable = new UserTable();
