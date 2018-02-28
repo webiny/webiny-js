@@ -28,7 +28,7 @@ class File extends Entity {
             .char()
             .onGetJSONValue(() => this.getURL());
         this.attr("tags").array();
-        this.attr("ref").char();
+        this.attr("ref").entity(Entity);
         this.attr("order")
             .integer()
             .setDefaultValue(0);

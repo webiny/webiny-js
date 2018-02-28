@@ -107,6 +107,9 @@ class EntitiesAttributeValue extends AttributeValue {
 
         // Set current entities as new values.
         this.syncInitial();
+        if (classes.using.class) {
+            this.syncInitialLinks();
+        }
 
         typeof callback === "function" && (await callback());
 
@@ -166,9 +169,17 @@ class EntitiesAttributeValue extends AttributeValue {
      */
     syncInitial(): void {
         this.initial = this.getCurrent().map(entity => entity);
+    }
 
-        if (this.attribute.getUsingClass()) {
-            this.links.initial = this.getCurrentLinks().map(entity => entity);
+    async manageCurrent() {
+        const current = this.getCurrent();
+
+        for (let i = 0; i < current.length; i++) {
+            const entity = current[i];
+            await entity.set(
+                this.attribute.classes.entities.attribute,
+                this.attribute.getParentModel().getParentEntity()
+            );
         }
     }
 
@@ -221,7 +232,14 @@ class EntitiesAttributeValue extends AttributeValue {
         }
     }
 
-    async syncInitialLinks(): Promise<void> {
+    /**
+     * Creates a new array that contains all currently loaded entities.
+     */
+    syncInitialLinks(): void {
+        this.links.initial = this.getCurrentLinks().map(entity => entity);
+    }
+
+    async manageCurrentLinks(): Promise<void> {
         const links = [],
             current = this.getCurrent(),
             currentLinks = this.getCurrentLinks();
