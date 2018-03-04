@@ -44,7 +44,7 @@ describe("custom attribute test", function() {
 
     it("should load entities from database", async () => {
         let entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
-            return new QueryResult({ id: "xyz", assignedTo: { classId: "User", identity: "abc" } });
+            return new QueryResult({ id: "xyz", assignedTo: "abc", assignedToClassId: "User" });
         });
 
         const issue = await Issue.findById(1);
@@ -64,7 +64,7 @@ describe("custom attribute test", function() {
 
     it("should return correct storage values", async () => {
         let entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
-            return new QueryResult({ id: "xyz", assignedTo: { classId: "User", identity: "abc" } });
+            return new QueryResult({ id: "xyz", assignedTo: "abc", assignedToClassId: "User" });
         });
 
         const issue = await Issue.findById(1);
@@ -76,10 +76,8 @@ describe("custom attribute test", function() {
         assert.deepEqual(storage, {
             id: "xyz",
             title: null,
-            assignedTo: {
-                classId: "User",
-                identity: "abc"
-            }
+            assignedTo: "abc",
+            assignedToClassId: "User"
         });
 
         entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
@@ -93,10 +91,8 @@ describe("custom attribute test", function() {
         assert.deepEqual(storage, {
             id: "xyz",
             title: null,
-            assignedTo: {
-                classId: "User",
-                identity: "abc"
-            }
+            assignedTo: "abc",
+            assignedToClassId: "User"
         });
     });
 });

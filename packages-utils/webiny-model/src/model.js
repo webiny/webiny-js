@@ -3,11 +3,10 @@ import _ from "lodash";
 import extractor from "webiny-data-extractor";
 import DefaultAttributesContainer from "./defaultAttributesContainer";
 import ModelError from "./modelError";
-import Attribute from "./attribute";
-import type { IModel, IAttribute } from "../flow-typed";
+import type Attribute from "./attribute";
 
-class Model implements IModel {
-    attributes: { [string]: IAttribute };
+class Model {
+    attributes: { [string]: Attribute };
     validating: boolean;
     attributesContainer: DefaultAttributesContainer;
 
@@ -61,18 +60,18 @@ class Model implements IModel {
         return this.attributesContainer;
     }
 
-    getAttribute(attribute: string): ?IAttribute {
+    getAttribute(attribute: string): ?Attribute {
         if (_.has(this.attributes, attribute)) {
             return this.attributes[attribute];
         }
     }
 
-    setAttribute(name: string, attribute: IAttribute): Model {
+    setAttribute(name: string, attribute: Attribute): Model {
         this.attributes[name] = attribute;
         return this;
     }
 
-    getAttributes(): { [string]: IAttribute } {
+    getAttributes(): { [string]: Attribute } {
         return this.attributes;
     }
 
@@ -85,7 +84,7 @@ class Model implements IModel {
     isDirty(): boolean {
         let name;
         for (name in this.attributes) {
-            const attribute: IAttribute = this.attributes[name];
+            const attribute: Attribute = this.attributes[name];
             if (attribute.value.isDirty()) {
                 return true;
             }
@@ -133,7 +132,7 @@ class Model implements IModel {
         const invalidAttributes = {};
         await Promise.all(
             Object.keys(this.attributes).map(async (name: string) => {
-                const attribute: IAttribute = this.attributes[name];
+                const attribute: Attribute = this.attributes[name];
                 try {
                     await attribute.validate();
                 } catch (e) {

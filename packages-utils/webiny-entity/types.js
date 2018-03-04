@@ -35,3 +35,11 @@ export type EntityDeleteParams = {
         afterDelete?: boolean
     }
 };
+
+export type EntityAttributeOptions = {
+    classIdAttribute?: string
+};
+
+export type EntitiesAttributeOptions = {
+    classIdAttribute?: string
+};

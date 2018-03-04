@@ -18,6 +18,7 @@ class Entity1 extends Entity {
         });
     }
 }
+Entity1.classId = "Entity1";
 
 class Entity2 extends Entity {
     constructor() {
@@ -38,6 +39,7 @@ class Entity2 extends Entity {
         });
     }
 }
+Entity2.classId = "Entity2";
 
 class MainEntity extends Entity {
     constructor() {
@@ -46,6 +48,8 @@ class MainEntity extends Entity {
         this.attr("attribute2").entities(Entity2);
     }
 }
+
+MainEntity.classId = "MainEntity";
 
 class MainSetOnceEntity extends Entity {
     constructor() {
@@ -56,5 +60,7 @@ class MainSetOnceEntity extends Entity {
         this.attr("attribute2").entities(Entity2);
     }
 }
+
+MainSetOnceEntity.classId = "MainSetOnceEntity";
 
 export { Entity1, Entity2, MainEntity, MainSetOnceEntity };

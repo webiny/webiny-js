@@ -10,6 +10,8 @@ export class User extends Entity {
     }
 }
 
+User.classId = "User";
+
 export class Document extends Entity {
     constructor() {
         super();
@@ -18,6 +20,8 @@ export class Document extends Entity {
         this.attr("type").char();
     }
 }
+
+Document.classId = "Document";
 
 export class VerificationModel extends EntityModel {
     constructor(params) {

@@ -81,9 +81,9 @@ class Authentication implements IAuthentication {
     }
 
     /**
-     * Get identity class.
+     * Returns Identity class for given `classId`.
      * @param {string} classId
-     * @returns {Class<Identity>} Identity class corresponding to `classId`.
+     * @returns {Class<Identity>} Identity class corresponding to given `classId`.
      */
     getIdentityClass(classId: string): Class<Identity> | null {
         for (let i = 0; i < this.config.identities.length; i++) {
@@ -92,6 +92,16 @@ class Authentication implements IAuthentication {
             }
         }
         return null;
+    }
+
+    /**
+     * Returns all set `Identity` classes.
+     * @returns {Array<Class<Identity>>} All set `Identity` classes.
+     */
+    getIdentityClasses(): Array<Class<Identity>> | null {
+        return this.config.identities.map(current => {
+            return current.identity;
+        });
     }
 }
 

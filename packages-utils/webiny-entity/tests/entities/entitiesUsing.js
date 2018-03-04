@@ -10,12 +10,16 @@ class User extends Entity {
     }
 }
 
+User.classId = "User";
+
 class Group extends Entity {
     constructor() {
         super();
         this.attr("name").char();
     }
 }
+
+Group.classId = "Group";
 
 class UsersGroups extends Entity {
     constructor() {
@@ -24,5 +28,6 @@ class UsersGroups extends Entity {
         this.attr("group").entity(Group);
     }
 }
+UsersGroups.classId = "UsersGroups";
 
 export { User, Group, UsersGroups };

@@ -10,6 +10,8 @@ class One extends Entity {
     }
 }
 
+One.classId = "One";
+
 class Two extends Entity {
     constructor() {
         super();
@@ -19,6 +21,7 @@ class Two extends Entity {
             .setAutoDelete();
     }
 }
+Two.classId = "Two";
 
 class Three extends Entity {
     constructor() {
@@ -38,6 +41,7 @@ class Three extends Entity {
             .setAutoDelete();
     }
 }
+Three.classId = "Three";
 
 class Four extends Entity {
     constructor() {
@@ -45,6 +49,7 @@ class Four extends Entity {
         this.attr("name").char();
     }
 }
+Four.classId = "Four";
 
 class Five extends Entity {
     constructor() {
@@ -52,6 +57,7 @@ class Five extends Entity {
         this.attr("name").char();
     }
 }
+Five.classId = "Five";
 
 class Six extends Entity {
     constructor() {
@@ -59,5 +65,6 @@ class Six extends Entity {
         this.attr("name").char();
     }
 }
+Six.classId = "Six";
 
 export { One, Two, Three, Four, Five, Six };

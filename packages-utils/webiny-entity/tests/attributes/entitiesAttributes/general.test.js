@@ -192,8 +192,7 @@ describe("attribute entities test", function() {
         assert.deepEqual(entity.getAttribute("entitiesUsing").classes, {
             entities: {
                 attribute: "mainEntity",
-                class: Entity1,
-                id: null
+                class: Entity1
             },
             parent: "MainEntity",
             using: {

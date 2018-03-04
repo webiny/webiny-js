@@ -1,6 +1,5 @@
 // @flow
-import type { IModel } from "./../flow-typed";
-
+import type { Model } from ".";
 import AttributesContainer from "./attributesContainer";
 import {
     ArrayAttribute,
@@ -60,13 +59,13 @@ class DefaultAttributesContainer extends AttributesContainer {
         return model.getAttribute(this.name);
     }
 
-    model(model: IModel): ModelAttribute {
+    model(model: Model): ModelAttribute {
         const parent = this.getParentModel();
         parent.setAttribute(this.name, new ModelAttribute(this.name, this, model));
         return parent.getAttribute(this.name);
     }
 
-    models(model: IModel): ModelsAttribute {
+    models(model: Model): ModelsAttribute {
         const parent = this.getParentModel();
         parent.setAttribute(this.name, new ModelsAttribute(this.name, this, model));
         return parent.getAttribute(this.name);

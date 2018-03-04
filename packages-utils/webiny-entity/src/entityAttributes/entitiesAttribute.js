@@ -13,13 +13,12 @@ class EntitiesAttribute extends Attribute {
         name: string,
         attributesContainer: EntityAttributesContainer,
         entity: Class<Entity>,
-        attributeName: ?string,
-        id: ?Function
+        attributeName: ?string
     ) {
         super(name, attributesContainer, entity);
         this.classes = {
             parent: this.getParentModel().getParentEntity().constructor.name,
-            entities: { class: entity, attribute: attributeName, id },
+            entities: { class: entity, attribute: attributeName },
             using: { class: null, attribute: null }
         };
 
@@ -153,13 +152,7 @@ class EntitiesAttribute extends Attribute {
     }
 
     getEntitiesClass(): ?Class<Entity> {
-        const entitiesClass = this.classes.entities.class;
-
-        if (entitiesClass.name) {
-            return entitiesClass;
-        }
-
-        return entitiesClass();
+        return this.classes.entities.class;
     }
 
     getUsingClass(): ?Class<Entity> {

@@ -1,14 +1,14 @@
 // @flow
 import { AttributeValue } from "webiny-model";
+import type { Attribute } from "webiny-model";
+
 import Entity from "./../entity";
 import EntityCollection from "./../entityCollection";
-
-import { IAttribute } from "webiny-model/flow-typed";
 
 class EntitiesAttributeValue extends AttributeValue {
     initial: EntityCollection;
 
-    constructor(attribute: IAttribute) {
+    constructor(attribute: Attribute) {
         super(attribute);
 
         this.current = new EntityCollection();
@@ -78,15 +78,10 @@ class EntitiesAttributeValue extends AttributeValue {
                     .getParentEntity()
                     .isExisting()
             ) {
-                let id = classes.entities.id;
-                if (typeof id === "function") {
-                    id = id();
-                } else {
-                    id = await this.attribute
-                        .getParentModel()
-                        .getAttribute("id")
-                        .getStorageValue();
-                }
+                let id = await this.attribute
+                    .getParentModel()
+                    .getAttribute("id")
+                    .getStorageValue();
 
                 if (classes.using.class) {
                     this.links.current = await classes.using.class.find({

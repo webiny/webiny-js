@@ -26,6 +26,8 @@ class Invoice extends Entity {
     }
 }
 
+Invoice.classId = "Invoice";
+
 class Company extends Entity {
     constructor() {
         super();
@@ -40,6 +42,8 @@ class Company extends Entity {
             .setDefaultValue(0);
     }
 }
+
+Company.classId = "Company";
 
 Invoice.on("paid", async ({ entity, price }) => {
     const company = await entity.company;

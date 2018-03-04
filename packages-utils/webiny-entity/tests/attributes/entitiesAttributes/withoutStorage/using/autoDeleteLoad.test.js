@@ -14,8 +14,7 @@ describe("attribute entities (using an additional aggregation class) - loading t
         expect(classes).to.deep.equal({
             entities: {
                 attribute: "user",
-                class: Group,
-                id: null
+                class: Group
             },
             parent: "User",
             using: {

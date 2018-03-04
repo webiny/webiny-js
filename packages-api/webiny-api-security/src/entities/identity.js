@@ -27,8 +27,6 @@ class Identity extends Entity implements IAuthorizable {
             .entities(RoleGroup, "identity", () => this.identityId)
             .setUsing(Identity2RoleGroup)
             .onSet(onSetFactory(RoleGroup));
-
-        this.attr("identityId").dynamic(() => this.classId + ":" + this.id);
     }
 
     /**
