@@ -8,12 +8,22 @@ class Main extends Entity {
     }
 }
 
-class MainMissingClassIdAttribute extends Entity {
+class MainMissingClassIdAttributeOption extends Entity {
     constructor() {
         super();
         this.attr("assignedTo").entity([A, B, C]);
     }
 }
+MainMissingClassIdAttributeOption.classId = "MainMissingClassIdAttributeOption";
+
+class MainMissingClassIdAttribute extends Entity {
+    constructor() {
+        super();
+        this.attr("assignedTo").entity([A, B, C], { classIdAttribute: "assignedToClassId" });
+        this.attr("assignedToClassIdEdited").char();
+    }
+}
+MainMissingClassIdAttribute.classId = "MainMissingClassIdAttribute";
 
 Main.classId = "Issue";
 
@@ -44,4 +54,19 @@ class C extends Entity {
 
 C.classId = "C";
 
-export { Main, MainMissingClassIdAttribute, A, B, C };
+class InvalidEntityClass extends Entity {
+    constructor() {
+        super();
+    }
+}
+InvalidEntityClass.classId = "InvalidEntityClass";
+
+export {
+    Main,
+    MainMissingClassIdAttributeOption,
+    MainMissingClassIdAttribute,
+    InvalidEntityClass,
+    A,
+    B,
+    C
+};

@@ -309,7 +309,7 @@ class EntityAttribute extends Attribute {
                     throw new EntityError(
                         `Entity attribute "${
                             this.name
-                        }" accepts multiple Entity classes but it was not found (classId attribute holds value "${classIdAttribute}").`,
+                        }" accepts multiple Entity classes but it was not found (classId attribute holds value "${classIdAttribute.getValue()}").`,
                         ModelError.INVALID_ATTRIBUTE
                     );
                 }

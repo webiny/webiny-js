@@ -22,5 +22,6 @@ describe("default Driver test", function() {
         assert.equal(await driver.alter(), "");
         assert.equal(await driver.drop(), "");
         assert.equal(await driver.truncate(), "");
+        assert.equal(await driver.sync(), "");
     });
 });
