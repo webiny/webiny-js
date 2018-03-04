@@ -80,6 +80,7 @@
     "test:webiny-entity-mysql": "yarn mocha \"packages-utils/webiny-entity-mysql/tests/**/*.test.js\"",
     "test:webiny-image-processor": "yarn mocha \"packages-utils/webiny-image-processor/tests/**/*.test.js\"",
     "test:webiny-model": "yarn mocha \"packages-utils/webiny-model/tests/**/*.test.js\"",
+    "test:webiny-semantic-release": "yarn mocha \"packages-utils/webiny-semantic-release/tests/**/*.test.js\"",
     "test:webiny-sql-query": "yarn mocha \"packages-utils/webiny-sql-query/tests/**/*.test.js\"",
     "test:webiny-sql-table": "yarn mocha \"packages-utils/webiny-sql-table/tests/**/*.test.js\"",
     "test:webiny-sql-table-mysql": "yarn mocha \"packages-utils/webiny-sql-table-mysql/tests/**/*.test.js\"",

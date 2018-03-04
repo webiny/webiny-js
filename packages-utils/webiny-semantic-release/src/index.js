@@ -1,10 +1,12 @@
-#!/usr/bin/env node
 import compose from "webiny-compose";
+import hookStd from "hook-std";
 import logger from "./utils/logger";
+import Git from "./utils/git";
 import getRepository from "./utils/getRepository";
 import verifyEnvironment from "./plugins/verifyEnvironment";
 import getLernaPackages from "./utils/getLernaPackages";
 import getSinglePackage from "./utils/getSinglePackage";
+import stdOut from "./utils/stdOut";
 
 import analyzeCommits from "./plugins/analyzeCommits";
 import githubVerify from "./plugins/github/verify";
@@ -30,6 +32,7 @@ export default async config => {
     const params = {
         packages: Array.isArray(config.packages) ? config.packages : [config.packages],
         logger: logger(),
+        git: new Git(),
         config: {
             ci: config.ci || true,
             preview: config.preview || false,
@@ -37,7 +40,7 @@ export default async config => {
             branch: config.branch || "master",
             tagFormat:
                 typeof config.tagFormat === "function"
-                    ? config.tagFormat
+                    ? () => config.tagFormat
                     : pkg => pkg.name + "@v${version}"
         }
     };
@@ -73,5 +76,14 @@ export default async config => {
         }
     });
 
-    return compose([verifyEnvironment(), ...config.plugins])(params);
+    // Connect to the stdout and process each line of the output using `stdOut` function
+    const unhook = hookStd({ silent: false }, stdOut);
+    try {
+        const result = await compose([verifyEnvironment(), ...config.plugins])(params);
+        unhook();
+        return result;
+    } catch (err) {
+        unhook();
+        throw err;
+    }
 };

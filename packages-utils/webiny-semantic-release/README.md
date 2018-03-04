@@ -84,17 +84,17 @@ const projectPackages = getLernaPackages();
 
 // For custom project structures you just need to specify your packages using the following template:
 const projectPackages = [
-	{
-		name: 'package-1',
-		location: '/my/project/packages/package-1',
-		packageJSON: {
-			// Here goes the ENTIRE content of `package.json` file
-			name: 'package-1',
-			version: '0.0.0-semantically-released',
-			dependencies: {},
-			// ...
-		}
-	}
+{
+    name: 'package-1',
+    location: '/my/project/packages/package-1',
+    packageJSON: {
+        // Here goes the ENTIRE content of `package.json` file
+        name: 'package-1',
+        version: '0.0.0-semantically-released',
+        dependencies: {},
+        // ...
+    }
+}
 ];
 
 // Run release (returns a Promise)

@@ -1,22 +1,27 @@
 import semver from "semver";
 import { template } from "lodash";
 import commitAnalyzer from "@semantic-release/commit-analyzer";
-import getCommits from "./../../utils/getCommits";
-import getLastReleaseFactory from "./../../utils/getLastRelease";
-import { unshallow, gitHead } from "./../../utils/git";
+import getCommits from "./getCommits";
+import getLastReleaseFactory from "./getLastRelease";
 import getRelevantCommits from "./relevantCommits";
 
-export default () => {
+/**
+ * Plugin factory.
+ * @param {Object} pluginConfig
+ * @param {Object} pluginConfig.analyzeCommits (@https://github.com/semantic-release/commit-analyzer#options)
+ * @returns {function(*, *)}
+ */
+export default (pluginConfig = {}) => {
     /**
      * Analyze commits for all packages and determine next release version
      */
     return async (params, next) => {
-        const { packages, logger, config } = params;
+        const { packages, logger, config, git } = params;
 
-        const getLastRelease = getLastReleaseFactory({ logger });
+        const getLastRelease = getLastReleaseFactory({ logger, git });
 
         // Fetch all commits and tags
-        await unshallow();
+        await git.unshallow();
 
         // Detect next version for all packages
         for (let i = 0; i < packages.length; i++) {
@@ -41,7 +46,7 @@ export default () => {
             }
 
             const type = await commitAnalyzer(
-                {},
+                pluginConfig.analyzeCommits || {},
                 Object.assign({ logger, commits: relevantCommits })
             );
             relevantCommits.length &&
@@ -56,13 +61,12 @@ export default () => {
                 version = "1.0.0";
                 logger.log("There is no previous release, the next release version is %s", version);
             }
-            const nextRelease = {
+            packages[i]["nextRelease"] = {
                 type,
                 version,
-                gitHead: await gitHead(),
+                gitHead: await git.head(),
                 gitTag: template(tagFormat)({ version })
             };
-            packages[i]["nextRelease"] = nextRelease;
             logger.log(`======== Finished processing package ========\n\n`);
         }
         next();

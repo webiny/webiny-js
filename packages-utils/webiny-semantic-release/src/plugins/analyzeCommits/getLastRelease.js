@@ -7,7 +7,6 @@
 import { escapeRegExp, template } from "lodash";
 import semver from "semver";
 import pLocate from "p-locate";
-import { gitTags, isRefInHistory, gitTagHead } from "./git";
 
 /**
  * Determine the Git tag and version of the last tagged release.
@@ -18,16 +17,17 @@ import { gitTags, isRefInHistory, gitTagHead } from "./git";
  * - Retrieve the highest version
  *
  * @param {Object} logger Global logger.
- * @return {Promise<LastRelease>} The last tagged release or `undefined` if none is found.
+ * @param {Object} git .
+ * @return {Promise<Object>} The last tagged release or `undefined` if none is found.
  */
-export default ({ logger }) => {
+export default ({ logger, git }) => {
     return async tagFormat => {
         // Generate a regex to parse tags formatted with `tagFormat`
         // by replacing the `version` variable in the template by `(.+)`.
         // The `tagFormat` is compiled with space as the `version` as it's an invalid tag character,
         // so it's guaranteed to no be present in the `tagFormat`.
         const tagRegexp = escapeRegExp(template(tagFormat)({ version: " " })).replace(" ", "(.+)");
-        const tags = (await gitTags())
+        const tags = (await git.tags())
             .map(tag => {
                 return { gitTag: tag, version: (tag.match(tagRegexp) || new Array(2))[1] };
             })
@@ -35,13 +35,13 @@ export default ({ logger }) => {
             .sort((a, b) => semver.rcompare(a.version, b.version));
 
         if (tags.length > 0) {
-            const { gitTag, version } = await pLocate(tags, tag => isRefInHistory(tag.gitTag), {
+            const { gitTag, version } = await pLocate(tags, tag => git.isRefInHistory(tag.gitTag), {
                 concurrency: 1,
                 preserveOrder: true
             });
             logger.log("Found git tag %s associated with version %s", gitTag, version);
 
-            return { gitHead: await gitTagHead(gitTag), gitTag, version };
+            return { gitHead: await git.tagHead(gitTag), gitTag, version };
         }
 
         logger.log("No git tag version found");

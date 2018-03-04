@@ -9,10 +9,7 @@ export default (commits, pkg) => {
 function isRelevant(affectsLine, packageName) {
     const affectedPackages = getAffectedPackages(affectsLine);
     return affectedPackages.some(function(thisPackage) {
-        if (thisPackage.indexOf("@") === -1 || thisPackage.lastIndexOf("@") === 0) {
-            return thisPackage === packageName;
-        }
-        return thisPackage.substring(0, thisPackage.lastIndexOf("@")) === packageName;
+        return thisPackage === packageName;
     });
 }
 
@@ -24,7 +21,10 @@ function getAffectedPackages(affectsLine) {
     if (trimmedPackages.length === 0) {
         return [];
     }
-    return trimmedPackages.split(", ");
+    return trimmedPackages
+        .split(",")
+        .map(p => p.trim())
+        .filter(p => p.length);
 }
 
 function findAffectsLine(commit) {

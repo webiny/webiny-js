@@ -33,8 +33,9 @@ class File extends Entity {
             });
         this.attr("tags").array();
 
-        this.attr("ref").entity([], { classIdAttribute: "refType" });
-        this.attr("refType").char();
+        // `ref` can be linked with any Entity class so we have to provide a `classIdAttribute` to store related Entity classId
+        this.attr("ref").entity([], { classIdAttribute: "refClassId" });
+        this.attr("refClassId").char();
 
         this.attr("order")
             .integer()
