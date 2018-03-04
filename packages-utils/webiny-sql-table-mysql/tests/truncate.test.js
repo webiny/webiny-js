@@ -26,13 +26,13 @@ describe("truncate table test", function() {
         truncateStub.restore();
 
         assert.deepEqual(sqlQueries, {
-            truncate: "TRUNCATE TABLE `Users`"
+            truncate: "TRUNCATE TABLE `Users`;"
         });
     });
 
     it("should return only SQL when setting returnSQL option to true", async () => {
         const userTable = new UserTable();
         const sql = await userTable.truncate({ returnSQL: true });
-        assert.equal(sql, "TRUNCATE TABLE `Users`");
+        assert.equal(sql, "TRUNCATE TABLE `Users`;");
     });
 });

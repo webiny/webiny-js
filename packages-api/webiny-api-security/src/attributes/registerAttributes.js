@@ -3,6 +3,7 @@ import { EntityAttributesContainer } from "webiny-entity";
 import type { IAuthentication } from "../../types";
 import passwordAttrFactory from "./passwordAttribute";
 import identityAttributeFactory from "./identityAttribute";
+import type { EntityAttributeOptions } from "webiny-entity/types";
 
 export default (authentication: IAuthentication) => {
     const PasswordAttribute = passwordAttrFactory();
@@ -24,9 +25,9 @@ export default (authentication: IAuthentication) => {
      * @package webiny-api-security
      * @return {IdentityAttribute}
      */
-    EntityAttributesContainer.prototype.identity = function() {
+    EntityAttributesContainer.prototype.identity = function(options: EntityAttributeOptions) {
         const model = this.getParentModel();
-        model.setAttribute(this.name, new IdentityAttribute(this.name, this));
+        model.setAttribute(this.name, new IdentityAttribute(this.name, this, options));
         return model.getAttribute(this.name);
     };
 };

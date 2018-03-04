@@ -1,14 +1,14 @@
 // @flow
 import { AttributeValue } from "webiny-model";
+import type { Attribute } from "webiny-model";
+
 import Entity from "./../entity";
 import EntityCollection from "./../entityCollection";
-
-import { IAttribute } from "webiny-model/flow-typed";
 
 class EntitiesAttributeValue extends AttributeValue {
     initial: EntityCollection;
 
-    constructor(attribute: IAttribute) {
+    constructor(attribute: Attribute) {
         super(attribute);
 
         this.current = new EntityCollection();
@@ -66,7 +66,6 @@ class EntitiesAttributeValue extends AttributeValue {
             if (this.attribute.getToStorage()) {
                 if (this.hasCurrent()) {
                     if (classes.using.class) {
-                        // TODO: finish this.
                         this.current = await classes.using.class.findByIds(this.current);
                     } else {
                         this.current = await classes.entities.class.findByIds(this.current);
@@ -78,15 +77,10 @@ class EntitiesAttributeValue extends AttributeValue {
                     .getParentEntity()
                     .isExisting()
             ) {
-                let id = classes.entities.id;
-                if (typeof id === "function") {
-                    id = id();
-                } else {
-                    id = await this.attribute
-                        .getParentModel()
-                        .getAttribute("id")
-                        .getStorageValue();
-                }
+                let id = await this.attribute
+                    .getParentModel()
+                    .getAttribute("id")
+                    .getStorageValue();
 
                 if (classes.using.class) {
                     this.links.current = await classes.using.class.find({
@@ -107,6 +101,9 @@ class EntitiesAttributeValue extends AttributeValue {
 
         // Set current entities as new values.
         this.syncInitial();
+        if (classes.using.class) {
+            this.syncInitialLinks();
+        }
 
         typeof callback === "function" && (await callback());
 
@@ -166,9 +163,17 @@ class EntitiesAttributeValue extends AttributeValue {
      */
     syncInitial(): void {
         this.initial = this.getCurrent().map(entity => entity);
+    }
 
-        if (this.attribute.getUsingClass()) {
-            this.links.initial = this.getCurrentLinks().map(entity => entity);
+    async manageCurrent() {
+        const current = this.getCurrent();
+
+        for (let i = 0; i < current.length; i++) {
+            const entity = current[i];
+            await entity.set(
+                this.attribute.classes.entities.attribute,
+                this.attribute.getParentModel().getParentEntity()
+            );
         }
     }
 
@@ -221,7 +226,14 @@ class EntitiesAttributeValue extends AttributeValue {
         }
     }
 
-    async syncInitialLinks(): Promise<void> {
+    /**
+     * Creates a new array that contains all currently loaded entities.
+     */
+    syncInitialLinks(): void {
+        this.links.initial = this.getCurrentLinks().map(entity => entity);
+    }
+
+    async manageCurrentLinks(): Promise<void> {
         const links = [],
             current = this.getCurrent(),
             currentLinks = this.getCurrentLinks();

@@ -18,13 +18,15 @@ export default memoryDriver => {
     memoryDriver.import("Security.Identity2Role", [
         {
             id: "1",
-            identity: "MyUser:user1",
+            identity: "user1",
+            identityClassId: "MyUser",
             role: "role1",
             deleted: false
         },
         {
             id: "2",
-            identity: "MyUser:user1",
+            identity: "user1",
+            identityClassId: "MyUser",
             role: "role2",
             deleted: false
         }
@@ -57,7 +59,8 @@ export default memoryDriver => {
     memoryDriver.import("Security.Identity2RoleGroup", [
         {
             id: "1",
-            identity: "MyUser:user1",
+            identity: "user1",
+            identityClassId: "MyUser",
             roleGroup: "roleGroup1",
             deleted: false
         }

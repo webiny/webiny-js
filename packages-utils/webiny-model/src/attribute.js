@@ -3,29 +3,22 @@ import _ from "lodash";
 import { validation } from "webiny-validation";
 import ModelError from "./modelError";
 import AttributeValue from "./attributeValue";
+import type { AttributesContainer, Model } from ".";
 
-import type {
-    IAttribute,
-    AttributeValueCallback,
-    IAttributesContainer,
-    IModel,
-    AttributeValidator
-} from "./../flow-typed";
-
-class Attribute implements IAttribute {
+class Attribute {
     name: string;
-    attributesContainer: IAttributesContainer;
+    attributesContainer: AttributesContainer;
     value: AttributeValue;
     once: boolean;
     toStorage: boolean;
     toJSON: boolean;
     skipOnPopulate: boolean;
     defaultValue: mixed;
-    validators: ?(string | AttributeValidator);
-    onSetCallback: AttributeValueCallback;
-    onGetCallback: AttributeValueCallback;
-    onGetJSONValueCallback: AttributeValueCallback;
-    constructor(name: string, attributesContainer: IAttributesContainer) {
+    validators: ?(string | Function);
+    onSetCallback: Function;
+    onGetCallback: Function;
+    onGetJSONValueCallback: Function;
+    constructor(name: string, attributesContainer: AttributesContainer) {
         /**
          * Attribute name.
          */
@@ -98,14 +91,14 @@ class Attribute implements IAttribute {
      * Returns parent model attributes container
      */
 
-    getParentAttributesContainer(): IAttributesContainer {
+    getParentAttributesContainer(): AttributesContainer {
         return this.attributesContainer;
     }
 
     /**
      * Returns model
      */
-    getParentModel(): IModel {
+    getParentModel(): Model {
         return this.getParentAttributesContainer().getParentModel();
     }
 
@@ -114,7 +107,7 @@ class Attribute implements IAttribute {
      * @param validators
      * @returns {Attribute}
      */
-    setValidators(validators: string | Function = ""): IAttribute {
+    setValidators(validators: string | Function = ""): Attribute {
         this.validators = validators;
         return this;
     }
@@ -123,7 +116,7 @@ class Attribute implements IAttribute {
      * Returns defined validators or validation callback.
      * @returns {array}
      */
-    getValidators(): string | AttributeValidator {
+    getValidators(): ?(string | Function) {
         return this.validators;
     }
 
@@ -180,7 +173,7 @@ class Attribute implements IAttribute {
      */
     async validateAttribute(value: mixed) {
         let validators = this.getValidators();
-        if (_.isString(validators)) {
+        if (typeof validators === "string") {
             try {
                 await validation.validate(value, validators);
             } catch (e) {
@@ -198,7 +191,7 @@ class Attribute implements IAttribute {
     /**
      * Resets attribute - empties value and resets value.set flag, which means setting value will again work in cases setOnce is present.
      */
-    reset(): IAttribute {
+    reset(): Attribute {
         this.value.reset();
         return this;
     }
@@ -206,7 +199,7 @@ class Attribute implements IAttribute {
     /**
      * Sets skip on populate - if true, value won't be set into attribute when populate method on parent model instance is called.
      */
-    setSkipOnPopulate(flag: boolean = true): IAttribute {
+    setSkipOnPopulate(flag: boolean = true): Attribute {
         this.skipOnPopulate = flag;
         return this;
     }
@@ -269,17 +262,17 @@ class Attribute implements IAttribute {
         return this.onGetCallback(this.value.getCurrent());
     }
 
-    onSet(callback: AttributeValueCallback) {
+    onSet(callback: Function) {
         this.onSetCallback = callback;
         return this;
     }
 
-    onGet(callback: AttributeValueCallback) {
+    onGet(callback: Function) {
         this.onGetCallback = callback;
         return this;
     }
 
-    onGetJSONValue(callback: AttributeValueCallback) {
+    onGetJSONValue(callback: Function) {
         this.onGetJSONValueCallback = callback;
         return this;
     }
@@ -301,7 +294,7 @@ class Attribute implements IAttribute {
         return this.getValue();
     }
 
-    setStorageValue(value: mixed): this {
+    setStorageValue(value: mixed): Attribute {
         // We don't want to mark value as dirty.
         this.value.setCurrent(value, { skipDifferenceCheck: true });
         return this;

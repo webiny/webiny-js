@@ -32,7 +32,10 @@ class File extends Entity {
                 return /^(https?:)?\/\//.test(value) ? value : this.getURL();
             });
         this.attr("tags").array();
-        this.attr("ref").char();
+
+        this.attr("ref").entity([], { classIdAttribute: "refType" });
+        this.attr("refType").char();
+
         this.attr("order")
             .integer()
             .setDefaultValue(0);
@@ -80,7 +83,9 @@ class File extends Entity {
             }
 
             const key = File.createKey(this.name);
-            this.src = await this.storage.setFile(path.join(this.storageFolder, key), { body: this.buffer });
+            this.src = await this.storage.setFile(path.join(this.storageFolder, key), {
+                body: this.buffer
+            });
             this.size = this.buffer.length;
             const { ext, mime } = fileType(this.buffer);
             this.ext = ext;

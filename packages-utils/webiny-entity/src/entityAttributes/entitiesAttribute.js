@@ -13,13 +13,12 @@ class EntitiesAttribute extends Attribute {
         name: string,
         attributesContainer: EntityAttributesContainer,
         entity: Class<Entity>,
-        attributeName: ?string,
-        id: ?Function
+        attributeName: ?string
     ) {
         super(name, attributesContainer, entity);
         this.classes = {
             parent: this.getParentModel().getParentEntity().constructor.name,
-            entities: { class: entity, attribute: attributeName, id },
+            entities: { class: entity, attribute: attributeName },
             using: { class: null, attribute: null }
         };
 
@@ -49,16 +48,23 @@ class EntitiesAttribute extends Attribute {
         this.getParentModel()
             .getParentEntity()
             .on("save", async () => {
-                if (!this.getUsingClass()) {
-                    return;
-                }
-
                 // If loading is in progress, wait until loaded.
                 this.value.isLoading() && (await this.value.load());
 
-                // Do we have to manage entities?
-                // If so, this will ensure that newly set or unset entities and its link entities are synced.
-                this.value.isLoaded() && (await this.value.syncInitialLinks());
+                if (!this.value.isLoaded()) {
+                    return;
+                }
+
+                if (this.getUsingClass()) {
+                    // Do we have to manage entities?
+                    // If so, this will ensure that newly set or unset entities and its link entities are synced.
+                    // "syncCurrentEntitiesAndLinks" method must be called on this event because link entities must be ready
+                    // before the validation of data happens. When validation happens and when link class is set,
+                    // validation is triggered on link (aggregation) entity, not on entity end (linked) entity.
+                    await this.value.manageCurrentLinks();
+                } else {
+                    await this.value.manageCurrent();
+                }
             });
 
         /**
@@ -100,6 +106,9 @@ class EntitiesAttribute extends Attribute {
 
                 // Set current entities as new initial values.
                 this.value.syncInitial();
+                if (this.getUsingClass()) {
+                    this.value.syncInitialLinks();
+                }
             });
 
         this.getParentModel()
@@ -143,13 +152,7 @@ class EntitiesAttribute extends Attribute {
     }
 
     getEntitiesClass(): ?Class<Entity> {
-        const entitiesClass = this.classes.entities.class;
-
-        if (entitiesClass.name) {
-            return entitiesClass;
-        }
-
-        return entitiesClass();
+        return this.classes.entities.class;
     }
 
     getUsingClass(): ?Class<Entity> {

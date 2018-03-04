@@ -37,7 +37,7 @@ describe("create table test", function() {
 
         assert.deepEqual(sqlQueries, {
             create: userTableSql,
-            drop: "DROP TABLE `Users`"
+            drop: "DROP TABLE IF EXISTS `Users`;"
         });
     });
 
@@ -74,8 +74,8 @@ describe("create table test", function() {
         createStub.restore();
 
         assert.deepEqual(sqlQueries, {
-            create: "CREATE TABLE `blankTable` (\n\n)",
-            drop: "DROP TABLE `blankTable`"
+            create: "CREATE TABLE `blankTable` (\n\n);",
+            drop: "DROP TABLE IF EXISTS `blankTable`;"
         });
     });
 
@@ -93,7 +93,7 @@ describe("create table test", function() {
                 "\t`createdOn` datetime,\n" +
                 "\t`meta` json,\n" +
                 "\tPRIMARY KEY (`id`)\n" +
-                ") ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Main Users table...'",
+                ") ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Main Users table...';",
             sql
         );
     });

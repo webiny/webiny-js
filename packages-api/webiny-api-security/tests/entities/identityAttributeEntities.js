@@ -25,7 +25,8 @@ export class Issue extends Entity {
     constructor() {
         super();
         this.attr("title").char();
-        this.attr("assignedTo").identity();
+        this.attr("assignedToClassId").char();
+        this.attr("assignedTo").identity({ classIdAttribute: "assignedToClassId" });
     }
 }
 

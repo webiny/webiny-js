@@ -18,9 +18,10 @@ describe("default Driver test", function() {
 
     it("default database methods should return empty results", async () => {
         const driver = new Driver();
-        assert.equal(driver.create(), "");
-        assert.equal(driver.alter(), "");
-        assert.equal(driver.drop(), "");
-        assert.equal(driver.truncate(), "");
+        assert.equal(await driver.create(), "");
+        assert.equal(await driver.alter(), "");
+        assert.equal(await driver.drop(), "");
+        assert.equal(await driver.truncate(), "");
+        assert.equal(await driver.sync(), "");
     });
 });

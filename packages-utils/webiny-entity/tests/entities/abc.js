@@ -8,6 +8,8 @@ class ClassA extends Entity {
     }
 }
 
+ClassA.classId = "ClassA";
+
 class ClassB extends Entity {
     constructor() {
         super();
@@ -16,11 +18,15 @@ class ClassB extends Entity {
     }
 }
 
+ClassB.classId = "ClassB";
+
 class ClassC extends Entity {
     constructor() {
         super();
         this.attr("name").char();
     }
 }
+
+ClassC.classId = "ClassC";
 
 export { ClassA, ClassB, ClassC };

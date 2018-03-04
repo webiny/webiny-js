@@ -3,8 +3,12 @@ import type { Log } from ".";
 
 export type SyncOptions = {
     tables: Array<Table>,
-    execute?: boolean,
+    preview?: boolean,
     logClass?: Log
 };
 
-export type LogType = "success" | "info" | "warning" | "error";
+export type LogOptions = {
+    tags: ?Array<string>,
+    message: ?string,
+    data: ?{}
+};

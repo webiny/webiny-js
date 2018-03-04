@@ -4,7 +4,9 @@ import Role from "./role";
 export class Identity2Role extends Entity {
     constructor() {
         super();
-        this.attr("identity").identity();
+        this.attr("identity").identity({ classIdAttribute: "identityClassId" });
+        this.attr("identityClassId").char();
+
         this.attr("role").entity(Role);
     }
 }

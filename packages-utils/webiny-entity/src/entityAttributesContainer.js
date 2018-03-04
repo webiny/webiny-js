@@ -1,5 +1,7 @@
 // @flow
 import { DefaultAttributesContainer } from "webiny-model";
+import type { Model } from "webiny-model";
+
 import {
     EntityAttribute,
     EntitiesAttribute,
@@ -8,35 +10,31 @@ import {
 } from "./entityAttributes";
 
 import type Entity from "./entity";
-import type { IModel } from "webiny-model/flow-typed";
+import type { EntityAttributeOptions } from "../types";
 
 class EntityAttributesContainer extends DefaultAttributesContainer {
-    entity(entity: Class<Entity>): EntityAttribute {
+    entity(
+        entity: Class<Entity> | Array<Class<Entity>>,
+        options: EntityAttributeOptions = {}
+    ): EntityAttribute {
         const parent = this.getParentModel();
-        parent.setAttribute(this.name, new EntityAttribute(this.name, this, entity));
+        parent.setAttribute(this.name, new EntityAttribute(this.name, this, entity, options));
         return parent.getAttribute(this.name);
     }
 
-    entities(
-        entity: Class<Entity>,
-        attribute: ?string = null,
-        id: ?Function = null
-    ): EntitiesAttribute {
+    entities(entity: Class<Entity>, attribute: ?string = null): EntitiesAttribute {
         const parent = this.getParentModel();
-        parent.setAttribute(
-            this.name,
-            new EntitiesAttribute(this.name, this, entity, attribute, id)
-        );
+        parent.setAttribute(this.name, new EntitiesAttribute(this.name, this, entity, attribute));
         return parent.getAttribute(this.name);
     }
 
-    model(model: IModel): ModelAttribute {
+    model(model: Model): ModelAttribute {
         const parent = this.getParentModel();
         parent.setAttribute(this.name, new ModelAttribute(this.name, this, model));
         return parent.getAttribute(this.name);
     }
 
-    models(model: IModel): ModelsAttribute {
+    models(model: Model): ModelsAttribute {
         const parent = this.getParentModel();
         parent.setAttribute(this.name, new ModelsAttribute(this.name, this, model));
         return parent.getAttribute(this.name);

@@ -27,42 +27,26 @@ describe("Identity attribute test", () => {
 
         const issue = new Issue();
         let issueIdentityAttribute = issue.getAttribute("assignedTo");
-        assert.equal(null, issueIdentityAttribute.getValue());
+        assert.equal(null, await issueIdentityAttribute.getValue());
         issueIdentityAttribute.setStorageValue(null);
         assert.equal(null, await issueIdentityAttribute.getStorageValue());
 
         issue.populate({ title: "testing custom attribute", assignedTo: user });
 
-        assert.equal(issue.getAttribute("assignedTo").value.getCurrent().classId, "User");
+        await issue.assignedTo;
+        assert.equal(await issue.getAttribute("assignedTo").value.getCurrent().classId, "User");
 
         await issue.assignedTo;
 
-        assert.equal(
-            issueIdentityAttribute.value
-                .getCurrent()
-                .getAttribute("identity")
-                .value.getCurrent().firstName,
-            "John"
-        );
-        assert.equal(
-            issueIdentityAttribute.value
-                .getCurrent()
-                .getAttribute("identity")
-                .value.getCurrent().lastName,
-            "Doe"
-        );
-        assert.instanceOf(
-            issueIdentityAttribute.value
-                .getCurrent()
-                .getAttribute("identity")
-                .value.getCurrent(),
-            User
-        );
+        assert.equal(issueIdentityAttribute.value.getCurrent().firstName, "John");
+        assert.equal(issueIdentityAttribute.value.getCurrent().lastName, "Doe");
+        assert.instanceOf(issueIdentityAttribute.value.getCurrent(), User);
 
         let identity = await issue.assignedTo;
 
         assert.equal(identity.firstName, "John");
         assert.equal(identity.lastName, "Doe");
+        await issue.save();
 
         await issue.validate();
 
@@ -70,26 +54,15 @@ describe("Identity attribute test", () => {
 
         issue.populate({
             title: "testing custom attribute",
-            assignedTo: { classId: "Company", identity: { name: "Webiny" } }
+            assignedToClassId: "Company",
+            assignedTo: { name: "Webiny" }
         });
 
         await issue.assignedTo;
 
         assert.equal(issueIdentityAttribute.value.getCurrent().classId, "Company");
-        assert.instanceOf(
-            issueIdentityAttribute.value
-                .getCurrent()
-                .getAttribute("identity")
-                .value.getCurrent(),
-            Company
-        );
-        assert.equal(
-            issueIdentityAttribute.value
-                .getCurrent()
-                .getAttribute("identity")
-                .value.getCurrent().name,
-            "Webiny"
-        );
+        assert.instanceOf(issueIdentityAttribute.value.getCurrent(), Company);
+        assert.equal(issueIdentityAttribute.value.getCurrent().name, "Webiny");
 
         await issue.validate();
     });
@@ -129,7 +102,7 @@ describe("Identity attribute test", () => {
 
     it("should load entities from database", async () => {
         let entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
-            return new QueryResult({ id: "xyz", assignedTo: "User:abc" });
+            return new QueryResult({ id: "xyz", assignedTo: "abc", assignedToClassId: "User" });
         });
 
         const issue = await Issue.findById(1);
@@ -149,7 +122,7 @@ describe("Identity attribute test", () => {
 
     it("should return correct storage values", async () => {
         let entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
-            return new QueryResult({ id: "xyz", assignedTo: "User:abc" });
+            return new QueryResult({ id: "xyz", assignedToClassId: "User", assignedTo: "abc" });
         });
 
         const issue = await Issue.findById(1);
@@ -159,7 +132,8 @@ describe("Identity attribute test", () => {
 
         let storage = await issue.toStorage();
         assert.deepEqual(storage, {
-            assignedTo: "User:abc",
+            assignedTo: "abc",
+            assignedToClassId: "User",
             createdOn: null,
             deleted: false,
             id: "xyz",
@@ -179,7 +153,8 @@ describe("Identity attribute test", () => {
         assert.deepEqual(storage, {
             id: "xyz",
             title: null,
-            assignedTo: "User:abc",
+            assignedTo: "abc",
+            assignedToClassId: "User",
             createdOn: null,
             deleted: false,
             savedOn: null,

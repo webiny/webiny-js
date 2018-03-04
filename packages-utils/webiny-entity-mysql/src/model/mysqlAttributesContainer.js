@@ -1,5 +1,6 @@
 // @flow
 import type { Entity } from "webiny-entity";
+import type { Model } from "webiny-model";
 import { EntityAttributesContainer } from "webiny-entity";
 import {
     BooleanAttribute,
@@ -8,8 +9,6 @@ import {
     ModelsAttribute,
     EntitiesAttribute
 } from "./attributes";
-
-import type { IModel } from "webiny-model/flow-typed";
 
 /**
  * Contains basic attributes. If needed, this class can be extended to add additional attributes,
@@ -28,13 +27,13 @@ class MySQLAttributesContainer extends EntityAttributesContainer {
         return model.getAttribute(this.name);
     }
 
-    model(model: IModel): ModelAttribute {
+    model(model: Model): ModelAttribute {
         const parent = this.getParentModel();
         parent.setAttribute(this.name, new ModelAttribute(this.name, this, model));
         return parent.getAttribute(this.name);
     }
 
-    models(model: IModel): ModelsAttribute {
+    models(model: Model): ModelsAttribute {
         const parent = this.getParentModel();
         parent.setAttribute(this.name, new ModelsAttribute(this.name, this, model));
         return parent.getAttribute(this.name);

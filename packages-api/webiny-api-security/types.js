@@ -60,6 +60,12 @@ export interface IAuthentication {
      * @returns {Class<Identity>} Identity class corresponding to `classId`.
      */
     getIdentityClass(classId: string): Class<Identity> | null;
+
+    /**
+     * Get all set identity classes.
+     * @returns {Array<Class<Identity>>} All set Identity classes.
+     */
+    getIdentityClasses(): Array<Class<Identity>> | null;
 }
 
 /**

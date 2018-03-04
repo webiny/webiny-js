@@ -1,7 +1,8 @@
-import { ModelAttribute, Entity, EntityModel } from "webiny-entity";
+import { EntityAttribute, Entity } from "webiny-entity";
 import { AttributesContainer } from "webiny-model";
+import type { EntityAttributeOptions } from "../../types";
 
-export class User extends Entity {
+class User extends Entity {
     constructor() {
         super();
         this.attr("firstName").char();
@@ -9,67 +10,38 @@ export class User extends Entity {
     }
 }
 
-export class Company extends Entity {
+User.classId = "User";
+
+class Company extends Entity {
     constructor() {
         super();
         this.attr("name").char();
     }
 }
 
-export class IdentityModel extends EntityModel {
-    constructor(params) {
-        super(params);
-        this.attr("classId").char();
-        this.attr("identity").entity(() => {
-            if (this.classId === "Company") {
-                return Company;
-            }
-            return User;
-        });
+Company.classId = "Company";
+
+class IdentityAttribute extends EntityAttribute {
+    constructor(
+        name: string,
+        attributesContainer: AttributesContainer,
+        options: EntityAttributeOptions
+    ) {
+        super(name, attributesContainer, [User, Company], options);
     }
 }
 
-export class IdentityAttribute extends ModelAttribute {
-    constructor(name: string, attributesContainer: AttributesContainer) {
-        super(name, attributesContainer, IdentityModel);
-    }
-
-    setValue(value) {
-        const modelInstance = this.getModelInstance();
-        if (value instanceof Entity) {
-            modelInstance.populate({
-                classId: value.classId,
-                identity: value
-            });
-            return this.value.setCurrent(modelInstance);
-        }
-
-        modelInstance.populate(value);
-        this.value.setCurrent(modelInstance);
-    }
-
-    getValue() {
-        return super.getValue().identity;
-    }
-
-    /**
-     * Returns storage value (entity ID or null).
-     * @returns {Promise<*>}
-     */
-    async getStorageValue() {
-        const value = this.value.getCurrent();
-        if (!value) {
-            return null;
-        }
-
-        return value.toStorage();
-    }
-}
-
-export class Issue extends Entity {
+class Issue extends Entity {
     constructor() {
         super();
         this.attr("title").char();
-        this.attr("assignedTo").custom(IdentityAttribute);
+        this.attr("assignedTo").custom(IdentityAttribute, {
+            classIdAttribute: "assignedToClassId"
+        });
+        this.attr("assignedToClassId").char();
     }
 }
+
+Issue.classId = "Issue";
+
+export { User, Company, Issue };

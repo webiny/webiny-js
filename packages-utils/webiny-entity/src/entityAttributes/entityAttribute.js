@@ -1,15 +1,31 @@
+// @flow
+
 import { Attribute } from "webiny-model";
 import _ from "lodash";
 import EntityAttributeValue from "./entityAttributeValue";
-import Entity from "./../entity";
+import type { EntityAttributesContainer } from "./..";
+import EntityError from "./../entityError";
+import { EntityAttributeOptions } from "./../../types";
+import { Entity } from "..";
+import ModelError from "../../../webiny-model/src/modelError";
+
+declare type EntityClass = Class<Entity> | Array<Class<Entity>>;
 
 class EntityAttribute extends Attribute {
     value: EntityAttributeValue;
-    classes: { parent: string, entity: { class: mixed } }; // TODO: class is not mixed.
+    classes: { entity: { class: Class<Entity> | Array<Class<Entity>> } };
     auto: { save: boolean, delete: boolean };
+    options: EntityAttributeOptions;
 
-    constructor(name, attributesContainer, entity) {
+    constructor(
+        name: string,
+        attributesContainer: EntityAttributesContainer,
+        entity: EntityClass,
+        options: EntityAttributeOptions = {}
+    ) {
         super(name, attributesContainer);
+
+        this.options = options;
 
         this.classes = {
             entity: { class: entity }
@@ -40,10 +56,7 @@ class EntityAttribute extends Attribute {
             .on("beforeSave", async () => {
                 // At this point current value is an instance or is not instance. It cannot be in the 'loading' state, because that was
                 // already checked in the validate method - if in that step entity was in 'loading' state, it will be waited before proceeding.
-                if (
-                    this.getAutoSave() &&
-                    this.value.getCurrent() instanceof this.getEntityClass()
-                ) {
+                if (this.getAutoSave() && this.value.getCurrent() instanceof Entity) {
                     // We don't need to validate here because validate method was called on the parent entity, which caused
                     // the validation of data to be executed recursively on all attribute values.
                     await this.value.getCurrent().save({ validation: false });
@@ -91,7 +104,7 @@ class EntityAttribute extends Attribute {
      * @param autoSave
      * @returns {EntityAttribute}
      */
-    setAutoSave(autoSave = true) {
+    setAutoSave(autoSave: boolean = true): EntityAttribute {
         this.auto.save = autoSave;
         return this;
     }
@@ -100,7 +113,7 @@ class EntityAttribute extends Attribute {
      * Returns true if auto save is enabled, otherwise false.
      * @returns {boolean}
      */
-    getAutoSave() {
+    getAutoSave(): boolean {
         return this.auto.save;
     }
 
@@ -110,7 +123,7 @@ class EntityAttribute extends Attribute {
      * @param autoDelete
      * @returns {EntityAttribute}
      */
-    setAutoDelete(autoDelete = true) {
+    setAutoDelete(autoDelete: boolean = true): EntityAttribute {
         this.auto.delete = autoDelete;
         return this;
     }
@@ -119,31 +132,53 @@ class EntityAttribute extends Attribute {
      * Returns true if auto delete is enabled, otherwise false.
      * @returns {boolean}
      */
-    getAutoDelete() {
+    getAutoDelete(): boolean {
         return this.auto.delete;
     }
 
-    getEntityClass() {
-        const entityClass = this.classes.entity.class;
-        if (entityClass.name) {
-            return entityClass;
+    getEntityClass(): ?Class<Entity> {
+        if (Array.isArray(this.classes.entity.class)) {
+            let classIdAttribute = this.getParentModel().getAttribute(
+                this.options.classIdAttribute
+            );
+            if (classIdAttribute) {
+                const classId = classIdAttribute.getValue();
+                for (let i = 0; i < this.classes.entity.class.length; i++) {
+                    let current = this.classes.entity.class[i];
+                    if (current.classId === classId) {
+                        return current;
+                    }
+                }
+            }
+
+            return undefined;
         }
 
-        return this.classes.entity.class();
+        return this.classes.entity.class;
     }
 
-    // Add Flow annotation: Class<Entity>
-    setEntityClass(entity) {
+    getClassIdAttribute(): ?Attribute {
+        return this.getParentModel().getAttribute(this.options.classIdAttribute);
+    }
+
+    hasMultipleEntityClasses(): boolean {
+        return Array.isArray(this.classes.entity.class);
+    }
+
+    canAcceptAnyEntityClass(): boolean {
+        return this.hasMultipleEntityClasses() && this.classes.entity.class.length === 0;
+    }
+
+    setEntityClass(entity: Class<Entity>) {
         this.classes.entity.class = entity;
         return this;
     }
 
     /**
-     * Only allowing EntityCollection or plain arrays
      * @param value
-     * @returns {Promise<void>}
+     * @returns {Promise<any>}
      */
-    setValue(value) {
+    setValue(value: any) {
         return new Promise((resolve, reject) => {
             return this.value.load(async () => {
                 if (!this.canSetValue()) {
@@ -153,14 +188,27 @@ class EntityAttribute extends Attribute {
 
                 const finalValue = await this.onSetCallback(value);
 
+                // If we are dealing with multiple Entity classes, we must assign received classId into
+                // attribute specified by the "classIdAttribute" option (passed on attribute construction).
+                const multipleClasses = this.hasMultipleEntityClasses();
+
                 try {
                     switch (true) {
                         case finalValue instanceof Entity:
                             this.value.setCurrent(finalValue);
+                            if (multipleClasses) {
+                                const classIdAttribute = this.getClassIdAttribute();
+                                if (classIdAttribute) {
+                                    await classIdAttribute.setValue(finalValue.classId);
+                                }
+                            }
+
                             break;
                         case _.isObject(finalValue): {
-                            let entity = this.getEntityClass();
-                            this.value.setCurrent(new entity().populate(finalValue));
+                            let entityClass = this.getEntityClass();
+                            if (entityClass) {
+                                this.value.setCurrent(new entityClass().populate(finalValue));
+                            }
                             break;
                         }
                         default:
@@ -178,7 +226,7 @@ class EntityAttribute extends Attribute {
      * Loads current entity if needed and returns it.
      * @returns {Promise<void>}
      */
-    async getValue() {
+    async getValue(): Promise<mixed> {
         return this.value.load();
     }
 
@@ -203,12 +251,12 @@ class EntityAttribute extends Attribute {
      * @param value
      * @returns {EntityAttribute}
      */
-    setStorageValue(value): this {
+    setStorageValue(value: mixed) {
         this.value.setCurrent(value, { skipDifferenceCheck: true });
         return this;
     }
 
-    async getJSONValue(): Promise<mixed> {
+    async getJSONValue() {
         const value = await this.getValue();
         if (value instanceof Entity) {
             return await value.toJSON();
@@ -237,6 +285,42 @@ class EntityAttribute extends Attribute {
         const valueValidation = this.isSet() && !Attribute.isEmptyValue(value);
 
         valueValidation && (await this.validateType(value));
+        if (this.hasMultipleEntityClasses()) {
+            if (!this.options.classIdAttribute) {
+                throw new ModelError(
+                    `Entity attribute "${
+                        this.name
+                    }" accepts multiple Entity classes but does not have "classIdAttribute" option defined.`,
+                    ModelError.INVALID_ATTRIBUTE
+                );
+            }
+
+            let classIdAttribute = this.getClassIdAttribute();
+            if (!classIdAttribute) {
+                throw new ModelError(
+                    `Entity attribute "${
+                        this.name
+                    }" accepts multiple Entity classes but classId attribute is missing.`,
+                    ModelError.INVALID_ATTRIBUTE
+                );
+            }
+
+            // We only do class validation if list of classes has been provided. Otherwise, we don't do the check.
+            // This is because in certain cases, a list of classes cannot be defined, and in other words, any
+            // class of entity can be assigned. One example is the File entity, which has an "ref" attribute, which
+            // can actually link to any type of entity.
+            if (!this.canAcceptAnyEntityClass()) {
+                if (!this.getEntityClass()) {
+                    throw new EntityError(
+                        `Entity attribute "${
+                            this.name
+                        }" accepts multiple Entity classes but it was not found (classId attribute holds value "${classIdAttribute.getValue()}").`,
+                        ModelError.INVALID_ATTRIBUTE
+                    );
+                }
+            }
+        }
+
         await this.validateAttribute(value);
         valueValidation && (await this.validateValue(value));
     }
@@ -244,7 +328,7 @@ class EntityAttribute extends Attribute {
     /**
      * Validates current value - if it's not a valid ID or an instance of Entity class, an error will be thrown.
      */
-    async validateType(value) {
+    async validateType(value: mixed) {
         if (
             this.getParentModel()
                 .getParentEntity()
@@ -253,15 +337,17 @@ class EntityAttribute extends Attribute {
             return;
         }
 
-        if (value instanceof this.getEntityClass()) {
+        const neededClass = this.hasMultipleEntityClasses() ? Entity : this.getEntityClass();
+        if (value instanceof neededClass) {
             return;
         }
+
         this.expected("instance of Entity class or a valid ID", typeof value);
     }
 
-    async validateValue(value) {
+    async validateValue(value: mixed) {
         // This validates on the entity level.
-        value instanceof this.getEntityClass() && (await value.validate());
+        value instanceof Entity && (await value.validate());
     }
 }
 

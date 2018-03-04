@@ -1,4 +1,5 @@
 // @flow
+import { Sync, ConsoleLog } from "webiny-sql-table-sync";
 import UserTable from "./tables/user.mysql";
 import { PermissionTable, RoleTable, Identity2RoleTable } from "webiny-api-security";
 
@@ -15,27 +16,14 @@ import { MySQLTable } from "webiny-api";
 MySQLTable.getDriver().setConnection(connection);
 
 (async () => {
-    const tables = [
-        new Identity2RoleTable(),
-        new RoleTable(),
-        new PermissionTable(),
-        new UserTable()
-    ];
+    const tables = [Identity2RoleTable, RoleTable, PermissionTable, UserTable];
 
-    for (let i = 0; i < tables.length; i++) {
-        const table = tables[i];
-        try {
-            await table.drop();
-        } catch (e) {
-            // Nothing to drop...
-        }
-
-        try {
-            await table.create();
-        } catch (e) {
-            console.log(e.message);
-        }
-    }
+    const sync = new Sync({
+        tables,
+        drop: true,
+        logClass: ConsoleLog
+    });
+    await sync.execute();
 
     return import("./import")
         .then(({ default: importer }) => {

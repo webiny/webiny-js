@@ -41,5 +41,5 @@ export default (table: Table): string => {
         output += ` COMMENT='${table.getComment()}'`;
     }
 
-    return output;
+    return output + ";";
 };

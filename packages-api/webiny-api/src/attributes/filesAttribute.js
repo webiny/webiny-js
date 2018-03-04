@@ -14,7 +14,15 @@ class FilesAttribute extends EntitiesAttribute {
     tags: Array<string>;
 
     constructor(name: string, attributesContainer: EntityAttributesContainer, entity: Class<File>) {
-        super(name, attributesContainer, entity, "ref");
+        super(name, attributesContainer, entity, "ref", () => {
+            // $FlowIgnore
+            const classId = this.getParentModel().getParentEntity().classId;
+            // $FlowIgnore
+            const id = this.getParentModel()
+                .getAttribute("id")
+                .getStorageValue();
+            return classId + ":" + id;
+        });
     }
 
     /**

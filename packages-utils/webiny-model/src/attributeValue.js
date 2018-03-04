@@ -1,13 +1,13 @@
 // @flow
-import { IAttribute } from "../flow-typed";
+import type { Attribute } from ".";
 
 class AttributeValue {
-    attribute: IAttribute;
+    attribute: Attribute;
     current: mixed;
     dirty: boolean;
     set: boolean;
 
-    constructor(attribute: IAttribute) {
+    constructor(attribute: Attribute) {
         this.attribute = attribute;
         this.current = null;
         this.dirty = false;
