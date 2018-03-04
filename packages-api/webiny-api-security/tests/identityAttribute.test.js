@@ -46,6 +46,7 @@ describe("Identity attribute test", () => {
 
         assert.equal(identity.firstName, "John");
         assert.equal(identity.lastName, "Doe");
+        await issue.save();
 
         await issue.validate();
 

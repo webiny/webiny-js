@@ -7,6 +7,7 @@ import type { EntityAttributesContainer } from "./..";
 import EntityError from "./../entityError";
 import { EntityAttributeOptions } from "./../../types";
 import { Entity } from "..";
+import ModelError from "../../../webiny-model/src/modelError";
 
 declare type EntityClass = Class<Entity> | Array<Class<Entity>>;
 
@@ -135,62 +136,42 @@ class EntityAttribute extends Attribute {
         return this.auto.delete;
     }
 
-    getEntityClass(): Class<Entity> {
-        const entityClass = this.classes.entity.class;
-
+    getEntityClass(): ?Class<Entity> {
         if (Array.isArray(this.classes.entity.class)) {
-            if (!this.options.classIdAttribute) {
-                throw new EntityError(
-                    `Entity attribute "${
-                        this.name
-                    }" accepts multiple Entity classes but does not have "classIdAttribute" option defined.`
-                );
-            }
-
-            let classId = this.getParentModel().getAttribute(this.options.classIdAttribute);
-            if (!classId) {
-                throw new EntityError(
-                    `Entity attribute "${
-                        this.name
-                    }" accepts multiple Entity classes but classId attribute is missing.`
-                );
-            }
-
-            classId = classId.getValue();
-
-            if (entityClass.length === 0) {
-                return Entity;
-            }
-
-            for (let i = 0; i < entityClass.length; i++) {
-                let current = entityClass[i];
-                if (current.classId === classId) {
-                    return current;
+            let classIdAttribute = this.getParentModel().getAttribute(
+                this.options.classIdAttribute
+            );
+            if (classIdAttribute) {
+                const classId = classIdAttribute.getValue();
+                for (let i = 0; i < this.classes.entity.class.length; i++) {
+                    let current = this.classes.entity.class[i];
+                    if (current.classId === classId) {
+                        return current;
+                    }
                 }
             }
 
-            throw new EntityError(
-                `Entity attribute "${
-                    this.name
-                }" accepts multiple Entity classes but it was not found (classId attribute holds value "${classId}").`
-            );
-        }
-
-        if (!this.classes.entity.class.classId) {
-            throw new EntityError(
-                `Entity attribute "${
-                    this.name
-                }" is missing a valid Entity class ("classId" static property missing).`
-            );
+            return undefined;
         }
 
         return this.classes.entity.class;
     }
 
+    getClassIdAttribute(): ?Attribute {
+        return this.getParentModel().getAttribute(this.options.classIdAttribute);
+    }
+
+    hasMultipleEntityClasses(): boolean {
+        return Array.isArray(this.classes.entity.class);
+    }
+
+    canAcceptAnyEntityClass(): boolean {
+        return this.hasMultipleEntityClasses() && this.classes.entity.class.length === 0;
+    }
+
     /**
-     * Only allowing EntityCollection or plain arrays
      * @param value
-     * @returns {Promise<void>}
+     * @returns {Promise<any>}
      */
     setValue(value: any) {
         return new Promise((resolve, reject) => {
@@ -201,23 +182,28 @@ class EntityAttribute extends Attribute {
                 }
 
                 const finalValue = await this.onSetCallback(value);
-                const multipleClasses = Array.isArray(this.classes.entity.class);
+
+                // If we are dealing with multiple Entity classes, we must assign received classId into
+                // attribute specified by the "classIdAttribute" option (passed on attribute construction).
+                const multipleClasses = this.hasMultipleEntityClasses();
 
                 try {
                     switch (true) {
                         case finalValue instanceof Entity:
                             this.value.setCurrent(finalValue);
                             if (multipleClasses) {
-                                const classIdAttribute = this.getParentModel().getAttribute(
-                                    this.options.classIdAttribute
-                                );
-                                classIdAttribute.setValue(finalValue.classId);
+                                const classIdAttribute = this.getClassIdAttribute();
+                                if (classIdAttribute) {
+                                    await classIdAttribute.setValue(finalValue.classId);
+                                }
                             }
 
                             break;
                         case _.isObject(finalValue): {
-                            let entity = this.getEntityClass();
-                            this.value.setCurrent(new entity().populate(finalValue));
+                            let entityClass = this.getEntityClass();
+                            if (entityClass) {
+                                this.value.setCurrent(new entityClass().populate(finalValue));
+                            }
                             break;
                         }
                         default:
@@ -294,6 +280,42 @@ class EntityAttribute extends Attribute {
         const valueValidation = this.isSet() && !Attribute.isEmptyValue(value);
 
         valueValidation && (await this.validateType(value));
+        if (this.hasMultipleEntityClasses()) {
+            if (!this.options.classIdAttribute) {
+                throw new ModelError(
+                    `Entity attribute "${
+                        this.name
+                    }" accepts multiple Entity classes but does not have "classIdAttribute" option defined.`,
+                    ModelError.INVALID_ATTRIBUTE
+                );
+            }
+
+            let classIdAttribute = this.getClassIdAttribute();
+            if (!classIdAttribute) {
+                throw new ModelError(
+                    `Entity attribute "${
+                        this.name
+                    }" accepts multiple Entity classes but classId attribute is missing.`,
+                    ModelError.INVALID_ATTRIBUTE
+                );
+            }
+
+            // We only do class validation if list of classes has been provided. Otherwise, we don't do the check.
+            // This is because in certain cases, a list of classes cannot be defined, and in other words, any
+            // class of entity can be assigned. One example is the File entity, which has an "ref" attribute, which
+            // can actually link to any type of entity.
+            if (!this.canAcceptAnyEntityClass()) {
+                if (!this.getEntityClass()) {
+                    throw new EntityError(
+                        `Entity attribute "${
+                            this.name
+                        }" accepts multiple Entity classes but it was not found (classId attribute holds value "${classIdAttribute}").`,
+                        ModelError.INVALID_ATTRIBUTE
+                    );
+                }
+            }
+        }
+
         await this.validateAttribute(value);
         valueValidation && (await this.validateValue(value));
     }
@@ -310,15 +332,17 @@ class EntityAttribute extends Attribute {
             return;
         }
 
-        if (value instanceof this.getEntityClass()) {
+        const neededClass = this.hasMultipleEntityClasses() ? Entity : this.getEntityClass();
+        if (value instanceof neededClass) {
             return;
         }
+
         this.expected("instance of Entity class or a valid ID", typeof value);
     }
 
     async validateValue(value: mixed) {
         // This validates on the entity level.
-        value instanceof this.getEntityClass() && (await value.validate());
+        value instanceof Entity && (await value.validate());
     }
 }
 

@@ -66,7 +66,6 @@ class EntitiesAttributeValue extends AttributeValue {
             if (this.attribute.getToStorage()) {
                 if (this.hasCurrent()) {
                     if (classes.using.class) {
-                        // TODO: finish this.
                         this.current = await classes.using.class.findByIds(this.current);
                     } else {
                         this.current = await classes.entities.class.findByIds(this.current);

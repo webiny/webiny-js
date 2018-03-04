@@ -14,7 +14,7 @@ class MySQLTable extends Table {
         this.column("savedOn").dateTime();
         this.column("updatedOn").dateTime();
         this.column("deleted")
-            .smallInt()
+            .tinyInt(1)
             .setDefault(0);
 
         this.index().primary("id");
