@@ -9,7 +9,7 @@ export default (BaseEndpoint: Class<Endpoint>, config: Object, authentication: I
         init(api: ApiContainer) {
             super.init(api);
 
-            // Create api methods for each identity
+            // Create API methods for each identity
             config.identities.map(({ identity: Identity, authenticate }) => {
                 // Create api methods for each strategy
                 authenticate.map(({ strategy, apiMethod }) => {

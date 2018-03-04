@@ -1,10 +1,12 @@
 // @flow
 import { Entity } from "webiny-api";
 import type { Storage } from "webiny-file-storage";
+import type { ImageProcessor } from "../../types";
 
 declare type Config = {
     documentStorage: Storage,
-    documentFolder: string
+    documentFolder: string,
+    imageProcessor: ImageProcessor
 };
 
 export default (config: Config) => {
@@ -23,6 +25,21 @@ export default (config: Config) => {
                 .setTags(["user"])
                 .setFolder(config.documentFolder)
                 .setStorage(config.documentStorage);
+
+            /*this.attr("avatar")
+                .image()
+                .setPresets({
+                    thumbnail: [
+                        { action: 'resize', width: 100 },
+                        { action: 'crop', width: 100, height: 30, x: 20, y: 20 },
+                        { action: 'radius', r: 20 },
+                    ]
+                })
+                .setQuality(95)
+                .setTags(["user"])
+                .setFolder(config.documentFolder)
+                .setStorage(config.documentStorage)
+                .setProcessor(config.imageProcessor);*/
         }
     }
 

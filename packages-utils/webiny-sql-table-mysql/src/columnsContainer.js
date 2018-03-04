@@ -12,6 +12,7 @@ import {
     EnumColumn,
     FloatColumn,
     IntColumn,
+    JSONColumn,
     LongBlobColumn,
     LongTextColumn,
     MediumBlobColumn,
@@ -88,6 +89,12 @@ class DefaultColumnsContainer extends ColumnsContainer {
 
     int(): IntColumn {
         const column = new IntColumn(this.newColumnName, this, Array.from(arguments));
+        this.columns.push(column);
+        return column;
+    }
+
+    json(): JSONColumn {
+        const column = new JSONColumn(this.newColumnName, this, Array.from(arguments));
         this.columns.push(column);
         return column;
     }

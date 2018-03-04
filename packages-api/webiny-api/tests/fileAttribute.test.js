@@ -1,36 +1,47 @@
 import { expect } from "chai";
+import fs from "fs";
 import { Storage } from "webiny-file-storage";
 import { MemoryDriver } from "webiny-entity-memory";
 
-import registerAttributes from "./../src/attributes/registerAttributes";
-import { jpegBase64, pngBase64 } from "./utils/base64Data";
+import registerAttributes from "./../src/attributes/registerFileAttributes";
 import { Entity, File } from "../src/entities";
 import userFactory from "./utils/user.entity";
 import MockDriver from "./utils/storageDriverMock";
 
 let User;
 
-const data1 = {
-    name: "File1.jpeg",
-    src: jpegBase64,
-    type: "image/jpeg",
-    tags: ["passport"]
-};
-
-const data2 = {
-    name: "File2.png",
-    src: pngBase64,
-    type: "image/png",
-    tags: ["passport"]
-};
-
 describe("File attribute test", () => {
+    let jpgBuffer;
+    let jpgBase64;
+    let pngBuffer;
+    let pngBase64;
+    let data1;
+    let data2;
+
     const storage = new Storage(new MockDriver({ cdnUrl: "https://cdn.webiny.com" }));
 
     before(() => {
         Entity.driver = new MemoryDriver();
-        registerAttributes();
+        registerAttributes({ entity: File });
         User = userFactory({ documentStorage: storage, documentFolder: "users/documents" });
+        jpgBuffer = fs.readFileSync(__dirname + "/utils/lenna.jpg");
+        jpgBase64 = "data:image/jpg;base64," + jpgBuffer.toString("base64");
+        pngBuffer = fs.readFileSync(__dirname + "/utils/lenna.png");
+        pngBase64 = "data:image/png;base64," + pngBuffer.toString("base64");
+
+        data1 = {
+            name: "File1.jpg",
+            src: jpgBase64,
+            type: "image/jpg",
+            tags: ["passport"]
+        };
+
+        data2 = {
+            name: "File2.png",
+            src: pngBase64,
+            type: "image/png",
+            tags: ["passport"]
+        };
     });
 
     beforeEach(() => {
@@ -57,7 +68,7 @@ describe("File attribute test", () => {
             name: "user1",
             document: {
                 id: document.id,
-                name: "File1.jpeg",
+                name: "File1.jpg",
                 src: fileUrl,
                 tags: ["user", "passport"]
             }

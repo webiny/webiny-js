@@ -1,12 +1,15 @@
 // @flow
 import SqlString from "sqlstring";
 import _ from "lodash";
-import { query } from "webiny-sql-query";
 import { OrderTuple } from "webiny-entity/types";
+import type { Operator, Payload } from "../../types";
 
 class Statement {
-    options: {};
-    constructor(options: {} = {}) {
+    options: {
+        operators: { [string]: Operator }
+    };
+
+    constructor(options: Object = {}) {
         this.options = options;
     }
 
@@ -29,7 +32,7 @@ class Statement {
             return "";
         }
 
-        return " WHERE " + query.execute(options.where);
+        return " WHERE " + this.process({ $and: options.where });
     }
 
     getOrder(options: { order?: Array<OrderTuple> }): string {
@@ -66,6 +69,30 @@ class Statement {
 
     escape(value: mixed) {
         return SqlString.escape(value);
+    }
+
+    /**
+     * Traverse the payload and apply operators to construct a valid MySQL statement
+     * @private
+     * @param {Object} payload
+     * @returns {string} SQL query
+     */
+    process(payload: Payload): string {
+        let output = "";
+
+        outerLoop: for (const [key, value] of Object.entries(payload)) {
+            const operators: Array<Operator> = Object.values(this.options.operators);
+            for (let i = 0; i < operators.length; i++) {
+                const operator = operators[i];
+                if (operator.canProcess({ key, value, statement: this })) {
+                    output += operator.process({ key, value, statement: this });
+                    continue outerLoop;
+                }
+            }
+            throw new Error(`Invalid operator {${key} : ${(value: any)}}.`);
+        }
+
+        return output;
     }
 }
 

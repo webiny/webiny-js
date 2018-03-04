@@ -20,6 +20,7 @@ class UserTable extends Table {
             .setDefault(50);
         this.column("type").enum("IT", "Marketing", "Animals");
         this.column("createdOn").dateTime();
+        this.column("meta").json();
 
         this.index().primary("id");
     }

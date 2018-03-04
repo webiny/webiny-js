@@ -1,26 +1,18 @@
+import fs from "fs";
 import { expect } from "chai";
-import File from "./../src/entities/file";
+import { File, Entity } from "./../src";
 import { Storage } from "webiny-file-storage";
 import MockDriver from "./utils/storageDriverMock";
 import { MemoryDriver } from "webiny-entity-memory";
-import { jpegBase64, pngBase64 } from "./utils/base64Data";
-
-const data1 = {
-    name: "File1.jpeg",
-    src: jpegBase64,
-    type: "image/jpeg",
-    tags: ["profile"]
-};
-
-const data2 = {
-    name: "File2.jpeg",
-    src: jpegBase64,
-    type: "image/jpeg"
-};
 
 describe("File entity test", () => {
+    let jpgBuffer;
+    let jpgBase64;
+    let pngBuffer;
+    let pngBase64;
+
     beforeEach(async () => {
-        File.driver = new MemoryDriver();
+        Entity.driver = new MemoryDriver();
         const storage = new Storage(new MockDriver({ cdnUrl: "https://cdn.webiny.com" }));
 
         const file = new File();
@@ -31,42 +23,59 @@ describe("File entity test", () => {
         file2.setStorageFolder("documents");
         file2.setStorage(storage);
 
+        jpgBuffer = fs.readFileSync(__dirname + "/utils/lenna.jpg");
+        jpgBase64 = "data:image/jpg;base64," + jpgBuffer.toString("base64");
+        pngBuffer = fs.readFileSync(__dirname + "/utils/lenna.png");
+        pngBase64 = "data:image/png;base64," + pngBuffer.toString("base64");
+
+        const data1 = {
+            name: "File1.jpg",
+            src: jpgBase64,
+            type: "image/jpg",
+            tags: ["profile"]
+        };
+
+        const data2 = {
+            name: "File2.jpg",
+            src: jpgBase64,
+            type: "image/jpg"
+        };
+
         return Promise.all([file.populate(data1).save(), file2.populate(data2).save()]);
     });
 
     it("should load file entity", async function() {
-        const file = await File.findOne({ query: { name: "File1.jpeg" } });
-        expect(file.name).to.equal("File1.jpeg");
-        expect(file.ext).to.equal("jpeg");
+        const file = await File.findOne({ query: { name: "File1.jpg" } });
+        expect(file.name).to.equal("File1.jpg");
+        expect(file.ext).to.equal("jpg");
         expect(file.type).to.equal("image/jpeg");
     });
 
     it("should load file from storage via entity", async function() {
-        const file = await File.findOne({ query: { name: "File1.jpeg" } });
-        const fileData = await file.getFile();
-        const base64data = new Buffer(fileData.body, "binary").toString("base64");
-        expect(base64data).to.equal(jpegBase64.split(",").pop());
+        const file = await File.findOne({ query: { name: "File1.jpg" } });
+        const { body } = await file.getFile();
+        expect(Buffer.from(body, "binary").equals(jpgBuffer)).to.be.true;
     });
 
     it("should get file URL", async function() {
-        const file = await File.findOne({ query: { name: "File1.jpeg" } });
+        const file = await File.findOne({ query: { name: "File1.jpg" } });
         expect(file.getURL()).to.equal("https://cdn.webiny.com/" + file.src);
     });
 
     it("should contain storage folder", async function() {
-        const file1 = await File.findOne({ query: { name: "File1.jpeg" } });
-        const file2 = await File.findOne({ query: { name: "File2.jpeg" } });
+        const file1 = await File.findOne({ query: { name: "File1.jpg" } });
+        const file2 = await File.findOne({ query: { name: "File2.jpg" } });
         expect(file1.src).to.contain("images/");
         expect(file2.src).to.contain("documents/");
     });
 
     it("should contain tags", async function() {
-        const file1 = await File.findOne({ query: { name: "File1.jpeg" } });
+        const file1 = await File.findOne({ query: { name: "File1.jpg" } });
         expect(file1.tags).to.contain("profile");
     });
 
     it("should return JSON data with URL", async function() {
-        const file1 = await File.findOne({ query: { name: "File1.jpeg" } });
+        const file1 = await File.findOne({ query: { name: "File1.jpg" } });
         expect(await file1.toJSON("src")).to.deep.equal({
             id: file1.id,
             src: "https://cdn.webiny.com/" + file1.src
@@ -74,12 +83,12 @@ describe("File entity test", () => {
     });
 
     it("should return absolute file path", async function() {
-        const file1 = await File.findOne({ query: { name: "File1.jpeg" } });
+        const file1 = await File.findOne({ query: { name: "File1.jpg" } });
         expect(await file1.getAbsolutePath()).to.equal(file1.src);
     });
 
     it("should update file contents", async function() {
-        let file1 = await File.findOne({ query: { name: "File1.jpeg" } });
+        let file1 = await File.findOne({ query: { name: "File1.jpg" } });
         const data = {
             name: "app-image.png",
             src: pngBase64,
@@ -98,29 +107,27 @@ describe("File entity test", () => {
         });
 
         const fileData = await file1.getFile();
-        const fileBody = new Buffer(fileData.body, "binary").toString("base64");
-        expect(fileBody).to.equal(pngBase64.split(",").pop());
+        expect(Buffer.from(fileData.body, "binary").equals(pngBuffer)).to.be.true;
     });
 
     it("should update file title without changing file contents", async function() {
-        const file = await File.findOne({ query: { name: "File1.jpeg" } });
+        const file = await File.findOne({ query: { name: "File1.jpg" } });
         const src = file.src;
-        file.populate({ title: "Header", name: "new-name.jpeg", src: "some/new/source" });
+        file.populate({ title: "Header", name: "new-name.jpg", src: "some/new/source" });
         await file.save();
 
-        expect(file.name).to.equal("File1.jpeg");
+        expect(file.name).to.equal("File1.jpg");
         expect(file.src).to.equal(src);
         expect(file.title).to.equal("Header");
         const fileData = await file.getFile();
-        const fileBody = new Buffer(fileData.body, "binary").toString("base64");
-        expect(fileBody).to.equal(jpegBase64.split(",").pop());
+        expect(Buffer.from(fileData.body, "binary").equals(jpgBuffer)).to.be.true;
     });
 
     it("should permanently delete file entity", async function() {
-        const file1 = await File.findOne({ query: { name: "File1.jpeg" } });
+        const file1 = await File.findOne({ query: { name: "File1.jpg" } });
         await file1.delete();
 
-        let file = await File.findOne({ query: { name: "File1.jpeg", deleted: true } });
+        let file = await File.findOne({ query: { name: "File1.jpg", deleted: true } });
         expect(file).to.be.null;
     });
 });

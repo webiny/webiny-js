@@ -132,6 +132,12 @@ class EntityAttribute extends Attribute {
         return this.classes.entity.class();
     }
 
+    // Add Flow annotation: Class<Entity>
+    setEntityClass(entity) {
+        this.classes.entity.class = entity;
+        return this;
+    }
+
     /**
      * Only allowing EntityCollection or plain arrays
      * @param value

@@ -9,6 +9,7 @@ class SimpleEntity extends Entity {
         this.attr("enabled")
             .boolean()
             .setDefaultValue(true);
+        this.attr("tags").array();
         this.on("beforeSave", () => {
             this.slug = _.camelCase(this.name);
         });

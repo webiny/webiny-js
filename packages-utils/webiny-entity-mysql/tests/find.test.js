@@ -9,7 +9,7 @@ describe("find test", function() {
     afterEach(() => sandbox.restore());
     beforeEach(() => SimpleEntity.getEntityPool().flush());
 
-    it("find - should find entities and total count", async () => {
+    it("should find entities and total count", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => [
             [
                 {
@@ -51,7 +51,7 @@ describe("find test", function() {
         assert.isFalse(entities[1].enabled);
     });
 
-    it("find - must change page and perPage parameters into limit / offset accordingly", async () => {
+    it("must change page and perPage parameters into limit / offset accordingly", async () => {
         const querySpy = sandbox
             .stub(SimpleEntity.getDriver().getConnection(), "query")
             .callsFake(() => {
@@ -66,6 +66,89 @@ describe("find test", function() {
 
         assert.deepEqual(querySpy.getCall(0).args[0], [
             "SELECT * FROM `SimpleEntity` WHERE (age = 30) ORDER BY createdOn DESC, id ASC LIMIT 7 OFFSET 14",
+            "SELECT FOUND_ROWS() as count"
+        ]);
+
+        SimpleEntity.getDriver()
+            .getConnection()
+            .query.restore();
+    });
+
+    it("JSON - find single value in an array", async () => {
+        const querySpy = sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake(() => {
+                return [[], [{ count: 0 }]];
+            });
+        await SimpleEntity.find({
+            query: { tags: "user" }
+        });
+
+        assert.deepEqual(querySpy.getCall(0).args[0], [
+            "SELECT * FROM `SimpleEntity` WHERE (JSON_SEARCH(tags, 'one', 'user') IS NOT NULL) LIMIT 10",
+            "SELECT FOUND_ROWS() as count"
+        ]);
+
+        SimpleEntity.getDriver()
+            .getConnection()
+            .query.restore();
+    });
+
+    it("JSON - find exact array value", async () => {
+        const querySpy = sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake(() => {
+                return [[], [{ count: 0 }]];
+            });
+
+        await SimpleEntity.find({
+            query: { tags: ["user", "avatar"] }
+        });
+
+        assert.deepEqual(querySpy.getCall(0).args[0], [
+            "SELECT * FROM `SimpleEntity` WHERE (tags = JSON_ARRAY('user', 'avatar')) LIMIT 10",
+            "SELECT FOUND_ROWS() as count"
+        ]);
+
+        SimpleEntity.getDriver()
+            .getConnection()
+            .query.restore();
+    });
+
+    it("JSON - match at least one array value inside the target array", async () => {
+        const querySpy = sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake(() => {
+                return [[], [{ count: 0 }]];
+            });
+
+        await SimpleEntity.find({
+            query: { tags: { $in: ["user", "avatar"] } }
+        });
+
+        assert.deepEqual(querySpy.getCall(0).args[0], [
+            "SELECT * FROM `SimpleEntity` WHERE ((JSON_SEARCH(tags, 'one', 'user') IS NOT NULL OR JSON_SEARCH(tags, 'one', 'avatar') IS NOT NULL)) LIMIT 10",
+            "SELECT FOUND_ROWS() as count"
+        ]);
+
+        SimpleEntity.getDriver()
+            .getConnection()
+            .query.restore();
+    });
+
+    it("JSON - match all array values inside the target array", async () => {
+        const querySpy = sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake(() => {
+                return [[], [{ count: 0 }]];
+            });
+
+        await SimpleEntity.find({
+            query: { tags: { $all: ["user", "avatar"] } }
+        });
+
+        assert.deepEqual(querySpy.getCall(0).args[0], [
+            "SELECT * FROM `SimpleEntity` WHERE ((JSON_SEARCH(tags, 'one', 'user') IS NOT NULL AND JSON_SEARCH(tags, 'one', 'avatar') IS NOT NULL)) LIMIT 10",
             "SELECT FOUND_ROWS() as count"
         ]);
 

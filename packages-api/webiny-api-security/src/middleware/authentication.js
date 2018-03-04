@@ -9,6 +9,9 @@ import api from "webiny-api";
 export default (options: { token: Function | string }) => {
     /**
      * Authentication middleware.
+     * Attempts to authenticate the client using the token from request (if any).
+     * If successful, `identity` instance is set on the `req` object itself.
+     * If not successful, we just call the next middleware.
      *
      * @param req
      * @param res

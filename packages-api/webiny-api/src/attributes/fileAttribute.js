@@ -1,16 +1,16 @@
 // @flow
 import _ from "lodash";
 import { EntityAttribute, type EntityAttributesContainer } from "webiny-entity";
-import { File } from "./../index";
 import type { Storage } from "webiny-file-storage";
+import type { File } from "./../index";
 
 class FileAttribute extends EntityAttribute {
     storage: Storage;
     storageFolder: string;
     tags: Array<string>;
 
-    constructor(name: string, attributesContainer: EntityAttributesContainer) {
-        super(name, attributesContainer, File);
+    constructor(name: string, attributesContainer: EntityAttributesContainer, entity: Class<File>) {
+        super(name, attributesContainer, entity);
     }
 
     /**
@@ -70,7 +70,7 @@ class FileAttribute extends EntityAttribute {
 
         const newValue = await this.getValue();
         if (newValue instanceof this.getEntityClass()) {
-            newValue.tags = _.uniqWith(this.tags.concat(newValue.tags), _.isEqual);
+            newValue.tags = _.uniqWith(this.tags.concat(newValue.tags || []), _.isEqual);
             if (this.storage) {
                 newValue.setStorage(this.storage).setStorageFolder(this.storageFolder);
             }

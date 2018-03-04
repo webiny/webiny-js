@@ -68,6 +68,15 @@ export default {
             unsigned: null,
             autoIncrement: null,
             notNull: false
+        },
+        {
+            arguments: [],
+            name: "meta",
+            type: "json",
+            default: undefined,
+            unsigned: null,
+            autoIncrement: null,
+            notNull: false
         }
     ],
     indexes: [

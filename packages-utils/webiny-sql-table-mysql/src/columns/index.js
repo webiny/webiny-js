@@ -13,6 +13,7 @@ export { default as TinyIntColumn } from "./tinyIntColumn";
 export { default as SmallIntColumn } from "./smallIntColumn";
 export { default as MediumIntColumn } from "./mediumIntColumn";
 export { default as IntColumn } from "./intColumn";
+export { default as JSONColumn } from "./jsonColumn";
 export { default as BigIntColumn } from "./bigIntColumn";
 export { default as FloatColumn } from "./floatColumn";
 export { default as DoubleColumn } from "./doubleColumn";

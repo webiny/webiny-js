@@ -3,7 +3,7 @@ import { AuthenticationService } from "webiny-api-security";
 import registerAttributes from "webiny-api-security/src/attributes/registerAttributes";
 import data from "./import/data";
 import { connection } from "./../connection";
-import User from "./../entities/User";
+import User from "./../entities/user.entity";
 import { MySQLDriver } from "webiny-entity-mysql";
 
 export default async () => {

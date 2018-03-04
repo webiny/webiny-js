@@ -55,27 +55,6 @@ export interface IFileStorageDriver {
      * Returns public file URL
      */
     getURL(key: string): string;
-
-    /**
-     * Get file size (if supported)
-     */
-    getSize(key: string): Promise<?number>;
-
-    /**
-     * Returns the last modified time
-     */
-    getTimeModified(key: string): Promise<?number>;
-
-    /**
-     * Returns content type
-     */
-    getContentType(key: string): Promise<?string>;
-
-    /**
-     * Get absolute file path (if supported).
-     * Return original file key if not supported.
-     */
-    getAbsolutePath(key: string): Promise<string>;
 }
 
 export interface IFile {
@@ -105,16 +84,6 @@ export interface IFile {
     getMeta(): Promise<?Object>;
 
     /**
-     * Get time modified
-     */
-    getTimeModified(): Promise<?number>;
-
-    /**
-     * Get content type
-     */
-    getContentType(key: string): Promise<?string>;
-
-    /**
      * Set file body
      */
     setBody(body: string | Buffer): void;
@@ -138,19 +107,4 @@ export interface IFile {
      * Save file
      */
     save(): Promise<boolean>;
-
-    /**
-     * Get absolute file path.
-     * If storage driver does not support absolute paths (cloud storage), returns file key
-     *
-     * @return string
-     */
-    getAbsolutePath(): Promise<string>;
-
-    /**
-     * Get file size in bytes
-     *
-     * @return int|null Number of bytes or null
-     */
-    getSize(): Promise<?number>;
 }

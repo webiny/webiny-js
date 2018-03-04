@@ -1,4 +1,4 @@
-import User from "./../../entities/User";
+import User from "./../../entities/user.entity";
 import { Permission, Role } from "webiny-api-security";
 
 export default [

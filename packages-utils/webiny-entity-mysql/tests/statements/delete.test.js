@@ -1,10 +1,12 @@
 import { assert } from "chai";
 import { Delete } from "../../src/statements";
+import { operators } from "../../src";
 
 describe("DELETE statement test", function() {
     it("should generate a DELETE statement", async () => {
         const sql = new Delete({
             operation: "delete",
+            operators,
             table: "TestTable",
             where: { name: "Test", enabled: true, deletedOn: null },
             limit: 10,

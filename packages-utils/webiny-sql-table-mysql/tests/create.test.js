@@ -91,6 +91,7 @@ describe("create table test", function() {
                 "\t`age` tinyint DEFAULT 50,\n" +
                 "\t`type` enum('IT', 'Marketing', 'Animals'),\n" +
                 "\t`createdOn` datetime,\n" +
+                "\t`meta` json,\n" +
                 "\tPRIMARY KEY (`id`)\n" +
                 ") ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Main Users table...'",
             sql

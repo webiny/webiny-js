@@ -5,16 +5,16 @@ import {
     type EntityAttributesContainer,
     type EntityCollection
 } from "webiny-entity";
-import { File } from "./../index";
 import type { Storage } from "webiny-file-storage";
+import type { File } from "./../index";
 
 class FilesAttribute extends EntitiesAttribute {
     storage: Storage;
     storageFolder: string;
     tags: Array<string>;
 
-    constructor(name: string, attributesContainer: EntityAttributesContainer) {
-        super(name, attributesContainer, File, "ref");
+    constructor(name: string, attributesContainer: EntityAttributesContainer, entity: Class<File>) {
+        super(name, attributesContainer, entity, "ref");
     }
 
     /**
@@ -76,7 +76,7 @@ class FilesAttribute extends EntitiesAttribute {
 
         values.map(value => {
             if (value instanceof this.getEntitiesClass()) {
-                value.tags = _.uniqWith(this.tags.concat(value.tags), _.isEqual);
+                value.tags = _.uniqWith(this.tags.concat(value.tags || []), _.isEqual);
                 if (this.storage) {
                     value.setStorage(this.storage).setStorageFolder(this.storageFolder);
                 }

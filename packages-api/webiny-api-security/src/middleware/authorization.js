@@ -4,7 +4,8 @@ import type { MatchedApiMethod } from "webiny-api";
 
 export default () => {
     /**
-     * Authorization middleware
+     * Authorization middleware.
+     * Checks if request identity is authorized to execute the matched API method.
      *
      * @param {Object} params
      * @param {Request} params.req

@@ -1,5 +1,5 @@
 // @flow
-import IdentityTable from "webiny-api-security/src/entities/mysql/identity.mysql";
+import { IdentityTable } from "webiny-api-security";
 
 class UserTable extends IdentityTable {
     constructor() {

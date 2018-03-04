@@ -1,40 +1,49 @@
 import { expect } from "chai";
+import fs from "fs";
 import { Storage } from "webiny-file-storage";
 import { MemoryDriver } from "webiny-entity-memory";
 
-import registerAttributes from "./../src/attributes/registerAttributes";
-import { jpegBase64, pngBase64 } from "./utils/base64Data";
+import registerAttributes from "./../src/attributes/registerFileAttributes";
 import { Entity, File } from "../src/entities";
 import userFactory from "./utils/user.entity";
 import MockDriver from "./utils/storageDriverMock";
 
-let User;
-
-const data1 = {
-    name: "File1.jpeg",
-    src: jpegBase64,
-    type: "image/jpeg",
-    tags: ["passport"]
-};
-
-const data2 = {
-    name: "File2.png",
-    src: pngBase64,
-    type: "image/png",
-    tags: ["passport"]
-};
-
 describe("Files attribute test", () => {
+    let User;
+    let jpgBuffer;
+    let jpgBase64;
+    let pngBuffer;
+    let pngBase64;
+    let data1;
+    let data2;
+
     const storage = new Storage(new MockDriver({ cdnUrl: "https://cdn.webiny.com" }));
 
     before(() => {
-        Entity.driver = new MemoryDriver();
-        registerAttributes();
+        registerAttributes({ entity: File });
         User = userFactory({ documentStorage: storage, documentFolder: "users/documents" });
+        jpgBuffer = fs.readFileSync(__dirname + "/utils/lenna.jpg");
+        jpgBase64 = "data:image/jpg;base64," + jpgBuffer.toString("base64");
+        pngBuffer = fs.readFileSync(__dirname + "/utils/lenna.png");
+        pngBase64 = "data:image/png;base64," + pngBuffer.toString("base64");
+
+        data1 = {
+            name: "File1.jpg",
+            src: jpgBase64,
+            type: "image/jpg",
+            tags: ["passport"]
+        };
+
+        data2 = {
+            name: "File2.png",
+            src: pngBase64,
+            type: "image/png",
+            tags: ["passport"]
+        };
     });
 
     beforeEach(() => {
-        Entity.driver.flush();
+        Entity.driver = new MemoryDriver();
         storage.driver.flush();
     });
 
@@ -48,12 +57,8 @@ describe("Files attribute test", () => {
         user.populate(userData);
         await user.save();
 
-        console.log(Entity.driver.data);
-
         const documents = await user.documents;
-
         expect(await storage.getKeys()).to.have.lengthOf(2);
-
         const json = await user.toJSON("name,documents[id,name,tags]");
 
         expect(json).to.deep.equal({
@@ -62,7 +67,7 @@ describe("Files attribute test", () => {
             documents: [
                 {
                     id: documents[0].id,
-                    name: "File1.jpeg",
+                    name: "File1.jpg",
                     tags: ["user", "passport"]
                 },
                 {
@@ -92,7 +97,7 @@ describe("Files attribute test", () => {
         const documents = await user.documents;
         expect(documents).to.have.lengthOf(0);
 
-        //const files = await File.find();
-        //expect(files).to.have.lengthOf(0);
+        const files = await File.find();
+        expect(files).to.have.lengthOf(0);
     });
 });

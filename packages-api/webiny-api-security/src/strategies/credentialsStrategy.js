@@ -31,6 +31,7 @@ export default (options: { usernameAttribute?: string, credentials?: Function } 
 
     /**
      * Credentials authentication strategy.
+     * It extracts credentials from request and tries loading the identity instance using the provided Identity class.
      * @param req
      * @param identity
      */

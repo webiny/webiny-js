@@ -1,20 +1,25 @@
 // @flow
 import _ from "lodash";
-import { Entity, Driver, QueryResult } from "webiny-entity";
-import { Insert, Update, Delete, Select } from "./statements";
-import { MySQLModel } from "./model";
 import type { Connection, Pool } from "mysql";
+import { Entity, Driver, QueryResult } from "webiny-entity";
 import { MySQLConnection } from "webiny-mysql-connection";
-import {
+import type {
     EntitySaveParams,
     EntityFindParams,
     EntityDeleteParams,
     EntityFindOneParams
 } from "webiny-entity/types";
+import type { Operator } from "./../types";
+
+import { Insert, Update, Delete, Select } from "./statements";
+import { MySQLModel } from "./model";
+import operators from "./operators";
+import { ArrayAttribute } from "webiny-model";
 
 declare type MySQLDriverOptions = {
     connection: Connection | Pool,
     model: Class<MySQLModel>,
+    operators: ?{ [string]: Operator },
     id: { attribute?: Function, value?: Function },
     tables: {
         prefix: string,
@@ -25,6 +30,7 @@ declare type MySQLDriverOptions = {
 class MySQLDriver extends Driver {
     connection: MySQLConnection;
     model: Class<MySQLModel>;
+    operators: { [string]: Operator };
     id: { validator: ?Function, value: ?Function };
     tables: {
         prefix: string,
@@ -33,6 +39,7 @@ class MySQLDriver extends Driver {
 
     constructor(options: MySQLDriverOptions) {
         super();
+        this.operators = { ...operators, ...options.operators };
         this.connection = new MySQLConnection(options.connection);
         this.model = options.model || MySQLModel;
 
@@ -48,6 +55,11 @@ class MySQLDriver extends Driver {
             },
             options.tables
         );
+    }
+
+    setOperator(name: string, operator: Operator) {
+        this.operators[name] = operator;
+        return this;
     }
 
     onEntityConstruct(entity: Entity) {
@@ -76,6 +88,7 @@ class MySQLDriver extends Driver {
         if (entity.isExisting()) {
             const data = await entity.toStorage();
             const sql = new Update({
+                operators: this.operators,
                 table: this.getTableName(entity),
                 data,
                 where: { id: data.id },
@@ -88,6 +101,7 @@ class MySQLDriver extends Driver {
 
         const data = await entity.toStorage();
         const sql = new Insert({
+            operators: this.operators,
             data,
             table: this.getTableName(entity)
         }).generate();
@@ -109,6 +123,7 @@ class MySQLDriver extends Driver {
     async delete(entity: Entity, options: EntityDeleteParams & {}): Promise<QueryResult> {
         const id = await entity.getAttribute("id").getStorageValue();
         const sql = new Delete({
+            operators: this.operators,
             table: this.getTableName(entity),
             where: { id },
             limit: 1
@@ -118,16 +133,58 @@ class MySQLDriver extends Driver {
         return new QueryResult(true);
     }
 
-    async find(entity: Entity, options: EntityFindParams & {}): Promise<QueryResult> {
+    async find(
+        entity: Entity | Class<Entity>,
+        options: EntityFindParams & {}
+    ): Promise<QueryResult> {
         const clonedOptions = _.merge({}, options, {
+            operators: this.operators,
             table: this.getTableName(entity),
             operation: "select",
             limit: 10,
             offset: 0
         });
 
+        const isScalar = v => /boolean|number|string/.test(typeof v);
+
         if (_.has(clonedOptions, "query")) {
-            clonedOptions.where = clonedOptions.query;
+            const where = {};
+            const instance = typeof entity === "function" ? new entity() : entity;
+            Object.keys(clonedOptions.query).map(key => {
+                const value = clonedOptions.query[key];
+                const attribute = instance.getAttribute(key);
+                if (attribute instanceof ArrayAttribute) {
+                    if (isScalar(value)) {
+                        where[key] = { $jsonArrayFindValue: value };
+                        return;
+                    }
+
+                    // Match all values (strict array equality check)
+                    if (Array.isArray(value)) {
+                        where[key] = { $jsonArrayStrictEquality: value };
+                        return;
+                    }
+
+                    // Match any of the array values
+                    if ("$in" in value) {
+                        where["$or"] = value["$in"].map(v => ({
+                            [key]: { $jsonArrayFindValue: v }
+                        }));
+                        return;
+                    }
+
+                    // Match all of the values (non-strict check)
+                    if ("$all" in value) {
+                        where["$and"] = value["$all"].map(v => ({
+                            [key]: { $jsonArrayFindValue: v }
+                        }));
+                        return;
+                    }
+                }
+
+                where[key] = value;
+            });
+            clonedOptions.where = where;
             delete clonedOptions.query;
         }
 
@@ -142,15 +199,17 @@ class MySQLDriver extends Driver {
         }
 
         const sql = new Select(clonedOptions).generate();
-
         const results = await this.getConnection().query([sql, "SELECT FOUND_ROWS() as count"]);
 
         return new QueryResult(results[0], { count: results[1][0].count });
     }
 
-    async findOne(entity: Entity, options: EntityFindOneParams & Object): Promise<QueryResult> {
+    async findOne(
+        entity: Entity | Class<Entity>,
+        options: EntityFindOneParams & {}
+    ): Promise<QueryResult> {
         const sql = new Select({
-            operation: "select",
+            operators: this.operators,
             table: this.getTableName(entity),
             where: options.query,
             limit: 1
@@ -160,9 +219,13 @@ class MySQLDriver extends Driver {
         return new QueryResult(results[0]);
     }
 
-    async count(entity: Entity, options: EntityFindParams & {}): Promise<QueryResult> {
+    async count(
+        entity: Entity | Class<Entity>,
+        options: EntityFindParams & {}
+    ): Promise<QueryResult> {
         const sql = new Select(
             _.merge({}, options, {
+                operators: this.operators,
                 table: this.getTableName(entity),
                 columns: ["COUNT(*) AS count"]
             })
@@ -173,7 +236,7 @@ class MySQLDriver extends Driver {
     }
 
     // eslint-disable-next-line
-    isId(entity: Entity, value: mixed, options: ?Object): boolean {
+    isId(entity: Entity | Class<Entity>, value: mixed, options: ?Object): boolean {
         if (typeof this.id.validator === "function") {
             return this.id.validator(entity, value, options);
         }

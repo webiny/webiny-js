@@ -1,11 +1,12 @@
 import { assert } from "chai";
-
 import { Select } from "../../src/statements";
+import { operators } from "../../src";
 
 describe("SELECT statement test", function() {
     it("should generate a SELECT statement", async () => {
         const params = {
             operation: "select",
+            operators,
             table: "TestTable",
             where: { name: "Test", enabled: true, deletedOn: null },
             limit: 10,
