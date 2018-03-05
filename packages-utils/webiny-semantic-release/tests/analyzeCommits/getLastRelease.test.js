@@ -6,7 +6,9 @@ import { gitRepo, gitCommits, gitTagVersion, gitCheckout } from "./../utils/gitC
 
 const cwd = process.cwd();
 
-describe("[analyzeCommits] getLastRelease test", () => {
+describe("[analyzeCommits] getLastRelease test", function() {
+    this.timeout(5000);
+
     let logger;
     let getLastRelease;
 
@@ -17,6 +19,9 @@ describe("[analyzeCommits] getLastRelease test", () => {
         };
 
         getLastRelease = getLastReleaseFactory({ logger, git: new Git() });
+    });
+
+    afterEach(() => {
         process.chdir(cwd);
     });
 

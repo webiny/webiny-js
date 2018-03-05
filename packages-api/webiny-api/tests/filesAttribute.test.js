@@ -60,7 +60,6 @@ describe("Files attribute test", () => {
         const documents = await user.documents;
         expect(await storage.getKeys()).to.have.lengthOf(2);
         const json = await user.toJSON("name,documents[id,name,tags]");
-        console.log(Entity.getDriver().data);
 
         expect(json).to.deep.equal({
             id: user.id,

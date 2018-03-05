@@ -9,7 +9,7 @@ export default () => {
                 continue;
             }
 
-            packages[i]["releaseNotes"] = await releaseNotesGenerator(
+            packages[i].nextRelease["notes"] = await releaseNotesGenerator(
                 {},
                 {
                     commits: pkg.commits,

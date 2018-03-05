@@ -9,7 +9,9 @@ import { gitTagVersion } from "../utils/gitCommands";
 
 const cwd = process.cwd();
 
-describe("[analyzeCommits] plugin test", () => {
+describe("[analyzeCommits] plugin test", function() {
+    this.timeout(5000);
+
     let logger;
     let release;
 
@@ -22,7 +24,7 @@ describe("[analyzeCommits] plugin test", () => {
         release = compose([analyzeCommitsFactory()]);
     });
 
-    beforeEach(() => {
+    afterEach(() => {
         process.chdir(cwd);
     });
 

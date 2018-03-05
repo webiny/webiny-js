@@ -22,7 +22,7 @@ describe("[analyzeCommits] relevantCommits test", () => {
         };
     });
 
-    beforeEach(() => {
+    afterEach(() => {
         process.chdir(cwd);
     });
 

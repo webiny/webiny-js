@@ -1,11 +1,12 @@
 import parseGithubUrl from "parse-github-url";
-import GitHubApi from "@octokit/rest";
+import GithubFactory from "./utils/githubClient";
 
-export default () => {
+export default (pluginConfig = {}) => {
     return async ({ config, logger, packages }, next) => {
         const githubToken = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
-        const github = new GitHubApi();
-        github.authenticate({ type: "token", token: githubToken });
+
+        const githubClientConfig = { ...(pluginConfig.githubClient || {}), githubToken };
+        const github = GithubFactory(githubClientConfig);
 
         const { name: repo, owner } = parseGithubUrl(config.repositoryUrl);
         for (let i = 0; i < packages.length; i++) {
@@ -21,7 +22,7 @@ export default () => {
                 tag_name: pkg.nextRelease.gitTag,
                 name: pkg.nextRelease.gitTag,
                 target_commitish: config.branch,
-                body: pkg.releaseNotes
+                body: pkg.nextRelease.notes
             };
 
             if (config.preview) {
@@ -31,9 +32,18 @@ export default () => {
                     JSON.stringify(release, null, 2)
                 );
             } else {
-                const { data } = await github.repos.createRelease(release);
-                packages[i].githubRelease = data;
-                logger.log("Published GitHub release: %s", data.html_url);
+                try {
+                    const { data } = await github.repos.createRelease(release);
+                    packages[i].githubRelease = {
+                        ...data
+                    };
+                    logger.log("Published GitHub release: %s", data.html_url);
+                } catch (err) {
+                    logger.error("Failed to publish %s\n%s", pkg.name, err.message);
+                    packages[i].githubRelease = {
+                        error: err
+                    };
+                }
             }
         }
         next();

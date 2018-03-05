@@ -18,6 +18,7 @@
     "@semantic-release/commit-analyzer": "^5.0.2",
     "@semantic-release/release-notes-generator": "^6.0.6",
     "aggregate-error": "^1.0.0",
+    "bottleneck": "^2.1.0",
     "chalk": "^2.3.1",
     "env-ci": "^1.4.1",
     "execa": "^0.9.0",
@@ -28,6 +29,7 @@
     "lerna": "^2.9.0",
     "lodash": "^4.17.5",
     "p-locate": "^2.0.0",
+    "p-retry": "^1.0.0",
     "parse-github-url": "^1.0.2",
     "semver": "^5.5.0",
     "webiny-compose": "0.0.0-semantically-released",
@@ -38,6 +40,7 @@
     "file-url": "^2.0.2",
     "nock": "^9.2.3",
     "p-reduce": "^1.0.0",
+    "proxyquire": "^2.0.0",
     "tempy": "^0.2.1"
   },
   "scripts": {

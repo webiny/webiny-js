@@ -199,14 +199,14 @@ release({
         analyzeCommits(),
         releaseNotes(),
         // This plugin will modify the release notes of each package and add a custom footer.
-        // After the `releaseNotes` plugin did its job, each package data will contain a `releaseNotes` key with the generated notes.
+        // After the `releaseNotes` plugin did its job, each package `nextRelease` will contain a `notes` key with the generated notes.
         ({packages}, next) => {
             packages.map(pkg => {
-                pkg.releaseNotes += "\nI MUST have this at the bottom of each release!"
+                pkg.nextRelease.notes += "\nI MUST have this at the bottom of each release!"
             });
             next();
         },
-        // Publish plugin will now use the new `releaseNotes` because they were modified by your plugin
+        // Publish plugin will now use the new `notes` because they were modified by your plugin
         githubPublish()
     ]
 });
