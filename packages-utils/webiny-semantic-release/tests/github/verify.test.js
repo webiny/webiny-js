@@ -14,9 +14,7 @@ describe("[github verify] plugin test", () => {
     let release;
 
     beforeEach(() => {
-        ["GH_TOKEN", "GITHUB_TOKEN", "GH_URL", "GH_PREFIX", "GITHUB_PREFIX"].map(
-            key => delete process.env[key]
-        );
+        ["GH_TOKEN", "GITHUB_TOKEN", "GH_URL"].map(key => delete process.env[key]);
 
         logger = {
             log: stub(),
@@ -27,7 +25,7 @@ describe("[github verify] plugin test", () => {
             githubVerifyFactory({
                 githubClient: {
                     retry: { retries: 3, factor: 1, minTimeout: 1, maxTimeout: 1 },
-                    limit: { search: 1, core: 1 },
+                    limit: { core: 1 },
                     globalLimit: 1
                 }
             })
@@ -40,11 +38,32 @@ describe("[github verify] plugin test", () => {
         nock.cleanAll();
     });
 
-    it("should verify access to repository", async () => {
+    it("should verify access to repository using GH_TOKEN", async () => {
         const owner = "repo-owner";
         const repo = "repo-name";
 
         process.env.GH_TOKEN = "github_token";
+
+        const params = {
+            logger,
+            config: {
+                repositoryUrl: `git+https://github.com/${owner}/${repo}.git`
+            }
+        };
+
+        const github = githubClient()
+            .get(`/repos/${owner}/${repo}`)
+            .reply(200, { permissions: { push: true } });
+
+        expect(await release(params)).to.not.throw;
+        expect(github.isDone()).to.be.true;
+    });
+
+    it("should verify access to repository using GITHUB_TOKEN", async () => {
+        const owner = "repo-owner";
+        const repo = "repo-name";
+
+        process.env.GITHUB_TOKEN = "github_token";
 
         const params = {
             logger,
@@ -104,6 +123,8 @@ describe("[github verify] plugin test", () => {
                 repositoryUrl: `git+https://github.com/invalid.git`
             }
         };
+
+        const release = compose([githubVerifyFactory()]);
 
         return release(params).should.be.rejectedWith(Error, /EINVALIDGITHUBURL/);
     });

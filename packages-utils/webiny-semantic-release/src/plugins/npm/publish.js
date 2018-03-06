@@ -19,12 +19,20 @@ export default () => {
                 logger.log(`DRY: %s`, `npm publish ${pkg.location}`);
                 logger.log(`DRY: package.json\n%s`, JSON.stringify(pkg.packageJSON, null, 2));
             } else {
-                // write the updated package.json to disk before publishing
-                fs.writeJsonSync(path.join(pkg.location, "package.json"), pkg.packageJSON, {
-                    spaces: 2
-                });
-                const shell = await execa("npm", ["publish", `${pkg.location}`]);
-                process.stdout.write(shell.stdout);
+                try {
+                    // write the updated package.json to disk before publishing
+                    fs.writeJsonSync(path.join(pkg.location, "package.json"), pkg.packageJSON, {
+                        spaces: 2
+                    });
+                    const shell = await execa("npm", ["publish", `${pkg.location}`]);
+                    process.stdout.write(shell.stdout);
+                    pkg.npmPublish = {
+                        ...shell
+                    };
+                } catch (err) {
+                    process.stdout.write(err.toString());
+                    pkg.npmPublish = { error: err };
+                }
             }
         }
 

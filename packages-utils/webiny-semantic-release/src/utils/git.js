@@ -1,7 +1,4 @@
 import execa from "execa";
-import debugFactory from "debug";
-
-const debug = debugFactory("WSR:GIT");
 
 class Git {
     /**
@@ -20,7 +17,7 @@ class Git {
         try {
             return await execa.stdout("git", ["rev-list", "-1", tagName]);
         } catch (err) {
-            debug(err);
+            return null;
         }
     }
 
@@ -37,16 +34,6 @@ class Git {
     }
 
     /**
-     * Tag the commit head on the local repository.
-     *
-     * @param {String} tagName The name of the tag.
-     * @throws {Error} if the tag creation failed.
-     */
-    async tag(tagName) {
-        await execa("git", ["tag", tagName]);
-    }
-
-    /**
      * Verify a tag name is a valid Git reference.
      *
      * @method verifyTagName
@@ -57,7 +44,7 @@ class Git {
         try {
             return (await execa("git", ["check-ref-format", `refs/tags/${tagName}`])).code === 0;
         } catch (err) {
-            debug(err);
+            return false;
         }
     }
 
@@ -72,7 +59,7 @@ class Git {
         try {
             return (await execa("git", ["merge-base", "--is-ancestor", ref, "HEAD"])).code === 0;
         } catch (err) {
-            debug(err);
+            return false;
         }
     }
 
@@ -87,22 +74,7 @@ class Git {
      * @return {string} The value of the remote git URL.
      */
     async repoUrl() {
-        try {
-            return await execa.stdout("git", ["remote", "get-url", "origin"]);
-        } catch (err) {
-            debug(err);
-        }
-    }
-
-    /**
-     * Push to the remote repository.
-     *
-     * @param {String} origin The remote repository URL.
-     * @param {String} branch The branch to push.
-     * @throws {Error} if the push failed.
-     */
-    async push(origin, branch) {
-        await execa("git", ["push", "--tags", origin, `HEAD:${branch}`]);
+        return await execa.stdout("git", ["remote", "get-url", "origin"]);
     }
 }
 

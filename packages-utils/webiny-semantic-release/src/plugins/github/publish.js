@@ -5,7 +5,7 @@ export default (pluginConfig = {}) => {
     return async ({ config, logger, packages }, next) => {
         const githubToken = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
 
-        const githubClientConfig = { ...(pluginConfig.githubClient || {}), githubToken };
+        const githubClientConfig = { ...pluginConfig.githubClient, githubToken };
         const github = GithubFactory(githubClientConfig);
 
         const { name: repo, owner } = parseGithubUrl(config.repositoryUrl);
@@ -34,13 +34,13 @@ export default (pluginConfig = {}) => {
             } else {
                 try {
                     const { data } = await github.repos.createRelease(release);
-                    packages[i].githubRelease = {
+                    pkg.githubRelease = {
                         ...data
                     };
                     logger.log("Published GitHub release: %s", data.html_url);
                 } catch (err) {
                     logger.error("Failed to publish %s\n%s", pkg.name, err.message);
-                    packages[i].githubRelease = {
+                    pkg.githubRelease = {
                         error: err
                     };
                 }

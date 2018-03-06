@@ -31,8 +31,8 @@ export {
 export default async config => {
     const params = {
         packages: Array.isArray(config.packages) ? config.packages : [config.packages],
-        logger: logger(),
-        git: new Git(),
+        logger: config.logger || logger(),
+        git: config.git || new Git(),
         config: {
             ci: config.ci || true,
             preview: config.preview || false,

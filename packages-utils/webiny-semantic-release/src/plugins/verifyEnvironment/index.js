@@ -1,10 +1,13 @@
 import envCi from "env-ci";
 import _ from "lodash";
-import { verifyTagName } from "./../../utils/git";
 
 export default () => {
-    return async ({ packages, config, logger }, next, finish) => {
+    return async ({ packages, config, logger, git }, next, finish) => {
         const { isCi, branch, isPr } = envCi();
+
+        if (!Array.isArray(packages)) {
+            throw new Error(`ENOPACKAGES: missing packages to process.`);
+        }
 
         if (!isCi && !config.preview && config.ci) {
             logger.log(
@@ -33,7 +36,8 @@ export default () => {
         const tagFormat = config.tagFormat(packages[0]);
 
         // Verify that compiling the `tagFormat` produce a valid Git tag
-        if (!await verifyTagName(_.template(tagFormat)({ version: "0.0.0" }))) {
+        const tagName = _.template(tagFormat)({ version: "0.0.0" });
+        if (!await git.verifyTagName(tagName)) {
             throw new Error(
                 `EINVALIDTAGFORMAT: You have specified an invalid tag format \`${tagFormat}\``
             );

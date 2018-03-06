@@ -18,7 +18,7 @@ export default (pluginConfig = {}) => {
         }
 
         if (githubToken) {
-            const githubClientConfig = { ...(pluginConfig.githubClient || {}), githubToken };
+            const githubClientConfig = { ...pluginConfig.githubClient, githubToken };
             const github = GithubFactory(githubClientConfig);
 
             try {
