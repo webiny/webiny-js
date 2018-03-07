@@ -31,14 +31,16 @@ describe("mysql connection test", async function() {
     it("should correctly query using pool of connections", async () => {
         const instance = new MySQLConnection(mysql.createPool({}));
 
+        const fakeGetConnection = {
+            query: _.noop,
+            release: _.noop
+        };
+
         const getConnectionStub = sandbox
             .stub(instance.getInstance(), "getConnection")
-            .callsFake(callback =>
-                callback(null, {
-                    query: _.noop,
-                    release: _.noop
-                })
-            );
+            .callsFake(callback => callback(null, fakeGetConnection));
+
+        const releaseSpy = sandbox.spy(fakeGetConnection, "release");
 
         const queryWithConnectionStub = sandbox
             .stub(instance, "__executeQueryWithConnection")
@@ -49,10 +51,12 @@ describe("mysql connection test", async function() {
         const results = await instance.query("INSERT INTO users ...");
 
         expect(getConnectionStub.callCount).to.equal(1);
+        expect(releaseSpy.callCount).to.equal(1);
         expect(results.insertId).to.equal(1);
 
         getConnectionStub.restore();
         queryWithConnectionStub.restore();
+        releaseSpy.restore();
     });
 
     it("should correctly execute more than one SQL query using a single connection", async () => {
@@ -122,14 +126,16 @@ describe("mysql connection test", async function() {
     it("should correctly execute more than one SQL query using pool of connections", async () => {
         const instance = new MySQLConnection(mysql.createPool({}));
 
+        const fakeGetConnection = {
+            query: _.noop,
+            release: _.noop
+        };
+
         const getConnectionStub = sandbox
             .stub(instance.getInstance(), "getConnection")
-            .callsFake(callback =>
-                callback(null, {
-                    query: _.noop,
-                    release: _.noop
-                })
-            );
+            .callsFake(callback => callback(null, fakeGetConnection));
+
+        const releaseSpy = sandbox.spy(fakeGetConnection, "release");
 
         const queryWithConnectionStub = sandbox
             .stub(instance, "__executeQueryWithConnection")
@@ -148,12 +154,14 @@ describe("mysql connection test", async function() {
         ]);
 
         expect(getConnectionStub.callCount).to.equal(1);
+        expect(releaseSpy.callCount).to.equal(1);
 
         expect(results).to.be.lengthOf(2);
         expect(results[0][0].id).to.be.equal(1);
         expect(results[0][1].id).to.be.equal(2);
         expect(results[1][0].count).to.be.equal(1);
 
+        releaseSpy.restore();
         getConnectionStub.restore();
         queryWithConnectionStub.restore();
     });
@@ -161,22 +169,26 @@ describe("mysql connection test", async function() {
     it("should return an error when using a pool of connections", async () => {
         const instance = new MySQLConnection(mysql.createPool({}));
 
+        const fakeGetConnection = {
+            query: (sql, callback) => {
+                return callback("Something went wrong.", null);
+            },
+            release: callback => {}
+        };
+
         const getConnectionStub = sandbox
             .stub(instance.getInstance(), "getConnection")
-            .callsFake(callback =>
-                callback(null, {
-                    query: (sql, callback) => {
-                        return callback("Something went wrong.", null);
-                    },
-                    release: callback => {}
-                })
-            );
+            .callsFake(callback => callback(null, fakeGetConnection));
+
+        const releaseSpy = sandbox.spy(fakeGetConnection, "release");
 
         try {
             await instance.query(["SELECT * FROM users", "SELECT FOUND_ROWS() as count"]);
         } catch (e) {
+            expect(releaseSpy.callCount).to.equal(1);
             return;
         } finally {
+            releaseSpy.restore();
             getConnectionStub.restore();
         }
 
