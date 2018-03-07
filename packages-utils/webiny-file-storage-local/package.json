@@ -20,7 +20,8 @@
     "globby": "^7.1.1",
     "lodash": "^4.17.4",
     "mime-types": "^2.1.17",
-    "minimatch": "^3.0.4"
+    "minimatch": "^3.0.4",
+    "webiny-file-storage": "0.0.0-semantically-released"
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",

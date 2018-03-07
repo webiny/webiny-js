@@ -1,12 +1,12 @@
 import { expect } from "chai";
 import { stub } from "sinon";
 import commits from "./utils/commits";
-import releaseNotesFactory from "../../src/plugins/releaseNotes";
+import releaseNotesFactory from "../src/plugins/releaseNotes";
 import compose from "webiny-compose";
 
 const cwd = process.cwd();
 
-describe("[releaseNotes] plugin test", () => {
+describe("releaseNotes plugin test", () => {
     let logger;
 
     before(() => {

@@ -1,12 +1,12 @@
 import { expect } from "chai";
 import { stub } from "sinon";
-import getLastReleaseFactory from "../../src/plugins/analyzeCommits/getLastRelease";
-import Git from "../../src/utils/git";
-import { gitRepo, gitCommits, gitTagVersion, gitCheckout } from "./../utils/gitCommands";
+import getLastReleaseFactory from "../src/plugins/analyzeCommits/getLastRelease";
+import Git from "../src/utils/git";
+import { gitRepo, gitCommits, gitTagVersion, gitCheckout } from "./utils/gitCommands";
 
 const cwd = process.cwd();
 
-describe("[analyzeCommits] getLastRelease test", function() {
+describe("getLastRelease test", function() {
     this.timeout(5000);
 
     let logger;

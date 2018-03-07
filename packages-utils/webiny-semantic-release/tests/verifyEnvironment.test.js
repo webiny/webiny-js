@@ -2,38 +2,23 @@ import { stub } from "sinon";
 import proxyquire from "proxyquire";
 import clearModule from "clear-module";
 import compose from "webiny-compose";
-import Git from "../../src/utils/git";
-import chai from "../utils/chai";
+import Git from "../src/utils/git";
+import chai from "./utils/chai";
 
 const { expect } = chai;
 
-describe("[verifyEnvironment] plugin test", function() {
-    const modulePath = "../../src/plugins/verifyEnvironment";
+describe("verifyEnvironment plugin test", function() {
+    const modulePath = "../src/plugins/verifyEnvironment";
 
     let logger;
 
     beforeEach(() => {
-        clearModule("../../src/plugins/verifyEnvironment");
+        clearModule(modulePath);
 
         logger = {
             log: stub(),
             error: stub()
         };
-    });
-
-    it("should throw an error `ENOPACKAGES` if no packages are defined", async () => {
-        const params = {
-            config: {}
-        };
-
-        proxyquire(modulePath, {
-            "env-ci": () => ({ isCi: false })
-        });
-
-        const { default: verifyEnvironmentFactory } = await import(modulePath);
-        const release = compose([verifyEnvironmentFactory()]);
-
-        return release(params).should.be.rejectedWith(Error, /ENOPACKAGES/);
     });
 
     it("should switch to `preview` mode if release is not run in a known CI and `config.ci=true`", async () => {

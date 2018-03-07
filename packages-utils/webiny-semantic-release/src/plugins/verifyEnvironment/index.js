@@ -5,10 +5,6 @@ export default () => {
     return async ({ packages, config, logger, git }, next, finish) => {
         const { isCi, branch, isPr } = envCi();
 
-        if (!Array.isArray(packages)) {
-            throw new Error(`ENOPACKAGES: missing packages to process.`);
-        }
-
         if (!isCi && !config.preview && config.ci) {
             logger.log(
                 "This run was not triggered in a known CI environment, running in dry-run mode."

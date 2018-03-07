@@ -2,14 +2,14 @@ import { expect } from "chai";
 import { stub } from "sinon";
 import _ from "lodash";
 import compose from "webiny-compose";
-import analyzeCommitsFactory from "../../src/plugins/analyzeCommits";
-import { gitRepo, gitCommits } from "./../utils/gitCommands";
-import Git from "../../src/utils/git";
-import { gitTagVersion } from "../utils/gitCommands";
+import analyzeCommitsFactory from "../src/plugins/analyzeCommits";
+import { gitRepo, gitCommits } from "./utils/gitCommands";
+import Git from "../src/utils/git";
+import { gitTagVersion } from "./utils/gitCommands";
 
 const cwd = process.cwd();
 
-describe("[analyzeCommits] plugin test", function() {
+describe("analyzeCommits plugin test", function() {
     this.timeout(5000);
 
     let logger;

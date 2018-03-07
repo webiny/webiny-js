@@ -88,7 +88,7 @@ export async function gitCommits(messages) {
 /**
  * Get the list of parsed commits since a git reference.
  *
- * @param {String} [from] Git reference from which to seach commits.
+ * @param {String} [from] Git reference from which to search commits.
  * @return {Array<Object>} The list of parsed commits.
  */
 export async function gitGetCommits(from) {

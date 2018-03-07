@@ -1,16 +1,16 @@
-import chai from "./../utils/chai";
 import nock from "nock";
 import { stub } from "sinon";
 import compose from "webiny-compose";
-import githubPublishFactory from "../../src/plugins/github/publish";
+import chai from "./utils/chai";
+import githubPublishFactory from "../src/plugins/github/publish";
 import githubClient from "./utils/githubClient";
-import Git from "../../src/utils/git";
+import Git from "../src/utils/git";
 
 const { expect } = chai;
 
 const envVars = { ...process.env };
 
-describe("[github publish] plugin test", () => {
+describe("githubPublish plugin test", () => {
     let logger;
     let release;
 
