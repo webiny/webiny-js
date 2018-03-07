@@ -1,8 +1,8 @@
 import { expect } from "chai";
 import compose from "webiny-compose";
-import updatePackageJsonFactory from "../../src/plugins/updatePackageJson";
+import updatePackageJsonFactory from "../src/plugins/updatePackageJson";
 
-describe("[updatePackageJson] plugin test", function() {
+describe("updatePackageJson plugin test", function() {
     it("should update package version and versions of dependencies", async () => {
         const params = {
             packages: [

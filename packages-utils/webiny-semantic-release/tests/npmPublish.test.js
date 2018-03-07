@@ -8,28 +8,20 @@ import { expect } from "chai";
 
 const cwd = process.cwd();
 
-const fileExists = path => {
+const fileExists = (path) => {
     try {
-        fs.openSync(path, "r");
+        fs.openSync(path, 'r');
         return true;
     } catch (err) {
         return false;
     }
 };
 
-describe("[npm publish] plugin test", function() {
+describe("npmPublish plugin test", function () {
     let logger;
 
-    before(() => {
-        stub(process.stdout, "write").callsFake(() => {});
-    });
-
-    after(() => {
-        process.stdout.write.restore();
-    });
-
     beforeEach(async () => {
-        clearModule("../../src/plugins/npm/publish");
+        clearModule("../src/plugins/npm/publish");
 
         process.chdir(cwd);
 
@@ -62,14 +54,14 @@ describe("[npm publish] plugin test", function() {
         };
 
         let packageWritten = false;
-        proxyquire("../../src/plugins/npm/publish", {
+        proxyquire("../src/plugins/npm/publish", {
             execa: () => {
                 packageWritten = fileExists(dir + "/package.json");
-                return { stdout: pkg.packageJSON.name + "@" + pkg.packageJSON.version };
+                return { stdout: pkg.packageJSON.name + '@' + pkg.packageJSON.version };
             }
         });
 
-        const { default: npmPublishFactory } = await import("../../src/plugins/npm/publish");
+        const { default: npmPublishFactory } = await import("../src/plugins/npm/publish");
         const release = compose([npmPublishFactory()]);
         await release(params);
 
@@ -112,15 +104,13 @@ describe("[npm publish] plugin test", function() {
             config: {}
         };
 
-        proxyquire("../../src/plugins/npm/publish", {
+        proxyquire("../src/plugins/npm/publish", {
             execa: stub()
-                .onFirstCall()
-                .throws(() => new Error("Invalid package"))
-                .onSecondCall()
-                .returns({ stdout: pkg2.packageJSON.name + "@" + pkg2.packageJSON.version })
+                .onFirstCall().throws(() => new Error("Invalid package"))
+                .onSecondCall().returns({ stdout: pkg2.packageJSON.name + '@' + pkg2.packageJSON.version })
         });
 
-        const { default: npmPublishFactory } = await import("../../src/plugins/npm/publish");
+        const { default: npmPublishFactory } = await import("../src/plugins/npm/publish");
         const release = compose([npmPublishFactory()]);
         await release(params);
 
@@ -139,7 +129,7 @@ describe("[npm publish] plugin test", function() {
             config: {}
         };
 
-        const { default: npmPublishFactory } = await import("../../src/plugins/npm/publish");
+        const { default: npmPublishFactory } = await import("../src/plugins/npm/publish");
         const release = compose([npmPublishFactory()]);
         await release(params);
 
@@ -167,18 +157,16 @@ describe("[npm publish] plugin test", function() {
             }
         };
 
-        proxyquire("../../src/plugins/npm/publish", {
+        proxyquire("../src/plugins/npm/publish", {
             execa: () => ({})
         });
 
-        const { default: npmPublishFactory } = await import("../../src/plugins/npm/publish");
+
+        const { default: npmPublishFactory } = await import("../src/plugins/npm/publish");
         const release = compose([npmPublishFactory()]);
         await release(params);
 
-        expect(logger.log.args[1]).to.deep.equal(["DRY: %s", "npm publish " + pkg.location]);
-        expect(logger.log.args[2]).to.deep.equal([
-            `DRY: package.json\n%s`,
-            JSON.stringify(pkg.packageJSON, null, 2)
-        ]);
+        expect(logger.log.args[1]).to.deep.equal(['DRY: %s', 'npm publish ' + pkg.location]);
+        expect(logger.log.args[2]).to.deep.equal([`DRY: package.json\n%s`, JSON.stringify(pkg.packageJSON, null, 2)]);
     });
 });

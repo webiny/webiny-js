@@ -2,13 +2,14 @@ import { stub } from "sinon";
 import proxyquire from "proxyquire";
 import clearModule from "clear-module";
 import compose from "webiny-compose";
-import "./../utils/chai";
+import "./utils/chai";
 
-describe("[npm verify] plugin test", function() {
+describe("npmVerify plugin test", function () {
     let logger;
+    const modulePath = "../src/plugins/npm/verify";
 
     beforeEach(async () => {
-        clearModule("../../src/plugins/npm/verify");
+        clearModule(modulePath);
 
         logger = {
             log: stub(),
@@ -17,7 +18,7 @@ describe("[npm verify] plugin test", function() {
     });
 
     it("should skip verification if release is in `preview` mode", async () => {
-        const { default: npmVerifyFactory } = await import("../../src/plugins/npm/verify");
+        const { default: npmVerifyFactory } = await import(modulePath);
 
         const release = compose([npmVerifyFactory()]);
 
@@ -32,11 +33,12 @@ describe("[npm verify] plugin test", function() {
     });
 
     it("should verify access to repository if valid token is set", async () => {
-        proxyquire("../../src/plugins/npm/verify", {
-            execa: () => {}
+        proxyquire(modulePath, {
+            execa: () => {
+            }
         });
 
-        const { default: npmVerifyFactory } = await import("../../src/plugins/npm/verify");
+        const { default: npmVerifyFactory } = await import(modulePath);
         const release = compose([npmVerifyFactory()]);
 
         const params = {
@@ -48,7 +50,7 @@ describe("[npm verify] plugin test", function() {
     });
 
     it("should throw error if invalid token is set", async () => {
-        proxyquire("../../src/plugins/npm/verify", {
+        proxyquire(modulePath, {
             execa: () => {
                 throw new Error(
                     "ENEEDAUTH: You need to authorize this machine using `npm adduser`"
@@ -56,7 +58,7 @@ describe("[npm verify] plugin test", function() {
             }
         });
 
-        const { default: npmVerifyFactory } = await import("../../src/plugins/npm/verify");
+        const { default: npmVerifyFactory } = await import(modulePath);
 
         const release = compose([npmVerifyFactory()]);
 

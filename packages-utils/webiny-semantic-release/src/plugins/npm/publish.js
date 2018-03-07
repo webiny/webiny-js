@@ -25,12 +25,12 @@ export default () => {
                         spaces: 2
                     });
                     const shell = await execa("npm", ["publish", `${pkg.location}`]);
-                    process.stdout.write(shell.stdout);
+                    logger.log(shell.stdout);
                     pkg.npmPublish = {
                         ...shell
                     };
                 } catch (err) {
-                    process.stdout.write(err.toString());
+                    logger.log(err.toString());
                     pkg.npmPublish = { error: err };
                 }
             }

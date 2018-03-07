@@ -1,11 +1,11 @@
 import { expect } from "chai";
 import { stub } from "sinon";
-import getCommits from "../../src/plugins/analyzeCommits/getCommits";
-import { gitRepo, gitCommits } from "./../utils/gitCommands";
+import getCommits from "../src/plugins/analyzeCommits/getCommits";
+import { gitRepo, gitCommits } from "./utils/gitCommands";
 
 const cwd = process.cwd();
 
-describe("[analyzeCommits] getCommits test", function() {
+describe("getCommits test", function() {
     this.timeout(5000);
     let logger;
 

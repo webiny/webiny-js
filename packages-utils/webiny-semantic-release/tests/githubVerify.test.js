@@ -1,15 +1,15 @@
-import chai from "./../utils/chai";
 import nock from "nock";
 import { stub } from "sinon";
 import compose from "webiny-compose";
-import githubVerifyFactory from "../../src/plugins/github/verify";
+import chai from "./utils/chai";
+import githubVerifyFactory from "../src/plugins/github/verify";
 import githubClient from "./utils/githubClient";
 
 const { expect } = chai;
 
 const envVars = { ...process.env };
 
-describe("[github verify] plugin test", () => {
+describe("githubVerify plugin test", () => {
     let logger;
     let release;
 

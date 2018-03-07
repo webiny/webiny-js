@@ -21,7 +21,7 @@ export default (pluginConfig = {}) => {
         const getLastRelease = getLastReleaseFactory({ logger, git });
 
         // Fetch all commits and tags
-        await git.unshallow();
+        await git.fetchAll();
 
         // Detect next version for all packages
         for (let i = 0; i < packages.length; i++) {

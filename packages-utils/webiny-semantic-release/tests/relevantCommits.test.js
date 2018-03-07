@@ -1,11 +1,11 @@
 import { expect } from "chai";
 import { stub } from "sinon";
-import relevantCommits from "../../src/plugins/analyzeCommits/relevantCommits";
-import { gitRepo, gitCommits } from "./../utils/gitCommands";
+import relevantCommits from "../src/plugins/analyzeCommits/relevantCommits";
+import { gitRepo, gitCommits } from "./utils/gitCommands";
 
 const cwd = process.cwd();
 
-describe("[analyzeCommits] relevantCommits test", () => {
+describe("relevantCommits test", () => {
     let logger;
     const messages = [
         "feat(scope): add feature 1\naffects: package-1, ,",

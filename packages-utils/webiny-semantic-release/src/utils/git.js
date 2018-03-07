@@ -2,10 +2,10 @@ import execa from "execa";
 
 class Git {
     /**
-     * Unshallow the git repository (fetch all commits and tags).
+     * Fetch all commits and tags
      */
-    async unshallow() {
-        await execa("git", ["fetch", "--unSHAllow", "--tags"], { reject: false });
+    async fetchAll() {
+        await execa("git", ["fetch", "--unshallow", "--tags"], { reject: false });
     }
 
     /**
@@ -53,7 +53,7 @@ class Git {
      *
      * @param {string} ref The reference to look for.
      *
-     * @return {boolean} `true` if the reference is in the history of the current branch, falsy otherwise.
+     * @return {boolean} `true` if the reference is in the history of the current branch, `false` otherwise.
      */
     async isRefInHistory(ref) {
         try {
@@ -71,10 +71,14 @@ class Git {
     }
 
     /**
-     * @return {string} The value of the remote git URL.
+     * @return {string} The value of the remote git URL or `undefined` if remote URL is not set
      */
     async repoUrl() {
-        return await execa.stdout("git", ["remote", "get-url", "origin"]);
+        try {
+            return await execa.stdout("git", ["remote", "get-url", "origin"]);
+        } catch (e) {
+            return undefined;
+        }
     }
 }
 

@@ -17,7 +17,8 @@
     "aws-sdk": "^2.188.0",
     "babel-runtime": "^6.26.0",
     "fecha": "^2.3.2",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "webiny-file-storage": "0.0.0-semantically-released"
   },
   "devDependencies": {
     "sinon": "^4.2.0",
