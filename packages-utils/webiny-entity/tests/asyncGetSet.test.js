@@ -127,4 +127,44 @@ describe("async get and set methods test", async function() {
         assert(findById.calledThrice);
         findById.restore();
     });
+
+    it(`should read from objects too, not only attributes`, async () => {
+        const user = new User().populate({
+            company: {
+                city: "New York"
+            }
+        });
+        await user.company;
+
+        user
+            .getAttribute("company")
+            .value.current.getAttribute("name")
+            .onGet(() => {
+                return { one: "one", two: { three: "finalValue" } };
+            });
+
+        assert.deepEqual(await user.get("company.name.two.three"), "finalValue");
+    });
+
+    it(`should return default value when keys on objects (not attributes) are not set`, async () => {
+        const user = new User().populate({ company: {} });
+        await user.company;
+
+        user
+            .getAttribute("company")
+            .value.current.getAttribute("name")
+            .onGet(() => {
+                return { one: "one", two: { three: "finalValue" } };
+            });
+
+        assert.deepEqual(await user.get("company.name.two.three", "defaultValue"), "finalValue");
+        assert.deepEqual(
+            await user.get("company.name.two.three.four", "defaultValue"),
+            "defaultValue"
+        );
+        assert.deepEqual(
+            await user.get("company.name.two.three.four.five", "defaultValue"),
+            "defaultValue"
+        );
+    });
 });

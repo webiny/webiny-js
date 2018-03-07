@@ -203,8 +203,7 @@ class Model {
                 value = await value[steps[i]];
             }
         }
-
-        return typeof value === "undefined" ? defaultValue : value;
+        return value;
     }
 
     __parseKeyParams(key: string): { arguments: Array<string>, key: string } {

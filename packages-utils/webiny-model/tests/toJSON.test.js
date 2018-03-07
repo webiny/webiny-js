@@ -136,4 +136,30 @@ describe("data extraction test", async function() {
             }
         });
     });
+
+    it(`should read from objects too, not only attributes`, async () => {
+        const user = new User().populate({
+            company: {
+                city: "New York"
+            }
+        });
+
+        user
+            .getAttribute("company")
+            .value.current.getAttribute("city")
+            .onGet(() => {
+                return { one: "one", two: { three: "finalValue" } };
+            });
+
+        let extract = await user.toJSON("company.city.two.three");
+        assert.deepEqual(extract, {
+            company: {
+                city: {
+                    two: {
+                        three: "finalValue"
+                    }
+                }
+            }
+        });
+    });
 });
