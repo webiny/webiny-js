@@ -76,7 +76,7 @@ describe("async get and set methods test", async function() {
 
         const image = await user.get("company.image");
 
-        assert(findById.calledThrice);
+        assert.equal(findById.callCount, 3);
         findById.restore();
 
         assert.instanceOf(image, Image);

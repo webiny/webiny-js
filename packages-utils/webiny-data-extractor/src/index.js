@@ -123,19 +123,21 @@ class DataExtractor {
 
         // If we reached the last key (or if only one key was passed), then we just modify the output and exit.
         if (path.length === 0) {
-            let value;
+            const final = { value: undefined, key };
             if (typeof options.onRead === "function") {
-                value = await options.onRead(data, key);
+                const results = await options.onRead(data, key);
+                final.key = results[0];
+                final.value = results[1];
             } else {
-                value = await data[key];
+                final.value = await data[key];
             }
 
-            if (typeof value === "undefined") {
+            if (typeof final.value === "undefined") {
                 if (options.includeUndefined === true) {
-                    fragments.output[key] = value;
+                    fragments.output[final.key] = final.value;
                 }
             } else {
-                fragments.output[key] = value;
+                fragments.output[final.key] = final.value;
             }
 
             return;

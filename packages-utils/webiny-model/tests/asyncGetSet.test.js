@@ -150,4 +150,23 @@ describe("async get and set methods test", async function() {
 
         assert.isUndefined(await user.get("company.image.file.size.width"));
     });
+
+    it(`should accept additional ":" arguments on root keys`, async () => {
+        const user = new User().populate({ id: "A", age: 30 });
+
+        assert.equal(await user.get("age"), 30);
+        assert.equal(await user.get("age:add:100"), 130);
+        assert.equal(await user.get("age:sub:20"), 10);
+    });
+
+    it(`should accept additional ":" arguments on nested keys`, async () => {
+        const user = new User().populate({
+            company: {
+                city: "New York"
+            }
+        });
+
+        assert.equal(await user.get("company.city"), "New York");
+        assert.equal(await user.get("company.city:true"), "new york");
+    });
 });

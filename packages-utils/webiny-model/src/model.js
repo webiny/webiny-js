@@ -165,13 +165,19 @@ class Model {
     async toJSON(fields: string): Promise<Object> {
         return await extractor.get(this, fields, {
             onRead: async (data, key) => {
-                if ("getAttribute" in data && typeof data.getAttribute === "function") {
-                    if (!data.getAttribute(key)) {
-                        return;
+                // Key can accept ":" separated arguments, so we have to make sure those are parsed.
+                const received = this.__parseKeyParams(key);
+
+                if (typeof data.getAttribute === "function") {
+                    if (!data.getAttribute(received.key)) {
+                        return [received.key];
                     }
-                    return await data.getAttribute(key).getJSONValue();
+                    return [
+                        received.key,
+                        await data.getAttribute(received.key).getJSONValue(...received.arguments)
+                    ];
                 }
-                return await data[key];
+                return [received.key, await data[received.key]];
             }
         });
     }
@@ -181,13 +187,30 @@ class Model {
         let value: Object = this;
         for (let i = 0; i < steps.length; i++) {
             if (!_.isObject(value)) {
-                return;
+                return defaultValue;
             }
 
-            value = await value[steps[i]];
+            // Key can accept ":" separated arguments, so we have to make sure those are parsed.
+            const received = this.__parseKeyParams(steps[i]);
+
+            if (typeof value.getAttribute === "function") {
+                if (value.getAttribute(received.key)) {
+                    value = await value.getAttribute(received.key).getValue(...received.arguments);
+                } else {
+                    return defaultValue;
+                }
+            } else {
+                value = await value[steps[i]];
+            }
         }
 
         return typeof value === "undefined" ? defaultValue : value;
+    }
+
+    __parseKeyParams(key: string): { arguments: Array<string>, key: string } {
+        const received = { arguments: key.split(":"), key: "" };
+        received.key = received.arguments.shift();
+        return received;
     }
 
     async set(path: string, value: mixed): Promise<void> {

@@ -33,7 +33,15 @@ class Company extends Model {
         this.attr("name")
             .char()
             .setValidators("required");
-        this.attr("city").char();
+        this.attr("city")
+            .char()
+            .onGet((value, lowerCase) => {
+                if (lowerCase && value) {
+                    return value.toLowerCase();
+                }
+                return value;
+            });
+
         this.attr("image")
             .model(Image)
             .setValidators("required");
@@ -49,7 +57,19 @@ class User extends Model {
         this.attr("lastName")
             .char()
             .setValidators("required");
-        this.attr("age").integer();
+        this.attr("age")
+            .integer()
+            .onGet((value, operation, number) => {
+                if (operation === "add") {
+                    return value + Number(number);
+                }
+
+                if (operation === "sub") {
+                    return value - Number(number);
+                }
+
+                return value;
+            });
         this.attr("company")
             .model(Company)
             .setValidators("required");

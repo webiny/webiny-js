@@ -1,4 +1,12 @@
 /**
+ * @typedef OnReadCallbackResult
+ * @name OnReadCallbackResult
+ * @description A result that must be returned when implementing onRead callback.
+ * It must be an array, in which the first element is a data key, and second is actual data.
+ */
+export type OnReadCallbackResult = [string, mixed];
+
+/**
  * @typedef ExtractionOptions
  * @name ExtractionOptions
  * @description All possible data extraction options.
@@ -7,7 +15,7 @@
  */
 export type ExtractionOptions = {
     includeUndefined?: boolean,
-    onRead?: Function
+    onRead?: Function<OnReadCallbackResult>
 };
 
 /**

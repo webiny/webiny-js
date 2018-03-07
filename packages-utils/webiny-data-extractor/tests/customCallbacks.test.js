@@ -6,9 +6,9 @@ import mock from "./mock";
 
 const onRead = (data, key) => {
     if (_.isObject(data[key])) {
-        return data[key];
+        return [key, data[key]];
     }
-    return "___" + data[key] + "___";
+    return [key, "___" + data[key] + "___"];
 };
 
 describe("custom callback test", () => {
@@ -41,7 +41,7 @@ describe("custom callback test", () => {
     });
 
     it("should return nested keys in square brackets", async () => {
-        const extracted = await extractor.get(mock, "company[name,city]", { onRead: onRead });
+        const extracted = await extractor.get(mock, "company[name,city]", { onRead });
 
         assert.deepEqual(extracted, {
             company: {
@@ -52,7 +52,7 @@ describe("custom callback test", () => {
     });
 
     it("if a key is an array and no nested keys are set, it should be returned completely", async () => {
-        const extracted = await extractor.get(mock, `age,meta.objects`, { onRead: onRead });
+        const extracted = await extractor.get(mock, `age,meta.objects`, { onRead });
         assert.deepEqual(extracted, {
             age: "___30___",
             meta: {

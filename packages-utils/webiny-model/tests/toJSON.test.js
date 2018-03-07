@@ -1,6 +1,7 @@
 import { assert } from "chai";
 
 import { User } from "./models/userModels";
+
 const user = new User();
 user.populate({
     firstName: "John",
@@ -99,5 +100,40 @@ describe("data extraction test", async function() {
         const user = new User().populate({ id: "A", age: 30 });
         const extract = await user.toJSON("age,username");
         assert.deepEqual(extract, { age: 30 });
+    });
+
+    it(`should accept additional ":" arguments on root keys`, async () => {
+        const user = new User().populate({ id: "A", age: 30 });
+
+        let extract = await user.toJSON("age");
+        assert.deepEqual(extract, { age: 30 });
+
+        extract = await user.toJSON("age:add:100");
+        assert.deepEqual(extract, { age: 130 });
+
+        extract = await user.toJSON("age:sub:20");
+        assert.deepEqual(extract, { age: 10 });
+    });
+
+    it(`should accept additional ":" arguments on nested keys`, async () => {
+        const user = new User().populate({
+            company: {
+                city: "New York"
+            }
+        });
+
+        let extract = await user.toJSON("company.city");
+        assert.deepEqual(extract, {
+            company: {
+                city: "New York"
+            }
+        });
+
+        extract = await user.toJSON("company.city:true");
+        assert.deepEqual(extract, {
+            company: {
+                city: "new york"
+            }
+        });
     });
 });

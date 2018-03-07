@@ -259,7 +259,7 @@ class Attribute {
             this.value.setCurrent(this.getDefaultValue());
         }
 
-        return this.onGetCallback(this.value.getCurrent());
+        return this.onGetCallback(this.value.getCurrent(), ...arguments);
     }
 
     onSet(callback: Function) {
@@ -278,7 +278,7 @@ class Attribute {
     }
 
     async getJSONValue(): Promise<mixed> {
-        return this.onGetJSONValueCallback(await this.getValue());
+        return this.onGetJSONValueCallback(await this.getValue(...arguments), ...arguments);
     }
 
     setToStorage(flag: boolean = true): this {
