@@ -279,6 +279,17 @@ class Attribute {
             return;
         }
 
+        if (this.getAsync()) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    await this.value.setCurrent(await this.onSetCallback(value));
+                } catch (e) {
+                    reject(e);
+                }
+                resolve();
+            });
+        }
+
         this.value.setCurrent(this.onSetCallback(value));
     }
 

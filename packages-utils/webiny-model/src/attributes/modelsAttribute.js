@@ -23,7 +23,7 @@ class ModelsAttribute extends Attribute {
         return new modelClass();
     }
 
-    setValue(values: Array<Model>) {
+    setValue(values: mixed) {
         if (!this.canSetValue()) {
             return;
         }
