@@ -5,7 +5,6 @@ class EntityAttributeValue extends AttributeValue {
     constructor(attribute) {
         super(attribute);
         this.queue = [];
-        this.state = { loaded: false, loading: false };
 
         // Contains initial value received upon loading from storage. If the current value becomes different from initial,
         // upon save, old entity must be removed. This is only active when auto delete option on the attribute is enabled,
@@ -75,14 +74,6 @@ class EntityAttributeValue extends AttributeValue {
 
     syncInitial() {
         this.setInitial(this.getCurrent());
-    }
-
-    isLoaded() {
-        return this.state.loaded;
-    }
-
-    isLoading() {
-        return this.state.loading;
     }
 
     setInitial(value) {

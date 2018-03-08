@@ -115,14 +115,6 @@ class EntitiesAttributeValue extends AttributeValue {
         return this.current;
     }
 
-    isLoaded(): boolean {
-        return this.state.loaded;
-    }
-
-    isLoading(): boolean {
-        return this.state.loading;
-    }
-
     setInitial(value: EntityCollection): this {
         this.initial = value;
         return this;

@@ -1,17 +1,20 @@
 // @flow
 import type { Attribute } from ".";
+import type { AttributeValueState } from "./../types";
 
 class AttributeValue {
     attribute: Attribute;
     current: mixed;
     dirty: boolean;
     set: boolean;
+    state: AttributeValueState;
 
     constructor(attribute: Attribute) {
         this.attribute = attribute;
         this.current = null;
         this.dirty = false;
         this.set = false;
+        this.state = { loading: false, loaded: false };
     }
 
     setCurrent(value: mixed, options: Object = {}): this {
@@ -57,6 +60,14 @@ class AttributeValue {
         this.current = null;
         this.dirty = false;
         this.set = false;
+    }
+
+    isLoaded() {
+        return this.state.loaded;
+    }
+
+    isLoading() {
+        return this.state.loading;
     }
 }
 
