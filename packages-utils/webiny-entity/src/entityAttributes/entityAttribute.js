@@ -184,7 +184,7 @@ class EntityAttribute extends Attribute {
      * @param value
      * @returns {Promise<any>}
      */
-    setValue(value: any) {
+    setValue(value: mixed) {
         return new Promise((resolve, reject) => {
             return this.value.load(async () => {
                 if (!this.canSetValue()) {

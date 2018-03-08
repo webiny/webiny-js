@@ -473,13 +473,13 @@ describe("save and delete entities attribute test", () => {
             error = e;
         }
 
-        assert.deepEqual(mainEntity.getAttribute("attribute1").value.status, {
+        assert.deepEqual(mainEntity.getAttribute("attribute1").value.state, {
             loaded: true,
             loading: false
         });
         assert.equal(mainEntity.getAttribute("attribute1").value.current[0].id, "B");
         assert.equal(mainEntity.getAttribute("attribute1").value.current[1].id, "C");
-        assert.deepEqual(mainEntity.getAttribute("attribute2").value.status, {
+        assert.deepEqual(mainEntity.getAttribute("attribute2").value.state, {
             loaded: false,
             loading: false
         });
@@ -501,13 +501,13 @@ describe("save and delete entities attribute test", () => {
             error = e;
         }
 
-        assert.deepEqual(mainEntity.getAttribute("attribute1").value.status, {
+        assert.deepEqual(mainEntity.getAttribute("attribute1").value.state, {
             loaded: true,
             loading: false
         });
         assert.equal(mainEntity.getAttribute("attribute1").value.current[0].id, "B");
         assert.equal(mainEntity.getAttribute("attribute1").value.current[1].id, "C");
-        assert.deepEqual(mainEntity.getAttribute("attribute2").value.status, {
+        assert.deepEqual(mainEntity.getAttribute("attribute2").value.state, {
             loaded: true,
             loading: false
         });

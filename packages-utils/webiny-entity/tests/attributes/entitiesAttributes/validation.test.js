@@ -169,14 +169,14 @@ describe("attribute entities test", function() {
         const mainEntity = await MainEntity.findById("mainEntity");
 
         await mainEntity.save();
-        assert.deepEqual(mainEntity.getAttribute("attribute1").value.status, {
+        assert.deepEqual(mainEntity.getAttribute("attribute1").value.state, {
             loaded: false,
             loading: false
         });
         assert.equal(findById.callCount, 1);
         findById.restore();
 
-        assert.deepEqual(mainEntity.getAttribute("attribute1").value.status, {
+        assert.deepEqual(mainEntity.getAttribute("attribute1").value.state, {
             loaded: false,
             loading: false
         });

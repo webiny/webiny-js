@@ -118,11 +118,11 @@ describe("entity attribute test", function() {
         const one = await One.findById("one");
 
         await one.save();
-        assert.deepEqual(one.getAttribute("two").value.status, { loaded: false, loading: false });
+        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
         assert.equal(findById.callCount, 1);
         findById.restore();
 
-        assert.deepEqual(one.getAttribute("two").value.status, { loaded: false, loading: false });
+        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
         one.two = 123;
 
         one.save().should.be.rejectedWith(ModelError);

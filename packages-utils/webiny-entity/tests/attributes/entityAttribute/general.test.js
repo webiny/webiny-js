@@ -280,7 +280,7 @@ describe("entity attribute test", function() {
         findById.restore();
 
         assert.equal(one.getAttribute("two").value.getCurrent(), null);
-        assert.deepEqual(one.getAttribute("two").value.status, { loaded: false, loading: false });
+        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
 
         findById = sandbox.spy(One.getDriver(), "findOne");
         one.two;
@@ -290,13 +290,13 @@ describe("entity attribute test", function() {
 
         assert.equal(findById.callCount, 0);
         assert.equal(one.getAttribute("two").value.getCurrent(), null);
-        assert.deepEqual(one.getAttribute("two").value.status, { loaded: true, loading: false });
+        assert.deepEqual(one.getAttribute("two").value.state, { loaded: true, loading: false });
 
         await one.two;
 
         assert.equal(findById.callCount, 0);
         assert.equal(one.getAttribute("two").value.getCurrent(), null);
-        assert.deepEqual(one.getAttribute("two").value.status, { loaded: true, loading: false });
+        assert.deepEqual(one.getAttribute("two").value.state, { loaded: true, loading: false });
 
         findById.restore();
     });

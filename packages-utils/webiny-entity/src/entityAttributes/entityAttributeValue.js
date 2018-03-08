@@ -5,7 +5,7 @@ class EntityAttributeValue extends AttributeValue {
     constructor(attribute) {
         super(attribute);
         this.queue = [];
-        this.status = { loaded: false, loading: false };
+        this.state = { loaded: false, loading: false };
 
         // Contains initial value received upon loading from storage. If the current value becomes different from initial,
         // upon save, old entity must be removed. This is only active when auto delete option on the attribute is enabled,
@@ -28,16 +28,16 @@ class EntityAttributeValue extends AttributeValue {
         }
 
         if (this.isLoaded()) {
-            this.status.loading = true;
+            this.state.loading = true;
             _.isFunction(callback) && (await callback());
-            this.status.loading = false;
+            this.state.loading = false;
 
             await this.__executeQueue();
 
             return this.getCurrent();
         }
 
-        this.status.loading = true;
+        this.state.loading = true;
 
         // Only if we have a valid ID set, we must load linked entity.
         if (
@@ -54,8 +54,8 @@ class EntityAttributeValue extends AttributeValue {
 
         _.isFunction(callback) && (await callback());
 
-        this.status.loading = false;
-        this.status.loaded = true;
+        this.state.loading = false;
+        this.state.loaded = true;
 
         await this.__executeQueue();
 
@@ -78,11 +78,11 @@ class EntityAttributeValue extends AttributeValue {
     }
 
     isLoaded() {
-        return this.status.loaded;
+        return this.state.loaded;
     }
 
     isLoading() {
-        return this.status.loading;
+        return this.state.loading;
     }
 
     setInitial(value) {

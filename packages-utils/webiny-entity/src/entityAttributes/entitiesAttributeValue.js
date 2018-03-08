@@ -21,7 +21,7 @@ class EntitiesAttributeValue extends AttributeValue {
             initial: new EntityCollection()
         };
 
-        this.status = {
+        this.state = {
             loading: false,
             loaded: false
         };
@@ -44,9 +44,9 @@ class EntitiesAttributeValue extends AttributeValue {
         }
 
         if (this.isLoaded()) {
-            this.status.loading = true;
+            this.state.loading = true;
             typeof callback === "function" && (await callback());
-            this.status.loading = false;
+            this.state.loading = false;
 
             await this.__executeQueue();
 
@@ -55,7 +55,7 @@ class EntitiesAttributeValue extends AttributeValue {
 
         const classes = this.attribute.classes;
 
-        this.status.loading = true;
+        this.state.loading = true;
 
         if (
             this.attribute
@@ -107,8 +107,8 @@ class EntitiesAttributeValue extends AttributeValue {
 
         typeof callback === "function" && (await callback());
 
-        this.status.loading = false;
-        this.status.loaded = true;
+        this.state.loading = false;
+        this.state.loaded = true;
 
         await this.__executeQueue();
 
@@ -116,11 +116,11 @@ class EntitiesAttributeValue extends AttributeValue {
     }
 
     isLoaded(): boolean {
-        return this.status.loaded;
+        return this.state.loaded;
     }
 
     isLoading(): boolean {
-        return this.status.loading;
+        return this.state.loading;
     }
 
     setInitial(value: EntityCollection): this {

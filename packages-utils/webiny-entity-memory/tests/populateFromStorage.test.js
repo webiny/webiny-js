@@ -41,7 +41,7 @@ describe("populateFromStorage test", function() {
 
         const complexEntity = await ComplexEntity.findById("A");
 
-        assert.deepEqual(complexEntity.getAttribute("simpleEntities").value.status, {
+        assert.deepEqual(complexEntity.getAttribute("simpleEntities").value.state, {
             loading: false,
             loaded: false
         });
@@ -56,7 +56,7 @@ describe("populateFromStorage test", function() {
         assert.equal(complexEntity.tags[1].label, "Adult User");
         assert.lengthOf(complexEntity.tags, 2);
 
-        assert.deepEqual(complexEntity.getAttribute("simpleEntities").value.status, {
+        assert.deepEqual(complexEntity.getAttribute("simpleEntities").value.state, {
             loading: false,
             loaded: false
         });
@@ -70,7 +70,7 @@ describe("populateFromStorage test", function() {
         assert.equal(simpleEntity.name, "Test-A");
 
         const simpleEntities = await complexEntity.simpleEntities;
-        assert.deepEqual(complexEntity.getAttribute("simpleEntities").value.status, {
+        assert.deepEqual(complexEntity.getAttribute("simpleEntities").value.state, {
             loading: false,
             loaded: true
         });
