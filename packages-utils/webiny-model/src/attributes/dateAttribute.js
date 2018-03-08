@@ -7,8 +7,8 @@ class DateAttribute extends Attribute {
         !_.isDate(value) && this.expected("Date object", typeof value);
     }
 
-    setValue(value: Date | string | number) {
-        if (_.isNumber(value) || _.isString(value)) {
+    setValue(value: mixed) {
+        if (typeof value === "number" || typeof value === "string") {
             this.value.setCurrent(new Date(value));
         } else {
             this.value.setCurrent(value);

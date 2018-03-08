@@ -25,16 +25,14 @@ class EntityAttribute extends Attribute {
     ) {
         super(name, attributesContainer);
 
+        // This attribute is async because we need to load entities both on set and get calls.
+        this.async = true;
+
         this.options = options;
 
         this.classes = {
             entity: { class: entity }
         };
-
-        /**
-         * Attribute's current value.
-         */
-        this.value = new EntityAttributeValue(this);
 
         /**
          * Auto save is always enabled, but delete not. This is because users will more often create many to one relationship than
@@ -96,6 +94,14 @@ class EntityAttribute extends Attribute {
                     }
                 }
             });
+    }
+
+    /**
+     * Returns AttributeValue class to be used on construct.
+     * @returns {AttributeValue}
+     */
+    getAttributeValueClass() {
+        return EntityAttributeValue;
     }
 
     /**

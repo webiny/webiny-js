@@ -12,6 +12,7 @@ class Attribute {
     once: boolean;
     toStorage: boolean;
     toJSON: boolean;
+    async: boolean;
     skipOnPopulate: boolean;
     defaultValue: mixed;
     validators: ?(string | Function);
@@ -32,7 +33,7 @@ class Attribute {
         /**
          * Attribute's current value.
          */
-        this.value = new AttributeValue((this: Attribute));
+        this.value = new (this.getAttributeValueClass())(this);
 
         /**
          * If true - updating will be disabled.
@@ -47,37 +48,51 @@ class Attribute {
         this.toStorage = true;
 
         /**
-         * If true - mass populate will skip this attribute
+         * If true - populate will skip this attribute
          * @var bool
          */
         this.skipOnPopulate = false;
 
         /**
-         * Default value
+         * Determines if attribute is asynchronous or not.
+         * @var bool
+         */
+        this.async = false;
+
+        /**
+         * Default value.
          * @var null
          */
         this.defaultValue = null;
 
         /**
-         * Attribute validators
+         * Attribute validators.
          * @var string
          */
         this.validators = null;
 
         /**
-         * Custom onSet callback
+         * Custom onSet callback.
          */
         this.onSetCallback = value => value;
 
         /**
-         * Custom onGet callback
+         * Custom onGet callback.
          */
         this.onGetCallback = value => value;
 
         /**
-         * Custom onGetJSONValue callback
+         * Custom onGetJSONValue callback.
          */
         this.onGetJSONValueCallback = value => value;
+    }
+
+    /**
+     * Returns AttributeValue class to be used on construct.
+     * @returns {AttributeValue}
+     */
+    getAttributeValueClass() {
+        return AttributeValue;
     }
 
     /**
@@ -85,6 +100,23 @@ class Attribute {
      */
     getName(): string {
         return this.name;
+    }
+
+    /**
+     * Sets this attribute as async.
+     * @param flag
+     * @returns {Attribute}
+     */
+    setAsync(flag: boolean = true): Attribute {
+        this.async = flag;
+        return this;
+    }
+
+    /**
+     * Returns whether or not this attribute is an async attribute.
+     */
+    getAsync(): boolean {
+        return this.async;
     }
 
     /**
@@ -242,7 +274,7 @@ class Attribute {
      * @param {any} value A value can be anything, depending on the attribute implementation.
      * @returns {void|Promise<void>}
      */
-    setValue(value: any): void | Promise<void> {
+    setValue(value: mixed): void | Promise<void> {
         if (!this.canSetValue()) {
             return;
         }
@@ -252,6 +284,7 @@ class Attribute {
 
     /**
      * Returns attribute's value.
+     * @returns {*}
      */
     getValue(): mixed {
         const value = this.value.getCurrent();

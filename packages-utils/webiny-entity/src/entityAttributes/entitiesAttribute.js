@@ -16,6 +16,10 @@ class EntitiesAttribute extends Attribute {
         attributeName: ?string
     ) {
         super(name, attributesContainer, entity);
+
+        // This attribute is async because we need to load entities both on set and get calls.
+        this.async = true;
+
         this.classes = {
             parent: this.getParentModel().getParentEntity().constructor.name,
             entities: { class: entity, attribute: attributeName },
@@ -26,12 +30,6 @@ class EntitiesAttribute extends Attribute {
         if (!this.classes.entities.attribute) {
             this.classes.entities.attribute = _.camelCase(this.classes.parent);
         }
-
-        /**
-         * Attribute's current value.
-         * @type {undefined}
-         */
-        this.value = new EntitiesAttributeValue(((this: any): EntitiesAttribute));
 
         /**
          * Auto save and delete are both enabled by default.
@@ -149,6 +147,14 @@ class EntitiesAttribute extends Attribute {
                     }
                 }
             });
+    }
+
+    /**
+     * Returns AttributeValue class to be used on construct.
+     * @returns {AttributeValue}
+     */
+    getAttributeValueClass() {
+        return EntitiesAttributeValue;
     }
 
     getEntitiesClass(): ?Class<Entity> {
