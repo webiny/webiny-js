@@ -43,33 +43,34 @@ class EntitiesAttribute extends Attribute {
          */
         this.toStorage = false;
 
-        this.getParentModel()
-            .getParentEntity()
-            .on("save", async () => {
-                // If loading is in progress, wait until loaded.
-                this.value.isLoading() && (await this.value.load());
+        const parentEntity = this.getParentModel().getParentEntity();
 
-                if (!this.value.isLoaded()) {
-                    return;
-                }
+        parentEntity.on("save", async () => {
+            // If loading is in progress, wait until loaded.
+            if (this.value.isDirty() || this.value.isLoading()) {
+                await this.value.load();
+            }
 
-                if (this.getUsingClass()) {
-                    // Do we have to manage entities?
-                    // If so, this will ensure that newly set or unset entities and its link entities are synced.
-                    // "syncCurrentEntitiesAndLinks" method must be called on this event because link entities must be ready
-                    // before the validation of data happens. When validation happens and when link class is set,
-                    // validation is triggered on link (aggregation) entity, not on entity end (linked) entity.
-                    await this.value.manageCurrentLinks();
-                } else {
-                    await this.value.manageCurrent();
-                }
-            });
+            if (!this.value.isLoaded()) {
+                return;
+            }
+
+            if (this.getUsingClass()) {
+                // Do we have to manage entities?
+                // If so, this will ensure that newly set or unset entities and its link entities are synced.
+                // "syncCurrentEntitiesAndLinks" method must be called on this event because link entities must be ready
+                // before the validation of data happens. When validation happens and when link class is set,
+                // validation is triggered on link (aggregation) entity, not on entity end (linked) entity.
+                await this.value.manageCurrentLinks();
+            } else {
+                await this.value.manageCurrent();
+            }
+        });
 
         /**
          * Same as in EntityAttribute, entities present here were already validated when parent entity called the validate method.
          * At this point, entities are ready to be saved (only loaded entities).
          */
-        const parentEntity = this.getParentModel().getParentEntity();
         parentEntity.on("afterSave", async () => {
             // We don't have to do the following check here:
             // this.value.isLoading() && (await this.value.load());
@@ -226,8 +227,15 @@ class EntitiesAttribute extends Attribute {
         return this.auto.delete;
     }
 
-    async getValue(): Promise<EntityCollection> {
-        return this.value.load();
+    /**
+     * Loads current entity if needed and returns it.
+     * @returns {Promise<void>}
+     */
+    async getValue(): Promise<mixed> {
+        if (this.value.isClean()) {
+            await this.value.load();
+        }
+        return this.value.getCurrent();
     }
 
     /**
@@ -235,55 +243,52 @@ class EntitiesAttribute extends Attribute {
      * @param value
      * @returns {Promise<void>}
      */
-    setValue(value: Array<{}> | EntityCollection): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.value.load(async () => {
-                if (!this.canSetValue()) {
-                    resolve();
-                    return;
+    setValue(value: Array<mixed> | EntityCollection): void {
+        if (!this.canSetValue()) {
+            return;
+        }
+
+        const finalValue = this.onSetCallback(value);
+
+        // Even if the value is invalid (eg. a string), we allow it here, but calling validate() will fail.
+        if (finalValue instanceof EntityCollection) {
+            this.value.setCurrent(finalValue);
+            return;
+        }
+
+        if (Array.isArray(finalValue)) {
+            const collection = new EntityCollection();
+            for (let i = 0; i < finalValue.length; i++) {
+                const current = finalValue[i];
+
+                switch (true) {
+                    case current instanceof Entity:
+                        collection.push(current);
+                        break;
+                    case _.isObject(current):
+                        collection.push(new this.classes.entities.class().populate(current));
+                        break;
+                    default:
+                        collection.push(current);
                 }
+            }
 
-                const finalValue = await this.onSetCallback(value);
+            this.value.setCurrent(collection);
+            return;
+        }
 
-                // Even if the value is invalid (eg. a string), we allow it here, but calling validate() will fail.
-                if (finalValue instanceof EntityCollection) {
-                    this.value.setCurrent(finalValue);
-                    resolve();
-                    return;
-                }
+        this.value.setCurrent(finalValue);
+    }
 
-                try {
-                    if (Array.isArray(finalValue)) {
-                        const collection = new EntityCollection();
-                        for (let i = 0; i < finalValue.length; i++) {
-                            const current = finalValue[i];
-
-                            switch (true) {
-                                case current instanceof Entity:
-                                    collection.push(current);
-                                    break;
-                                case _.isObject(current):
-                                    collection.push(
-                                        new this.classes.entities.class().populate(current)
-                                    );
-                                    break;
-                                default:
-                                    collection.push(current);
-                            }
-                        }
-
-                        this.value.setCurrent(collection);
-                        resolve();
-                        return;
-                    }
-
-                    this.value.setCurrent(finalValue);
-                    resolve();
-                } catch (e) {
-                    reject(e);
-                }
-            });
-        });
+    /**
+     * Sets value received from storage.
+     * @param value
+     * @returns {EntityAttribute}
+     */
+    setStorageValue(value: Array<mixed>) {
+        this.value.setCurrent(value, { skipDifferenceCheck: true });
+        this.value.setInitial(value);
+        return this;
     }
 
     /**
@@ -368,7 +373,7 @@ class EntitiesAttribute extends Attribute {
      */
     async validate() {
         // If attribute has validators or loading is in progress, wait until loaded.
-        if (this.hasValidators() || this.value.isLoading()) {
+        if (this.value.isDirty() || this.hasValidators() || this.value.isLoading()) {
             await this.value.load();
         }
 
@@ -380,7 +385,7 @@ class EntitiesAttribute extends Attribute {
         await Attribute.prototype.validate.call(this);
     }
 
-    async getJSONValue(): Promise<Array<Object>> {
+    async getJSONValue(): mixed | Promise<Array<mixed>> {
         const value = await this.getValue();
         if (value instanceof EntityCollection) {
             return value.toJSON();

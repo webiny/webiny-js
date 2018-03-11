@@ -132,4 +132,14 @@ describe("toJSON test", function() {
         const extract = await user.toJSON("age,username");
         assert.deepEqual(extract, { id: "A", age: 30 });
     });
+
+    it("should pass arguments correctly", async () => {
+        const user = new User();
+        assert.equal(await user.getAttribute("dynamicWithArgs").getJSONValue(1, 2, 3), 6);
+        assert.equal(await user.get("dynamicWithArgs:1:2:3"), "123");
+        assert.deepEqual(await user.toJSON("dynamicWithArgs:1:2:3"), {
+            id: null,
+            dynamicWithArgs: "123"
+        });
+    });
 });

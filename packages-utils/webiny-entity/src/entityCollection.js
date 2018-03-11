@@ -5,7 +5,7 @@ import EntityCollectionError from "./entityCollectionError";
 class EntityCollection extends Array<Entity> {
     __entityCollection: { params: Object, meta: Object };
 
-    constructor(values: Array<Entity> = []) {
+    constructor(values: Array<mixed> = []) {
         super();
         this.__entityCollection = { params: {}, meta: {} };
         if (Array.isArray(values)) {

@@ -40,8 +40,12 @@ describe("save and delete entities attribute test", () => {
                 return new QueryResult({ id: "Z", name: "Group Z" });
             });
 
-        // This action is async, and following save should wait until the attribute is fully loaded.
-        user.groups = [{ name: "Group P" }, { name: "Group Q" }];
+        await user.set("groups", [{ name: "Group P" }, { name: "Group Q" }]);
+        assert.deepEqual(user.getAttribute("groups").value.state, {
+            loading: false,
+            loaded: false
+        });
+
         let entitySave = sandbox
             .stub(user.getDriver(), "save")
             .onCall(0)

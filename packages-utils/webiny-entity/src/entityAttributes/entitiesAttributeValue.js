@@ -6,7 +6,7 @@ import Entity from "./../entity";
 import EntityCollection from "./../entityCollection";
 
 class EntitiesAttributeValue extends AttributeValue {
-    initial: EntityCollection;
+    initial: Array<mixed> | EntityCollection;
 
     constructor(attribute: Attribute) {
         super(attribute);
@@ -33,24 +33,13 @@ class EntitiesAttributeValue extends AttributeValue {
      * Ensures data is loaded correctly, and in the end returns current value.
      * @returns {Promise<*>}
      */
-    async load(callback: ?Function) {
+    async load() {
         if (this.isLoading()) {
-            return new Promise(resolve => {
-                this.queue.push(async () => {
-                    typeof callback === "function" && (await callback());
-                    resolve(this.current);
-                });
-            });
+            return new Promise(resolve => this.queue.push(resolve));
         }
 
         if (this.isLoaded()) {
-            this.state.loading = true;
-            typeof callback === "function" && (await callback());
-            this.state.loading = false;
-
-            await this.__executeQueue();
-
-            return this.current;
+            return;
         }
 
         const classes = this.attribute.classes;
@@ -66,46 +55,46 @@ class EntitiesAttributeValue extends AttributeValue {
             if (this.attribute.getToStorage()) {
                 if (this.hasCurrent()) {
                     if (classes.using.class) {
-                        this.current = await classes.using.class.findByIds(this.current);
+                        this.initial = await classes.using.class.findByIds(this.initial);
                     } else {
-                        this.current = await classes.entities.class.findByIds(this.current);
+                        this.initial = await classes.entities.class.findByIds(this.initial);
                     }
                 }
-            } else if (
-                this.attribute
-                    .getParentModel()
-                    .getParentEntity()
-                    .isExisting()
-            ) {
+            } else {
                 let id = await this.attribute
                     .getParentModel()
                     .getAttribute("id")
                     .getStorageValue();
 
                 if (classes.using.class) {
-                    this.links.current = await classes.using.class.find({
+                    this.links.initial = await classes.using.class.find({
                         query: { [classes.entities.attribute]: id }
                     });
 
-                    this.current = new EntityCollection();
-                    for (let i = 0; i < this.links.current.length; i++) {
-                        this.current.push(await this.links.current[i][classes.using.attribute]);
+                    this.initial = new EntityCollection();
+                    for (let i = 0; i < this.links.initial.length; i++) {
+                        this.initial.push(await this.links.initial[i][classes.using.attribute]);
                     }
                 } else {
-                    this.current = await classes.entities.class.find({
+                    this.initial = await classes.entities.class.find({
                         query: { [classes.entities.attribute]: id }
                     });
                 }
             }
-        }
 
-        // Set current entities as new values.
-        this.syncInitial();
-        if (classes.using.class) {
-            this.syncInitialLinks();
+            if (this.isClean()) {
+                const initial = this.getInitial();
+                const initialLinks = this.getInitialLinks();
+                if (Array.isArray(initial) && Array.isArray(initialLinks)) {
+                    this.setCurrent(new EntityCollection(initial), { skipDifferenceCheck: true });
+                    if (classes.using.class) {
+                        this.setCurrentLinks(new EntityCollection(initialLinks), {
+                            skipDifferenceCheck: true
+                        });
+                    }
+                }
+            }
         }
-
-        typeof callback === "function" && (await callback());
 
         this.state.loading = false;
         this.state.loaded = true;
@@ -115,12 +104,12 @@ class EntitiesAttributeValue extends AttributeValue {
         return this.current;
     }
 
-    setInitial(value: EntityCollection): this {
+    setInitial(value: Array<mixed> | EntityCollection): this {
         this.initial = value;
         return this;
     }
 
-    getInitial(): EntityCollection {
+    getInitial(): Array<mixed> | EntityCollection {
         return this.initial;
     }
 
@@ -143,9 +132,11 @@ class EntitiesAttributeValue extends AttributeValue {
             currentEntitiesIds = this.getCurrent().map(entity => entity.id);
 
         for (let i = 0; i < initial.length; i++) {
-            const currentInitial: Object = initial[i];
-            if (!currentEntitiesIds.includes(currentInitial.id)) {
-                await currentInitial.delete();
+            const currentInitial: mixed = initial[i];
+            if (currentInitial instanceof Entity) {
+                if (!currentEntitiesIds.includes(currentInitial.id)) {
+                    await currentInitial.delete();
+                }
             }
         }
     }
@@ -169,7 +160,7 @@ class EntitiesAttributeValue extends AttributeValue {
         }
     }
 
-    getInitialLinks(): EntityCollection {
+    getInitialLinks(): Array<mixed> | EntityCollection {
         return this.links.initial;
     }
 
@@ -213,7 +204,7 @@ class EntitiesAttributeValue extends AttributeValue {
             const initial = initialLinks[i];
             // $FlowIgnore
             if (!currentLinksIds.includes(initial.id)) {
-                await initial.delete();
+                initial instanceof Entity && (await initial.delete());
             }
         }
     }

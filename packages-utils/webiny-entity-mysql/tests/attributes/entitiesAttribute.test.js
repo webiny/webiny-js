@@ -22,15 +22,16 @@ describe("entities attribute test", function() {
             { name: "Test-2" },
             { name: "Test-3" }
         ];
+
         assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state, {
-            loading: true,
+            loading: false,
             loaded: false
         });
 
         let simpleEntities = await entity.simpleEntitiesLoadedFromTable;
         assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state, {
             loading: false,
-            loaded: true
+            loaded: false
         });
 
         assert.lengthOf(simpleEntities, 3);
@@ -57,13 +58,13 @@ describe("entities attribute test", function() {
         await entity.simpleEntitiesLoadedFromTable;
         assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state, {
             loading: false,
-            loaded: true
+            loaded: false
         });
 
         simpleEntities = await entity.simpleEntitiesLoadedFromTable;
         assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state, {
             loading: false,
-            loaded: true
+            loaded: false
         });
 
         assert.lengthOf(simpleEntities, 3);
@@ -79,14 +80,14 @@ describe("entities attribute test", function() {
 
         assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state, {
             loading: false,
-            loaded: true
+            loaded: false
         });
         entity.simpleEntitiesLoadedFromTable = null;
 
         assert.isNull(await entity.simpleEntitiesLoadedFromTable);
         assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state, {
             loading: false,
-            loaded: true
+            loaded: false
         });
     });
 
@@ -100,15 +101,15 @@ describe("entities attribute test", function() {
         ];
         entity.simpleEntitiesLoadedFromTable = null;
         assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state, {
-            loading: true,
+            loading: false,
             loaded: false
         });
-        assert.lengthOf(entity.getAttribute("simpleEntitiesLoadedFromTable").value.queue, 1);
+        assert.lengthOf(entity.getAttribute("simpleEntitiesLoadedFromTable").value.queue, 0);
 
         assert.isNull(await entity.simpleEntitiesLoadedFromTable);
         assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state, {
             loading: false,
-            loaded: true
+            loaded: false
         });
     });
 

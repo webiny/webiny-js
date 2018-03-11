@@ -9,6 +9,7 @@ describe("getAttributes test", function() {
         const allAttributes = user.getAttributes();
 
         assert.hasAllKeys(allAttributes, [
+            "dynamicWithArgs",
             "firstName",
             "lastName",
             "enabled",
@@ -21,5 +22,6 @@ describe("getAttributes test", function() {
         assert.instanceOf(allAttributes["enabled"], BooleanAttribute);
         assert.instanceOf(allAttributes["age"], IntegerAttribute);
         assert.instanceOf(allAttributes["totalSomething"], DynamicAttribute);
+        assert.instanceOf(allAttributes["dynamicWithArgs"], DynamicAttribute);
     });
 });

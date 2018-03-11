@@ -9,7 +9,6 @@ describe("save and delete entities attribute test", () => {
     afterEach(() => sandbox.restore());
 
     it("should replace entities if direct assign was made or correctly update the list otherwise", async () => {
-        let entityDelete = sandbox.spy(MainEntity.getDriver(), "delete");
         let entityFindById = sandbox
             .stub(MainEntity.getDriver(), "findOne")
             .callsFake(() => new QueryResult({ id: "A" }));
@@ -23,10 +22,14 @@ describe("save and delete entities attribute test", () => {
         const mainEntity = await MainEntity.findById(123);
         entityFindById.restore();
 
-        await mainEntity.set("attribute1", [{ name: "x", type: "parrot" }]);
+        mainEntity.attribute1 = [{ name: "x", type: "parrot" }];
 
-        assert.equal(mainEntity.getAttribute("attribute1").value.initial[0].id, "B");
-        assert.equal(mainEntity.getAttribute("attribute1").value.initial[1].id, "C");
+        assert.deepEqual(mainEntity.getAttribute("attribute1").value.state, {
+            loading: false,
+            loaded: false
+        });
+
+        assert.isEmpty(mainEntity.getAttribute("attribute1").value.initial);
         assert.equal(mainEntity.getAttribute("attribute1").value.current[0].name, "x");
 
         let entitySave = sandbox
@@ -41,6 +44,11 @@ describe("save and delete entities attribute test", () => {
 
         await mainEntity.save();
 
+        assert.deepEqual(mainEntity.getAttribute("attribute1").value.state, {
+            loading: false,
+            loaded: true
+        });
+
         assert.lengthOf(mainEntity.getAttribute("attribute1").value.initial, 1);
         assert.equal(mainEntity.getAttribute("attribute1").value.initial[0].id, "X");
         assert.lengthOf(mainEntity.getAttribute("attribute1").value.current, 1);
@@ -49,10 +57,7 @@ describe("save and delete entities attribute test", () => {
         entitySave.restore();
         entityFind.restore();
 
-        await mainEntity.set("attribute1", [
-            { name: "y", type: "dog" },
-            { name: "z", type: "parrot" }
-        ]);
+        mainEntity.attribute1 = [{ name: "y", type: "dog" }, { name: "z", type: "parrot" }];
 
         assert.lengthOf(mainEntity.getAttribute("attribute1").value.initial, 1);
         assert.equal(mainEntity.getAttribute("attribute1").value.initial[0].id, "X");
@@ -84,10 +89,9 @@ describe("save and delete entities attribute test", () => {
         assert.equal(mainEntity.getAttribute("attribute1").value.current[0].id, "Y");
         assert.equal(mainEntity.getAttribute("attribute1").value.current[1].id, "Z");
 
-        entityDelete.restore();
         entitySave.restore();
 
-        await mainEntity.set("attribute1", null);
+        mainEntity.attribute1 = null;
         assert.lengthOf(mainEntity.getAttribute("attribute1").value.initial, 2);
         assert.equal(mainEntity.getAttribute("attribute1").value.initial[0].id, "Y");
         assert.equal(mainEntity.getAttribute("attribute1").value.initial[1].id, "Z");

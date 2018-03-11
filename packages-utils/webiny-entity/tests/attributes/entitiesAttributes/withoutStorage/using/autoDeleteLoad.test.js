@@ -57,7 +57,7 @@ describe("attribute entities (using an additional aggregation class) - loading t
                 return new QueryResult({ id: "Z", name: "Group Z" });
             });
 
-        const groups = await user.groups;
+        const groups = await user.get("groups");
 
         expect(entityFind.callCount).to.equal(1);
         expect(entityFindById.callCount).to.equal(3);

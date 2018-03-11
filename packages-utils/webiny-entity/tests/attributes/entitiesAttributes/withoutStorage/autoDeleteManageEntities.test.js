@@ -2,6 +2,7 @@ import { QueryResult } from "../../../../src";
 import { MainEntity, Entity1, Entity2 } from "../../../entities/entitiesAttributeEntities";
 import { assert } from "chai";
 import sinon from "sinon";
+
 const sandbox = sinon.sandbox.create();
 
 describe("entity attribute current / initial values syncing", function() {
@@ -27,8 +28,8 @@ describe("entity attribute current / initial values syncing", function() {
 
         await mainEntity.set("attribute1", [{ name: "x", type: "parrot" }]);
 
-        assert.equal(mainEntity.getAttribute("attribute1").value.initial[0].id, "B");
-        assert.equal(mainEntity.getAttribute("attribute1").value.initial[1].id, "C");
+        assert.isUndefined(mainEntity.getAttribute("attribute1").value.initial[0]);
+        assert.isUndefined(mainEntity.getAttribute("attribute1").value.initial[1]);
 
         let entitySave = sandbox
             .stub(mainEntity.getDriver(), "save")

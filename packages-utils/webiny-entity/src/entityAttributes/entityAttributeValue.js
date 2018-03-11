@@ -47,7 +47,7 @@ class EntityAttributeValue extends AttributeValue {
             // If current value is not dirty, than we can set initial value as current, otherwise we
             // assume that something else was set as current value like a new entity.
             if (this.isClean()) {
-                this.setCurrent(entity);
+                this.setCurrent(entity, { skipDifferenceCheck: true });
             }
         }
 

@@ -8,6 +8,9 @@ class User extends Entity {
         this.attr("age").integer();
         this.attr("enabled").boolean();
         this.attr("totalSomething").dynamic(() => 555);
+        this.attr("dynamicWithArgs").dynamic((a, b, c) => {
+            return a + b + c;
+        });
     }
 }
 
