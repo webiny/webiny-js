@@ -319,15 +319,12 @@ describe("entity attribute test", function() {
             .onCall(0)
             .callsFake(() => {
                 return new QueryResult({ id: "one", name: "One", two: "two" });
-            })
-            .onCall(1)
-            .callsFake(() => {
-                return new QueryResult({ id: "two", name: "Two", three: "three" });
             });
 
         const one = await One.findById("a");
         assert.equal(await one.getAttribute("two").getStorageValue(), "two");
         assert.equal(one.getAttribute("two").value.getCurrent(), "two");
+        assert.equal(one.getAttribute("two").value.getInitial(), "two");
 
         one.two = {
             name: "Another Two",
@@ -338,15 +335,13 @@ describe("entity attribute test", function() {
             }
         };
 
-        // Since set is async, to test initial / current values, we had to get value of attribute two...
-        await one.two;
-
-        assert.equal(entityFindById.callCount, 2);
+        assert.equal(entityFindById.callCount, 1);
         entityFindById.restore();
 
         // ... and now we can be sure the values are set and ready for testing.
-        assert.equal(one.getAttribute("two").value.getInitial().id, "two");
+        assert.equal(one.getAttribute("two").value.getInitial(), "two");
         assert.equal(one.getAttribute("two").value.getCurrent().id, null);
+        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
 
         // This is what will happen once we execute save method on One entity
 
@@ -378,12 +373,16 @@ describe("entity attribute test", function() {
                 return new QueryResult();
             });
 
-        // 2. Once the save is done, deletes will start because main entity has a different entity on attribute 'two'. Before deletions,
-        // findById method will be executed to recursively load entities and then of course delete them. At this point, we only need
-        // to load entity 'three' on initial entity 'two'. After that, deletes will start, it will delete entity three and entity two.
+        // 2. Once the save is done, deletes will start because main entity has a different entity on attribute 'two'.
+        // Before deletions, findById method will be executed to recursively load entities and then of course delete
+        // them (first entity 'three' than 'two').
         entityFindById = sandbox
             .stub(One.getDriver(), "findOne")
             .onCall(0)
+            .callsFake(() => {
+                return new QueryResult({ id: "two", name: "Two", three: "three" });
+            })
+            .onCall(1)
             .callsFake(() => {
                 return new QueryResult({ id: "three", name: "Three" });
             });
@@ -395,13 +394,23 @@ describe("entity attribute test", function() {
         await one.save();
 
         assert.equal(entitySave.callCount, 5);
-        assert.equal(entityFindById.callCount, 1);
+        assert.equal(entityFindById.callCount, 2);
+
+        // Make sure entity with ID 'three' was first deleted, and then the one with ID 'two'.
         assert.equal(entityDelete.callCount, 2);
+        assert.equal(entityDelete.getCall(0).args[0].id, "three");
+        assert.equal(entityDelete.getCall(1).args[0].id, "two");
+
+        assert.equal(one.getAttribute("two").value.getInitial().id, "anotherTwo");
+        assert.equal(one.getAttribute("two").value.getCurrent().id, "anotherTwo");
+        assert.deepEqual(one.getAttribute("two").value.state, { loaded: true, loading: false });
 
         entityFindById.restore();
         entityDelete.restore();
         entitySave.restore();
     });
 
-    it("must delete previous entities even if they were still loading", () => {});
+    it("must delete previous entities even if they were still loading", () => {
+        // aaaaa
+    });
 });

@@ -69,84 +69,79 @@ class EntitiesAttribute extends Attribute {
          * Same as in EntityAttribute, entities present here were already validated when parent entity called the validate method.
          * At this point, entities are ready to be saved (only loaded entities).
          */
-        this.getParentModel()
-            .getParentEntity()
-            .on("afterSave", async () => {
-                // We don't have to do the following check here:
-                // this.value.isLoading() && (await this.value.load());
+        const parentEntity = this.getParentModel().getParentEntity();
+        parentEntity.on("afterSave", async () => {
+            // We don't have to do the following check here:
+            // this.value.isLoading() && (await this.value.load());
 
-                // ...it was already made in the 'save' handler above. Now we only check if not loaded.
-                if (!this.value.isLoaded()) {
-                    return;
-                }
+            // ...it was already made in the 'save' handler above. Now we only check if not loaded.
+            if (!this.value.isLoaded()) {
+                return;
+            }
 
-                if (this.getAutoSave()) {
-                    // If we are using an link class, we only need to save links, and child entities will be automatically
-                    // saved if they were loaded.
-                    if (this.getUsingClass()) {
-                        const entities = this.value.getCurrentLinks();
-                        for (let i = 0; i < entities.length; i++) {
-                            await entities[i].save({ validation: false });
-                        }
-                    } else {
-                        const entities = await this.value.getCurrent();
-                        for (let i = 0; i < entities.length; i++) {
-                            await entities[i].save({ validation: false });
-                        }
-                    }
-
-                    if (this.getAutoDelete()) {
-                        this.getUsingClass()
-                            ? await this.value.deleteInitialLinks()
-                            : await this.value.deleteInitial();
-                    }
-                }
-
-                // Set current entities as new initial values.
-                this.value.syncInitial();
+            if (this.getAutoSave()) {
+                // If we are using an link class, we only need to save links, and child entities will be automatically
+                // saved if they were loaded.
                 if (this.getUsingClass()) {
-                    this.value.syncInitialLinks();
-                }
-            });
-
-        this.getParentModel()
-            .getParentEntity()
-            .on("delete", async () => {
-                if (this.getAutoDelete()) {
-                    await this.value.load();
-                    const entities = {
-                        current: this.getUsingClass()
-                            ? this.value.getCurrentLinks()
-                            : this.value.getCurrent(),
-                        class: this.getUsingClass() || this.getEntitiesClass()
-                    };
-                    for (let i = 0; i < entities.current.length; i++) {
-                        if (entities.current[i] instanceof entities.class) {
-                            await entities.current[i].emit("delete");
-                        }
+                    const entities = this.value.getCurrentLinks();
+                    for (let i = 0; i < entities.length; i++) {
+                        await entities[i].save({ validation: false });
+                    }
+                } else {
+                    const entities = await this.value.getCurrent();
+                    for (let i = 0; i < entities.length; i++) {
+                        await entities[i].save({ validation: false });
                     }
                 }
-            });
 
-        this.getParentModel()
-            .getParentEntity()
-            .on("beforeDelete", async () => {
                 if (this.getAutoDelete()) {
-                    await this.value.load();
-                    const entities = {
-                        current: this.getUsingClass()
-                            ? this.value.getCurrentLinks()
-                            : this.value.getCurrent(),
-                        class: this.getUsingClass() || this.getEntitiesClass()
-                    };
+                    this.getUsingClass()
+                        ? await this.value.deleteInitialLinks()
+                        : await this.value.deleteInitial();
+                }
+            }
 
-                    for (let i = 0; i < entities.current.length; i++) {
-                        if (entities.current[i] instanceof entities.class) {
-                            await entities.current[i].delete({ events: { delete: false } });
-                        }
+            // Set current entities as new initial values.
+            this.value.syncInitial();
+            if (this.getUsingClass()) {
+                this.value.syncInitialLinks();
+            }
+        });
+
+        parentEntity.on("delete", async () => {
+            if (this.getAutoDelete()) {
+                await this.value.load();
+                const entities = {
+                    current: this.getUsingClass()
+                        ? this.value.getCurrentLinks()
+                        : this.value.getCurrent(),
+                    class: this.getUsingClass() || this.getEntitiesClass()
+                };
+                for (let i = 0; i < entities.current.length; i++) {
+                    if (entities.current[i] instanceof entities.class) {
+                        await entities.current[i].emit("delete");
                     }
                 }
-            });
+            }
+        });
+
+        parentEntity.on("beforeDelete", async () => {
+            if (this.getAutoDelete()) {
+                await this.value.load();
+                const entities = {
+                    current: this.getUsingClass()
+                        ? this.value.getCurrentLinks()
+                        : this.value.getCurrent(),
+                    class: this.getUsingClass() || this.getEntitiesClass()
+                };
+
+                for (let i = 0; i < entities.current.length; i++) {
+                    if (entities.current[i] instanceof entities.class) {
+                        await entities.current[i].delete({ events: { delete: false } });
+                    }
+                }
+            }
+        });
     }
 
     /**

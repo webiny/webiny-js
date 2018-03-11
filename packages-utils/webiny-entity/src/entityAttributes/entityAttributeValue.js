@@ -1,8 +1,13 @@
+// @flow
 import { AttributeValue } from "webiny-model";
+import type { Attribute } from "webiny-model";
+import { Entity } from "webiny-entity";
 import _ from "lodash";
 
 class EntityAttributeValue extends AttributeValue {
-    constructor(attribute) {
+    queue: Array<Function>;
+    initial: ?mixed;
+    constructor(attribute: Attribute) {
         super(attribute);
         this.queue = [];
 
@@ -16,42 +21,35 @@ class EntityAttributeValue extends AttributeValue {
      * Ensures data is loaded correctly, and in the end returns current value.
      * @returns {Promise<*>}
      */
-    async load(callback) {
+    async load() {
         if (this.isLoading()) {
             return new Promise(resolve => {
-                this.queue.push(async () => {
-                    _.isFunction(callback) && (await callback());
-                    resolve(this.getCurrent());
-                });
+                this.queue.push(resolve);
             });
         }
 
         if (this.isLoaded()) {
-            this.state.loading = true;
-            _.isFunction(callback) && (await callback());
-            this.state.loading = false;
-
-            await this.__executeQueue();
-
-            return this.getCurrent();
+            return;
         }
 
         this.state.loading = true;
 
         // Only if we have a valid ID set, we must load linked entity.
+        const initial = this.getInitial();
         if (
             this.attribute
                 .getParentModel()
                 .getParentEntity()
-                .isId(this.getCurrent())
+                .isId(initial)
         ) {
-            this.setCurrent(await this.attribute.getEntityClass().findById(this.getCurrent()));
+            const entity = await this.attribute.getEntityClass().findById(initial);
+            this.setInitial(entity);
+            // If current value is not dirty, than we can set initial value as current, otherwise we
+            // assume that something else was set as current value like a new entity.
+            if (this.isClean()) {
+                this.setCurrent(entity);
+            }
         }
-
-        // Set current entity as new initial value.
-        this.syncInitial();
-
-        _.isFunction(callback) && (await callback());
 
         this.state.loading = false;
         this.state.loaded = true;
@@ -67,8 +65,9 @@ class EntityAttributeValue extends AttributeValue {
         }
 
         // Initial value will always be an existing (already saved) Entity instance.
-        if (_.get(this.getInitial(), "id") !== _.get(this.getCurrent(), "id")) {
-            await this.getInitial().delete();
+        const initial = this.getInitial();
+        if (initial instanceof Entity && _.get(initial, "id") !== _.get(this.getCurrent(), "id")) {
+            await initial.delete();
         }
     }
 
@@ -76,7 +75,7 @@ class EntityAttributeValue extends AttributeValue {
         this.setInitial(this.getCurrent());
     }
 
-    setInitial(value) {
+    setInitial(value: mixed) {
         this.initial = value;
         return this;
     }

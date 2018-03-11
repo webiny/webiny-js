@@ -297,7 +297,7 @@ class Attribute {
      * Returns attribute's value.
      * @returns {*}
      */
-    getValue(): mixed {
+    getValue(): mixed | Promise<mixed> {
         const value = this.value.getCurrent();
         if (Attribute.isEmptyValue(value)) {
             this.value.setCurrent(this.getDefaultValue());
