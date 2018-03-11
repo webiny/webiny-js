@@ -4,6 +4,7 @@ import { Storage } from "webiny-file-storage";
 import { MemoryDriver } from "webiny-entity-memory";
 
 import registerAttributes from "./../src/attributes/registerFileAttributes";
+import registerBufferAttribute from "../src/attributes/registerBufferAttribute";
 import { Entity, File } from "../src/entities";
 import userFactory from "./utils/user.entity";
 import MockDriver from "./utils/storageDriverMock";
@@ -20,6 +21,7 @@ describe("Files attribute test", () => {
     const storage = new Storage(new MockDriver({ cdnUrl: "https://cdn.webiny.com" }));
 
     before(() => {
+        registerBufferAttribute();
         registerAttributes({ entity: File });
         User = userFactory({ documentStorage: storage, documentFolder: "users/documents" });
         jpgBuffer = fs.readFileSync(__dirname + "/utils/lenna.jpg");
@@ -29,14 +31,14 @@ describe("Files attribute test", () => {
 
         data1 = {
             name: "File1.jpg",
-            src: jpgBase64,
+            data: jpgBase64,
             type: "image/jpg",
             tags: ["passport"]
         };
 
         data2 = {
             name: "File2.png",
-            src: pngBase64,
+            data: pngBase64,
             type: "image/png",
             tags: ["passport"]
         };

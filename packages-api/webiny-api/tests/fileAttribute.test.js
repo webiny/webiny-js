@@ -3,7 +3,8 @@ import fs from "fs";
 import { Storage } from "webiny-file-storage";
 import { MemoryDriver } from "webiny-entity-memory";
 
-import registerAttributes from "./../src/attributes/registerFileAttributes";
+import registerFileAttributes from "./../src/attributes/registerFileAttributes";
+import registerBufferAttribute from "../src/attributes/registerBufferAttribute";
 import { Entity, File } from "../src/entities";
 import userFactory from "./utils/user.entity";
 import MockDriver from "./utils/storageDriverMock";
@@ -22,7 +23,8 @@ describe("File attribute test", () => {
 
     before(() => {
         Entity.driver = new MemoryDriver();
-        registerAttributes({ entity: File });
+        registerFileAttributes({ entity: File });
+        registerBufferAttribute();
         User = userFactory({ documentStorage: storage, documentFolder: "users/documents" });
         jpgBuffer = fs.readFileSync(__dirname + "/utils/lenna.jpg");
         jpgBase64 = "data:image/jpg;base64," + jpgBuffer.toString("base64");
@@ -31,14 +33,14 @@ describe("File attribute test", () => {
 
         data1 = {
             name: "File1.jpg",
-            src: jpgBase64,
+            data: jpgBase64,
             type: "image/jpg",
             tags: ["passport"]
         };
 
         data2 = {
             name: "File2.png",
-            src: pngBase64,
+            data: pngBase64,
             type: "image/png",
             tags: ["passport"]
         };

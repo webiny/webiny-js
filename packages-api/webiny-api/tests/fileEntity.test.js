@@ -1,6 +1,7 @@
 import fs from "fs";
 import { expect } from "chai";
 import { File, Entity } from "./../src";
+import registerBufferAttribute from "./../src/attributes/registerBufferAttribute";
 import { Storage } from "webiny-file-storage";
 import MockDriver from "./utils/storageDriverMock";
 import { MemoryDriver } from "webiny-entity-memory";
@@ -10,10 +11,15 @@ describe("File entity test", () => {
     let jpgBase64;
     let pngBuffer;
     let pngBase64;
+    let storage;
+
+    before(() => {
+        registerBufferAttribute();
+    });
 
     beforeEach(async () => {
         Entity.driver = new MemoryDriver();
-        const storage = new Storage(new MockDriver({ cdnUrl: "https://cdn.webiny.com" }));
+        storage = new Storage(new MockDriver({ cdnUrl: "https://cdn.webiny.com" }));
 
         const file = new File();
         file.setStorageFolder("images");
@@ -30,14 +36,14 @@ describe("File entity test", () => {
 
         const data1 = {
             name: "File1.jpg",
-            src: jpgBase64,
+            data: jpgBase64,
             type: "image/jpg",
             tags: ["profile"]
         };
 
         const data2 = {
             name: "File2.jpg",
-            src: jpgBase64,
+            data: jpgBase64,
             type: "image/jpg"
         };
 
@@ -59,14 +65,14 @@ describe("File entity test", () => {
 
     it("should get file URL", async function() {
         const file = await File.findOne({ query: { name: "File1.jpg" } });
-        expect(file.getURL()).to.equal("https://cdn.webiny.com/" + file.src);
+        expect(file.getURL()).to.equal("https://cdn.webiny.com/" + file.key);
     });
 
     it("should contain storage folder", async function() {
         const file1 = await File.findOne({ query: { name: "File1.jpg" } });
         const file2 = await File.findOne({ query: { name: "File2.jpg" } });
-        expect(file1.src).to.contain("images/");
-        expect(file2.src).to.contain("documents/");
+        expect(file1.key).to.contain("images/");
+        expect(file2.key).to.contain("documents/");
     });
 
     it("should contain tags", async function() {
@@ -78,20 +84,20 @@ describe("File entity test", () => {
         const file1 = await File.findOne({ query: { name: "File1.jpg" } });
         expect(await file1.toJSON("src")).to.deep.equal({
             id: file1.id,
-            src: "https://cdn.webiny.com/" + file1.src
+            src: "https://cdn.webiny.com/" + file1.key
         });
     });
 
     it("should return absolute file path", async function() {
         const file1 = await File.findOne({ query: { name: "File1.jpg" } });
-        expect(await file1.getAbsolutePath()).to.equal(file1.src);
+        expect(await file1.getAbsolutePath()).to.equal(file1.key);
     });
 
     it("should update file contents", async function() {
         let file1 = await File.findOne({ query: { name: "File1.jpg" } });
         const data = {
             name: "app-image.png",
-            src: pngBase64,
+            data: pngBase64,
             type: "image/png"
         };
         await file1.populate(data).save();
@@ -101,7 +107,7 @@ describe("File entity test", () => {
         expect(json).to.deep.equal({
             id: file1.id,
             name: "app-image.png",
-            src: "https://cdn.webiny.com/" + file1.src,
+            src: "https://cdn.webiny.com/" + file1.key,
             type: "image/png",
             ext: "png"
         });
@@ -112,12 +118,12 @@ describe("File entity test", () => {
 
     it("should update file title without changing file contents", async function() {
         const file = await File.findOne({ query: { name: "File1.jpg" } });
-        const src = file.src;
-        file.populate({ title: "Header", name: "new-name.jpg", src: "some/new/source" });
+        const key = file.key;
+        file.populate({ title: "Header", name: "new-name.jpg" });
         await file.save();
 
         expect(file.name).to.equal("File1.jpg");
-        expect(file.src).to.equal(src);
+        expect(file.key).to.equal(key);
         expect(file.title).to.equal("Header");
         const fileData = await file.getFile();
         expect(Buffer.from(fileData.body, "binary").equals(jpgBuffer)).to.be.true;

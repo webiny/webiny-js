@@ -7,6 +7,11 @@ import { App, ApiResponse, Endpoint, Entity } from "./index";
 import { ServiceManager } from "webiny-service-manager";
 import ApiErrorResponse from "./response/apiErrorResponse";
 
+// Attributes registration functions
+import registerBufferAttribute from "./attributes/registerBufferAttribute";
+import registerFileAttributes from "./attributes/registerFileAttributes";
+import registerImageAttributes from "./attributes/registerImageAttributes";
+
 type EndpointsMap = {
     [url: string]: {
         classId: string,
@@ -55,9 +60,17 @@ class Api {
 
         this.requestMiddleware = compose(this.config.use);
 
-        // Assign entity driver (if configured)
+        // Configure Entity layer
         if (this.config.entity) {
+            // Register Entity driver
             Entity.driver = this.config.entity.driver;
+            // Register attributes
+            this.config.entity.attributes &&
+                this.config.entity.attributes({
+                    bufferAttribute: registerBufferAttribute,
+                    fileAttributes: registerFileAttributes,
+                    imageAttributes: registerImageAttributes
+                });
         }
     }
 

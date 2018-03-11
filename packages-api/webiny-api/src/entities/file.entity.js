@@ -11,7 +11,6 @@ class File extends Entity {
     storage: Storage;
     storageFolder: string;
     tags: Array<string>;
-    buffer: Buffer;
 
     constructor() {
         super();
@@ -26,11 +25,15 @@ class File extends Entity {
         this.attr("size").integer();
         this.attr("type").char();
         this.attr("ext").char();
-        this.attr("src")
+        this.attr("data")
+            .buffer("base64")
+            .setToStorage(false);
+        this.attr("key")
             .char()
-            .onGetJSONValue(value => {
-                return /^(https?:)?\/\//.test(value) ? value : this.getURL();
-            });
+            .setSkipOnPopulate();
+        this.attr("src").dynamic(() => {
+            return /^(https?:)?\/\//.test(this.key) ? this.key : this.getURL();
+        });
         this.attr("tags").array();
 
         // `ref` can be linked with any Entity class so we have to provide a `classIdAttribute` to store related Entity classId
@@ -44,28 +47,20 @@ class File extends Entity {
 
     getURL() {
         this.ensureStorage();
-        return this.storage.getURL(this.src);
+        return this.storage.getURL(this.key);
     }
 
     getAbsolutePath() {
         this.ensureStorage();
-        return this.storage.getAbsolutePath(this.src);
+        return this.storage.getAbsolutePath(this.key);
     }
 
     /**
      * @inheritDoc
      */
     populate(data: Object) {
-        const fileContent = data["src"] || "";
-        const newContents = fileContent.startsWith("data:");
-        if (this.id) {
-            if (newContents) {
-                this.deleteFileFromStorage();
-            } else {
-                // These keys should not change if file contents is not changing
-                delete data["src"];
-                delete data["name"];
-            }
+        if (this.isExisting()) {
+            data["data"] ? this.deleteFileFromStorage() : delete data["name"];
         }
 
         return super.populate(data);
@@ -77,23 +72,22 @@ class File extends Entity {
     // eslint-disable-next-line
     async save(params: EntitySaveParams & Object = {}) {
         // If new file contents is being saved...
-        if (this.buffer || this.src.startsWith("data:")) {
+        if (this.data) {
             this.ensureStorage();
-            if (!Buffer.isBuffer(this.buffer)) {
-                this.buffer = Buffer.from(this.src.split(",").pop(), "base64");
+
+            let key = this.key || File.createKey(this.name);
+            if (this.storageFolder !== "" && !key.startsWith(this.storageFolder + "/")) {
+                key = path.join(this.storageFolder, key);
             }
 
-            const key = File.createKey(this.name);
-            this.src = await this.storage.setFile(path.join(this.storageFolder, key), {
-                body: this.buffer
-            });
-            this.size = this.buffer.length;
-            const { ext, mime } = fileType(this.buffer);
+            this.key = await this.storage.setFile(key, { body: this.data });
+            this.size = this.data.length;
+            const { ext, mime } = fileType(this.data);
             this.ext = ext;
             this.type = mime;
         }
 
-        delete this.buffer;
+        this.getAttribute("data").reset();
         return Entity.prototype.save.call(this, params);
     }
 
@@ -140,7 +134,7 @@ class File extends Entity {
      */
     getFile(): Promise<IFileData> {
         this.ensureStorage();
-        return this.storage.getFile(this.src);
+        return this.storage.getFile(this.key);
     }
 
     /**
@@ -170,7 +164,7 @@ class File extends Entity {
      */
     deleteFileFromStorage() {
         this.ensureStorage();
-        return this.storage.delete(this.src);
+        return this.storage.delete(this.key);
     }
 
     ensureStorage() {

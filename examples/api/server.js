@@ -7,7 +7,17 @@ import {
 } from "webiny-api-security";
 import { MemoryDriver } from "webiny-entity-memory";
 import imageProcessor from "webiny-jimp";
+import LocalDriver from "webiny-file-storage-local";
+import { Storage } from "webiny-file-storage";
 
+// Configure default storage
+const localDriver = new LocalDriver({
+    directory: __dirname + "/storage",
+    createDatePrefix: false,
+    publicUrl: "https://cdn.domain.com"
+});
+
+// Configure express app
 const app = express();
 app.use(express.json());
 app.use(
@@ -35,9 +45,17 @@ app.use(
             // Instantiate driver with DB connection
             driver: new MemoryDriver(),
             // Configure entity attributes
-            attributes: ({ fileAttributes, imageAttributes }) => {
-                fileAttributes({ entity: File });
-                imageAttributes({ entity: Image, processor: imageProcessor() });
+            attributes: ({ bufferAttribute, fileAttributes, imageAttributes }) => {
+                bufferAttribute();
+                fileAttributes({
+                    entity: File,
+                    storage: new Storage(localDriver)
+                });
+                imageAttributes({
+                    entity: Image,
+                    processor: imageProcessor(),
+                    quality: 90
+                });
             }
         }
     })
