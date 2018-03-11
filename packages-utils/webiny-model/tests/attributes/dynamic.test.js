@@ -9,8 +9,8 @@ const model = new Model(function() {
     this.attr("amount1").integer();
     this.attr("amount2").integer();
 
-    this.attr("sum").dynamic(({ model }) => {
-        return model.getAttribute("amount1").getValue() + model.getAttribute("amount2").getValue();
+    this.attr("sum").dynamic(() => {
+        return this.getAttribute("amount1").getValue() + this.getAttribute("amount2").getValue();
     });
     this.attr("div").dynamic(function() {
         return this.getAttribute("amount1").getValue() / this.getAttribute("amount2").getValue();
