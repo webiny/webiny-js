@@ -28,7 +28,7 @@ class Image extends File {
         this.attr("height")
             .integer()
             .setSkipOnPopulate();
-        this.attr("src").dynamic((value, preset) => {
+        this.attr("src").dynamic(preset => {
             return /^(https?:)?\/\//.test(this.key) ? this.key : this.getURL(preset);
         });
         this.attr("aspectRatio").dynamic(() => {

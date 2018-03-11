@@ -60,7 +60,7 @@
     "commit:check": "yarn flow && yarn lint-staged && yarn test",
     "coverage": "scripts/coverage.js --reporter=text",
     "coverage:html": "scripts/coverage.js --reporter=html",
-    "coverage:check": "nyc check-coverage yarn test",
+    "coverage:check": "scripts/coverage.js --check=true",
     "flow": "flow",
     "lint-staged": "lint-staged",
     "prettier": "prettier --config .prettierrc.js --write",
@@ -73,15 +73,6 @@
     "lint-staged",
     "test"
   ],
-  "nyc": {
-    "branches": 95,
-    "functions": 98,
-    "lines": 98,
-    "include": [
-      "packages-api/**/src",
-      "packages-utils/**/src"
-    ]
-  },
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-lerna-changelog"
