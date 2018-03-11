@@ -64,12 +64,6 @@ class LocalStorageDriver implements IFileStorageDriver {
 
         newKey = _.trimStart(newKey, "/");
 
-        // directory prepend
-        const prefix = this.config.directory + "/";
-        if (this.config.directory !== "" && !newKey.startsWith(prefix)) {
-            newKey = prefix + newKey;
-        }
-
         const filePath = path.join(this.config.directory, newKey);
         const content: string | Buffer = file.body;
         return fs.outputFile(filePath, content).then(() => newKey);
