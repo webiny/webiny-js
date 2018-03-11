@@ -2,34 +2,37 @@
 const execa = require("execa");
 const { argv } = require("yargs");
 
-const config = [];
+let glob = "packages-*/**/tests/**/*.test.js";
 const pkg = argv._[0];
 
-if (!pkg) {
-    config.push("packages-*/**/tests/**/*.test.js");
-} else {
+if (pkg) {
     if (pkg.startsWith("packages-")) {
-        config.push(pkg);
+        glob = pkg;
     } else if (pkg.includes("/tests/")) {
-        config.push("packages-*/" + pkg);
+        glob = "packages-*/" + pkg;
     } else {
-        config.push("packages-*/" + pkg + "/tests/**/*.test.js");
+        glob = "packages-*/" + pkg + "/tests/**/*.test.js";
     }
 }
 
-const params = [
-    "--reporter",
-    argv.reporter || "text",
-    ...(pkg ? ["--include", "packages-*/" + pkg + "/src"] : []),
+const common = [
+    ...(pkg
+        ? ["--include", "packages-*/" + pkg + "/src"]
+        : ["--include", "packages-api/**/src", "--include", "packages-utils/**/src"]),
     "mocha",
     "--require",
     "source-map-support/register",
     "--require",
     "babel-register",
-    ...config
+    glob
 ];
 
-execa("nyc", params, { stdio: "inherit" }).catch(e => {
-    console.log(e);
-    process.exit(1);
-});
+let params;
+
+if (argv.check) {
+    params = ["--check-coverage", "--branches=95", "--functions=98", "--lines=98", ...common];
+} else {
+    params = ["--reporter", argv.reporter || "text", ...common];
+}
+
+execa("nyc", params, { stdio: "inherit" });

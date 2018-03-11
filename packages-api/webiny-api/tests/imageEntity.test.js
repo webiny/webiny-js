@@ -65,21 +65,36 @@ describe("Image entity test", () => {
         const image = await Image.findOne({ query: { name: "image.jpg" } });
         image.setProcessor(processor);
         image.setStorage(storage);
-        image.setPresets({ thumbnail: [{ action: "resize", width: 100, height: 100 }] });
+        image.setPresets({
+            thumbnail: [{ action: "resize", width: 100, height: 100 }],
+            small: [{ action: "resize", width: 50 }]
+        });
+        // Get `thumbnail`
         const src = await image.getURL("thumbnail");
         expect(src).to.include("-thumbnail");
 
-        const presetImage = await Image.findOne({
+        const thumbnail = await Image.findOne({
             query: { name: "image.jpg", preset: "thumbnail" }
         });
-        expect(await presetImage.src).to.equal(src);
-        expect(await presetImage.get("ref.id")).to.equal(image.id);
-        expect(presetImage.refClassId).to.equal(image.classId);
-        expect(presetImage.width).to.equal(100);
-        expect(presetImage.height).to.equal(100);
+        expect(await thumbnail.src).to.equal(src);
+        expect(await thumbnail.get("ref.id")).to.equal(image.id);
+        expect(thumbnail.refClassId).to.equal(image.classId);
+        expect(thumbnail.width).to.equal(100);
+        expect(thumbnail.height).to.equal(100);
+
+        // Get `small`
+        const src2 = await image.getURL("small");
+        expect(src2).to.include("-small");
+
+        const small = await Image.findOne({
+            query: { name: "image.jpg", preset: "small" }
+        });
+        expect(await small.src).to.equal(src2);
+        expect(small.width).to.equal(50);
+        expect(small.height).to.be.below(100);
     });
 
-    /*    it("should dynamically resize image according to the preset name requested via `toJSON`", async () => {
+    it("should dynamically resize image according to the preset name requested via `toJSON`", async () => {
         const image = await Image.findOne({ query: { name: "image.jpg" } });
         image.setProcessor(processor);
         image.setStorage(storage);
@@ -87,8 +102,8 @@ describe("Image entity test", () => {
         const src = await image.getURL("thumbnail");
 
         const json = await image.toJSON("name,src:thumbnail");
-        expect(json).to.deep.equal({ id: image.id, name: "image.jpeg", src });
-    });*/
+        expect(json).to.deep.equal({ id: image.id, name: "image.jpg", src });
+    });
 
     it("should only load original images when using `find`", async () => {
         const image = await Image.findOne({ query: { name: "image.jpg" } });

@@ -1,17 +1,10 @@
 export { default as Identity } from "./entities/identity";
-export { default as IdentityTable } from "./entities/identity.mysql";
 export { default as Role } from "./entities/role";
-export { default as RoleTable } from "./entities/role.mysql";
 export { default as Role2RoleGroup } from "./entities/role2RoleGroup";
-export { default as Role2RoleGroupTable } from "./entities/role2RoleGroup.mysql";
 export { default as RoleGroup } from "./entities/roleGroup";
-export { default as RoleGroupTable } from "./entities/roleGroup.mysql";
 export { default as Role2Permission } from "./entities/role2Permission";
-export { default as Role2PermissionTable } from "./entities/role2Permission.mysql";
 export { default as Permission } from "./entities/permission";
-export { default as PermissionTable } from "./entities/permission.mysql";
 export { default as Identity2Role } from "./entities/identity2Role";
-export { default as Identity2RoleTable } from "./entities/identity2Role.mysql";
 
 export { default as AuthorizationService } from "./services/authorization";
 export { default as AuthorizationError } from "./services/authorizationError";

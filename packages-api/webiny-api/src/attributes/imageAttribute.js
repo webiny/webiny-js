@@ -58,7 +58,7 @@ class ImageAttribute extends FileAttribute {
             this.getParentModel()
                 .getParentEntity()
                 .on("afterSave", async () => {
-                    await currentValue.delete({ permanent: true });
+                    await currentValue.delete();
                 })
                 .setOnce();
         }

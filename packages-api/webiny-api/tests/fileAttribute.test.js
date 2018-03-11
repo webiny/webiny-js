@@ -25,7 +25,7 @@ describe("File attribute test", () => {
         Entity.driver = new MemoryDriver();
         registerFileAttributes({ entity: File });
         registerBufferAttribute();
-        User = userFactory({ documentStorage: storage, documentFolder: "users/documents" });
+        User = userFactory({ storage, folder: "users/documents" });
         jpgBuffer = fs.readFileSync(__dirname + "/utils/lenna.jpg");
         jpgBase64 = "data:image/jpg;base64," + jpgBuffer.toString("base64");
         pngBuffer = fs.readFileSync(__dirname + "/utils/lenna.png");
