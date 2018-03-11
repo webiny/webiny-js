@@ -15,6 +15,14 @@ const model = new Model(function() {
     this.attr("div").dynamic(function() {
         return this.getAttribute("amount1").getValue() / this.getAttribute("amount2").getValue();
     });
+
+    this.attr("dynamicSum")
+        .dynamic(function(a, b, c, d) {
+            return a + b + c + d;
+        })
+        .onGet((value, a, b, c, d) => {
+            return value + a + b + c + d;
+        });
 });
 
 describe("attribute boolean test", function() {
@@ -49,5 +57,14 @@ describe("attribute boolean test", function() {
         model.amount2 = 2;
 
         assert.equal(model.div, 1);
+    });
+
+    it("should accept passed arguments directly on attribute's callback (no need to handle this in a separate onGet handler)", async () => {
+        const dynamicSum = model.getAttribute("dynamicSum").getValue(1, 2, 3, 4);
+        assert.equal(dynamicSum, 20);
+
+        // Check if toJSON / get works correctly too.
+        assert.equal(await model.get("dynamicSum:1:2:3:4"), "12341234");
+        assert.deepEqual(await model.toJSON("dynamicSum:1:2:3:4"), { dynamicSum: "12341234" });
     });
 });
