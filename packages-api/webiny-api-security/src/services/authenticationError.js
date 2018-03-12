@@ -6,23 +6,27 @@ class AuthenticationError extends Error {
     static UNKNOWN_STRATEGY: string;
     static TOKEN_EXPIRED: string;
     static TOKEN_INVALID: string;
-    type: string;
+    code: string;
     data: Object;
 
-    constructor(message: string, type: string, data: Object = {}) {
+    constructor(message: string, code: string, data: Object = {}) {
         super();
         this.name = "AuthenticationError";
         this.message = message;
         this.data = data;
-        this.type = type;
+        this.code = code;
+    }
+
+    toString() {
+        return this.name + ": " + this.message;
     }
 }
 
-AuthenticationError.IDENTITY_INSTANCE_NOT_FOUND = "identityInstanceNotFound";
-AuthenticationError.INVALID_CREDENTIALS = "invalidCredentials";
-AuthenticationError.UNKNOWN_IDENTITY = "unknownIdentity";
-AuthenticationError.UNKNOWN_STRATEGY = "unknownStrategy";
-AuthenticationError.TOKEN_EXPIRED = "tokenExpired";
-AuthenticationError.TOKEN_INVALID = "tokenInvalid";
+AuthenticationError.IDENTITY_INSTANCE_NOT_FOUND = "IDENTITY_INSTANCE_NOT_FOUND";
+AuthenticationError.INVALID_CREDENTIALS = "INVALID_CREDENTIALS";
+AuthenticationError.UNKNOWN_IDENTITY = "UNKNOWN_IDENTITY";
+AuthenticationError.UNKNOWN_STRATEGY = "UNKNOWN_STRATEGY";
+AuthenticationError.TOKEN_EXPIRED = "TOKEN_EXPIRED";
+AuthenticationError.TOKEN_INVALID = "TOKEN_INVALID";
 
 export default AuthenticationError;

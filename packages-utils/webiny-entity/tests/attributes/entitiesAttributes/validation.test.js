@@ -41,7 +41,7 @@ describe("attribute entities test", function() {
             assert.lengthOf(attr1.data.items, 2);
             assert.equal(attr1.data.items[0].data.index, 0);
             assert.equal(
-                attr1.data.items[0].data.invalidAttributes.name.type,
+                attr1.data.items[0].data.invalidAttributes.name.code,
                 ModelError.INVALID_ATTRIBUTE
             );
             assert.equal(
@@ -57,11 +57,11 @@ describe("attribute entities test", function() {
             assert.equal(attr2.data.items[2].data.index, 2);
 
             assert.equal(
-                attr2.data.items[0].data.invalidAttributes.firstName.type,
+                attr2.data.items[0].data.invalidAttributes.firstName.code,
                 ModelError.INVALID_ATTRIBUTE
             );
             assert.equal(
-                attr2.data.items[0].data.invalidAttributes.lastName.type,
+                attr2.data.items[0].data.invalidAttributes.lastName.code,
                 ModelError.INVALID_ATTRIBUTE
             );
             assert.notExists(attr2.data.items[0].data.invalidAttributes.enabled);
@@ -102,7 +102,7 @@ describe("attribute entities test", function() {
             assert.lengthOf(attr1.data.items, 1);
             assert.equal(attr1.data.items[0].data.index, 2);
             assert.equal(
-                attr1.data.items[0].data.invalidAttributes.type.type,
+                attr1.data.items[0].data.invalidAttributes.type.code,
                 ModelError.INVALID_ATTRIBUTE
             );
             assert.equal(attr1.data.items[0].data.invalidAttributes.type.data.validator, "in");
@@ -208,7 +208,7 @@ describe("attribute entities test", function() {
             error = e;
         }
 
-        assert.equal(error.data.invalidAttributes.requiredEntity.type, "invalidAttribute");
+        assert.equal(error.data.invalidAttributes.requiredEntity.code, "INVALID_ATTRIBUTE");
         assert.equal(error.data.invalidAttributes.requiredEntity.data.validator, "required");
 
         mainEntity.requiredEntity = [{ name: "requiredEntity" }];
@@ -220,7 +220,7 @@ describe("attribute entities test", function() {
             error = e;
         }
 
-        assert.equal(error.data.invalidAttributes.requiredEntity.type, "invalidAttribute");
+        assert.equal(error.data.invalidAttributes.requiredEntity.code, "INVALID_ATTRIBUTE");
         assert.equal(error.data.invalidAttributes.requiredEntity.data.validator, "minLength");
     });
 
@@ -234,16 +234,16 @@ describe("attribute entities test", function() {
             assert.deepEqual(e.data, {
                 invalidAttributes: {
                     attribute1: {
-                        type: "invalidAttribute",
+                        code: "INVALID_ATTRIBUTE",
                         data: {
                             items: [
                                 {
-                                    type: "invalidAttributes",
+                                    code: "INVALID_ATTRIBUTES",
                                     data: {
                                         index: 0,
                                         invalidAttributes: {
                                             name: {
-                                                type: "invalidAttribute",
+                                                code: "INVALID_ATTRIBUTE",
                                                 data: {
                                                     message: "Value is required.",
                                                     value: null,
@@ -256,7 +256,7 @@ describe("attribute entities test", function() {
                                     message: "Validation failed."
                                 },
                                 {
-                                    type: "invalidAttribute",
+                                    code: "INVALID_ATTRIBUTE",
                                     data: {
                                         index: 1
                                     },
@@ -284,7 +284,7 @@ describe("attribute entities test", function() {
         } catch (e) {
             assert.deepEqual(e.data.invalidAttributes, {
                 attribute1: {
-                    type: "invalidAttribute",
+                    code: "INVALID_ATTRIBUTE",
                     data: {},
                     message:
                         "Validation failed, received number, expecting instance of EntityCollection."

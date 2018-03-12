@@ -109,7 +109,7 @@ class ModelsAttribute extends Attribute {
             const current = arrayValue[i];
             if (!(current instanceof this.getModelClass())) {
                 errors.push({
-                    type: ModelError.INVALID_ATTRIBUTE,
+                    code: ModelError.INVALID_ATTRIBUTE,
                     data: {
                         index: i
                     },
@@ -121,7 +121,7 @@ class ModelsAttribute extends Attribute {
                 await current.validate();
             } catch (e) {
                 errors.push({
-                    type: e.type,
+                    code: e.code,
                     data: { index: i, ...e.data },
                     message: e.message
                 });

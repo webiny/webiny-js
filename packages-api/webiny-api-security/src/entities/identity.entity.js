@@ -1,9 +1,9 @@
 // @flow
 import { Entity } from "webiny-api";
-import Role from "./role";
-import RoleGroup from "./roleGroup";
-import Identity2Role from "./identity2Role";
-import Identity2RoleGroup from "./identity2RoleGroup";
+import Role from "./role.entity";
+import RoleGroup from "./roleGroup.entity";
+import Identity2Role from "./identity2Role.entity";
+import Identity2RoleGroup from "./identity2RoleGroup.entity";
 import onSetFactory from "./helpers/onSetFactory";
 
 import type { IAuthorizable } from "../../types";
@@ -21,12 +21,12 @@ class Identity extends Entity implements IAuthorizable {
         this.attr("roles")
             .entities(Role, "identity", () => this.identityId)
             .setUsing(Identity2Role)
-            .onSet(onSetFactory(Role));
+            .onGet(onSetFactory(Role));
 
         this.attr("roleGroups")
             .entities(RoleGroup, "identity", () => this.identityId)
             .setUsing(Identity2RoleGroup)
-            .onSet(onSetFactory(RoleGroup));
+            .onGet(onSetFactory(RoleGroup));
     }
 
     /**

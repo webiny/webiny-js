@@ -78,7 +78,7 @@ describe("JWT token test", () => {
         expect(token.decode("123"))
             .to.be.rejectedWith(AuthenticationError)
             .then(err => {
-                expect(err.type).to.equal(AuthenticationError.TOKEN_INVALID);
+                expect(err.code).to.equal(AuthenticationError.TOKEN_INVALID);
             });
     });
 
@@ -93,7 +93,7 @@ describe("JWT token test", () => {
         expect(token.decode(jwt))
             .to.be.rejectedWith(AuthenticationError)
             .then(err => {
-                expect(err.type).to.equal(AuthenticationError.TOKEN_EXPIRED);
+                expect(err.code).to.equal(AuthenticationError.TOKEN_EXPIRED);
             });
     });
 });

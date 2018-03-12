@@ -1,16 +1,16 @@
 // @flow
 class AuthorizationError extends Error {
     static NOT_AUTHORIZED: string;
-    type: string;
+    code: string;
 
-    constructor(message: string, type: string) {
+    constructor(message: string, code: string) {
         super();
         this.name = "AuthorizationError";
         this.message = message;
-        this.type = type;
+        this.code = code;
     }
 }
 
-AuthorizationError.NOT_AUTHORIZED = "WBY_NOT_AUTHORIZED";
+AuthorizationError.NOT_AUTHORIZED = "NOT_AUTHORIZED";
 
 export default AuthorizationError;

@@ -1,8 +1,8 @@
 import { Entity } from "webiny-api";
-import Permission from "./permission";
-import RoleGroup from "./roleGroup";
-import Role2Permission from "./role2Permission";
-import Role2RoleGroup from "./role2RoleGroup";
+import Permission from "./permission.entity";
+import RoleGroup from "./roleGroup.entity";
+import Role2Permission from "./role2Permission.entity";
+import Role2RoleGroup from "./role2RoleGroup.entity";
 import nameSlugDesc from "./helpers/nameSlugDesc";
 
 class Role extends Entity {

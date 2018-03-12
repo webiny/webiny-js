@@ -6,18 +6,18 @@ class EntityError extends Error {
 
     message: string;
     data: ?Object;
-    type: ?string;
+    code: ?string;
 
-    constructor(message: string, type: ?string, data: ?Object) {
+    constructor(message: string, code: ?string, data: ?Object) {
         super();
         this.message = message;
         this.data = data;
-        this.type = type;
+        this.code = code;
     }
 }
 
-EntityError.ATTRIBUTE_NOT_FOUND = "attributeNotFound";
-EntityError.CANNOT_DELETE_NO_ID = "cannotDeleteNoId";
-EntityError.MODEL_MISSING = "modelMissing";
+EntityError.ATTRIBUTE_NOT_FOUND = "ATTRIBUTE_NOT_FOUND";
+EntityError.CANNOT_DELETE_NO_ID = "CANNOT_DELETE_NO_ID";
+EntityError.MODEL_MISSING = "MODEL_MISSING";
 
 export default EntityError;

@@ -6,6 +6,9 @@ class RoleGroup extends MySQLTable {
         this.column("name")
             .varChar(50)
             .setNotNull();
+        this.column("description")
+            .varChar(200)
+            .setNotNull();
         this.column("slug")
             .varChar(50)
             .setNotNull();

@@ -35,7 +35,7 @@ describe("inline model test", function() {
         }
 
         assert.instanceOf(error, ModelError);
-        assert.equal(error.type, ModelError.INVALID_ATTRIBUTES);
+        assert.equal(error.code, ModelError.INVALID_ATTRIBUTES);
 
         assert.isDefined(error.data.invalidAttributes.firstName);
         assert.isDefined(error.data.invalidAttributes.lastName);

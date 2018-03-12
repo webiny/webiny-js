@@ -35,7 +35,7 @@ describe("entity attribute test", function() {
 
         assert.instanceOf(error, ModelError);
         assert.equal(
-            error.data.invalidAttributes.company.data.invalidAttributes.image.type,
+            error.data.invalidAttributes.company.data.invalidAttributes.image.code,
             ModelError.INVALID_ATTRIBUTE
         );
     });
@@ -60,7 +60,7 @@ describe("entity attribute test", function() {
         }
 
         assert.instanceOf(error, ModelError);
-        assert.equal(error.type, ModelError.INVALID_ATTRIBUTES);
+        assert.equal(error.code, ModelError.INVALID_ATTRIBUTES);
         let invalid = error.data.invalidAttributes.company.data.invalidAttributes;
 
         assert.hasAllKeys(invalid, ["name", "image"]);
@@ -85,7 +85,7 @@ describe("entity attribute test", function() {
         }
 
         assert.instanceOf(error, ModelError);
-        assert.equal(error.type, ModelError.INVALID_ATTRIBUTES);
+        assert.equal(error.code, ModelError.INVALID_ATTRIBUTES);
         invalid = error.data.invalidAttributes.company.data.invalidAttributes;
 
         assert.hasAllKeys(invalid, ["name"]);
@@ -154,7 +154,7 @@ describe("entity attribute test", function() {
         assert.deepEqual(error.data, {
             invalidAttributes: {
                 requiredEntity: {
-                    type: "invalidAttribute",
+                    code: "INVALID_ATTRIBUTE",
                     data: {
                         message: "Value is required.",
                         value: null,

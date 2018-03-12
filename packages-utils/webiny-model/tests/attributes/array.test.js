@@ -21,12 +21,12 @@ describe("attribute models test", function() {
             assert.deepEqual(e.data, {
                 invalidAttributes: {
                     attribute1: {
-                        type: "invalidAttribute",
+                        code: "INVALID_ATTRIBUTE",
                         data: {},
                         message: "Validation failed, received object, expecting array."
                     },
                     attribute2: {
-                        type: "invalidAttribute",
+                        code: "INVALID_ATTRIBUTE",
                         data: {},
                         message: "Validation failed, received object, expecting array."
                     }
@@ -54,11 +54,11 @@ describe("attribute models test", function() {
             assert.deepEqual(e.data, {
                 invalidAttributes: {
                     attribute2: {
-                        type: "invalidAttribute",
+                        code: "INVALID_ATTRIBUTE",
                         data: {
                             items: [
                                 {
-                                    type: "invalidAttribute",
+                                    code: "INVALID_ATTRIBUTE",
                                     data: {
                                         index: 1
                                     },
@@ -92,11 +92,11 @@ describe("attribute models test", function() {
             assert.deepEqual(e.data, {
                 invalidAttributes: {
                     attribute1: {
-                        type: "invalidAttribute",
+                        code: "INVALID_ATTRIBUTE",
                         data: {
                             items: [
                                 {
-                                    type: "invalidAttribute",
+                                    code: "INVALID_ATTRIBUTE",
                                     data: {
                                         index: 2
                                     },

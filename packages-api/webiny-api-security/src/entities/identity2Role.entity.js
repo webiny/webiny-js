@@ -1,5 +1,5 @@
 import { Entity } from "webiny-api";
-import Role from "./role";
+import Role from "./role.entity";
 
 export class Identity2Role extends Entity {
     constructor() {

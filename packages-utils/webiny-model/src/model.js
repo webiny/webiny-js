@@ -138,13 +138,13 @@ class Model {
                 } catch (e) {
                     if (e instanceof ModelError) {
                         invalidAttributes[name] = {
-                            type: e.type,
+                            code: e.code,
                             data: e.data,
                             message: e.message
                         };
                     } else {
                         invalidAttributes[name] = {
-                            type: ModelError.INVALID_ATTRIBUTE,
+                            code: ModelError.INVALID_ATTRIBUTE,
                             data: null,
                             message: e.message
                         };

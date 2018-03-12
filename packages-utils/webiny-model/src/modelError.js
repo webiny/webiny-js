@@ -6,20 +6,20 @@ class ModelError extends Error {
     static POPULATE_FAILED_NOT_OBJECT: string;
 
     message: string;
-    type: ?string;
+    code: ?string;
     data: ?Object;
 
     constructor(message: string = "", type: ?string = "", data: ?Object = {}) {
         super();
         this.message = message;
-        this.type = type;
+        this.code = type;
         this.data = data;
     }
 }
 
-ModelError.INVALID_ATTRIBUTE = "invalidAttribute";
-ModelError.INVALID_ATTRIBUTES = "invalidAttributes";
-ModelError.ATTRIBUTE_NOT_FOUND = "attributeNotFound";
-ModelError.POPULATE_FAILED_NOT_OBJECT = "populateFailedNotObject";
+ModelError.INVALID_ATTRIBUTE = "INVALID_ATTRIBUTE";
+ModelError.INVALID_ATTRIBUTES = "INVALID_ATTRIBUTES";
+ModelError.ATTRIBUTE_NOT_FOUND = "ATTRIBUTE_NOT_FOUND";
+ModelError.POPULATE_FAILED_NOT_OBJECT = "POPULATE_FAILED_NOT_OBJECT";
 
 export default ModelError;

@@ -23,7 +23,7 @@ describe("functional validator test", function() {
         }
 
         assert.equal(error.data.invalidAttributes.yearOfBirth.data, null);
-        assert.equal(error.data.invalidAttributes.yearOfBirth.type, "invalidAttribute");
+        assert.equal(error.data.invalidAttributes.yearOfBirth.code, "INVALID_ATTRIBUTE");
         assert.equal(error.data.invalidAttributes.yearOfBirth.message, "Invalid year passed.");
     });
 });

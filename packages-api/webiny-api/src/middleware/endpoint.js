@@ -26,7 +26,7 @@ export default (options: EndpointMiddlewareOptions = {}) => {
     ) => {
         const { req, res, versioning } = params;
         const log = debug("api:endpoint");
-        log(`Trying to match an endpoint: %o`, req.url);
+        log(`Trying to match an endpoint: %o`, req.method + " " + req.path);
         const reqVersion = versioning(req);
 
         const versionPrefix = reqVersion !== "latest" ? "/v" + reqVersion : "";
@@ -64,7 +64,11 @@ export default (options: EndpointMiddlewareOptions = {}) => {
                 break;
             }
 
-            log("Matched %o", matchedMethod.getApiMethod().getPattern());
+            log(
+                "Matched %o with pattern %o",
+                matchedMethod.getApiMethod().getName(),
+                matchedMethod.getApiMethod().getPattern()
+            );
 
             try {
                 await beforeApiMethodMiddleware({ req, res, matchedApiMethod: matchedMethod });
@@ -78,7 +82,6 @@ export default (options: EndpointMiddlewareOptions = {}) => {
                 break;
             }
 
-            log("Matched %o", matchedMethod.getApiMethod().getPattern());
             const methodParams = matchedMethod.getParams();
             const response = await matchedMethod
                 .getApiMethod()

@@ -23,7 +23,7 @@ describe("entity nested validation test", function() {
 
         assert.instanceOf(error, ModelError);
         assert.equal(
-            error.data.invalidAttributes.company.data.invalidAttributes.image.type,
+            error.data.invalidAttributes.company.data.invalidAttributes.image.code,
             ModelError.INVALID_ATTRIBUTE
         );
     });
@@ -49,7 +49,7 @@ describe("entity nested validation test", function() {
 
         assert.instanceOf(error, ModelError);
         assert.equal(
-            error.data.invalidAttributes.company.data.invalidAttributes.image.type,
+            error.data.invalidAttributes.company.data.invalidAttributes.image.code,
             ModelError.INVALID_ATTRIBUTES
         );
         assert.equal(
@@ -59,7 +59,7 @@ describe("entity nested validation test", function() {
         );
 
         assert.equal(
-            error.data.invalidAttributes.company.data.invalidAttributes.name.type,
+            error.data.invalidAttributes.company.data.invalidAttributes.name.code,
             ModelError.INVALID_ATTRIBUTE
         );
         assert.equal(

@@ -108,6 +108,14 @@ class ApiMethod {
             return callback(...params);
         };
     }
+
+    toJSON() {
+        return {
+            name: this.name,
+            method: this.httpMethod,
+            pattern: this.pattern
+        };
+    }
 }
 
 export default ApiMethod;
