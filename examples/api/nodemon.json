@@ -1,0 +1,6 @@
+{
+    "ignoreRoot": [
+        ".git",
+        ".idea"
+    ]
+}

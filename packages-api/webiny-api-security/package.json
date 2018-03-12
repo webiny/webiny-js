@@ -23,6 +23,7 @@
     "date-fns": "^1.29.0",
     "jsonwebtoken": "^8.1.0",
     "lodash": "^4.17.4",
+    "md5": "^2.2.1",
     "webiny-api": "0.0.0-semantically-released"
   },
   "scripts": {

@@ -1,5 +1,5 @@
 // @flow
-import { IdentityTable } from "webiny-api-security";
+import IdentityTable from "./identity.mysql";
 
 class UserTable extends IdentityTable {
     constructor() {
@@ -20,6 +20,6 @@ class UserTable extends IdentityTable {
     }
 }
 
-UserTable.setName("Users");
+UserTable.setName("Security_Users");
 
 export default UserTable;

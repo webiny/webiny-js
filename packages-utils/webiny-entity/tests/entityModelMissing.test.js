@@ -26,6 +26,6 @@ describe("entity model missing test", function() {
         }
 
         assert.instanceOf(error, EntityError);
-        assert.equal(error.type, EntityError.MODEL_MISSING);
+        assert.equal(error.code, EntityError.MODEL_MISSING);
     });
 });

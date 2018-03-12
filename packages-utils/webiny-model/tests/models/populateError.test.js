@@ -13,7 +13,7 @@ describe("populate error test", async function() {
         }
 
         assert.instanceOf(error, ModelError);
-        assert.equal(error.type, ModelError.POPULATE_FAILED_NOT_OBJECT);
+        assert.equal(error.code, ModelError.POPULATE_FAILED_NOT_OBJECT);
 
         error = null;
         try {
@@ -23,6 +23,6 @@ describe("populate error test", async function() {
         }
 
         assert.instanceOf(error, ModelError);
-        assert.equal(error.type, ModelError.POPULATE_FAILED_NOT_OBJECT);
+        assert.equal(error.code, ModelError.POPULATE_FAILED_NOT_OBJECT);
     });
 });

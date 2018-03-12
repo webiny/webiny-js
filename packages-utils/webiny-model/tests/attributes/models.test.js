@@ -45,8 +45,8 @@ describe("attribute models test", function() {
         try {
             await model.validate();
         } catch (e) {
-            assert.equal(e.data.invalidAttributes.attribute1.type, ModelError.INVALID_ATTRIBUTE);
-            assert.equal(e.data.invalidAttributes.attribute2.type, ModelError.INVALID_ATTRIBUTE);
+            assert.equal(e.data.invalidAttributes.attribute1.code, ModelError.INVALID_ATTRIBUTE);
+            assert.equal(e.data.invalidAttributes.attribute2.code, ModelError.INVALID_ATTRIBUTE);
             return;
         }
 
@@ -69,7 +69,7 @@ describe("attribute models test", function() {
             assert.lengthOf(attr1.data.items, 2);
             assert.equal(attr1.data.items[0].data.index, 0);
             assert.equal(
-                attr1.data.items[0].data.invalidAttributes.name.type,
+                attr1.data.items[0].data.invalidAttributes.name.code,
                 ModelError.INVALID_ATTRIBUTE
             );
             assert.equal(
@@ -85,11 +85,11 @@ describe("attribute models test", function() {
             assert.equal(attr2.data.items[2].data.index, 2);
 
             assert.equal(
-                attr2.data.items[0].data.invalidAttributes.firstName.type,
+                attr2.data.items[0].data.invalidAttributes.firstName.code,
                 ModelError.INVALID_ATTRIBUTE
             );
             assert.equal(
-                attr2.data.items[0].data.invalidAttributes.lastName.type,
+                attr2.data.items[0].data.invalidAttributes.lastName.code,
                 ModelError.INVALID_ATTRIBUTE
             );
             assert.notExists(attr2.data.items[0].data.invalidAttributes.enabled);
@@ -130,7 +130,7 @@ describe("attribute models test", function() {
             assert.lengthOf(attr1.data.items, 1);
             assert.equal(attr1.data.items[0].data.index, 2);
             assert.equal(
-                attr1.data.items[0].data.invalidAttributes.type.type,
+                attr1.data.items[0].data.invalidAttributes.type.code,
                 ModelError.INVALID_ATTRIBUTE
             );
             assert.equal(attr1.data.items[0].data.invalidAttributes.type.data.validator, "in");
@@ -147,15 +147,15 @@ describe("attribute models test", function() {
         try {
             await newModel.validate();
         } catch (e) {
-            assert.equal(e.type, "invalidAttributes");
+            assert.equal(e.code, "INVALID_ATTRIBUTES");
             assert.deepEqual(e.data, {
                 invalidAttributes: {
                     attribute1: {
-                        type: "invalidAttribute",
+                        code: "INVALID_ATTRIBUTE",
                         data: {
                             items: [
                                 {
-                                    type: "invalidAttribute",
+                                    code: "INVALID_ATTRIBUTE",
                                     data: {
                                         index: 2
                                     },
@@ -192,7 +192,7 @@ describe("attribute models test", function() {
         assert.deepEqual(error.data, {
             invalidAttributes: {
                 attribute1: {
-                    type: "invalidAttribute",
+                    code: "INVALID_ATTRIBUTE",
                     data: {
                         message: "Value is required.",
                         value: [],
@@ -212,7 +212,7 @@ describe("attribute models test", function() {
         }
 
         assert.instanceOf(error, ModelError);
-        assert.equal(error.data.invalidAttributes.attribute1.type, "invalidAttribute");
+        assert.equal(error.data.invalidAttributes.attribute1.code, "INVALID_ATTRIBUTE");
         assert.equal(error.data.invalidAttributes.attribute1.data.validator, "minLength");
         assert.lengthOf(error.data.invalidAttributes.attribute1.data.value, 1);
         assert.instanceOf(error.data.invalidAttributes.attribute1.data.value[0], Model);

@@ -1,7 +1,8 @@
 import { Entity } from "webiny-api";
-import Role from "./role";
-import Role2RoleGroup from "./role2RoleGroup";
+import Role from "./role.entity";
+import Role2RoleGroup from "./role2RoleGroup.entity";
 import nameSlugDesc from "./helpers/nameSlugDesc";
+import onSetFactory from "./helpers/onSetFactory";
 
 class RoleGroup extends Entity {
     constructor() {
@@ -9,10 +10,12 @@ class RoleGroup extends Entity {
         nameSlugDesc(this);
         this.attr("roles")
             .entities(Role)
-            .setUsing(Role2RoleGroup);
+            .setUsing(Role2RoleGroup)
+            .onGet(onSetFactory(Role));
     }
 }
 
 RoleGroup.classId = "Security.RoleGroup";
+RoleGroup.tableName = "Security_RoleGroups";
 
 export default RoleGroup;

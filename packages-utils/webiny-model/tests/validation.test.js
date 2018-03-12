@@ -15,7 +15,7 @@ describe("validation test", function() {
         }
 
         assert.instanceOf(error, ModelError);
-        assert.equal(error.type, ModelError.INVALID_ATTRIBUTES);
+        assert.equal(error.code, ModelError.INVALID_ATTRIBUTES);
 
         assert.isDefined(error.data.invalidAttributes.email);
         assert.isDefined(error.data.invalidAttributes.required1);
@@ -34,7 +34,7 @@ describe("validation test", function() {
         }
 
         assert.instanceOf(error, ModelError);
-        assert.equal(error.type, ModelError.INVALID_ATTRIBUTES);
+        assert.equal(error.code, ModelError.INVALID_ATTRIBUTES);
 
         assert.isDefined(error.data.invalidAttributes.email);
         assert.isUndefined(error.data.invalidAttributes.required1);
@@ -73,7 +73,7 @@ describe("validation test", function() {
         assert.deepEqual(error.data, {
             invalidAttributes: {
                 email: {
-                    type: "invalidAttribute",
+                    code: "INVALID_ATTRIBUTE",
                     data: {
                         message: "Value is required.",
                         value: null,
@@ -82,7 +82,7 @@ describe("validation test", function() {
                     message: "Invalid attribute."
                 },
                 required1: {
-                    type: "invalidAttribute",
+                    code: "INVALID_ATTRIBUTE",
                     data: {
                         message: "Value is required.",
                         value: null,
@@ -91,7 +91,7 @@ describe("validation test", function() {
                     message: "Invalid attribute."
                 },
                 required2: {
-                    type: "invalidAttribute",
+                    code: "INVALID_ATTRIBUTE",
                     data: {
                         message: "Value is required.",
                         value: null,
@@ -100,7 +100,7 @@ describe("validation test", function() {
                     message: "Invalid attribute."
                 },
                 type: {
-                    type: "invalidAttribute",
+                    code: "INVALID_ATTRIBUTE",
                     data: {
                         message: "Value must be one of the following: bird, dog, parrot.",
                         value: "cat",

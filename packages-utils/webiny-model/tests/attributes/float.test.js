@@ -32,7 +32,7 @@ describe("attribute float test", function() {
             }
 
             assert.instanceOf(error, ModelError);
-            assert.equal(error.type, ModelError.INVALID_ATTRIBUTES);
+            assert.equal(error.code, ModelError.INVALID_ATTRIBUTES);
         });
     });
 

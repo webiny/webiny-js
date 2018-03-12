@@ -46,7 +46,7 @@ describe("save and delete entities attribute test", () => {
             error = e;
         }
 
-        assert.equal(error.data.invalidAttributes.attribute1.type, "invalidAttribute");
+        assert.equal(error.data.invalidAttributes.attribute1.code, "INVALID_ATTRIBUTE");
         assert.lengthOf(error.data.invalidAttributes.attribute1.data.items, 2);
 
         let items = error.data.invalidAttributes.attribute1.data.items;
@@ -66,7 +66,7 @@ describe("save and delete entities attribute test", () => {
             error = e;
         }
 
-        assert.equal(error.data.invalidAttributes.attribute2.type, "invalidAttribute");
+        assert.equal(error.data.invalidAttributes.attribute2.code, "INVALID_ATTRIBUTE");
         assert.lengthOf(error.data.invalidAttributes.attribute2.data.items, 2);
 
         items = error.data.invalidAttributes.attribute2.data.items;
@@ -76,12 +76,12 @@ describe("save and delete entities attribute test", () => {
             items[0].data.invalidAttributes.entity1Entities.data.items[0],
 
             {
-                type: "invalidAttributes",
+                code: "INVALID_ATTRIBUTES",
                 data: {
                     index: 2,
                     invalidAttributes: {
                         type: {
-                            type: "invalidAttribute",
+                            code: "INVALID_ATTRIBUTE",
                             data: {
                                 message:
                                     "Value must be one of the following: cat, dog, mouse, parrot.",
@@ -99,12 +99,12 @@ describe("save and delete entities attribute test", () => {
         assert.equal(items[1].data.index, 1);
         assert.lengthOf(items[1].data.invalidAttributes.entity1Entities.data.items, 1);
         assert.deepEqual(items[1].data.invalidAttributes.entity1Entities.data.items[0], {
-            type: "invalidAttributes",
+            code: "INVALID_ATTRIBUTES",
             data: {
                 index: 0,
                 invalidAttributes: {
                     type: {
-                        type: "invalidAttribute",
+                        code: "INVALID_ATTRIBUTE",
                         data: {
                             message: "Value must be one of the following: cat, dog, mouse, parrot.",
                             value: "invalid",
@@ -126,19 +126,19 @@ describe("save and delete entities attribute test", () => {
             error = e;
         }
 
-        assert.equal(error.data.invalidAttributes.attribute2.type, "invalidAttribute");
+        assert.equal(error.data.invalidAttributes.attribute2.code, "INVALID_ATTRIBUTE");
         assert.lengthOf(error.data.invalidAttributes.attribute2.data.items, 1);
 
         items = error.data.invalidAttributes.attribute2.data.items;
         assert.equal(items[0].data.index, 0);
         assert.lengthOf(items[0].data.invalidAttributes.entity1Entities.data.items, 1);
         assert.deepEqual(items[0].data.invalidAttributes.entity1Entities.data.items[0], {
-            type: "invalidAttributes",
+            code: "INVALID_ATTRIBUTES",
             data: {
                 index: 2,
                 invalidAttributes: {
                     type: {
-                        type: "invalidAttribute",
+                        code: "INVALID_ATTRIBUTE",
                         data: {
                             message: "Value must be one of the following: cat, dog, mouse, parrot.",
                             value: "invalid",

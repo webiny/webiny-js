@@ -25,7 +25,7 @@ class ArrayAttribute extends Attribute {
             const current = currentValue[i];
             if (!this.__isPrimitiveValue(current)) {
                 errors.push({
-                    type: ModelError.INVALID_ATTRIBUTE,
+                    code: ModelError.INVALID_ATTRIBUTE,
                     data: {
                         index: i
                     },

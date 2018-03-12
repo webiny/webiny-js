@@ -338,7 +338,7 @@ class EntitiesAttribute extends Attribute {
         for (let i = 0; i < entitiesToValidate.length; i++) {
             if (!(entitiesToValidate[i] instanceof correctClass)) {
                 errors.push({
-                    type: ModelError.INVALID_ATTRIBUTE,
+                    code: ModelError.INVALID_ATTRIBUTE,
                     data: {
                         index: i
                     },
@@ -351,7 +351,7 @@ class EntitiesAttribute extends Attribute {
                 await entitiesToValidate[i].validate();
             } catch (e) {
                 errors.push({
-                    type: e.type,
+                    code: e.code,
                     data: { index: i, ...e.data },
                     message: e.message
                 });

@@ -45,7 +45,7 @@ describe("attribute model test", function() {
             }
 
             assert.instanceOf(error, ModelError);
-            assert.equal(error.type, ModelError.INVALID_ATTRIBUTES);
+            assert.equal(error.code, ModelError.INVALID_ATTRIBUTES);
         });
 
         it("attribute2 shouldn't accept Model1 (ModelError must be thrown", async () => {
@@ -58,7 +58,7 @@ describe("attribute model test", function() {
             }
 
             assert.instanceOf(error, ModelError);
-            assert.equal(error.type, ModelError.INVALID_ATTRIBUTES);
+            assert.equal(error.code, ModelError.INVALID_ATTRIBUTES);
         });
     });
 
@@ -144,7 +144,7 @@ describe("attribute model test", function() {
         assert.deepEqual(error.data, {
             invalidAttributes: {
                 company: {
-                    type: "invalidAttribute",
+                    code: "INVALID_ATTRIBUTE",
                     data: {
                         message: "Value is required.",
                         value: null,
@@ -171,11 +171,11 @@ describe("attribute model test", function() {
         assert.deepEqual(error.data, {
             invalidAttributes: {
                 company: {
-                    type: "invalidAttributes",
+                    code: "INVALID_ATTRIBUTES",
                     data: {
                         invalidAttributes: {
                             name: {
-                                type: "invalidAttribute",
+                                code: "INVALID_ATTRIBUTE",
                                 data: {
                                     message: "Value is required.",
                                     value: null,
@@ -184,7 +184,7 @@ describe("attribute model test", function() {
                                 message: "Invalid attribute."
                             },
                             image: {
-                                type: "invalidAttribute",
+                                code: "INVALID_ATTRIBUTE",
                                 data: {
                                     message: "Value is required.",
                                     value: null,

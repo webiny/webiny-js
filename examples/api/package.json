@@ -4,12 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "develop": "nodemon ./run-server.js --require=babel-register",
+    "debug": "nodemon --inspect=9005 ./run-server.js --require=babel-register"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "md5": "^2.2.1",
-    "webiny-api-security": "0.0.0-semantically-released"
+
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.1"
   }
 }

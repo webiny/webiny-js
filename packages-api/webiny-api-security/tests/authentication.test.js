@@ -98,7 +98,7 @@ describe("Authentication test", () => {
             )
             .should.be.rejectedWith(AuthenticationError)
             .then(err => {
-                expect(err.type).to.equal(AuthenticationError.INVALID_CREDENTIALS);
+                expect(err.code).to.equal(AuthenticationError.INVALID_CREDENTIALS);
             });
     });
 
@@ -114,7 +114,7 @@ describe("Authentication test", () => {
             )
             .should.be.rejectedWith(AuthenticationError)
             .then(err => {
-                expect(err.type).to.equal(AuthenticationError.INVALID_CREDENTIALS);
+                expect(err.code).to.equal(AuthenticationError.INVALID_CREDENTIALS);
             });
     });
 
@@ -135,7 +135,7 @@ describe("Authentication test", () => {
             .verifyToken(token)
             .should.be.rejectedWith(AuthenticationError)
             .then(err => {
-                expect(err.type).to.equal(AuthenticationError.IDENTITY_INSTANCE_NOT_FOUND);
+                expect(err.code).to.equal(AuthenticationError.IDENTITY_INSTANCE_NOT_FOUND);
             });
     });
 
@@ -151,7 +151,7 @@ describe("Authentication test", () => {
             )
             .should.be.rejectedWith(AuthenticationError)
             .then(err => {
-                expect(err.type).to.equal(AuthenticationError.UNKNOWN_STRATEGY);
+                expect(err.code).to.equal(AuthenticationError.UNKNOWN_STRATEGY);
             });
     });
 
@@ -173,7 +173,7 @@ describe("Authentication test", () => {
             .verifyToken(token)
             .should.be.rejectedWith(AuthenticationError)
             .then(err => {
-                expect(err.type).to.equal(AuthenticationError.UNKNOWN_IDENTITY);
+                expect(err.code).to.equal(AuthenticationError.UNKNOWN_IDENTITY);
             });
     });
 });

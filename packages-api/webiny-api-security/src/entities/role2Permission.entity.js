@@ -1,6 +1,6 @@
 import { Entity } from "webiny-api";
-import Role from "./role";
-import Permission from "./permission";
+import Role from "./role.entity";
+import Permission from "./permission.entity";
 
 export class Role2Permission extends Entity {
     constructor() {
@@ -11,5 +11,6 @@ export class Role2Permission extends Entity {
 }
 
 Role2Permission.classId = "Security.Role2Permission";
+Role2Permission.tableName = "Security_Role2Permission";
 
 export default Role2Permission;

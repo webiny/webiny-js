@@ -6,6 +6,9 @@ class Identity2RoleTable extends MySQLTable {
         this.column("identity")
             .varChar(50)
             .setNotNull();
+        this.column("identityClassId")
+            .varChar(50)
+            .setNotNull();
         this.column("role")
             .bigInt(20)
             .setUnsigned()

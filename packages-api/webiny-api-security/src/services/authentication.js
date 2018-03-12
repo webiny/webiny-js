@@ -36,7 +36,7 @@ class Authentication implements IAuthentication {
 
         if (!identity) {
             throw new AuthenticationError(
-                "Unknown identity",
+                `Unknown identity '${decoded.data.classId}'`,
                 AuthenticationError.UNKNOWN_IDENTITY,
                 { classId: decoded.data.classId }
             );

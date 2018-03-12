@@ -43,11 +43,11 @@ describe("multiple Entity classes test", function() {
             await main.validate();
         } catch (e) {
             assert.instanceOf(e, ModelError);
-            assert.equal(e.type, ModelError.INVALID_ATTRIBUTES);
+            assert.equal(e.code, ModelError.INVALID_ATTRIBUTES);
             assert.deepEqual(e.data, {
                 invalidAttributes: {
                     assignedTo: {
-                        type: "invalidAttribute",
+                        code: "INVALID_ATTRIBUTE",
                         data: null,
                         message:
                             'Entity attribute "assignedTo" accepts multiple Entity classes but it was not found (classId attribute holds value "InvalidEntityClass").'
@@ -67,11 +67,11 @@ describe("multiple Entity classes test", function() {
             await main.validate();
         } catch (e) {
             assert.instanceOf(e, ModelError);
-            assert.equal(e.type, ModelError.INVALID_ATTRIBUTES);
+            assert.equal(e.code, ModelError.INVALID_ATTRIBUTES);
             assert.deepEqual(e.data, {
                 invalidAttributes: {
                     assignedTo: {
-                        type: "invalidAttribute",
+                        code: "INVALID_ATTRIBUTE",
                         data: {},
                         message:
                             'Entity attribute "assignedTo" accepts multiple Entity classes but does not have "classIdAttribute" option defined.'
@@ -92,11 +92,11 @@ describe("multiple Entity classes test", function() {
             await main.validate();
         } catch (e) {
             assert.instanceOf(e, ModelError);
-            assert.equal(e.type, ModelError.INVALID_ATTRIBUTES);
+            assert.equal(e.code, ModelError.INVALID_ATTRIBUTES);
             assert.deepEqual(e.data, {
                 invalidAttributes: {
                     assignedTo: {
-                        type: "invalidAttribute",
+                        code: "INVALID_ATTRIBUTE",
                         data: {},
                         message:
                             'Entity attribute "assignedTo" accepts multiple Entity classes but classId attribute is missing.'

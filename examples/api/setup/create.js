@@ -1,22 +1,33 @@
 // @flow
 import { Sync, ConsoleLog } from "webiny-sql-table-sync";
-import UserTable from "./tables/user.mysql";
-import { PermissionTable, RoleTable, Identity2RoleTable } from "webiny-api-security";
-
-/*
-import RoleGroupTable from "webiny-api-security/src/entities/mysql/roleGroup.mysql";
-import Role2PermissionTable from "webiny-api-security/src/entities/mysql/role2Permission.mysql";
-import Role2RoleGroupTable from "webiny-api-security/src/entities/mysql/role2RoleGroup.mysql";
-import Identity2RoleGroupTable from "webiny-api-security/src/entities/mysql/identity2RoleGroup.mysql";*/
+import {
+    UserTable,
+    PermissionTable,
+    RoleTable,
+    RoleGroupTable,
+    Identity2RoleTable,
+    Identity2RoleGroupTable,
+    Role2RoleGroupTable,
+    Role2PermissionTable
+} from "webiny-api-security/src/mysql";
+import { MySQLTable } from "webiny-api";
 
 // Configure MySQLTable driver
-import { connection } from "../connection";
-import { MySQLTable } from "webiny-api";
+import { connection } from "./../configs/database";
 
 MySQLTable.getDriver().setConnection(connection);
 
 (async () => {
-    const tables = [Identity2RoleTable, RoleTable, PermissionTable, UserTable];
+    const tables = [
+        UserTable,
+        Identity2RoleTable,
+        RoleTable,
+        PermissionTable,
+        Role2PermissionTable,
+        RoleGroupTable,
+        Identity2RoleGroupTable,
+        Role2RoleGroupTable
+    ];
 
     const sync = new Sync({
         tables,
@@ -25,11 +36,6 @@ MySQLTable.getDriver().setConnection(connection);
     });
     await sync.execute();
 
-    return import("./import")
-        .then(({ default: importer }) => {
-            return importer();
-        })
-        .then(() => {
-            process.exit(0);
-        });
+    const { default: importer } = await import("./import");
+    return importer();
 })();
