@@ -26,9 +26,8 @@ describe("save error test", function() {
     });
 
     it("should update existing entity but an exception must be thrown", async () => {
-        sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
-            return { insertId: 1 };
-        });
+        sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {});
+        sandbox.stub(SimpleEntity.getDriver(), "generateID").callsFake(() => "a");
 
         const simpleEntity = new SimpleEntity();
         await simpleEntity.save();
@@ -36,7 +35,7 @@ describe("save error test", function() {
             .getConnection()
             .query.restore();
 
-        assert.equal(simpleEntity.id, 1);
+        assert.equal(simpleEntity.id, "a");
 
         sandbox
             .stub(SimpleEntity.getDriver().getConnection(), "query")

@@ -16,7 +16,7 @@ describe("populateFromStorage test", function() {
                     lastName: "tester",
                     verification: `{"verified":true,"documentType":"driversLicense"}`,
                     tags: `[{"slug":"no-name","label":"No Name"},{"slug":"adult-user","label":"Adult User"}]`,
-                    simpleEntity: 1,
+                    simpleEntity: "01234567890123456789adee",
                     simpleEntities: "[22, 33, 44]"
                 }
             ];
@@ -44,10 +44,13 @@ describe("populateFromStorage test", function() {
         assert.equal(user.tags[1].label, "Adult User");
         assert.lengthOf(user.tags, 2);
 
-        assert.equal(user.getAttribute("simpleEntity").value.getCurrent(), 1);
+        assert.equal(
+            user.getAttribute("simpleEntity").value.getCurrent(),
+            "01234567890123456789adee"
+        );
 
         sandbox.stub(user.getDriver().getConnection(), "query").callsFake(() => {
-            return [{ id: 1, name: "Test-1" }];
+            return [{ id: "01234567890123456789adee", name: "Test-1" }];
         });
 
         const simpleEntity = await user.simpleEntity;
@@ -56,7 +59,7 @@ describe("populateFromStorage test", function() {
             .getConnection()
             .query.restore();
 
-        assert.equal(simpleEntity.id, 1);
+        assert.equal(simpleEntity.id, "01234567890123456789adee");
         assert.equal(simpleEntity.name, "Test-1");
 
         assert.equal(user.getAttribute("simpleEntities").value.getCurrent()[0], 22);

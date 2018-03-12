@@ -18,7 +18,7 @@ describe("toStorage test", function() {
         });
 
         const simpleEntity1 = new SimpleEntity();
-        simpleEntity1.id = 1;
+        simpleEntity1.id = "000000000000000000000001";
         simpleEntity1.name = "Test-1";
 
         complexEntity.simpleEntity = simpleEntity1;
@@ -49,7 +49,7 @@ describe("toStorage test", function() {
             userStorageValue.tags,
             `[{"slug":"no-name","label":"No Name"},{"slug":"adult-user","label":"Adult User"}]`
         );
-        assert.equal(userStorageValue.simpleEntity, 1);
+        assert.equal(userStorageValue.simpleEntity, "000000000000000000000001");
         assert.equal(userStorageValue.simpleEntities, "[2,3,4]");
     });
 });

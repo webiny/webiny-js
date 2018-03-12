@@ -196,7 +196,7 @@ describe("entity attribute test", function() {
         assert.deepEqual(error.data, {
             invalidAttributes: {
                 two: {
-                    type: "invalidAttribute",
+                    code: "INVALID_ATTRIBUTE",
                     data: {},
                     message:
                         "Validation failed, received string, expecting instance of Entity class."

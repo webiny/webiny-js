@@ -245,18 +245,24 @@ describe("entities attribute test", function() {
             ]
         });
 
-        sandbox.stub(entity.getDriver().getConnection(), "query").callsFake(() => {
-            return { insertId: 1 };
-        });
+        sandbox.stub(entity.getDriver().getConnection(), "query").callsFake(() => {});
+
+        let generateIDStub = sandbox
+            .stub(entity.getDriver(), "generateID")
+            .onCall(0)
+            .callsFake(() => {
+                return "one";
+            });
 
         await entity.save();
+        generateIDStub.restore();
 
         entity
             .getDriver()
             .getConnection()
             .query.restore();
 
-        assert.equal(entity.id, 1);
+        assert.equal(entity.id, "one");
         assert.isTrue(entity.getAttribute("id").value.isClean());
 
         let simpleEntities = await entity.simpleEntitiesLoadedFromTable;
@@ -292,6 +298,21 @@ describe("entities attribute test", function() {
                 return {};
             });
 
+        generateIDStub = sandbox
+            .stub(ComplexEntity.getDriver(), "generateID")
+            .onCall(0)
+            .callsFake(() => {
+                return "four";
+            })
+            .onCall(1)
+            .callsFake(() => {
+                return "three";
+            })
+            .onCall(2)
+            .callsFake(() => {
+                return "two";
+            });
+
         await entity.save();
         assert.equal(entitySave.callCount, 4);
 
@@ -300,7 +321,7 @@ describe("entities attribute test", function() {
             .getConnection()
             .query.restore();
 
-        assert.equal(entity.id, 1);
+        assert.equal(entity.id, "one");
         assert.isTrue(entity.getAttribute("id").value.isClean());
         assert.isTrue(entity.getAttribute("simpleEntitiesLoadedFromTable").value.isClean());
 
@@ -310,8 +331,8 @@ describe("entities attribute test", function() {
         assert.instanceOf(simpleEntities[1], SimpleEntity);
         assert.instanceOf(simpleEntities[2], SimpleEntity);
 
-        assert.equal(simpleEntities[2].id, 2);
-        assert.equal(simpleEntities[1].id, 3);
-        assert.equal(simpleEntities[0].id, 4);
+        assert.equal(simpleEntities[2].id, "two");
+        assert.equal(simpleEntities[1].id, "three");
+        assert.equal(simpleEntities[0].id, "four");
     });
 });

@@ -9,9 +9,7 @@ describe("save test", function() {
     afterEach(() => sandbox.restore());
 
     it("should save new entity into database and entity should receive an integer ID", async () => {
-        sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
-            return { insertId: 1 };
-        });
+        sandbox.stub(SimpleEntity.getDriver().getConnection(), "query");
 
         const simpleEntity = new SimpleEntity();
         await simpleEntity.save();
@@ -19,30 +17,26 @@ describe("save test", function() {
             .getConnection()
             .query.restore();
 
-        assert.equal(simpleEntity.id, 1);
+        assert.lengthOf(simpleEntity.id, 24);
+        assert.isTrue(SimpleEntity.isId(simpleEntity.id));
     });
 
     it("should update existing entity", async () => {
-        sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
-            return { insertId: 1 };
+        sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {});
+        sandbox.stub(SimpleEntity.getDriver(), "generateID").callsFake(() => {
+            return "a";
         });
 
         const simpleEntity = new SimpleEntity();
         await simpleEntity.save();
-        SimpleEntity.getDriver()
-            .getConnection()
-            .query.restore();
 
-        assert.equal(simpleEntity.id, 1);
-
-        sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
-            return { insertId: 1 };
-        });
+        assert.equal(simpleEntity.id, "a");
 
         await simpleEntity.save();
         SimpleEntity.getDriver()
             .getConnection()
             .query.restore();
+        assert.equal(simpleEntity.id, "a");
     });
 
     it("should save new entity into database and entity should receive a hash ID", async () => {

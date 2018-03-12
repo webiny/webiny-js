@@ -1,5 +1,7 @@
 // @flow
 import _ from "lodash";
+import mdbid from "mdbid";
+
 import type { Connection, Pool } from "mysql";
 import { Entity, Driver, QueryResult } from "webiny-entity";
 import { MySQLConnection } from "webiny-mysql-connection";
@@ -31,7 +33,6 @@ class MySQLDriver extends Driver {
     connection: MySQLConnection;
     model: Class<MySQLModel>;
     operators: { [string]: Operator };
-    id: { validator: ?Function, value: ?Function };
     tables: {
         prefix: string,
         naming: ?Function
@@ -42,11 +43,6 @@ class MySQLDriver extends Driver {
         this.operators = { ...operators, ...options.operators };
         this.connection = new MySQLConnection(options.connection);
         this.model = options.model || MySQLModel;
-
-        this.id = { validator: null, value: null };
-        if (options.id) {
-            this.id = _.merge(this.id, options.id);
-        }
 
         this.tables = _.merge(
             {
@@ -63,14 +59,9 @@ class MySQLDriver extends Driver {
     }
 
     onEntityConstruct(entity: Entity) {
-        if (typeof this.id.value === "function") {
-            entity.attr("id").char();
-        } else {
-            entity.attr("id").integer();
-        }
-
         entity
-            .getAttribute("id")
+            .attr("id")
+            .char()
             .setValidators((value, attribute) =>
                 this.isId(attribute.getParentModel().getParentEntity(), value)
             );
@@ -80,9 +71,10 @@ class MySQLDriver extends Driver {
         return this.model;
     }
 
+    // eslint-disable-next-line
     async save(entity: Entity, options: EntitySaveParams & {}): Promise<QueryResult> {
-        if (!entity.isExisting() && typeof this.id.value === "function") {
-            entity.id = this.id.value(entity, options);
+        if (!entity.isExisting()) {
+            entity.id = this.generateID();
         }
 
         if (entity.isExisting()) {
@@ -107,10 +99,7 @@ class MySQLDriver extends Driver {
         }).generate();
 
         try {
-            const results = await this.getConnection().query(sql);
-            if (!_.isFunction(this.id.value)) {
-                entity.id = results.insertId;
-            }
+            await this.getConnection().query(sql);
         } catch (e) {
             entity.id && entity.getAttribute("id").reset();
             throw e;
@@ -237,10 +226,11 @@ class MySQLDriver extends Driver {
 
     // eslint-disable-next-line
     isId(entity: Entity | Class<Entity>, value: mixed, options: ?Object): boolean {
-        if (typeof this.id.validator === "function") {
-            return this.id.validator(entity, value, options);
+        if (typeof value === "string") {
+            return value.match(new RegExp("^[0-9a-fA-F]{24}$")) !== null;
         }
-        return typeof value === "number" && value > 0;
+
+        return false;
     }
 
     getConnection(): MySQLConnection {
@@ -282,6 +272,10 @@ class MySQLDriver extends Driver {
         }
 
         return this.tables.prefix + params.classId;
+    }
+
+    generateID() {
+        return mdbid();
     }
 }
 
