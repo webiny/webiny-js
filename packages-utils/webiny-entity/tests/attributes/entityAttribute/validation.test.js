@@ -168,4 +168,43 @@ describe("entity attribute test", function() {
         one.requiredEntity = { name: "two" };
         await one.validate();
     });
+
+    it("should throw error since invalid ID was set", async () => {
+        let entityFindById = sandbox
+            .stub(One.getDriver(), "findOne")
+            .onCall(0)
+            .callsFake(() => {
+                return new QueryResult({ id: "one", name: "One", two: "two" });
+            });
+
+        const one = await One.findById("a");
+
+        assert.equal(entityFindById.callCount, 1);
+        entityFindById.restore();
+
+        one.two = "anotherTwo";
+
+        let entitySave = sandbox.stub(One.getDriver(), "save").callsFake(() => new QueryResult());
+
+        let error = null;
+        try {
+            await one.validate();
+        } catch (e) {
+            error = e;
+        }
+
+        assert.deepEqual(error.data, {
+            invalidAttributes: {
+                two: {
+                    type: "invalidAttribute",
+                    data: {},
+                    message:
+                        "Validation failed, received string, expecting instance of Entity class."
+                }
+            }
+        });
+
+        entityFindById.restore();
+        entitySave.restore();
+    });
 });

@@ -196,27 +196,36 @@ class EntityAttribute extends Attribute {
         // attribute specified by the "classIdAttribute" option (passed on attribute construction).
         const multipleClasses = this.hasMultipleEntityClasses();
 
-        switch (true) {
-            case finalValue instanceof Entity:
-                this.value.setCurrent(finalValue);
-                if (multipleClasses) {
-                    const classIdAttribute = this.getClassIdAttribute();
-                    if (classIdAttribute) {
-                        classIdAttribute.setValue(finalValue.classId);
-                    }
+        if (finalValue instanceof Entity) {
+            this.value.setCurrent(finalValue);
+            if (multipleClasses) {
+                const classIdAttribute = this.getClassIdAttribute();
+                if (classIdAttribute) {
+                    classIdAttribute.setValue(finalValue.classId);
                 }
-
-                break;
-            case _.isObject(finalValue): {
-                let entityClass = this.getEntityClass();
-                if (entityClass) {
-                    this.value.setCurrent(new entityClass().populate(finalValue));
-                }
-                break;
             }
-            default:
-                this.value.setCurrent(finalValue);
+            return;
         }
+
+        if (finalValue instanceof Object) {
+            // We only populate if value does not have an ID, otherwise we save ID as a value.
+            if (
+                this.getParentModel()
+                    .getParentEntity()
+                    .isId(finalValue.id)
+            ) {
+                this.value.setCurrent(finalValue);
+                return;
+            }
+
+            let entityClass = this.getEntityClass();
+            if (entityClass) {
+                this.value.setCurrent(new entityClass().populate(finalValue));
+                return;
+            }
+        }
+
+        this.value.setCurrent(finalValue);
     }
 
     /**
@@ -226,7 +235,37 @@ class EntityAttribute extends Attribute {
     async getValue(): Promise<mixed> {
         if (this.value.isClean()) {
             await this.value.load();
+            return this.value.getCurrent();
         }
+
+        // "Instance of Entity" check is enough at this point.
+        if (this.value.getCurrent() instanceof Entity) {
+            return this.value.getCurrent();
+        }
+
+        const id = _.get(this.value.getCurrent(), "id", this.value.getCurrent());
+        if (
+            this.getParentModel()
+                .getParentEntity()
+                .isId(id)
+        ) {
+            const entityClass = this.getEntityClass();
+            if (entityClass) {
+                const entity = await entityClass.findById(id);
+                if (entity) {
+                    // If we initially had object with other data set, we must populate entity with it, otherwise
+                    // just set loaded entity (because only an ID was received, without additional data).
+                    if (typeof this.value.getCurrent() === "object") {
+                        entity.populate(this.value.getCurrent());
+                    }
+                    this.value.setCurrent(entity);
+                }
+            }
+        }
+
+        // If valid value was not returned until this point, we return recently set value.
+        // The reason is, if the entity is about to be saved, validation must be executed and error must be thrown,
+        // warning users that passed value is invalid / entity was not found.
         return this.value.getCurrent();
     }
 
@@ -243,7 +282,12 @@ class EntityAttribute extends Attribute {
             current = await this.value.load();
         }
 
-        return current instanceof Entity ? current.id : current;
+        const id = _.get(current, "id", current);
+        return this.getParentModel()
+            .getParentEntity()
+            .isId(id)
+            ? id
+            : null;
     }
 
     /**
@@ -283,9 +327,6 @@ class EntityAttribute extends Attribute {
 
         const value = await this.getValidationValue();
 
-        const valueValidation = this.isSet() && !Attribute.isEmptyValue(value);
-
-        valueValidation && (await this.validateType(value));
         if (this.hasMultipleEntityClasses()) {
             if (!this.options.classIdAttribute) {
                 throw new ModelError(
@@ -322,6 +363,9 @@ class EntityAttribute extends Attribute {
             }
         }
 
+        const valueValidation = this.isSet() && !Attribute.isEmptyValue(value);
+
+        valueValidation && (await this.validateType(value));
         await this.validateAttribute(value);
         valueValidation && (await this.validateValue(value));
     }
@@ -330,25 +374,23 @@ class EntityAttribute extends Attribute {
      * Validates current value - if it's not a valid ID or an instance of Entity class, an error will be thrown.
      */
     async validateType(value: mixed) {
-        if (
-            this.getParentModel()
-                .getParentEntity()
-                .isId(value)
-        ) {
+        if (this.isValidInstance(value)) {
             return;
         }
 
-        const neededClass = this.hasMultipleEntityClasses() ? Entity : this.getEntityClass();
-        if (value instanceof neededClass) {
-            return;
-        }
-
-        this.expected("instance of Entity class or a valid ID", typeof value);
+        this.expected("instance of Entity class", typeof value);
     }
 
     async validateValue(value: mixed) {
         // This validates on the entity level.
         value instanceof Entity && (await value.validate());
+    }
+
+    isValidInstance(instance: ?Entity) {
+        if (this.hasMultipleEntityClasses()) {
+            return instance instanceof Entity;
+        }
+        return instance instanceof this.getEntityClass();
     }
 }
 

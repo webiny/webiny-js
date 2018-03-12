@@ -30,8 +30,8 @@ describe("entity attribute test", function() {
     it("should return correct storage value", async () => {
         const entity = new User();
 
-        entity.getAttribute("company").setStorageValue(1);
-        assert.equal(await entity.getAttribute("company").getStorageValue(), 1);
+        entity.getAttribute("company").setStorageValue("one");
+        assert.equal(await entity.getAttribute("company").getStorageValue(), "one");
 
         const findById = sandbox
             .stub(entity.getDriver(), "findOne")
@@ -45,9 +45,9 @@ describe("entity attribute test", function() {
                 return new QueryResult();
             });
 
-        entity.company = { id: 5, name: "Test-1" };
+        entity.company = { id: "five", name: "Test-1" };
         await entity.company;
-        assert.equal(await entity.getAttribute("company").getStorageValue(), 5);
+        assert.equal(await entity.getAttribute("company").getStorageValue(), "five");
 
         entity.company = null;
         await entity.company;
@@ -410,7 +410,36 @@ describe("entity attribute test", function() {
         entitySave.restore();
     });
 
-    it("must delete previous entities even if they were still loading", () => {
-        // aaaaa
+    it("should load entities on save to make sure they exist", async () => {
+        let entityFindById = sandbox
+            .stub(One.getDriver(), "findOne")
+            .onCall(0)
+            .callsFake(() => {
+                return new QueryResult({ id: "one", name: "One", two: "two" });
+            });
+
+        const one = await One.findById("a");
+
+        assert.equal(entityFindById.callCount, 1);
+        entityFindById.restore();
+
+        one.two = "anotherTwo";
+
+        entityFindById = sandbox
+            .stub(One.getDriver(), "findOne")
+            .onCall(0)
+            .callsFake(() => {
+                return new QueryResult({ id: "anotherTwo", name: "Two" });
+            });
+
+        let entitySave = sandbox.stub(One.getDriver(), "save").callsFake(() => new QueryResult());
+
+        await one.save();
+
+        assert.equal(entityFindById.callCount, 1);
+        assert.equal(entitySave.callCount, 2);
+
+        entityFindById.restore();
+        entitySave.restore();
     });
 });
