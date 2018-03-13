@@ -1,14 +1,19 @@
 #!/usr/bin/env node
 const path = require("path");
 const fs = require("fs");
-const program = require("yargs");
+const yargs = require("yargs");
 
 if (!process.env.NODE_ENV) {
     process.env.NODE_ENV = "production";
 }
 
+const { argv } = yargs;
+if (argv.require) {
+    Array.isArray(argv.require) ? argv.require.map(r => require(r)) : require(argv.require);
+}
+
 // Configure browser sync with webpack config and dev/hot middleware
-program.command(
+yargs.command(
     "develop-app <appRoot>",
     "Start development server",
     cmd => {
@@ -22,27 +27,13 @@ program.command(
 
         const projectRoot = process.cwd();
         const appRoot = path.join(projectRoot, argv.appRoot);
-
-        const UrlGenerator = require("./../lib/spa/urlGenerator");
-        const urlGenerator = new UrlGenerator();
-
-        const browserSync = require(path.join(appRoot, "server.js"));
-        const baseWebpack = require("./../lib/spa/webpack.config")({
-            projectRoot,
-            appRoot,
-            urlGenerator
-        });
-        const appWebpack = require(path.join(appRoot, "webpack.config.js"))({
-            urlGenerator,
-            config: baseWebpack
-        });
-
-        browserSync({ config: appWebpack, projectRoot, appRoot });
+        const { developApp } = require("./../");
+        developApp(projectRoot, appRoot);
     }
 );
 
 // Build app
-program.command(
+yargs.command(
     "build-app <appRoot>",
     "Build app",
     cmd => {
@@ -54,31 +45,13 @@ program.command(
     argv => {
         const projectRoot = process.cwd();
         const appRoot = path.join(projectRoot, argv.appRoot);
-
-        const UrlGenerator = require("./../lib/spa/urlGenerator");
-        const urlGenerator = new UrlGenerator();
-
-        const baseWebpack = require("./../lib/spa/webpack.config")({
-            projectRoot,
-            appRoot,
-            urlGenerator
-        });
-        const appWebpack = require(path.join(appRoot, "webpack.config.js"))({
-            config: baseWebpack,
-            urlGenerator
-        });
-
-        const webpack = require("webpack");
-        webpack(appWebpack).run(function(err, stats) {
-            if (err) console.error(err);
-
-            console.log(stats.toString({ colors: true }));
-        });
+        const { buildApp } = require("./../");
+        buildApp(projectRoot, appRoot);
     }
 );
 
 // Build serve
-program.command(
+yargs.command(
     "serve <appRoot>",
     "Start simple server to serve content from the given folder",
     cmd => {
@@ -97,7 +70,7 @@ program.command(
 );
 
 // Build theme
-program.command(
+yargs.command(
     "develop-plugin <themeRoot>",
     "Develop theme",
     cmd => {
@@ -128,4 +101,4 @@ program.command(
 );
 
 // Run script
-program.argv;
+yargs.argv;

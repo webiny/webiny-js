@@ -1,8 +1,8 @@
 /* eslint-disable */
-const { getIfUtils, removeEmpty } = require("webpack-config-utils");
+import { getIfUtils, removeEmpty } from "webpack-config-utils";
 const { ifDevelopment } = getIfUtils(process.env.NODE_ENV);
 
-module.exports = {
+export default {
     presets: [
         [
             "babel-preset-env",

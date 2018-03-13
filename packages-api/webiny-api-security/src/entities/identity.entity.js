@@ -50,11 +50,12 @@ class Identity extends Entity implements IAuthorizable {
      * @returns {Array<Role>} All roles assigned to the user.
      */
     async getRoles(): Promise<Array<Role>> {
-        const roles = [...(await this.roles)];
+        let roles = [...(await this.roles)];
         const groups = await this.roleGroups;
         for (let i = 0; i < groups.length; i++) {
             const group = groups[i];
-            roles.concat(...(await group.roles));
+            const groupRoles = await group.roles;
+            roles = roles.concat(...groupRoles);
         }
 
         return roles;

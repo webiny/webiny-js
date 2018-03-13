@@ -13,6 +13,9 @@ export default EntityClass => {
         if (Array.isArray(entities)) {
             for (let i = 0; i < entities.length; i++) {
                 let value = entities[i];
+                if (value instanceof EntityClass) {
+                    continue;
+                }
                 let query = { id: value };
                 // If not DB ids - load entities by slugs
                 if (!EntityClass.isId(value)) {

@@ -5,7 +5,7 @@ class UserTable extends IdentityTable {
     constructor() {
         super();
         this.column("email")
-            .char(20)
+            .char(50)
             .setNotNull();
         this.column("password")
             .char(60)

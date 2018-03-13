@@ -1,30 +1,30 @@
-const path = require("path");
-const webpack = require("webpack");
+import path from "path";
+import webpack from "webpack";
 
 // Webpack plugins
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const Visualizer = require("webpack-visualizer-plugin");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
-const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const AutoDllPlugin = require("autodll-webpack-plugin");
+import ExtractTextPlugin from "extract-text-webpack-plugin";
+import Visualizer from "webpack-visualizer-plugin";
+import CleanWebpackPlugin from "clean-webpack-plugin";
+import OptimizeCssAssetsPlugin from "optimize-css-assets-webpack-plugin";
+import AutoDllPlugin from "autodll-webpack-plugin";
 
 // Custom plugins
-const AssetFileNamePlugin = require("./plugins/AssetFileName");
-const AssetsMetaPlugin = require("./plugins/AssetsMeta");
-const ModuleIdsPlugin = require("./plugins/ModuleIds");
-const ChunkIdsPlugin = require("./plugins/ChunkIds");
+import AssetFileNamePlugin from "./plugins/AssetFileName";
+import AssetsMetaPlugin from "./plugins/AssetsMeta";
+import ModuleIdsPlugin from "./plugins/ModuleIds";
+import ChunkIdsPlugin from "./plugins/ChunkIds";
 
 // Config helpers
-const resolveCreator = require("./resolve");
-const stylesCreator = require("./styles");
-const babelOptions = require("./babel");
+import resolveCreator from "./resolve";
+import stylesCreator from "./styles";
+import babelOptions from "./babel";
 // List of vendor libraries to create a DLL
-const vendor = require("webiny-client/lib/vendor");
+import vendor from "webiny-client/vendor";
 
-const { getIfUtils, removeEmpty } = require("webpack-config-utils");
+import { getIfUtils, removeEmpty } from "webpack-config-utils";
 const { ifProduction, ifDevelopment } = getIfUtils(process.env.NODE_ENV);
 
-module.exports = ({ projectRoot, appRoot, urlGenerator }) => {
+export default ({ projectRoot, appRoot, urlGenerator }) => {
     const definePlugin = new webpack.DefinePlugin({
         DEVELOPMENT: ifDevelopment(true, false),
         PRODUCTION: ifProduction(true, false),
@@ -88,6 +88,10 @@ module.exports = ({ projectRoot, appRoot, urlGenerator }) => {
                 return file;
             },
             publicPath: file => {
+                if (file.startsWith("_/")) {
+                    const parts = file.replace(/_\//g, "").split("/Assets/");
+                    file = path.normalize(path.join("external", parts[0], parts[1]));
+                }
                 return urlGenerator.generate(file);
             }
         };
@@ -135,6 +139,8 @@ module.exports = ({ projectRoot, appRoot, urlGenerator }) => {
                             return path.normalize(path.join("external", parts.pop()));
                         },
                         publicPath: file => {
+                            const parts = file.replace(/_\//g, "").split("node_modules/");
+                            file = path.normalize(path.join("external", parts.pop()));
                             return urlGenerator.generate(file);
                         }
                     }

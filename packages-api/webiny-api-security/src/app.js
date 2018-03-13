@@ -4,6 +4,7 @@ import BaseAuthEndpoint from "./endpoints/auth";
 import generateEndpoint from "./endpoints/generator";
 import { AuthenticationService, AuthorizationService } from "./index";
 import registerAttributes from "./attributes/registerAttributes";
+import UsersEndpoint from "./endpoints/users";
 import PermissionsEndpoint from "./endpoints/permissions";
 import RolesEndpoint from "./endpoints/roles";
 import RoleGroupsEndpoint from "./endpoints/roleGroups";
@@ -25,6 +26,7 @@ class Security extends App {
                 config.authentication,
                 api.serviceManager.get("Authentication")
             ),
+            UsersEndpoint,
             PermissionsEndpoint,
             RoleGroupsEndpoint,
             RolesEndpoint

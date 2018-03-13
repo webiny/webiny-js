@@ -1,6 +1,6 @@
-const _ = require("lodash");
+import _ from "lodash";
 
-module.exports = (resolve = {}) => {
+export default (resolve = {}) => {
     return _.merge(
         {},
         {

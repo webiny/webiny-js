@@ -12,6 +12,7 @@ class Role extends Entity {
         this.attr("permissions")
             .entities(Permission)
             .setUsing(Role2Permission);
+
         this.attr("roleGroups")
             .entities(RoleGroup)
             .setUsing(Role2RoleGroup);

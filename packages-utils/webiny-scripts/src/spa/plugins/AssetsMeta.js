@@ -94,4 +94,4 @@ class AssetsMeta {
     }
 }
 
-module.exports = AssetsMeta;
+export default AssetsMeta;
