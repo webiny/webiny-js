@@ -1,7 +1,6 @@
 import request from "supertest";
 import express from "express";
-import { expect } from "chai";
-import sinon from "sinon";
+import { assert, expect } from "chai";
 import { MemoryDriver } from "webiny-entity-memory";
 import api, { middleware, endpointMiddleware, Entity } from "webiny-api";
 import {
@@ -13,8 +12,15 @@ import {
 } from "./../src";
 import MyUser from "./entities/myUser";
 import MyCompany from "./entities/myCompany";
+import { User } from "./entities/identityAttributeEntities";
+
+import sinon from "sinon";
+
+const sandbox = sinon.sandbox.create();
 
 describe("Security test", () => {
+    afterEach(() => sandbox.restore());
+
     let app = null;
     let user;
     let company;
@@ -112,7 +118,7 @@ describe("Security test", () => {
 
     it("should return error response with WBY_INTERNAL_ERROR", () => {
         const authService = api.serviceManager.get("Authentication");
-        sinon.stub(authService, "authenticate").callsFake(() => {
+        sandbox.stub(authService, "authenticate").callsFake(() => {
             return {
                 promise: () => {
                     return Promise.reject(new Error("Arbitrary error"));
@@ -198,4 +204,67 @@ describe("Security test", () => {
     });
 
     // TODO: create user roles/permissions for Authorization and test API calls
+
+    it("additional identity attributes - should set null if no identity", async () => {
+        const user = new User();
+        await user.save();
+
+        assert.equal(await user.createdBy, null);
+        assert.equal(await user.savedBy, null);
+        assert.equal(await user.updatedBy, null);
+
+        await user.save();
+        assert.equal(await user.createdBy, null);
+        assert.equal(await user.savedBy, null);
+        assert.equal(await user.updatedBy, null);
+
+        user.id = "someId";
+        await user.delete();
+        assert.equal(await user.createdBy, null);
+        assert.equal(await user.savedBy, null);
+        assert.equal(await user.updatedBy, null);
+    });
+
+    it("additional identity attributes - should set identity to attributes correctly", async () => {
+        const identity = new MyUser().populate({ id: "identityID", username: "identity" });
+        let getRequestStub = sandbox.stub(api, "getRequest").callsFake(() => {
+            return {
+                identity
+            };
+        });
+
+        const user = new User();
+        user.populate({ username: "user" });
+
+        await user.save();
+
+        assert.equal(await user.createdBy, identity);
+        assert.equal(await user.savedBy, identity);
+        assert.equal(await user.updatedBy, null);
+
+        await user.save();
+
+        assert.equal(await user.createdBy, identity);
+        assert.equal(await user.savedBy, identity);
+        assert.equal(await user.updatedBy, identity);
+
+        user.id = "someId";
+        await user.delete();
+        assert.equal(await user.createdBy, identity);
+        assert.equal(await user.savedBy, identity);
+        assert.equal(await user.updatedBy, identity);
+
+        getRequestStub.restore();
+        getRequestStub = sandbox.stub(api, "getRequest").callsFake(() => {
+            return { identity: null };
+        });
+
+        await user.save();
+
+        assert.equal(await user.createdBy, identity);
+        assert.equal(await user.savedBy, null);
+        assert.equal(await user.updatedBy, null);
+
+        getRequestStub.restore();
+    });
 });

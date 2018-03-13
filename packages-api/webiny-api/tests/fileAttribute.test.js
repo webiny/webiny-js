@@ -117,7 +117,9 @@ describe("File attribute test", () => {
         };
 
         user.populate(userData);
+
         await user.save();
+
         await user.populate({ document: null }).save();
 
         const document2 = await user.document;

@@ -11,6 +11,10 @@ class FileAttribute extends EntityAttribute {
 
     constructor(name: string, attributesContainer: EntityAttributesContainer, entity: Class<File>) {
         super(name, attributesContainer, entity);
+        this.auto.delete = {
+            enabled: true,
+            options: { permanent: true }
+        };
     }
 
     /**
@@ -64,29 +68,12 @@ class FileAttribute extends EntityAttribute {
     }
 
     // $FlowIgnore
-    async setValue(value) {
-        const currentValue = await this.getValue();
-        await EntityAttribute.prototype.setValue.call(this, value);
-
-        const newValue = await this.getValue();
-        if (newValue instanceof this.getEntityClass()) {
-            newValue.tags = _.uniqWith(this.tags.concat(newValue.tags || []), _.isEqual);
-            if (this.storage) {
-                newValue.setStorage(this.storage).setStorageFolder(this.storageFolder);
-            }
+    setValue(value) {
+        if (Array.isArray(_.get(value, "tags"))) {
+            value.tags = _.uniqWith(this.tags.concat(value.tags || []), _.isEqual);
         }
 
-        // If new value is being assigned and there is an existing file - delete the existing file after a successful save
-        if (currentValue && (!newValue || currentValue.id !== newValue.id)) {
-            this.getParentModel()
-                .getParentEntity()
-                .on("afterSave", async () => {
-                    await currentValue.delete({ permanent: true });
-                })
-                .setOnce();
-        }
-
-        return this;
+        super.setValue(value);
     }
 }
 

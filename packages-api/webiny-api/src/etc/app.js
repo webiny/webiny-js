@@ -44,8 +44,8 @@ class App {
         const id = entity.constructor.classId;
         const wildcardCallbacks = this.entityExtensions["*"] || [];
         const callbacks = this.entityExtensions[id] || [];
-        wildcardCallbacks.map(cb => cb({ id, entity }));
-        callbacks.map(cb => cb({ id, entity }));
+        wildcardCallbacks.map(cb => cb(entity));
+        callbacks.map(cb => cb(entity));
     }
 }
 

@@ -59,7 +59,7 @@ class EntityAttributeValue extends AttributeValue {
         return this.getCurrent();
     }
 
-    async deleteInitial() {
+    async deleteInitial(options: ?{}) {
         if (!this.hasInitial()) {
             return;
         }
@@ -67,7 +67,7 @@ class EntityAttributeValue extends AttributeValue {
         // Initial value will always be an existing (already saved) Entity instance.
         const initial = this.getInitial();
         if (initial instanceof Entity && _.get(initial, "id") !== _.get(this.getCurrent(), "id")) {
-            await initial.delete();
+            await initial.delete(options);
         }
     }
 

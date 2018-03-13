@@ -108,4 +108,18 @@ describe("multiple Entity classes test", function() {
 
         throw Error(`Error should've been thrown.`);
     });
+
+    it("must be able to set null as value", async () => {
+        const main = new Main();
+        main.assignedTo = new A().populate({ name: "a" });
+        assert.equal(main.assignedToClassId, "A");
+        assert.equal(await main.get("assignedTo.name"), "a");
+
+        main.assignedTo = null;
+        assert.equal(main.assignedToClassId, null);
+        assert.isNull(await main.assignedTo);
+
+        // Should not throw error.
+        await main.validate();
+    });
 });

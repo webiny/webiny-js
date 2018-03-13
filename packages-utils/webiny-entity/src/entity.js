@@ -9,7 +9,6 @@ import EntityModel from "./entityModel";
 import EntityAttributesContainer from "./entityAttributesContainer";
 import QueryResult from "./queryResult";
 import { EntityError } from "./index";
-import { EntitySaveParams, EntityFindParams, EntityDeleteParams } from "webiny-entity/types";
 
 class Entity {
     static classId: ?string;
@@ -261,7 +260,7 @@ class Entity {
      * Saves current and all linked entities (if autoSave on the attribute was enabled).
      * @param params
      */
-    async save(params: EntitySaveParams & Object = {}): Promise<void> {
+    async save(params: ?Object): Promise<void> {
         if (this.processing) {
             return;
         }
@@ -269,6 +268,10 @@ class Entity {
         this.processing = "save";
         const existing = this.isExisting();
         const logs = _.get(this, "constructor.crud.logs");
+
+        if (!params) {
+            params = {};
+        }
 
         try {
             const events = params.events || {};
@@ -316,7 +319,7 @@ class Entity {
      * Deletes current and all linked entities (if autoDelete on the attribute was enabled).
      * @param params
      */
-    async delete(params: EntityDeleteParams & Object = {}): Promise<void> {
+    async delete(params: ?Object): Promise<void> {
         if (this.processing) {
             return;
         }
@@ -324,6 +327,10 @@ class Entity {
         this.processing = "delete";
 
         const soft = _.get(this, "constructor.crud.delete.soft");
+
+        if (!params) {
+            params = {};
+        }
 
         try {
             const events = params.events || {};
@@ -353,7 +360,7 @@ class Entity {
      * @param id
      * @param params
      */
-    static async findById(id: mixed, params: Object = {}): Promise<null | Entity> {
+    static async findById(id: mixed, params: ?Object): Promise<null | Entity> {
         if (!id) {
             return null;
         }
@@ -361,6 +368,10 @@ class Entity {
         const pooled = this.getEntityPool().get(this, id);
         if (pooled) {
             return pooled;
+        }
+
+        if (!params) {
+            params = {};
         }
 
         const newParams = _.merge(_.cloneDeep(params), { query: { id } });
@@ -372,7 +383,10 @@ class Entity {
      * @param ids
      * @param params
      */
-    static async findByIds(ids: Array<mixed>, params: Object = {}): Promise<EntityCollection> {
+    static async findByIds(ids: Array<mixed>, params: ?Object): Promise<EntityCollection> {
+        if (!params) {
+            params = {};
+        }
         return await this.find(_.merge(_.cloneDeep(params), { query: { id: ids } }));
     }
 
@@ -380,7 +394,11 @@ class Entity {
      * Finds one entity matched by given query parameters.
      * @param params
      */
-    static async findOne(params: EntityFindParams & Object = {}): Promise<null | Entity> {
+    static async findOne(params: ?Object): Promise<null | Entity> {
+        if (!params) {
+            params = {};
+        }
+
         const prepared = this.__prepareParams(params);
         await this.emit("query", prepared);
 
@@ -403,7 +421,11 @@ class Entity {
      * Finds one or more entities matched by given query parameters.
      * @param params
      */
-    static async find(params: EntityFindParams & Object = {}): Promise<EntityCollection> {
+    static async find(params: ?Object): Promise<EntityCollection> {
+        if (!params) {
+            params = {};
+        }
+
         const prepared = this.__prepareParams(params);
         await this.emit("query", prepared);
 
@@ -432,7 +454,11 @@ class Entity {
      * Counts total number of entities matched by given query parameters.
      * @param params
      */
-    static async count(params: EntityFindParams & Object = {}): Promise<number> {
+    static async count(params: ?Object): Promise<number> {
+        if (!params) {
+            params = {};
+        }
+
         const prepared = this.__prepareParams(params);
         await this.emit("query", prepared);
 

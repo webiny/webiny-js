@@ -274,20 +274,9 @@ class Attribute {
      * @param {any} value A value can be anything, depending on the attribute implementation.
      * @returns {void|Promise<void>}
      */
-    setValue(value: mixed): void | Promise<void> {
+    setValue(value: mixed): void {
         if (!this.canSetValue()) {
             return;
-        }
-
-        if (this.getAsync()) {
-            return new Promise(async (resolve, reject) => {
-                try {
-                    await this.value.setCurrent(await this.onSetCallback(value));
-                } catch (e) {
-                    reject(e);
-                }
-                resolve();
-            });
         }
 
         this.value.setCurrent(this.onSetCallback(value));

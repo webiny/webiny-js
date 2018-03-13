@@ -90,7 +90,7 @@ describe("entity attribute test", function() {
 
         save.restore();
 
-        assert(save.calledOnce);
+        assert.equal(save.callCount, 1);
         assert.equal(user.id, "A");
 
         user.getAttribute("company").setAutoSave();

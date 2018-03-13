@@ -14,7 +14,10 @@ declare type EntityClass = Class<Entity> | Array<Class<Entity>>;
 class EntityAttribute extends Attribute {
     value: EntityAttributeValue;
     classes: { entity: { class: Class<Entity> | Array<Class<Entity>> } };
-    auto: { save: boolean, delete: boolean };
+    auto: {
+        save: { enabled: boolean, options: ?Object },
+        delete: { enabled: boolean, options: ?Object }
+    };
     options: EntityAttributeOptions;
 
     constructor(
@@ -40,7 +43,10 @@ class EntityAttribute extends Attribute {
          * be correct to say that if auto delete is enabled, we are dealing with one to one relationship.
          * @type {{save: boolean, delete: boolean}}
          */
-        this.auto = { save: true, delete: false };
+        this.auto = {
+            save: { enabled: true, options: null },
+            delete: { enabled: false, options: null }
+        };
 
         /**
          * Before save, let's validate and save linked entity.
@@ -53,16 +59,18 @@ class EntityAttribute extends Attribute {
         parentEntity.on("beforeSave", async () => {
             // At this point current value is an instance or is not instance. It cannot be in the 'loading' state, because that was
             // already checked in the validate method - if in that step entity was in 'loading' state, it will be waited before proceeding.
-            if (this.getAutoSave() && this.value.getCurrent() instanceof Entity) {
+            if (this.getAutoSave()) {
                 // We don't need to validate here because validate method was called on the parent entity, which caused
                 // the validation of data to be executed recursively on all attribute values.
-                await this.value.getCurrent().save({ validation: false });
+                if (this.value.getCurrent() instanceof Entity) {
+                    await this.value.getCurrent().save({ validation: false });
+                }
 
                 // If initially we had a different entity linked, we must delete it.
                 // If initial is empty, that means nothing was ever loaded (attribute was not accessed) and there is nothing to do.
                 // Otherwise, deleteInitial method will internally delete only entities that are not needed anymore.
-                if (this.getAutoSave() && this.getAutoDelete()) {
-                    await this.value.deleteInitial();
+                if (this.getAutoDelete()) {
+                    await this.value.deleteInitial(this.auto.delete.options);
                 }
             }
 
@@ -108,11 +116,12 @@ class EntityAttribute extends Attribute {
     /**
      * Should linked entity be automatically saved once parent entity is saved? By default, linked entities will be automatically saved,
      * after main entity was saved. Can be disabled, although not recommended since manual saving needs to be done in that case.
-     * @param autoSave
+     * @param enabled
+     * @param options
      * @returns {EntityAttribute}
      */
-    setAutoSave(autoSave: boolean = true): EntityAttribute {
-        this.auto.save = autoSave;
+    setAutoSave(enabled: boolean = true, options: ?Object = null): EntityAttribute {
+        this.auto.save = { enabled, options };
         return this;
     }
 
@@ -121,17 +130,18 @@ class EntityAttribute extends Attribute {
      * @returns {boolean}
      */
     getAutoSave(): boolean {
-        return this.auto.save;
+        return this.auto.save.enabled;
     }
 
     /**
      * Should linked entity be automatically deleted once parent entity is deleted? By default, linked entities will be automatically
      * deleted, before main entity was deleted. Can be disabled, although not recommended since manual deletion needs to be done in that case.
-     * @param autoDelete
+     * @param enabled
+     * @param options
      * @returns {EntityAttribute}
      */
-    setAutoDelete(autoDelete: boolean = true): EntityAttribute {
-        this.auto.delete = autoDelete;
+    setAutoDelete(enabled: boolean = true, options: ?Object = null): EntityAttribute {
+        this.auto.delete = { enabled, options };
         return this;
     }
 
@@ -140,7 +150,7 @@ class EntityAttribute extends Attribute {
      * @returns {boolean}
      */
     getAutoDelete(): boolean {
-        return this.auto.delete;
+        return this.auto.delete.enabled;
     }
 
     getEntityClass(): ?Class<Entity> {
@@ -181,51 +191,25 @@ class EntityAttribute extends Attribute {
         return this;
     }
 
-    /**
-     * @param value
-     * @returns {Promise<any>}
-     */
     setValue(value: mixed) {
         if (!this.canSetValue()) {
             return;
         }
 
         const finalValue = this.onSetCallback(value);
+        this.value.setCurrent(finalValue);
 
         // If we are dealing with multiple Entity classes, we must assign received classId into
         // attribute specified by the "classIdAttribute" option (passed on attribute construction).
-        const multipleClasses = this.hasMultipleEntityClasses();
-
-        if (finalValue instanceof Entity) {
-            this.value.setCurrent(finalValue);
-            if (multipleClasses) {
-                const classIdAttribute = this.getClassIdAttribute();
-                if (classIdAttribute) {
-                    classIdAttribute.setValue(finalValue.classId);
-                }
+        const classIdAttribute = this.getClassIdAttribute();
+        if (classIdAttribute && this.hasMultipleEntityClasses()) {
+            if (finalValue instanceof Entity) {
+                return classIdAttribute.setValue(finalValue.classId);
             }
-            return;
-        }
-
-        if (finalValue instanceof Object) {
-            // We only populate if value does not have an ID, otherwise we save ID as a value.
-            if (
-                this.getParentModel()
-                    .getParentEntity()
-                    .isId(finalValue.id)
-            ) {
-                this.value.setCurrent(finalValue);
-                return;
-            }
-
-            let entityClass = this.getEntityClass();
-            if (entityClass) {
-                this.value.setCurrent(new entityClass().populate(finalValue));
-                return;
+            if (!finalValue) {
+                return classIdAttribute.setValue(null);
             }
         }
-
-        this.value.setCurrent(finalValue);
     }
 
     /**
@@ -235,11 +219,15 @@ class EntityAttribute extends Attribute {
     async getValue(): Promise<mixed> {
         if (this.value.isClean()) {
             await this.value.load();
-            return this.value.getCurrent();
         }
 
         // "Instance of Entity" check is enough at this point.
         if (this.value.getCurrent() instanceof Entity) {
+            return this.value.getCurrent();
+        }
+
+        const entityClass = this.getEntityClass();
+        if (!entityClass) {
             return this.value.getCurrent();
         }
 
@@ -249,18 +237,21 @@ class EntityAttribute extends Attribute {
                 .getParentEntity()
                 .isId(id)
         ) {
-            const entityClass = this.getEntityClass();
-            if (entityClass) {
-                const entity = await entityClass.findById(id);
-                if (entity) {
-                    // If we initially had object with other data set, we must populate entity with it, otherwise
-                    // just set loaded entity (because only an ID was received, without additional data).
-                    if (typeof this.value.getCurrent() === "object") {
-                        entity.populate(this.value.getCurrent());
-                    }
-                    this.value.setCurrent(entity);
+            const entity = await entityClass.findById(id);
+            if (entity) {
+                // If we initially had object with other data set, we must populate entity with it, otherwise
+                // just set loaded entity (because only an ID was received, without additional data).
+                if (this.value.getCurrent() instanceof Object) {
+                    entity.populate(this.value.getCurrent());
                 }
+                this.value.setCurrent(entity);
             }
+            return this.value.getCurrent();
+        }
+
+        if (this.value.getCurrent() instanceof Object) {
+            const entity = new entityClass().populate(this.value.getCurrent());
+            this.value.setCurrent(entity);
         }
 
         // If valid value was not returned until this point, we return recently set value.
@@ -326,8 +317,9 @@ class EntityAttribute extends Attribute {
         }
 
         const value = await this.getValidationValue();
+        const valueValidation = !Attribute.isEmptyValue(value);
 
-        if (this.hasMultipleEntityClasses()) {
+        if (valueValidation && this.hasMultipleEntityClasses()) {
             if (!this.options.classIdAttribute) {
                 throw new ModelError(
                     `Entity attribute "${
@@ -362,8 +354,6 @@ class EntityAttribute extends Attribute {
                 }
             }
         }
-
-        const valueValidation = this.isSet() && !Attribute.isEmptyValue(value);
 
         valueValidation && (await this.validateType(value));
         await this.validateAttribute(value);

@@ -95,8 +95,8 @@ class Authentication implements IAuthentication {
     }
 
     /**
-     * Returns all set `Identity` classes.
-     * @returns {Array<Class<Identity>>} All set `Identity` classes.
+     * Returns set `Identity` classes.
+     * @returns {Array<Class<Identity>>} Set `Identity` classes.
      */
     getIdentityClasses(): Array<Class<Identity>> | null {
         return this.config.identities.map(current => {
