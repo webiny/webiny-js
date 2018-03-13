@@ -4,12 +4,10 @@ class Role2Permission extends MySQLTable {
     constructor() {
         super();
         this.column("role")
-            .bigInt(20)
-            .setUnsigned()
+            .char(24)
             .setNotNull();
         this.column("permission")
-            .bigInt(20)
-            .setUnsigned()
+            .char(24)
             .setNotNull();
 
         this.index("unique").unique("permission", "role");

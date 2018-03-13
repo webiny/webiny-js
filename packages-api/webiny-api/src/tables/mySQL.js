@@ -4,15 +4,20 @@ import { MySQLDriver } from "webiny-sql-table-mysql";
 class MySQLTable extends Table {
     constructor() {
         super();
-        this.column("id")
-            .bigInt(20)
-            .setUnsigned()
-            .setAutoIncrement()
-            .setNotNull();
+        this.column("id").char(24);
 
         this.column("createdOn").dateTime();
+        this.column("createdBy").char(24);
+        this.column("createdByClassId").varChar(100);
+
         this.column("savedOn").dateTime();
+        this.column("savedBy").char(24);
+        this.column("savedByClassId").varChar(100);
+
         this.column("updatedOn").dateTime();
+        this.column("updatedBy").char(24);
+        this.column("updatedByClassId").varChar(100);
+
         this.column("deleted")
             .tinyInt(1)
             .setDefault(0);

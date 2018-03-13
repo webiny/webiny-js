@@ -110,9 +110,7 @@ class EntityEndpoint extends Endpoint {
         entityCollection: EntityCollection,
         fields: string
     ): Promise<{ list: Array<Object>, meta: Object }> {
-        const list = await Promise.all(
-            entityCollection.map((entity: Entity) => entity.toJSON(fields))
-        );
+        const list = await entityCollection.toJSON(fields);
         const meta = entityCollection.getParams();
         meta.totalCount = entityCollection.getMeta().count;
         meta.count = entityCollection.length;

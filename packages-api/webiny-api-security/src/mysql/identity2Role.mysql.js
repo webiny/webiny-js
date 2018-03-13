@@ -10,8 +10,7 @@ class Identity2RoleTable extends MySQLTable {
             .varChar(50)
             .setNotNull();
         this.column("role")
-            .bigInt(20)
-            .setUnsigned()
+            .char(24)
             .setNotNull();
 
         this.index("unique").unique("identity", "role");

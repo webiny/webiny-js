@@ -12,7 +12,7 @@ class Permission extends MySQLTable {
         this.column("description")
             .varChar(200)
             .setNotNull();
-        this.column("rules").text();
+        this.column("rules").json();
     }
 }
 

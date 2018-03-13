@@ -65,7 +65,7 @@ describe("find test", function() {
         });
 
         assert.deepEqual(querySpy.getCall(0).args[0], [
-            "SELECT * FROM `SimpleEntity` WHERE (age = 30) ORDER BY createdOn DESC, id ASC LIMIT 7 OFFSET 14",
+            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE (age = 30) ORDER BY createdOn DESC, id ASC LIMIT 7 OFFSET 14",
             "SELECT FOUND_ROWS() as count"
         ]);
 
@@ -85,7 +85,7 @@ describe("find test", function() {
         });
 
         assert.deepEqual(querySpy.getCall(0).args[0], [
-            "SELECT * FROM `SimpleEntity` WHERE (JSON_SEARCH(tags, 'one', 'user') IS NOT NULL) LIMIT 10",
+            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE (JSON_SEARCH(tags, 'one', 'user') IS NOT NULL) LIMIT 10",
             "SELECT FOUND_ROWS() as count"
         ]);
 
@@ -106,7 +106,7 @@ describe("find test", function() {
         });
 
         assert.deepEqual(querySpy.getCall(0).args[0], [
-            "SELECT * FROM `SimpleEntity` WHERE (tags = JSON_ARRAY('user', 'avatar')) LIMIT 10",
+            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE (tags = JSON_ARRAY('user', 'avatar')) LIMIT 10",
             "SELECT FOUND_ROWS() as count"
         ]);
 
@@ -127,7 +127,7 @@ describe("find test", function() {
         });
 
         assert.deepEqual(querySpy.getCall(0).args[0], [
-            "SELECT * FROM `SimpleEntity` WHERE ((JSON_SEARCH(tags, 'one', 'user') IS NOT NULL OR JSON_SEARCH(tags, 'one', 'avatar') IS NOT NULL)) LIMIT 10",
+            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE ((JSON_SEARCH(tags, 'one', 'user') IS NOT NULL OR JSON_SEARCH(tags, 'one', 'avatar') IS NOT NULL)) LIMIT 10",
             "SELECT FOUND_ROWS() as count"
         ]);
 
@@ -148,7 +148,7 @@ describe("find test", function() {
         });
 
         assert.deepEqual(querySpy.getCall(0).args[0], [
-            "SELECT * FROM `SimpleEntity` WHERE ((JSON_SEARCH(tags, 'one', 'user') IS NOT NULL AND JSON_SEARCH(tags, 'one', 'avatar') IS NOT NULL)) LIMIT 10",
+            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE ((JSON_SEARCH(tags, 'one', 'user') IS NOT NULL AND JSON_SEARCH(tags, 'one', 'avatar') IS NOT NULL)) LIMIT 10",
             "SELECT FOUND_ROWS() as count"
         ]);
 

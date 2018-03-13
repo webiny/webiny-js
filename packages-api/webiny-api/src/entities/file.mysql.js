@@ -13,7 +13,8 @@ class FileTable extends MySQLTable {
         this.column("ext").varChar(5);
         this.column("src").varChar(250);
         this.column("tags").json();
-        this.column("ref").bigInt(20);
+        this.column("ref").char(24);
+        this.column("refClassId").varChar(100);
         this.column("order")
             .smallInt(4)
             .setUnsigned();

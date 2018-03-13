@@ -187,6 +187,7 @@ class MySQLDriver extends Driver {
             delete clonedOptions.page;
         }
 
+        clonedOptions.calculateFoundRows = true;
         const sql = new Select(clonedOptions).generate();
         const results = await this.getConnection().query([sql, "SELECT FOUND_ROWS() as count"]);
 

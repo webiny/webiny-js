@@ -4,12 +4,10 @@ class Role2RoleGroup extends MySQLTable {
     constructor() {
         super();
         this.column("role")
-            .bigInt(20)
-            .setUnsigned()
+            .char(24)
             .setNotNull();
         this.column("roleGroup")
-            .bigInt(20)
-            .setUnsigned()
+            .char(24)
             .setNotNull();
 
         this.index("unique").unique("roleGroup", "role");
