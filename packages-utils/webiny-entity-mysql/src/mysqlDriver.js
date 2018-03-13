@@ -191,7 +191,7 @@ class MySQLDriver extends Driver {
         const sql = new Select(clonedOptions).generate();
         const results = await this.getConnection().query([sql, "SELECT FOUND_ROWS() as count"]);
 
-        return new QueryResult(results[0], { count: results[1][0].count });
+        return new QueryResult(results[0], { totalCount: results[1][0].count });
     }
 
     async findOne(

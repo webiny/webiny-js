@@ -53,13 +53,13 @@ class EntityCollection extends Array<Entity> {
         return Promise.all(this.map(async (entity: Entity) => await entity.toJSON(fields)));
     }
 
-    setCount(count: number): this {
-        this.__entityCollection.meta.count = count;
+    setTotalCount(totalCount: number): this {
+        this.__entityCollection.meta.totalCount = totalCount;
         return this;
     }
 
-    getCount(): ?number {
-        return this.__entityCollection.meta.count;
+    getTotalCount(): ?number {
+        return this.__entityCollection.meta.totalCount;
     }
 }
 
