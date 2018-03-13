@@ -1,8 +1,8 @@
-const path = require("path");
-const _ = require("lodash");
-const browserSync = require("browser-sync").create();
+import path from "path";
+import _ from "lodash";
+import browserSync from "browser-sync";
 
-module.exports = ({ routes, port, domain }) => {
+export default ({ routes, port, domain }) => {
     return ({ projectRoot }) => {
         const baseDir = path.join(projectRoot, "dist", process.env.NODE_ENV);
         // Run browser-sync server
@@ -39,6 +39,6 @@ module.exports = ({ routes, port, domain }) => {
             }
         };
 
-        browserSync.init(browserSyncConfig);
+        browserSync.create().init(browserSyncConfig);
     };
 };

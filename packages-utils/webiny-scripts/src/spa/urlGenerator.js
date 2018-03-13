@@ -1,4 +1,4 @@
-const _ = require("lodash");
+import _ from "lodash";
 
 /**
  * Generate URL using given Array<{test: RegEx, domain: string}> set of rules.
@@ -17,7 +17,7 @@ const _ = require("lodash");
  * @param assetRules
  * @return {string}
  */
-module.exports = class UrlGenerator {
+class UrlGenerator {
     constructor() {
         this.rules = {};
     }
@@ -37,4 +37,6 @@ module.exports = class UrlGenerator {
 
         return _.trimEnd(prefix, "/") + "/" + _.trimStart(file, "/");
     }
-};
+}
+
+export default UrlGenerator;

@@ -1,5 +1,4 @@
-'use strict';
-module.exports = function (source) {
+export default source => {
     if (this.cacheable) {
         this.cacheable();
     }

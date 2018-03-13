@@ -1,6 +1,6 @@
 // @flow
 import api from "webiny-api";
-import ApiErrorResponse from "../../../webiny-api/src/response/apiErrorResponse";
+import { ApiErrorResponse } from "webiny-api";
 
 /**
  * Authentication middleware factory.

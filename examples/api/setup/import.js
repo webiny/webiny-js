@@ -46,6 +46,8 @@ export default async () => {
             } catch (e) {
                 if (e.data) {
                     console.log(e.data.invalidAttributes);
+                } else {
+                    console.log(e);
                 }
             }
         }

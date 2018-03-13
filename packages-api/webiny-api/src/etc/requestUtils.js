@@ -91,8 +91,8 @@ export default (req: express$Request): { [string]: Function } => {
          * @returns {number}
          */
         getPage(fallback: number = 1) {
-            const page = req.query._page;
-            return !page || parseInt(page) < 1 ? fallback : page;
+            const page = parseInt(req.query._page);
+            return !page || page < 1 ? fallback : page;
         },
 
         /**

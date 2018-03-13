@@ -1,6 +1,6 @@
-const server = require("webiny-scripts/lib/server");
+import { spa } from "webiny-scripts";
 
-module.exports = server({
+export default spa.server({
     domain: "http://localhost",
     port: 8060,
     routes: {

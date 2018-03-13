@@ -1,5 +1,5 @@
-const path = require("path");
-const crypto = require("crypto");
+import path from "path";
+import crypto from "crypto";
 
 /**
  * PRODUCTION ONLY PLUGIN
@@ -64,4 +64,4 @@ class AssetsFileName {
     }
 }
 
-module.exports = AssetsFileName;
+export default AssetsFileName;

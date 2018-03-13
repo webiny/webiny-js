@@ -4,22 +4,28 @@ class SpaConfigPlugin {
     }
 
     apply(compiler) {
-        compiler.plugin('compilation', (compilation) => {
-            compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, callback) => {
-                const chunksManifest = JSON.parse(compilation.assets['meta.json'].source()).chunks;
+        compiler.plugin("compilation", compilation => {
+            compilation.plugin(
+                "html-webpack-plugin-before-html-processing",
+                (htmlPluginData, callback) => {
+                    const chunksManifest = JSON.parse(compilation.assets["meta.json"].source())
+                        .chunks;
 
-                const config = `
+                    const config = `
                     <script type="text/javascript"> 
-                        var webinyConfig = ${JSON.stringify(this.options[htmlPluginData.plugin.options.name])};
+                        var webinyConfig = ${JSON.stringify(
+                            this.options[htmlPluginData.plugin.options.name]
+                        )};
                         window.webpackManifest = ${JSON.stringify(chunksManifest)};
                     </script>
                     </body>
                 `;
-                htmlPluginData.html = htmlPluginData.html.replace("<\/body>", config);
-                callback(null, htmlPluginData);
-            });
+                    htmlPluginData.html = htmlPluginData.html.replace("</body>", config);
+                    callback(null, htmlPluginData);
+                }
+            );
         });
-    };
+    }
 }
 
-module.exports = SpaConfigPlugin;
+export default SpaConfigPlugin;

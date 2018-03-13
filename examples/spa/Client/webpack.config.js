@@ -1,9 +1,11 @@
 /* eslint-disable */
-const webpack = require("webpack");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const { appEntry, SpaConfigPlugin } = require("webiny-scripts/lib/spa");
+import webpack from "webpack";
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import { spa } from "webiny-scripts";
 
-module.exports = ({ config, urlGenerator }) => {
+const { appEntry, SpaConfigPlugin } = spa;
+
+export default ({ config, urlGenerator }) => {
     // Define asset rules (optional)
     urlGenerator.setRules([{ test: ".js$", domain: "http://localhost:8060" }]);
 

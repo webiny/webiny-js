@@ -1,12 +1,12 @@
-const path = require("path");
-const webpack = require("webpack");
-const _ = require("lodash");
-const browserSync = require("browser-sync").create();
-const devMiddleware = require("webpack-dev-middleware");
-const hotMiddleware = require("webpack-hot-middleware");
-const WriteFilePlugin = require("write-file-webpack-plugin");
+import path from "path";
+import webpack from "webpack";
+import _ from "lodash";
+import browserSync from "browser-sync";
+import devMiddleware from "webpack-dev-middleware";
+import hotMiddleware from "webpack-hot-middleware";
+import WriteFilePlugin from "write-file-webpack-plugin";
 
-module.exports = ({ routes, port, domain }) => {
+export default ({ routes, port, domain }) => {
     return ({ config, projectRoot }) => {
         const statsConfig = {
             all: false,
@@ -75,6 +75,6 @@ module.exports = ({ routes, port, domain }) => {
             files: [config.output.path + "/*.css"]
         };
 
-        browserSync.init(browserSyncConfig);
+        browserSync.create().init(browserSyncConfig);
     };
 };

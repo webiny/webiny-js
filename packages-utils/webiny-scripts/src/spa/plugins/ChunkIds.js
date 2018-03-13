@@ -1,7 +1,7 @@
-const crypto = require("crypto");
-const path = require("path");
-const _ = require("lodash");
-const NormalModule = require("webpack/lib/NormalModule");
+import path from "path";
+import crypto from "crypto";
+import _ from "lodash";
+import NormalModule from "webpack/lib/NormalModule";
 
 class ChunkIds {
     constructor(options) {
@@ -95,4 +95,4 @@ class ChunkIds {
     }
 }
 
-module.exports = ChunkIds;
+export default ChunkIds;

@@ -40,7 +40,14 @@ class EntityEndpoint extends Endpoint {
 
         // CRUD List
         api.get(`List.${classId}`, "/", async ({ req }) => {
-            const data: EntityCollection = await this.getEntityClass().find();
+            const utils = requestUtils(req);
+            const params = {
+                page: utils.getPage(),
+                perPage: utils.getPerPage(10),
+                order: utils.getSorters(),
+                query: utils.getFilters()
+            };
+            const data: EntityCollection = await this.getEntityClass().find(params);
             const response = await this.formatList(data, requestUtils(req).getFields());
             return new ApiResponse(response);
         });
@@ -107,7 +114,7 @@ class EntityEndpoint extends Endpoint {
             entityCollection.map((entity: Entity) => entity.toJSON(fields))
         );
         const meta = entityCollection.getParams();
-        // TODO: meta.totalCount = entityCollection.getMeta().count;
+        meta.totalCount = entityCollection.getMeta().count;
         meta.count = entityCollection.length;
         return { list, meta };
     }
