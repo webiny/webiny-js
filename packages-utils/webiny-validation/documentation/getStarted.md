@@ -33,7 +33,7 @@ The following validator simply states that value must be greater than 20:
 gt:20
 ```
 
-Some validators may even accept more than one arguments:
+Some validators may even accept more than one argument:
 ```
 in:dog:cat:fish:bird
 ```
@@ -96,7 +96,7 @@ validation.validateSync('fish', 'in:cat:dog:fish:parrot');
 ```
 
 ### Returning instead of throwing
-The following example shows how to force ValidationError to be returned, instead of thrown:
+The following example shows how to force `ValidationError` to be returned, instead of thrown:
 
 ```
 import { validation } from 'webiny-validation';

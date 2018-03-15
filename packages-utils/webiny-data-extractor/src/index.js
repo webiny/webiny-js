@@ -11,9 +11,9 @@ class DataExtractor {
      * @param data    Data object on which the extraction will be performed.
      * @param keys    Comma-separated keys which need to be extracted. For nested keys, dot and square brackets notation is available.
      * @param options    Extraction options.
-     * @returns {Promise<{}>}
+     * @returns {Promise<Object>}
      */
-    async get(data: {}, keys: string = "", options: ExtractionOptions = {}): {} {
+    async get(data: Object, keys: string = "", options: ExtractionOptions = {}): Object {
         // First we remove all breaks from the string.
         keys = keys.replace(/\s/g, "").trim();
 

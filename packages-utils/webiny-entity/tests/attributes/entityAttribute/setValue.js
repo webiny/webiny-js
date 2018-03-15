@@ -76,4 +76,36 @@ describe("populate test", function() {
         assert.equal(findById.callCount, 2);
         findById.restore();
     });
+
+    it("should set / get values correctly even on multiple calls and setting null as value", async () => {
+        const one = new One();
+
+        one.two = { id: "invalidTwo" };
+
+        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
+
+        const findById = sandbox.spy(One.getDriver(), "findOne");
+
+        assert.equal(await one.get("two.id"), "invalidTwo");
+        assert.isObject(await one.two, Two);
+        assert.equal(findById.callCount, 2);
+        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
+
+        findById.restore();
+    });
+
+    it("after loading from storage, loaded entity must be populated with received object data", async () => {
+        const one = new One();
+
+        one.two = { id: "invalidTwo" };
+
+        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
+
+        const findById = sandbox.spy(One.getDriver(), "findOne");
+
+        assert.equal(await one.get("two.id"), "invalidTwo");
+        assert.isObject(await one.get("two"), Two);
+        assert.equal(findById.callCount, 2);
+        findById.restore();
+    });
 });

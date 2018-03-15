@@ -36,7 +36,7 @@ const data = {
 
 ### Simple extraction
 ```
-const extractor = require("webiny-data-extractor");
+import extractor from 'webiny-data-extractor';
 await extractor.get(data, "firstName,lastName,age,company");
 ```
 
@@ -58,7 +58,7 @@ Notice how the company was returned completely with all nested keys. But we can 
 
 ### Nested keys with dot notation
 ```
-const extractor = require("webiny-data-extractor");
+import extractor from 'webiny-data-extractor';
 await extractor.get(data, "firstName,lastName,age,company.city");
 ```
 
@@ -77,7 +77,7 @@ This will return the following result:
 
 Another example:
 ```
-const extractor = require("webiny-data-extractor");
+import extractor from 'webiny-data-extractor';
 await extractor.get(data, "subscription.name,subscription.price,subscription.commitment");
 ```
 
@@ -103,7 +103,7 @@ From the previous example, listing keys using `subscription.name,subscription.pr
 square brackets can be used.
 
 ```
-const extractor = require("webiny-data-extractor");
+import extractor from 'webiny-data-extractor';
 await extractor.get(data, "subscription[name,price,commitment]");
 ```
 
@@ -111,7 +111,7 @@ This will return the same as in previous example.
 
 More advanced example:
 ```
-const extractor = require("webiny-data-extractor");
+import extractor from 'webiny-data-extractor';
 await extractor.get(data, "age,subscription[name,price,commitment[expiresOn,enabled]]");
 ```
 
@@ -134,7 +134,7 @@ This will return the following result:
 When having many keys to extract, keys can be specified over multiple lines by using [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals). 
 This way the code becomes more readable by not having to specify all keys in one line.
 ```
-const extractor = require("webiny-data-extractor");
+import extractor from 'webiny-data-extractor';
 await extractor.get(data, `
     firstName,lastName,age,enabled,
     subscription[name,price,commitment],
@@ -145,7 +145,7 @@ await extractor.get(data, `
 ### Extracting arrays
 Data extractor recognizes when a specified key is an array, in which case it will iterate and execute extraction over each item.
 ```
-const extractor = require("webiny-data-extractor");
+import extractor from 'webiny-data-extractor';
 await extractor.get(data, "simpleCollection[name]");
 ```
 This will return the following result:
@@ -163,7 +163,7 @@ This will return the following result:
 ### Extracting promises
 In case key in given data represents an unresolved promise, data extractor will make sure it is first resolved.
 ```
-const extractor = require("webiny-data-extractor");
+import extractor from 'webiny-data-extractor';
 await extractor.get(data, "promised");
 ```
 This will return the following result:

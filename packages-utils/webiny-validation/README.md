@@ -62,7 +62,7 @@ It is possible to provide as many validators as needed.
 #### Passing arguments
 
 As seen in previous section, validators can accept additional arguments, which are divided by colon.
-The following validator simply states that value must be greater than 50:
+The following validator simply states that value must be greater than 20:
 
     gt:20
 
