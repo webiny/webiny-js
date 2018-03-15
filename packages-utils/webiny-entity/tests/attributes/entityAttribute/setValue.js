@@ -58,7 +58,12 @@ describe("populate test", function() {
 
         assert.equal(await one.get("two.id"), "two");
         assert.instanceOf(await one.get("two"), Two);
+
+        // Just in case, so we can be sure second find against storage wasn't executed.
+        await one.get("two");
+
         assert.equal(findById.callCount, 1);
+
         findById.restore();
     });
 
@@ -74,21 +79,6 @@ describe("populate test", function() {
         assert.equal(await one.get("two.id"), "invalidTwo");
         assert.isObject(await one.get("two"), Two);
         assert.equal(findById.callCount, 2);
-        findById.restore();
-    });
-
-    it("should set / get values correctly even on multiple calls and setting null as value", async () => {
-        const one = new One();
-
-        one.two = { id: "invalidTwo" };
-
-        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
-
-        const findById = sandbox.spy(One.getDriver(), "findOne");
-
-        assert.equal(await one.get("two.id"), "invalidTwo");
-        assert.isObject(await one.two, Two);
-        assert.equal(findById.callCount, 2);
         assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
 
         findById.restore();
@@ -97,15 +87,22 @@ describe("populate test", function() {
     it("after loading from storage, loaded entity must be populated with received object data", async () => {
         const one = new One();
 
-        one.two = { id: "invalidTwo" };
+        one.two = { id: "two", name: "Changed name" };
 
         assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
 
-        const findById = sandbox.spy(One.getDriver(), "findOne");
+        const findById = sandbox
+            .stub(One.getDriver(), "findOne")
+            .onCall(0)
+            .callsFake(() => {
+                return new QueryResult({ id: "two", name: "Two" });
+            });
 
-        assert.equal(await one.get("two.id"), "invalidTwo");
-        assert.isObject(await one.get("two"), Two);
-        assert.equal(findById.callCount, 2);
+        assert.instanceOf(await one.two, Two);
+        assert.equal(await one.get("two.id"), "two");
+        assert.equal(await one.get("two.name"), "Changed name");
+
+        assert.equal(findById.callCount, 1);
         findById.restore();
     });
 });

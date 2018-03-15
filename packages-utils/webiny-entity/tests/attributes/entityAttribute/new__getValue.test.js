@@ -9,7 +9,7 @@ describe("populate test", function() {
     beforeEach(() => One.getEntityPool().flush());
     afterEach(() => sandbox.restore());
 
-    it("√√√ should not load anything if no ID was received from storage", async () => {
+    it("should not load anything if no ID was received from storage", async () => {
         const findById = sandbox
             .stub(One.getDriver(), "findOne")
             .onCall(0)
@@ -26,7 +26,7 @@ describe("populate test", function() {
         findById.restore();
     });
 
-    it("√√√ should load entity if received an ID from storage", async () => {
+    it("should load entity if received an ID from storage", async () => {
         let findById = sandbox
             .stub(One.getDriver(), "findOne")
             .onCall(0)
@@ -51,7 +51,7 @@ describe("populate test", function() {
         findById.restore();
     });
 
-    it("√√√ when a new value is set, attribute should not load anything even though storage value exists", async () => {
+    it("when a new value is set, attribute should not load anything even though storage value exists", async () => {
         let findOneSpy = sandbox.spy(One.getDriver(), "findOne");
         const entity1 = new One();
         assert.deepEqual(entity1.getAttribute("two").value.state, {
@@ -102,7 +102,7 @@ describe("populate test", function() {
         findOneSpy.restore();
     });
 
-    it("√√√ when a new id is set, getting the value should return a loaded instance", async () => {
+    it("when a new id is set, getting the value should return a loaded instance", async () => {
         const one = new One();
 
         one.two = { id: "newTwo" };
@@ -123,7 +123,7 @@ describe("populate test", function() {
         findById.restore();
     });
 
-    it("√√√ when an invalid id is set, getting the value should return initially set value", async () => {
+    it("when an invalid id is set, getting the value should return initially set value", async () => {
         const one = new One();
 
         one.two = { id: "newTwo" };
@@ -140,7 +140,7 @@ describe("populate test", function() {
         findById.restore();
     });
 
-    it("√√√ when loading an instance from passed ID, load must happen only on first call", async () => {
+    it("when loading an instance from passed ID, load must happen only on first call", async () => {
         const one = new One();
 
         one.two = { id: "newTwo" };
