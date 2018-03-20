@@ -1,8 +1,9 @@
-import { EntityCollection, QueryResult } from "../../../src";
+import { QueryResult } from "../../../src";
 import { MainEntity, Entity1 } from "../../entities/entitiesAttributeEntities";
 
 import { assert } from "chai";
 import sinon from "sinon";
+
 const sandbox = sinon.sandbox.create();
 
 describe("save and delete entities attribute test", () => {

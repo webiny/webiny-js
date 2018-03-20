@@ -1,23 +1,14 @@
 // @flow
 import Entity from "./entity";
-import EntityCollectionError from "./entityCollectionError";
 
-class EntityCollection extends Array<Entity> {
+class EntityCollection extends Array<mixed> {
     __entityCollection: { params: Object, meta: Object };
 
     constructor(values: Array<mixed> = []) {
         super();
         this.__entityCollection = { params: {}, meta: {} };
         if (Array.isArray(values)) {
-            values.map(item => {
-                if (item instanceof Entity) {
-                    this.push(item);
-                    return true;
-                }
-                throw new EntityCollectionError(
-                    "EntityCollection cannot accept a value that is not an instance of Entity."
-                );
-            });
+            values.map(item => this.push(item));
         }
     }
 
@@ -39,18 +30,15 @@ class EntityCollection extends Array<Entity> {
         return this.__entityCollection.meta;
     }
 
-    push(value: Entity) {
-        if (value instanceof Entity) {
-            return super.push(value);
-        }
+    async toJSON(fields: ?string): Promise<Array<mixed>> {
+        const collection = this.map(async (entity: mixed) => {
+            if (entity instanceof Entity) {
+                return await entity.toJSON(fields);
+            }
+            return entity;
+        });
 
-        throw new EntityCollectionError(
-            "EntityCollection cannot accept a value that is not an instance of Entity."
-        );
-    }
-
-    async toJSON(fields: ?string) {
-        return Promise.all(this.map(async (entity: Entity) => await entity.toJSON(fields)));
+        return Promise.all(collection);
     }
 
     setTotalCount(totalCount: number): this {

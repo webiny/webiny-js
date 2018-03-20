@@ -56,9 +56,9 @@ describe("entity attribute test", function() {
     it("it should return correct toStorage data", async () => {
         let entity = new ComplexEntity();
         entity.simpleEntities = [
-            { id: 1, name: "Test-1" },
-            { id: 2, name: "Test-2" },
-            { id: 3, name: "Test-3" }
+            { id: "54759eb3c090d83494e2d804", name: "Test-1" },
+            { id: "54759eb3c090d83494e2d805", name: "Test-2" },
+            { id: "54759eb3c090d83494e2d806", name: "Test-3" }
         ];
 
         let actual = await entity.toStorage();
@@ -69,7 +69,7 @@ describe("entity attribute test", function() {
             verification: null,
             tags: "[]",
             simpleEntity: null,
-            simpleEntities: `[1,2,3]`
+            simpleEntities: `["54759eb3c090d83494e2d804","54759eb3c090d83494e2d805","54759eb3c090d83494e2d806"]`
         };
         assert.deepEqual(actual, expected);
 

@@ -21,8 +21,12 @@ class AttributeValue {
         // If needed, implement skipMarkAsSet option (at the time of implementation, it was not needed).
         this.set = true;
 
-        if (!options.skipDifferenceCheck) {
-            if (this.isDifferentFrom(value)) {
+        if (options.skipDifferenceCheck) {
+            if (options.forceSetAsDirty) {
+                this.dirty = true;
+            }
+        } else {
+            if (!this.dirty && this.isDifferentFrom(value)) {
                 this.dirty = true;
             }
         }

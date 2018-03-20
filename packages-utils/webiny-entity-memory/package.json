@@ -15,7 +15,7 @@
   "dependencies": {
     "babel-runtime": "^6.26.0",
     "lodash": "^4.17.4",
-    "mdbid": "^1.0.0",
+    "shortid": "^2.2.8",
     "webiny-entity": "0.0.0-semantically-released"
   },
   "scripts": {

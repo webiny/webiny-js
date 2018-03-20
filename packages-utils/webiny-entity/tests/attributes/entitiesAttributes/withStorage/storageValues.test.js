@@ -4,7 +4,7 @@ import sinon from "sinon";
 import EntityCollection from "../../../../src/entityCollection";
 const sandbox = sinon.sandbox.create();
 
-describe("attribute entities test", function() {
+describe("storage values test", function() {
     afterEach(() => sandbox.restore());
 
     class Entity1 extends Entity {
@@ -67,11 +67,23 @@ describe("attribute entities test", function() {
             .stub(entity.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
-                return new QueryResult({ id: 10, name: "Bucky", type: "dog" });
+                return new QueryResult({ id: "A", name: "Bucky", type: "dog" });
             })
             .onCall(1)
             .callsFake(() => {
-                return new QueryResult({ id: 11, firstName: "Foo", lastName: "Bar" });
+                return new QueryResult({ id: "B", name: "Rocky", type: "dog" });
+            })
+            .onCall(2)
+            .callsFake(() => {
+                return new QueryResult({ id: "C", name: "Lina", type: "bird" });
+            })
+            .onCall(3)
+            .callsFake(() => {
+                return new QueryResult({ id: "X", firstName: "John", type: "Doe" });
+            })
+            .onCall(4)
+            .callsFake(() => {
+                return new QueryResult({ id: "Y", firstName: "Joey", type: "Doe" });
             });
 
         const attribute1 = await mainEntity.attribute1;
