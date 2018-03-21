@@ -1,18 +1,22 @@
 import { assert } from "chai";
 import { Delete } from "../../src/statements";
 import { operators } from "../../src";
+import { Entity } from "webiny-entity";
 
 describe("DELETE statement test", function() {
     it("should generate a DELETE statement", async () => {
-        const sql = new Delete({
-            operation: "delete",
-            operators,
-            table: "TestTable",
-            where: { name: "Test", enabled: true, deletedOn: null },
-            limit: 10,
-            offset: 0,
-            order: [["name", -1], ["createdOn", 1]]
-        }).generate();
+        const sql = new Delete(
+            {
+                operation: "delete",
+                operators,
+                table: "TestTable",
+                where: { name: "Test", enabled: true, deletedOn: null },
+                limit: 10,
+                offset: 0,
+                order: [["name", -1], ["createdOn", 1]]
+            },
+            Entity
+        ).generate();
 
         assert.equal(
             sql,

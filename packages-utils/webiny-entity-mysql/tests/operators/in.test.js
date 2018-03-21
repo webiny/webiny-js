@@ -1,12 +1,13 @@
 import { assert } from "chai";
 import { operators } from "../../src";
 import Statement from "../../src/statements/statement";
+import { Entity } from "webiny-entity";
 
 describe("regular and $eq equality comparison operator test", function() {
     let stmt;
 
     before(() => {
-        stmt = new Statement({ operators });
+        stmt = new Statement({ operators }, Entity);
     });
 
     it("if array of values was passed, must use the IN operator", () => {

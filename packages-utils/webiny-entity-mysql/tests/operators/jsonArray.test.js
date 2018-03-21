@@ -1,6 +1,7 @@
 import { assert } from "chai";
 import { operators } from "../../src";
 import Statement from "../../src/statements/statement";
+import { Entity } from "webiny-entity";
 
 // => if tags=Array, it must contain the value 'preset'
 // {tags: 'preset'}
@@ -20,7 +21,7 @@ describe("JSON comparison operator test", function() {
     let stmt;
 
     before(() => {
-        stmt = new Statement({ operators });
+        stmt = new Statement({ operators }, Entity);
     });
 
     it("$jsonArrayStrictEquality must create a simple '=' query", () => {

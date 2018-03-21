@@ -1,6 +1,7 @@
 import { assert } from "chai";
 import { Select } from "../../src/statements";
 import { operators } from "../../src";
+import { Entity } from "webiny-entity";
 
 describe("SELECT statement test", function() {
     it("should generate a SELECT statement", async () => {
@@ -14,14 +15,14 @@ describe("SELECT statement test", function() {
             order: [["name", -1], ["createdOn", 1]]
         };
 
-        let sql = new Select(params).generate();
+        let sql = new Select(params, Entity).generate();
         assert.equal(
             sql,
             "SELECT * FROM `TestTable` WHERE (name = 'Test' AND enabled = true AND deletedOn IS NULL) ORDER BY name DESC, createdOn ASC LIMIT 10"
         );
 
         params.columns = ["name", "enabled"];
-        sql = new Select(params).generate();
+        sql = new Select(params, Entity).generate();
 
         assert.equal(
             sql,

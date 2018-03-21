@@ -1,12 +1,13 @@
 import { assert } from "chai";
 import { operators } from "../../src";
 import Statement from "../../src/statements/statement";
+import { Entity } from "webiny-entity";
 
 describe("missing operator error test", function() {
     let stmt;
 
     before(() => {
-        stmt = new Statement({ operators });
+        stmt = new Statement({ operators }, Entity);
     });
 
     it("should throw an error because operator is not recognized", async () => {
