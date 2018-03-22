@@ -151,13 +151,13 @@ class MySQLDriver extends Driver {
             delete clonedOptions.page;
         }
 
-        if ("query" in clonedOptions) {
+        if (clonedOptions.query instanceof Object) {
             clonedOptions.where = clonedOptions.query;
             delete clonedOptions.query;
         }
 
         // Here we handle search (if passed) - we transform received arguments into linked LIKE statements.
-        if ("search" in clonedOptions) {
+        if (clonedOptions.search instanceof Object) {
             const { query, operators, fields: columns } = clonedOptions.search;
             clonedOptions.where = {
                 $and: [{ $search: { operators, columns, query } }, clonedOptions.where]
