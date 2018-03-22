@@ -105,7 +105,7 @@ describe("Entity endpoint test", () => {
             .get("/crud/users")
             .query({})
             .then(({ body }) => {
-                const search = body.data.meta.search;
+                expect(body.data.meta.search).to.equal(null);
             });
 
         await request(app)
