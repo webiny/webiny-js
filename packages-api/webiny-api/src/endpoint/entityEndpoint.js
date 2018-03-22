@@ -45,7 +45,8 @@ class EntityEndpoint extends Endpoint {
                 page: utils.getPage(),
                 perPage: utils.getPerPage(10),
                 order: utils.getSorters(),
-                query: utils.getFilters()
+                query: utils.getFilters(),
+                search: utils.getSearch()
             };
             const data: EntityCollection = await this.getEntityClass().find(params);
             const response = await this.formatList(data, requestUtils(req).getFields());
