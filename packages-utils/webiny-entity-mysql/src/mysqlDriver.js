@@ -21,7 +21,6 @@ declare type MySQLDriverOptions = {
     connection: Connection | Pool,
     model: Class<MySQLModel>,
     operators: ?{ [string]: Operator },
-    id: { attribute?: Function, value?: Function },
     tables: {
         prefix: string,
         naming: ?Function
@@ -142,19 +141,27 @@ class MySQLDriver extends Driver {
             offset: 0
         });
 
-        if (_.has(clonedOptions, "perPage")) {
+        if ("perPage" in clonedOptions) {
             clonedOptions.limit = clonedOptions.perPage;
             delete clonedOptions.perPage;
         }
 
-        if (_.has(clonedOptions, "page")) {
+        if ("page" in clonedOptions) {
             clonedOptions.offset = clonedOptions.limit * (clonedOptions.page - 1);
             delete clonedOptions.page;
         }
 
-        if (_.has(clonedOptions, "query")) {
+        if ("query" in clonedOptions) {
             clonedOptions.where = clonedOptions.query;
             delete clonedOptions.query;
+        }
+
+        // Here we handle search (if passed) - we transform received arguments into linked LIKE statements.
+        if ("search" in clonedOptions) {
+            const { query, operators, fields: columns } = clonedOptions.search;
+            clonedOptions.where = {
+                $and: [{ $search: { operators, columns, query } }, clonedOptions.where]
+            };
         }
 
         clonedOptions.calculateFoundRows = true;
