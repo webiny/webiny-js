@@ -1,11 +1,17 @@
 import express from "express";
+import cors from "cors";
 import webiny from "webiny-api";
+import bodyParser from "body-parser";
+import monitor from "express-status-monitor";
 import middleware from "./configs/middleware";
 
 export default async () => {
     // Configure express app
     const app = express();
-    app.use(express.json());
+    app.use(monitor());
+    app.use(bodyParser.json({ limit: "50mb", type: "application/*+json" }));
+    app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+    app.use(cors());
 
     app.get("/setup", async (req, res) => {
         await import("./setup");
@@ -26,7 +32,7 @@ export default async () => {
         res.json(methods);
     });
 
-    app.use(await middleware(process.env));
+    app.use("/api", await middleware(process.env));
 
     return app;
 };

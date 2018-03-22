@@ -11,9 +11,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4"
   },
   "devDependencies": {
+    "express-status-monitor": "^1.0.1",
     "nodemon": "^1.17.1"
   }
 }

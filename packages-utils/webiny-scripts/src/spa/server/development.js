@@ -2,11 +2,11 @@ import path from "path";
 import webpack from "webpack";
 import _ from "lodash";
 import browserSync from "browser-sync";
-import devMiddleware from "webpack-dev-middleware";
-import hotMiddleware from "webpack-hot-middleware";
+import webpackDevMiddleware from "webpack-dev-middleware";
+import webpackHotMiddleware from "webpack-hot-middleware";
 import WriteFilePlugin from "write-file-webpack-plugin";
 
-export default ({ routes, port, domain }) => {
+export default ({ routes, port, domain, devMiddleware }) => {
     return ({ config, projectRoot }) => {
         const statsConfig = {
             all: false,
@@ -18,18 +18,16 @@ export default ({ routes, port, domain }) => {
 
         // Write webpack files to disk to trigger BrowserSync injection of CSS
         const wfp = { log: false, test: /^((?!hot-update).)*$/ };
-        config.devServer = { outputPath: config.output.path };
         config.plugins.push(new WriteFilePlugin(wfp));
+        config.output.publicPath = `${domain}:${port}/`;
 
         // Create webpack compiler
-        // If we are only building one app we MUST NOT pass an array!!
-        // An array causes webpack to treat it as MultiCompiler and it resolves hot update file paths incorrectly thus breaking hot reload
         const compiler = webpack(config);
 
         const devMiddlewareOptions = {
-            publicPath: "/",
             noInfo: false,
-            stats: statsConfig
+            stats: statsConfig,
+            ...devMiddleware
         };
 
         // Run browser-sync server
@@ -46,8 +44,8 @@ export default ({ routes, port, domain }) => {
             server: {
                 baseDir,
                 middleware: [
-                    devMiddleware(compiler, devMiddlewareOptions),
-                    hotMiddleware(compiler),
+                    webpackDevMiddleware(compiler, devMiddlewareOptions),
+                    webpackHotMiddleware(compiler),
                     (req, res, next) => {
                         if (/\.[a-z]{2,}/.test(req.url)) {
                             return next();

@@ -18,6 +18,8 @@ class AssetsMeta {
                 chunks: {}
             };
 
+            const prefix = process.env.NODE_ENV === "development" ? "" : "/";
+
             compilation.chunks.forEach(chunk => {
                 chunk.files.forEach(file => {
                     // Don't add hot updates to meta
@@ -27,7 +29,7 @@ class AssetsMeta {
 
                     // Only store chunks map
                     if (file.startsWith("chunks/")) {
-                        meta.chunks[chunk.id] = urlGenerator.generate(file);
+                        meta.chunks[chunk.id] = urlGenerator.generate(file, prefix);
                     }
                 });
             });
@@ -80,16 +82,20 @@ class AssetsMeta {
             /**
              * Generate proper URLs for assets that are injected in the HTML
              */
-            compilation.plugin(
-                "html-webpack-plugin-before-html-processing",
-                (htmlPluginData, callback) => {
-                    const { js, css } = htmlPluginData.assets;
-                    htmlPluginData.assets.js = js.map(file => urlGenerator.generate(file));
-                    htmlPluginData.assets.css = css.map(file => urlGenerator.generate(file));
+            const generateUrl = file => {
+                return urlGenerator.generate(file.replace(compiler.options.output.publicPath, ""));
+            };
 
-                    callback(null, htmlPluginData);
-                }
-            );
+            compilation.plugin("html-webpack-plugin-before-html-processing", function(
+                htmlPluginData,
+                callback
+            ) {
+                const { js, css } = htmlPluginData.assets;
+                htmlPluginData.assets.js = js.map(generateUrl);
+                htmlPluginData.assets.css = css.map(generateUrl);
+
+                callback(null, htmlPluginData);
+            });
         });
     }
 }

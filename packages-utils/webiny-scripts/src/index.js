@@ -2,6 +2,8 @@ import path from "path";
 
 import { appEntry, SpaConfigPlugin, server } from "./spa";
 
+const interopModule = m => (m.default ? m.default : m);
+
 export const spa = {
     appEntry,
     SpaConfigPlugin,
@@ -9,17 +11,17 @@ export const spa = {
 };
 
 export async function developApp(projectRoot, appRoot) {
-    const { default: UrlGenerator } = await import("./spa/urlGenerator");
+    const UrlGenerator = interopModule(await import("./spa/urlGenerator"));
     const urlGenerator = new UrlGenerator();
 
-    const { default: server } = await import(path.join(appRoot, "server.js"));
-    const baseWebpack = (await import("./spa/webpack.config")).default({
+    const server = interopModule(await import(path.join(appRoot, "server.js")));
+    const baseWebpack = interopModule(await import("./spa/webpack.config"))({
         projectRoot,
         appRoot,
         urlGenerator
     });
 
-    const appWebpack = (await import(path.join(appRoot, "webpack.config.js"))).default({
+    const appWebpack = interopModule(await import(path.join(appRoot, "webpack.config.js")))({
         urlGenerator,
         config: baseWebpack
     });

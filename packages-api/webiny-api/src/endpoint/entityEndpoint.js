@@ -31,11 +31,7 @@ class EntityEndpoint extends Endpoint {
         };
 
         const createValidationErrorResponse = (e: ModelError) => {
-            return new ApiErrorResponse(
-                e.data,
-                `${entityClassId} validation failed!`,
-                "WBY_ENTITY_DATA_VALIDATION"
-            );
+            return new ApiErrorResponse(e.data, `${entityClassId} validation failed!`, e.code);
         };
 
         // CRUD List

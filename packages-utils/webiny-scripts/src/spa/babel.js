@@ -18,7 +18,13 @@ export default {
         ifDevelopment(require.resolve("react-hot-loader/babel")),
         [require.resolve("babel-plugin-transform-object-rest-spread"), { useBuiltIns: true }],
         [require.resolve("babel-plugin-syntax-dynamic-import")],
-        [require.resolve("babel-plugin-lodash")],
+        [
+            require.resolve("babel-plugin-transform-runtime"),
+            {
+                polyfill: false,
+                regenerator: true
+            }
+        ][require.resolve("babel-plugin-lodash")],
         [require.resolve("babel-plugin-transform-builtin-extend"), { globals: ["Error"] }],
         // This plugin is required to force all css/scss imports to have a resourceQuery
         [

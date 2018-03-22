@@ -26,5 +26,8 @@ module.exports = {
         flowtype: {
             onlyFilesWithFlowAnnotation: true
         }
+    },
+    globals: {
+        document: true
     }
 };

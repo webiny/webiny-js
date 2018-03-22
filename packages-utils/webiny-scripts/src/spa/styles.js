@@ -11,7 +11,7 @@ export default () => {
         oneOf: [
             // 1. Convert all styles not located in Assets folder to CSS modules.
             {
-                exclude: /Assets/,
+                exclude: /assets/,
                 resourceQuery: query => !query.includes("extract"),
                 issuer: /\.jsx?$/,
                 use: [
@@ -31,7 +31,7 @@ export default () => {
             // 2. Extract styles from Assets folder into external CSS file
             {
                 issuer: /\.jsx?$/,
-                include: /Assets/,
+                include: /assets/,
                 use: extractCss
             },
             // 3. Files with '?extract' query will also be extracted into external CSS file

@@ -12,7 +12,12 @@ export default [
                     rules: [
                         {
                             classId: "Security.Users",
-                            methods: [{ method: "List.Security.Users" }]
+                            methods: [
+                                { method: "List.Security.Users" },
+                                { method: "Create.Security.Users" },
+                                { method: "Get.Security.Users" },
+                                { method: "Update.Security.Users" }
+                            ]
                         }
                     ]
                 },

@@ -13,13 +13,14 @@ import AssetFileNamePlugin from "./plugins/AssetFileName";
 import AssetsMetaPlugin from "./plugins/AssetsMeta";
 import ModuleIdsPlugin from "./plugins/ModuleIds";
 import ChunkIdsPlugin from "./plugins/ChunkIds";
+import ChunkHotReload from "./plugins/ChunkHotReload";
 
 // Config helpers
 import resolveCreator from "./resolve";
 import stylesCreator from "./styles";
 import babelOptions from "./babel";
 // List of vendor libraries to create a DLL
-import vendor from "webiny-client/vendor";
+import vendor from "webiny-client/lib/vendor";
 
 import { getIfUtils, removeEmpty } from "webpack-config-utils";
 const { ifProduction, ifDevelopment } = getIfUtils(process.env.NODE_ENV);
@@ -42,14 +43,29 @@ export default ({ projectRoot, appRoot, urlGenerator }) => {
         new AutoDllPlugin({
             inject: true,
             filename: "[name].dll.js",
+            plugins: removeEmpty([definePlugin, assetFileNamePlugin, uglifyPlugin]),
             entry: {
                 vendor
             },
-            plugins: removeEmpty([definePlugin, assetFileNamePlugin, uglifyPlugin])
+            module: {
+                rules: [
+                    {
+                        test: /\.jsx?$/,
+                        exclude: /node_modules/,
+                        use: [
+                            {
+                                loader: "babel-loader",
+                                options: babelOptions
+                            }
+                        ]
+                    }
+                ]
+            }
         }),
         new CleanWebpackPlugin(["dist/" + process.env.NODE_ENV], { root: projectRoot }),
         new ModuleIdsPlugin(),
         new ChunkIdsPlugin({ projectRoot }),
+        ifDevelopment(new ChunkHotReload()),
         ifDevelopment(new webpack.NoEmitOnErrorsPlugin()),
         ifDevelopment(new webpack.HotModuleReplacementPlugin()),
         new ExtractTextPlugin("styles.css"),
@@ -82,14 +98,14 @@ export default ({ projectRoot, appRoot, urlGenerator }) => {
             context: path.resolve(appRoot, "Assets"),
             outputPath: file => {
                 if (file.startsWith("_/")) {
-                    const parts = file.replace(/_\//g, "").split("/Assets/");
+                    const parts = file.replace(/_\//g, "").split("/assets/");
                     file = path.normalize(path.join("external", parts[0], parts[1]));
                 }
                 return file;
             },
             publicPath: file => {
                 if (file.startsWith("_/")) {
-                    const parts = file.replace(/_\//g, "").split("/Assets/");
+                    const parts = file.replace(/_\//g, "").split("/assets/");
                     file = path.normalize(path.join("external", parts[0], parts[1]));
                 }
                 return urlGenerator.generate(file);
@@ -105,7 +121,8 @@ export default ({ projectRoot, appRoot, urlGenerator }) => {
         output: {
             path: path.resolve(path.join(projectRoot, "dist", process.env.NODE_ENV)),
             filename: "[name].js",
-            chunkFilename: "chunks/[name].js"
+            chunkFilename: "chunks/[name].js",
+            publicPath: "/"
         },
         plugins,
         module: {
@@ -117,8 +134,8 @@ export default ({ projectRoot, appRoot, urlGenerator }) => {
                         {
                             loader: "babel-loader",
                             options: babelOptions
-                        }
-                        //'i18n-loader'
+                        },
+                        "hot-accept-loader"
                     ]
                 },
                 {

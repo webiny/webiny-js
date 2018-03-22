@@ -8,8 +8,7 @@ export function appEntry(entry) {
 
     return [
         "react-hot-loader/patch",
-        "webpack-hot-middleware/client?quiet=false&noInfo=true&warn=false&overlay=true&reload=false",
-        "webpack/hot/only-dev-server",
+        "webpack-hot-middleware/client?path=/__webpack_hmr&quiet=false&noInfo=true&warn=false&overlay=true&reload=false",
         entry
     ];
 }

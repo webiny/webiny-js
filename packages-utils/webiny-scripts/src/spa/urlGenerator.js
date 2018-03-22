@@ -7,11 +7,11 @@ import _ from "lodash";
  *
  * Example:
  * [
- *   {test: '^fonts\/', domain: 'http://fonts.domain.com'},
- *   {test: '^chunks\/', domain: 'http://chunks.domain.com'},
- *   {test: 'images\/', domain: 'http://images.domain.com'},
- *   {test: '\.js$', domain: 'http://js.domain.com'},
- *   {test: '\.css$', domain: 'http://css.domain.com'}
+ *   {test: '^fonts\/', domain: 'http://fonts.domain.com/'},
+ *   {test: '^chunks\/', domain: 'http://chunks.domain.com/'},
+ *   {test: 'images\/', domain: 'http://images.domain.com/'},
+ *   {test: '\.js$', domain: 'http://js.domain.com/'},
+ *   {test: '\.css$', domain: 'http://css.domain.com/'}
  * ]
  *
  * @param assetRules
@@ -26,7 +26,7 @@ class UrlGenerator {
         this.rules = rules;
     }
 
-    generate(file, prefix = "") {
+    generate(file, prefix = "/") {
         _.each(this.rules, rule => {
             const regex = new RegExp(rule.test);
             if (regex.test(file)) {
@@ -35,7 +35,7 @@ class UrlGenerator {
             }
         });
 
-        return _.trimEnd(prefix, "/") + "/" + _.trimStart(file, "/");
+        return prefix + _.trimStart(file, "/");
     }
 }
 

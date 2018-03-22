@@ -1,7 +1,7 @@
 module.exports = {
     admin: {
         Api: {
-            Url: 'http://thehub.app:8001/api',
+            Url: "http://localhost:9000/api",
             AggregateRequests: true
         },
         I18n: {
@@ -10,16 +10,7 @@ module.exports = {
     },
     frontend: {
         Api: {
-            Url: 'http://thehub.app:8001/api',
-            AggregateRequests: false
-        },
-        I18n: {
-            enabled: false
-        }
-    },
-    userarea: {
-        Api: {
-            Url: 'http://thehub.app:8001/api',
+            Url: "http://localhost:9000/api",
             AggregateRequests: false
         },
         I18n: {

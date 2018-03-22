@@ -1,5 +1,6 @@
 // @flow
 import type { OrderTuple } from "webiny-entity/types";
+import parseBoolean from "./parseBoolean";
 
 /**
  * Create utility getters for the specified request object.
@@ -21,6 +22,8 @@ export default (req: express$Request): { [string]: Function } => {
             if (name) {
                 return req.query[name] || fallback;
             }
+
+            parseBoolean(req.query);
 
             return req.query;
         },

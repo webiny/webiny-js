@@ -13,9 +13,6 @@ class SpaConfigPlugin {
 
                     const config = `
                     <script type="text/javascript"> 
-                        var webinyConfig = ${JSON.stringify(
-                            this.options[htmlPluginData.plugin.options.name]
-                        )};
                         window.webpackManifest = ${JSON.stringify(chunksManifest)};
                     </script>
                     </body>

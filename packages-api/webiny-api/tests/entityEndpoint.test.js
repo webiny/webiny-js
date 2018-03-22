@@ -39,7 +39,7 @@ describe("Entity endpoint test", () => {
             .expect(404)
             .then(({ body }) => {
                 expect(body.data).to.have.nested.property("invalidAttributes.email");
-                expect(body.code).to.equal("WBY_ENTITY_DATA_VALIDATION");
+                expect(body.code).to.equal("INVALID_ATTRIBUTES");
             });
     });
 
