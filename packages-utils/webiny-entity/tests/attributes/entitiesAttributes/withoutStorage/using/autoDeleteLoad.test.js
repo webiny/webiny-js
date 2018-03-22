@@ -2,11 +2,13 @@ import { User, Group, UsersGroups } from "../../../../entities/entitiesUsing";
 import { expect } from "chai";
 import sinon from "sinon";
 import { QueryResult } from "../../../../../src";
+import { MainEntity } from "../../../../entities/entitiesAttributeEntities";
 
 const sandbox = sinon.sandbox.create();
 
 describe("attribute entities (using an additional aggregation class) - loading test", function() {
     afterEach(() => sandbox.restore());
+    beforeEach(() => MainEntity.getEntityPool().flush());
 
     it("should correctly set entity and link (class and attributes)", async () => {
         const user = new User();

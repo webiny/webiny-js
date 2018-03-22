@@ -63,4 +63,18 @@ class MainSetOnceEntity extends Entity {
 
 MainSetOnceEntity.classId = "MainSetOnceEntity";
 
-export { Entity1, Entity2, MainEntity, MainSetOnceEntity };
+class MainEntityWithStorage extends Entity {
+    constructor() {
+        super();
+        this.attr("attribute1")
+            .entities(Entity1)
+            .setToStorage();
+        this.attr("attribute2")
+            .entities(Entity2)
+            .setToStorage();
+    }
+}
+
+MainEntityWithStorage.classId = "MainEntityWithStorage";
+
+export { Entity1, Entity2, MainEntity, MainSetOnceEntity, MainEntityWithStorage };

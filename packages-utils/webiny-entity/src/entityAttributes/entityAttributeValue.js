@@ -7,6 +7,7 @@ import _ from "lodash";
 class EntityAttributeValue extends AttributeValue {
     queue: Array<Function>;
     initial: ?mixed;
+
     constructor(attribute: Attribute) {
         super(attribute);
         this.queue = [];
@@ -98,6 +99,23 @@ class EntityAttributeValue extends AttributeValue {
         }
 
         return this;
+    }
+
+    isDifferentFrom(value: mixed): boolean {
+        const differentIds = _.get(this.current, "id", this.current) !== _.get(value, "id", value);
+        if (differentIds) {
+            return true;
+        }
+
+        // IDs are the same at this point.
+        if (value instanceof Object) {
+            if (value.id) {
+                return Object.keys(value).length > 1;
+            }
+            return true;
+        }
+
+        return false;
     }
 
     async __executeQueue() {

@@ -1,12 +1,13 @@
 import { assert } from "chai";
 import { operators } from "../../src";
 import Statement from "../../src/statements/statement";
+import { Entity } from "webiny-entity";
 
 describe("$or logical operator test", function() {
     let stmt;
 
     before(() => {
-        stmt = new Statement({ operators });
+        stmt = new Statement({ operators }, Entity);
     });
 
     it("should generate correct statement with nested $or operators", () => {

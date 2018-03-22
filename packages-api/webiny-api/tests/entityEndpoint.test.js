@@ -96,4 +96,47 @@ describe("Entity endpoint test", () => {
                 expect(body.data).to.equal(true);
             });
     });
+
+    it("should apply _searchQuery, _searchOperator and _searchFields correctly", async () => {
+        // Since memory driver cannot work with search query, we check if search was parsed correctly.
+        // We assume the driver knows how to handle it properly, to return correct results.
+
+        await request(app)
+            .get("/crud/users")
+            .query({})
+            .then(({ body }) => {
+                expect(body.data.meta.search).to.equal(null);
+            });
+
+        await request(app)
+            .get("/crud/users")
+            .query({
+                _searchQuery: "something",
+                _searchFields: "firstName,lastName"
+            })
+            .then(({ body }) => {
+                const search = body.data.meta.search;
+                expect(search).to.deep.equal({
+                    query: "something",
+                    operator: null,
+                    fields: ["firstName", "lastName"]
+                });
+            });
+
+        await request(app)
+            .get("/crud/users")
+            .query({
+                _searchQuery: "something",
+                _searchFields: "firstName",
+                _searchOperator: "and"
+            })
+            .then(({ body }) => {
+                const search = body.data.meta.search;
+                expect(search).to.deep.equal({
+                    query: "something",
+                    operator: "and",
+                    fields: ["firstName"]
+                });
+            });
+    });
 });

@@ -88,6 +88,27 @@ export default (req: express$Request): { [string]: Function } => {
         },
 
         /**
+         * Get search.
+         * Search values are fetched from "_searchQuery", "_searchOperator" and "_searchFields" query parameters.
+         * Fields are defined through a string that contains a comma-separated list of fields.
+         * @returns Object Parsed search arguments.
+         */
+        getSearch(): ?Object {
+            const query = utils.getQuery("_searchQuery");
+            const fields = ((utils.getQuery("_searchFields"): any): string);
+            if (!fields || !query) {
+                return null;
+            }
+
+            const operator = utils.getQuery("_searchOperator");
+            return {
+                query,
+                operator,
+                fields: fields.split(",")
+            };
+        },
+
+        /**
          * Get page.
          * Page is fetched from "_page" query parameter.
          * @param {number} fallback Page number to return if it is not found in query parameters.

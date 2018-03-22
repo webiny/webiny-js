@@ -24,15 +24,15 @@ describe("toStorage test", function() {
         complexEntity.simpleEntity = simpleEntity1;
 
         const simpleEntity2 = new SimpleEntity();
-        simpleEntity2.id = 2;
+        simpleEntity2.id = "54759eb3c090d83494e2d804";
         simpleEntity2.name = "Test-2";
 
         const simpleEntity3 = new SimpleEntity();
-        simpleEntity3.id = 3;
+        simpleEntity3.id = "54759eb3c090d83494e2d805";
         simpleEntity3.name = "Test-3";
 
         const simpleEntity4 = new SimpleEntity();
-        simpleEntity4.id = 4;
+        simpleEntity4.id = "54759eb3c090d83494e2d806";
         simpleEntity4.name = "Test-4";
 
         complexEntity.simpleEntities = [simpleEntity2, simpleEntity3, simpleEntity4];
@@ -50,6 +50,9 @@ describe("toStorage test", function() {
             `[{"slug":"no-name","label":"No Name"},{"slug":"adult-user","label":"Adult User"}]`
         );
         assert.equal(userStorageValue.simpleEntity, "000000000000000000000001");
-        assert.equal(userStorageValue.simpleEntities, "[2,3,4]");
+        assert.equal(
+            userStorageValue.simpleEntities,
+            `["54759eb3c090d83494e2d804","54759eb3c090d83494e2d805","54759eb3c090d83494e2d806"]`
+        );
     });
 });

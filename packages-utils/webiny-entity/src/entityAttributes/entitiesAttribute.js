@@ -47,13 +47,14 @@ class EntitiesAttribute extends Attribute {
 
         parentEntity.on("save", async () => {
             // If loading is in progress, wait until loaded.
-            if (this.value.isDirty() || this.value.isLoading()) {
-                await this.value.load();
-            }
-
-            if (!this.value.isLoaded()) {
+            const mustManage = this.value.isDirty() || this.value.isLoading();
+            if (!mustManage) {
                 return;
             }
+
+            await this.value.load();
+
+            await this.normalizeSetValues();
 
             if (this.getUsingClass()) {
                 // Do we have to manage entities?
@@ -86,7 +87,8 @@ class EntitiesAttribute extends Attribute {
                 if (this.getUsingClass()) {
                     const entities = this.value.getCurrentLinks();
                     for (let i = 0; i < entities.length; i++) {
-                        await entities[i].save({ validation: false });
+                        const current = ((entities[i]: any): Entity);
+                        await current.save({ validation: false });
                     }
                 } else {
                     const entities = await this.value.getCurrent();
@@ -235,6 +237,9 @@ class EntitiesAttribute extends Attribute {
         if (this.value.isClean()) {
             await this.value.load();
         }
+
+        await this.normalizeSetValues();
+
         return this.value.getCurrent();
     }
 
@@ -243,41 +248,16 @@ class EntitiesAttribute extends Attribute {
      * @param value
      * @returns {Promise<void>}
      */
-    setValue(value: Array<mixed> | EntityCollection): void {
+    setValue(value: mixed): void {
         if (!this.canSetValue()) {
             return;
         }
 
         const finalValue = this.onSetCallback(value);
-
-        // Even if the value is invalid (eg. a string), we allow it here, but calling validate() will fail.
-        if (finalValue instanceof EntityCollection) {
-            this.value.setCurrent(finalValue);
-            return;
-        }
-
-        if (Array.isArray(finalValue)) {
-            const collection = new EntityCollection();
-            for (let i = 0; i < finalValue.length; i++) {
-                const current = finalValue[i];
-
-                switch (true) {
-                    case current instanceof Entity:
-                        collection.push(current);
-                        break;
-                    case _.isObject(current):
-                        collection.push(new this.classes.entities.class().populate(current));
-                        break;
-                    default:
-                        collection.push(current);
-                }
-            }
-
-            this.value.setCurrent(collection);
-            return;
-        }
-
-        this.value.setCurrent(finalValue);
+        this.value.setCurrent(finalValue, {
+            skipDifferenceCheck: true,
+            forceSetAsDirty: true
+        });
     }
 
     /**
@@ -302,14 +282,10 @@ class EntitiesAttribute extends Attribute {
             const storageValue = [];
             for (let i = 0; i < this.value.getCurrent().length; i++) {
                 const value = this.value.getCurrent()[i];
-                if (value instanceof this.getEntitiesClass()) {
-                    storageValue.push(value.id);
-                    continue;
-                }
-
+                const id = _.get(value, "id", value);
                 this.getParentModel()
                     .getParentEntity()
-                    .isId(value) && storageValue.push(value);
+                    .isId(id) && storageValue.push(id);
             }
 
             return storageValue;
@@ -322,21 +298,28 @@ class EntitiesAttribute extends Attribute {
      * Validates current value - if it's not an instance of EntityCollection, an error will be thrown.
      */
     async validateType(value: mixed) {
-        if (value instanceof EntityCollection) {
+        if (Array.isArray(value)) {
             return;
         }
-        this.expected("instance of EntityCollection", typeof value);
+        this.expected("instance of Array or EntityCollection", typeof value);
     }
 
-    async validateValue() {
+    async getValidationValue() {
+        await this.normalizeSetValues();
+        return this.getUsingClass() ? this.value.getCurrentLinks() : this.value.getCurrent();
+    }
+
+    async validateValue(value: mixed) {
         const errors = [];
-        const entitiesToValidate = this.getUsingClass()
-            ? this.value.getCurrentLinks()
-            : this.value.getCurrent();
         const correctClass = this.getUsingClass() || this.getEntitiesClass();
 
-        for (let i = 0; i < entitiesToValidate.length; i++) {
-            if (!(entitiesToValidate[i] instanceof correctClass)) {
+        if (!Array.isArray(value)) {
+            return;
+        }
+
+        for (let i = 0; i < value.length; i++) {
+            const currentEntity = value[i];
+            if (!(currentEntity instanceof correctClass)) {
                 errors.push({
                     code: ModelError.INVALID_ATTRIBUTE,
                     data: {
@@ -348,7 +331,7 @@ class EntitiesAttribute extends Attribute {
             }
 
             try {
-                await entitiesToValidate[i].validate();
+                await currentEntity.validate();
             } catch (e) {
                 errors.push({
                     code: e.code,
@@ -373,16 +356,19 @@ class EntitiesAttribute extends Attribute {
      */
     async validate() {
         // If attribute has validators or loading is in progress, wait until loaded.
-        if (this.value.isDirty() || this.hasValidators() || this.value.isLoading()) {
-            await this.value.load();
-        }
-
-        if (!this.value.isLoaded()) {
+        const mustValidate = this.value.isDirty() || this.hasValidators() || this.value.isLoading();
+        if (!mustValidate) {
             return;
         }
 
-        // This validates on the attribute level.
-        await Attribute.prototype.validate.call(this);
+        await this.value.load();
+
+        const value = await this.getValidationValue();
+        const valueValidation = !Attribute.isEmptyValue(value);
+
+        valueValidation && (await this.validateType(value));
+        await this.validateAttribute(value);
+        valueValidation && (await this.validateValue(value));
     }
 
     async getJSONValue(): mixed | Promise<Array<mixed>> {
@@ -392,6 +378,51 @@ class EntitiesAttribute extends Attribute {
         }
 
         return value;
+    }
+
+    async normalizeSetValues() {
+        // Before returning, let's load all values.
+        const entities = this.value.getCurrent();
+
+        if (!Array.isArray(entities)) {
+            return;
+        }
+
+        for (let i = 0; i < entities.length; i++) {
+            let current = entities[i];
+
+            // "Instance of Entity" check is enough at this point.
+            if (current instanceof Entity) {
+                continue;
+            }
+
+            const entityClass = this.getEntitiesClass();
+            if (!entityClass) {
+                continue;
+            }
+
+            const id = _.get(current, "id", current);
+            if (
+                this.getParentModel()
+                    .getParentEntity()
+                    .isId(id)
+            ) {
+                const entity = await entityClass.findById(id);
+                if (entity) {
+                    // If we initially had object with other data set, we must populate entity with it, otherwise
+                    // just set loaded entity (because only an ID was received, without additional data).
+                    if (current instanceof Object) {
+                        entity.populate(current);
+                    }
+                    entities[i] = entity;
+                }
+                continue;
+            }
+
+            if (current instanceof Object) {
+                entities[i] = new entityClass().populate(current);
+            }
+        }
     }
 }
 

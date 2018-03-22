@@ -81,6 +81,7 @@ describe("attribute entities test", function() {
             { firstName: "John", lastName: "Doe" },
             { firstName: "Jane", lastName: "Doe" }
         ];
+
         await entity.validate();
     });
 
@@ -112,40 +113,70 @@ describe("attribute entities test", function() {
     it("should correctly validate instances in the attribute and throw errors appropriately", async () => {
         const mainEntity = new MainEntity();
 
-        let error = null;
-        try {
-            await mainEntity.set("attribute1", [
-                null,
-                10,
-                { id: "A", name: "Enlai", type: "dog" },
-                new Entity2().populate({
-                    firstName: "Foo",
-                    lastName: "bar"
-                })
-            ]);
-        } catch (e) {
-            error = e;
-        }
+        mainEntity.attribute1 = [
+            null,
+            10,
+            "A",
+            { id: "B", name: "Enlai", type: "dog" },
+            new Entity2().populate({
+                firstName: "Foo",
+                lastName: "bar"
+            })
+        ];
 
-        assert.instanceOf(error, Error);
-
-        mainEntity.attribute2 = [{ id: "B", firstName: "John", lastName: "Doe" }];
+        mainEntity.attribute2 = [{ id: "C", firstName: "John", lastName: "Doe" }];
 
         sandbox
             .stub(entity.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
-                return { id: 10, name: "Bucky", type: "dog" };
+                return new QueryResult({ id: "A", name: "Bucky", type: "dog" });
             })
-            .onCall(1)
             .callsFake(() => {
-                return { id: "AA", firstName: "Foo", lastName: "Bar" };
+                return new QueryResult({ id: "B", name: "Enlai", type: "dog" });
+            })
+            .onCall(2)
+            .callsFake(() => {
+                return new QueryResult({ id: "C", firstName: "Foo", lastName: "Bar" });
             });
 
-        await mainEntity.getAttribute("attribute1").validate();
-        await mainEntity.getAttribute("attribute2").validate();
+        let error = null;
+        try {
+            await mainEntity.getAttribute("attribute1").validate();
+        } catch (e) {
+            error = e;
+        }
 
-        entity.getDriver().findOne.restore();
+        assert.deepEqual(error.data, {
+            items: [
+                {
+                    code: "INVALID_ATTRIBUTE",
+                    data: {
+                        index: 0
+                    },
+                    message:
+                        "Validation failed, item at index 0 not an instance of correct Entity class."
+                },
+                {
+                    code: "INVALID_ATTRIBUTE",
+                    data: {
+                        index: 1
+                    },
+                    message:
+                        "Validation failed, item at index 1 not an instance of correct Entity class."
+                },
+                {
+                    code: "INVALID_ATTRIBUTE",
+                    data: {
+                        index: 4
+                    },
+                    message:
+                        "Validation failed, item at index 4 not an instance of correct Entity class."
+                }
+            ]
+        });
+
+        await mainEntity.getAttribute("attribute2").validate();
 
         mainEntity.attribute1 = null;
         await mainEntity.getAttribute("attribute1").validate();
@@ -287,7 +318,7 @@ describe("attribute entities test", function() {
                     code: "INVALID_ATTRIBUTE",
                     data: {},
                     message:
-                        "Validation failed, received number, expecting instance of EntityCollection."
+                        "Validation failed, received number, expecting instance of Array or EntityCollection."
                 }
             });
             return;

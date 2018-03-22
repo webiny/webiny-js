@@ -2,15 +2,18 @@
 import SqlString from "sqlstring";
 import _ from "lodash";
 import { OrderTuple } from "webiny-entity/types";
+import type { Entity } from "webiny-entity";
 import type { Operator, Payload } from "../../types";
 
 class Statement {
+    entity: Entity;
     options: {
         operators: { [string]: Operator }
     };
 
-    constructor(options: Object = {}) {
+    constructor(options: Object = {}, entity: Entity) {
         this.options = options;
+        this.entity = entity;
     }
 
     generate(): string {

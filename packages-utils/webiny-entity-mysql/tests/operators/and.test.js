@@ -1,12 +1,13 @@
 import { assert, expect } from "chai";
 import Statement from "../../src/statements/statement";
 import { operators } from "../../src";
+import { Entity } from "webiny-entity";
 
 describe("$and logical operator test", function() {
     let stmt;
 
     before(() => {
-        stmt = new Statement({ operators });
+        stmt = new Statement({ operators }, Entity);
     });
 
     it("should generate correct statement", () => {

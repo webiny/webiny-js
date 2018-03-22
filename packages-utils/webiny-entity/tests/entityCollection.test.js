@@ -18,25 +18,22 @@ describe("EntityCollection test", function() {
         expect(collection[2].age).to.equal(40);
     });
 
-    it("must correctly push new entities", async () => {
+    it("must correctly push new entities and all other values without throwing errors", async () => {
         const entities = getEntities();
         const collection = new EntityCollection(entities);
 
         collection.push(new User().populate({ age: 45 }));
         expect(collection).to.have.lengthOf(4);
         expect(collection[3].age).to.equal(45);
+        collection.push(1);
+        collection.push({ age: 50 });
 
-        expect(() => collection.push(1)).to.throw(Error);
-        expect(() => collection.push({ age: 50 })).to.throw(Error);
-
-        expect(collection).to.have.lengthOf(4);
+        expect(collection).to.have.lengthOf(6);
         expect(collection[3].age).to.equal(45);
     });
 
-    it("must throw an error on construct, if one of the values is not an instance of Entity", async () => {
-        expect(() => {
-            new EntityCollection([new User(), new User(), { id: 123 }]);
-        }).to.throw(Error);
+    it("must NOT throw an error on construct, if one of the values is not an instance of Entity", async () => {
+        new EntityCollection([new User(), new User(), { id: 123 }]);
     });
 
     it("setParams/getParams methods must work correctly", async () => {

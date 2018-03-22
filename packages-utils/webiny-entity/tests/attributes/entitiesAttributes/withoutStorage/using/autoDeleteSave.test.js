@@ -2,11 +2,13 @@ import { User, Group, UsersGroups } from "../../../../entities/entitiesUsing";
 import { expect } from "chai";
 import sinon from "sinon";
 import { QueryResult } from "../../../../../src";
+import { MainEntity } from "../../../../entities/entitiesAttributeEntities";
 
 const sandbox = sinon.sandbox.create();
 
 describe("attribute entities (using an additional aggregation class) - saving test", function() {
     afterEach(() => sandbox.restore());
+    beforeEach(() => MainEntity.getEntityPool().flush());
 
     it("should assign existing values correctly and track links that need to be deleted on consequent save method calls", async () => {
         let entityFindById = sandbox
@@ -17,9 +19,9 @@ describe("attribute entities (using an additional aggregation class) - saving te
 
         sandbox.stub(UsersGroups.getDriver(), "find").callsFake(() => {
             return new QueryResult([
-                { id: "1st", user: "A", group: "X" },
-                { id: "2nd", user: "A", group: "Y" },
-                { id: "3rd", user: "A", group: "Z" }
+                { id: "usersGroups1st", user: "A", group: "X" },
+                { id: "usersGroups2nd", user: "A", group: "Y" },
+                { id: "usersGroups3rd", user: "A", group: "Z" }
             ]);
         });
 
@@ -38,25 +40,15 @@ describe("attribute entities (using an additional aggregation class) - saving te
                 return new QueryResult({ id: "Z", name: "Group Z" });
             });
 
-        await user.set("groups", [{ name: "Group P" }, { name: "Group Q" }]);
+        user.groups = [{ name: "Group P" }, { name: "Group Q" }];
 
-        expect(user.getAttribute("groups").value.initial).to.have.lengthOf(3);
-        expect(user.getAttribute("groups").value.initial[0].id).to.equal("X");
-        expect(user.getAttribute("groups").value.initial[1].id).to.equal("Y");
-        expect(user.getAttribute("groups").value.initial[2].id).to.equal("Z");
+        expect(user.getAttribute("groups").value.initial).to.have.lengthOf(0);
         expect(user.getAttribute("groups").value.current).to.have.lengthOf(2);
         expect(user.getAttribute("groups").value.current[0].name).to.equal("Group P");
         expect(user.getAttribute("groups").value.current[1].name).to.equal("Group Q");
 
-        expect(user.getAttribute("groups").value.links.initial).to.have.lengthOf(3);
-        expect(user.getAttribute("groups").value.links.initial[0].id).to.equal("1st");
-        expect(user.getAttribute("groups").value.links.initial[1].id).to.equal("2nd");
-        expect(user.getAttribute("groups").value.links.initial[2].id).to.equal("3rd");
-
-        expect(user.getAttribute("groups").value.links.current).to.have.lengthOf(3);
-        expect(user.getAttribute("groups").value.links.current[0].id).to.equal("1st");
-        expect(user.getAttribute("groups").value.links.current[1].id).to.equal("2nd");
-        expect(user.getAttribute("groups").value.links.current[2].id).to.equal("3rd");
+        expect(user.getAttribute("groups").value.links.initial).to.have.lengthOf(0);
+        expect(user.getAttribute("groups").value.links.current).to.have.lengthOf(0);
 
         let entitySave = sandbox
             .stub(user.getDriver(), "save")
@@ -71,7 +63,7 @@ describe("attribute entities (using an additional aggregation class) - saving te
             })
             .onCall(2)
             .callsFake(entity => {
-                entity.id = "4th";
+                entity.id = "usersGroups4th";
                 return new QueryResult();
             })
             .onCall(3)
@@ -81,7 +73,7 @@ describe("attribute entities (using an additional aggregation class) - saving te
             })
             .onCall(4)
             .callsFake(entity => {
-                entity.id = "5th";
+                entity.id = "usersGroups5th";
                 return new QueryResult();
             });
 
@@ -99,12 +91,12 @@ describe("attribute entities (using an additional aggregation class) - saving te
         expect(user.getAttribute("groups").value.current[1].id).to.equal("Q");
 
         expect(user.getAttribute("groups").value.links.initial).to.have.lengthOf(2);
-        expect(user.getAttribute("groups").value.links.initial[0].id).to.equal("4th");
-        expect(user.getAttribute("groups").value.links.initial[1].id).to.equal("5th");
+        expect(user.getAttribute("groups").value.links.initial[0].id).to.equal("usersGroups4th");
+        expect(user.getAttribute("groups").value.links.initial[1].id).to.equal("usersGroups5th");
 
         expect(user.getAttribute("groups").value.links.current).to.have.lengthOf(2);
-        expect(user.getAttribute("groups").value.links.current[0].id).to.equal("4th");
-        expect(user.getAttribute("groups").value.links.current[1].id).to.equal("5th");
+        expect(user.getAttribute("groups").value.links.current[0].id).to.equal("usersGroups4th");
+        expect(user.getAttribute("groups").value.links.current[1].id).to.equal("usersGroups5th");
 
         // Let's try to add values using push.
         const groups = await user.groups;
@@ -113,12 +105,15 @@ describe("attribute entities (using an additional aggregation class) - saving te
         groups.push(new Group().populate({ name: "Group J" }));
         groups.push(new Group().populate({ id: "I", name: "Group I" }));
 
+        user.groups = groups;
+
+        // Here we care only for save calls that actually created an ID, we don't care about updates.
         entitySave = sandbox
             .stub(user.getDriver(), "save")
             .callsFake(() => new QueryResult())
             .onCall(6)
             .callsFake(entity => {
-                entity.id = "6th";
+                entity.id = "usersGroups6th";
                 return new QueryResult();
             })
             .onCall(7)
@@ -128,12 +123,12 @@ describe("attribute entities (using an additional aggregation class) - saving te
             })
             .onCall(8)
             .callsFake(entity => {
-                entity.id = "7th";
+                entity.id = "usersGroups7th";
                 return new QueryResult();
             })
             .onCall(10)
             .callsFake(entity => {
-                entity.id = "8th";
+                entity.id = "usersGroups8th";
                 return new QueryResult();
             });
 
@@ -156,22 +151,24 @@ describe("attribute entities (using an additional aggregation class) - saving te
         expect(user.getAttribute("groups").value.current[4].id).to.equal("I");
 
         expect(user.getAttribute("groups").value.links.initial).to.have.lengthOf(5);
-        expect(user.getAttribute("groups").value.links.initial[0].id).to.equal("4th");
-        expect(user.getAttribute("groups").value.links.initial[1].id).to.equal("5th");
-        expect(user.getAttribute("groups").value.links.initial[2].id).to.equal("6th");
-        expect(user.getAttribute("groups").value.links.initial[3].id).to.equal("7th");
-        expect(user.getAttribute("groups").value.links.initial[4].id).to.equal("8th");
+        expect(user.getAttribute("groups").value.links.initial[0].id).to.equal("usersGroups4th");
+        expect(user.getAttribute("groups").value.links.initial[1].id).to.equal("usersGroups5th");
+        expect(user.getAttribute("groups").value.links.initial[2].id).to.equal("usersGroups6th");
+        expect(user.getAttribute("groups").value.links.initial[3].id).to.equal("usersGroups7th");
+        expect(user.getAttribute("groups").value.links.initial[4].id).to.equal("usersGroups8th");
 
         expect(user.getAttribute("groups").value.links.current).to.have.lengthOf(5);
-        expect(user.getAttribute("groups").value.links.current[0].id).to.equal("4th");
-        expect(user.getAttribute("groups").value.links.current[1].id).to.equal("5th");
-        expect(user.getAttribute("groups").value.links.current[2].id).to.equal("6th");
-        expect(user.getAttribute("groups").value.links.current[3].id).to.equal("7th");
-        expect(user.getAttribute("groups").value.links.current[4].id).to.equal("8th");
+        expect(user.getAttribute("groups").value.links.current[0].id).to.equal("usersGroups4th");
+        expect(user.getAttribute("groups").value.links.current[1].id).to.equal("usersGroups5th");
+        expect(user.getAttribute("groups").value.links.current[2].id).to.equal("usersGroups6th");
+        expect(user.getAttribute("groups").value.links.current[3].id).to.equal("usersGroups7th");
+        expect(user.getAttribute("groups").value.links.current[4].id).to.equal("usersGroups8th");
 
         // Let's try to remove values using shift / pop - deletes should occur.
         groups.pop();
         groups.shift();
+
+        user.groups = groups;
 
         const entityDelete = sandbox.spy(user.getDriver(), "delete");
         entitySave = sandbox.stub(user.getDriver(), "save");
@@ -193,13 +190,13 @@ describe("attribute entities (using an additional aggregation class) - saving te
         expect(user.getAttribute("groups").value.current[2].id).to.equal("J");
 
         expect(user.getAttribute("groups").value.links.initial).to.have.lengthOf(3);
-        expect(user.getAttribute("groups").value.links.initial[0].id).to.equal("5th");
-        expect(user.getAttribute("groups").value.links.initial[1].id).to.equal("6th");
-        expect(user.getAttribute("groups").value.links.initial[2].id).to.equal("7th");
+        expect(user.getAttribute("groups").value.links.initial[0].id).to.equal("usersGroups5th");
+        expect(user.getAttribute("groups").value.links.initial[1].id).to.equal("usersGroups6th");
+        expect(user.getAttribute("groups").value.links.initial[2].id).to.equal("usersGroups7th");
 
         expect(user.getAttribute("groups").value.links.current).to.have.lengthOf(3);
-        expect(user.getAttribute("groups").value.links.current[0].id).to.equal("5th");
-        expect(user.getAttribute("groups").value.links.current[1].id).to.equal("6th");
-        expect(user.getAttribute("groups").value.links.current[2].id).to.equal("7th");
+        expect(user.getAttribute("groups").value.links.current[0].id).to.equal("usersGroups5th");
+        expect(user.getAttribute("groups").value.links.current[1].id).to.equal("usersGroups6th");
+        expect(user.getAttribute("groups").value.links.current[2].id).to.equal("usersGroups7th");
     });
 });
