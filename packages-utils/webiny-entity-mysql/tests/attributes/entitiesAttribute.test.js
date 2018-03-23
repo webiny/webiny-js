@@ -248,7 +248,7 @@ describe("entities attribute test", function() {
         sandbox.stub(entity.getDriver().getConnection(), "query").callsFake(() => {});
 
         let generateIDStub = sandbox
-            .stub(entity.getDriver(), "generateID")
+            .stub(entity.getDriver().constructor, "__generateID")
             .onCall(0)
             .callsFake(() => {
                 return "one";
@@ -299,7 +299,7 @@ describe("entities attribute test", function() {
             });
 
         generateIDStub = sandbox
-            .stub(ComplexEntity.getDriver(), "generateID")
+            .stub(ComplexEntity.getDriver().constructor, "__generateID")
             .onCall(0)
             .callsFake(() => {
                 return "four";

@@ -72,7 +72,7 @@ class MySQLDriver extends Driver {
     // eslint-disable-next-line
     async save(entity: Entity, options: EntitySaveParams & {}): Promise<QueryResult> {
         if (!entity.isExisting()) {
-            entity.id = this.generateID();
+            entity.id = MySQLDriver.__generateID();
         }
 
         if (entity.isExisting()) {
@@ -300,7 +300,7 @@ class MySQLDriver extends Driver {
         }
     }
 
-    generateID() {
+    static __generateID() {
         return mdbid();
     }
 }

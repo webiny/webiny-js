@@ -23,7 +23,7 @@ describe("save test", function() {
 
     it("should update existing entity", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {});
-        sandbox.stub(SimpleEntity.getDriver(), "generateID").callsFake(() => {
+        sandbox.stub(SimpleEntity.getDriver().constructor, "__generateID").callsFake(() => {
             return "a";
         });
 
