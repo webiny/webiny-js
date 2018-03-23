@@ -5,7 +5,7 @@
 [API](https://github.com/webiny/webiny-js/tree/master/packages-api/webiny-api) | Express middleware to quickly build powerful REST APIs. <br/><br/> [![Known Vulnerabilities](https://snyk.io/test/github/webiny/webiny-js/badge.svg?targetFile=packages-api%2Fwebiny-api%2Fpackage.json)](https://snyk.io/test/github/webiny/webiny-js?targetFile=packages-api%2Fwebiny-api%2Fpackage.json)
 [API Security](https://github.com/webiny/webiny-js/tree/master/packages-api/webiny-api-security) | Provides an app which handles security layer for your project. It includes both authentication and authorization mechanisms. <br/><br/> [![Known Vulnerabilities](https://snyk.io/test/github/webiny/webiny-js/badge.svg?targetFile=packages-api%2Fwebiny-api-security%2Fpackage.json)](https://snyk.io/test/github/webiny/webiny-js?targetFile=packages-api%2Fwebiny-api-security%2Fpackage.json)
 
-## Entity
+## Entity
 Entity layer which can work with various database / storage systems like MySQL, MongoDB and even IndexedDB or localStorage if needed.
 
 | Package | About
@@ -15,7 +15,7 @@ Entity layer which can work with various database / storage systems like MySQL, 
 [MySQL](https://github.com/webiny/webiny-js/tree/master/packages-utils/webiny-entity-mysql) | MySQL driver for `webiny-entity`. <br/><br/> [![Known Vulnerabilities](https://snyk.io/test/github/webiny/webiny-js/badge.svg?targetFile=packages-utils%2Fwebiny-entity-mysql%2Fpackage.json)](https://snyk.io/test/github/webiny/webiny-js?targetFile=packages-utils%2Fwebiny-entity-mysql%2Fpackage.json)
 [Validation](https://github.com/webiny/webiny-js/tree/master/packages-utils/webiny-validation)| A simple, pluginable and async data validation library, packed with frequently used validators like `required`, `email`, `url`, `creditCard` etc. <br/> [![Known Vulnerabilities](https://snyk.io/test/github/webiny/webiny-js/badge.svg?targetFile=packages-utils%2Fwebiny-validation%2Fpackage.json)](https://snyk.io/test/github/webiny/webiny-js?targetFile=packages-utils%2Fwebiny-validation%2Fpackage.json)
 
-## Files
+## Files
 A plugginable file storage package.
 
 | Package | About
@@ -26,6 +26,7 @@ A plugginable file storage package.
 
 ## Other
 Other useful packages.
+
 | Package | About
 | --- | --- |
 [Compose](https://github.com/webiny/webiny-js/tree/master/packages-utils/webiny-cli) | Compose multiple functions into a connect-style middleware. <br/><br/> [![Known Vulnerabilities](https://snyk.io/test/github/webiny/webiny-js/badge.svg?targetFile=packages-utils%2Fwebiny-compose%2Fpackage.json)](https://snyk.io/test/github/webiny/webiny-js?targetFile=packages-utils%2Fwebiny-cli%2Fpackage.json)
