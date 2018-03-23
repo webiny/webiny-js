@@ -158,15 +158,18 @@ class MySQLDriver extends Driver {
         entity: Entity | Class<Entity>,
         options: EntityFindOneParams & {}
     ): Promise<QueryResult> {
-        const sql = new Select(
-            {
-                operators: this.operators,
-                table: this.getTableName(entity),
-                where: options.query,
-                limit: 1
-            },
-            entity
-        ).generate();
+        const clonedOptions = {
+            operators: this.operators,
+            table: this.getTableName(entity),
+            where: options.query,
+            search: options.search,
+            limit: 1
+        };
+
+        MySQLDriver.__prepareQueryOption(clonedOptions);
+        MySQLDriver.__prepareSearchOption(clonedOptions);
+
+        const sql = new Select(clonedOptions, entity).generate();
 
         const results = await this.getConnection().query(sql);
         return new QueryResult(results[0]);
@@ -176,18 +179,21 @@ class MySQLDriver extends Driver {
         entity: Entity | Class<Entity>,
         options: EntityFindParams & {}
     ): Promise<QueryResult> {
-        const sql = new Select(
-            _.merge(
-                {},
-                options,
-                {
-                    operators: this.operators,
-                    table: this.getTableName(entity),
-                    columns: ["COUNT(*) AS count"]
-                },
-                entity
-            )
+        const clonedOptions = _.merge(
+            {},
+            options,
+            {
+                operators: this.operators,
+                table: this.getTableName(entity),
+                columns: ["COUNT(*) AS count"]
+            },
+            entity
         );
+
+        MySQLDriver.__prepareQueryOption(clonedOptions);
+        MySQLDriver.__prepareSearchOption(clonedOptions);
+
+        const sql = new Select(clonedOptions, entity).generate();
 
         const results = await this.getConnection().query(sql);
         return new QueryResult(results[0].count);
