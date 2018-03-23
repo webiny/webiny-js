@@ -6,6 +6,23 @@ const sandbox = sinon.sandbox.create();
 describe("findById test", function() {
     afterEach(() => sandbox.restore());
 
+    it("must generate correct query", async () => {
+        const queryStub = sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake(() => {
+                return [[], [{ count: null }]];
+            });
+
+        await SimpleEntity.findById("customId");
+
+        assert.deepEqual(
+            queryStub.getCall(0).args[0],
+            "SELECT * FROM `SimpleEntity` WHERE (id = 'customId') LIMIT 1"
+        );
+
+        queryStub.restore();
+    });
+
     it("findById - should find previously inserted entity", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => [
             {

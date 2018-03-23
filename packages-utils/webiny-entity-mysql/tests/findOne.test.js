@@ -7,6 +7,20 @@ const sandbox = sinon.sandbox.create();
 describe("findOne test", function() {
     afterEach(() => sandbox.restore());
 
+    it("findOne - must generate correct query", async () => {
+        const queryStub = sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake(() => {
+                return [[], [{ count: null }]];
+            });
+
+        await SimpleEntity.findOne();
+
+        assert.deepEqual(queryStub.getCall(0).args[0], "SELECT * FROM `SimpleEntity` LIMIT 1");
+
+        queryStub.restore();
+    });
+
     it("findOne - should find previously inserted entity", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
             return [

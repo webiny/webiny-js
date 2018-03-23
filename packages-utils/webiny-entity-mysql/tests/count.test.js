@@ -7,7 +7,24 @@ const sandbox = sinon.sandbox.create();
 describe("count test", function() {
     afterEach(() => sandbox.restore());
 
-    it("count - should count entities", async () => {
+    it("must generate correct query", async () => {
+        const queryStub = sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake(() => {
+                return [[], [{ count: null }]];
+            });
+
+        await SimpleEntity.count();
+
+        assert.deepEqual(
+            queryStub.getCall(0).args[0],
+            "SELECT COUNT(*) AS count FROM `SimpleEntity`"
+        );
+
+        queryStub.restore();
+    });
+
+    it("should count entities", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
             return [{ count: 1 }];
         });
@@ -20,7 +37,7 @@ describe("count test", function() {
         assert.equal(count, 1);
     });
 
-    it("count - should include search query if passed", async () => {
+    it("should include search query if passed", async () => {
         const queryStub = sandbox
             .stub(SimpleEntity.getDriver().getConnection(), "query")
             .callsFake(() => {

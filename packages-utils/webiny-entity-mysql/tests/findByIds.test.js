@@ -8,6 +8,23 @@ describe("findByIds test", function() {
     afterEach(() => sandbox.restore());
     beforeEach(() => SimpleEntity.getEntityPool().flush());
 
+    it("must generate correct query", async () => {
+        const queryStub = sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake(() => {
+                return [[], [{ count: null }]];
+            });
+
+        await SimpleEntity.findByIds(["a", "b", "c"]);
+
+        assert.deepEqual(queryStub.getCall(0).args[0], [
+            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE (id IN('a', 'b', 'c')) LIMIT 10",
+            "SELECT FOUND_ROWS() as count"
+        ]);
+
+        queryStub.restore();
+    });
+
     it("findByIds - should find previously inserted entities", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => [
             [

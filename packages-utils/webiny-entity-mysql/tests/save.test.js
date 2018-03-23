@@ -8,6 +8,36 @@ const sandbox = sinon.sandbox.create();
 describe("save test", function() {
     afterEach(() => sandbox.restore());
 
+    it("must generate correct query", async () => {
+        const queryStub = sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake(() => {
+                return [[], [{ count: null }]];
+            });
+
+        const simpleEntity = new SimpleEntity();
+        await simpleEntity.save();
+
+        assert.deepEqual(
+            queryStub.getCall(0).args[0],
+            "INSERT INTO `SimpleEntity` (id, name, slug, enabled, tags) VALUES ('" +
+                simpleEntity.id +
+                "', NULL, '', true, NULL)"
+        );
+
+        await simpleEntity.save();
+        assert.deepEqual(
+            queryStub.getCall(1).args[0],
+            "UPDATE `SimpleEntity` SET id = '" +
+                simpleEntity.id +
+                "', name = NULL, slug = '', enabled = true, tags = NULL WHERE (id = '" +
+                simpleEntity.id +
+                "') LIMIT 1"
+        );
+
+        queryStub.restore();
+    });
+
     it("should save new entity into database and entity should receive an integer ID", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query");
 

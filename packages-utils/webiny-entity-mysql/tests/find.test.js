@@ -9,6 +9,23 @@ describe("find test", function() {
     afterEach(() => sandbox.restore());
     beforeEach(() => SimpleEntity.getEntityPool().flush());
 
+    it("find - must generate simple query correctly", async () => {
+        const queryStub = sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake(() => {
+                return [[], [{ count: null }]];
+            });
+
+        await SimpleEntity.find();
+
+        assert.deepEqual(queryStub.getCall(0).args[0], [
+            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` LIMIT 10",
+            "SELECT FOUND_ROWS() as count"
+        ]);
+
+        queryStub.restore();
+    });
+
     it("should find entities and total count", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => [
             [
