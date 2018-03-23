@@ -1,3 +1,6 @@
+# Packages
+The following is a complete list of packages, which are used by the Webiny platform, but can also be used standalone if needed.
+
 ## API
 
 | Package | About
