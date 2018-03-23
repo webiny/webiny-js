@@ -141,38 +141,13 @@ class MySQLDriver extends Driver {
             offset: 0
         });
 
-        if ("perPage" in clonedOptions) {
-            clonedOptions.limit = clonedOptions.perPage;
-            delete clonedOptions.perPage;
-        }
-
-        if ("page" in clonedOptions) {
-            clonedOptions.offset = clonedOptions.limit * (clonedOptions.page - 1);
-            delete clonedOptions.page;
-        }
-
-        if (clonedOptions.query instanceof Object) {
-            clonedOptions.where = clonedOptions.query;
-            delete clonedOptions.query;
-        }
-
-        // Here we handle search (if passed) - we transform received arguments into linked LIKE statements.
-        if (clonedOptions.search instanceof Object) {
-            const { query, operator, fields: columns } = clonedOptions.search;
-            const search = { $search: { operator, columns, query } };
-
-            if (clonedOptions.where instanceof Object) {
-                clonedOptions.where = {
-                    $and: [search, clonedOptions.where]
-                };
-            } else {
-                clonedOptions.where = search;
-            }
-
-            delete clonedOptions.search;
-        }
+        MySQLDriver.__preparePerPageOption(clonedOptions);
+        MySQLDriver.__preparePageOption(clonedOptions);
+        MySQLDriver.__prepareQueryOption(clonedOptions);
+        MySQLDriver.__prepareSearchOption(clonedOptions);
 
         clonedOptions.calculateFoundRows = true;
+
         const sql = new Select(clonedOptions, entity).generate();
         const results = await this.getConnection().query([sql, "SELECT FOUND_ROWS() as count"]);
 
@@ -266,6 +241,63 @@ class MySQLDriver extends Driver {
         }
 
         return this.tables.prefix + params.classId;
+    }
+
+    static MySQLDriver(clonedOptions: Object): void {
+        // Here we handle search (if passed) - we transform received arguments into linked LIKE statements.
+        if (clonedOptions.search instanceof Object) {
+            const { query, operator, fields: columns } = clonedOptions.search;
+            const search = { $search: { operator, columns, query } };
+
+            if (clonedOptions.where instanceof Object) {
+                clonedOptions.where = {
+                    $and: [search, clonedOptions.where]
+                };
+            } else {
+                clonedOptions.where = search;
+            }
+
+            delete clonedOptions.search;
+        }
+    }
+
+    static __preparePerPageOption(clonedOptions: Object): void {
+        if ("perPage" in clonedOptions) {
+            clonedOptions.limit = clonedOptions.perPage;
+            delete clonedOptions.perPage;
+        }
+    }
+
+    static __preparePageOption(clonedOptions: Object): void {
+        if ("page" in clonedOptions) {
+            clonedOptions.offset = clonedOptions.limit * (clonedOptions.page - 1);
+            delete clonedOptions.page;
+        }
+    }
+
+    static __prepareQueryOption(clonedOptions: Object): void {
+        if (clonedOptions.query instanceof Object) {
+            clonedOptions.where = clonedOptions.query;
+            delete clonedOptions.query;
+        }
+    }
+
+    static __prepareSearchOption(clonedOptions: Object): void {
+        // Here we handle search (if passed) - we transform received arguments into linked LIKE statements.
+        if (clonedOptions.search instanceof Object) {
+            const { query, operator, fields: columns } = clonedOptions.search;
+            const search = { $search: { operator, columns, query } };
+
+            if (clonedOptions.where instanceof Object) {
+                clonedOptions.where = {
+                    $and: [search, clonedOptions.where]
+                };
+            } else {
+                clonedOptions.where = search;
+            }
+
+            delete clonedOptions.search;
+        }
     }
 
     generateID() {
