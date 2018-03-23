@@ -2,6 +2,8 @@ import { MainEntity } from "../../../entities/entitiesAttributeEntities";
 import { assert } from "chai";
 
 describe("attribute entities test", function() {
+    beforeEach(() => MainEntity.getEntityPool().flush());
+
     it("should not set anything as values since setToStorage is not enabled by default", async () => {
         const mainEntity = new MainEntity();
 
