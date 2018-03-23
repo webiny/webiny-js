@@ -10,6 +10,14 @@ class ModelsAttribute extends Attribute {
 
     constructor(name: string, attributesContainer: AttributesContainer, model: Class<Model>) {
         super(name, attributesContainer);
+
+        // If provided class is not a subclass of Model, we must throw an error.
+        if (!(model.prototype instanceof Model)) {
+            throw Error(
+                `"models" attribute "${name}" received an invalid class (subclass of Model is required).`
+            );
+        }
+
         this.value.current = [];
         this.modelClass = model;
     }
