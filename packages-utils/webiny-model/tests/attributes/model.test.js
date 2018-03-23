@@ -2,11 +2,10 @@ import { assert } from "chai";
 import Model from "./../../src/model";
 import ModelError from "./../../src/modelError";
 import { User } from "./../models/userModels";
-import { Entity } from "../../../webiny-entity/src";
 
 describe("attribute model test", function() {
     it("should not accept inline functions, must always receive a Model class", async () => {
-        class ModelAttributeWithoutModelClassEntity extends Entity {
+        class ModelAttributeWithoutModelClassModel extends Model {
             constructor() {
                 super();
                 this.attr("modelAttribute1").model(() => {});
@@ -14,7 +13,7 @@ describe("attribute model test", function() {
         }
 
         try {
-            new ModelAttributeWithoutModelClassEntity();
+            new ModelAttributeWithoutModelClassModel();
         } catch (e) {
             assert.equal(
                 e.message,
