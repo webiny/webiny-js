@@ -33,4 +33,7 @@ Object.keys(packages).forEach(name => {
     paths.map(p => {
         fs.copySync(p, path.join(process.cwd(), "node_modules", name, p.split(name).pop()));
     });
+
+    // TODO: update package.json main field with "lib/index.js"
+    // NOTE: this is only temporary until we publish actual packages to npm
 });

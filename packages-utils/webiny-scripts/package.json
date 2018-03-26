@@ -1,7 +1,7 @@
 {
   "name": "webiny-scripts",
   "bin": "bin/webiny-scripts.js",
-  "main": "lib/index.js",
+  "main": "src/index.js",
   "description": "A collection of utility scripts to use with client apps",
   "repository": {
     "type": "git",
