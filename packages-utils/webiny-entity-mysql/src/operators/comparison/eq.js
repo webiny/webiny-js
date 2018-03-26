@@ -15,7 +15,7 @@ const eq: Operator = {
             return true;
         }
 
-        // Valid values are 1, '1', null, true, false
+        // Valid values are 1, '1', null, true, false.
         if (_.isString(value) || _.isNumber(value) || [null, true, false].includes(value)) {
             return true;
         }

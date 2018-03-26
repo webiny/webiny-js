@@ -27,7 +27,7 @@ describe("save error test", function() {
 
     it("should update existing entity but an exception must be thrown", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {});
-        sandbox.stub(SimpleEntity.getDriver(), "generateID").callsFake(() => "a");
+        sandbox.stub(SimpleEntity.getDriver().constructor, "__generateID").callsFake(() => "a");
 
         const simpleEntity = new SimpleEntity();
         await simpleEntity.save();

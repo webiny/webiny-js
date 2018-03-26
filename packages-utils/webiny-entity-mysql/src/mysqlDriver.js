@@ -72,7 +72,7 @@ class MySQLDriver extends Driver {
     // eslint-disable-next-line
     async save(entity: Entity, options: EntitySaveParams & {}): Promise<QueryResult> {
         if (!entity.isExisting()) {
-            entity.id = this.generateID();
+            entity.id = MySQLDriver.__generateID();
         }
 
         if (entity.isExisting()) {
@@ -141,30 +141,13 @@ class MySQLDriver extends Driver {
             offset: 0
         });
 
-        if ("perPage" in clonedOptions) {
-            clonedOptions.limit = clonedOptions.perPage;
-            delete clonedOptions.perPage;
-        }
-
-        if ("page" in clonedOptions) {
-            clonedOptions.offset = clonedOptions.limit * (clonedOptions.page - 1);
-            delete clonedOptions.page;
-        }
-
-        if (clonedOptions.query instanceof Object) {
-            clonedOptions.where = clonedOptions.query;
-            delete clonedOptions.query;
-        }
-
-        // Here we handle search (if passed) - we transform received arguments into linked LIKE statements.
-        if (clonedOptions.search instanceof Object) {
-            const { query, operators, fields: columns } = clonedOptions.search;
-            clonedOptions.where = {
-                $and: [{ $search: { operators, columns, query } }, clonedOptions.where]
-            };
-        }
+        MySQLDriver.__preparePerPageOption(clonedOptions);
+        MySQLDriver.__preparePageOption(clonedOptions);
+        MySQLDriver.__prepareQueryOption(clonedOptions);
+        MySQLDriver.__prepareSearchOption(clonedOptions);
 
         clonedOptions.calculateFoundRows = true;
+
         const sql = new Select(clonedOptions, entity).generate();
         const results = await this.getConnection().query([sql, "SELECT FOUND_ROWS() as count"]);
 
@@ -175,15 +158,18 @@ class MySQLDriver extends Driver {
         entity: Entity | Class<Entity>,
         options: EntityFindOneParams & {}
     ): Promise<QueryResult> {
-        const sql = new Select(
-            {
-                operators: this.operators,
-                table: this.getTableName(entity),
-                where: options.query,
-                limit: 1
-            },
-            entity
-        ).generate();
+        const clonedOptions = {
+            operators: this.operators,
+            table: this.getTableName(entity),
+            where: options.query,
+            search: options.search,
+            limit: 1
+        };
+
+        MySQLDriver.__prepareQueryOption(clonedOptions);
+        MySQLDriver.__prepareSearchOption(clonedOptions);
+
+        const sql = new Select(clonedOptions, entity).generate();
 
         const results = await this.getConnection().query(sql);
         return new QueryResult(results[0]);
@@ -193,18 +179,21 @@ class MySQLDriver extends Driver {
         entity: Entity | Class<Entity>,
         options: EntityFindParams & {}
     ): Promise<QueryResult> {
-        const sql = new Select(
-            _.merge(
-                {},
-                options,
-                {
-                    operators: this.operators,
-                    table: this.getTableName(entity),
-                    columns: ["COUNT(*) AS count"]
-                },
-                entity
-            )
+        const clonedOptions = _.merge(
+            {},
+            options,
+            {
+                operators: this.operators,
+                table: this.getTableName(entity),
+                columns: ["COUNT(*) AS count"]
+            },
+            entity
         );
+
+        MySQLDriver.__prepareQueryOption(clonedOptions);
+        MySQLDriver.__prepareSearchOption(clonedOptions);
+
+        const sql = new Select(clonedOptions, entity).generate();
 
         const results = await this.getConnection().query(sql);
         return new QueryResult(results[0].count);
@@ -260,7 +249,64 @@ class MySQLDriver extends Driver {
         return this.tables.prefix + params.classId;
     }
 
-    generateID() {
+    static MySQLDriver(clonedOptions: Object): void {
+        // Here we handle search (if passed) - we transform received arguments into linked LIKE statements.
+        if (clonedOptions.search instanceof Object) {
+            const { query, operator, fields: columns } = clonedOptions.search;
+            const search = { $search: { operator, columns, query } };
+
+            if (clonedOptions.where instanceof Object) {
+                clonedOptions.where = {
+                    $and: [search, clonedOptions.where]
+                };
+            } else {
+                clonedOptions.where = search;
+            }
+
+            delete clonedOptions.search;
+        }
+    }
+
+    static __preparePerPageOption(clonedOptions: Object): void {
+        if ("perPage" in clonedOptions) {
+            clonedOptions.limit = clonedOptions.perPage;
+            delete clonedOptions.perPage;
+        }
+    }
+
+    static __preparePageOption(clonedOptions: Object): void {
+        if ("page" in clonedOptions) {
+            clonedOptions.offset = clonedOptions.limit * (clonedOptions.page - 1);
+            delete clonedOptions.page;
+        }
+    }
+
+    static __prepareQueryOption(clonedOptions: Object): void {
+        if (clonedOptions.query instanceof Object) {
+            clonedOptions.where = clonedOptions.query;
+            delete clonedOptions.query;
+        }
+    }
+
+    static __prepareSearchOption(clonedOptions: Object): void {
+        // Here we handle search (if passed) - we transform received arguments into linked LIKE statements.
+        if (clonedOptions.search instanceof Object) {
+            const { query, operator, fields: columns } = clonedOptions.search;
+            const search = { $search: { operator, columns, query } };
+
+            if (clonedOptions.where instanceof Object) {
+                clonedOptions.where = {
+                    $and: [search, clonedOptions.where]
+                };
+            } else {
+                clonedOptions.where = search;
+            }
+
+            delete clonedOptions.search;
+        }
+    }
+
+    static __generateID() {
         return mdbid();
     }
 }

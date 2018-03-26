@@ -1,7 +1,7 @@
 import { QueryResult } from "../../../../../src/index";
 import { assert, expect } from "chai";
 import sinon from "sinon";
-import { Group, User, UsersGroups } from "../../../../entities/entitiesUsing";
+import { Group, User, UsersGroups } from "../../../../entities/entitiesUsingWithStorage";
 
 const sandbox = sinon.sandbox.create();
 
@@ -12,7 +12,7 @@ describe("save and delete entities attribute test", () => {
     it("should use correct storage queries to fetch linked entities", async () => {
         let entityFindById = sandbox
             .stub(User.getDriver(), "findOne")
-            .callsFake(() => new QueryResult({ id: "A" }));
+            .callsFake(() => new QueryResult({ id: "A", groups: ["1st", "2nd", "3rd"] }));
 
         const user = await User.findById(123);
         entityFindById.restore();
@@ -45,7 +45,7 @@ describe("save and delete entities attribute test", () => {
         assert.equal(findStub.getCall(0).args[0], UsersGroups);
         assert.deepEqual(findStub.getCall(0).args[1], {
             query: {
-                user: "A"
+                id: ["1st", "2nd", "3rd"]
             }
         });
 

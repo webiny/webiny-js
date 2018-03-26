@@ -7,6 +7,20 @@ const sandbox = sinon.sandbox.create();
 describe("findOne test", function() {
     afterEach(() => sandbox.restore());
 
+    it("findOne - must generate correct query", async () => {
+        const queryStub = sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake(() => {
+                return [[], [{ count: null }]];
+            });
+
+        await SimpleEntity.findOne();
+
+        assert.deepEqual(queryStub.getCall(0).args[0], "SELECT * FROM `SimpleEntity` LIMIT 1");
+
+        queryStub.restore();
+    });
+
     it("findOne - should find previously inserted entity", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
             return [
@@ -28,5 +42,30 @@ describe("findOne test", function() {
         assert.equal(simpleEntity.name, "This is a test");
         assert.equal(simpleEntity.slug, "thisIsATest");
         assert.isTrue(simpleEntity.enabled);
+    });
+
+    it("findOne - should include search query if passed", async () => {
+        const queryStub = sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake(() => {
+                return [[], [{ count: null }]];
+            });
+
+        await SimpleEntity.findOne({
+            query: {
+                age: { $gt: 30 }
+            },
+            search: {
+                query: "this is",
+                fields: ["name"]
+            }
+        });
+
+        assert.deepEqual(
+            queryStub.getCall(0).args[0],
+            "SELECT * FROM `SimpleEntity` WHERE (((name LIKE '%this is%') AND age > 30)) LIMIT 1"
+        );
+
+        queryStub.restore();
     });
 });

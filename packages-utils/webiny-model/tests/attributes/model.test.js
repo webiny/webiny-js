@@ -4,6 +4,27 @@ import ModelError from "./../../src/modelError";
 import { User } from "./../models/userModels";
 
 describe("attribute model test", function() {
+    it("should not accept inline functions, must always receive a Model class", async () => {
+        class ModelAttributeWithoutModelClassModel extends Model {
+            constructor() {
+                super();
+                this.attr("modelAttribute1").model(() => {});
+            }
+        }
+
+        try {
+            new ModelAttributeWithoutModelClassModel();
+        } catch (e) {
+            assert.equal(
+                e.message,
+                `"model" attribute "modelAttribute1" received an invalid class (subclass of Model is required).`
+            );
+            return;
+        }
+
+        throw Error(`Error should've been thrown.`);
+    });
+
     describe("accepting correct Model classes test", () => {
         class Model1 extends Model {}
 

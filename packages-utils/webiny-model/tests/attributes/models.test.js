@@ -1,7 +1,6 @@
 import { assert } from "chai";
-import Model from "./../../src/model";
 import ModelError from "./../../src/modelError";
-import { User } from "../models/userModels";
+import { Model } from "../../../webiny-model/src";
 
 describe("attribute models test", function() {
     class Model1 extends Model {
@@ -33,6 +32,27 @@ describe("attribute models test", function() {
     const model = new Model(function() {
         this.attr("attribute1").models(Model1);
         this.attr("attribute2").models(Model2);
+    });
+
+    it("should not accept inline functions, must always receive a Model class", async () => {
+        class ModelsAttributeWithoutModelsClassModel extends Model {
+            constructor() {
+                super();
+                this.attr("modelsAttribute1").models(() => {});
+            }
+        }
+
+        try {
+            new ModelsAttributeWithoutModelsClassModel();
+        } catch (e) {
+            assert.equal(
+                e.message,
+                `"models" attribute "modelsAttribute1" received an invalid class (subclass of Model is required).`
+            );
+            return;
+        }
+
+        throw Error(`Error should've been thrown.`);
     });
 
     it("should fail - attributes should accept array of models", async () => {

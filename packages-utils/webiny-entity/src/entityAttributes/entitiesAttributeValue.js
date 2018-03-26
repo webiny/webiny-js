@@ -53,10 +53,19 @@ class EntitiesAttributeValue extends AttributeValue {
                 .isExisting()
         ) {
             if (this.attribute.getToStorage()) {
-                if (this.hasCurrent()) {
-                    if (classes.using.class) {
-                        this.initial = await classes.using.class.findByIds(this.initial);
-                    } else {
+                if (classes.using.class) {
+                    if (this.hasInitialLinks()) {
+                        this.links.initial = await classes.using.class.findByIds(
+                            this.links.initial
+                        );
+
+                        this.initial = new EntityCollection();
+                        for (let i = 0; i < this.links.initial.length; i++) {
+                            this.initial.push(await this.links.initial[i][classes.using.attribute]);
+                        }
+                    }
+                } else {
+                    if (this.hasInitial()) {
                         this.initial = await classes.entities.class.findByIds(this.initial);
                     }
                 }
@@ -166,6 +175,11 @@ class EntitiesAttributeValue extends AttributeValue {
 
     hasInitialLinks(): boolean {
         return this.getInitialLinks().length > 0;
+    }
+
+    setInitialLinks(value: mixed): this {
+        this.links.initial = value;
+        return this;
     }
 
     getCurrentLinks(): EntityCollection {

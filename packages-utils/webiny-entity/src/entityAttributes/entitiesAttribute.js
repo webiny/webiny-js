@@ -266,8 +266,13 @@ class EntitiesAttribute extends Attribute {
      * @returns {EntityAttribute}
      */
     setStorageValue(value: Array<mixed>) {
-        this.value.setCurrent(value, { skipDifferenceCheck: true });
-        this.value.setInitial(value);
+        if (this.classes.using.class) {
+            this.value.setCurrentLinks(value, { skipDifferenceCheck: true });
+            this.value.setInitialLinks(value);
+        } else {
+            this.value.setCurrent(value, { skipDifferenceCheck: true });
+            this.value.setInitial(value);
+        }
         return this;
     }
 

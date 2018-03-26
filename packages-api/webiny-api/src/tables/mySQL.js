@@ -28,7 +28,7 @@ class MySQLTable extends Table {
 
 MySQLTable.setEngine("InnoDB")
     .setDefaultCharset("utf8")
-    .setCollate("utf8_bin");
+    .setCollate("utf8_general_ci");
 
 MySQLTable.setDriver(new MySQLDriver());
 
