@@ -1,16 +1,15 @@
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-client';
+import { createComponent } from 'webiny-client';
 
-class ToggleField extends Webiny.Ui.Component {
+class ToggleField extends React.Component {
+    render() {
+        const { ChangeConfirm, Switch, List, render, ...tdProps } = this.props;
 
-}
+        if (render) {
+            return render.call(this);
+        }
 
-ToggleField.defaultProps = {
-    message: null,
-    onChange: null,
-    disabled: false,
-    renderer() {
         const props = {
             onChange: newValue => {
                 if (_.isNull(this.props.onChange)) {
@@ -25,10 +24,8 @@ ToggleField.defaultProps = {
             disabled: _.isFunction(this.props.disabled) ? this.props.disabled(this.props.data) : this.props.disabled
         };
 
-        const {ChangeConfirm, Switch, List, ...tdProps} = this.props;
-
         return (
-            <List.Table.Field {..._.omit(tdProps, ['renderer'])}>
+            <List.Table.Field {...tdProps}>
                 {() => (
                     <ChangeConfirm message={this.props.message}>
                         <Switch {...props}/>
@@ -37,6 +34,12 @@ ToggleField.defaultProps = {
             </List.Table.Field>
         );
     }
+}
+
+ToggleField.defaultProps = {
+    message: null,
+    onChange: null,
+    disabled: false
 };
 
-export default Webiny.createComponent(ToggleField, {modules: ['List', 'ChangeConfirm', 'Switch'], tableField: true});
+export default createComponent(ToggleField, { modules: ['List', 'ChangeConfirm', 'Switch'], tableField: true });

@@ -5,27 +5,61 @@ import axios from "axios";
 import { hot } from "react-hot-loader";
 
 import { app as skeletonApp } from "webiny-skeleton-app";
+import { app as securityApp, authenticationMiddleware } from "webiny-client-security";
 import selectoApp from "./selectoApp";
 
 if (!app.initialized) {
+    app.use(
+        securityApp({
+            authentication: {
+                cookie: "webiny-token",
+                identities: [
+                    {
+                        identity: "user",
+                        authenticate: [
+                            {
+                                strategy: "credentials",
+                                apiMethod: "/security/auth/login-user"
+                            }
+                        ]
+                    }
+                ],
+                onLogout() {
+                    app.router.goToRoute("Login");
+                }
+            }
+        })
+    );
     app.use(skeletonApp());
     app.use(selectoApp());
 
     app.configure(() => {
-        window.axios = axios;
-        axios.defaults.baseURL = "http://localhost:9000/api";
-        axios.defaults.headers["Authorization"] =
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkZW50aXR5SWQiOiI1YWFkNTUwNmE1NGQ3NTcyZjE1N2MxZTEiLCJjbGFzc0lkIjoiU2VjdXJpdHkuVXNlciJ9LCJleHAiOjE1MjM5NTA2NDIsImlhdCI6MTUyMTM2MjI0Mn0.s323FvRfijZADEJ6J1eyeHAQ1ztG3B9vJjoik0_eGgo";
+        if (process.env.NODE_ENV === "development") {
+            axios.defaults.baseURL = "http://localhost:3000/api";
+        }
 
-        return {
-            i18n: false,
-            api: "http://localhost:9000/api"
-        };
+        if (process.env.NODE_ENV === "production") {
+            axios.defaults.baseURL =
+                "https://2z2788jepi.execute-api.eu-west-1.amazonaws.com/dev/api";
+        }
+
+        return {};
     });
 
     app.router.configure({
         history: createBrowserHistory({ basename: "/" }),
-        middleware: [resolveMiddleware(), renderMiddleware()]
+        middleware: [
+            authenticationMiddleware({
+                onNotAuthenticated({ route }, next) {
+                    if (route.name !== "Login") {
+                        app.router.goToRoute("Login");
+                    }
+                    next();
+                }
+            }),
+            resolveMiddleware(),
+            renderMiddleware()
+        ]
     });
 }
 

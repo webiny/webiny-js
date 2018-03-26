@@ -1,5 +1,4 @@
 // @flow
-import addDays from "date-fns/add_days";
 import jwt from "jsonwebtoken";
 import type { Identity } from "./../index";
 import type { IToken } from "../../types";
@@ -7,7 +6,6 @@ import AuthenticationError from "../services/authenticationError";
 
 type JwtTokenConfig = {
     secret: string,
-    expiresOn?: (identity: Identity) => number,
     data?: (identity: Identity) => Object
 };
 
@@ -16,15 +14,6 @@ class JwtToken implements IToken {
 
     constructor(config: JwtTokenConfig) {
         this.config = config;
-    }
-
-    expiresOn(identity: Identity): Promise<number> {
-        if (typeof this.config.expiresOn === "function") {
-            return this.config.expiresOn(identity);
-        }
-
-        // Seconds since epoch
-        return Promise.resolve(Math.floor(addDays(new Date(), 30).getTime() / 1000));
     }
 
     data(identity: Identity): Promise<Object> {
@@ -39,11 +28,11 @@ class JwtToken implements IToken {
         });
     }
 
-    async encode(identity: Identity, expiresOn: ?number): Promise<string> {
+    async encode(identity: Identity, expiresOn: number): Promise<string> {
         const token = jwt.sign(
             {
                 data: await this.data(identity),
-                exp: expiresOn || (await this.expiresOn(identity))
+                exp: expiresOn
             },
             this.config.secret
         );

@@ -35,20 +35,6 @@ describe("JWT token test", () => {
         });
     });
 
-    it("should create tokens that expire in 1 day", async () => {
-        const in1Day = Math.floor(addDays(new Date(), 1).getTime() / 1000);
-        const token = new JwtToken({
-            secret: "MyS3cr3tK3Y",
-            expiresOn: (identity: MyEntity) => in1Day
-        });
-
-        let jwt = await token.encode(user);
-        return token.decode(jwt).then(({ data, exp }) => {
-            expect(exp).to.equal(in1Day);
-            expect(data).to.deep.equal({ identityId: user.id, classId: MyEntity.classId });
-        });
-    });
-
     it("should create tokens with custom data", async () => {
         const token = new JwtToken({
             secret: "MyS3cr3tK3Y",
@@ -62,7 +48,8 @@ describe("JWT token test", () => {
             }
         });
 
-        let jwt = await token.encode(user);
+        const expiresOn = Math.floor(addDays(new Date(), 1).getTime() / 1000);
+        let jwt = await token.encode(user, expiresOn);
         return token.decode(jwt).then(({ data }) => {
             expect(data).to.deep.equal({
                 identityId: user.id,

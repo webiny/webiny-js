@@ -64,8 +64,8 @@ yargs.command(
         const projectRoot = process.cwd();
         const appRoot = path.join(projectRoot, argv.appRoot);
 
-        const browserSync = require(path.join(appRoot, "server.js"));
-        browserSync({ projectRoot, appRoot });
+        const { serveApp } = require("./../");
+        serveApp(projectRoot, appRoot);
     }
 );
 

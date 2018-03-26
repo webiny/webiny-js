@@ -1,0 +1,308 @@
+/** loginRegister: start **/
+.loginRegister {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	margin-top: 150px;
+}
+
+.loginRegister .message {
+	background-color: #fff;
+	padding: 50px;
+	text-align: center;
+	border: 1px solid #cdcdcd;
+}
+
+.loginRegister .message h2 {
+	position: relative;
+	text-align: center;
+	display: inline-block;
+	letter-spacing: -.1px;
+	width: 100%;
+	font-size: 28px;
+	margin-bottom: 0px;
+	font-weight: 300;
+	color: #fa5a28;
+	padding-bottom: 5px;
+	border-bottom: 1px solid #eee;
+}
+
+.loginRegister .message h3 {
+	margin-bottom: 30px;
+	margin-top: 10px;
+	font-size: 14px;
+	color: #333;
+	font-weight: 300;
+}
+
+.loginRegister .actions {
+	background: #F0F0F0;
+	padding: 15px 20px 20px;
+	border: none;
+	text-align: right;
+	overflow: hidden;
+	margin: 25px -50px -50px;
+}
+
+.modalAction {
+	margin-top: 25px;
+	text-align: right;
+}
+
+.loginForm {
+	text-align: left;
+}
+
+.cantRemember {
+	position: absolute;
+	right: 0px;
+	z-index: 10;
+}
+
+@media (max-width: 768px) {
+	.loginRegister {
+		margin-top: -20px;
+	}
+
+	.loginRegister .actions {
+		flex-direction: column;
+	}
+}
+
+/** loginRegister: end **/
+
+/** browse: start **/
+.browse .appList {
+	margin-top: 50px;
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+
+.browse .appList > div {
+	margin-bottom: 80px;
+}
+
+.browse .appBox {
+	padding: 50px;
+	/*margin: 0 10px 90px 10px;*/
+	height: 100%;
+	position: relative;
+	background-color: #fff;
+	text-align: center;
+	width: auto;
+	border: 1px solid #e7e5e5;
+}
+
+.browse .appBox .logo img, .browse .appBox.empty .logo {
+	border-radius: 50%;
+	box-sizing: border-box;
+	position: absolute;
+	top: -45px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 100px;
+	height: 100px;
+}
+
+.browse .appBox.empty .logo {
+	background-color: #fff;
+	border: 3px dashed #676767;
+}
+
+.browse .appBox.empty .logo :global(.icon) {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 32px;
+}
+
+.browse .appBox a.viewDetails {
+	margin: 0;
+	position: absolute;
+	bottom: 65px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.browse .appBox p.shortDescription {
+	padding-bottom: 50px;
+}
+
+.browse .appBox h3 {
+	margin-top: 25px;
+}
+
+.browse .appBox .footer {
+	background-color: #F3F3F3;
+	display: block;
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	left: 0;
+}
+
+.browse .appBox .footer p {
+	padding: 10px;
+	margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+	.browse .appList {
+		flex-direction: column;
+	}
+
+	.browse .appList > div {
+		margin-bottom: 0px;
+	}
+
+	.browse .appBox {
+		padding: 50px 25px;
+		margin: 0 0 75px 0;
+	}
+
+	.browse .appBox p.shortDescription {
+		padding-bottom: 0px;
+	}
+
+	.browse .appBox a.viewDetails {
+		position: relative;
+		left: 0;
+		bottom: 0;
+		transform: none;
+		margin-bottom: 20px;
+	}
+}
+
+/** browse: end **/
+
+/** appDetails: start **/
+.appDetails .header {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 20px;
+}
+
+.appDetails .header .title {
+	display: flex;
+}
+
+.appDetails .header .logo {
+	width: 70px;
+	height: 70px;
+	border-radius: 50%;
+}
+
+.appDetails .header .titleBlock {
+	margin-left: 15px;
+}
+
+.appDetails .header .titleBlock p {
+	margin-bottom: 0;
+}
+
+.appDetails .header .title {
+	width: 85%;
+}
+
+.appDetails .header .title h2 {
+	margin-bottom: 0;
+	margin-top: 0;
+	border-bottom: none;
+}
+
+.appDetails .header .action {
+	text-align: right;
+	width: 15%;
+}
+
+.appDetails .sidebar {
+	padding-left: 25px;
+}
+
+.appDetails .sidebar .detailsList li {
+	width: 100%;
+	justify-content: space-between;
+	font-weight: bold;
+	border-bottom: 1px solid #eee;
+	display: flex;
+	margin-bottom: 15px;
+}
+
+.appDetails .sidebar .detailsList li span {
+	font-weight: normal;
+}
+
+.appDetails .sidebar .tags {
+	margin-left: 25px;
+	text-align: right;
+}
+
+.appDetails .sidebar .tags span {
+	background-color: #f2f2f2;
+	display: inline-block;
+	padding: 2px 5px;
+	margin-right: 5px;
+	margin-bottom: 2px;
+	font-size: 80%;
+}
+
+.appDetails .sidebar .reportIssue {
+	width: 100%;
+	text-align: center;
+}
+
+.appDetails .carousel {
+	margin: 0 auto;
+	max-width: 900px;
+}
+
+.appDetails .carousel :global(.owl-carousel .owl-item) {
+	height: 500px;
+	width: 100%;
+	vertical-align: middle;
+}
+
+@media (max-width: 768px) {
+	.appDetails .header {
+		flex-direction: column;
+		text-align: center;
+	}
+
+	.appDetails .header .title {
+		display: block;
+		margin-bottom: 15px;
+	}
+
+	.appDetails .header .logo, .appDetails .header .titleBlock {
+		float: none;
+	}
+
+	.appDetails .header .action {
+		width: 100%;
+		text-align: center;
+		margin-top: -10px;
+		margin-bottom: 10px;
+	}
+
+	.appDetails .header .action button,
+	.appDetails .header .action button > :global(span.icon) {
+		font-size: 16px !important;
+	}
+
+	.appDetails .sidebar {
+		padding-left: 0;
+	}
+
+	.appDetails .carousel :global(.owl-carousel .owl-item) {
+		height: auto;
+	}
+}
+
+/** appDetails: end **/

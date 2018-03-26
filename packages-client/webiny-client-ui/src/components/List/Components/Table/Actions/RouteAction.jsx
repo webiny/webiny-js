@@ -1,12 +1,12 @@
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-client';
+import { app, createComponent } from 'webiny-client';
 
-class RouteAction extends Webiny.Ui.Component {
+class RouteAction extends React.Component {
     constructor(props) {
         super(props);
 
-        this.bindMethods('getRoute,getParams');
+        ['getRoute','getParams'].map(m => this[m] = this[m].bind(this));
     }
 
     getRoute() {
@@ -14,31 +14,30 @@ class RouteAction extends Webiny.Ui.Component {
     }
 
     getParams() {
-        let params = !this.props.params ? Webiny.Router.getRoute(this.getRoute()).paramNames : _.clone(this.props.params);
+        let params = {};
 
-        if (_.isString(params) || _.isArray(params)) {
-            const paramNames = _.isString(params) ? params.split(',') : params;
-            params = {};
-            paramNames.map(p => {
-                params[p] = this.props.data[p];
+        if(!this.props.params) {
+            const routeParams = app.router.getRoute(this.getRoute()).params;
+            routeParams.map(p => {
+                params[p.name] = this.props.data[p.name];
             });
+        } else {
+            params = {...this.props.params}
         }
 
         if (_.isFunction(params)) {
             //noinspection JSUnresolvedFunction
             params = params(this.props.data);
         }
+
         return params;
     }
-}
 
-RouteAction.defaultProps = {
-    params: null,
-    route: null,
-    data: {},
-    label: null,
-    hide: null,
-    renderer() {
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
+
         if (_.isFunction(this.props.hide) && this.props.hide(this.props.data)) {
             return null;
         }
@@ -52,6 +51,14 @@ RouteAction.defaultProps = {
             </Link>
         );
     }
+}
+
+RouteAction.defaultProps = {
+    params: null,
+    route: null,
+    data: {},
+    label: null,
+    hide: null
 };
 
-export default Webiny.createComponent(RouteAction, {modules: ['Link', 'Icon']});
+export default createComponent(RouteAction, {modules: ['Link', 'Icon']});

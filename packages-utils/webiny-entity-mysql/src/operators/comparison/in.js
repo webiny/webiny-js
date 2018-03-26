@@ -1,7 +1,7 @@
 // @flow
 import _ from "lodash";
 import type { Operator } from "../../../types";
-import { ArrayAttribute } from "../../../../webiny-model/src";
+import { ArrayAttribute } from "webiny-model";
 import or from "../logical/or";
 
 const inOperator: Operator = {

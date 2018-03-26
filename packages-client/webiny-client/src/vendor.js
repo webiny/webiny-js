@@ -1,11 +1,8 @@
 module.exports = [
-    "jquery",
-    "bootstrap-sass",
-    "bluebird",
+    "jquery/dist/jquery.slim.js",
     "react",
     "react-dom",
-    "react-transition-group",
-    "baobab",
     "js-cookie",
     "history"
+    //"webiny-client"
 ];

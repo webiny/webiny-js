@@ -2,7 +2,7 @@
 import QueryResult from "./queryResult";
 import EntityModel from "./entityModel";
 import type Entity from "./entity";
-import {
+import type {
     EntitySaveParams,
     EntityFindParams,
     EntityDeleteParams,

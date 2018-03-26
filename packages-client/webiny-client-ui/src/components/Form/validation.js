@@ -18,7 +18,7 @@ class Validation {
     }
 
     getValidatorsFromProps(props: Object) {
-        let { defaultValidate, validators } = props;
+        let { defaultValidators, validators } = props;
         if (!validators) {
             validators = [];
         }
@@ -27,8 +27,8 @@ class Validation {
             validators = validators.split(",");
         }
 
-        if (defaultValidate) {
-            validators.push(defaultValidate);
+        if (defaultValidators) {
+            validators.push(defaultValidators);
         }
 
         return this.parseValidateProperty(validators);

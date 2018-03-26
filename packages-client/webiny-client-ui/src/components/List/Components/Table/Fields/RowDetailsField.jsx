@@ -1,19 +1,19 @@
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-client';
+import { createComponent } from 'webiny-client';
+import classSet from "classnames";
 import styles from '../../../styles.css';
 
-class RowDetailsField extends Webiny.Ui.Component {
+class RowDetailsField extends React.Component {
+    render() {
+        const { Link, List, styles, render, ...tdProps } = this.props;
 
-}
-
-RowDetailsField.defaultProps = {
-    hide: false,
-    renderer() {
-        const {styles} = this.props;
+        if (render) {
+            return render.call(this);
+        }
 
         let onClick = this.props.actions.hideRowDetails;
-        let className = this.classSet(styles.expand, styles.close);
+        let className = classSet(styles.expand, styles.close);
         if (!this.props.rowDetailsExpanded) {
             onClick = this.props.actions.showRowDetails;
             className = styles.expand;
@@ -24,18 +24,21 @@ RowDetailsField.defaultProps = {
             className
         };
 
-        const {Link, List, ...tdProps} = this.props;
         let content = <Link {...props}/>;
         if (_.isFunction(this.props.hide) ? this.props.hide(this.props.data) : this.props.hide) {
             content = null;
         }
 
         return (
-            <List.Table.Field {..._.omit(tdProps, ['renderer'])} className={styles.rowDetailsField}>
+            <List.Table.Field {...tdProps} className={styles.rowDetailsField}>
                 {() => content}
             </List.Table.Field>
         );
     }
+}
+
+RowDetailsField.defaultProps = {
+    hide: false
 };
 
-export default Webiny.createComponent(RowDetailsField, {modules: ['Link', 'List'], tableField: true, styles});
+export default createComponent(RowDetailsField, { modules: ['Link', 'List'], tableField: true, styles });

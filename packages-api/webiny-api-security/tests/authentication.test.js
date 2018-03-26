@@ -1,5 +1,6 @@
 import { Entity } from "webiny-api";
 import { MemoryDriver } from "webiny-entity-memory";
+import addDays from "date-fns/add_days";
 import Authentication from "../src/services/authentication";
 import MyUser from "./entities/myUser";
 import chai from "./utils/chai";
@@ -29,6 +30,7 @@ describe("Authentication test", () => {
                 authenticate: [
                     {
                         strategy: "credentials",
+                        expiresOn: () => addDays(new Date(), 30),
                         apiMethod: {
                             name: "Auth.MyUser.Login",
                             pattern: "/login-user"
@@ -71,7 +73,8 @@ describe("Authentication test", () => {
             MyUser,
             "credentials"
         );
-        token = await auth.createToken(login);
+        const expiresOn = Math.floor(addDays(new Date(), 1).getTime() / 1000);
+        token = await auth.createToken(login, expiresOn);
 
         expect(token).to.be.a("string");
         return auth.verifyToken(token).should.be.fulfilled.then(identity => {
@@ -127,7 +130,8 @@ describe("Authentication test", () => {
             MyUser,
             "credentials"
         );
-        const token = await auth.createToken(login);
+        const expiresOn = Math.floor(addDays(new Date(), 1).getTime() / 1000);
+        const token = await auth.createToken(login, expiresOn);
         const user = await MyUser.findOne({ query: { username: "test@webiny.com" } });
         await user.delete();
 
@@ -167,7 +171,8 @@ describe("Authentication test", () => {
         });
 
         const user = MyUser.findOne({ query: { username: "admin@webiny.com" } });
-        const token = await tokenProvider.encode(user);
+        const expiresOn = Math.floor(addDays(new Date(), 1).getTime() / 1000);
+        const token = await tokenProvider.encode(user, expiresOn);
 
         return auth
             .verifyToken(token)

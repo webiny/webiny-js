@@ -1,21 +1,19 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import _ from 'lodash';
-import $ from 'jquery';
+import React from "react";
+import _ from "lodash";
+import $ from "jquery";
 import classSet from "classnames";
-import { createComponent } from 'webiny-client';
-import styles from './styles.css';
+import { createComponent } from "webiny-client";
+import styles from "./styles.css";
 
 class Dropdown extends React.Component {
     constructor(props) {
         super(props);
-        this.id = _.uniqueId('dropdown-');
-        this.opened = false;
+        this.id = _.uniqueId("dropdown-");
     }
 
     componentDidMount() {
         if (!this.props.closeOnClick) {
-            $(document).on('click.' + this.id, '.' + this.id + ' .dropdown-menu', e => {
+            $(document).on("click." + this.id, "." + this.id + " .dropdown-menu", e => {
                 e.stopPropagation();
             });
         }
@@ -23,34 +21,32 @@ class Dropdown extends React.Component {
         const { styles } = this.props;
 
         $(this.element).on({
-            'show.bs.dropdown': () => {
+            "show.bs.dropdown": () => {
                 this.props.onShow();
-                $('.' + this.id).addClass(styles.opened);
+                $(this.element).addClass(styles.opened);
             },
-            'shown.bs.dropdown': () => {
+            "shown.bs.dropdown": () => {
                 this.props.onShown();
             },
-            'hide.bs.dropdown': () => {
+            "hide.bs.dropdown": () => {
                 this.props.onHide();
-                $('.' + this.id).removeClass(styles.opened);
+                $(this.element).removeClass(styles.opened);
             },
-            'hidden.bs.dropdown': () => {
+            "hidden.bs.dropdown": () => {
                 this.props.onHidden();
             }
         });
     }
 
     componentWillUnmount() {
-        $(document).off('.' + this.id);
+        $(document).off("." + this.id);
     }
 
-    /*
-    TODO: not sure if needed
     close() {
         const { styles } = this.props;
-        $('.' + this.id).removeClass('open');
-        $('.' + this.id).removeClass(styles.opened);
-    }*/
+        $(this.element).removeClass("open");
+        $(this.element).removeClass(styles.opened);
+    }
 
     render() {
         if (this.props.render) {
@@ -60,9 +56,9 @@ class Dropdown extends React.Component {
         const { styles, ...props } = this.props;
 
         const alignClasses = {
-            normal: '',
-            left: 'pull-left',
-            right: 'pull-right'
+            normal: "",
+            left: "pull-left",
+            right: "pull-right"
         };
 
         const classes = classSet(
@@ -70,26 +66,31 @@ class Dropdown extends React.Component {
             alignClasses[props.align],
             props.className,
             this.id,
-            this.props.type === 'balloon' && styles.balloon
+            this.props.type === "balloon" && styles.balloon
         );
 
-        const buttonClasses = classSet(
-            'dropdown-toggle',
-            styles.dropdownToggle
-        );
+        const buttonClasses = classSet("dropdown-toggle", styles.dropdownToggle);
 
         return (
-            <div className={classes} data-role="dropdown" ref={ref => this.element = ref}>
-                <button className={buttonClasses} type="button" data-toggle="dropdown" disabled={this.props.disabled}>
+            <div className={classes} data-role="dropdown" ref={ref => (this.element = ref)}>
+                <button
+                    className={buttonClasses}
+                    type="button"
+                    data-toggle="dropdown"
+                    disabled={this.props.disabled}
+                >
                     {props.title}
-                    <span className={'caret ' + styles.caret}/>
+                    <span className={"caret " + styles.caret} />
                 </button>
                 <ul
-                    className={'dropdown-menu ' + styles.dropdownMenu}
+                    className={"dropdown-menu " + styles.dropdownMenu}
                     role="menu"
                     style={this.props.listStyle}
-                    data-role="dropdown-menu">
-                    {_.isFunction(props.children) ? props.children.call(this, this) : props.children}
+                    data-role="dropdown-menu"
+                >
+                    {_.isFunction(props.children)
+                        ? props.children.call(this, this)
+                        : props.children}
                 </ul>
             </div>
         );
@@ -97,7 +98,7 @@ class Dropdown extends React.Component {
 }
 
 Dropdown.defaultProps = {
-    align: 'normal',
+    align: "normal",
     closeOnClick: true,
     disabled: false,
     listStyle: null,
@@ -106,7 +107,7 @@ Dropdown.defaultProps = {
     onShown: _.noop,
     onHide: _.noop,
     onHidden: _.noop,
-    type: 'default'
+    type: "default"
 };
 
 export default createComponent(Dropdown, { styles });

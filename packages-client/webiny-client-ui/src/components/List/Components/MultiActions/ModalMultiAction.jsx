@@ -1,8 +1,8 @@
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-client';
+import { createComponent } from 'webiny-client';
 
-class ModalMultiAction extends Webiny.Ui.Component {
+class ModalMultiAction extends React.Component {
     constructor(props) {
         super(props);
 
@@ -10,14 +10,12 @@ class ModalMultiAction extends Webiny.Ui.Component {
             modal: null
         };
     }
-}
 
-ModalMultiAction.defaultProps = {
-    actions: null,
-    label: null,
-    data: null,
-    hide: _.noop,
-    renderer() {
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
+
         if (_.isFunction(this.props.hide) && this.props.hide(this.props.data)) {
             return null;
         }
@@ -36,19 +34,21 @@ ModalMultiAction.defaultProps = {
                         }
                     }
                 });
-                this.setState({modal});
+                this.setState({ modal });
             }
         };
 
-        const {Link} = this.props;
+        const { Link } = this.props;
 
         const dialogProps = {
-            ref: ref => this.dialog = ref,
+            onReady: dialog => {
+                this.dialog = dialog;
+                dialog.show();
+            },
             // `dialog` is passed from Component.js as `this` of the mounted dialog itself
-            onComponentDidMount: dialog => dialog.show(),
             onHidden: () => {
                 this.dialog = null;
-                this.setState({modal: null});
+                this.setState({ modal: null });
             }
         };
 
@@ -59,6 +59,13 @@ ModalMultiAction.defaultProps = {
             </Link>
         );
     }
+}
+
+ModalMultiAction.defaultProps = {
+    actions: null,
+    label: null,
+    data: null,
+    hide: _.noop
 };
 
-export default Webiny.createComponent(ModalMultiAction, {modules: ['Link']});
+export default createComponent(ModalMultiAction, { modules: ['Link'] });

@@ -2,7 +2,7 @@
 import path from "path";
 import fileType from "file-type";
 import { Storage } from "webiny-file-storage";
-import { EntitySaveParams, EntityDeleteParams } from "webiny-entity/types";
+import type { EntitySaveParams, EntityDeleteParams } from "webiny-entity/types";
 import mdbid from "mdbid";
 import type { IFileData } from "webiny-file-storage/types";
 import Entity from "./entity";

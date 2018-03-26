@@ -4,7 +4,7 @@ import IndexesContainer from "./indexesContainer";
 import { Driver, Table } from "webiny-sql-table";
 import { MySQLConnection } from "webiny-mysql-connection";
 import { createTable, alterTable, truncateTable, dropTable } from "./sql";
-import { MySQLDriverOptions, MySQL } from "./../types";
+import type { MySQLDriverOptions, MySQL } from "./../types";
 import type { CommandOptions } from "webiny-sql-table/types";
 
 class MySQLDriver extends Driver {

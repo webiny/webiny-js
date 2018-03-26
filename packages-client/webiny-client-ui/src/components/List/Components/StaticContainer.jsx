@@ -1,33 +1,30 @@
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-client';
+import { createComponent } from 'webiny-client';
 import BaseContainer from './BaseContainer';
 
-class StaticContainer extends BaseContainer {
+// TODO: not finished!
+
+class StaticContainer extends React.Component {
 
     componentWillMount() {
-        super.componentWillMount();
-        this.prepare(this.props).then(() => {
-            this.loadData(this.props);
-        });
+        this.loadData(this.props);
     }
 
-    componentWillReceiveProps(props) {
-        super.componentWillReceiveProps(props);
+    async componentWillReceiveProps(props) {
         if (_.isEqual(props.data, this.props.data)) {
             return;
         }
-        this.prepare(props).then(() => {
-            this.loadData(props);
-        });
+        await this.prepare(props);
+        this.loadData(props);
     }
 
     loadData(props) {
         const propsData = _.get(props, 'data', this.props.data);
-        let data = _.isEmpty(this.state.filters) ? propsData : _.filter(propsData, this.state.filters);
+        let data = _.isEmpty(this.props.filters) ? propsData : _.filter(propsData, this.props.filters);
         const fields = [];
         const order = [];
-        const sorters = Object.keys(this.state.sorters).length ? this.state.sorters : this.state.initialSorters;
+        const sorters = Object.keys(this.props.sorters).length ? this.props.sorters : this.props.initialSorters;
         _.each(sorters, (sort, field) => {
             fields.push(field);
             order.push(sort === 1 ? 'asc' : 'desc');
@@ -36,17 +33,17 @@ class StaticContainer extends BaseContainer {
 
 
         const meta = {
-            currentPage: this.state.page,
-            perPage: this.state.perPage,
+            currentPage: this.props.page,
+            perPage: this.props.perPage,
             totalCount: data.length,
-            totalPages: Math.ceil(data.length / this.state.perPage)
+            totalPages: Math.ceil(data.length / this.props.perPage)
         };
 
         this.totalPages = meta.totalPages;
 
-        const from = (this.state.page - 1) * this.state.perPage;
+        const from = (this.props.page - 1) * this.props.perPage;
         const newState = _.assign({
-            list: data.slice(from, from + this.state.perPage),
+            list: data.slice(from, from + this.props.perPage),
             meta,
             selectedRows: []
         });
@@ -55,19 +52,19 @@ class StaticContainer extends BaseContainer {
     }
 }
 
-StaticContainer.defaultProps = _.merge({}, BaseContainer.defaultProps, {
+StaticContainer.defaultProps = {
     connectToRouter: false,
     page: 1,
     perPage: 10,
-    layout() {
+    layout({ filters, table, pagination }) {
         return (
             <webiny-list-layout>
-                <filters/>
-                <table/>
-                <pagination/>
+                {filters}
+                {table}
+                {pagination}
             </webiny-list-layout>
         );
     }
-});
+};
 
-export default Webiny.createComponent(StaticContainer);
+export default createComponent([StaticContainer, BaseContainer]);

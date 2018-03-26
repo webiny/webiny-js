@@ -1,4 +1,6 @@
 import pathToRegexp from "path-to-regexp";
+import qs from "query-string";
+import _ from "lodash";
 
 const patternCache = {};
 const cacheLimit = 10000;
@@ -28,7 +30,19 @@ const generatePath = (pattern = "/", params = {}) => {
         return pattern;
     }
     const generator = compileGenerator(pattern);
-    return generator(params);
+
+    const patternParams = [];
+    pathToRegexp(pattern, patternParams);
+
+    const query = {};
+    const paramKeys = Object.keys(params);
+    paramKeys.map(p => {
+        if (!_.find(patternParams, { name: p })) {
+            query[p] = params[p];
+        }
+    });
+
+    return generator(params) + "?" + qs.stringify(query);
 };
 
 export default generatePath;

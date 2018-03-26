@@ -171,7 +171,7 @@
 }
 
 /* when we have a tab list in the root of modal body, we have to remove the padding */
-.body :global(.Webiny_Ui_Tabs_tabs) {
+.body :global(.Tabs_tabs) {
 	margin: -15px;
 }
 

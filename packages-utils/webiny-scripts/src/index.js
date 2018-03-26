@@ -31,16 +31,16 @@ export async function developApp(projectRoot, appRoot) {
 }
 
 export async function buildApp(projectRoot, appRoot) {
-    const { default: UrlGenerator } = await import("./spa/urlGenerator");
+    const UrlGenerator = interopModule(await import("./spa/urlGenerator"));
     const urlGenerator = new UrlGenerator();
 
-    const baseWebpack = await import("./spa/webpack.config")({
+    const baseWebpack = interopModule(await import("./spa/webpack.config"))({
         projectRoot,
         appRoot,
         urlGenerator
     });
 
-    const appWebpack = (await import(path.join(appRoot, "webpack.config.js"))).default({
+    const appWebpack = interopModule(await import(path.join(appRoot, "webpack.config.js")))({
         config: baseWebpack,
         urlGenerator
     });
@@ -51,4 +51,9 @@ export async function buildApp(projectRoot, appRoot) {
 
         console.log(stats.toString({ colors: true }));
     });
+}
+
+export async function serveApp(projectRoot, appRoot) {
+    const server = interopModule(await import(path.join(appRoot, "server.js")));
+    server({ projectRoot, appRoot });
 }

@@ -22,14 +22,7 @@ export default () => {
         app.router.addRoute({
             name: "About",
             path: "/about",
-            render: () =>
-                import("./views/About").then(m => {
-                    return React.createElement(m.default, {
-                        api: "/security/users",
-                        fields: "id,email,firstName",
-                        perPage: 100
-                    });
-                })
+            component: () => import("./views/About").then(m => m.default)
         });
 
         app.router.addRoute({
@@ -47,6 +40,25 @@ export default () => {
         });
 
         app.router.addRoute({
+            name: "Login",
+            path: "/login",
+            exact: true,
+            render: () =>
+                app.modules.load("Skeleton.Login").then(Login => {
+                    return (
+                        <Login
+                            identity={"user"}
+                            strategy={"credentials"}
+                            onSuccess={() => {
+                                app.router.goToRoute("About");
+                            }}
+                        />
+                    );
+                }),
+            title: "Login"
+        });
+
+        app.router.addRoute({
             name: "NotMatched",
             path: "*",
             render() {
@@ -58,13 +70,6 @@ export default () => {
                 );
             }
         });
-
-        app.modules.register([
-            {
-                name: "CustomUI",
-                factory: () => import("./views/Custom").then(m => m.default)
-            }
-        ]);
 
         next();
     };

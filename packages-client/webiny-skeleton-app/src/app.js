@@ -1,4 +1,3 @@
-import React from "react";
 import { app as uiApp } from "webiny-client-ui";
 import Menu from "./services/menu";
 
@@ -15,16 +14,6 @@ export default () => {
                 name: "Me.Account",
                 path: "/me/account",
                 component: () => app.modules.load("Skeleton.UserAccountForm"),
-                title: "My Account"
-            });
-
-            app.router.addRoute({
-                name: "Dashboard",
-                path: "/",
-                exact: true,
-                render() {
-                    return <h2>Missing Dashboard view!</h2>;
-                },
                 title: "My Account"
             });
 
@@ -70,6 +59,10 @@ export default () => {
                     factory: () => import("./components/UserMenu")
                 },
                 {
+                    name: "Skeleton.Login",
+                    factory: () => import("./views/security/Login")
+                },
+                {
                     name: "Skeleton.UserMenu.AccountPreferences",
                     factory: () => import("./components/UserMenu/AccountPreferences"),
                     tags: ["user-menu-item"]
@@ -78,18 +71,6 @@ export default () => {
                     name: "Skeleton.UserMenu.Logout",
                     factory: () => import("./components/UserMenu/Logout"),
                     tags: ["user-logout-menu-item"]
-                },
-                {
-                    name: "Skeleton.Notifications.Widget",
-                    factory: () => import("./components/Notifications/Widget")
-                },
-                {
-                    name: "Skeleton.Notifications.Container",
-                    factory: () => import("./components/Notifications/Container")
-                },
-                {
-                    name: "Skeleton.Notifications.Notification",
-                    factory: () => import("./components/Notifications/Notification")
                 }
             ]);
 

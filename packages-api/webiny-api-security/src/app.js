@@ -15,17 +15,14 @@ class Security extends App {
         super();
 
         this.name = "Security";
-        api.serviceManager.add(
-            "Authentication",
-            () => new AuthenticationService(config.authentication)
-        );
-        api.serviceManager.add("Authorization", () => new AuthorizationService());
+        api.services.add("authentication", () => new AuthenticationService(config.authentication));
+        api.services.add("authorization", () => new AuthorizationService());
 
         this.endpoints = [
             generateEndpoint(
                 BaseAuthEndpoint,
                 config.authentication,
-                api.serviceManager.get("Authentication")
+                api.services.get("authentication")
             ),
             UsersEndpoint,
             PermissionsEndpoint,
@@ -33,7 +30,7 @@ class Security extends App {
             RolesEndpoint
         ];
 
-        registerAttributes(api.serviceManager.get("Authentication"));
+        registerAttributes(api.services.get("authentication"));
 
         // Helper attributes
         this.extendEntity("*", (entity: Entity) => {

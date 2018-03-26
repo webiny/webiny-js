@@ -1,6 +1,6 @@
-import React from 'react';
-import _ from 'lodash';
-import { app, createComponent } from 'webiny-client';
+import React from "react";
+import _ from "lodash";
+import { app, createComponent } from "webiny-client";
 
 class Navigation extends React.Component {
     constructor(props) {
@@ -9,25 +9,23 @@ class Navigation extends React.Component {
         this.state = {
             user: null,
             highlight: null,
-            display: window.outerWidth > 768 ? 'desktop' : 'mobile'
+            display: window.outerWidth > 768 ? "desktop" : "mobile"
         };
 
+        this.auth = app.services.get("authentication");
         this.checkDisplayInterval = null;
-        this.cursors = [];
     }
 
     componentDidMount() {
         // Navigation is rendered based on user roles so we need to watch for changes
-        this.watch('User', user => {
-            this.setState({ user });
+        this.unwatch = this.auth.onIdentity(identity => {
+            this.setState({ user: identity });
         });
 
-        this.watch('Navigation', nav => {
-            this.setState({ highlight: _.get(nav, 'highlight') });
-        });
+        this.setState({ user: this.auth.identity });
 
         this.checkDisplayInterval = setInterval(() => {
-            this.setState({ display: window.outerWidth > 768 ? 'desktop' : 'mobile' });
+            this.setState({ display: window.outerWidth > 768 ? "desktop" : "mobile" });
         }, 500);
     }
 
@@ -35,28 +33,11 @@ class Navigation extends React.Component {
         clearInterval(this.checkDisplayInterval);
 
         // Release data cursors
-        _.forEach(this.__cursors, cursor => {
-            if (cursor && cursor.tree) {
-                cursor.release();
-            }
-        });
-        this.__cursors = [];
+        this.unwatch();
     }
 
     shouldComponentUpdate(nextProps, nextState) {
         return !_.isEqual(this.state, nextState);
-    }
-
-    watch(key, func) {
-        let cursor = app.state.select(key);
-
-        cursor.on("update", e => {
-            func(e.data.currentData, e.data.previousData, e);
-        });
-
-        this.cursors.push(cursor);
-        // Execute callback with initial data
-        func(cursor.get());
     }
 
     render() {
@@ -69,17 +50,20 @@ class Navigation extends React.Component {
             highlight: this.state.highlight
         };
 
-        if (this.state.display === 'mobile') {
-            return <Mobile {...props}/>
+        if (this.state.display === "mobile") {
+            return <Mobile {...props} />;
         }
 
-        return <Desktop {...props}/>
+        return <Desktop {...props} />;
     }
 }
 
 export default createComponent(Navigation, {
-    modules: ['Link', {
-        Desktop: 'Skeleton.Navigation.Desktop',
-        Mobile: 'Skeleton.Navigation.Mobile'
-    }]
+    modules: [
+        "Link",
+        {
+            Desktop: "Skeleton.Navigation.Desktop",
+            Mobile: "Skeleton.Navigation.Mobile"
+        }
+    ]
 });

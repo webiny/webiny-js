@@ -1,13 +1,13 @@
-import React from 'react';
-import _ from 'lodash';
-import { app, createComponent } from 'webiny-client';
+import React from "react";
+import _ from "lodash";
+import { app, createComponent } from "webiny-client";
 
 class ClickSuccess extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = { data: {} };
-        this.dialogId = _.uniqueId('click-success-');
+        this.dialogId = _.uniqueId("click-success-");
 
         this.getContent = this.getContent.bind(this);
         this.onClick = this.onClick.bind(this);
@@ -15,12 +15,12 @@ class ClickSuccess extends React.Component {
     }
 
     hide() {
-        return app.services.get('modal').hide(this.dialogId);
+        return app.services.get("modal").hide(this.dialogId);
     }
 
     onClick() {
         return Promise.resolve(this.realOnClick(this)).then(() => {
-            return app.services.get('modal').show(this.dialogId);
+            return app.services.get("modal").show(this.dialogId);
         });
     }
 
@@ -30,7 +30,7 @@ class ClickSuccess extends React.Component {
             return content({
                 success: ({ data }) => {
                     this.setState({ data }, () => {
-                        app.services.get('modal').show(this.dialogId);
+                        app.services.get("modal").show(this.dialogId);
                     });
                 }
             });
@@ -38,7 +38,7 @@ class ClickSuccess extends React.Component {
 
         const input = React.Children.toArray(content)[0];
         this.realOnClick = input.props.onClick;
-        const props = _.omit(input.props, ['onClick']);
+        const props = _.omit(input.props, ["onClick"]);
         props.onClick = this.onClick;
         return React.cloneElement(input, props);
     }
@@ -50,14 +50,18 @@ class ClickSuccess extends React.Component {
 
         const dialogProps = {
             name: this.dialogId,
-            message: () => _.isFunction(this.props.message) ? this.props.message(this.state.data) : this.props.message,
+            message: () =>
+                _.isFunction(this.props.message)
+                    ? this.props.message(this.state.data)
+                    : this.props.message,
             onClose: () => {
                 this.hide().then(this.props.onClose);
             }
         };
 
         if (_.isFunction(this.props.renderDialog)) {
-            dialogProps['render'] = this.props.renderDialog.bind(this, {
+            // TODO: finish this part
+            dialogProps["render"] = this.props.renderDialog.bind(this, {
                 data: this.state.data,
                 close: dialogProps.onClose
             });
@@ -68,7 +72,7 @@ class ClickSuccess extends React.Component {
         return (
             <webiny-click-success>
                 {this.getContent()}
-                <Modal.Success {...dialogProps}/>
+                <Modal.Success {...dialogProps} />
             </webiny-click-success>
         );
     }
@@ -80,4 +84,4 @@ ClickSuccess.defaultProps = {
     renderDialog: null
 };
 
-export default createComponent(ClickSuccess, { modules: ['Modal'] });
+export default createComponent(ClickSuccess, { modules: ["Modal"] });

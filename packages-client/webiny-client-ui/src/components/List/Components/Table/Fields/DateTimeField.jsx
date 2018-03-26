@@ -1,24 +1,22 @@
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-client';
+import { createComponent, i18n } from 'webiny-client';
 
-class DateTimeField extends Webiny.Ui.Component {
+class DateTimeField extends React.Component {
+    render() {
+        const { List, format, render, ...props } = this.props;
 
-}
+        if (render) {
+            return render.call(this);
+        }
 
-DateTimeField.defaultProps = {
-    name: null,
-    default: '-',
-    format: null,
-    renderer() {
-        const {List, format, ...props} = this.props;
         const datetime = _.get(this.props.data, this.props.name);
 
         return (
-            <List.Table.Field {..._.omit(props, ['renderer'])}>
+            <List.Table.Field {...props}>
                 {() => {
                     try {
-                        return Webiny.I18n.datetime(datetime, this.props.format);
+                        return i18n.datetime(datetime, format);
                     } catch (e) {
                         return this.props.default;
                     }
@@ -26,6 +24,12 @@ DateTimeField.defaultProps = {
             </List.Table.Field>
         );
     }
+}
+
+DateTimeField.defaultProps = {
+    name: null,
+    default: '-',
+    format: null
 };
 
-export default Webiny.createComponent(DateTimeField, {modules: ['List'], tableField: true});
+export default createComponent(DateTimeField, { modules: ['List'], tableField: true });

@@ -1,30 +1,21 @@
 import React from 'react';
-import {Webiny} from 'webiny-client';
+import { createComponent } from 'webiny-client';
 
-class Filters extends Webiny.Ui.Component {
+class Filters extends React.Component {
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
 
-    constructor(props) {
-        super(props);
-
-        this.bindMethods('applyFilters');
-    }
-
-    applyFilters(filters) {
-        this.props.onFilter(filters);
-    }
-}
-
-Filters.defaultProps = {
-    renderer() {
         const callbacks = {
-            apply: filters => () => this.applyFilters(filters),
-            reset: () => () => this.applyFilters({})
+            apply: filters => () => this.props.onFilter(filters),
+            reset: () => () => this.props.onFilter({})
         };
 
         return (
             <webiny-list-filters>{this.props.children.call(this, callbacks)}</webiny-list-filters>
         );
     }
-};
+}
 
-export default Filters;
+export default createComponent(Filters);

@@ -1,7 +1,7 @@
-import React from 'react';
-import _ from 'lodash';
-import axios from 'axios';
-import { createComponent } from 'webiny-client';
+import React from "react";
+import _ from "lodash";
+import axios from "axios";
+import { createComponent } from "webiny-client";
 
 class Downloader extends React.Component {
     constructor(props) {
@@ -40,7 +40,7 @@ class Downloader extends React.Component {
         }
 
         let action = this.state.url;
-        if (!action.startsWith('http')) {
+        if (!action.startsWith("http")) {
             action = axios.defaults.baseURL + action;
         }
 
@@ -51,26 +51,37 @@ class Downloader extends React.Component {
                 if (_.isArray(value)) {
                     value.map((v, index) => {
                         params.push(
-                            <input type="hidden" name={name + '[]'} value={v} key={name + '-' + index}/>
+                            <input
+                                type="hidden"
+                                name={name + "[]"}
+                                value={v}
+                                key={name + "-" + index}
+                            />
                         );
                     });
                     return;
                 }
-                params.push(<input type="hidden" name={name} value={value} key={name}/>);
+                params.push(<input type="hidden" name={name} value={value} key={name} />);
             });
         }
 
         let authorization = null;
-        if (this.state.httpMethod !== 'GET') {
+        if (this.state.httpMethod !== "GET") {
             // TODO: after security
-            authorization =
-                <input type="hidden" name="Authorization" value={Webiny.Cookies.get(this.props.tokenCookie)}/>;
+            /*authorization = (
+                <input type="hidden" name="Authorization" value={Webiny.Cookies.get(this.props.tokenCookie)}/>
+            );*/
         }
 
         this.downloaded = true;
 
         return (
-            <form ref={ref => this.downloader = ref} action={action} method={this.state.httpMethod} target="_blank">
+            <form
+                ref={ref => (this.downloader = ref)}
+                action={action}
+                method={this.state.httpMethod}
+                target="_blank"
+            >
                 {params}
                 {authorization}
             </form>
@@ -79,7 +90,7 @@ class Downloader extends React.Component {
 }
 
 Downloader.defaultProps = {
-    tokenCookie: 'webiny-token',
+    tokenCookie: "webiny-token",
     onReady: _.noop
 };
 

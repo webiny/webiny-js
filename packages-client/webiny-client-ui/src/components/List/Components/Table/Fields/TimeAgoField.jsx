@@ -1,14 +1,14 @@
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-client';
+import { createComponent } from 'webiny-client';
 
-class TimeAgoField extends Webiny.Ui.Component {
+class TimeAgoField extends React.Component {
+    render() {
+        const {List, moment, data, name, render, ...props} = this.props;
 
-}
-
-TimeAgoField.defaultProps = {
-    renderer() {
-        const {List, moment, data, name, ...props} = this.props;
+        if (render) {
+            return render.call(this);
+        }
 
         let value = data[name];
         if (value) {
@@ -17,11 +17,11 @@ TimeAgoField.defaultProps = {
 
 
         return (
-            <List.Table.Field {..._.omit(props, ['renderer'])}>
+            <List.Table.Field {...props}>
                 {() => value || this.props.default}
             </List.Table.Field>
         );
     }
-};
+}
 
-export default Webiny.createComponent(TimeAgoField, {modules: ['List', {moment: 'Webiny/Vendors/Moment'}], tableField: true});
+export default createComponent(TimeAgoField, {modules: ['List', {moment: 'Vendor.Moment'}], tableField: true});

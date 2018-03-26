@@ -1,6 +1,6 @@
-import React from 'react';
-import _ from 'lodash';
-import { app, createComponent, i18n } from 'webiny-client';
+import React from "react";
+import _ from "lodash";
+import { app, createComponent, i18n } from "webiny-client";
 
 /**
  * If onClick function we are handling returns a function, the confirmation dialog will be hidden before executing the function.
@@ -16,7 +16,7 @@ class ClickConfirm extends React.Component {
 
         this.message = null;
         this.realOnClick = _.noop;
-        this.dialogId = _.uniqueId('click-confirm-');
+        this.dialogId = _.uniqueId("click-confirm-");
 
         this.onClick = this.onClick.bind(this);
         this.onConfirm = this.onConfirm.bind(this);
@@ -36,7 +36,7 @@ class ClickConfirm extends React.Component {
 
         this.message = msg;
         this.setState({ time: _.now() }, () => {
-            app.services.get('modal').show(this.dialogId);
+            app.services.get("modal").show(this.dialogId);
         });
     }
 
@@ -45,7 +45,10 @@ class ClickConfirm extends React.Component {
     }
 
     onCancel() {
-        return app.services.get('modal').hide(this.dialogId).then(this.props.onCancel);
+        return app.services
+            .get("modal")
+            .hide(this.dialogId)
+            .then(this.props.onCancel);
     }
 
     /**
@@ -67,9 +70,8 @@ class ClickConfirm extends React.Component {
         // Input
         const input = this.getInput(this.props);
         this.realOnClick = input.props.onClick;
-        const props = _.omit(input.props, ['onClick']);
+        const props = _.omit(input.props, ["onClick"]);
         props.onClick = this.onClick;
-
 
         const dialogProps = {
             name: this.dialogId,
@@ -79,26 +81,27 @@ class ClickConfirm extends React.Component {
             onComplete: this.props.onComplete
         };
 
-        if (_.isFunction(this.props.renderDialog)) {
-            dialogProps['render'] = this.props.renderDialog;
-        }
-
         const { Modal } = this.props;
+        const dialog = _.isFunction(this.props.renderDialog) ? (
+            this.props.renderDialog()
+        ) : (
+            <Modal.Confirmation />
+        );
 
         return (
             <webiny-click-confirm>
                 {React.cloneElement(input, props)}
-                <Modal.Confirmation {...dialogProps}/>
+                {React.cloneElement(dialog, dialogProps)}
             </webiny-click-confirm>
         );
     }
 }
 
 ClickConfirm.defaultProps = {
-    message: i18n('We need you to confirm your action.'),
+    message: i18n("We need you to confirm your action."),
     onComplete: _.noop,
     onCancel: _.noop,
     renderDialog: null
 };
 
-export default createComponent(ClickConfirm, { modules: ['Modal'] });
+export default createComponent(ClickConfirm, { modules: ["Modal"] });

@@ -1,18 +1,19 @@
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-client';
-import SelectRowField from './Fields/SelectRowField';
+import classSet from "classnames";
+import { createComponent, isElementOfType, elementHasFlag } from 'webiny-client';
 import Row from './Row';
-import Field from './Field';
 import FieldInfo from './FieldInfo';
 import Actions from './Actions';
 import Footer from './Footer';
 import RowDetails from './RowDetails';
 import Header from './Header';
 import Empty from './Empty';
+import SelectRowField from './Fields/SelectRowField';
 import styles from '../../styles.css';
 
-class Table extends Webiny.Ui.Component {
+
+class Table extends React.Component {
 
     constructor(props) {
         super(props);
@@ -31,7 +32,7 @@ class Table extends Webiny.Ui.Component {
             expandedRows: []
         };
 
-        this.bindMethods(
+        [
             'attachToTable',
             'prepareChildren',
             'prepareChild',
@@ -43,18 +44,16 @@ class Table extends Webiny.Ui.Component {
             'showRowDetails',
             'hideRowDetails',
             'toggleRowDetails'
-        );
+        ].map(m => this[m] = this[m].bind(this));
     }
 
     componentWillMount() {
-        super.componentWillMount();
         this.tempProps = this.props; // assign props to tempProps to be accessible without passing through method args
         this.prepareChildren(this.props.children);
     }
 
     componentWillReceiveProps(props) {
-        super.componentWillReceiveProps(props);
-        this.setState({selectedRows: props.selectedRows});
+        this.setState({ selectedRows: props.selectedRows });
         this.tempProps = props; // assign props to tempProps to be accessible without passing through method args
         this.prepareChildren(props.children);
     }
@@ -90,13 +89,13 @@ class Table extends Webiny.Ui.Component {
         } else {
             selectedRows.splice(_.findIndex(selectedRows, data), 1);
         }
-        this.setState({selectedRows});
+        this.setState({ selectedRows });
         this.props.onSelect(selectedRows);
     }
 
     onSort(name, sort) {
         this.selectAll(false);
-        this.setState({expandedRows: []});
+        this.setState({ expandedRows: [] });
         const sorters = _.clone(this.props.sorters);
         if (sort !== 0) {
             sorters[name] = sort;
@@ -113,13 +112,13 @@ class Table extends Webiny.Ui.Component {
         }
 
         // Table handles Row and Footer
-        if (Webiny.isElementOfType(child, Row)) {
+        if (isElementOfType(child, Row)) {
             this.rowElement = child;
             // Parse Row fields to extract headers
             this.headers = [];
             React.Children.map(child.props.children, rowChild => {
-                if (Webiny.elementHasFlag(rowChild, 'tableField')) {
-                    if (Webiny.isElementOfType(rowChild, SelectRowField)) {
+                if (elementHasFlag(rowChild, 'tableField')) {
+                    if (isElementOfType(rowChild, SelectRowField)) {
                         this.selectAllRowsElement = true;
                     }
 
@@ -128,34 +127,34 @@ class Table extends Webiny.Ui.Component {
                         return;
                     }
 
-                    const headerProps = _.omit(rowChild.props, ['renderer', 'headerRenderer']);
+                    const headerProps = _.omit(rowChild.props, ['render', 'renderHeader']);
                     headerProps.sortable = headerProps.sort || false;
                     headerProps.sorted = this.tempProps.sorters[headerProps.sort] || 0;
                     headerProps.children = React.Children.map(rowChild.props.children, ch => {
-                        if (Webiny.isElementOfType(ch, FieldInfo)) {
+                        if (isElementOfType(ch, FieldInfo)) {
                             return ch;
                         }
                     });
 
-                    if (_.has(rowChild.props, 'headerRenderer')) {
-                        headerProps.renderer = rowChild.props.headerRenderer;
+                    if (_.has(rowChild.props, 'renderHeader')) {
+                        headerProps.render = rowChild.props.renderHeader;
                     }
                     this.headers.push(headerProps);
                 }
 
-                if (Webiny.isElementOfType(rowChild, Actions) && !rowChild.props.hide) {
+                if (isElementOfType(rowChild, Actions) && !rowChild.props.hide) {
                     this.headers.push({});
                 }
             });
 
             if (this.props.onSelect && !this.selectAllRowsElement) {
-                this.headers.splice(0, 0, {renderer: SelectRowField.defaultProps.headerRenderer});
+                this.headers.splice(0, 0, { render: SelectRowField.defaultProps.renderHeader });
             }
-        } else if (Webiny.isElementOfType(child, Footer)) {
+        } else if (isElementOfType(child, Footer)) {
             this.footerElement = child;
-        } else if (Webiny.isElementOfType(child, Empty)) {
+        } else if (isElementOfType(child, Empty)) {
             this.emptyElement = child;
-        } else if (Webiny.isElementOfType(child, RowDetails)) {
+        } else if (isElementOfType(child, RowDetails)) {
             this.rowDetailsElement = child;
         }
     }
@@ -163,14 +162,14 @@ class Table extends Webiny.Ui.Component {
     showRowDetails(rowIndex) {
         return () => {
             this.state.expandedRows.push(rowIndex);
-            this.setState({expandedRows: this.state.expandedRows});
+            this.setState({ expandedRows: this.state.expandedRows });
         };
     }
 
     hideRowDetails(rowIndex) {
         return () => {
             this.state.expandedRows.splice(this.state.expandedRows.indexOf(rowIndex), 1);
-            this.setState({expandedRows: this.state.expandedRows});
+            this.setState({ expandedRows: this.state.expandedRows });
         };
     }
 
@@ -201,7 +200,7 @@ class Table extends Webiny.Ui.Component {
             data,
             fieldsCount: this.headers.length + (this.props.onSelect ? 1 : 0),
             expanded: this.state.expandedRows.indexOf(index) > -1,
-            selected: !!_.find(this.state.selectedRows, {id: data.id}),
+            selected: !!_.find(this.state.selectedRows, { id: data.id }),
             sorters: _.clone(this.props.sorters),
             actions: _.assign({}, this.props.actions, {
                 showRowDetails: this.showRowDetails,
@@ -228,24 +227,17 @@ class Table extends Webiny.Ui.Component {
             <Header {...header}/>
         );
     }
-}
 
-Table.defaultProps = {
-    formSkip: true, // tells Form to stop descending into this element's children when looking for form components
-    data: [],
-    type: 'simple',
-    onSelect: null,
-    selectedRows: [],
-    sorters: {},
-    showHeader: true,
-    className: null,
-    renderer() {
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
 
         const typeClasses = {
             simple: styles.simple
         };
 
-        const className = this.classSet([
+        const className = classSet([
             styles.table,
             typeClasses[this.props.type],
             this.props.className
@@ -281,6 +273,17 @@ Table.defaultProps = {
             </table>
         );
     }
+}
+
+Table.defaultProps = {
+    formSkip: true, // tells Form to stop descending into this element's children when looking for form components
+    data: [],
+    type: 'simple',
+    onSelect: null,
+    selectedRows: [],
+    sorters: {},
+    showHeader: true,
+    className: null
 };
 
-export default Webiny.createComponent(Table, {styles});
+export default createComponent(Table, { styles });

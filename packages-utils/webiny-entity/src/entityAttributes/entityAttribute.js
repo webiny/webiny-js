@@ -5,9 +5,9 @@ import _ from "lodash";
 import EntityAttributeValue from "./entityAttributeValue";
 import type { EntityAttributesContainer } from "./..";
 import EntityError from "./../entityError";
-import { EntityAttributeOptions } from "./../../types";
+import type { EntityAttributeOptions } from "./../../types";
 import { Entity } from "..";
-import ModelError from "../../../webiny-model/src/modelError";
+import { ModelError } from "webiny-model";
 
 declare type EntityClass = Class<Entity> | Array<Class<Entity>>;
 

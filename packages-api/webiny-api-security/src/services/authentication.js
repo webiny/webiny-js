@@ -21,7 +21,7 @@ class Authentication implements IAuthentication {
      * @param identity
      * @param expiresOn
      */
-    createToken(identity: Identity, expiresOn: ?number): Promise<string> {
+    createToken(identity: Identity, expiresOn: number): Promise<string> {
         return this.config.token.encode(identity, expiresOn);
     }
 

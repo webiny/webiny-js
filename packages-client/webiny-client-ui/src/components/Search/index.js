@@ -1,46 +1,47 @@
-import React from 'react';
-import _ from 'lodash';
-import {Webiny} from 'webiny-client';
-import styles from './styles.css';
+import React from "react";
+import _ from "lodash";
+import warning from "warning";
+import classSet from "classnames";
+import { i18n, createComponent, ApiComponent } from "webiny-client";
+import { FormComponent } from "webiny-client-ui";
+import styles from "./styles.css";
 
 /**
  * @i18n.namespace Webiny.Ui.Search
  */
-class Search extends Webiny.Ui.FormComponent {
-
+class Search extends React.Component {
     constructor(props) {
         super(props);
 
-        _.assign(this.state, {
-            query: '', // Value being searched
-            preview: '', // Rendered value of selected value
+        this.state = {
+            ...props.initialState,
+            query: "", // Value being searched
+            preview: "", // Rendered value of selected value
             options: [],
             loading: false,
             selectedOption: -1, // Selected option index
             selectedData: null // Delected item data
-        });
+        };
 
-        this.warned = false;
+        this.mounted = false;
         this.preventBlur = false;
         this.delay = null;
         this.currentValueIsId = false;
         this.filters = {};
         this.unwatch = _.noop;
 
-        this.bindMethods(
-            'loadOptions',
-            'inputChanged',
-            'selectItem',
-            'selectCurrent',
-            'onKeyUp',
-            'onBlur',
-            'renderPreview',
-            'fetchValue',
-            'getCurrentData',
-            'applyFreeInput'
-        );
-
-        Webiny.Mixins.ApiComponent.extend(this);
+        [
+            "loadOptions",
+            "inputChanged",
+            "selectItem",
+            "selectCurrent",
+            "onKeyUp",
+            "onBlur",
+            "renderPreview",
+            "fetchValue",
+            "getCurrentData",
+            "applyFreeInput"
+        ].map(m => (this[m] = this[m].bind(this)));
 
         if (this.props.filterBy) {
             // Assume the most basic form of filtering (single string)
@@ -62,13 +63,13 @@ class Search extends Webiny.Ui.FormComponent {
             this.filterName = name;
             this.filterField = filter;
 
-            this.unwatch = this.props.form.watch(name, newValue => this.applyFilter(newValue, name, filter));
+            this.unwatch = this.props.form.watch(name, newValue =>
+                this.applyFilter(newValue, name, filter)
+            );
         }
     }
 
     componentWillReceiveProps(props) {
-        super.componentWillReceiveProps(props);
-
         if (_.isEqual(props.value, this.props.value)) {
             return;
         }
@@ -77,12 +78,16 @@ class Search extends Webiny.Ui.FormComponent {
     }
 
     componentWillMount() {
-        super.componentWillMount();
         this.normalizeValue(this.props);
     }
 
+    componentDidMount() {
+        this.mounted = true;
+        this.props.attachToForm && this.props.attachToForm(this);
+    }
+
     componentWillUnmount() {
-        super.componentWillUnmount();
+        this.mounted = false;
         this.unwatch();
     }
 
@@ -102,7 +107,7 @@ class Search extends Webiny.Ui.FormComponent {
         const newState = {
             options: [],
             selectedOption: -1,
-            query: ''
+            query: ""
         };
 
         // Try to extract ID
@@ -111,24 +116,23 @@ class Search extends Webiny.Ui.FormComponent {
             id = value;
         } else if (value && _.isPlainObject(value)) {
             id = value.id;
-            newState['selectedData'] = value;
+            newState["selectedData"] = value;
         }
 
         if (!id && value) {
-            newState['preview'] = value;
+            newState["preview"] = value;
         } else if (id && _.isPlainObject(value)) {
-            newState['preview'] = this.renderPreview(value);
+            newState["preview"] = this.renderPreview(value);
         } else if (id) {
-            this.api.get(this.api.getUrl(value)).then(apiResponse => {
-                const data = apiResponse.getData('entity');
-                this.setState({selectedData: data, preview: this.renderPreview(data)});
+            this.props.api.get(this.props.api.defaults.url + "/" + value).then(response => {
+                const data = response.data.data.entity;
+                this.setState({ selectedData: data, preview: this.renderPreview(data) });
             });
         }
 
         this.currentValueIsId = !!id;
         this.setState(newState);
     }
-
 
     getCurrentData() {
         return this.state.selectedData;
@@ -147,26 +151,34 @@ class Search extends Webiny.Ui.FormComponent {
             filters[filter] = _.isObject(newValue) ? newValue.id : newValue;
             this.filters = filters;
         }
-        this.filters = _.pickBy(this.filters, v => !_.isNull(v) && !_.isUndefined(v) && v !== '');
+        this.filters = _.pickBy(this.filters, v => !_.isNull(v) && !_.isUndefined(v) && v !== "");
     }
 
     loadOptions(query) {
-        this.setState({query});
+        this.setState({ query });
         clearTimeout(this.delay);
 
         this.delay = setTimeout(() => {
-            if (_.isEmpty(this.state.query) || this.state.query.length < this.props.minQueryLength) {
+            if (
+                _.isEmpty(this.state.query) ||
+                this.state.query.length < this.props.minQueryLength
+            ) {
                 return;
             }
 
-            if (this.isMounted()) {
-                this.setState({loading: true});
-                this.api.setQuery(_.merge({_searchQuery: this.state.query}, this.filters)).execute().then(apiResponse => {
-                    const data = apiResponse.getData();
-                    this.setState({options: _.get(data, 'list', data), loading: false}, () => {
-                        this.props.onLoadOptions({options: this.state.options});
+            if (this.mounted) {
+                this.setState({ loading: true });
+                this.props.api
+                    .request({ params: { _searchQuery: this.state.query, ...this.filters } })
+                    .then(response => {
+                        const { data } = response.data;
+                        this.setState(
+                            { options: _.get(data, "list", data), loading: false },
+                            () => {
+                                this.props.onLoadOptions({ options: this.state.options });
+                            }
+                        );
                     });
-                });
             }
         }, this.props.allowFreeInput ? 300 : 500);
     }
@@ -177,7 +189,7 @@ class Search extends Webiny.Ui.FormComponent {
         }
         this.setState({
             query: e.target.value,
-            preview: '',
+            preview: "",
             selectedData: null
         });
         if (e.target.value.length >= 2) {
@@ -193,11 +205,15 @@ class Search extends Webiny.Ui.FormComponent {
         }
 
         switch (this.key) {
-            case 'Backspace':
-                if (_.isEmpty(this.state.query) || _.get(this.props, 'value')) {
+            case "Backspace":
+                if (_.isEmpty(this.state.query) || _.get(this.props, "value")) {
                     // Reset only if it is a selected value with valid mongo ID or data object
-                    const id = _.get(this.props, 'value');
-                    if (this.props.allowFreeInput && _.isString(id) && !id.match(/^[0-9a-fA-F]{24}$/)) {
+                    const id = _.get(this.props, "value");
+                    if (
+                        this.props.allowFreeInput &&
+                        _.isString(id) &&
+                        !id.match(/^[0-9a-fA-F]{24}$/)
+                    ) {
                         this.inputChanged(e);
                         break;
                     }
@@ -207,13 +223,13 @@ class Search extends Webiny.Ui.FormComponent {
                     this.inputChanged(e);
                 }
                 break;
-            case 'ArrowDown':
+            case "ArrowDown":
                 this.selectNext();
                 break;
-            case 'ArrowUp':
+            case "ArrowUp":
                 this.selectPrev();
                 break;
-            case 'Enter':
+            case "Enter":
                 e.stopPropagation();
                 e.preventDefault();
                 if (this.state.options.length > 0) {
@@ -221,15 +237,15 @@ class Search extends Webiny.Ui.FormComponent {
                 } else if (this.props.allowFreeInput) {
                     this.applyFreeInput();
                 } else {
-                    this.props.onEnter({event: e});
+                    this.props.onEnter({ event: e });
                 }
                 break;
-            case 'Escape':
+            case "Escape":
                 this.onBlur();
                 break;
-            case 'Tab':
-            case 'ArrowLeft':
-            case 'ArrowRight':
+            case "Tab":
+            case "ArrowLeft":
+            case "ArrowRight":
                 break;
             default:
                 this.inputChanged(e);
@@ -243,12 +259,12 @@ class Search extends Webiny.Ui.FormComponent {
         }
 
         if (!this.props.allowFreeInput) {
-            const state = {options: []};
-            if (!_.get(this.props, 'value')) {
-                state['query'] = '';
-                state['selectedOption'] = -1;
+            const state = { options: [] };
+            if (!_.get(this.props, "value")) {
+                state["query"] = "";
+                state["selectedOption"] = -1;
             }
-            this.setState(state, this.validate);
+            this.setState(state, this.props.validate);
         }
 
         if (this.props.allowFreeInput) {
@@ -257,25 +273,28 @@ class Search extends Webiny.Ui.FormComponent {
     }
 
     applyFreeInput() {
-        if (!this.state.selectedData && !(this.state.query === '' && this.state.preview !== '')) {
+        if (!this.state.selectedData && !(this.state.query === "" && this.state.preview !== "")) {
             this.props.onChange(this.state.query);
-            setTimeout(this.validate, 10);
+            setTimeout(this.props.validate, 10);
         }
     }
 
     selectItem(item) {
         this.preventBlur = true;
-        this.setState({
-            selectedOption: -1,
-            query: '',
-            options: [],
-            preview: this.renderPreview(item),
-            selectedData: item
-        }, () => {
-            this.props.onChange(this.props.useDataAsValue ? item : item[this.props.valueAttr]);
-            setTimeout(this.validate, 10);
-            this.preventBlur = false;
-        });
+        this.setState(
+            {
+                selectedOption: -1,
+                query: "",
+                options: [],
+                preview: this.renderPreview(item),
+                selectedData: item
+            },
+            () => {
+                this.props.onChange(this.props.useDataAsValue ? item : item[this.props.valueAttr]);
+                setTimeout(this.props.validate, 10);
+                this.preventBlur = false;
+            }
+        );
     }
 
     selectNext() {
@@ -328,30 +347,31 @@ class Search extends Webiny.Ui.FormComponent {
     }
 
     reset() {
-        this.setState({
-            selectedOption: -1,
-            query: '',
-            preview: '',
-            options: [],
-            selectedData: null
-        }, () => {
-            this.props.onChange(null);
-            this.props.onReset();
-        });
+        this.setState(
+            {
+                selectedOption: -1,
+                query: "",
+                preview: "",
+                options: [],
+                selectedData: null
+            },
+            () => {
+                this.props.onChange(null);
+                this.props.onReset();
+            }
+        );
     }
 
-    fetchValue({data: item}) {
-        let value = _.get(item, this.props.textAttr);
-        if (DEVELOPMENT) {
-            if (!value) {
-                if (!this.warned) {
-                    console.warn(`Warning: Item attribute '${this.props.textAttr}' was not found in the results of '${this.props.name}'
-                component.\nMissing or misspelled 'fields' parameter?`);
-                    this.warned = true;
-                }
-                value = item.id;
-            }
-        }
+    fetchValue({ data: item }) {
+        let value = _.get(item, this.props.textAttr, item.id);
+
+        warning(
+            value,
+            `Warning: Item attribute '${this.props.textAttr}' was not found in the results of '${
+                this.props.name
+            }' component.\nMissing or misspelled 'fields' parameter?`
+        );
+
         return value;
     }
 
@@ -359,71 +379,95 @@ class Search extends Webiny.Ui.FormComponent {
         if (!item) {
             return null;
         }
-        return this.props.selectedRenderer.call(this, {option: {data: item}});
+        return this.props.renderSelected.call(this, { option: { data: item } });
+    }
+
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
+
+        const { FormGroup } = this.props;
+
+        return (
+            <FormGroup valid={this.state.isValid} className={this.props.className}>
+                {this.props.renderLabel.call(this)}
+                {this.props.renderInfo.call(this)}
+
+                <div className="inputGroup">
+                    {this.props.renderSearchInput.call(this, { $this: this })}
+                </div>
+                {this.props.renderDescription.call(this)}
+                {this.props.renderValidationMessage.call(this)}
+            </FormGroup>
+        );
     }
 }
 
-Search.defaultProps = Webiny.Ui.FormComponent.extendProps({
-    searchOperator: 'or',
-    valueAttr: 'id',
-    textAttr: 'name',
+Search.defaultProps = {
+    searchOperator: "or",
+    valueAttr: "id",
+    textAttr: "name",
     minQueryLength: 2,
     onEnter: _.noop,
     onChange: _.noop,
     onReset: _.noop,
     onLoadOptions: _.noop,
-    inputIcon: 'icon-search',
-    loadingIcon: 'icon-search',
-    placeholder: Webiny.I18n('Type to search'),
+    inputIcon: "icon-search",
+    loadingIcon: "icon-search",
+    placeholder: i18n("Type to search"),
     useDataAsValue: false,
     allowFreeInput: false,
-    optionRenderer({option}) {
+    renderOptionLabel({ option }) {
         const value = this.fetchValue(option);
-        const content = {__html: value.replace(/\s+/g, '&nbsp;')};
-        return <div dangerouslySetInnerHTML={content}/>;
+        const content = { __html: value.replace(/\s+/g, "&nbsp;") };
+        return <div dangerouslySetInnerHTML={content} />;
     },
-    selectedRenderer({option}) {
+    renderSelected({ option }) {
         return this.fetchValue(option);
     },
-    renderOption({item, index}) {
-        const {styles} = this.props;
+    renderOption({ item, index }) {
+        const { styles } = this.props;
         const itemClasses = {
             [styles.selected]: index === this.state.selectedOption
         };
 
         const linkProps = {
             onMouseDown: () => this.selectItem(item),
-            onMouseOver: () => this.setState({selectedOption: index, preview: this.renderPreview(item)})
+            onMouseOver: () =>
+                this.setState({ selectedOption: index, preview: this.renderPreview(item) })
         };
 
         return (
-            <li key={index} className={this.classSet(itemClasses)} {...linkProps}>
+            <li key={index} className={classSet(itemClasses)} {...linkProps}>
                 <a href="javascript:void(0)">
-                    {this.props.optionRenderer.call(this, {option: {data: item}})}
+                    {this.props.renderOptionLabel.call(this, { option: { data: item } })}
                 </a>
             </li>
         );
     },
     renderSearchInput() {
         const inputProps = {
-            type: 'text',
+            type: "text",
             readOnly: this.props.readOnly || false,
-            placeholder: this.getPlaceholder(),
-            autoComplete: 'off',
-            spellCheck: 'false',
-            dir: 'auto',
+            placeholder: this.props.placeholder,
+            autoComplete: "off",
+            spellCheck: "false",
+            dir: "auto",
             onKeyDown: this.onKeyUp,
             onBlur: this.onBlur,
-            value: this.state.query || this.state.preview || '',
+            value: this.state.query || this.state.preview || "",
             onChange: this.inputChanged,
-            disabled: this.isDisabled()
+            disabled: this.props.isDisabled()
         };
 
         // Render option
-        const options = this.state.options.map((item, index) => this.props.renderOption.call(this, {item, index}));
+        const options = this.state.options.map((item, index) =>
+            this.props.renderOption.call(this, { item, index })
+        );
 
         let dropdownMenu = null;
-        const {styles} = this.props;
+        const { styles } = this.props;
         if (this.state.options.length > 0) {
             dropdownMenu = (
                 <div className={styles.autosuggest}>
@@ -435,33 +479,24 @@ Search.defaultProps = Webiny.Ui.FormComponent.extendProps({
         }
 
         // Create search input
-        const {Link, Icon} = this.props;
+        const { Link, Icon } = this.props;
         return (
             <div className={styles.search}>
                 <Link className={styles.btn}>
-                    <Icon className={styles.icon} icon={this.props.loading ? this.props.loadingIcon : this.props.inputIcon}/>
+                    <Icon
+                        className={styles.icon}
+                        icon={this.props.loading ? this.props.loadingIcon : this.props.inputIcon}
+                    />
                 </Link>
-                <input {...inputProps}/>
+                <input {...inputProps} />
                 {dropdownMenu}
             </div>
         );
-    },
-    renderer() {
-        const {FormGroup} = this.props;
-
-        return (
-            <FormGroup valid={this.state.isValid} className={this.props.className}>
-                {this.renderLabel()}
-                {this.renderInfo()}
-
-                <div className="inputGroup">
-                    {this.props.renderSearchInput.call(this, {$this: this})}
-                </div>
-                {this.renderDescription()}
-                {this.renderValidationMessage()}
-            </FormGroup>
-        );
     }
-});
+};
 
-export default Webiny.createComponent(Search, {modules: ['Link', 'Icon', 'FormGroup'], styles});
+export default createComponent([Search, ApiComponent, FormComponent], {
+    modules: ["Link", "Icon", "FormGroup"],
+    styles,
+    formComponent: true
+});

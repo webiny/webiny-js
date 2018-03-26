@@ -110,6 +110,7 @@ class ModalComponent extends React.Component {
 
     componentWillUnmount() {
         this.unbindHandlers();
+        app.services.get("modal").unregister(this.props.name);
         mountedDialogs.splice(_.findIndex(mountedDialogs, { id: this.id }), 1);
         ReactDOM.unmountComponentAtNode(this.modalContainer);
     }

@@ -1,119 +1,105 @@
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-client';
+import { app, createComponent, ApiComponent, i18n } from 'webiny-client';
 import BaseContainer from './BaseContainer';
+import sortersToString from './sortersToString';
 import styles from './../styles.css';
 
 /**
  * @i18n.namespace Webiny.Ui.List.ApiContainer
  */
-class ApiContainer extends BaseContainer {
+class ApiContainer extends React.Component {
 
     constructor(props) {
         super(props);
-        _.assign(this.state, {
+
+        this.state = {
             initiallyLoaded: false,
             routerParams: null
-        });
-        Webiny.Mixins.ApiComponent.extend(this);
+        };
+
+        this.mounted = false;
+
+        ['loadData', 'recordUpdate', 'recordDelete'].map(m => this[m] = this[m].bind(this));
     }
 
     componentWillMount() {
-        super.componentWillMount();
-        this.prepare(this.props).then(() => {
-            if (this.props.autoLoad) {
-                this.loadData().then(data => {
-                    if (!this.isMounted()) {
-                        return;
-                    }
-                    this.setState({initiallyLoaded: true});
-                    this.props.onInitialLoad({list: _.get(data, 'list'), meta: _.get(data, 'meta')});
-                });
-            }
-        });
+        this.mounted = true;
+
+        if (this.props.autoLoad) {
+            this.loadData().then(data => {
+                if (!this.mounted) {
+                    return;
+                }
+                this.setState({ initiallyLoaded: true });
+                this.props.onInitialLoad({ list: _.get(data, 'list'), meta: _.get(data, 'meta') });
+            });
+        }
     }
 
     componentDidMount() {
-        super.componentDidMount();
         if (this.props.autoRefresh && _.isNumber(this.props.autoRefresh)) {
             this.autoRefresh = setInterval(() => this.loadData(null, false), 1000 * this.props.autoRefresh);
         }
     }
 
     componentWillUnmount() {
-        super.componentWillUnmount();
+        this.mounted = false;
         clearInterval(this.autoRefresh);
         if (this.request) {
-            this.request.cancel();
+            // TODO: this.cancelRequest();
         }
     }
 
     componentWillReceiveProps(props) {
-        super.componentWillReceiveProps(props);
         let shouldLoad = false;
 
-        if (props.url !== this.props.url) {
+        const propKeys = ['sorters', 'filters', 'perPage', 'page', 'searchQuery', 'searchFields', 'searchOperator'];
+        if (!_.isEqual(_.pick(props, propKeys), _.pick(this.props, propKeys))) {
             shouldLoad = true;
-            this.api.setUrl(props.url);
-        }
-
-        if (!_.isEqual(props.query, this.props.query)) {
-            shouldLoad = true;
-        }
-
-        if (this.props.connectToRouter) {
-            const routerParams = Webiny.Router.getQueryParams();
-            if (!_.isEqual(this.state.routerParams, routerParams)) {
-                this.setState({routerParams});
-                shouldLoad = true;
-            }
         }
 
         if (this.props.autoLoad && shouldLoad) {
-            this.prepare(props).then(() => {
-                this.loadData(props).then(data => {
-                    this.props.onLoad({list: _.get(data, 'list'), meta: _.get(data, 'meta')});
-                });
+            this.loadData(props).then(data => {
+                this.props.onLoad({ list: _.get(data, 'list'), meta: _.get(data, 'meta') });
             });
         }
     }
 
     loadData(props = null, showLoading = true) {
-        if (this.request) {
-            this.request.cancel();
-        }
-
         if (!props) {
             props = this.props;
         }
-        this.setState({selectedRows: []});
-        const query = _.assign({}, props.query, {
-            _sort: Object.keys(this.state.sorters).length ? Webiny.Router.sortersToString(this.state.sorters) : this.state.initialSorters,
-            _perPage: this.state.perPage,
-            _page: this.state.page,
-            _searchQuery: this.state.searchQuery,
-            _searchFields: this.state.searchFields,
-            _searchOperator: this.state.searchOperator
-        }, this.state.filters);
 
-        if (showLoading) {
-            this.showLoading();
+        if (this.request) {
+            // TODO: this.cancelRequest();
         }
 
-        this.request = this.api.setQuery(query).execute().then(apiResponse => {
-            const data = apiResponse.getData();
-            if (!apiResponse.isError() && !apiResponse.isAborted()) {
-                if (this.props.prepareLoadedData) {
-                    data.list = this.props.prepareLoadedData({list: data.list, meta: data.meta, $this: this});
-                }
+        const query = _.assign({}, props.query, {
+            _sort: Object.keys(props.sorters).length ? sortersToString(props.sorters) : props.initialSorters,
+            _perPage: props.perPage,
+            _page: props.page,
+            _searchQuery: props.searchQuery,
+            _searchFields: props.searchFields,
+            _searchOperator: props.searchOperator
+        }, props.filters);
+
+        if (showLoading) {
+            this.props.showLoading();
+        }
+
+        this.request = props.api.request({ params: query }).then(response => {
+            const { data } = response.data;
+            if (!response.data.code && props.prepareLoadedData) {
+                data.list = props.prepareLoadedData({ list: data.list, meta: data.meta, $this: this });
             }
 
-            if (apiResponse.isError()) {
-                Webiny.Growl.danger(apiResponse.getMessage(), this.i18n('That didn\'t go as expected...'), true);
+            if (response.data.code) {
+                app.services.get('growler').danger(response.data.message, i18n('That didn\'t go as expected...'), true);
             }
 
-            if (this.isMounted()) {
-                this.setState(_.merge({loading: false}, data));
+            if (this.mounted) {
+                props.setState({ loading: false, ...data, selectedRows: [] });
             }
 
             return data;
@@ -122,57 +108,81 @@ class ApiContainer extends BaseContainer {
         return this.request;
     }
 
-    getContainerActions() {
-        const actions = super.getContainerActions();
-        actions.api = this.api;
-        return actions;
-    }
-
     recordUpdate(id, attributes) {
-        return this.api.patch(id, attributes).then(apiResponse => {
-            if (!apiResponse.isError()) {
+        return this.props.api.patch(this.props.api.defaults.url + '/' + id, attributes).then(response => {
+            if (!response.data.code) {
                 this.loadData();
             } else {
-                Webiny.Growl.danger(apiResponse.getMessage(), this.i18n('That didn\'t go as expected...'), true);
+                app.services.get('growler').danger(response.data.message, i18n('That didn\'t go as expected...'), true);
             }
-            return apiResponse;
+            return response;
         });
     }
 
     recordDelete(id, autoRefresh = true) {
-        return this.api.delete(id).then(apiResponse => {
-            if (!apiResponse.isError() && autoRefresh) {
+        return this.props.api.delete(this.props.api.defaults.url + '/' + id).then(response => {
+            if (!response.data.code && autoRefresh) {
                 this.loadData();
+            } else {
+                app.services.get('growler').danger(response.data.message, i18n('That didn\'t go as expected...'), true);
             }
-            return apiResponse;
+            return response;
         });
+    }
+
+    render() {
+        const content = this.props.getContent(this.props.children);
+
+        if (!content) {
+            return null;
+        }
+
+        if (!this.props.layout) {
+            return <webiny-list>{React.Children.map(content, this.prepareElement, this)}</webiny-list>;
+        }
+
+        const layoutProps = {
+            ...this.props.prepareList(content, {
+                actions: {
+                    update: this.recordUpdate,
+                    delete: this.recordDelete,
+                    reload: this.loadData,
+                    api: this.props.api
+                }
+            }),
+            list: this.state.list,
+            meta: this.state.meta,
+            container: this
+        };
+
+        return this.props.layout.call(this, layoutProps)
     }
 }
 
-ApiContainer.defaultProps = _.merge({}, BaseContainer.defaultProps, {
+ApiContainer.defaultProps = {
     onInitialLoad: _.noop,
     onLoad: _.noop,
     autoLoad: true,
     autoRefresh: null,
     prepareLoadedData: null,
-    layout() {
-        const {Grid, styles} = this.props;
+    layout({ filters, table, pagination, multiActions, loader }) {
+        const { Grid, styles } = this.props;
         return (
             <webiny-list-layout>
-                <loader/>
-                <filters/>
-                <table/>
+                {loader}
+                {filters}
+                {table}
                 <Grid.Row className={styles.footer}>
                     <Grid.Col sm={4} className={styles.multiAction}>
-                        <multi-actions/>
+                        {multiActions}
                     </Grid.Col>
                     <Grid.Col sm={8} className={styles.paginationWrapper}>
-                        <pagination/>
+                        {pagination}
                     </Grid.Col>
                 </Grid.Row>
             </webiny-list-layout>
         );
     }
-});
+};
 
-export default Webiny.createComponent(ApiContainer, {modules: ['Grid'], api: ['loadData'], styles});
+export default createComponent([ApiContainer, BaseContainer, ApiComponent], { modules: ['Grid'], styles });

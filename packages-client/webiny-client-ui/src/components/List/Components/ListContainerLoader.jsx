@@ -1,24 +1,23 @@
 import React from 'react';
-import _ from 'lodash';
-import {Webiny} from 'webiny-client';
+import { createComponent } from 'webiny-client';
 
-class ListContainerLoader extends Webiny.Ui.Component {
+class ListContainerLoader extends React.Component {
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
 
-}
-
-ListContainerLoader.defaultProps = {
-    renderer() {
         if (!this.props.show) {
             return null;
         }
 
-        if (_.isFunction(this.props.children)) {
+        if (typeof this.props.children === "function") {
             return this.props.children();
         }
 
-        const {Loader} = this.props;
+        const { Loader } = this.props;
         return <Loader/>;
     }
-};
+}
 
-export default Webiny.createComponent(ListContainerLoader, {modules: ['Loader']});
+export default createComponent(ListContainerLoader, { modules: ['Loader'] });

@@ -1,24 +1,28 @@
 import React from 'react';
-import {Webiny} from 'webiny-client';
+import classSet from "classnames";
+import { createComponent } from 'webiny-client';
 import styles from '../../styles.css';
 
-class RowDetails extends Webiny.Ui.Component {
+class RowDetails extends React.Component {
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
 
-}
-
-RowDetails.defaultProps = {
-    fieldsCount: 0,
-    className: null,
-    renderer() {
-        const css = this.classSet(this.props.className, styles.rowDetails);
+        const css = classSet(this.props.className, styles.rowDetails);
         return (
-            <tr className={css} style={{display: this.props.expanded ? 'table-row' : 'none'}}>
+            <tr className={css} style={{ display: this.props.expanded ? 'table-row' : 'none' }}>
                 <td colSpan={this.props.fieldsCount}>
-                    {this.props.expanded ? this.props.children({data: this.props.data, $this: this}) : null}
+                    {this.props.expanded ? this.props.children({ data: this.props.data, $this: this }) : null}
                 </td>
             </tr>
         );
     }
+}
+
+RowDetails.defaultProps = {
+    fieldsCount: 0,
+    className: null
 };
 
-export default Webiny.createComponent(RowDetails, {styles});
+export default createComponent(RowDetails, { styles });

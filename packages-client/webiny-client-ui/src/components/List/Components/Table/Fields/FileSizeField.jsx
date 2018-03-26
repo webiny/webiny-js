@@ -1,22 +1,25 @@
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-client';
+import { createComponent } from 'webiny-client';
 import filesize from 'filesize';
 
-class FileSizeField extends Webiny.Ui.Component {
+class FileSizeField extends React.Component {
+    render() {
+        const { List, render, options, ...props } = this.props;
+        if (render) {
+            return render.call(this);
+        }
 
-}
-
-FileSizeField.defaultProps = {
-    options: {},
-    renderer() {
-        const {List, ...props} = this.props;
         return (
-            <List.Table.Field {..._.omit(props, ['renderer', 'options'])}>
-                {() => filesize(_.get(this.props.data, this.props.name), this.props.options)}
+            <List.Table.Field {...props}>
+                {() => filesize(_.get(this.props.data, this.props.name), options)}
             </List.Table.Field>
         );
     }
+}
+
+FileSizeField.defaultProps = {
+    options: {}
 };
 
-export default Webiny.createComponent(FileSizeField, {modules: ['List'], tableField: true});
+export default createComponent(FileSizeField, { modules: ['List'], tableField: true });

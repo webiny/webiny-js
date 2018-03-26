@@ -25,7 +25,7 @@ class Api {
     apps: Array<App>;
     endpoints: EndpointsMap;
     requestMiddleware: Function;
-    serviceManager: ServiceManager;
+    services: ServiceManager;
     namespace: cls$Namespace;
 
     constructor() {
@@ -33,7 +33,7 @@ class Api {
         this.apps = [];
         this.endpoints = {};
         this.requestMiddleware = () => Promise.resolve();
-        this.serviceManager = new ServiceManager();
+        this.services = new ServiceManager();
     }
 
     getApps(): Array<App> {

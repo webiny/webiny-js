@@ -1,17 +1,18 @@
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-client';
+import classSet from "classnames";
+import { createComponent, i18n } from 'webiny-client';
 import styles from '../styles.css';
 
 /**
  * @i18n.namespace Webiny.Ui.List.Pagination
  */
-class Pagination extends Webiny.Ui.Component {
+class Pagination extends React.Component {
 
     constructor(props) {
         super(props);
 
-        this.bindMethods('renderPages,renderPerPage');
+        this.renderPages = this.renderPages.bind(this);
     }
 
     pageChanged(page) {
@@ -20,10 +21,6 @@ class Pagination extends Webiny.Ui.Component {
         }
 
         this.props.onPageChange(page);
-    }
-
-    renderPerPage() {
-        return this.props.perPageRenderer.call(this);
     }
 
     renderPages() {
@@ -76,38 +73,20 @@ class Pagination extends Webiny.Ui.Component {
             );
         });
     }
-}
 
-Pagination.defaultProps = {
-    onPageChange: _.noop,
-    onPerPageChange: _.noop,
-    totalPages: 0,
-    currentPage: 0,
-    perPage: 0,
-    perPageOptions: [10, 25, 50],
-    count: 0,
-    totalCount: 0,
-    size: 'large', // large or small
-    perPageRenderer() {
-        const {Dropdown, perPageOptions} = this.props;
-        return (
-            <Dropdown title={<span><strong>{this.props.perPage}</strong> per page</span>} type="balloon">
-                <Dropdown.Header title={this.i18n('Results per page')}/>
-                {perPageOptions.map(option => (
-                    <Dropdown.Link key={option} title={option} onClick={() => this.props.onPerPageChange(option)}/>
-                ))}
-            </Dropdown>
-        );
-    },
-    renderer() {
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
+
         if (!this.props.count) {
             return null;
         }
 
-        const {Grid, styles} = this.props;
+        const { Grid, styles } = this.props;
         const cp = parseInt(this.props.currentPage);
         const previousPage = cp === 1 ? null : this.pageChanged.bind(this, cp - 1);
-        const previousClasses = this.classSet(
+        const previousClasses = classSet(
             styles.previous,
             {
                 [styles.disabled]: cp === 1
@@ -115,7 +94,7 @@ Pagination.defaultProps = {
         );
 
         const nextPage = cp === this.props.totalPages ? null : this.pageChanged.bind(this, cp + 1);
-        const nextClasses = this.classSet(
+        const nextClasses = classSet(
             styles.next,
             {
                 [styles.disabled]: cp === this.props.totalPages
@@ -126,27 +105,53 @@ Pagination.defaultProps = {
             <webiny-list-pagination>
                 <Grid.Row>
                     <Grid.Col all={12}>
-                        {this.renderPerPage()}
-                        <ul className={this.classSet(styles.pagination)}>
+                        <ul className={classSet(styles.pagination)}>
                             <li className={previousClasses} onClick={previousPage}>
                                 <a href="javascript:void(0)">
                                     <span className="icon icon-caret-down"/>
-                                    <span>{this.i18n('PREVIOUS')}</span>
+                                    <span>{i18n('PREVIOUS')}</span>
                                 </a>
                             </li>
                             {this.renderPages()}
                             <li className={nextClasses} onClick={nextPage}>
                                 <a href="javascript:void(0)">
-                                    <span>{this.i18n('NEXT')}</span>
+                                    <span>{i18n('NEXT')}</span>
                                     <span className="icon icon-caret-down"/>
                                 </a>
                             </li>
                         </ul>
                     </Grid.Col>
+                    <Grid.Col all={12}>
+                        {this.props.renderPerPage.call(this)}
+                        <span>Total number of records: <strong>{this.props.totalCount}</strong></span>
+                    </Grid.Col>
                 </Grid.Row>
             </webiny-list-pagination>
         );
     }
+}
+
+Pagination.defaultProps = {
+    onPageChange: _.noop,
+    onPerPageChange: _.noop,
+    totalPages: 0,
+    currentPage: 0,
+    perPage: 0,
+    perPageOptions: [10, 25, 50, 100],
+    count: 0,
+    totalCount: 0,
+    size: 'large', // large or small
+    renderPerPage() {
+        const { Dropdown, perPageOptions } = this.props;
+        return (
+            <Dropdown title={<span><strong>{this.props.perPage}</strong> per page</span>} type="balloon">
+                <Dropdown.Header title={i18n('Results per page')}/>
+                {perPageOptions.map(option => (
+                    <Dropdown.Link key={option} title={option} onClick={() => this.props.onPerPageChange(option)}/>
+                ))}
+            </Dropdown>
+        );
+    }
 };
 
-export default Webiny.createComponent(Pagination, {modules: ['Grid', 'Dropdown'], styles});
+export default createComponent(Pagination, { modules: ['Grid', 'Dropdown'], styles });

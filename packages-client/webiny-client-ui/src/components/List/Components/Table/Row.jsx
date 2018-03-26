@@ -1,12 +1,13 @@
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-client';
+import classSet from "classnames";
+import { createComponent, isElementOfType, elementHasFlag } from 'webiny-client';
 import SelectRowField from './Fields/SelectRowField';
 import Actions from './Actions';
 import FieldInfo from './FieldInfo';
 import styles from '../../styles.css';
 
-class Row extends Webiny.Ui.Component {
+class Row extends React.Component {
 
     constructor(props) {
         super(props);
@@ -16,11 +17,10 @@ class Row extends Webiny.Ui.Component {
         this.selectRowElement = null;
         this.data = props.data;
 
-        this.bindMethods('prepareChildren,prepareChild,renderField,onClick,isDisabled');
+        ['prepareChildren', 'prepareChild', 'renderField', 'onClick', 'isDisabled'].map(m => this[m] = this[m].bind(this));
     }
 
     componentWillMount() {
-        super.componentWillMount();
         this.prepareChildren(this.props.children);
         if (this.props.attachToTable) {
             this.props.attachToTable(this, this.props.index);
@@ -28,7 +28,6 @@ class Row extends Webiny.Ui.Component {
     }
 
     componentWillReceiveProps(props) {
-        super.componentWillReceiveProps(props);
         this.data = props.data;
         this.prepareChildren(props.children);
         if (this.props.attachToTable) {
@@ -37,7 +36,7 @@ class Row extends Webiny.Ui.Component {
     }
 
     isDisabled() {
-        const {disabled} = this.props;
+        const { disabled } = this.props;
         return _.isFunction(disabled) ? disabled(this.props.data) : disabled;
     }
 
@@ -46,9 +45,9 @@ class Row extends Webiny.Ui.Component {
             return child;
         }
 
-        const tableField = Webiny.elementHasFlag(child, 'tableField');
+        const tableField = elementHasFlag(child, 'tableField');
         if (tableField) {
-            if (Webiny.isElementOfType(child, SelectRowField)) {
+            if (isElementOfType(child, SelectRowField)) {
                 this.selectRowElement = true;
             }
 
@@ -61,7 +60,7 @@ class Row extends Webiny.Ui.Component {
             return;
         }
 
-        const tableActions = Webiny.isElementOfType(child, Actions);
+        const tableActions = isElementOfType(child, Actions);
         if (tableActions && !child.props.hide) {
             this.actionsElement = React.cloneElement(child, {
                 data: this.data,
@@ -102,7 +101,7 @@ class Row extends Webiny.Ui.Component {
         const children = [];
         _.filter(childrenArray).map(fieldChild => {
             // Do not include FieldInfo in Field children
-            if (!Webiny.isElementOfType(fieldChild, FieldInfo)) {
+            if (!isElementOfType(fieldChild, FieldInfo)) {
                 children.push(fieldChild);
             }
         });
@@ -115,17 +114,15 @@ class Row extends Webiny.Ui.Component {
         if (_.isString(onClick) && onClick === 'toggleRowDetails') {
             this.props.actions.toggleRowDetails(this.props.index)();
         } else if (_.isFunction(onClick)) {
-            onClick.call(this, {data: this.data, $this: this});
+            onClick.call(this, { data: this.data, $this: this });
         }
     }
-}
 
-Row.defaultProps = {
-    className: null,
-    onClick: _.noop,
-    disabled: false,
-    actionsClass: 'text-center',
-    renderer() {
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
+
         if (this.props.onSelect && !this.selectRowElement) {
             this.fields.splice(0, 0, <SelectRowField/>);
         }
@@ -136,12 +133,19 @@ Row.defaultProps = {
         }
 
         return (
-            <tr className={this.classSet(classes, (this.props.selected && styles.selected))} onClick={this.onClick}>
+            <tr className={classSet(classes, (this.props.selected && styles.selected))} onClick={this.onClick}>
                 {this.fields.map(this.renderField)}
                 {this.actionsElement ? <td className={this.props.actionsClass}>{this.actionsElement}</td> : null}
             </tr>
         );
     }
+}
+
+Row.defaultProps = {
+    className: null,
+    onClick: _.noop,
+    disabled: false,
+    actionsClass: 'text-center'
 };
 
-export default Webiny.createComponent(Row, {styles, api: ['isDisabled']});
+export default createComponent(Row, { styles });

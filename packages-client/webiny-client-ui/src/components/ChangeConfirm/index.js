@@ -1,6 +1,6 @@
-import React from 'react';
-import _ from 'lodash';
-import { app, createComponent, i18n } from 'webiny-client';
+import React from "react";
+import _ from "lodash";
+import { app, createComponent, i18n } from "webiny-client";
 
 /**
  * @i18n.namespace Webiny.Ui.ChangeConfirm
@@ -14,9 +14,8 @@ class ChangeConfirm extends React.Component {
             value: input.props.value
         };
 
-        this.dialogId = _.uniqueId('change-confirm-');
+        this.dialogId = _.uniqueId("change-confirm-");
         this.message = null;
-
 
         this.onChange = this.onChange.bind(this);
         this.onConfirm = this.onConfirm.bind(this);
@@ -51,7 +50,7 @@ class ChangeConfirm extends React.Component {
 
         this.message = msg;
         this.value = value;
-        app.services.get('modal').show(this.dialogId);
+        app.services.get("modal").show(this.dialogId);
     }
 
     getInput(props) {
@@ -63,7 +62,7 @@ class ChangeConfirm extends React.Component {
         if (!_.isUndefined(cancelValue)) {
             this.realOnChange(cancelValue);
         }
-        app.services.get('modal').hide(this.dialogId);
+        app.services.get("modal").hide(this.dialogId);
     }
 
     onConfirm() {
@@ -78,7 +77,7 @@ class ChangeConfirm extends React.Component {
         // Input
         const input = this.getInput(this.props);
         this.realOnChange = input.props.onChange;
-        const props = _.omit(input.props, ['onChange']);
+        const props = _.omit(input.props, ["onChange"]);
         props.onChange = this.onChange;
 
         const dialogProps = {
@@ -89,26 +88,27 @@ class ChangeConfirm extends React.Component {
             onComplete: this.props.onComplete
         };
 
-        if (_.isFunction(this.props.renderDialog)) {
-            dialogProps['render'] = this.props.renderDialog;
-        }
-
         const { Modal } = this.props;
+        const dialog = _.isFunction(this.props.renderDialog) ? (
+            this.props.renderDialog()
+        ) : (
+            <Modal.Confirmation />
+        );
 
         return (
             <webiny-change-confirm>
                 {React.cloneElement(input, props)}
-                <Modal.Confirmation {...dialogProps}/>
+                {React.cloneElement(dialog, dialogProps)}
             </webiny-change-confirm>
         );
     }
 }
 
 ChangeConfirm.defaultProps = {
-    message: i18n('Confirm value change?'),
+    message: i18n("Confirm value change?"),
     onComplete: _.noop,
     onCancel: _.noop,
     renderDialog: null
 };
 
-export default createComponent(ChangeConfirm, { modules: ['Modal'] });
+export default createComponent(ChangeConfirm, { modules: ["Modal"] });

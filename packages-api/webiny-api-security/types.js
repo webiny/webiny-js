@@ -45,7 +45,7 @@ export interface IAuthentication {
      * @param {number} expiresOn Seconds since epoch when token should expire.
      * @returns {string}
      */
-    createToken(identity: Identity, expiresOn: ?number): Promise<string>;
+    createToken(identity: Identity, expiresOn: number): Promise<string>;
 
     /**
      * Verify token and return a valid Identity instance.
@@ -87,12 +87,6 @@ export interface IAuthorization {
  */
 export interface IToken {
     /**
-     * Get time in seconds since epoch when token should expire.
-     * @param {Identity} identity Identity instance to be encoded.
-     * @returns {Promise<number>}
-     */
-    expiresOn(identity: Identity): Promise<number>;
-    /**
      * Get data to encode.
      * @param {Identity} identity Identity instance to be encoded.
      * @returns {Promise<Object>}
@@ -104,7 +98,7 @@ export interface IToken {
      * @param {number} expiresOn Seconds since epoch.
      * @returns {Promise<string>}
      */
-    encode(identity: Identity, expiresOn: ?number): Promise<string>;
+    encode(identity: Identity, expiresOn: number): Promise<string>;
     /**
      * Decode token.
      * @param {string} token

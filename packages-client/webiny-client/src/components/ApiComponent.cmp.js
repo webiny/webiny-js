@@ -32,10 +32,12 @@ class ApiComponent extends React.Component {
             if (!config.query || _.isPlainObject(config.query)) {
                 config.query = _.merge({}, config.query, getApiProps(props));
             }
+
+            const apiUrl = typeof props.api === "string" ? props.api : props.api.defaults.url;
             this.api = axios.create({
                 method: config.method || "get",
                 baseURL: axios.defaults.baseURL,
-                url: config.url ? props.api + config.url : props.api,
+                url: config.url ? apiUrl + config.url : apiUrl,
                 params: config.query,
                 data: config.body
             });

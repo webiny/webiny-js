@@ -1,22 +1,20 @@
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-client';
+import { createComponent } from 'webiny-client';
 import RouteAction from './RouteAction';
 
-class EditAction extends Webiny.Ui.Component {
+class EditAction extends React.Component {
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
 
-}
-
-EditAction.defaultProps = {
-    label: 'Edit',
-    icon: 'icon-pencil',
-    renderer() {
         const props = _.pick(this.props, ['data', 'label', 'icon']);
-        const {Link, Icon} = this.props;
+        const { Link, Icon } = this.props;
 
         if (this.props.onClick) {
             const icon = props.icon ? <Icon icon={props.icon}/> : null;
-            props.onClick = () => this.props.onClick({data: this.props.data});
+            props.onClick = () => this.props.onClick({ data: this.props.data });
             return (
                 <Link {...props}>
                     {icon}
@@ -37,6 +35,11 @@ EditAction.defaultProps = {
             <RouteAction {...props}/>
         );
     }
+}
+
+EditAction.defaultProps = {
+    label: 'Edit',
+    icon: 'icon-pencil'
 };
 
-export default Webiny.createComponent(EditAction, {modules: ['Link', 'Icon']});
+export default createComponent(EditAction, { modules: ['Link', 'Icon'] });

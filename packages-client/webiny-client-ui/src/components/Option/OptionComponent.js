@@ -161,40 +161,57 @@ class OptionComponent extends React.Component {
             }
 
             this.setState({ loading: true });
-            this.request = this.props.api.request({
-                cancelToken: new axios.CancelToken(cancel => {
-                    this.cancelRequest = cancel;
+            this.request = this.props.api
+                .request({
+                    cancelToken: new axios.CancelToken(cancel => {
+                        this.cancelRequest = cancel;
+                    })
                 })
-            }).then(apiResponse => {
-                this.request = null;
-                this.cancelRequest = null;
+                .then(apiResponse => {
+                    this.request = null;
+                    this.cancelRequest = null;
 
-                let { data } = apiResponse.data;
-                if (_.isPlainObject(data) && Array.isArray(data.list)) {
-                    data = data.list;
-                }
+                    let { data } = apiResponse.data;
+                    if (_.isPlainObject(data) && Array.isArray(data.list)) {
+                        data = data.list;
+                    }
 
-                if (this.props.prepareLoadedData) {
-                    data = this.props.prepareLoadedData({ data });
-                }
+                    if (this.props.prepareLoadedData) {
+                        data = this.props.prepareLoadedData({ data });
+                    }
 
-                this.setState({ options: this.normalizeOptions(props, data), loading: false });
-            }).catch(err => {
-                if (axios.isCancel(err)) {
-                    return this.mounted ? this.setState({ loading: false }) : null;
-                }
-                console.log(err);
-            });
+                    this.setState({ options: this.normalizeOptions(props, data), loading: false });
+                })
+                .catch(err => {
+                    if (axios.isCancel(err)) {
+                        return this.mounted ? this.setState({ loading: false }) : null;
+                    }
+                    console.log(err);
+                });
 
             return this.request;
         }
 
-        if (props.children) {
-            React.Children.map(props.children, child => {
+        /**
+         * Check options defined using <option> element.
+         * Since this is a HOC, we need to access the actual UI component's children.
+         * As a reminder, the structure looks like this:
+         *
+         * <OptionComponent> <-- this is where we currently are
+         *     <Select>
+         *         <option value={x}>Label X</option>
+         *         <option value={y}>Label Y</option>
+         *     </Select>
+         * </OptionComponent>
+         */
+        const uiElement = props.children;
+
+        if (uiElement.props.children) {
+            React.Children.map(uiElement.props.children, child => {
                 if (child.type === "option") {
                     options.push({
                         id: child.props.value,
-                        text: this.renderOptionText(props, child.props.children)
+                        text: this.renderOptionText(uiElement.props, child.props.children)
                     });
                 }
             });
@@ -231,12 +248,10 @@ class OptionComponent extends React.Component {
     }
 
     render() {
-        return (
-            React.cloneElement(this.props.children, {
-                ..._.omit(this.props, ['children']),
-                options: this.state.options
-            })
-        );
+        return React.cloneElement(this.props.children, {
+            ..._.omit(this.props, ["children"]),
+            options: this.state.options
+        });
     }
 }
 

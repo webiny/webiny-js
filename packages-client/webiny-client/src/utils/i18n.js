@@ -68,6 +68,12 @@ const processTextPart = (part, values) => {
     return output.value;
 };
 
-export default (text, values) => {
+const i18n = (text, values) => {
     return replaceVariables(text, values);
 };
+
+i18n.datetime = date => {
+    return date;
+};
+
+export default i18n;

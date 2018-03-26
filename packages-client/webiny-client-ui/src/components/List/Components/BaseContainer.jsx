@@ -1,13 +1,16 @@
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-client';
+import invariant from "invariant";
+import { app, isElementOfType, createComponent } from 'webiny-client';
 import Filters from './Filters';
+import FormFilters from './FormFilters';
 import Table from './Table/Table';
 import MultiActions from './MultiActions';
 import Pagination from './Pagination';
+import sortersToString from "./sortersToString";
 import Loader from './../Components/ListContainerLoader';
 
-class BaseContainer extends Webiny.Ui.Component {
+class BaseContainer extends React.Component {
 
     constructor(props) {
         super(props);
@@ -33,7 +36,7 @@ class BaseContainer extends Webiny.Ui.Component {
         this.paginationElement = null;
         this.multiActionsElement = null;
 
-        this.bindMethods(
+        [
             'prepareList',
             'tableProps',
             'paginationProps',
@@ -43,30 +46,23 @@ class BaseContainer extends Webiny.Ui.Component {
             'setPerPage',
             'setSearchQuery',
             'getSearchQuery',
-            'loadData',
             'prepare',
             'recordUpdate',
             'recordDelete',
             'onSelect',
-            'getContent',
-            'registerElement'
-        );
+            'getContent'
+        ].map(m => {
+            invariant(this[m], `Method ${m} does not exist!`);
+            this[m] = this[m].bind(this);
+        });
     }
 
     componentWillMount() {
-        super.componentWillMount();
-        if (this.props.connectToRouter && this.props.trackLastUsedParameters) {
-            if (Object.keys(Webiny.Router.getQueryParams()).length === 0) {
-                const value = Webiny.LocalStorage.get('webiny.list.' + window.location.pathname);
-                if (value) {
-                    Webiny.Router.goToRoute('current', value);
-                }
-            }
-        }
+        this.prepare(this.props);
     }
 
     componentWillReceiveProps(props) {
-        super.componentWillReceiveProps(props);
+        this.prepare(props);
     }
 
     getInitialSorters(props) {
@@ -87,34 +83,28 @@ class BaseContainer extends Webiny.Ui.Component {
             }
         });
 
-        return Webiny.Router.sortersToString(sorters);
+        return sortersToString(sorters);
     }
 
     /**
      * LOADING METHODS
      */
     showLoading() {
-        this.setState({loading: true});
+        this.setState({ loading: true });
     }
 
     hideLoading() {
-        this.setState({loading: false});
+        this.setState({ loading: false });
     }
 
     isLoading() {
         return this.state.loading;
     }
 
-    loadData() {
-        throw new Error('Implement loadData method in your list container class!');
-    }
-
     prepare(props) {
-        return new Promise(resolve => {
-            const state = props.connectToRouter ? this.prepareUsingRouter(props) : this.prepareNotUsingRouter(props);
+        const state = props.connectToRouter ? this.prepareUsingRouter(props) : this.prepareNotUsingRouter();
 
-            this.setState(state, resolve);
-        });
+        this.setState(state);
     }
 
     prepareUsingRouter(props) {
@@ -122,7 +112,7 @@ class BaseContainer extends Webiny.Ui.Component {
             sorters: {},
             filters: {}
         };
-        const params = Webiny.Router.getQueryParams();
+        const params = app.router.getQuery();
         const urlSort = params._sort || '';
         urlSort.split(',').map(sorter => {
             if (sorter === '') {
@@ -153,7 +143,7 @@ class BaseContainer extends Webiny.Ui.Component {
         return state;
     }
 
-    prepareNotUsingRouter(props) {
+    prepareNotUsingRouter() {
         return {
             sorters: {},
             filters: {},
@@ -162,9 +152,9 @@ class BaseContainer extends Webiny.Ui.Component {
 
     setSorters(sorters) {
         if (this.props.connectToRouter) {
-            this.goToRoute({_sort: Webiny.Router.sortersToString(sorters), _page: 1});
+            this.goToRoute({ _sort: sortersToString(sorters), _page: 1 });
         } else {
-            this.setState({page: 1, sorters}, this.loadData);
+            this.setState({ page: 1, sorters }, this.loadData);
         }
 
         return this;
@@ -180,7 +170,7 @@ class BaseContainer extends Webiny.Ui.Component {
             filters._page = 1;
             this.goToRoute(filters);
         } else {
-            this.setState({page: 1, filters}, this.loadData);
+            this.setState({ page: 1, filters }, this.loadData);
         }
 
         return this;
@@ -188,9 +178,9 @@ class BaseContainer extends Webiny.Ui.Component {
 
     setPage(page) {
         if (this.props.connectToRouter) {
-            this.goToRoute({_page: page});
+            this.goToRoute({ _page: page });
         } else {
-            this.setState({page}, this.loadData);
+            this.setState({ page }, this.loadData);
         }
 
         return this;
@@ -198,9 +188,9 @@ class BaseContainer extends Webiny.Ui.Component {
 
     setPerPage(perPage) {
         if (this.props.connectToRouter) {
-            this.goToRoute({_perPage: perPage, _page: 1});
+            this.goToRoute({ _perPage: perPage, _page: 1 });
         } else {
-            this.setState({page: 1, perPage}, this.loadData);
+            this.setState({ page: 1, perPage }, this.loadData);
         }
 
         return this;
@@ -208,20 +198,17 @@ class BaseContainer extends Webiny.Ui.Component {
 
     setSearchQuery(query) {
         if (this.props.connectToRouter) {
-            this.goToRoute({_searchQuery: query, _page: 1});
+            this.goToRoute({ _searchQuery: query, _page: 1 });
         } else {
-            this.setState({page: 1, searchQuery: query}, this.loadData);
+            this.setState({ page: 1, searchQuery: query }, this.loadData);
         }
 
         return this;
     }
 
     goToRoute(params) {
-        const routeParams = _.merge({}, Webiny.Router.getParams(), params);
-        if (this.props.connectToRouter && this.props.trackLastUsedParameters) {
-            Webiny.LocalStorage.set('webiny.list.' + window.location.pathname, routeParams);
-        }
-        Webiny.Router.goToRoute('current', routeParams);
+        const routeParams = _.merge({}, app.router.getQuery(), params);
+        app.router.goToRoute('current', routeParams);
     }
 
     getSearchQuery() {
@@ -244,15 +231,7 @@ class BaseContainer extends Webiny.Ui.Component {
     /* eslint-enable */
 
     onSelect(data) {
-        this.setState({selectedRows: data});
-    }
-
-    getContainerActions() {
-        return {
-            reload: this.loadData,
-            update: this.recordUpdate,
-            delete: this.recordDelete
-        };
+        this.setState({ selectedRows: data });
     }
 
     tableProps(tableProps) {
@@ -267,7 +246,6 @@ class BaseContainer extends Webiny.Ui.Component {
             data: _.clone(this.state.list),
             sorters: this.state.sorters,
             onSort: this.setSorters,
-            actions: this.getContainerActions(),
             selectedRows: this.state.selectedRows,
             showEmpty: !this.isLoading()
         });
@@ -291,8 +269,7 @@ class BaseContainer extends Webiny.Ui.Component {
 
     multiActionsProps(multiActionsProps) {
         _.assign(multiActionsProps, {
-            data: this.state.selectedRows,
-            actions: this.getContainerActions()
+            data: this.state.selectedRows
         });
 
         return multiActionsProps;
@@ -301,14 +278,15 @@ class BaseContainer extends Webiny.Ui.Component {
     /**
      * @private
      * @param children
+     * @param props
      */
-    prepareList(children) {
+    prepareList(children, listProps) {
         if (typeof children !== 'object' || children === null) {
             return;
         }
 
         React.Children.map(children, child => {
-            if (Webiny.isElementOfType(child, Filters)) {
+            if (isElementOfType(child, Filters) || isElementOfType(child, FormFilters)) {
                 // Need to omit fields that are not actual filters
                 this.filtersElement = React.cloneElement(child, {
                     filters: this.state.filters,
@@ -317,75 +295,44 @@ class BaseContainer extends Webiny.Ui.Component {
             }
 
             const props = _.omit(child.props, ['children', 'key', 'ref']);
-            if (Webiny.isElementOfType(child, Table)) {
-                this.tableElement = React.cloneElement(child, this.tableProps(props), child.props.children);
+            if (isElementOfType(child, Table)) {
+                this.tableElement = React.cloneElement(child, { ...this.tableProps(props), ...listProps }, child.props.children);
             }
 
-            if (Webiny.isElementOfType(child, Pagination)) {
-                this.paginationElement = React.cloneElement(child, this.paginationProps(props), child.props.children);
+            if (isElementOfType(child, Pagination)) {
+                this.paginationElement = React.cloneElement(child, { ...this.paginationProps(props), ...listProps }, child.props.children);
             }
 
-            if (Webiny.isElementOfType(child, Loader)) {
-                this.loaderElement = React.cloneElement(child, {show: this.isLoading()}, child.props.children);
+            if (isElementOfType(child, Loader)) {
+                this.loaderElement = React.cloneElement(child, { show: this.isLoading() }, child.props.children);
             }
 
-            if (Webiny.isElementOfType(child, MultiActions)) {
-                this.multiActionsElement = React.cloneElement(child, this.multiActionsProps(props), child.props.children);
+            if (isElementOfType(child, MultiActions)) {
+                this.multiActionsElement = React.cloneElement(child, { ...this.multiActionsProps(props), ...listProps }, child.props.children);
             }
         }, this);
 
         // If MultiActions are present, pass an onSelect callback to Table which will tell Table to allow selection
         // and execute onSelect callback when selection is changed
         if (this.multiActionsElement) {
-            this.tableElement = React.cloneElement(this.tableElement, {onSelect: this.onSelect});
+            this.tableElement = React.cloneElement(this.tableElement, { onSelect: this.onSelect });
         }
+
+        return {
+            filters: this.filtersElement,
+            table: this.tableElement,
+            pagination: this.paginationElement,
+            multiActions: this.multiActionsElement,
+            loader: this.loaderElement ? this.loaderElement : React.createElement(Loader, { show: this.isLoading() })
+        };
     }
 
-    /**
-     * @private
-     * @param element
-     * @returns {*}
-     */
-    replacePlaceholders(element) {
-        if (typeof element !== 'object' || element === null) {
-            return element;
-        }
-
-        if (element.type === 'filters' && this.filtersElement) {
-            return this.filtersElement;
-        }
-
-        if (element.type === 'table') {
-            return this.tableElement;
-        }
-
-        if (element.type === 'pagination') {
-            return this.paginationElement;
-        }
-
-        if (element.type === 'loader') {
-            return this.loaderElement ? this.loaderElement : React.createElement(Loader, {show: this.isLoading()});
-        }
-
-        if (element.type === 'multi-actions') {
-            return this.multiActionsElement;
-        }
-
-        if (element.props && element.props.children) {
-            return React.cloneElement(element, _.omit(element.props, ['key', 'ref']), React.Children.map(element.props.children, item => {
-                return this.replacePlaceholders(item);
-            }));
-        }
-
-        return element;
-    }
 
     /**
      * Get ApiContainer content
      * @returns {*}
      */
-    getContent() {
-        const children = this.props.children;
+    getContent(children) {
         if (_.isFunction(children)) {
             const params = {
                 list: this.state.list,
@@ -410,44 +357,18 @@ class BaseContainer extends Webiny.Ui.Component {
         return React.Children.toArray(children);
     }
 
-    /**
-     * @private
-     * @param element
-     * @returns {*}
-     */
-    registerElement(element) {
-        if (typeof element !== 'object' || element === null) {
-            return element;
-        }
-
-        if (Webiny.isElementOfType(element, Filters)) {
-            return React.cloneElement(element, {
-                filters: this.state.filters,
-                onFilter: this.setFilters
-            });
-        }
-
-        const props = _.omit(element.props, ['key', 'ref']);
-
-        if (Webiny.isElementOfType(element, Pagination)) {
-            return React.cloneElement(element, this.paginationProps(props));
-        }
-
-        if (Webiny.isElementOfType(element, Loader)) {
-            return React.cloneElement(element, {show: this.isLoading()});
-        }
-
-        if (Webiny.isElementOfType(element, MultiActions)) {
-            return React.cloneElement(element, this.multiActionsProps(props));
-        }
-
-        if (element.props && element.props.children && !_.isFunction(element.props.children)) {
-            return React.cloneElement(element, _.omit(element.props, ['key', 'ref']), React.Children.map(element.props.children, item => {
-                return this.registerElement(item);
-            }));
-        }
-
-        return element;
+    render() {
+        const { children, ...props } = this.props;
+        return React.cloneElement(children, {
+            ...props,
+            ...this.state,
+            setState: (...args) => this.setState(...args),
+            prepare: props => this.prepare(props),
+            prepareList: this.prepareList.bind(this),
+            getContent: children => this.getContent(children),
+            getListElements: content => this.prepareList(content),
+            showLoading: this.showLoading.bind(this)
+        });
     }
 }
 
@@ -455,42 +376,7 @@ BaseContainer.defaultProps = {
     connectToRouter: false,
     trackLastUsedParameters: true,
     page: 1,
-    perPage: 10,
-    renderer() {
-        const content = this.getContent();
-
-        if (!content) {
-            return null;
-        }
-
-        if (!this.props.layout) {
-            return <webiny-list>{React.Children.map(content, this.registerElement, this)}</webiny-list>;
-        }
-
-        this.prepareList(content);
-        const layout = this.props.layout.call(this);
-
-        if (React.Children.toArray(layout.props.children).length) {
-            const render = [];
-            React.Children.map(layout, (item, index) => {
-                render.push(React.cloneElement(this.replacePlaceholders(item), {key: index}));
-            });
-            return <webiny-list>{render}</webiny-list>;
-        }
-
-        const layoutProps = {
-            list: this.state.list,
-            meta: this.state.meta,
-            filters: this.filtersElement,
-            table: this.tableElement,
-            pagination: this.paginationElement,
-            multiActions: this.multiActionsElement,
-            loader: this.loaderElement ? this.loaderElement : React.createElement(Loader, {show: this.isLoading()}),
-            container: this
-        };
-
-        return React.cloneElement(layout, layoutProps);
-    }
+    perPage: 10
 };
 
 export default BaseContainer;

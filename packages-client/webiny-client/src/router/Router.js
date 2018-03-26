@@ -1,13 +1,14 @@
 import invariant from "invariant";
 import compose from "webiny-compose";
 import debugFactory from "debug";
+import pathToRegExp from "path-to-regexp";
 import _ from "lodash";
-import urlParse from "url-parse";
+import qs from "query-string";
 import Route from "./Route.cmp";
 import matchPath from "./matchPath";
 import generatePath from "./generatePath";
 
-const debug = debugFactory("webiny:router");
+const debug = debugFactory("webiny-client:router");
 
 class Router {
     config: {
@@ -32,11 +33,13 @@ class Router {
     }
 
     addRoute(route: Route) {
+        route.params = [];
+        pathToRegExp(route.path, route.params);
         this.routes.push(route);
     }
 
     goToRoute(name: string, params: {}) {
-        const route = _.find(this.routes, { name });
+        const route = name === "current" ? this.route : _.find(this.routes, { name });
         invariant(route, `Route "${name}" does not exist!`);
         const path = generatePath(route.path, params);
 
@@ -64,14 +67,13 @@ class Router {
         debug("Matching location %o", pathname);
         let route = null;
         for (let i = 0; i < this.routes.length; i++) {
-            route = this.routes[i];
+            route = _.cloneDeep(this.routes[i]);
             const match = matchPath(pathname, { path: route.path, exact: route.exact });
             if (!match) {
                 continue;
             }
 
-            const url = urlParse(this.history.createHref(this.history.location), true);
-            match.query = url.query;
+            match.query = qs.parse(this.history.location.search);
 
             this.route = route;
             this.match = match;

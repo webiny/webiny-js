@@ -1,5 +1,6 @@
 import request from "supertest";
 import express from "express";
+import addDays from "date-fns/add_days";
 import { assert, expect } from "chai";
 import { MemoryDriver } from "webiny-entity-memory";
 import api, { middleware, endpointMiddleware, Entity } from "webiny-api";
@@ -52,6 +53,7 @@ describe("Security test", () => {
                                     authenticate: [
                                         {
                                             strategy: "credentials",
+                                            expiresOn: () => addDays(new Date(), 30),
                                             apiMethod: {
                                                 name: "Auth.MyUser.Login",
                                                 pattern: "/login-user"
@@ -64,6 +66,7 @@ describe("Security test", () => {
                                     authenticate: [
                                         {
                                             strategy: "companyCredentials",
+                                            expiresOn: () => addDays(new Date(), 30),
                                             apiMethod: {
                                                 name: "Auth.MyCompany.Login",
                                                 pattern: "/login-company"
@@ -117,7 +120,7 @@ describe("Security test", () => {
     });
 
     it("should return error response with WBY_INTERNAL_ERROR", () => {
-        const authService = api.serviceManager.get("Authentication");
+        const authService = api.services.get("authentication");
         sandbox.stub(authService, "authenticate").callsFake(() => {
             return {
                 promise: () => {

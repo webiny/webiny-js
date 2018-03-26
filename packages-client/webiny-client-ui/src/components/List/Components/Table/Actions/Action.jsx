@@ -1,19 +1,13 @@
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-client';
+import { createComponent } from 'webiny-client';
 
-class Action extends Webiny.Ui.Component {
+class Action extends React.Component {
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
 
-}
-
-Action.defaultProps = {
-    icon: null,
-    onClick: _.noop,
-    download: null,
-    actions: null,
-    data: null,
-    hide: false,
-    renderer() {
         if (_.isFunction(this.props.hide) && this.props.hide(this.props.data)) {
             return null;
         }
@@ -26,12 +20,17 @@ Action.defaultProps = {
             });
         }
 
-        const {Icon, Link, DownloadLink} = this.props;
+        const { Icon, Link, DownloadLink } = this.props;
         const icon = this.props.icon ? <Icon icon={this.props.icon}/> : null;
 
         if (this.props.download) {
             return (
-                <DownloadLink download={this.props.download} params={this.props.data}>{icon} {this.props.label}</DownloadLink>
+                <DownloadLink
+                    download={this.props.download}
+                    params={this.props.data}
+                >
+                    {icon} {this.props.label}
+                </DownloadLink>
             );
         }
 
@@ -48,6 +47,15 @@ Action.defaultProps = {
             </Link>
         );
     }
+}
+
+Action.defaultProps = {
+    icon: null,
+    onClick: _.noop,
+    download: null,
+    actions: null,
+    data: null,
+    hide: false
 };
 
-export default Webiny.createComponent(Action, {modules: ['Icon', 'Link', 'DownloadLink']});
+export default createComponent(Action, { modules: ['Icon', 'Link', 'DownloadLink'] });

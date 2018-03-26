@@ -1,13 +1,13 @@
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-client';
+import { createComponent } from 'webiny-client';
 
-class CaseField extends Webiny.Ui.Component {
+class CaseField extends React.Component {
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
 
-}
-
-CaseField.defaultProps = {
-    renderer() {
         let content = null;
         let defaultContent = null;
         _.each(React.Children.toArray(this.props.children), child => {
@@ -32,11 +32,11 @@ CaseField.defaultProps = {
         const {List, ...props} = this.props;
 
         return (
-            <List.Table.Field {..._.omit(props, ['renderer'])}>
+            <List.Table.Field {..._.omit(props, ['render'])}>
                 {content}
             </List.Table.Field>
         );
     }
-};
+}
 
-export default Webiny.createComponent(CaseField, {modules: ['List'], tableField: true});
+export default createComponent(CaseField, {modules: ['List'], tableField: true});

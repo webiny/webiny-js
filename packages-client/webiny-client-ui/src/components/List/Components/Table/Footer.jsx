@@ -1,18 +1,18 @@
 import React from 'react';
-import {Webiny} from 'webiny-client';
+import { createComponent } from 'webiny-client';
 
-class Footer extends Webiny.Ui.Component {
+class Footer extends React.Component {
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
 
-}
-
-Footer.defaultProps = {
-    renderer() {
         return (
             <tfoot>
             <tr/>
             </tfoot>
         );
     }
-};
+}
 
-export default Footer;
+export default createComponent(Footer);

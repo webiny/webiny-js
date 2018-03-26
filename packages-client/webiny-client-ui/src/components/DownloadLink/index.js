@@ -1,6 +1,6 @@
-import React from 'react';
-import _ from 'lodash';
-import { createComponent } from 'webiny-client';
+import React from "react";
+import _ from "lodash";
+import { createComponent } from "webiny-client";
 
 class DownloadLink extends React.Component {
     constructor(props) {
@@ -15,15 +15,17 @@ class DownloadLink extends React.Component {
         this.getDialog = this.getDialog.bind(this);
     }
 
-    componentWillReceiveProps(props) {
-        super.componentWillReceiveProps(props);
+    componentWillReceiveProps() {
         if (this.dialog) {
             this.getDialog();
         }
     }
 
     getDialog() {
-        const result = this.props.download({ download: this.downloader.download, data: this.props.params || null });
+        const result = this.props.download({
+            download: this.downloader.download,
+            data: this.props.params || null
+        });
         // At this point we do not want to import Modal component to perform the check so we assume it is a ModalDialog if it is not null
         if (result) {
             this.dialog = result;
@@ -37,7 +39,7 @@ class DownloadLink extends React.Component {
         }
 
         const { Downloader, Link, ...props } = this.props;
-        const downloader = <Downloader onReady={downloader => this.downloader = downloader}/>;
+        const downloader = <Downloader onReady={downloader => (this.downloader = downloader)} />;
         props.onClick = () => {
             if (this.props.disabled) {
                 return;
@@ -48,7 +50,7 @@ class DownloadLink extends React.Component {
                 this.getDialog();
             }
         };
-        delete props['download'];
+        delete props["download"];
 
         let dialog = null;
         if (this.dialog) {
@@ -58,7 +60,7 @@ class DownloadLink extends React.Component {
                     this.setState({ showDialog: false });
                 },
                 onComponentDidMount: dialog => {
-                    if (this.state.showDialog && !dialog.isShown()) {
+                    if (this.state.showDialog) {
                         dialog.show();
                     }
                 }
@@ -66,7 +68,7 @@ class DownloadLink extends React.Component {
         }
 
         return (
-            <Link {..._.omit(props, ['render'])}>
+            <Link {..._.omit(props, ["render"])}>
                 {this.props.children}
                 {downloader}
                 {dialog}
@@ -77,9 +79,9 @@ class DownloadLink extends React.Component {
 
 DownloadLink.defaultProps = {
     download: null,
-    method: 'GET',
+    method: "GET",
     params: null,
     disabled: false
 };
 
-export default createComponent(DownloadLink, { modules: ['Downloader', 'Link'] });
+export default createComponent(DownloadLink, { modules: ["Downloader", "Link"] });

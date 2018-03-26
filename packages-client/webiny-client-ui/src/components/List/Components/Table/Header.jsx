@@ -1,12 +1,13 @@
 import React from 'react';
-import {Webiny} from 'webiny-client';
+import { createComponent } from 'webiny-client';
+import classSet from "classnames";
 import styles from '../../styles.css';
 
-class Header extends Webiny.Ui.Component {
+class Header extends React.Component {
     constructor(props) {
         super(props);
 
-        this.bindMethods('toggleSorter');
+        this.toggleSorter = this.toggleSorter.bind(this);
     }
 
     toggleSorter() {
@@ -24,17 +25,12 @@ class Header extends Webiny.Ui.Component {
 
         this.props.onSort(this.props.sort, sort);
     }
-}
 
-Header.defaultProps = {
-    align: 'left',
-    alignLeftClass: 'text-left',
-    alignRightClass: 'text-right',
-    alignCenterClass: 'text-center',
-    sortedAscendingIcon: 'icon-caret-up',
-    sortedDescendingIcon: 'icon-caret-down',
-    sortableIcon: 'icon-sort',
-    renderer() {
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
+
         let classes = {};
         if(this.props.sorted && this.props.sorted !== 0){
             classes[styles.sorted] = true;
@@ -50,7 +46,7 @@ Header.defaultProps = {
         sortIcon[this.props.sortableIcon] = this.props.sorted === 0;
 
         const {Icon} = this.props;
-        const icon = this.props.sortable ? <Icon icon={this.classSet(sortIcon)}/> : null;
+        const icon = this.props.sortable ? <Icon icon={classSet(sortIcon)}/> : null;
 
         let content = this.props.label;
         if (this.props.sortable) {
@@ -63,12 +59,22 @@ Header.defaultProps = {
         }
 
         return (
-            <th className={this.classSet(classes)}>
+            <th className={classSet(classes)}>
                 {this.props.children}
                 {content}
             </th>
         );
     }
+}
+
+Header.defaultProps = {
+    align: 'left',
+    alignLeftClass: 'text-left',
+    alignRightClass: 'text-right',
+    alignCenterClass: 'text-center',
+    sortedAscendingIcon: 'icon-caret-up',
+    sortedDescendingIcon: 'icon-caret-down',
+    sortableIcon: 'icon-sort'
 };
 
-export default Webiny.createComponent(Header, {modules: ['Icon'], styles});
+export default createComponent(Header, {modules: ['Icon'], styles});

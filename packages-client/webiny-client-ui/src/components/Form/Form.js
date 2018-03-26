@@ -1,27 +1,26 @@
-import React from 'react';
-import _ from 'lodash';
-import { app, i18n, createComponent, isElementOfType, ApiComponent } from 'webiny-client';
+import React from "react";
+import _ from "lodash";
+import {
+    app,
+    i18n,
+    createComponent,
+    isElementOfType,
+    elementHasFlag,
+    ApiComponent
+} from "webiny-client";
 import validation from "./validation";
 import LinkState from "./LinkState";
-import Error from './Error';
-import Loader from './Loader';
+import Error from "./Error";
+import Loader from "./Loader";
 import axios from "axios";
 
 function isValidModelType(value) {
     const type = typeof value;
-    if (type === 'undefined' || type === 'function') {
+    if (type === "undefined" || type === "function") {
         return false;
     }
 
     return _.isArray(value) || _.isPlainObject(value) || /boolean|number|string/.test(type);
-}
-
-function elementHasFlag(element, flag) {
-    if (React.isValidElement(element)) {
-        return _.get(element.type, 'options.' + flag, false);
-    }
-
-    return false;
 }
 
 /**
@@ -44,40 +43,39 @@ class Form extends React.Component {
         this.watches = {};
         this.inputs = {};
         this.tabs = {};
-        this.growlId = _.uniqueId('growl-');
-        this.growler = app.services.get('growler');
+        this.growlId = _.uniqueId("growl-");
+        this.growler = app.services.get("growler");
 
         this.parsingTabsIndex = 0;
         this.mounted = false;
         this.cancelRequest = null;
 
-
         [
-            'resetForm',
-            'getModel',
-            'setModel',
-            'loadModel',
-            'registerComponents',
-            'registerComponent',
-            'attachToForm',
-            'attachValidators',
-            'detachFromForm',
-            'validateInput',
-            'submit',
-            'cancel',
-            'validate',
-            'onSubmit',
-            'onInvalid',
-            'isSubmitDisabled',
-            'enableSubmit',
-            'disableSubmit',
-            'handleApiError',
-            '__createCancelToken',
-            '__catchApiError',
-            '__renderContent',
-            '__processSubmitResponse',
-            '__focusTab',
-            '__onKeyDown'
+            "resetForm",
+            "getModel",
+            "setModel",
+            "loadModel",
+            "registerComponents",
+            "registerComponent",
+            "attachToForm",
+            "attachValidators",
+            "detachFromForm",
+            "validateInput",
+            "submit",
+            "cancel",
+            "validate",
+            "onSubmit",
+            "onInvalid",
+            "isSubmitDisabled",
+            "enableSubmit",
+            "disableSubmit",
+            "handleApiError",
+            "__createCancelToken",
+            "__catchApiError",
+            "__renderContent",
+            "__processSubmitResponse",
+            "__focusTab",
+            "__onKeyDown"
         ].map(m => {
             this[m] = this[m].bind(this);
         });
@@ -90,7 +88,11 @@ class Form extends React.Component {
         if (this.props.loadModel) {
             return this.props.loadModel({ form: this }).then(customModel => {
                 const mergedModel = _.merge({}, this.props.defaultModel || {}, customModel);
-                this.setState({ model: mergedModel, loading: false, initialModel: _.cloneDeep(mergedModel) });
+                this.setState({
+                    model: mergedModel,
+                    loading: false,
+                    initialModel: _.cloneDeep(mergedModel)
+                });
             });
         }
 
@@ -124,7 +126,7 @@ class Form extends React.Component {
         }
     }
 
-    disableSubmit(message = '') {
+    disableSubmit(message = "") {
         this.setState({ submitDisabled: message || true });
     }
 
@@ -150,7 +152,7 @@ class Form extends React.Component {
      * @returns {*}
      */
     getInput(name) {
-        return _.get(this.inputs, name + '.component');
+        return _.get(this.inputs, name + ".component");
     }
 
     /**
@@ -202,13 +204,12 @@ class Form extends React.Component {
 
         if (model.id) {
             return this.props.api
-                .patch(this.props.api.defaults.url + '/' + model.id, model, {
+                .patch(this.props.api.defaults.url + "/" + model.id, model, {
                     cancelToken: this.__createCancelToken()
                 })
                 .then(res => this.__processSubmitResponse(model, res))
                 .catch(this.__catchApiError);
         }
-
 
         return this.props.api[this.props.createHttpMethod]("/", model, {
             cancelToken: this.__createCancelToken()
@@ -286,7 +287,7 @@ class Form extends React.Component {
     loadModel(id = null, model = null) {
         if (!id) {
             if (this.props.connectToRouter) {
-                id = app.router.getParams('id');
+                id = app.router.getParams("id");
             }
         }
 
@@ -295,41 +296,53 @@ class Form extends React.Component {
                 return this.request;
             }
 
-
             this.showLoading();
-            this.request = this.props.api.request({
-                url: this.props.api.defaults.url + '/' + id,
-                cancelToken: this.__createCancelToken()
-            }).then(response => {
-                this.request = null;
-                this.cancelRequest = null;
-                if (response.statusText === 'abort') {
-                    return;
-                }
-
-                if (response.data.code) {
-                    if (this.props.onFailure) {
-                        this.props.onFailure({ response, form: this });
+            this.request = this.props.api
+                .request({
+                    url: this.props.api.defaults.url + "/" + id,
+                    cancelToken: this.__createCancelToken()
+                })
+                .then(response => {
+                    this.request = null;
+                    this.cancelRequest = null;
+                    if (response.statusText === "abort") {
+                        return;
                     }
-                    return;
-                }
 
-                let newModel;
-                const entity = response.data.data.entity;
-                if (_.isFunction(this.props.prepareLoadedData) && this.props.prepareLoadedData !== _.noop) {
-                    newModel = _.merge({}, this.props.defaultModel || {}, this.props.prepareLoadedData({ data: entity }));
-                } else {
-                    newModel = _.merge({}, this.props.defaultModel || {}, entity);
-                }
-
-                this.setState({ model: newModel, initialModel: _.cloneDeep(newModel), loading: false }, () => {
-                    // Execute optional `onLoad` callback
-                    if (_.isFunction(this.props.onLoad)) {
-                        this.props.onLoad({ model: this.getModel(), form: this });
+                    if (response.data.code) {
+                        if (this.props.onFailure) {
+                            this.props.onFailure({ response, form: this });
+                        }
+                        return;
                     }
-                    this.__processWatches();
-                });
-            }).catch(this.__catchApiError);
+
+                    let newModel;
+                    const entity = response.data.data.entity;
+                    if (
+                        _.isFunction(this.props.prepareLoadedData) &&
+                        this.props.prepareLoadedData !== _.noop
+                    ) {
+                        newModel = _.merge(
+                            {},
+                            this.props.defaultModel || {},
+                            this.props.prepareLoadedData({ data: entity })
+                        );
+                    } else {
+                        newModel = _.merge({}, this.props.defaultModel || {}, entity);
+                    }
+
+                    this.setState(
+                        { model: newModel, initialModel: _.cloneDeep(newModel), loading: false },
+                        () => {
+                            // Execute optional `onLoad` callback
+                            if (_.isFunction(this.props.onLoad)) {
+                                this.props.onLoad({ model: this.getModel(), form: this });
+                            }
+                            this.__processWatches();
+                        }
+                    );
+                })
+                .catch(this.__catchApiError);
             return this.request;
         }
 
@@ -343,10 +356,11 @@ class Form extends React.Component {
                 }
             });
 
-            this.setState({ model, initialModel: _.cloneDeep(model) }, () => this.__processWatches(changes));
+            this.setState({ model, initialModel: _.cloneDeep(model) }, () =>
+                this.__processWatches(changes)
+            );
         }
     }
-
 
     /**
      * MAIN FORM ACTION METHODS
@@ -359,7 +373,10 @@ class Form extends React.Component {
         }
 
         if (this.state.submitDisabled !== false) {
-            this.growler.info(this.state.submitDisabled, i18n('Please wait! Your data is being processed...'));
+            this.growler.info(
+                this.state.submitDisabled,
+                i18n("Please wait! Your data is being processed...")
+            );
             return false;
         }
 
@@ -372,11 +389,13 @@ class Form extends React.Component {
                 // If onSubmit was passed through props, execute it. Otherwise proceed with default behaviour.
                 if (this.props.onSubmit) {
                     // Make sure whatever is returned from `onSubmit` handler is a Promise and then enable form submit
-                    return Promise.resolve(this.props.onSubmit({ model, form: this })).catch(e => {
-                        this.growler.danger('' + e);
-                    }).finally(() => {
-                        this.enableSubmit();
-                    });
+                    return Promise.resolve(this.props.onSubmit({ model, form: this }))
+                        .catch(e => {
+                            this.growler.danger("" + e);
+                        })
+                        .finally(() => {
+                            this.enableSubmit();
+                        });
                 }
                 return this.onSubmit(model);
             }
@@ -403,9 +422,10 @@ class Form extends React.Component {
             const cmp = inputs[name].component;
             const hasValidators = inputs[name] && inputs[name].validators;
             const hasValue = cmp.props.value;
-            const isRequired = hasValidators && _.has(inputs[name].validators, 'required');
+            const isRequired = hasValidators && _.has(inputs[name].validators, "required");
 
-            const shouldValidate = (!hasValue && isRequired) || (hasValue && cmp.state.isValid !== true);
+            const shouldValidate =
+                (!hasValue && isRequired) || (hasValue && cmp.state.isValid !== true);
 
             if (hasValidators && shouldValidate) {
                 if (cmp.state.isValid === false || cmp.state.isValid === null) {
@@ -436,7 +456,7 @@ class Form extends React.Component {
         try {
             return this.registerComponent(element);
         } catch (e) {
-            console.error('INVALID ELEMENT', element);
+            console.error("INVALID ELEMENT", element);
         }
     }
 
@@ -446,7 +466,7 @@ class Form extends React.Component {
      * @returns {*}
      */
     registerComponent(input) {
-        if (typeof input !== 'object' || input === null || _.get(input, 'props.formSkip')) {
+        if (typeof input !== "object" || input === null || _.get(input, "props.formSkip")) {
             return input;
         }
 
@@ -455,7 +475,7 @@ class Form extends React.Component {
             return input;
         }
 
-        if (_.get(input, 'props.formInject')) {
+        if (_.get(input, "props.formInject")) {
             input = React.cloneElement(input, { form: this });
         }
         if (isElementOfType(input, Loader)) {
@@ -472,7 +492,7 @@ class Form extends React.Component {
             });
         }
 
-        if (input.props && input.props.name && elementHasFlag(input, 'formComponent')) {
+        if (input.props && input.props.name && elementHasFlag(input, "formComponent")) {
             // Build new input props
             const newProps = {
                 attachToForm: this.attachToForm,
@@ -480,21 +500,23 @@ class Form extends React.Component {
                 detachFromForm: this.detachFromForm,
                 validateInput: this.validateInput,
                 form: this,
-                disabled: _.get(input.props, 'disabled', null)
+                disabled: _.get(input.props, "disabled", null)
             };
 
             // If Form has a `disabled` prop we must evaluate it to see if form input needs to be disabled
             if (this.props.disabled) {
-                const inputDisabledByForm = _.isFunction(this.props.disabled) ? this.props.disabled({ model: this.getModel() }) : this.props.disabled;
+                const inputDisabledByForm = _.isFunction(this.props.disabled)
+                    ? this.props.disabled({ model: this.getModel() })
+                    : this.props.disabled;
                 // Only override the input prop if the entire Form is disabled
                 if (inputDisabledByForm) {
-                    newProps['disabled'] = true;
+                    newProps["disabled"] = true;
                 }
             }
 
             // Create an onChange callback
-            let onAfterChange = _.get(input.props, 'onChange');
-            const formatValue = _.get(input.props, 'formatValue');
+            let onAfterChange = _.get(input.props, "onChange");
+            const formatValue = _.get(input.props, "formatValue");
 
             // Input changed callback, triggered on each input change
             const changeCallback = (value, oldValue) => {
@@ -519,7 +541,12 @@ class Form extends React.Component {
             };
 
             // Assign value and onChange props
-            const ls = new LinkState(this, 'model.' + input.props.name, changeCallback, input.props.defaultValue);
+            const ls = new LinkState(
+                this,
+                "model." + input.props.name,
+                changeCallback,
+                input.props.defaultValue
+            );
             const linkState = ls.create();
 
             _.assign(newProps, {
@@ -547,7 +574,10 @@ class Form extends React.Component {
             });
 
             if (this.parsingTabsIndex > 0) {
-                newProps['__tabs'] = { id: 'tabs-' + this.parsingTabsIndex, tab: this.parsingTabIndex };
+                newProps["__tabs"] = {
+                    id: "tabs-" + this.parsingTabsIndex,
+                    tab: this.parsingTabIndex
+                };
             }
 
             return React.cloneElement(input, newProps, input.props && input.props.children);
@@ -555,28 +585,36 @@ class Form extends React.Component {
 
         // Track Tabs to be able to focus the relevant tab when validation fails
 
-        if (elementHasFlag(input, 'tabs')) {
+        if (elementHasFlag(input, "tabs")) {
             this.parsingTabsIndex++;
             this.parsingTabIndex = -1;
 
-            const tabsProps = _.omit(input.props, ['key', 'ref']);
+            const tabsProps = _.omit(input.props, ["key", "ref"]);
             _.merge(tabsProps, {
-                __tabsId: 'tabs-' + this.parsingTabsIndex,
+                __tabsId: "tabs-" + this.parsingTabsIndex,
                 attachToForm: this.attachToForm,
                 detachFromForm: this.detachFromForm,
                 form: this
             });
 
-            const tabsContent = React.cloneElement(input, tabsProps, this.registerComponents(input.props && input.props.children));
+            const tabsContent = React.cloneElement(
+                input,
+                tabsProps,
+                this.registerComponents(input.props && input.props.children)
+            );
             this.parsingTabsIndex--;
             return tabsContent;
         }
 
-        if (elementHasFlag(input, 'tab') && this.parsingTabsIndex > 0) {
+        if (elementHasFlag(input, "tab") && this.parsingTabsIndex > 0) {
             this.parsingTabIndex++;
         }
 
-        return React.cloneElement(input, _.omit(input.props, ['key', 'ref']), this.registerComponents(input.props && input.props.children));
+        return React.cloneElement(
+            input,
+            _.omit(input.props, ["key", "ref"]),
+            this.registerComponents(input.props && input.props.children)
+        );
     }
 
     /**
@@ -585,7 +623,7 @@ class Form extends React.Component {
      * @returns {*}
      */
     registerComponents(children) {
-        if (typeof children !== 'object' || children === null) {
+        if (typeof children !== "object" || children === null) {
             return children;
         }
         return React.Children.map(children, this.registerComponent, this);
@@ -611,7 +649,10 @@ class Form extends React.Component {
     }
 
     validateInput(component) {
-        if ((this.props.validateOnFirstSubmit && !this.state.wasSubmitted) || !this.inputs[component.props.name]) {
+        if (
+            (this.props.validateOnFirstSubmit && !this.state.wasSubmitted) ||
+            !this.inputs[component.props.name]
+        ) {
             return Promise.resolve(null);
         }
         const validators = this.inputs[component.props.name].validators;
@@ -624,42 +665,43 @@ class Form extends React.Component {
             model: this.getModel()
         };
 
-        return Promise.resolve(validation.validate(component.props.value, validators, formData)).then(validationResults => {
-            if (hasValidators) {
-                const isValid = component.props.value === null ? null : true;
-                component.setState({ isValid, validationResults });
-            } else {
-                component.setState({ isValid: null, validationMessage: null });
-            }
-            return validationResults;
-        }).catch(validationError => {
-            // Set custom error message if defined
-            const validator = validationError.getValidator();
-            if (validator in messages) {
-                validationError.setMessage(messages[validator]);
-            }
+        return Promise.resolve(validation.validate(component.props.value, validators, formData))
+            .then(validationResults => {
+                if (hasValidators) {
+                    const isValid = component.props.value === null ? null : true;
+                    component.setState({ isValid, validationResults });
+                } else {
+                    component.setState({ isValid: null, validationMessage: null });
+                }
+                return validationResults;
+            })
+            .catch(validationError => {
+                // Set custom error message if defined
+                const validator = validationError.getValidator();
+                if (validator in messages) {
+                    validationError.setMessage(messages[validator]);
+                }
 
-            // Set component state to reflect validation error
-            component.setState({
-                isValid: false,
-                validationMessage: validationError.getMessage(),
-                validationResults: false
+                // Set component state to reflect validation error
+                component.setState({
+                    isValid: false,
+                    validationMessage: validationError.getMessage(),
+                    validationResults: false
+                });
+
+                return false;
             });
-
-            return false;
-        });
     }
 
     handleApiError(response) {
         this.hideLoading();
         this.enableSubmit();
-        console.log(response);
         this.setState({ error: response, showError: true }, () => {
             // error callback
             this.props.onSubmitError({ response, form: this });
 
             // Check error data and if validation error - try highlighting invalid fields
-            const data = _.get(response, 'data.data');
+            const data = _.get(response, "data.data");
             if (_.isPlainObject(data)) {
                 let tabFocused = false;
                 _.each(data, (message, name) => {
@@ -684,9 +726,11 @@ class Form extends React.Component {
     __renderContent() {
         const children = this.props.children;
         if (!_.isFunction(children)) {
-            throw new Error('Form must have a function as its only child!');
+            throw new Error("Form must have a function as its only child!");
         }
-        return this.registerComponents(children.call(this, { model: _.cloneDeep(this.state.model), form: this }));
+        return this.registerComponents(
+            children.call(this, { model: _.cloneDeep(this.state.model), form: this })
+        );
     }
 
     __createCancelToken() {
@@ -696,12 +740,10 @@ class Form extends React.Component {
     }
 
     __catchApiError(err) {
-        console.log("CAUGHT ERROR", err);
-        console.log("RESPONSE", err.response);
         if (axios.isCancel(err)) {
             return;
         }
-        this.handleApiError(err.response)
+        this.handleApiError(err.response);
     }
 
     __processSubmitResponse(model, response) {
@@ -712,8 +754,13 @@ class Form extends React.Component {
         this.hideLoading();
 
         const responseData = response.data.data;
-        const newModel = _.has(responseData, 'entity') ? responseData.entity : responseData;
-        this.setState({ model: newModel, initialModel: _.cloneDeep(newModel), error: null, showError: false });
+        const newModel = _.has(responseData, "entity") ? responseData.entity : responseData;
+        this.setState({
+            model: newModel,
+            initialModel: _.cloneDeep(newModel),
+            error: null,
+            showError: false
+        });
         if (_.isFunction(this.props.onSuccessMessage)) {
             this.growler.success(this.props.onSuccessMessage({ model, response, form: this }));
         }
@@ -744,9 +791,9 @@ class Form extends React.Component {
         });
     }
 
-    __removeKeys(collection, excludeKeys = ['$key', '$index']) {
+    __removeKeys(collection, excludeKeys = ["$key", "$index"]) {
         function omitFn(value) {
-            if (value && typeof value === 'object') {
+            if (value && typeof value === "object") {
                 excludeKeys.forEach(key => {
                     delete value[key];
                 });
@@ -757,7 +804,11 @@ class Form extends React.Component {
     }
 
     __onKeyDown(e) {
-        if ((e.metaKey || e.ctrlKey) && (['s', 'Enter'].indexOf(e.key) > -1) && !e.isDefaultPrevented()) {
+        if (
+            (e.metaKey || e.ctrlKey) &&
+            ["s", "Enter"].indexOf(e.key) > -1 &&
+            !e.isDefaultPrevented()
+        ) {
             // Need to blur current target in case of input fields to trigger validation
             e.target.blur();
             e.preventDefault();
@@ -768,7 +819,9 @@ class Form extends React.Component {
 
     render() {
         return (
-            <webiny-form-container onKeyDown={this.__onKeyDown}>{this.__renderContent()}</webiny-form-container>
+            <webiny-form-container onKeyDown={this.__onKeyDown}>
+                {this.__renderContent()}
+            </webiny-form-container>
         );
     }
 }
@@ -777,7 +830,7 @@ Form.defaultProps = {
     disabled: false,
     defaultModel: {},
     connectToRouter: false,
-    createHttpMethod: 'post',
+    createHttpMethod: "post",
     validateOnFirstSubmit: false,
     onSubmit: null,
     onSubmitSuccess: null,
@@ -786,7 +839,7 @@ Form.defaultProps = {
     onLoad: _.noop,
     prepareLoadedData: null,
     onSuccessMessage() {
-        return 'Your record was saved successfully!';
+        return "Your record was saved successfully!";
     }
 };
 

@@ -1,7 +1,7 @@
 // @flow
 import SqlString from "sqlstring";
 import _ from "lodash";
-import { OrderTuple } from "webiny-entity/types";
+import type { OrderTuple } from "webiny-entity/types";
 import type { Entity } from "webiny-entity";
 import type { Operator, Payload } from "../../types";
 

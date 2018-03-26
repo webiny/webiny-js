@@ -32,6 +32,7 @@ class Profile extends React.Component {
                 File,
                 RadioGroup,
                 Select,
+                Search,
                 IconPicker,
                 Tabs,
                 Tags,
@@ -43,7 +44,9 @@ class Profile extends React.Component {
         const formProps = {
             api: "/security/users",
             connectToRouter: true,
-            fields: "id,firstName,lastName,email,enabled"
+            fields: "id,firstName,lastName,email,enabled",
+            onCancel: "About",
+            onSubmitSuccess: "About"
         };
 
         const msg = data => (
@@ -76,6 +79,23 @@ class Profile extends React.Component {
             perPage: 100,
             textAttr: "email",
             filterBy: "enabled"
+        };
+
+        const searchProps = {
+            label: "Search manager",
+            name: "manager",
+            api: "/security/users",
+            fields: "id,email,createdOn",
+            sort: "email",
+            textAttr: "email",
+            searchFields: "email",
+            renderOptionLabel: ({ option }) => (
+                <div>
+                    <strong>{option.data.email}</strong>
+                    <br />
+                    <span>Created on: {option.data.createdOn}</span>
+                </div>
+            )
         };
 
         const radioGroup = {
@@ -201,6 +221,12 @@ class Profile extends React.Component {
                                                             label={"User tags"}
                                                             validatorsTags={"minLength:3"}
                                                         />
+                                                        <ChangeConfirm message="Are you sure you want to toggle this switch?">
+                                                            <Switch
+                                                                label={i18n("Enabled")}
+                                                                name="enabled"
+                                                            />
+                                                        </ChangeConfirm>
                                                     </Grid.Col>
                                                     <Grid.Col all={4}>
                                                         <Avatar
@@ -282,6 +308,7 @@ class Profile extends React.Component {
                                                     name={"icon"}
                                                 />
                                                 <Select {...selectProps} />
+                                                <Search {...searchProps} />
                                             </Grid.Col>
                                         </Grid.Row>
                                     </Tabs.Tab>
@@ -453,6 +480,7 @@ export default createComponent(Profile, {
         "Gallery",
         "RadioGroup",
         "Select",
+        "Search",
         "IconPicker",
         "Tabs",
         "Tags",

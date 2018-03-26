@@ -3,7 +3,7 @@ if (argv.require) {
     Array.isArray(argv.require) ? argv.require.map(r => require(r)) : require(argv.require);
 }
 
-require("./express")
+require("./src/express")
     .default()
     .then(app => {
         app.listen(9000, () => {

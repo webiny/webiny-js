@@ -1,5 +1,5 @@
-import $ from "jquery";
 import React from "react";
+import $ from "jquery";
 import parse from "url-parse";
 
 class Router extends React.Component {

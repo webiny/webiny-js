@@ -1,6 +1,6 @@
-import React from 'react';
-import _ from 'lodash';
-import { app, createComponent } from 'webiny-client';
+import React from "react";
+import _ from "lodash";
+import { app, createComponent } from "webiny-client";
 
 class UserMenu extends React.Component {
     constructor(props) {
@@ -10,30 +10,28 @@ class UserMenu extends React.Component {
             user: {}
         };
 
-        this.auth = app.services.get('authentication');
+        this.auth = app.services.get("authentication");
     }
 
     componentDidMount() {
-        this.watcher = app.state.select('User');
-        this.watcher.on("update", e => {
-            this.setState({ user: e.data.currentData });
+        this.unwatch = this.auth.onIdentity(identity => {
+            this.setState({ user: identity });
         });
 
-        // Execute callback with initial data
-        this.setState({ user: this.watcher.get() });
+        this.setState({ user: this.auth.identity });
     }
 
     componentWillUnmount() {
-        this.watcher.release();
+        this.unwatch();
     }
 
     getUserName() {
-        const user = this.state.user;
-        if (_.get(user, 'firstName', '') === '' && _.get(user, 'lastName', '') === '') {
-            return _.get(user, 'email', '');
+        const { user } = this.state;
+        if (!_.get(user, "firstName") && !_.get(user, "lastName")) {
+            return _.get(user, "email");
         }
 
-        return _.get(user, 'firstName', '') + ' ' + _.get(user, 'lastName', '');
+        return _.get(user, "firstName", "") + " " + _.get(user, "lastName", "");
     }
 
     renderLogoutMenuItem() {
@@ -44,11 +42,12 @@ class UserMenu extends React.Component {
 
         const logout = {
             logout: () => {
-                console.log("TODO: REDIRECT TO LOGIN?");
                 this.auth.logout();
             }
         };
-        return React.isValidElement(item) ? React.cloneElement(item, logout) : React.createElement(item, logout);
+        return React.isValidElement(item)
+            ? React.cloneElement(item, logout)
+            : React.createElement(item, logout);
     }
 
     render() {
@@ -63,12 +62,12 @@ class UserMenu extends React.Component {
         return (
             <div className="dropdown profile-holder">
                 <a href="#" className="profile" data-toggle="dropdown">
-                    <span className="icon-user icon"/>
+                    <span className="icon-user icon" />
                     <span className="user">{this.getUserName()}</span>
                 </a>
 
                 <div className="drop dropdown-menu" role="menu">
-                    <span className="top-arr"/>
+                    <span className="top-arr" />
                     <ul>
                         {this.props.userMenuItems.map((item, i) => (
                             <li key={i}>
@@ -84,12 +83,14 @@ class UserMenu extends React.Component {
 }
 
 export default createComponent(UserMenu, {
-    modules: [{
-        userMenuItems: () => {
-            return app.modules.loadByTag('user-menu-item').then(modules => {
-                return Object.values(modules).filter(m => !_.isNil(m));
-            });
-        },
-        logoutMenuItem: 'Skeleton.UserMenu/Logout'
-    }]
+    modules: [
+        {
+            userMenuItems: () => {
+                return app.modules.loadByTag("user-menu-item").then(modules => {
+                    return Object.values(modules).filter(m => !_.isNil(m));
+                });
+            },
+            logoutMenuItem: "Skeleton.UserMenu.Logout"
+        }
+    ]
 });

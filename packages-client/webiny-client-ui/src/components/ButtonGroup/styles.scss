@@ -26,7 +26,7 @@
     }
   }
 
-  :global(button.Webiny_Ui_Button_btn) {
+  :global(button.Button_btn) {
     &:hover, &:active, &:focus, &:focus:active {
       box-shadow: none;
     }
@@ -37,7 +37,7 @@
   .btnGroup {
     display: flex;
 
-    :global(button.Webiny_Ui_Button_btn) {
+    :global(button.Button_btn) {
       flex-grow: 1;
     }
 

@@ -1,0 +1,25 @@
+service: webiny-demo
+
+plugins:
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: dev
+  region: eu-west-1
+  environment: # Service wide environment variables
+      WEBINY_ENV: 'lambda-production'
+
+package:
+  include:
+    - 'serverless.yml'
+  exclude:
+    - 'src/**'
+
+functions:
+  app:
+    handler: dist/lambda.handler
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'

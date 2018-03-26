@@ -19,8 +19,8 @@ export default () => {
         next: Function
     ) => {
         const { req, matchedApiMethod } = params;
-        await api.serviceManager
-            .get("Authorization")
+        await api.services
+            .get("authorization")
             .canExecute(matchedApiMethod.getApiMethod(), req.identity);
         next();
     };

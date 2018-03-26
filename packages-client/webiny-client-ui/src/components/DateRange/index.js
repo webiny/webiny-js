@@ -1,15 +1,14 @@
-import React from 'react';
-import _ from 'lodash';
-import $ from 'jquery';
-import { Webiny } from 'webiny-client';
-import 'bootstrap-daterangepicker';
-import './styles.scss?extract';
+import React from "react";
+import _ from "lodash";
+import $ from "jquery";
+import { Webiny } from "webiny-client";
+import "bootstrap-daterangepicker";
+import "./styles.scss?extract";
 
 /**
  * TODO: complete I18N support needed.
  */
 class DateRange extends Webiny.Ui.FormComponent {
-
     constructor(props) {
         super(props);
 
@@ -20,7 +19,7 @@ class DateRange extends Webiny.Ui.FormComponent {
                 start: null,
                 end: null
             },
-            rangeType: _.get(this.props, 'rangeType', '')
+            rangeType: _.get(this.props, "rangeType", "")
         });
 
         const { moment } = props;
@@ -28,49 +27,56 @@ class DateRange extends Webiny.Ui.FormComponent {
         this.options = {
             autoApply: true,
             alwaysShowCalendars: true,
-            opens: 'left',
+            opens: "left",
             locale: {
-                format: 'DD/MMM/YY'
+                format: "DD/MMM/YY"
             },
             ranges: {
-                'Today': [moment(), moment()],
-                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                'This Month': [moment().startOf('month'), moment().endOf('month')],
-                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                Today: [moment(), moment()],
+                Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
+                "Last 7 Days": [moment().subtract(6, "days"), moment()],
+                "Last 30 Days": [moment().subtract(29, "days"), moment()],
+                "This Month": [moment().startOf("month"), moment().endOf("month")],
+                "Last Month": [
+                    moment()
+                        .subtract(1, "month")
+                        .startOf("month"),
+                    moment()
+                        .subtract(1, "month")
+                        .endOf("month")
+                ]
             }
         };
 
         this.availableOptions = [
-            'startDate',
-            'endDate',
-            'minDate',
-            'maxDate',
-            'dateLimit',
-            'showDropdowns',
-            'showWeekNumbers',
-            'timePicker',
-            'timePickerIncrement',
-            'timePicker24hour',
-            'timePickerSeconds',
-            'ranges',
-            'opens',
-            'drops',
-            'buttonClasses',
-            'applyClasses',
-            'cancelClasses',
-            'locale',
-            'singleDatePicker',
-            'autoApply',
-            'linkedCalendars',
-            'parentEl',
-            'isInvalidDate',
-            'autoUpdateInput',
-            'alwaysShowCalendars'
+            "startDate",
+            "endDate",
+            "minDate",
+            "maxDate",
+            "dateLimit",
+            "showDropdowns",
+            "showWeekNumbers",
+            "timePicker",
+            "timePickerIncrement",
+            "timePicker24hour",
+            "timePickerSeconds",
+            "ranges",
+            "opens",
+            "drops",
+            "buttonClasses",
+            "applyClasses",
+            "cancelClasses",
+            "locale",
+            "singleDatePicker",
+            "autoApply",
+            "linkedCalendars",
+            "parentEl",
+            "isInvalidDate",
+            "autoUpdateInput",
+            "alwaysShowCalendars"
         ];
 
-        this.bindMethods('setup,onChange,setInitialRange');
+        this.bindMethods("setup,onChange,setInitialRange");
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -89,17 +95,16 @@ class DateRange extends Webiny.Ui.FormComponent {
     }
 
     componentWillReceiveProps(props) {
-        super.componentWillReceiveProps(props);
         if (!this.getInput()) {
             return;
         }
 
         if (!props.value) {
-            this.getInput().value = this.getPlaceholder() || '';
+            this.getInput().value = this.getPlaceholder() || "";
         } else {
             const dates = props.value.split(this.props.rangeDelimiter);
-            this.element.data('daterangepicker').setStartDate(dates[0]);
-            this.element.data('daterangepicker').setEndDate(dates[1]);
+            this.element.data("daterangepicker").setStartDate(dates[0]);
+            this.element.data("daterangepicker").setEndDate(dates[1]);
         }
     }
 
@@ -121,24 +126,24 @@ class DateRange extends Webiny.Ui.FormComponent {
         this.element = $(this.getInput());
 
         // detect to which side we need to open the range selector in case opens is set to auto
-        let opens = 'left';
-        if (this.props.opens === 'auto') {
+        let opens = "left";
+        if (this.props.opens === "auto") {
             let left = this.element.offset().left;
             let windowWidth = window.innerWidth;
 
-            let offset = (left / windowWidth) * 100;
+            let offset = left / windowWidth * 100;
 
             // if within first 30% of the screen, open to left
             if (offset <= 30) {
-                opens = 'right';
+                opens = "right";
             } else if (offset > 30 && offset <= 60) {
-                opens = 'center';
+                opens = "center";
             } else {
-                opens = 'left';
+                opens = "left";
             }
         }
 
-        const range = _.get(this.options.ranges, _.get(this.props, 'rangeType'));
+        const range = _.get(this.options.ranges, _.get(this.props, "rangeType"));
         _.assign(this.options, this.props.options || {}, _.pick(this.props, this.availableOptions));
         this.options.locale.format = this.props.inputFormat;
         this.options.opens = opens;
@@ -152,12 +157,12 @@ class DateRange extends Webiny.Ui.FormComponent {
         }
 
         this.element.daterangepicker(this.options);
-        this.element.on('apply.daterangepicker', (ev, picker) => {
+        this.element.on("apply.daterangepicker", (ev, picker) => {
             this.onChange(picker);
         });
 
         if (!value) {
-            this.element[0].value = this.getPlaceholder() || '';
+            this.element[0].value = this.getPlaceholder() || "";
         }
 
         return this;
@@ -170,7 +175,7 @@ class DateRange extends Webiny.Ui.FormComponent {
             }
 
             const { moment } = this.props;
-            const dates = this.getInput().value.split(' - ');
+            const dates = this.getInput().value.split(" - ");
             const from = moment(dates[0], this.props.inputFormat, true);
             const to = moment(dates[1], this.props.inputFormat, true);
 
@@ -183,7 +188,7 @@ class DateRange extends Webiny.Ui.FormComponent {
                         from: fromYmd,
                         to: toYmd
                     },
-                    rangeType: _.get(picker, 'chosenLabel', this.state.rangeType)
+                    rangeType: _.get(picker, "chosenLabel", this.state.rangeType)
                 };
                 this.setState(state, () => {
                     this.props.onChange(this.state.date.range, this.validate);
@@ -195,7 +200,7 @@ class DateRange extends Webiny.Ui.FormComponent {
     }
 
     unregisterListeners() {
-        this.element.off('apply.daterangepicker');
+        this.element.off("apply.daterangepicker");
         return this;
     }
 
@@ -209,29 +214,40 @@ class DateRange extends Webiny.Ui.FormComponent {
         const from = moment(dates[0], this.props.modelFormat, true);
         const to = moment(dates[1], this.props.modelFormat, true);
 
-        return from.format(this.props.inputFormat + ' - ' + to.format(this.props.inputFormat));
+        return from.format(this.props.inputFormat + " - " + to.format(this.props.inputFormat));
     }
 }
 
 DateRange.defaultProps = Webiny.Ui.FormComponent.extendProps({
-    inputFormat: 'YYYY-MM-DD',
-    modelFormat: 'YYYY-MM-DD',
-    rangeDelimiter: ':',
-    rangeType: 'Last 30 Days', // initial date range
-    opens: 'auto',
+    inputFormat: "YYYY-MM-DD",
+    modelFormat: "YYYY-MM-DD",
+    rangeDelimiter: ":",
+    rangeType: "Last 30 Days", // initial date range
+    opens: "auto",
     renderer() {
-        const omitProps = ['attachToForm', 'attachValidators', 'detachFromForm', 'validateInput', 'form', 'renderer', 'name', 'onChange'];
+        const omitProps = [
+            "attachToForm",
+            "attachValidators",
+            "detachFromForm",
+            "validateInput",
+            "form",
+            "renderer",
+            "name",
+            "onChange"
+        ];
         const props = _.omit(this.props, omitProps);
         const { Input, Icon } = props;
-        props.addonRight = <Icon icon="icon-calendar"/>;
+        props.addonRight = <Icon icon="icon-calendar" />;
         props.value = this.renderPreview();
         props.onComponentDidMount = input => {
             this.input = input;
             this.setup();
         };
 
-        return <Input onRef={ref => this.input = ref} {...props}/>;
+        return <Input onRef={ref => (this.input = ref)} {...props} />;
     }
 });
 
-export default Webiny.createComponent(DateRange, { modules: ['Icon', 'Input', { moment: 'Webiny/Vendors/Moment' }] });
+export default Webiny.createComponent(DateRange, {
+    modules: ["Icon", "Input", { moment: "Webiny/Vendors/Moment" }]
+});

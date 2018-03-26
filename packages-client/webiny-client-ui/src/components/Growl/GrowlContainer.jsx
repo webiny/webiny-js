@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
-import $ from 'jquery';
 import classSet from "classnames";
+import dynamics from 'dynamics.js';
 import { createComponent } from 'webiny-client';
 import styles from './styles.css';
 
@@ -48,13 +48,18 @@ class GrowlContainer extends React.Component {
 
     removeGrowl(growl) {
         const id = growl.props.id;
-        $(this.dom[id]).fadeOut(400);
 
-        setTimeout(() => {
-            const index = _.findIndex(this.state.growls, item => item.props.id === id);
-            this.state.growls.splice(index, 1);
-            this.setState({ growls: this.state.growls });
-        }, 400);
+        dynamics.animate(this.dom[id], {
+            opacity: 0
+        }, {
+            type: dynamics.easeOut,
+            duration: 400,
+            complete: () => {
+                const index = _.findIndex(this.state.growls, item => item.props.id === id);
+                this.state.growls.splice(index, 1);
+                this.setState({ growls: this.state.growls });
+            }
+        });
     }
 
     render() {

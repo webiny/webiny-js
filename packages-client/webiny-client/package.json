@@ -15,9 +15,6 @@
   "dependencies": {
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
-    "baobab": "^2.5.0",
-    "bluebird": "^3.5.1",
-    "bootstrap-sass": "^3.3.7",
     "classnames": "^2.2.5",
     "console-polyfill": "^0.3.0",
     "history": "^4.7.2",
@@ -30,7 +27,7 @@
     "react": "16.2.0",
     "react-dom": "16.2.0",
     "react-hot-loader": "^4.0.0",
-    "react-transition-group": "^1.2.0",
+    "query-string": "^6.0.0",
     "url-parse": "^1.2.0",
     "warning": "^3.0.0"
   },

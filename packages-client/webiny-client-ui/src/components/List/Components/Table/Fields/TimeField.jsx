@@ -1,24 +1,22 @@
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-client';
+import { createComponent, i18n } from 'webiny-client';
 
-class TimeField extends Webiny.Ui.Component {
+class TimeField extends React.Component {
+    render() {
+        const {List, format, render, ...props} = this.props;
 
-}
+        if (render) {
+            return render.call(this);
+        }
 
-TimeField.defaultProps = {
-    name: null,
-    default: '-',
-    format: null,
-    renderer() {
-        const {List, format, ...props} = this.props;
         const time = _.get(this.props.data, this.props.name);
 
         return (
-            <List.Table.Field {..._.omit(props, ['renderer'])}>
+            <List.Table.Field {...props}>
                 {() => {
                     try {
-                        return Webiny.I18n.time(time, this.props.format);
+                        return i18n.time(time, format);
                     } catch (e) {
                         return this.props.default;
                     }
@@ -26,6 +24,12 @@ TimeField.defaultProps = {
             </List.Table.Field>
         );
     }
+}
+
+TimeField.defaultProps = {
+    name: null,
+    default: '-',
+    format: null
 };
 
-export default Webiny.createComponent(TimeField, {modules: ['List'], tableField: true});
+export default createComponent(TimeField, {modules: ['List'], tableField: true});

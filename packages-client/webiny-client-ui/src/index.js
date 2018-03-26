@@ -1,8 +1,17 @@
+if (window) {
+    window.jQuery = window.$ = require("jquery");
+}
+
+require("bootstrap-sass");
+
 import "./assets/styles.scss";
 import growler from "./services/growler";
 import ModalService from "./services/modal";
 
 export { default as ModalComponent } from "./components/Modal/Components/ModalComponent";
+export {
+    default as ModalConfirmationComponent
+} from "./components/Modal/Components/ModalConfirmationComponent";
 export { default as FormComponent } from "./components/Form/FormComponent";
 export { default as LinkState } from "./components/Form/LinkState";
 export { default as OptionComponent } from "./components/Option/OptionComponent";
@@ -174,6 +183,10 @@ const app = () => {
                 factory: () => import("./components/Link")
             },
             {
+                name: "List",
+                factory: () => import("./components/List")
+            },
+            {
                 name: "Loader",
                 factory: () => import("./components/Loader")
             },
@@ -208,6 +221,10 @@ const app = () => {
             {
                 name: "RadioGroup",
                 factory: () => import("./components/RadioGroup")
+            },
+            {
+                name: "Search",
+                factory: () => import("./components/Search")
             },
             {
                 name: "Section",

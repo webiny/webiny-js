@@ -1,15 +1,15 @@
 import React from 'react';
-import {Webiny} from 'webiny-client';
+import { createComponent, i18n } from 'webiny-client';
 
 /**
  * @i18n.namespace Webiny.Ui.List.Table.FieldInfo
  */
-class FieldInfo extends Webiny.Ui.Component {
+class FieldInfo extends React.Component {
 
     constructor(props) {
         super(props);
 
-        this.bindMethods('showInfo,hideInfo');
+        ['showInfo', 'hideInfo'].map(m => this[m] = this[m].bind(this));
     }
 
     showInfo() {
@@ -19,17 +19,19 @@ class FieldInfo extends Webiny.Ui.Component {
     hideInfo() {
         this.refs.dialog.hide();
     }
-}
 
-FieldInfo.defaultProps = {
-    renderer() {
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
+
         const info = (
             <a onClick={this.showInfo} href="javascript:void(0);">
                 <span className="icon icon-info"/>
             </a>
         );
 
-        const {Button, Modal} = this.props;
+        const { Button, Modal } = this.props;
 
         const modal = (
             <Modal.Dialog ref="dialog">
@@ -37,7 +39,7 @@ FieldInfo.defaultProps = {
                     <Modal.Header title={this.props.title}/>
                     <Modal.Body children={this.props.children}/>
                     <Modal.Footer>
-                        <Button label={this.i18n('Close')} onClick={this.hideInfo}/>
+                        <Button label={i18n('Close')} onClick={this.hideInfo}/>
                     </Modal.Footer>
                 </Modal.Content>
             </Modal.Dialog>
@@ -50,6 +52,6 @@ FieldInfo.defaultProps = {
             </webiny-field-info>
         );
     }
-};
+}
 
-export default Webiny.createComponent(FieldInfo, {modules: ['Modal', 'Button']});
+export default createComponent(FieldInfo, { modules: ['Modal', 'Button'] });

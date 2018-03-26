@@ -1,30 +1,22 @@
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-client';
+import { createComponent, i18n } from 'webiny-client';
 import ModalAction from './ModalAction';
 
 /**
  * @i18n.namespace Webiny.Ui.List.Table.Actions
  */
-class DeleteAction extends Webiny.Ui.Component {
+class DeleteAction extends React.Component {
+    constructor() {
+        super();
+        this.dialogId = _.uniqueId('delete-action-modal-');
+    }
 
-}
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
 
-DeleteAction.defaultProps = {
-    label: Webiny.I18n('Delete'),
-    title: Webiny.I18n('Delete confirmation'),
-    icon: 'icon-cancel',
-    message: Webiny.I18n('Are you sure you want to delete this record?'),
-    confirmButtonLabel: Webiny.I18n('Yes, delete!'),
-    cancelButtonLabel: Webiny.I18n('No'),
-    hide: _.noop,
-    afterDelete: _.noop,
-    onConfirm({data, actions, dialog}) {
-        return actions.delete(data.id, false).then(res => {
-            return Promise.resolve(this.props.afterDelete(res)).then(() => res);
-        });
-    },
-    renderer() {
         const {message, Modal} = this.props;
         const $this = this;
 
@@ -32,6 +24,7 @@ DeleteAction.defaultProps = {
             <ModalAction {..._.pick(this.props, 'data', 'actions', 'label', 'hide', 'afterDelete', 'icon')}>
                 {function render({data, actions, dialog}) {
                     const props = {
+                        name: $this.dialogId,
                         title: $this.props.title,
                         confirm: $this.props.confirmButtonLabel,
                         cancel: $this.props.cancelButtonLabel,
@@ -50,6 +43,22 @@ DeleteAction.defaultProps = {
             </ModalAction>
         );
     }
+}
+
+DeleteAction.defaultProps = {
+    label: i18n('Delete'),
+    title: i18n('Delete confirmation'),
+    icon: 'icon-cancel',
+    message: i18n('Are you sure you want to delete this record?'),
+    confirmButtonLabel: i18n('Yes, delete!'),
+    cancelButtonLabel: i18n('No'),
+    hide: _.noop,
+    afterDelete: _.noop,
+    onConfirm({data, actions, dialog}) {
+        return actions.delete(data.id, false).then(res => {
+            return Promise.resolve(this.props.afterDelete(res)).then(() => res);
+        });
+    }
 };
 
-export default Webiny.createComponent(DeleteAction, {modules: ['Modal']});
+export default createComponent(DeleteAction, {modules: ['Modal']});

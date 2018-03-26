@@ -1,15 +1,16 @@
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-client';
+import classSet from "classnames";
+import { createComponent, i18n } from 'webiny-client';
 import RouteAction from './Actions/RouteAction';
 import styles from '../../styles.css';
 
-class Field extends Webiny.Ui.Component {
+class Field extends React.Component {
 
     constructor(props) {
         super(props);
 
-        this.bindMethods('getTdClasses');
+        this.getTdClasses = this.getTdClasses.bind(this);
     }
 
     getTdClasses(classes = {}) {
@@ -18,7 +19,36 @@ class Field extends Webiny.Ui.Component {
         coreClasses[this.props.alignLeftClass] = this.props.align === 'left';
         coreClasses[this.props.alignRightClass] = this.props.align === 'right';
         coreClasses[this.props.alignCenterClass] = this.props.align === 'center';
-        return this.classSet(coreClasses, this.props.className, classes);
+        return classSet(coreClasses, this.props.className, classes);
+    }
+
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
+
+        let content = this.props.children;
+        if (!_.isFunction(content) && _.isEmpty(content)) {
+            content = _.get(this.props.data, this.props.name, this.props.default);
+        }
+
+        if (_.isFunction(content)) {
+            content = content.call(this, { data: this.props.data, $this: this });
+        }
+
+        if (this.props.route) {
+            content = (
+                <RouteAction route={this.props.route} data={this.props.data} params={this.props.params}>
+                    {content}
+                </RouteAction>
+            );
+        }
+
+        // TODO: data-th={i18n.toText(this.props.label)}
+
+        return this.props.includeTd ?
+            <td className={this.getTdClasses()}>{content}</td>
+            : content;
     }
 }
 
@@ -33,29 +63,7 @@ Field.defaultProps = {
     alignCenterClass: 'text-center',
     route: null,
     params: null,
-    hide: false,
-    renderer() {
-        let content = this.props.children;
-        if (!_.isFunction(content) && _.isEmpty(content)) {
-            content = _.get(this.props.data, this.props.name, this.props.default);
-        }
-
-        if (_.isFunction(content)) {
-            content = content.call(this, {data: this.props.data, $this: this});
-        }
-
-        if (this.props.route) {
-            content = (
-                <RouteAction route={this.props.route} data={this.props.data} params={this.props.params}>
-                    {content}
-                </RouteAction>
-            );
-        }
-
-        return this.props.includeTd ?
-            <td className={this.getTdClasses()} data-th={Webiny.I18n.toText(this.props.label)}>{content}</td>
-            : content;
-    }
+    hide: false
 };
 
-export default Webiny.createComponent(Field, {styles, tableField: true});
+export default createComponent(Field, { styles, tableField: true });

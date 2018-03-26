@@ -3,47 +3,44 @@ import webpack from "webpack";
 
 // Webpack plugins
 import ExtractTextPlugin from "extract-text-webpack-plugin";
-import Visualizer from "webpack-visualizer-plugin";
 import CleanWebpackPlugin from "clean-webpack-plugin";
 import OptimizeCssAssetsPlugin from "optimize-css-assets-webpack-plugin";
 import AutoDllPlugin from "autodll-webpack-plugin";
+import UglifyJsPlugin from "uglifyjs-webpack-plugin";
 
 // Custom plugins
 import AssetFileNamePlugin from "./plugins/AssetFileName";
 import AssetsMetaPlugin from "./plugins/AssetsMeta";
 import ModuleIdsPlugin from "./plugins/ModuleIds";
 import ChunkIdsPlugin from "./plugins/ChunkIds";
-import ChunkHotReload from "./plugins/ChunkHotReload";
 
 // Config helpers
-import resolveCreator from "./resolve";
 import stylesCreator from "./styles";
 import babelOptions from "./babel";
 // List of vendor libraries to create a DLL
 import vendor from "webiny-client/lib/vendor";
 
 import { getIfUtils, removeEmpty } from "webpack-config-utils";
+
 const { ifProduction, ifDevelopment } = getIfUtils(process.env.NODE_ENV);
 
 export default ({ projectRoot, appRoot, urlGenerator }) => {
     const definePlugin = new webpack.DefinePlugin({
-        DEVELOPMENT: ifDevelopment(true, false),
-        PRODUCTION: ifProduction(true, false),
-        "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV)
+        "process.env": {
+            NODE_ENV: JSON.stringify(process.env.NODE_ENV)
+        }
     });
 
     const assetFileNamePlugin = ifProduction(new AssetFileNamePlugin());
     const assetsMetaPlugin = new AssetsMetaPlugin({ projectRoot, urlGenerator });
-    const uglifyPlugin = ifProduction(
-        new webpack.optimize.UglifyJsPlugin({ mangle: true, sourceMap: false })
-    );
+    const uglifyPlugin = ifProduction(new UglifyJsPlugin());
 
     const plugins = removeEmpty([
         definePlugin,
         new AutoDllPlugin({
             inject: true,
             filename: "[name].dll.js",
-            plugins: removeEmpty([definePlugin, assetFileNamePlugin, uglifyPlugin]),
+            plugins: removeEmpty([definePlugin, uglifyPlugin, assetFileNamePlugin]),
             entry: {
                 vendor
             },
@@ -62,10 +59,13 @@ export default ({ projectRoot, appRoot, urlGenerator }) => {
                 ]
             }
         }),
+        new webpack.ProvidePlugin({
+            $: "jquery",
+            jQuery: "jquery"
+        }),
         new CleanWebpackPlugin(["dist/" + process.env.NODE_ENV], { root: projectRoot }),
         new ModuleIdsPlugin(),
         new ChunkIdsPlugin({ projectRoot }),
-        ifDevelopment(new ChunkHotReload()),
         ifDevelopment(new webpack.NoEmitOnErrorsPlugin()),
         ifDevelopment(new webpack.HotModuleReplacementPlugin()),
         new ExtractTextPlugin("styles.css"),
@@ -86,7 +86,6 @@ export default ({ projectRoot, appRoot, urlGenerator }) => {
                 }
             })
         ),
-        new Visualizer({ filename: "stats.html" }),
         new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
     ]);
 
@@ -95,7 +94,7 @@ export default ({ projectRoot, appRoot, urlGenerator }) => {
     const fileLoaderOptions = name => {
         return {
             name,
-            context: path.resolve(appRoot, "Assets"),
+            context: path.resolve(appRoot, "assets"),
             outputPath: file => {
                 if (file.startsWith("_/")) {
                     const parts = file.replace(/_\//g, "").split("/assets/");
@@ -116,13 +115,13 @@ export default ({ projectRoot, appRoot, urlGenerator }) => {
     return {
         cache: true,
         context: appRoot,
-        devtool: ifProduction("cheap-module-source-map"),
+        devtool: ifDevelopment("eval-source-map", "cheap-module-source-map"),
         entry: {},
         output: {
             path: path.resolve(path.join(projectRoot, "dist", process.env.NODE_ENV)),
             filename: "[name].js",
             chunkFilename: "chunks/[name].js",
-            publicPath: "/"
+            publicPath: ifDevelopment("/", "")
         },
         plugins,
         module: {
@@ -130,13 +129,13 @@ export default ({ projectRoot, appRoot, urlGenerator }) => {
                 {
                     test: /\.jsx?$/,
                     exclude: /node_modules/,
-                    use: [
+                    use: removeEmpty([
                         {
                             loader: "babel-loader",
                             options: babelOptions
                         },
-                        "hot-accept-loader"
-                    ]
+                        ifDevelopment("hot-accept-loader")
+                    ])
                 },
                 {
                     test: /bootstrap-sass/,
@@ -181,9 +180,12 @@ export default ({ projectRoot, appRoot, urlGenerator }) => {
                 }
             ]
         },
-        resolve: resolveCreator({
-            alias: { bluebird: "bluebird/js/browser/bluebird.core.js" }
-        }),
+        resolve: {
+            alias: {
+                jquery: require.resolve("jquery/dist/jquery.slim.js")
+            },
+            extensions: [".jsx", ".js", ".css", ".scss"]
+        },
         resolveLoader: {
             modules: [__dirname + "/loaders", "node_modules"]
         }

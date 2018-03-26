@@ -1,16 +1,16 @@
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-client';
+import { createComponent, isElementOfType, i18n } from 'webiny-client';
 
 /**
- * @i18n.namespace Webiny.Ui.List.Table.Actions
+ * @i18n.namespace Ui.List.Table.Actions
  */
-class Actions extends Webiny.Ui.Component {
+class Actions extends React.Component {
 
     constructor(props) {
         super(props);
 
-        this.bindMethods('shouldHideItem');
+        this.shouldHideItem = this.shouldHideItem.bind(this);
     }
 
     shouldHideItem(item) {
@@ -26,27 +26,27 @@ class Actions extends Webiny.Ui.Component {
 
         return hide || !show;
     }
-}
 
-Actions.defaultProps = {
-    label: 'Actions',
-    hide: false,
-    renderer() {
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
+
         if (this.props.hide) {
             return null;
         }
 
-        const {Dropdown} = this.props;
+        const { Dropdown } = this.props;
 
         return (
             <Dropdown title={this.props.label} type="balloon">
-                <Dropdown.Header title={this.i18n('Actions')}/>
+                <Dropdown.Header title={i18n('Actions')}/>
                 {React.Children.map(this.props.children, child => {
                     if (this.shouldHideItem(child)) {
                         return null;
                     }
 
-                    if (Webiny.isElementOfType(child, Dropdown.Divider) || Webiny.isElementOfType(child, Dropdown.Header)) {
+                    if (isElementOfType(child, Dropdown.Divider) || isElementOfType(child, Dropdown.Header)) {
                         return child;
                     }
 
@@ -62,6 +62,11 @@ Actions.defaultProps = {
             </Dropdown>
         );
     }
+}
+
+Actions.defaultProps = {
+    label: 'Actions',
+    hide: false
 };
 
-export default Webiny.createComponent(Actions, {modules: ['Dropdown']});
+export default createComponent(Actions, { modules: ['Dropdown'] });

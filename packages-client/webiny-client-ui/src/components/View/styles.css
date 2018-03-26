@@ -197,7 +197,7 @@
 		float: none;
 	}
 
-	.viewHeader .titleRight .Webiny_Ui_Link_btn,
+	.viewHeader .titleRight .Link_btn,
 	.viewHeader .titleRight a,
 	.viewHeader .titleRight button {
 		display: block;

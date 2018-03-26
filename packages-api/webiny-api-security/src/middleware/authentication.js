@@ -29,7 +29,7 @@ export default (options: { token: Function | string }) => {
         }
 
         try {
-            req.identity = await api.serviceManager.get("Authentication").verifyToken(token);
+            req.identity = await api.services.get("authentication").verifyToken(token);
         } catch (e) {
             return finish(new ApiErrorResponse(e.data, e.toString(), e.code, 401));
         }

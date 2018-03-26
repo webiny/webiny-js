@@ -1,26 +1,31 @@
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-client';
+import { createComponent, i18n } from 'webiny-client';
 
-class PriceField extends Webiny.Ui.Component {
+class PriceField extends React.Component {
+    render() {
+        const {List, render, ...props} = this.props;
+
+        if (render) {
+            return render.call(this);
+        }
+
+        const value = _.get(this.props.data, this.props.name);
+
+        return (
+            <List.Table.Field {...props}>
+                {() => value ? i18n.price(value, this.props.format) : this.props.default}
+            </List.Table.Field>
+        );
+    }
 }
 
 PriceField.defaultProps = {
     format: null,
-    default: '-',
-    renderer() {
-        const value = _.get(this.props.data, this.props.name);
-        const {List, ...props} = this.props;
-
-        return (
-            <List.Table.Field {..._.omit(props, ['renderer'])}>
-                {() => value ? Webiny.I18n.price(value, this.props.format) : this.props.default}
-            </List.Table.Field>
-        );
-    }
+    default: '-'
 };
 
-export default Webiny.createComponent(PriceField, {
+export default createComponent(PriceField, {
     modules: ['List'],
     tableField: true
 });
