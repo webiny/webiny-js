@@ -1,12 +1,10 @@
-import React from 'react';
-import $ from 'jquery';
-import _ from 'lodash';
-import { createComponent, i18n} from 'webiny-client';
+import React from "react";
+import $ from "jquery";
+import _ from "lodash";
+import { createComponent, i18n } from "webiny-client";
 import classSet from "classnames";
 
-/**
- * @i18n.namespace Webiny.Ui.Carousel
- */
+const t = i18n.namespace("Webiny.Ui.Carousel");
 class Carousel extends React.Component {
     constructor(props) {
         super(props);
@@ -26,7 +24,7 @@ class Carousel extends React.Component {
     }
 
     componentWillUpdate() {
-        this.carousel.trigger('destroy.owl.carousel');
+        this.carousel.trigger("destroy.owl.carousel");
     }
 
     componentDidUpdate() {
@@ -47,7 +45,10 @@ class Carousel extends React.Component {
         }
 
         return (
-            <div ref={ref => this.dom = ref} className={classSet('owl-carousel owl-theme', this.props.className)}>
+            <div
+                ref={ref => (this.dom = ref)}
+                className={classSet("owl-carousel owl-theme", this.props.className)}
+            >
                 {this.props.children}
             </div>
         );
@@ -63,7 +64,7 @@ Carousel.defaultProps = {
     autoWidth: false,
     URLhashListener: false,
     navRewind: false,
-    navText: [i18n('prev'), i18n('next')],
+    navText: [t`prev`, t`next`],
     dots: true,
     lazyLoad: false,
     autoplay: false,
@@ -74,8 +75,8 @@ Carousel.defaultProps = {
     videoWidth: false,
     animateOut: false,
     animateIn: false,
-    itemElement: 'div',
-    stageElement: 'div',
+    itemElement: "div",
+    stageElement: "div",
     mouseDrag: false,
     className: null
 };
@@ -83,6 +84,6 @@ Carousel.defaultProps = {
 export default createComponent(Carousel, {
     modules: [
         // owl.carousel attaches itself to jQuery object and does not export anything
-        'Vendor.OwlCarousel'
+        "Vendor.OwlCarousel"
     ]
 });

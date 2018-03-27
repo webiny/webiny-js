@@ -21,5 +21,8 @@
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",
     "build:watch": "babel src -d lib --source-maps --copy-files --watch"
+  },
+  "devDependencies": {
+    "glob": "^7.1.2"
   }
 }

@@ -1,21 +1,20 @@
-import React from 'react';
-import {Webiny} from 'webiny-client';
+import React from "react";
+import { createComponent, i18n } from "webiny-client";
 
-class Number extends Webiny.Ui.Component {
-}
-
-Number.defaultProps = {
-    format: null,
-    default: '-',
-    value: null,
-    renderer() {
+class Number extends React.Component {
+    render() {
         try {
-            return <span>{Webiny.I18n.number(this.props.value, this.props.format)}</span>;
+            return <span>{i18n.number(this.props.value, this.props.format)}</span>;
         } catch (e) {
             return this.props.default;
         }
     }
+}
+
+Number.defaultProps = {
+    format: null,
+    default: "-",
+    value: null
 };
 
-
-export default Webiny.createComponent(Number);
+export default createComponent(Number);

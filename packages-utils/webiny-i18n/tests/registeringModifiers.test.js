@@ -1,8 +1,8 @@
 // @flow
 import { assert } from "chai";
 
-import { i18n, namespace } from "./..";
-const t = namespace("Random.Namespace");
+import i18n from "./..";
+const t = i18n.namespace("Random.Namespace");
 
 describe("registering modifiers test", () => {
     it("register and unregister a modifier", () => {

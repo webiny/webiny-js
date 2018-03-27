@@ -3,9 +3,7 @@ import _ from 'lodash';
 import { app, createComponent, i18n } from 'webiny-client';
 import ModalMultiAction from './ModalMultiAction';
 
-/**
- * @i18n.namespace Webiny.Ui.List.MultiActions.DeleteMultiAction
- */
+const t = i18n.namespace("Webiny.Ui.List.MultiActions.DeleteMultiAction");
 class DeleteMultiAction extends React.Component {
 
     constructor(props) {
@@ -29,10 +27,10 @@ class DeleteMultiAction extends React.Component {
         return api.post(api.defaults.url + '/delete', { ids: _.map(data, 'id') }).then(response => {
             const growler = app.services.get('growler');
             if (response.statusCode >= 200) {
-                growler.success(i18n('{count} records deleted successfully!', { count: data.length }));
+                growler.success(t`{count} records deleted successfully!`({ count: data.length }));
                 actions.reload();
             } else {
-                growler.danger(_.get(response, 'data.message', response.statusText), i18n('Delete failed'), true);
+                growler.danger(_.get(response, 'data.message', response.statusText), t`Delete failed`, true);
             }
             return dialog.hide();
         });
@@ -66,9 +64,9 @@ class DeleteMultiAction extends React.Component {
 }
 
 DeleteMultiAction.defaultProps = {
-    label: i18n('Delete'),
-    title: i18n('Delete confirmation'),
-    message: i18n('Do you really want to delete {count} record(s)?'),
+    label: t`Delete`,
+    title: t`Delete confirmation`,
+    message: t`Do you really want to delete {count} record(s)?`,
     actions: null,
     data: [],
     onConfirm(params) {

@@ -4,9 +4,7 @@ import TwoFactorAuthActivation from "./TwoFactorAuthActivation";
 
 // import TwoFactorAuthConfirmation from './TwoFactorAuthConfirmation';
 
-/**
- * @i18n.namespace Webiny.Skeleton.UserAccount
- */
+const t = i18n.namespace("Webiny.Skeleton.UserAccount");
 class UserAccount extends React.Component {
     constructor(props) {
         super(props);
@@ -37,7 +35,7 @@ class UserAccount extends React.Component {
                     }
 
                     form.setModel({ password: null, confirmPassword: null });
-                    this.growler.success(i18n("Account settings were saved!"));
+                    this.growler.success(t`Account settings were saved!`);
                     this.auth.refresh();
                 });
             }
@@ -50,31 +48,29 @@ class UserAccount extends React.Component {
                 <Ui.Form {...formContainer}>
                     {({ model, form }) => (
                         <Ui.View.Form>
-                            <Ui.View.Header title={i18n("Account Settings")} />
+                            <Ui.View.Header title={t`Account Settings`} />
                             <Ui.View.Body>
                                 <Ui.Grid.Row>
                                     <Ui.Grid.Col md={6} sm={12}>
-                                        <Ui.Section title={i18n("Your account")} />
+                                        <Ui.Section title={t`Your account`} />
                                         <Ui.Input
-                                            label={i18n("First name")}
+                                            label={t`First name`}
                                             name="firstName"
                                             validators="required"
                                         />
                                         <Ui.Input
-                                            label={i18n("Last name")}
+                                            label={t`Last name`}
                                             name="lastName"
                                             validators="required"
                                         />
                                         <Ui.Email
-                                            label={i18n("Email")}
+                                            label={t`Email`}
                                             name="email"
                                             validators="required"
                                         />
 
                                         <div className="form-group">
-                                            <label className="control-label">
-                                                {i18n("Gravatar")}
-                                            </label>
+                                            <label className="control-label">{t`Gravatar`}</label>
 
                                             <div className="input-group">
                                                 <Ui.Gravatar hash={model.gravatar} size={100} />
@@ -82,20 +78,20 @@ class UserAccount extends React.Component {
                                         </div>
                                     </Ui.Grid.Col>
                                     <Ui.Grid.Col md={6} sm={12}>
-                                        <Ui.Section title={i18n("Reset password")} />
+                                        <Ui.Section title={t`Reset password`} />
                                         <Ui.Password
-                                            label={i18n("New password")}
+                                            label={t`New password`}
                                             name="password"
-                                            placeholder={i18n("Type your new password")}
+                                            placeholder={t`Type your new password`}
                                         />
                                         <Ui.Password
-                                            label={i18n("Confirm password")}
+                                            label={t`Confirm password`}
                                             name="confirmPassword"
                                             validators="eq:@password"
-                                            placeholder={i18n("Re-type your new password")}
+                                            placeholder={t`Re-type your new password`}
                                         >
                                             <validator name="eq">
-                                                {i18n("Passwords do not match")}
+                                                {t`Passwords do not match`}
                                             </validator>
                                         </Ui.Password>
                                         <Ui.ChangeConfirm
@@ -106,7 +102,7 @@ class UserAccount extends React.Component {
                                             onComplete={() => this.twoFactorAuthConfirmation.show()}
                                         >
                                             <Ui.Switch
-                                                label={i18n("Enable 2 Factor Authentication")}
+                                                label={t`Enable 2 Factor Authentication`}
                                                 name="twoFactorAuth.status"
                                             />
                                         </Ui.ChangeConfirm>
@@ -118,7 +114,7 @@ class UserAccount extends React.Component {
                                 <Ui.Button
                                     type="primary"
                                     onClick={form.submit}
-                                    label={i18n("Save account")}
+                                    label={t`Save account`}
                                 />
                             </Ui.View.Footer>
                         </Ui.View.Form>

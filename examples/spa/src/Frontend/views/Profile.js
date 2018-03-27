@@ -93,13 +93,15 @@ class Profile extends React.Component {
                 <div>
                     <strong>{option.data.email}</strong>
                     <br />
-                    <span>Created on: {option.data.createdOn}</span>
+                    <span>
+                        {t`Created on: {created|dateTime}`({ created: option.data.createdOn })}
+                    </span>
                 </div>
             )
         };
 
         const radioGroup = {
-            label: "Select assignee",
+            label: t`Select assignee`,
             name: "assignee",
             api: "/security/users",
             fields: "id,email",
@@ -143,34 +145,36 @@ class Profile extends React.Component {
                     {({ model, form }) => (
                         <View.Form>
                             <View.Header
-                                title={
-                                    model.id ? i18n("ACL - Edit User") : i18n("ACL - Create User")
-                                }
+                                title={model.id ? t`ACL - Edit User` : t`ACL - Create User`}
                             >
                                 <Button
                                     type="primary"
-                                    label="Show modal"
+                                    label={t`Show modal`}
                                     onClick={this.showDialog("myDialog")}
                                 />
                                 <Button
                                     type="primary"
-                                    label="Confirm modal"
+                                    label={t`Confirm modal`}
                                     onClick={this.showDialog("confirmAction")}
                                 />
                                 <Button
                                     type="primary"
-                                    label="Success modal"
+                                    label={t`Success modal`}
                                     onClick={this.showDialog("successAction")}
                                 />
                                 <ClickSuccess message="That was easy!">
-                                    <Button type="primary" label="Click me!" onClick={() => {}} />
+                                    <Button
+                                        type="primary"
+                                        label={t`Click me!`}
+                                        onClick={() => {}}
+                                    />
                                 </ClickSuccess>
                                 <CustomDialog name={"myDialog"} />
                                 <Modal.Confirmation
                                     name={"confirmAction"}
                                     message={"Are you sure?"}
                                 />
-                                <Modal.Success name={"successAction"} message={"Hoorraaaay!"} />
+                                <Modal.Success name={"successAction"} message={t`Hoorraaaay!`} />
                                 <ClickSuccess message={msg}>
                                     {({ success }) => (
                                         <ClickConfirm
@@ -197,33 +201,33 @@ class Profile extends React.Component {
                                     <Tabs.Tab label="User" icon="fa-home">
                                         <Grid.Row>
                                             <Grid.Col all={6}>
-                                                <Section title={i18n("Info")} />
+                                                <Section title={t`Info`} />
                                                 <Grid.Row>
                                                     <Grid.Col all={8}>
                                                         <Input
-                                                            label={i18n("First name")}
+                                                            label={t`First name`}
                                                             name="firstName"
                                                             validators="required"
                                                         />
                                                         <Input
-                                                            label={i18n("Last name")}
+                                                            label={t`Last name`}
                                                             name="lastName"
                                                             validators="required"
                                                         />
                                                         <Input
-                                                            label={i18n("Email")}
+                                                            label={t`Email`}
                                                             name="email"
-                                                            description={i18n("Your email")}
+                                                            description={t`Your email`}
                                                             validators="required,email"
                                                         />
                                                         <Tags
                                                             name={"tags"}
-                                                            label={"User tags"}
+                                                            label={t`User tags`}
                                                             validatorsTags={"minLength:3"}
                                                         />
                                                         <ChangeConfirm message="Are you sure you want to toggle this switch?">
                                                             <Switch
-                                                                label={i18n("Enabled")}
+                                                                label={t`Enabled`}
                                                                 name="enabled"
                                                             />
                                                         </ChangeConfirm>
@@ -231,8 +235,8 @@ class Profile extends React.Component {
                                                     <Grid.Col all={4}>
                                                         <Avatar
                                                             cropper={{
-                                                                title: "Crop your image",
-                                                                action: "Upload image",
+                                                                title: t`Crop your image`,
+                                                                action: t`Upload image`,
                                                                 config: {
                                                                     aspectRatio: 1,
                                                                     closeOnClick: false,
@@ -248,11 +252,11 @@ class Profile extends React.Component {
                                                 </Grid.Row>
                                             </Grid.Col>
                                             <Grid.Col all={6}>
-                                                <Section title={i18n("Password")} />
+                                                <Section title={t`Password`} />
                                                 <Grid.Row>
                                                     <Grid.Col all={12}>
                                                         <Password
-                                                            label={i18n("New password")}
+                                                            label={t`New password`}
                                                             name="password"
                                                             placeholder={i18n(
                                                                 "Type a new password"
@@ -263,15 +267,13 @@ class Profile extends React.Component {
                                                 <Grid.Row>
                                                     <Grid.Col all={12}>
                                                         <Password
-                                                            label={i18n("Confirm password")}
+                                                            label={t`Confirm password`}
                                                             name="confirmPassword"
                                                             validators="eq:@password"
-                                                            placeholder={i18n(
-                                                                "Retype the new password"
-                                                            )}
+                                                            placeholder={t`Retype the new password`}
                                                         >
                                                             <validator name="eq">
-                                                                {i18n("Passwords do not match")}
+                                                                {t`Passwords do not match`}
                                                             </validator>
                                                         </Password>
                                                     </Grid.Col>
@@ -287,24 +289,24 @@ class Profile extends React.Component {
                                     <Tabs.Tab label="Tab 2" icon="fa-cog">
                                         <Grid.Row>
                                             <Grid.Col all={6}>
-                                                <Section title={i18n("Info")} />
+                                                <Section title={t`Info`} />
                                                 <CheckboxGroup {...checkboxGroup}>
                                                     <validator name="required">
-                                                        You must select something!
+                                                        {t`You must select something!`}
                                                     </validator>
                                                     <validator name="minLength">
-                                                        Select at least 2 items
+                                                        {t`Select at least 2 items`}
                                                     </validator>
                                                 </CheckboxGroup>
                                                 <RadioGroup {...radioGroup} />
                                                 <File
-                                                    label="Verification document"
-                                                    placeholder="Select a file"
+                                                    label={t`Verification document`}
+                                                    placeholder={t`Select a file`}
                                                     name="document"
                                                 />
                                                 <IconPicker
-                                                    label="Icon"
-                                                    placeholder="Select an icon"
+                                                    label={t`Icon`}
+                                                    placeholder={t`Select an icon`}
                                                     name={"icon"}
                                                 />
                                                 <Select {...selectProps} />
@@ -324,11 +326,11 @@ class Profile extends React.Component {
                                                                     <strong>view1!</strong>
                                                                 </p>
                                                                 <Button
-                                                                    label="Show View 2"
+                                                                    label={t`Show View 2`}
                                                                     onClick={showView("view2")}
                                                                 />
                                                                 <Button
-                                                                    label="Show Modal View"
+                                                                    label={t`Show Modal View`}
                                                                     onClick={showView("view3")}
                                                                 />
                                                             </div>
@@ -343,7 +345,7 @@ class Profile extends React.Component {
                                                                     <strong>view2</strong>.
                                                                 </p>
                                                                 <Button
-                                                                    label="Show View 1"
+                                                                    label={t`Show View 1`}
                                                                     onClick={showView("view1")}
                                                                 />
                                                             </div>
@@ -364,10 +366,10 @@ class Profile extends React.Component {
                                                         {() => (
                                                             <Grid.Row>
                                                                 <Grid.Col all={3}>
-                                                                    <h5>Key</h5>
+                                                                    <h5>{t`Key`}</h5>
                                                                 </Grid.Col>
                                                                 <Grid.Col all={3}>
-                                                                    <h5>Value</h5>
+                                                                    <h5>{t`Value`}</h5>
                                                                 </Grid.Col>
                                                             </Grid.Row>
                                                         )}
@@ -415,14 +417,14 @@ class Profile extends React.Component {
                                                             <Grid.Row>
                                                                 <Grid.Col all={12}>
                                                                     <h6>
-                                                                        You have not added any
+                                                                        {t`You have not added any
                                                                         contacts yet. Click "Add
                                                                         contact" to start creating
-                                                                        your contacts!
+                                                                        your contacts!`}
                                                                     </h6>
                                                                     <Button
                                                                         type="primary"
-                                                                        label="Add contact"
+                                                                        label={t`Add contact`}
                                                                         onClick={actions.add()}
                                                                     />
                                                                 </Grid.Col>
@@ -436,15 +438,11 @@ class Profile extends React.Component {
                                 </Tabs>
                             </View.Body>
                             <View.Footer>
-                                <Button
-                                    type="default"
-                                    onClick={form.cancel}
-                                    label={i18n("Go back")}
-                                />
+                                <Button type="default" onClick={form.cancel} label={t`Go back`} />
                                 <Button
                                     type="primary"
                                     onClick={form.submit}
-                                    label={i18n("Save user")}
+                                    label={t`Save user`}
                                     align="right"
                                 />
                             </View.Footer>

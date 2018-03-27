@@ -1,22 +1,18 @@
-import React from 'react';
-import {Webiny} from 'webiny-client';
+import React from "react";
+import { createComponent } from "webiny-client";
 
-class TimeAgo extends Webiny.Ui.Component {
+class TimeAgo extends React.Component {
+    render() {
+        const { moment } = this.props;
+        const timeAgo = moment(this.props.value, moment.ISO_8601);
 
+        return <span>{timeAgo.isValid() ? timeAgo.fromNow() : this.props.invalidMessage}</span>;
+    }
 }
 
 TimeAgo.defaultProps = {
     value: null,
-    invalidMessage: 'invalid date format',
-    renderer() {
-        const {moment} = this.props;
-        const timeAgo = moment(this.props.value, moment.ISO_8601);
-
-        return (
-            <span>{timeAgo.isValid() ? timeAgo.fromNow() : this.props.invalidMessage}</span>
-        );
-    }
+    invalidMessage: "invalid date format"
 };
 
-
-export default Webiny.createComponent(TimeAgo, {modules: [{moment: 'Webiny/Vendors/Moment'}]});
+export default createComponent(TimeAgo, { modules: [{ moment: "Webiny/Vendors/Moment" }] });

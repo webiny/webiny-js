@@ -1,20 +1,18 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import _ from 'lodash';
-import $ from 'jquery';
+import React from "react";
+import ReactDOM from "react-dom";
+import _ from "lodash";
+import $ from "jquery";
 import classSet from "classnames";
-import { createComponent, i18n } from 'webiny-client';
-import { FormComponent, LinkState } from 'webiny-client-ui';
-import Image from './Image';
-import styles from './styles.css';
+import { createComponent, i18n } from "webiny-client";
+import { FormComponent, LinkState } from "webiny-client-ui";
+import Image from "./Image";
+import styles from "./styles.css";
 
-const placeholder = document.createElement('div');
+const placeholder = document.createElement("div");
 placeholder.className = styles.placeholder;
-placeholder.textContent = 'Drop here';
+placeholder.textContent = "Drop here";
 
-/**
- * @i18n.namespace Webiny.Ui.Gallery
- */
+const t = i18n.namespace("Webiny.Ui.Gallery");
 class Gallery extends React.Component {
     constructor(props) {
         super(props);
@@ -33,21 +31,21 @@ class Gallery extends React.Component {
         };
 
         [
-            'getFiles',
-            'getImageIndex',
-            'getCropper',
-            'saveImage',
-            'deleteImage',
-            'applyCropping',
-            'onCropperHidden',
-            'filesChanged',
-            'onDrop',
-            'onDragOver',
-            'onDragLeave',
-            'onImageDragOver',
-            'onImageDragStart',
-            'onImageDragEnd'
-        ].map(m => this[m] = this[m].bind(this));
+            "getFiles",
+            "getImageIndex",
+            "getCropper",
+            "saveImage",
+            "deleteImage",
+            "applyCropping",
+            "onCropperHidden",
+            "filesChanged",
+            "onDrop",
+            "onDragOver",
+            "onDragLeave",
+            "onImageDragOver",
+            "onImageDragStart",
+            "onImageDragEnd"
+        ].map(m => (this[m] = this[m].bind(this)));
     }
 
     componentDidMount() {
@@ -63,10 +61,11 @@ class Gallery extends React.Component {
     }
 
     setupComponent(props) {
-        this.dom = ReactDOM.findDOMNode(this);
+        // TODO: @i18nRefactor ESLint Do not use findDOMNode (react/no-find-dom-node)
+        this.dom = ReactDOM.findDOMNode(this); // eslint-disable-line
         if (props.value) {
             const images = props.value.map(img => {
-                img.key = _.uniqueId('image-');
+                img.key = _.uniqueId("image-");
                 return img;
             });
             this.setState({ images });
@@ -88,9 +87,13 @@ class Gallery extends React.Component {
     }
 
     saveImage(image) {
-        const numberOfImages = _.get(this.props, 'value.length', 0) + 1;
+        const numberOfImages = _.get(this.props, "value.length", 0) + 1;
         // Show error message if maximum images limit is reached and the image being saved does not yet exists in the gallery
-        if (this.props.maxImages && numberOfImages > this.props.maxImages && !_.find(this.props.value, { name: image.name })) {
+        if (
+            this.props.maxImages &&
+            numberOfImages > this.props.maxImages &&
+            !_.find(this.props.value, { name: image.name })
+        ) {
             const errors = this.state.errors || [];
             errors.push({ name: image.name, message: this.props.maxImagesMessage });
             this.setState({ errors });
@@ -100,7 +103,7 @@ class Gallery extends React.Component {
         const index = this.getImageIndex(image);
         const state = this.state;
         if (index !== null) {
-            _.set(state, 'images.' + index, image);
+            _.set(state, "images." + index, image);
         } else {
             image.order = state.images.length;
             state.images.push(image);
@@ -128,7 +131,7 @@ class Gallery extends React.Component {
 
         if (files.length === 1) {
             const file = files[0];
-            file.key = _.uniqueId('image-');
+            file.key = _.uniqueId("image-");
             if (this.props.newCropper) {
                 return this.setState({ cropImage: file });
             }
@@ -139,7 +142,7 @@ class Gallery extends React.Component {
         }
 
         files.map(img => {
-            img.key = _.uniqueId('image-');
+            img.key = _.uniqueId("image-");
             this.saveImage(img);
         });
     }
@@ -205,7 +208,7 @@ class Gallery extends React.Component {
         if (this.dragged) {
             e.dataTransfer.setDragImage(this.dragged, 10, 50);
             // Firefox requires calling dataTransfer.setData for the drag to properly work
-            e.dataTransfer.setData('text/html', this.dragged);
+            e.dataTransfer.setData("text/html", this.dragged);
         }
     }
 
@@ -221,11 +224,11 @@ class Gallery extends React.Component {
         if (from < to) {
             to--;
         }
-        if (this.nodePlacement === 'after') {
+        if (this.nodePlacement === "after") {
             to++;
         }
 
-        this.dragged.style.display = 'inline-block';
+        this.dragged.style.display = "inline-block";
         if (this.dragged.parentNode === placeholder.parentNode) {
             this.dragged.parentNode.removeChild(placeholder);
         }
@@ -244,9 +247,9 @@ class Gallery extends React.Component {
             return;
         }
         e.preventDefault();
-        this.dragged.style.display = 'none';
+        this.dragged.style.display = "none";
         const over = $(e.target).closest('[data-role="image"]')[0];
-        if (!over || $(over).hasClass('placeholder')) {
+        if (!over || $(over).hasClass("placeholder")) {
             return;
         }
         this.over = over;
@@ -257,10 +260,10 @@ class Gallery extends React.Component {
         const parent = over.parentNode;
 
         if (relX > width) {
-            this.nodePlacement = 'after';
+            this.nodePlacement = "after";
             parent.insertBefore(placeholder, over.nextElementSibling);
         } else if (relX < width) {
-            this.nodePlacement = 'before';
+            this.nodePlacement = "before";
             parent.insertBefore(placeholder, over);
         }
     }
@@ -285,7 +288,8 @@ class Gallery extends React.Component {
                     onHidden={this.onCropperHidden}
                     onCrop={this.applyCropping}
                     config={cropper.config}
-                    image={this.state.cropImage}>
+                    image={this.state.cropImage}
+                >
                     {children}
                 </Cropper.Inline>
             );
@@ -298,7 +302,8 @@ class Gallery extends React.Component {
                 onHidden={this.onCropperHidden}
                 onCrop={this.applyCropping}
                 config={cropper.config}
-                image={this.state.cropImage}>
+                image={this.state.cropImage}
+            >
                 {children}
             </Cropper.Modal>
         );
@@ -315,7 +320,7 @@ class Gallery extends React.Component {
         if (this.state.images.length === 0) {
             message = (
                 <div>
-                    <span className={styles.mainText}>{i18n('DRAG FILES HERE')}</span>
+                    <span className={styles.mainText}>{t`DRAG FILES HERE`}</span>
                 </div>
             );
         }
@@ -327,10 +332,7 @@ class Gallery extends React.Component {
             onClick: this.getFiles
         };
 
-        let css = classSet(
-            styles.trayBin,
-            styles.trayBinEmpty
-        );
+        let css = classSet(styles.trayBin, styles.trayBinEmpty);
 
         if (this.state.images.length > 0) {
             css = classSet(styles.trayBin);
@@ -340,11 +342,15 @@ class Gallery extends React.Component {
         if (this.state.errors) {
             const data = [];
             _.each(this.state.errors, (err, key) => {
-                data.push(<li key={key}><strong>{err.name}</strong>: {err.message}</li>);
+                data.push(
+                    <li key={key}>
+                        <strong>{err.name}</strong>: {err.message}
+                    </li>
+                );
             });
 
             errors = (
-                <Alert title={i18n('Some files could not be added to the gallery')} type="error">
+                <Alert title={t`Some files could not be added to the gallery`} type="error">
                     {data && <ul>{data}</ul>}
                 </Alert>
             );
@@ -370,22 +376,27 @@ class Gallery extends React.Component {
                                 onDragOver: this.onImageDragOver
                             };
 
-                            return <Image {...imageProps}/>;
+                            // eslint-disable-next-line
+                            return <Image {...imageProps} />;
                         })}
                         <FileReader
                             accept={this.props.accept}
                             multiple={true}
-                            onReady={reader => this.reader = reader}
+                            onReady={reader => (this.reader = reader)}
                             sizeLimit={this.props.sizeLimit}
-                            onChange={this.filesChanged}/>
+                            onChange={this.filesChanged}
+                        />
                         {this.getCropper(
-                            <Input label={i18n('Title')}
-                                   placeholder={i18n('Type in an image title')} {...this.bindTo('cropImage.title')}/>
+                            <Input
+                                label={t`Title`}
+                                placeholder={t`Type in an image title`}
+                                {...this.bindTo("cropImage.title")}
+                            />
                         )}
                     </div>
                     <div className={styles.uploadAction}>
-                        <span>{i18n('Dragging not convenient?')}</span>&nbsp;
-                        <a href="#" onClick={this.getFiles}>{i18n('SELECT FILES HERE')}</a>
+                        <span>{t`Dragging not convenient?`}</span>&nbsp;
+                        <a href="#" onClick={this.getFiles}>{t`SELECT FILES HERE`}</a>
                     </div>
                 </div>
             </FormGroup>
@@ -394,10 +405,10 @@ class Gallery extends React.Component {
 }
 
 Gallery.defaultProps = {
-    accept: ['image/jpg', 'image/jpeg', 'image/gif', 'image/png'],
+    accept: ["image/jpg", "image/jpeg", "image/gif", "image/png"],
     sizeLimit: 10000000,
     maxImages: null,
-    maxImagesMessage: i18n('Maximum number of images reached!'),
+    maxImagesMessage: t`Maximum number of images reached!`,
     newCropper: {},
     editCropper: {},
     onSaveImage: _.noop
@@ -406,7 +417,7 @@ Gallery.defaultProps = {
 Gallery.Image = Image;
 
 export default createComponent([Gallery, FormComponent], {
-    modules: ['Alert', 'Cropper', 'FileReader', 'Input', 'FormGroup'],
+    modules: ["Alert", "Cropper", "FileReader", "Input", "FormGroup"],
     styles,
     formComponent: true
 });

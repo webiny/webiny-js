@@ -2,9 +2,7 @@ import React from "react";
 import _ from 'lodash';
 import { createComponent, i18n } from 'webiny-client';
 
-/**
- * @i18n.namespace Webiny.Ui.Cropper.BaseCropper
- */
+const t = i18n.namespace("Webiny.Ui.Cropper.BaseCropper");
 class BaseCropper extends React.Component {
 
     constructor(props) {
@@ -202,7 +200,7 @@ class BaseCropper extends React.Component {
 BaseCropper.defaultProps = {
     config: {},
     onCrop: _.noop,
-    action: i18n('Apply cropping')
+    action: t`Apply cropping`
 };
 
 export default createComponent(BaseCropper, { modules: [{ Cropper: 'Vendor.Cropper' }] });

@@ -1,12 +1,10 @@
-import React from 'react';
-import _ from 'lodash';
-import { i18n, createComponent } from 'webiny-client';
-import { FormComponent } from 'webiny-client-ui';
-import styles from './styles.css';
+import React from "react";
+import _ from "lodash";
+import { i18n, createComponent } from "webiny-client";
+import { FormComponent } from "webiny-client-ui";
+import styles from "./styles.css";
 
-/**
- * @i18n.namespace Webiny.Ui.Avatar
- */
+const t = i18n.namespace("Webiny.Ui.Avatar");
 class Avatar extends React.Component {
     constructor(props) {
         super(props);
@@ -14,16 +12,16 @@ class Avatar extends React.Component {
         this.lastId = null;
 
         [
-            'applyCropping',
-            'onCropperHidden',
-            'fileChanged',
-            'editFile',
-            'removeFile',
-            'getFiles',
-            'getCropper',
-            'onDrop',
-            'onDragOver',
-            'onDragLeave'
+            "applyCropping",
+            "onCropperHidden",
+            "fileChanged",
+            "editFile",
+            "removeFile",
+            "getFiles",
+            "getCropper",
+            "onDrop",
+            "onDragOver",
+            "onDragLeave"
         ].map(m => {
             this[m] = this[m].bind(this);
         });
@@ -34,7 +32,7 @@ class Avatar extends React.Component {
             cropImage: null,
             actualWidth: 0,
             actualHeight: 0
-        }
+        };
     }
 
     componentDidMount() {
@@ -57,8 +55,8 @@ class Avatar extends React.Component {
             return;
         }
 
-        if (_.has(file, 'data')) {
-            file.id = _.get(this.props, 'value.id', this.lastId);
+        if (_.has(file, "data")) {
+            file.id = _.get(this.props, "value.id", this.lastId);
             if (this.props.cropper) {
                 this.setState({ cropImage: file });
             } else {
@@ -77,7 +75,7 @@ class Avatar extends React.Component {
         if (e && e.stopPropagation) {
             e.stopPropagation();
         }
-        this.lastId = this.props.value && this.props.value.id || null;
+        this.lastId = (this.props.value && this.props.value.id) || null;
         this.props.onChange(null);
     }
 
@@ -104,7 +102,8 @@ class Avatar extends React.Component {
                     onHidden={this.onCropperHidden}
                     onCrop={this.applyCropping}
                     config={cropper.config}
-                    image={this.state.cropImage}/>
+                    image={this.state.cropImage}
+                />
             );
         }
 
@@ -115,7 +114,8 @@ class Avatar extends React.Component {
                 onHidden={this.onCropperHidden}
                 onCrop={this.applyCropping}
                 config={cropper.config}
-                image={this.state.cropImage}/>
+                image={this.state.cropImage}
+            />
         );
     }
 
@@ -149,7 +149,7 @@ class Avatar extends React.Component {
         }
 
         // If inline cropper is used - render only the cropper component
-        if (this.state.cropImage && _.get(this.props, 'cropper.inline', false)) {
+        if (this.state.cropImage && _.get(this.props, "cropper.inline", false)) {
             return this.getCropper();
         }
 
@@ -166,8 +166,9 @@ class Avatar extends React.Component {
                 type="primary"
                 icon="fa-upload"
                 onClick={this.getFiles}
-                className={styles.uploadBtn}>
-                {i18n('Upload')}
+                className={styles.uploadBtn}
+            >
+                {t`Upload`}
             </Button>
         );
 
@@ -182,18 +183,26 @@ class Avatar extends React.Component {
         return (
             <div>
                 <div {...props}>
-                    {this.state.error && <Alert type="error" icon={null}>{this.state.error.message}</Alert>}
+                    {this.state.error && (
+                        <Alert type="error" icon={null}>
+                            {this.state.error.message}
+                        </Alert>
+                    )}
                     <span className={styles.placeholder}>
-                        {imageSrc ?
-                            <img src={imageSrc} className={styles.image} height="157" width="157"/> : this.props.empty}
+                        {imageSrc ? (
+                            <img src={imageSrc} className={styles.image} height="157" width="157" />
+                        ) : (
+                            this.props.empty
+                        )}
                     </span>
                     {imageAction}
-                    <span className={styles.smallText}>{i18n('JPG, PNG, GIF')}</span>
+                    <span className={styles.smallText}>{t`JPG, PNG, GIF`}</span>
                     <FileReader
-                        onReady={reader => this.reader = reader}
+                        onReady={reader => (this.reader = reader)}
                         sizeLimit={this.props.sizeLimit}
                         accept={this.props.accept}
-                        onChange={this.fileChanged}/>
+                        onChange={this.fileChanged}
+                    />
                     {this.getCropper()}
                 </div>
             </div>
@@ -202,15 +211,15 @@ class Avatar extends React.Component {
 }
 
 Avatar.defaultProps = {
-    accept: ['image/jpg', 'image/jpeg', 'image/gif', 'image/png'],
+    accept: ["image/jpg", "image/jpeg", "image/gif", "image/png"],
     cropper: false,
     defaultImage: null,
-    empty: 'x',
+    empty: "x",
     sizeLimit: 2485760
 };
 
 export default createComponent([Avatar, FormComponent], {
-    modules: ['Alert', 'FileReader', 'Cropper', 'Button'],
+    modules: ["Alert", "FileReader", "Cropper", "Button"],
     formComponent: true,
     styles
 });

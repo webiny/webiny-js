@@ -1,14 +1,12 @@
-import React from 'react';
-import _ from 'lodash';
+import React from "react";
+import _ from "lodash";
 import classSet from "classnames";
-import { createComponent, i18n } from 'webiny-client';
-import { FormComponent } from 'webiny-client-ui';
-import ImagePreview from './Preview';
-import styles from './styles.css';
+import { createComponent, i18n } from "webiny-client";
+import { FormComponent } from "webiny-client-ui";
+import ImagePreview from "./Preview";
+import styles from "./styles.css";
 
-/**
- * @i18n.namespace Webiny.Ui.Image
- */
+const t = i18n.namespace("Webiny.Ui.Image");
 class Image extends React.Component {
     constructor(props) {
         super(props);
@@ -24,17 +22,17 @@ class Image extends React.Component {
         };
 
         [
-            'applyCropping',
-            'onCropperHidden',
-            'fileChanged',
-            'editFile',
-            'removeFile',
-            'getFiles',
-            'getCropper',
-            'onDrop',
-            'onDragOver',
-            'onDragLeave'
-        ].map(m => this[m] = this[m].bind(this));
+            "applyCropping",
+            "onCropperHidden",
+            "fileChanged",
+            "editFile",
+            "removeFile",
+            "getFiles",
+            "getCropper",
+            "onDrop",
+            "onDragOver",
+            "onDragLeave"
+        ].map(m => (this[m] = this[m].bind(this)));
     }
 
     componentDidMount() {
@@ -57,9 +55,9 @@ class Image extends React.Component {
             return;
         }
 
-        if (_.has(file, 'data')) {
-            file.id = _.get(this.props, 'value.id', this.lastId);
-            if (this.props.cropper && file.type !== 'image/svg+xml') {
+        if (_.has(file, "data")) {
+            file.id = _.get(this.props, "value.id", this.lastId);
+            if (this.props.cropper && file.type !== "image/svg+xml") {
                 this.setState({ cropImage: file });
             } else {
                 this.props.onChange(file);
@@ -77,7 +75,7 @@ class Image extends React.Component {
         if (e && e.stopPropagation) {
             e.stopPropagation();
         }
-        this.lastId = this.props.value && this.props.value.id || null;
+        this.lastId = (this.props.value && this.props.value.id) || null;
         this.props.onChange(null);
     }
 
@@ -104,7 +102,8 @@ class Image extends React.Component {
                     onHidden={this.onCropperHidden}
                     onCrop={this.applyCropping}
                     config={cropper.config}
-                    image={this.state.cropImage}>
+                    image={this.state.cropImage}
+                >
                     {children}
                 </Cropper.Inline>
             );
@@ -117,7 +116,8 @@ class Image extends React.Component {
                 onHidden={this.onCropperHidden}
                 onCrop={this.applyCropping}
                 config={cropper.config}
-                image={this.state.cropImage}>
+                image={this.state.cropImage}
+            >
                 {children}
             </Cropper.Modal>
         );
@@ -151,9 +151,7 @@ class Image extends React.Component {
         let error = null;
         if (this.state.error) {
             const { Alert } = this.props;
-            error = (
-                <Alert type="error">{this.state.error.message}</Alert>
-            );
+            error = <Alert type="error">{this.state.error.message}</Alert>;
         }
         return error;
     }
@@ -163,7 +161,7 @@ class Image extends React.Component {
             return this.props.render.call(this);
         }
 
-        if (this.state.cropImage && _.get(this.props, 'cropper.inline', false)) {
+        if (this.state.cropImage && _.get(this.props, "cropper.inline", false)) {
             return this.getCropper();
         }
 
@@ -173,7 +171,7 @@ class Image extends React.Component {
         if (!this.props.value) {
             message = (
                 <div>
-                    <span className={styles.mainText}>{i18n('DRAG FILES HERE')}</span>
+                    <span className={styles.mainText}>{t`DRAG FILES HERE`}</span>
                 </div>
             );
         }
@@ -185,10 +183,7 @@ class Image extends React.Component {
             onClick: this.getFiles
         };
 
-        let css = classSet(
-            styles.trayBin,
-            styles.trayBinEmpty
-        );
+        let css = classSet(styles.trayBin, styles.trayBinEmpty);
 
         if (this.props.value) {
             css = classSet(styles.trayBin);
@@ -205,9 +200,7 @@ class Image extends React.Component {
                 onDragOver: this.onImageDragOver
             };
 
-            image = (
-                <ImagePreview {...imageProps}/>
-            );
+            image = <ImagePreview {...imageProps} />;
         }
 
         return (
@@ -218,14 +211,15 @@ class Image extends React.Component {
                         {message}
                         {image}
                         <FileReader
-                            onReady={reader => this.reader = reader}
+                            onReady={reader => (this.reader = reader)}
                             accept={this.props.accept}
                             sizeLimit={this.props.sizeLimit}
-                            onChange={this.fileChanged}/>
+                            onChange={this.fileChanged}
+                        />
                     </div>
                     <div className={styles.uploadAction}>
-                        <span>{i18n('Dragging not convenient?')}</span>&nbsp;
-                        <a href="#" onClick={this.getFiles}>{i18n('SELECT FILES HERE')}</a>
+                        <span>{t`Dragging not convenient?`}</span>&nbsp;
+                        <a href="#" onClick={this.getFiles}>{t`SELECT FILES HERE`}</a>
                     </div>
                 </div>
                 {this.getCropper()}
@@ -235,13 +229,13 @@ class Image extends React.Component {
 }
 
 Image.defaultProps = {
-    accept: ['image/jpg', 'image/jpeg', 'image/gif', 'image/png'],
+    accept: ["image/jpg", "image/jpeg", "image/gif", "image/png"],
     cropper: false,
     sizeLimit: 2485760
 };
 
 export default createComponent([Image, FormComponent], {
-    modules: ['FileReader', 'Alert', 'Cropper', 'FormGroup'],
+    modules: ["FileReader", "Alert", "Cropper", "FormGroup"],
     formComponent: true,
     styles
 });

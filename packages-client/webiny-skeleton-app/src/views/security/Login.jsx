@@ -5,9 +5,7 @@ import { app, createComponent, i18n } from 'webiny-client';
 import logoOrange from './../../assets/images/logo_orange.png';
 import styles from './styles/Login.css';
 
-/**
- * @i18n.namespace Webiny.Skeleton.Auth.Login
- */
+const t = i18n.namespace("Webiny.Skeleton.Auth.Login");
 class Login extends React.Component {
     constructor(props) {
         super(props);
@@ -54,7 +52,7 @@ class Login extends React.Component {
                                         <img src={logoOrange} width="180" height="58"/>
                                     </a>
 
-                                    <h2 className="form-signin-heading"><span/>{i18n('Sign in to your Account')}
+                                    <h2 className="form-signin-heading"><span/>{t`Sign in to your Account`}
                                     </h2>
 
                                     <div className="clear"/>
@@ -64,8 +62,8 @@ class Login extends React.Component {
 
                                     {this.state.twoFactorAuth && (<Input
                                         name="twoFactorAuthCode"
-                                        placeholder={i18n('Enter your verification code')}
-                                        label={i18n('Verification code')}
+                                        placeholder={t`Enter your verification code`}
+                                        label={t`Verification code`}
                                         validators="required"
                                         onEnter={form.submit}
                                         autoFocus={true}/>)}
@@ -73,16 +71,16 @@ class Login extends React.Component {
                                     {!this.state.twoFactorAuth && (<div>
                                         <Email
                                             name="username"
-                                            placeholder={i18n('Enter email')}
-                                            label={i18n('Email address')}
+                                            placeholder={t`Enter email`}
+                                            label={t`Email address`}
                                             validators="required"
                                             onEnter={form.submit}
                                             autoFocus={true}/>
 
                                         <Password
                                             name="password"
-                                            placeholder={i18n('Password')}
-                                            label={i18n('Password')}
+                                            placeholder={t`Password`}
+                                            label={t`Password`}
                                             validators="required"
                                             onEnter={form.submit}/>
                                     </div>)}
@@ -95,12 +93,12 @@ class Login extends React.Component {
                                             onClick={form.submit}
                                             icon="icon-next"
                                             className={styles.btnLogin}>
-                                            <span>{i18n('Submit')}</span>
+                                            <span>{t`Submit`}</span>
                                         </Button>
                                     </div>
                                 </div>
 
-                                <p className="copyright">{i18n('powered by')}</p>
+                                <p className="copyright">{t`powered by`}</p>
                                 <a href="https://www.webiny.com/" className="site">www.webiny.com</a>
                             </div>
                         </div>

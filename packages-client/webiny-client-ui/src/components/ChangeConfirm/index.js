@@ -2,9 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { app, createComponent, i18n } from "webiny-client";
 
-/**
- * @i18n.namespace Webiny.Ui.ChangeConfirm
- */
+const t = i18n.namespace("Webiny.Ui.ChangeConfirm");
 class ChangeConfirm extends React.Component {
     constructor(props) {
         super(props);
@@ -105,7 +103,7 @@ class ChangeConfirm extends React.Component {
 }
 
 ChangeConfirm.defaultProps = {
-    message: i18n("Confirm value change?"),
+    message: t`Confirm value change?`,
     onComplete: _.noop,
     onCancel: _.noop,
     renderDialog: null

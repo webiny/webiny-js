@@ -1,9 +1,7 @@
 import React from 'react';
 import { createComponent, isElementOfType, i18n } from 'webiny-client';
 
-/**
- * @i18n.namespace Webiny.Ui.ExpandableList.ActionSet
- */
+const t = i18n.namespace("Webiny.Ui.ExpandableList.ActionSet");
 class ActionSet extends React.Component {
     render() {
         if (this.props.render) {
@@ -13,7 +11,7 @@ class ActionSet extends React.Component {
         const { Dropdown } = this.props;
         return (
             <Dropdown title={this.props.label} type="balloon" className="expandable-list__action-set">
-                <Dropdown.Header title={i18n('Actions')}/>
+                <Dropdown.Header title={t`Actions`}/>
                 {React.Children.map(this.props.children, child => {
                     if (isElementOfType(child, Dropdown.Divider) || isElementOfType(child, Dropdown.Header)) {
                         return child;

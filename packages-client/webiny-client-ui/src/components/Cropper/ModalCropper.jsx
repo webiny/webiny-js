@@ -5,9 +5,7 @@ import { ModalComponent } from 'webiny-client-ui';
 import BaseCropper from './BaseCropper';
 import CropperDialog from "./CropperDialog";
 
-/**
- * @i18n.namespace Webiny.Ui.Cropper.ModalCropper
- */
+const t = i18n.namespace("Webiny.Ui.Cropper.ModalCropper");
 class ModalCropper extends React.Component {
     constructor() {
         super();
@@ -74,9 +72,7 @@ class ModalCropper extends React.Component {
                                 src={props.image && (props.image.data || props.image.src) + props.getCacheBust()}
                                 style={{ maxWidth: '100%' }}/>
                             <div className="clearfix"/>
-                            {i18n('Cropped image size: {size}', {
-                                size: <strong>{props.width}x{props.height}</strong>
-                            })}
+                            {t`Cropped image size: {size}`({size: <strong>{props.width}x{props.height}</strong>})}
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
@@ -93,7 +89,7 @@ class ModalCropper extends React.Component {
 
 ModalCropper.defaultProps = {
     config: {},
-    title: i18n('Crop image'),
+    title: t`Crop image`,
     closeOnClick: false,
     onCrop: _.noop,
     onShown: _.noop,

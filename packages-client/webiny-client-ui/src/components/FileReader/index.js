@@ -1,13 +1,9 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import _ from 'lodash';
-import { createComponent, i18n } from 'webiny-client';
+import React from "react";
+import _ from "lodash";
+import { createComponent, i18n } from "webiny-client";
 
-/**
- * @i18n.namespace Webiny.Ui.FileReader
- */
+const t = i18n.namespace("Webiny.Ui.FileReader");
 class FileReader extends React.Component {
-
     constructor(props) {
         super(props);
         this.reset = () => {
@@ -16,7 +12,7 @@ class FileReader extends React.Component {
 
         this.dom = null;
 
-        ['onChange', 'getFiles', 'readFiles'].map(m => this[m] = this[m].bind(this));
+        ["onChange", "getFiles", "readFiles"].map(m => (this[m] = this[m].bind(this)));
     }
 
     componentDidMount() {
@@ -46,8 +42,8 @@ class FileReader extends React.Component {
         _.each(files, file => {
             const reader = new window.FileReader();
 
-            reader.onloadend = ((f) => {
-                return (e) => {
+            reader.onloadend = (f => {
+                return e => {
                     loadedFiles++;
                     const data = {
                         name: f.name,
@@ -57,9 +53,9 @@ class FileReader extends React.Component {
 
                     let errorMessage = null;
                     if (this.props.accept.length && this.props.accept.indexOf(file.type) === -1) {
-                        errorMessage = i18n('Unsupported file type ({type})', { type: file.type });
+                        errorMessage = t`Unsupported file type ({type})`({ type: file.type });
                     } else if (this.props.sizeLimit < file.size) {
-                        errorMessage = i18n('File is too big');
+                        errorMessage = t`File is too big`;
                     }
 
                     if (!errorMessage) {
@@ -70,15 +66,19 @@ class FileReader extends React.Component {
                         errors.push(data);
                     }
 
-
                     if (loadedFiles === files.length) {
-                        this.props.onChange.apply(this, this.props.multiple ? [output, errors] : [output[0] || null, errors[0] || null]);
+                        this.props.onChange.apply(
+                            this,
+                            this.props.multiple
+                                ? [output, errors]
+                                : [output[0] || null, errors[0] || null]
+                        );
                         this.reset();
                     }
                 };
             })(file);
 
-            if (this.props.readAs === 'binary') {
+            if (this.props.readAs === "binary") {
                 reader.readAsBinaryString(file);
             } else {
                 reader.readAsDataURL(file);
@@ -89,12 +89,13 @@ class FileReader extends React.Component {
     render() {
         return (
             <input
-                ref={ref => this.dom = ref}
+                ref={ref => (this.dom = ref)}
                 accept={this.props.accept}
-                style={{ display: 'none' }}
+                style={{ display: "none" }}
                 type="file"
                 multiple={this.props.multiple}
-                onChange={this.onChange}/>
+                onChange={this.onChange}
+            />
         );
     }
 }
@@ -103,7 +104,7 @@ FileReader.defaultProps = {
     accept: [],
     multiple: false,
     sizeLimit: 2097152, // 10485760
-    readAs: 'data', // data || binary
+    readAs: "data", // data || binary
     onChange: _.noop,
     onReady: _.noop
 };

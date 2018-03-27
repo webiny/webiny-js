@@ -1,16 +1,8 @@
-import React from 'react';
-import {Webiny} from 'webiny-client';
+import React from "react";
+import { createComponent } from "webiny-client";
 
-class Pluralize extends Webiny.Ui.Component {
-
-}
-
-Pluralize.defaultProps = {
-    plural: null,
-    count: null,
-    noun: null,
-    pattern: '{count} {noun}',
-    renderer() {
+class Pluralize extends React.Component {
+    render() {
         let noun = this.props.noun;
         // If 'plural' is set, it will be used as plural form of given noun.
         if (this.props.plural && this.props.count !== 1) {
@@ -21,13 +13,21 @@ Pluralize.defaultProps = {
             noun = this.props.pluralize(this.props.noun, this.props.count);
         }
 
-        const result = this.props.pattern.replace('{count}', this.props.count).replace('{noun}', noun);
+        const result = this.props.pattern
+            .replace("{count}", this.props.count)
+            .replace("{noun}", noun);
 
-        return <span>{result}</span>
+        return <span>{result}</span>;
     }
+}
+
+Pluralize.defaultProps = {
+    plural: null,
+    count: null,
+    noun: null,
+    pattern: "{count} {noun}"
 };
 
-
-export default Webiny.createComponent(Pluralize, {
-    modules: [{pluralize: () => import('pluralize')}]
+export default createComponent(Pluralize, {
+    modules: [{ pluralize: () => import("pluralize") }]
 });

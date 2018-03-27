@@ -4,9 +4,7 @@ import classSet from "classnames";
 import { i18n, createComponent } from 'webiny-client';
 import styles from './styles.css';
 
-/**
- * @i18n.namespace Webiny.Ui.Tabs
- */
+const t = i18n.namespace("Webiny.Ui.Tabs");
 class TabHeader extends React.Component {
     render() {
         if (this.props.render) {
@@ -24,7 +22,7 @@ class TabHeader extends React.Component {
 }
 
 TabHeader.defaultProps = {
-    label: i18n('Tab'),
+    label: t`Tab`,
     onClick: _.noop,
     icon: null,
     disabled: false, // "private" prop passed by Tabs component

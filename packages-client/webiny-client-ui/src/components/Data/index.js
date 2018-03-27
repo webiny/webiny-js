@@ -3,9 +3,6 @@ import _ from "lodash";
 import { app, createComponent, ApiComponent } from "webiny-client";
 import axios from "axios";
 
-/**
- * @i18n.namespace Webiny.Ui.Data
- */
 class Data extends React.Component {
     constructor(props) {
         super(props);

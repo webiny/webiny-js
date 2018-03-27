@@ -1,7 +1,7 @@
 // @flow
 import { assert } from "chai";
 
-import { i18n } from "./..";
+import i18n from "./..";
 
 describe("datetime test", () => {
     const april1st2018 = new Date(1522540800 * 1000);

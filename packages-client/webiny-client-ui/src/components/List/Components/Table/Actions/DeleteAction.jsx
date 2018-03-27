@@ -3,9 +3,7 @@ import _ from 'lodash';
 import { createComponent, i18n } from 'webiny-client';
 import ModalAction from './ModalAction';
 
-/**
- * @i18n.namespace Webiny.Ui.List.Table.Actions
- */
+const t = i18n.namespace("Webiny.Ui.List.Table.Actions");
 class DeleteAction extends React.Component {
     constructor() {
         super();
@@ -46,12 +44,12 @@ class DeleteAction extends React.Component {
 }
 
 DeleteAction.defaultProps = {
-    label: i18n('Delete'),
-    title: i18n('Delete confirmation'),
+    label: t`Delete`,
+    title: t`Delete confirmation`,
     icon: 'icon-cancel',
-    message: i18n('Are you sure you want to delete this record?'),
-    confirmButtonLabel: i18n('Yes, delete!'),
-    cancelButtonLabel: i18n('No'),
+    message: t`Are you sure you want to delete this record?`,
+    confirmButtonLabel: t`Yes, delete!`,
+    cancelButtonLabel: t`No`,
     hide: _.noop,
     afterDelete: _.noop,
     onConfirm({data, actions, dialog}) {

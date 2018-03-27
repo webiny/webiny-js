@@ -1,8 +1,8 @@
 // @flow
 import { assert } from "chai";
-import { i18n, namespace } from "./..";
+import i18n from "./..";
 
-const t = namespace("Some.Namespace");
+const t = i18n.namespace("Some.Namespace");
 
 describe("translate test with namespaces", () => {
     it("should translate correctly without variables", () => {

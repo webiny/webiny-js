@@ -2,9 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import { createComponent, isElementOfType, i18n } from 'webiny-client';
 
-/**
- * @i18n.namespace Ui.List.Table.Actions
- */
+const t = i18n.namespace("Ui.List.Table.Actions");
 class Actions extends React.Component {
 
     constructor(props) {
@@ -40,7 +38,7 @@ class Actions extends React.Component {
 
         return (
             <Dropdown title={this.props.label} type="balloon">
-                <Dropdown.Header title={i18n('Actions')}/>
+                <Dropdown.Header title={t`Actions`}/>
                 {React.Children.map(this.props.children, child => {
                     if (this.shouldHideItem(child)) {
                         return null;

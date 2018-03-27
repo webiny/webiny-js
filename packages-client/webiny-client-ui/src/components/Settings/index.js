@@ -1,9 +1,7 @@
 import React from "react";
 import { app, createComponent, i18n } from "webiny-client";
 
-/**
- * @i18n.namespace Webiny.Ui.Settings
- */
+const t = i18n.namespace("Webiny.Ui.Settings");
 class Settings extends React.Component {
     render() {
         if (this.props.render) {
@@ -26,7 +24,7 @@ class Settings extends React.Component {
                     if (response.data.code) {
                         growler.danger(
                             response.data.message,
-                            i18n("That didn't go as expected..."),
+                            t`That didn't go as expected...`,
                             true
                         );
                         return form.handleApiError(response);
@@ -42,7 +40,7 @@ class Settings extends React.Component {
 
 Settings.defaultProps = {
     api: "/settings",
-    onSuccessMessage: () => i18n("Settings saved!"),
+    onSuccessMessage: () => t`Settings saved!`,
     onSubmitSuccess: null
 };
 

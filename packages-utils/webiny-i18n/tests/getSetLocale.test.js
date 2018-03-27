@@ -1,7 +1,7 @@
 // @flow
 import { assert } from "chai";
 
-import { i18n } from "./..";
+import i18n from "./..";
 
 describe("locales set / get test", () => {
     beforeEach(() => i18n.clearTranslations());

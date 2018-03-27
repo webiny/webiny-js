@@ -2,14 +2,16 @@ import React from "react";
 import { i18n } from "webiny-client";
 import { Menu } from "webiny-skeleton-app";
 
+const t = i18n.namespace("NewClient.Frontend");
+
 export default () => {
     return async (params, next) => {
         const { app } = params;
 
         app.services.get("menu").add(
-            <Menu order="0" label={i18n("Dashboard")} route="Dashboard" icon="fa-home">
-                <Menu order="0" label={i18n("My Account")} route="Dashboard" icon="fa-home" />
-                <Menu order="1" label={i18n("Settings")} route="Dashboard" icon="fa-home" />
+            <Menu order="0" label={t`Dashboard`} route="Dashboard" icon="fa-home">
+                <Menu order="0" label={t`My Account`} route="Dashboard" icon="fa-home" />
+                <Menu order="1" label={t`Settings`} route="Dashboard" icon="fa-home" />
             </Menu>
         );
 
@@ -32,8 +34,8 @@ export default () => {
             render() {
                 return (
                     <div>
-                        <h1>Homepage</h1>
-                        <a href={"/about"}>About</a>
+                        <h1>{t`Homepage`}</h1>
+                        <a href={"/about"}>{t`About`}</a>
                     </div>
                 );
             }
@@ -64,8 +66,8 @@ export default () => {
             render() {
                 return (
                     <div>
-                        <h1>404 Not Found</h1>
-                        <a href={"/"}>Get me out of here</a>
+                        <h1>{t`404 Not Found`}</h1>
+                        <a href={"/"}>{t`Get me out of here`}</a>
                     </div>
                 );
             }

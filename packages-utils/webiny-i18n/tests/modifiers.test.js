@@ -1,8 +1,8 @@
 // @flow
 import { assert } from "chai";
 
-import { namespace } from "./..";
-const t = namespace("Random.Namespace");
+import i18n from "./..";
+const t = i18n.namespace("Random.Namespace");
 
 let text = null;
 const april1st2018 = new Date(1522540800 * 1000);
