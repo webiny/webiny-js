@@ -3,9 +3,9 @@ import React from 'react';
 import _ from 'lodash';
 import {Webiny} from 'webiny-client';
 import matchOption from './matchOption';
-import {namespace} from 'webiny-i18n';
+import i18n from 'webiny-i18n';
 
-const i18n = namespace(\`Cool.Namespace\`);
+const t = i18n.namespace(\`Cool.Namespace\`);
 
 class AddServiceModal extends Webiny.Ui.ModalComponent {
     constructor() {
@@ -32,20 +32,20 @@ class AddServiceModal extends Webiny.Ui.ModalComponent {
                             form.hideLoading();
                             await dialog.hide();
 
-                            console.log(i18n\`Service {serviceName} saved!\`({serviceName: 'EXAMPLE'}));
+                            console.log(t\`Service {serviceName} saved!\`({serviceName: 'EXAMPLE'}));
                             this.props.onSubmit(apiResponse.getData());
                         }}>
                         {({form}) => (
                             <Modal.Content>
-                                <Modal.Header title={i18n\`Add service\`} onClose={dialog.hide}/>
+                                <Modal.Header title={t\`Add service\`} onClose={dialog.hide}/>
                                 <Modal.Body>
                                     <Grid.Row>
                                         <Grid.Col all={12}>
                                             <Form.Error/>
                                             <Form.Loader/>
                                             <Select
-                                                description={i18n\`Services already added are not shown.\`}
-                                                placeholder={i18n\`Select service...\`}
+                                                description={t\`Services already added are not shown.\`}
+                                                placeholder={t\`Select service...\`}
                                                 name="service"
                                                 validate="required"
                                                 api="/services/webiny/services"
@@ -64,8 +64,8 @@ class AddServiceModal extends Webiny.Ui.ModalComponent {
                                     </Grid.Row>
                                 </Modal.Body>
                                 <Modal.Footer>
-                                    <Button label={i18n\`Cancel\`} onClick={this.hide}/>
-                                    <Button type="primary" label={i18n\`Add\`} onClick={form.submit}/>
+                                    <Button label={t\`Cancel\`} onClick={this.hide}/>
+                                    <Button type="primary" label={t\`Add\`} onClick={form.submit}/>
                                 </Modal.Footer>
                             </Modal.Content>
                         )}

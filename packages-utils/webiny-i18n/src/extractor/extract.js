@@ -5,7 +5,9 @@ import hash from "short-hash";
  * @param source
  */
 const sourceImportsI18N = source => {
-    return source.match(/import .* from ["'`]webiny-i18n["'`]/);
+    if (source.match(/import[ ].*i18n.*/)) {
+        return true;
+    }
 };
 
 /**
@@ -15,7 +17,7 @@ const sourceImportsI18N = source => {
  * @param source
  */
 const getNamespaces = source => {
-    const regex = /([a-zA-Z0-9]+)[ ]+=[ ]+namespace\(['"`]([a-zA-Z0-9.]+)['"`]\)/g;
+    const regex = /([a-zA-Z0-9]+)[ ]+=[ ]+i18n.namespace\(['"`]([a-zA-Z0-9.]+)['"`]\)/g;
     let m;
 
     const results = {};

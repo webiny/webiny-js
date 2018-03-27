@@ -1,13 +1,13 @@
 export default `
-    import {namespace} from "webiny-i18n";
+    import i18n from "webiny-i18n";
     
-    const t1 = namespace('ns1');
-    const t2 = namespace('ns2');
-    let t3 = namespace("ns3");
+    const t1 = i18n.namespace('ns1');
+    const t2 = i18n.namespace('ns2');
+    let t3 = i18n.namespace("ns3");
 
 	const namespaces = {
-		t4: namespace("ns4"),		
-		t5: namespace("ns5"),
+		t4: i18n.namespace("ns4"),		
+		t5: i18n.namespace("ns5"),
 	};
 
     t1\`This is ns1 text.\`

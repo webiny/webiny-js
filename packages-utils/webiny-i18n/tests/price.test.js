@@ -1,7 +1,7 @@
 // @flow
 import { assert } from "chai";
 
-import { i18n } from "./..";
+import i18n from "./..";
 
 describe("price test", () => {
     it("should output price with no formatting set", () => {
