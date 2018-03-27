@@ -1,5 +1,5 @@
 // @flow
-import api from "webiny-api";
+import { app } from "webiny-api";
 import type { MatchedApiMethod } from "webiny-api";
 
 export default () => {
@@ -19,7 +19,7 @@ export default () => {
         next: Function
     ) => {
         const { req, matchedApiMethod } = params;
-        await api.services
+        await app.services
             .get("authorization")
             .canExecute(matchedApiMethod.getApiMethod(), req.identity);
         next();

@@ -1,5 +1,5 @@
 // @flow
-import api, { App } from "webiny-api";
+import { app, App } from "webiny-api";
 import BaseAuthEndpoint from "./endpoints/auth";
 import generateEndpoint from "./endpoints/generator";
 import { AuthenticationService, AuthorizationService } from "./index";
@@ -15,14 +15,14 @@ class Security extends App {
         super();
 
         this.name = "Security";
-        api.services.add("authentication", () => new AuthenticationService(config.authentication));
-        api.services.add("authorization", () => new AuthorizationService());
+        app.services.add("authentication", () => new AuthenticationService(config.authentication));
+        app.services.add("authorization", () => new AuthorizationService());
 
         this.endpoints = [
             generateEndpoint(
                 BaseAuthEndpoint,
                 config.authentication,
-                api.services.get("authentication")
+                app.services.get("authentication")
             ),
             UsersEndpoint,
             PermissionsEndpoint,
@@ -30,7 +30,7 @@ class Security extends App {
             RolesEndpoint
         ];
 
-        registerAttributes(api.services.get("authentication"));
+        registerAttributes(app.services.get("authentication"));
 
         // Helper attributes
         this.extendEntity("*", (entity: Entity) => {
@@ -49,11 +49,11 @@ class Security extends App {
             // We don't need a standalone "deletedBy" attribute, since its value would be the same as in "savedBy"
             // and "updatedBy" attributes. Check these attributes to find out who deleted an entity.
             entity.on("save", () => {
-                if (!api.getRequest()) {
+                if (!app.getRequest()) {
                     return;
                 }
 
-                const { identity } = api.getRequest();
+                const { identity } = app.getRequest();
                 entity.savedBy = identity;
                 if (entity.isExisting()) {
                     entity.updatedBy = identity;

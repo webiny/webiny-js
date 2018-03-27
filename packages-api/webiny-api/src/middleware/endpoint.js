@@ -3,7 +3,7 @@ import debug from "debug";
 import _ from "lodash";
 import compose from "webiny-compose";
 import semver from "semver";
-import api, { ApiErrorResponse } from "./../index";
+import { app, ApiErrorResponse } from "./../index";
 
 declare type EndpointMiddlewareOptions = {
     beforeApiMethod?: Array<Function>,
@@ -35,11 +35,11 @@ export default (options: EndpointMiddlewareOptions = {}) => {
             .split("?")
             .shift();
 
-        const urls = Object.keys(api.endpoints);
+        const urls = Object.keys(app.endpoints);
 
         for (let i = 0; i < urls.length; i++) {
             const baseUrl = urls[i];
-            const definition = api.endpoints[baseUrl];
+            const definition = app.endpoints[baseUrl];
 
             if (!reqUrl.startsWith(baseUrl)) {
                 continue;

@@ -3,7 +3,7 @@ import express from "express";
 import addDays from "date-fns/add_days";
 import { assert, expect } from "chai";
 import { MemoryDriver } from "webiny-entity-memory";
-import api, { middleware, endpointMiddleware, Entity } from "webiny-api";
+import { app, middleware, endpointMiddleware, Entity } from "webiny-api";
 import {
     authenticationMiddleware,
     authorizationMiddleware,
@@ -22,14 +22,14 @@ const sandbox = sinon.sandbox.create();
 describe("Security test", () => {
     afterEach(() => sandbox.restore());
 
-    let app = null;
+    let expApp = null;
     let user;
     let company;
 
     before(() => {
-        app = express();
-        app.use(express.json());
-        app.use(
+        expApp = express();
+        expApp.use(express.json());
+        expApp.use(
             middleware({
                 apps: [
                     new SecurityApp({
@@ -100,7 +100,7 @@ describe("Security test", () => {
     });
 
     it("should return error response with WBY_NOT_AUTHENTICATED", () => {
-        return request(app)
+        return request(expApp)
             .get("/security/auth/me")
             .expect(401)
             .then(({ body }) => {
@@ -109,7 +109,7 @@ describe("Security test", () => {
     });
 
     it("should return error response with WBY_INVALID_CREDENTIALS", () => {
-        return request(app)
+        return request(expApp)
             .post("/security/auth/login-user")
             .query({ _fields: "id,username" })
             .send({ username: "admin@webiny.com", password: "wrong" })
@@ -120,7 +120,7 @@ describe("Security test", () => {
     });
 
     it("should return error response with WBY_INTERNAL_ERROR", () => {
-        const authService = api.services.get("authentication");
+        const authService = app.services.get("authentication");
         sandbox.stub(authService, "authenticate").callsFake(() => {
             return {
                 promise: () => {
@@ -129,7 +129,7 @@ describe("Security test", () => {
             };
         });
 
-        return request(app)
+        return request(expApp)
             .post("/security/auth/login-user")
             .query({ _fields: "id,username" })
             .send({ username: "admin@webiny.com", password: "wrong" })
@@ -141,7 +141,7 @@ describe("Security test", () => {
     });
 
     it("should authenticate user identity", () => {
-        return request(app)
+        return request(expApp)
             .post("/security/auth/login-user")
             .query({ _fields: "id,username" })
             .send({ username: "admin@webiny.com", password: "dev" })
@@ -154,13 +154,13 @@ describe("Security test", () => {
     });
 
     it("should authenticate user identity using token", () => {
-        return request(app)
+        return request(expApp)
             .post("/security/auth/login-user")
             .query({ _fields: "id,username" })
             .send({ username: "admin@webiny.com", password: "dev" })
             .expect(200)
             .then(({ body }) => {
-                return request(app)
+                return request(expApp)
                     .get("/security/auth/me")
                     .set({ "Api-Token": body.data.token })
                     .query({ _fields: "id,username" })
@@ -173,7 +173,7 @@ describe("Security test", () => {
     });
 
     it("should authenticate company identity", () => {
-        return request(app)
+        return request(expApp)
             .post("/security/auth/login-company")
             .query({ _fields: "id,companyId" })
             .send({ companyId: "ABC", password: "dev" })
@@ -189,12 +189,12 @@ describe("Security test", () => {
     });
 
     it("should authenticate company identity using token", () => {
-        return request(app)
+        return request(expApp)
             .post("/security/auth/login-company")
             .send({ companyId: "ABC", password: "dev" })
             .expect(200)
             .then(({ body }) => {
-                return request(app)
+                return request(expApp)
                     .get("/security/auth/me")
                     .set({ "Api-Token": body.data.token })
                     .query({ _fields: "id,companyId" })
@@ -230,7 +230,7 @@ describe("Security test", () => {
 
     it("additional identity attributes - should set identity to attributes correctly", async () => {
         const identity = new MyUser().populate({ id: "identityID", username: "identity" });
-        let getRequestStub = sandbox.stub(api, "getRequest").callsFake(() => {
+        let getRequestStub = sandbox.stub(app, "getRequest").callsFake(() => {
             return {
                 identity
             };
@@ -258,7 +258,7 @@ describe("Security test", () => {
         assert.equal(await user.updatedBy, identity);
 
         getRequestStub.restore();
-        getRequestStub = sandbox.stub(api, "getRequest").callsFake(() => {
+        getRequestStub = sandbox.stub(app, "getRequest").callsFake(() => {
             return { identity: null };
         });
 

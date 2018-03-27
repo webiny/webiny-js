@@ -27,6 +27,7 @@ class App {
         this.services = new ServiceManager();
         this.router = new Router();
         this.initialized = false;
+        this.configLoader = () => Promise.resolve({});
 
         axios.defaults.validateStatus = status => {
             return status >= 200 && status < 500;

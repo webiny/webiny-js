@@ -2,7 +2,6 @@
   "scripts": {
     "develop": "./../../node_modules/.bin/webiny-scripts develop-app src --require=babel-register",
     "production:build": "./../../node_modules/.bin/webiny-scripts build-app src --require=babel-register",
-    "production:serve": "./../../node_modules/.bin/webiny-scripts serve src --require=babel-register",
-    "develop:theme": "./../../node_modules/.bin/webiny-scripts develop-plugin Theme"
+    "production:serve": "./../../node_modules/.bin/webiny-scripts serve src --require=babel-register"
   }
 }

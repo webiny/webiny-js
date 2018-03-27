@@ -1,5 +1,7 @@
-import Api from "./api";
-export default new Api();
+import Api from "./app";
+const app = new Api();
+
+export { app };
 export { default as middleware } from "./middleware";
 export { default as versionFromUrl } from "./etc/versionFromUrl";
 export { default as versionFromHeader } from "./etc/versionFromHeader";

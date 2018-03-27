@@ -2,7 +2,7 @@
 import _ from "lodash";
 import ApiContainer from "./apiContainer";
 import App from "./../etc/app";
-import api from "./../index";
+import { app } from "./../index";
 
 // Container for ApiContainer instances
 // The definition of an Endpoint class stays the same no matter how many instances we create so we only need one copy of ApiContainer per endpoint.
@@ -26,7 +26,7 @@ class Endpoint {
             apiContainer = new ApiContainer(this);
             _.set(apiContainers, [classId, version], apiContainer);
             this.init(apiContainer);
-            api.getApps().map((appInstance: App) => {
+            app.getApps().map((appInstance: App) => {
                 appInstance.applyEndpointExtensions(this);
             });
         }

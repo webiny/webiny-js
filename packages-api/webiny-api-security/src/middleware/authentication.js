@@ -1,5 +1,5 @@
 // @flow
-import api from "webiny-api";
+import { app } from "webiny-api";
 import { ApiErrorResponse } from "webiny-api";
 
 /**
@@ -29,7 +29,7 @@ export default (options: { token: Function | string }) => {
         }
 
         try {
-            req.identity = await api.services.get("authentication").verifyToken(token);
+            req.identity = await app.services.get("authentication").verifyToken(token);
         } catch (e) {
             return finish(new ApiErrorResponse(e.data, e.toString(), e.code, 401));
         }

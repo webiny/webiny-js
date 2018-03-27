@@ -1,4 +1,4 @@
-import path from "path";
+import findUp from "find-up";
 
 import { appEntry, SpaConfigPlugin, server } from "./spa";
 
@@ -14,14 +14,16 @@ export async function developApp(projectRoot, appRoot) {
     const UrlGenerator = interopModule(await import("./spa/urlGenerator"));
     const urlGenerator = new UrlGenerator();
 
-    const server = interopModule(await import(path.join(appRoot, "server.js")));
+    const server = interopModule(await import(findUp.sync(["server.js"], { cwd: appRoot })));
     const baseWebpack = interopModule(await import("./spa/webpack.config"))({
         projectRoot,
         appRoot,
         urlGenerator
     });
 
-    const appWebpack = interopModule(await import(path.join(appRoot, "webpack.config.js")))({
+    const appWebpack = interopModule(
+        await import(findUp.sync(["webpack.config.js"], { cwd: appRoot }))
+    )({
         urlGenerator,
         config: baseWebpack
     });
@@ -40,7 +42,9 @@ export async function buildApp(projectRoot, appRoot) {
         urlGenerator
     });
 
-    const appWebpack = interopModule(await import(path.join(appRoot, "webpack.config.js")))({
+    const appWebpack = interopModule(
+        await import(findUp.sync(["webpack.config.js"], { cwd: appRoot }))
+    )({
         config: baseWebpack,
         urlGenerator
     });
@@ -54,6 +58,6 @@ export async function buildApp(projectRoot, appRoot) {
 }
 
 export async function serveApp(projectRoot, appRoot) {
-    const server = interopModule(await import(path.join(appRoot, "server.js")));
+    const server = interopModule(await import(findUp.sync(["server.js"], { cwd: appRoot })));
     server({ projectRoot, appRoot });
 }
