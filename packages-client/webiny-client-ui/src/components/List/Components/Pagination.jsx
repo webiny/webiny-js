@@ -4,9 +4,7 @@ import classSet from "classnames";
 import { createComponent, i18n } from 'webiny-client';
 import styles from '../styles.css';
 
-/**
- * @i18n.namespace Webiny.Ui.List.Pagination
- */
+const t = i18n.namespace("Webiny.Ui.List.Pagination");
 class Pagination extends React.Component {
 
     constructor(props) {
@@ -109,13 +107,13 @@ class Pagination extends React.Component {
                             <li className={previousClasses} onClick={previousPage}>
                                 <a href="javascript:void(0)">
                                     <span className="icon icon-caret-down"/>
-                                    <span>{i18n('PREVIOUS')}</span>
+                                    <span>{t`PREVIOUS`}</span>
                                 </a>
                             </li>
                             {this.renderPages()}
                             <li className={nextClasses} onClick={nextPage}>
                                 <a href="javascript:void(0)">
-                                    <span>{i18n('NEXT')}</span>
+                                    <span>{t`NEXT`}</span>
                                     <span className="icon icon-caret-down"/>
                                 </a>
                             </li>
@@ -145,7 +143,7 @@ Pagination.defaultProps = {
         const { Dropdown, perPageOptions } = this.props;
         return (
             <Dropdown title={<span><strong>{this.props.perPage}</strong> per page</span>} type="balloon">
-                <Dropdown.Header title={i18n('Results per page')}/>
+                <Dropdown.Header title={t`Results per page`}/>
                 {perPageOptions.map(option => (
                     <Dropdown.Link key={option} title={option} onClick={() => this.props.onPerPageChange(option)}/>
                 ))}

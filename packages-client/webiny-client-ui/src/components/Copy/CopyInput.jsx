@@ -4,9 +4,7 @@ import { app, i18n, createComponent } from 'webiny-client';
 import { FormComponent } from 'webiny-client-ui';
 import styles from './styles.css';
 
-/**
- * @i18n.namespace Webiny.Ui.Copy.CopyInput
- */
+const t = i18n.namespace("Webiny.Ui.Copy.CopyInput");
 class CopyInput extends React.Component {
     constructor() {
         super();
@@ -80,8 +78,8 @@ class CopyInput extends React.Component {
 }
 
 CopyInput.defaultProps = {
-    actionLabel: i18n('Copy'),
-    onSuccessMessage: i18n('Copied to clipboard!'),
+    actionLabel: t`Copy`,
+    onSuccessMessage: t`Copied to clipboard!`,
     onCopy: _.noop
 };
 

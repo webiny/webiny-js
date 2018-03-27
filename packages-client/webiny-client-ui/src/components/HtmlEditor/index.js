@@ -1,12 +1,10 @@
-import React from 'react';
-import _ from 'lodash';
-import { app, i18n, createComponent, Uploader } from 'webiny-client';
-import { FormComponent } from 'webiny-client-ui';
+import React from "react";
+import _ from "lodash";
+import { app, i18n, createComponent, Uploader } from "webiny-client";
+import { FormComponent } from "webiny-client-ui";
 import axios from "axios";
 
-/**
- * @i18n.namespace Webiny.Ui.HtmlEditor
- */
+const t = i18n.namespace("Webiny.Ui.HtmlEditor");
 class HtmlEditor extends React.Component {
     constructor(props) {
         super(props);
@@ -29,16 +27,16 @@ class HtmlEditor extends React.Component {
         this.uploader = new Uploader(api);
 
         [
-            'getTextareaElement',
-            'getEditor',
-            'getCropper',
-            'onCropperHidden',
-            'uploadImage',
-            'fileChanged',
-            'applyValue',
-            'changed',
-            'renderError'
-        ].map(m => this[m] = this[m].bind(this));
+            "getTextareaElement",
+            "getEditor",
+            "getCropper",
+            "onCropperHidden",
+            "uploadImage",
+            "fileChanged",
+            "applyValue",
+            "changed",
+            "renderError"
+        ].map(m => (this[m] = this[m].bind(this)));
     }
 
     componentDidMount() {
@@ -51,16 +49,16 @@ class HtmlEditor extends React.Component {
             modules: {
                 toolbar: this.props.toolbar
             },
-            theme: 'snow',
+            theme: "snow",
             bounds: document.body
         });
 
-        const toolbar = this.editor.getModule('toolbar');
-        toolbar.addHandler('image', () => {
+        const toolbar = this.editor.getModule("toolbar");
+        toolbar.addHandler("image", () => {
             this.reader.getFiles();
         });
 
-        this.editor.on('text-change', () => {
+        this.editor.on("text-change", () => {
             this.setState({ value: this.editor.root.innerHTML }, this.changed);
         });
 
@@ -74,8 +72,8 @@ class HtmlEditor extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        const oldState = _.pick(this.state, ['cropImage', 'uploadPercentage', 'error']);
-        const newState = _.pick(nextState, ['cropImage', 'uploadPercentage', 'error']);
+        const oldState = _.pick(this.state, ["cropImage", "uploadPercentage", "error"]);
+        const newState = _.pick(nextState, ["cropImage", "uploadPercentage", "error"]);
         return !_.isEqual(oldState, newState);
     }
 
@@ -118,17 +116,22 @@ class HtmlEditor extends React.Component {
     }
 
     uploadImage(data) {
-        this.uploader.upload(data, ({ percentage }) => {
-            this.setState({ uploadPercentage: percentage });
-        }, ({ file }) => {
-            this.editor.insertEmbed(this.index, 'image', file.entity.src);
-            // reposition index to previous position
-            this.setState({ uploadPercentage: null });
-            this.editor.setSelection({ index: this.index, length: 0 });
-        }, ({ response }) => {
-            app.services.get('growler').danger(response.message, i18n('Upload failed'));
-            this.setState({ uploadPercentage: null });
-        });
+        this.uploader.upload(
+            data,
+            ({ percentage }) => {
+                this.setState({ uploadPercentage: percentage });
+            },
+            ({ file }) => {
+                this.editor.insertEmbed(this.index, "image", file.entity.src);
+                // reposition index to previous position
+                this.setState({ uploadPercentage: null });
+                this.editor.setSelection({ index: this.index, length: 0 });
+            },
+            ({ response }) => {
+                app.services.get("growler").danger(response.message, t`Upload failed`);
+                this.setState({ uploadPercentage: null });
+            }
+        );
     }
 
     getCropper(children = null) {
@@ -146,7 +149,8 @@ class HtmlEditor extends React.Component {
                     onHidden={this.onCropperHidden}
                     onCrop={this.uploadImage}
                     config={cropper.config}
-                    image={this.state.cropImage}>
+                    image={this.state.cropImage}
+                >
                     {children}
                 </Cropper.Inline>
             );
@@ -159,7 +163,8 @@ class HtmlEditor extends React.Component {
                 onHidden={this.onCropperHidden}
                 onCrop={this.uploadImage}
                 config={cropper.config}
-                image={this.state.cropImage}>
+                image={this.state.cropImage}
+            >
                 {children}
             </Cropper.Modal>
         );
@@ -181,9 +186,7 @@ class HtmlEditor extends React.Component {
         let error = null;
         if (this.state.error) {
             const { Alert } = this.props;
-            error = (
-                <Alert type="error">{this.state.error.message}</Alert>
-            );
+            error = <Alert type="error">{this.state.error.message}</Alert>;
         }
         return error;
     }
@@ -200,7 +203,7 @@ class HtmlEditor extends React.Component {
             uploader = (
                 <div>
                     <strong>Your image is being uploaded...</strong>
-                    <Progress value={this.state.uploadPercentage}/>
+                    <Progress value={this.state.uploadPercentage} />
                 </div>
             );
         }
@@ -212,14 +215,15 @@ class HtmlEditor extends React.Component {
                 <div className="inputGroup">
                     {this.renderError()}
                     {uploader}
-                    <div ref={ref => this.dom = ref} className="editor"/>
+                    <div ref={ref => (this.dom = ref)} className="editor" />
                     <FileReader
                         accept={this.props.accept}
-                        onReady={reader => this.reader = reader}
+                        onReady={reader => (this.reader = reader)}
                         sizeLimit={this.props.sizeLimit}
-                        onChange={this.fileChanged}/>
+                        onChange={this.fileChanged}
+                    />
                     {this.getCropper(
-                        <Alert type="info" title={i18n('Hint')}>{i18n('Scroll to zoom in/out')}</Alert>
+                        <Alert type="info" title={t`Hint`}>{t`Scroll to zoom in/out`}</Alert>
                     )}
                 </div>
                 {this.props.renderDescription.call(this)}
@@ -229,24 +233,24 @@ class HtmlEditor extends React.Component {
 }
 
 HtmlEditor.defaultProps = {
-    imageApi: '/entities/webiny/images',
-    accept: ['image/jpg', 'image/jpeg', 'image/gif', 'image/png'],
+    imageApi: "/entities/webiny/images",
+    accept: ["image/jpg", "image/jpeg", "image/gif", "image/png"],
     sizeLimit: 2485760,
     toolbar: [
-        ['bold', 'italic', 'underline', 'strike'],
-        ['blockquote', 'code-block', 'link', 'image'],
-        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-        [{ 'indent': '-1' }, { 'indent': '+1' }],
-        [{ 'size': ['small', false, 'large', 'huge'] }],
-        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-        [{ 'color': [] }, { 'background': [] }],
-        [{ 'font': [] }],
-        [{ 'align': [] }],
-        ['clean']
+        ["bold", "italic", "underline", "strike"],
+        ["blockquote", "code-block", "link", "image"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        [{ indent: "-1" }, { indent: "+1" }],
+        [{ size: ["small", false, "large", "huge"] }],
+        [{ header: [1, 2, 3, 4, 5, 6, false] }],
+        [{ color: [] }, { background: [] }],
+        [{ font: [] }],
+        [{ align: [] }],
+        ["clean"]
     ],
     cropper: {
-        title: 'Crop your image',
-        action: 'Insert image',
+        title: "Crop your image",
+        action: "Insert image",
         config: {
             closeOnClick: false,
             autoCropArea: 0.7
@@ -255,6 +259,13 @@ HtmlEditor.defaultProps = {
 };
 
 export default createComponent([HtmlEditor, FormComponent], {
-    modules: ['Alert', 'Cropper', 'FileReader', 'Progress', 'FormGroup', { Quill: 'Vendors/Quill' }],
+    modules: [
+        "Alert",
+        "Cropper",
+        "FileReader",
+        "Progress",
+        "FormGroup",
+        { Quill: "Vendors/Quill" }
+    ],
     formComponent: true
 });

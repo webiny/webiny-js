@@ -3,9 +3,7 @@ import _ from "lodash";
 import { createComponent, i18n } from "webiny-client";
 import icons from "./icons";
 
-/**
- * @i18n.namespace Webiny.Ui.IconPicker
- */
+const t = i18n.namespace("Webiny.Ui.IconPicker");
 class IconPicker extends React.Component {
     constructor(props) {
         super(props);
@@ -54,7 +52,7 @@ class IconPicker extends React.Component {
 
 IconPicker.defaultProps = {
     minimumInputLength: 2,
-    tooltip: i18n("Visit http://fontawesome.io for full list"),
+    tooltip: t`Visit http://fontawesome.io for full list`,
     renderOption: null,
     renderSelected: null
 };

@@ -6,9 +6,7 @@ import { i18n, createComponent, ApiComponent } from "webiny-client";
 import { FormComponent } from "webiny-client-ui";
 import styles from "./styles.css";
 
-/**
- * @i18n.namespace Webiny.Ui.Search
- */
+const t = i18n.namespace("Webiny.Ui.Search");
 class Search extends React.Component {
     constructor(props) {
         super(props);
@@ -415,7 +413,7 @@ Search.defaultProps = {
     onLoadOptions: _.noop,
     inputIcon: "icon-search",
     loadingIcon: "icon-search",
-    placeholder: i18n("Type to search"),
+    placeholder: t`Type to search`,
     useDataAsValue: false,
     allowFreeInput: false,
     renderOptionLabel({ option }) {

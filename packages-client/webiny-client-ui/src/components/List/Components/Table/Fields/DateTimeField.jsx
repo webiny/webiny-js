@@ -16,7 +16,7 @@ class DateTimeField extends React.Component {
             <List.Table.Field {...props}>
                 {() => {
                     try {
-                        return i18n.datetime(datetime, format);
+                        return i18n.dateTime(datetime, format);
                     } catch (e) {
                         return this.props.default;
                     }

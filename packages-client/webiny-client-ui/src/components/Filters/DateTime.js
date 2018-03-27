@@ -1,21 +1,20 @@
-import React from 'react';
-import {Webiny} from 'webiny-client';
+import React from "react";
+import { i18n, createComponent } from "webiny-client";
 
-class DateTime extends Webiny.Ui.Component {
-}
-
-DateTime.defaultProps = {
-    format: null,
-    default: '-',
-    value: null,
-    renderer() {
+class DateTime extends React.Component {
+    render() {
         try {
-            return <span>{Webiny.I18n.datetime(this.props.value, this.props.format)}</span>;
+            return <span>{i18n.dateTime(this.props.value, this.props.format)}</span>;
         } catch (e) {
             return this.props.default;
         }
     }
+}
+
+DateTime.defaultProps = {
+    format: null,
+    default: "-",
+    value: null
 };
 
-
-export default Webiny.createComponent(DateTime);
+export default createComponent(DateTime);

@@ -5,9 +5,7 @@ import BaseContainer from './BaseContainer';
 import sortersToString from './sortersToString';
 import styles from './../styles.css';
 
-/**
- * @i18n.namespace Webiny.Ui.List.ApiContainer
- */
+const t = i18n.namespace("Webiny.Ui.List.ApiContainer");
 class ApiContainer extends React.Component {
 
     constructor(props) {
@@ -95,7 +93,7 @@ class ApiContainer extends React.Component {
             }
 
             if (response.data.code) {
-                app.services.get('growler').danger(response.data.message, i18n('That didn\'t go as expected...'), true);
+                app.services.get('growler').danger(response.data.message, t`That didn\'t go as expected...`, true);
             }
 
             if (this.mounted) {
@@ -113,7 +111,7 @@ class ApiContainer extends React.Component {
             if (!response.data.code) {
                 this.loadData();
             } else {
-                app.services.get('growler').danger(response.data.message, i18n('That didn\'t go as expected...'), true);
+                app.services.get('growler').danger(response.data.message, t`That didn\'t go as expected...`, true);
             }
             return response;
         });
@@ -124,7 +122,7 @@ class ApiContainer extends React.Component {
             if (!response.data.code && autoRefresh) {
                 this.loadData();
             } else {
-                app.services.get('growler').danger(response.data.message, i18n('That didn\'t go as expected...'), true);
+                app.services.get('growler').danger(response.data.message, t`That didn\'t go as expected...`, true);
             }
             return response;
         });

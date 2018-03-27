@@ -3,9 +3,7 @@ import _ from 'lodash';
 import { createComponent, i18n } from 'webiny-client';
 import styles from '../../styles.css';
 
-/**
- * @i18n.namespace Webiny.Ui.List.Table.Empty
- */
+const t = i18n.namespace("Webiny.Ui.List.Table.Empty");
 class Empty extends React.Component {
     render() {
         const { render, children, message } = this.props;
@@ -27,9 +25,9 @@ Empty.defaultProps = {
     message: (
         <div className={styles.emptyContainer}>
             <div className={styles.content}>
-                <h2>{i18n('Sorry, but no records matched your query.')}</h2>
+                <h2>{t`Sorry, but no records matched your query.`}</h2>
 
-                <p>{i18n('Try changing your search parameters.')}</p>
+                <p>{t`Try changing your search parameters.`}</p>
             </div>
         </div>
     )

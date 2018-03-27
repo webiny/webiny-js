@@ -7,9 +7,7 @@ import Content from "./Content";
 import Body from "./Body";
 import Footer from "./Footer";
 
-/**
- * @i18n.namespace Webiny.Ui.Modal.Confirmation
- */
+const t = i18n.namespace("Webiny.Ui.Modal.Confirmation");
 class Confirmation extends React.Component {
     render() {
         const { Loader, Button, styles, title, render } = this.props;
@@ -57,9 +55,9 @@ class Confirmation extends React.Component {
 }
 
 Confirmation.defaultProps = {
-    title: i18n("Confirmation dialog"),
-    confirm: i18n("Yes"),
-    cancel: i18n("No")
+    title: t`Confirmation dialog`,
+    confirm: t`Yes`,
+    cancel: t`No`
 };
 
 export default createComponent([Confirmation, ModalConfirmationComponent], {

@@ -5,9 +5,6 @@ import { validation } from "webiny-validation";
 import type { Validator } from "webiny-validation/types";
 import ValidationError from "./ValidationError";
 
-/**
- * @i18n.namespace Webiny.Core.Validators
- */
 class Validation {
     getValidator(name: string): Validator {
         const validator = validation.getValidator(name);

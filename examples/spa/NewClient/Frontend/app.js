@@ -35,7 +35,7 @@ if (!app.initialized) {
 
     app.configure(() => {
         if (process.env.NODE_ENV === "development") {
-            axios.defaults.baseURL = "http://localhost:3000/api";
+            axios.defaults.baseURL = "http://localhost:9000/api";
         }
 
         if (process.env.NODE_ENV === "production") {

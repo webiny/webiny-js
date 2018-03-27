@@ -2,9 +2,7 @@ import React from "react";
 import { createComponent, i18n } from "webiny-client";
 import _ from "lodash";
 
-/**
- * @i18n.namespace Webiny.Ui.Wizard.Actions.Previous
- */
+const t = i18n.namespace("Webiny.Ui.Wizard.Actions.Previous");
 class Next extends React.Component {
     render() {
         const { Button, onClick, render, wizard, ...props } = this.props;
@@ -36,7 +34,7 @@ class Next extends React.Component {
 Next.defaultProps = {
     wizard: null,
     onClick: _.noop,
-    label: i18n("Next")
+    label: t`Next`
 };
 
 export default createComponent(Next, { modules: ["Button"] });

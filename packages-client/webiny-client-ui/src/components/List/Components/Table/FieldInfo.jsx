@@ -1,9 +1,7 @@
 import React from 'react';
 import { createComponent, i18n } from 'webiny-client';
 
-/**
- * @i18n.namespace Webiny.Ui.List.Table.FieldInfo
- */
+const t = i18n.namespace("Webiny.Ui.List.Table.FieldInfo");
 class FieldInfo extends React.Component {
 
     constructor(props) {
@@ -39,7 +37,7 @@ class FieldInfo extends React.Component {
                     <Modal.Header title={this.props.title}/>
                     <Modal.Body children={this.props.children}/>
                     <Modal.Footer>
-                        <Button label={i18n('Close')} onClick={this.hideInfo}/>
+                        <Button label={t`Close`} onClick={this.hideInfo}/>
                     </Modal.Footer>
                 </Modal.Content>
             </Modal.Dialog>

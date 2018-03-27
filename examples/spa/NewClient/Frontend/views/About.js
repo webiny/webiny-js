@@ -1,6 +1,8 @@
 import React from "react";
-import { createComponent } from "webiny-client";
+import { createComponent, i18n } from "webiny-client";
 import { ModalComponent } from "webiny-client-ui";
+
+const t = i18n.namespace("NewClient.Frontend.Views.About");
 
 class About extends React.Component {
     render() {
@@ -22,12 +24,12 @@ class About extends React.Component {
             <AdminLayout>
                 <View.List>
                     <View.Header
-                        title="My List"
-                        description="Your list of records. Click the button on the right to create a new record."
+                        title={t`My List`}
+                        description={t`Your list of records. Click the button on the right to create a new record.`}
                     >
                         <Link type="primary" align="right">
                             <Icon icon="icon-plus-circled" />
-                            New record
+                            {t`New record`}
                         </Link>
                     </View.Header>
                     <View.Body>
@@ -44,18 +46,18 @@ class About extends React.Component {
                                         <Grid.Col all={6}>
                                             <Select
                                                 name="enabled"
-                                                placeholder={"All users"}
+                                                placeholder={t`All users`}
                                                 onChange={apply()}
                                                 allowClear
                                             >
-                                                <option value={true}>Enabled</option>
-                                                <option value={false}>Disabled</option>
+                                                <option value={true}>{t`Enabled`}</option>
+                                                <option value={false}>{t`Disabled`}</option>
                                             </Select>
                                         </Grid.Col>
                                         <Grid.Col all={6}>
                                             <Input
                                                 name="_searchQuery"
-                                                placeholder="Search by email"
+                                                placeholder={t`Search by email`}
                                                 onEnter={apply()}
                                             />
                                         </Grid.Col>
@@ -67,7 +69,7 @@ class About extends React.Component {
                                     <List.Table.Field
                                         name="email"
                                         align="left"
-                                        label="Title"
+                                        label={t`Title`}
                                         sort="email"
                                         route={"Profile"}
                                     >
@@ -75,7 +77,7 @@ class About extends React.Component {
                                             <span>
                                                 <strong>{data.email}</strong>
                                                 <br />
-                                                {data.createdOn}
+                                                {t`{created|dateTime}`({ created: data.createdOn })}
                                             </span>
                                         )}
                                     </List.Table.Field>
@@ -83,12 +85,12 @@ class About extends React.Component {
                                         name="enabled"
                                         sort="enabled"
                                         align="center"
-                                        label="Published"
+                                        label={t`Published`}
                                     />
                                     <List.Table.DateTimeField
                                         name="createdOn"
                                         align="left"
-                                        label="Created"
+                                        label={t`Created`}
                                         sort="createdOn"
                                     />
                                     <List.Table.Actions>
@@ -100,12 +102,12 @@ class About extends React.Component {
                             <List.Pagination />
                             <List.MultiActions>
                                 <List.MultiAction
-                                    label={"Log"}
+                                    label={t`Log`}
                                     onAction={({ data }) => console.log(data)}
                                 />
 
                                 <List.MultiAction
-                                    label={"Export ZIP"}
+                                    label={t`Export ZIP`}
                                     download={({ download, data }) => {
                                         download("POST", "/security/users", {
                                             ids: _.map(Array.from(data), "id")
@@ -116,7 +118,11 @@ class About extends React.Component {
                                 <Dropdown.Divider />
                                 <List.DeleteMultiAction
                                     onConfirm={this.delete}
-                                    message={({ data }) => "Delete " + data.length + " records?"}
+                                    message={({ data }) =>
+                                        t`Delete {records|count:1:record:default:records}?`({
+                                            records: data.length
+                                        })
+                                    }
                                 />
                                 <List.ModalMultiAction label={"Modal"}>
                                     {({ data, dialog }) => (
@@ -130,7 +136,7 @@ class About extends React.Component {
                                                     <Modal.Footer>
                                                         <Button
                                                             type="default"
-                                                            label={"Cancel"}
+                                                            label={t`Cancel`}
                                                             onClick={dialog.hide}
                                                         />
                                                     </Modal.Footer>

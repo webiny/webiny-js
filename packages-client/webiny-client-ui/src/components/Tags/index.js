@@ -1,13 +1,11 @@
-import React from 'react';
-import _ from 'lodash';
-import { createComponent, i18n } from 'webiny-client';
-import { FormComponent } from 'webiny-client-ui';
-import { validation } from 'webiny-validation';
-import styles from './styles.css';
+import React from "react";
+import _ from "lodash";
+import { createComponent, i18n } from "webiny-client";
+import { FormComponent } from "webiny-client-ui";
+import { validation } from "webiny-validation";
+import styles from "./styles.css";
 
-/**
- * @i18n.namespace Webiny.Ui.Tags
- */
+const t = i18n.namespace("Webiny.Ui.Tags");
 class Tags extends React.Component {
     constructor(props) {
         super(props);
@@ -16,7 +14,9 @@ class Tags extends React.Component {
             ...props.initialState
         };
 
-        ['focusTagInput', 'removeTag', 'addTag', 'validateTag'].map(m => this[m] = this[m].bind(this));
+        ["focusTagInput", "removeTag", "addTag", "validateTag"].map(
+            m => (this[m] = this[m].bind(this))
+        );
     }
 
     componentDidMount() {
@@ -50,8 +50,8 @@ class Tags extends React.Component {
         let tags = this.props.value;
         const input = this.tagInput;
         const emptyField = !input.value;
-        const canRemove = emptyField && e.keyCode === 8 || e.keyCode === 46;
-        const skipAdd = e.key !== 'Tab' && e.key !== 'Enter';
+        const canRemove = (emptyField && e.keyCode === 8) || e.keyCode === 46;
+        const skipAdd = e.key !== "Tab" && e.key !== "Enter";
 
         if (canRemove) {
             this.removeTag(_.findLastIndex(tags));
@@ -76,14 +76,16 @@ class Tags extends React.Component {
             tags = [];
         }
 
-        this.validateTag(input.value).then(() => {
-            tags.push(input.value);
-            input.value = '';
-            this.props.onChange(tags);
-            this.setState({ tag: '' });
-        }).catch(e => {
-            this.props.onInvalidTag({ value: input.value, event: e });
-        });
+        this.validateTag(input.value)
+            .then(() => {
+                tags.push(input.value);
+                input.value = "";
+                this.props.onChange(tags);
+                this.setState({ tag: "" });
+            })
+            .catch(e => {
+                this.props.onInvalidTag({ value: input.value, event: e });
+            });
     }
 
     validateTag(value = null) {
@@ -98,13 +100,13 @@ class Tags extends React.Component {
         const { FormGroup, styles } = this.props;
 
         const input = {
-            type: 'text',
+            type: "text",
             className: styles.input,
-            ref: tagInput => this.tagInput = tagInput,
+            ref: tagInput => (this.tagInput = tagInput),
             onKeyDown: this.addTag,
             placeholder: this.props.placeholder,
             onBlur: this.props.validate,
-            readOnly: _.get(this.props, 'readOnly', false),
+            readOnly: _.get(this.props, "readOnly", false)
         };
 
         return (
@@ -112,10 +114,11 @@ class Tags extends React.Component {
                 {this.props.renderLabel.call(this)}
                 <div className={styles.container} onClick={this.focusTagInput}>
                     <div className={styles.tag}>
-                        {_.isArray(this.props.value) && this.props.value.map((value, index) => (
-                            this.props.renderTag.call(this, { value, index })
-                        ))}
-                        <input {...input}/>
+                        {_.isArray(this.props.value) &&
+                            this.props.value.map((value, index) =>
+                                this.props.renderTag.call(this, { value, index })
+                            )}
+                        <input {...input} />
                     </div>
                 </div>
                 {this.props.renderDescription.call(this)}
@@ -128,17 +131,21 @@ class Tags extends React.Component {
 Tags.defaultProps = {
     autoFocus: false,
     validateTags: null,
-    placeholder: i18n('Type and hit ENTER'),
+    placeholder: t`Type and hit ENTER`,
     onInvalidTag: _.noop,
     renderTag({ value, index }) {
         const { Icon, styles } = this.props;
         return (
             <div key={value} className={styles.block}>
                 <p>{value}</p>
-                <Icon icon="icon-cancel" onClick={() => this.removeTag(index)}/>
+                <Icon icon="icon-cancel" onClick={() => this.removeTag(index)} />
             </div>
         );
     }
 };
 
-export default createComponent([Tags, FormComponent], { modules: ['Icon', 'FormGroup'], styles, formComponent: true });
+export default createComponent([Tags, FormComponent], {
+    modules: ["Icon", "FormGroup"],
+    styles,
+    formComponent: true
+});

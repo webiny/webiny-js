@@ -1,9 +1,7 @@
 import React from 'react';
 import { createComponent, i18n, isElementOfType } from 'webiny-client';
 
-/**
- * @i18n.namespace Webiny.Ui.List.Table.MultiActions
- */
+const t = i18n.namespace("Webiny.Ui.List.Table.MultiActions");
 class MultiActions extends React.Component {
     render() {
         if (this.props.render) {
@@ -13,7 +11,7 @@ class MultiActions extends React.Component {
         const { Dropdown } = this.props;
         return (
             <Dropdown title={this.props.label}>
-                <Dropdown.Header title={i18n('Actions')}/>
+                <Dropdown.Header title={t`Actions`}/>
                 {React.Children.map(this.props.children, child => {
                     if (isElementOfType(child, Dropdown.Divider) || isElementOfType(child, Dropdown.Header)) {
                         return child;
@@ -34,7 +32,7 @@ class MultiActions extends React.Component {
 }
 
 MultiActions.defaultProps = {
-    label: i18n('With selected...')
+    label: t`With selected...`
 };
 
 export default createComponent(MultiActions, { modules: ['Dropdown'] });

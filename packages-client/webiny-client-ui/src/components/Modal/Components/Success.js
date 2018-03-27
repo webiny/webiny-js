@@ -1,18 +1,15 @@
-import React from 'react';
-import _ from 'lodash';
-import { createComponent, i18n } from 'webiny-client';
-import { ModalComponent } from 'webiny-client-ui';
-import Dialog from './Dialog';
-import Content from './Content';
-import Body from './Body';
-import Footer from './Footer';
-import styles from '../styles.css';
+import React from "react";
+import _ from "lodash";
+import { createComponent, i18n } from "webiny-client";
+import { ModalComponent } from "webiny-client-ui";
+import Dialog from "./Dialog";
+import Content from "./Content";
+import Body from "./Body";
+import Footer from "./Footer";
+import styles from "../styles.css";
 
-/**
- * @i18n.namespace Webiny.Ui.Modal.Success
- */
+const t = i18n.namespace("Webiny.Ui.Modal.Success");
 class Success extends React.Component {
-
     renderFooter() {
         let { Button, closeBtn, onClose } = this.props;
         let button = null;
@@ -22,16 +19,20 @@ class Success extends React.Component {
         }
 
         if (_.isString(closeBtn)) {
-            button = <Button type="primary" label={closeBtn} onClick={() => this.props.hide().then(onClose)}/>;
+            button = (
+                <Button
+                    type="primary"
+                    label={closeBtn}
+                    onClick={() => this.props.hide().then(onClose)}
+                />
+            );
         }
 
         if (React.isValidElement(closeBtn)) {
             button = closeBtn;
         }
 
-        return (
-            <Footer>{button}</Footer>
-        );
+        return <Footer>{button}</Footer>;
     }
 
     render() {
@@ -47,15 +48,19 @@ class Success extends React.Component {
 
         const { Icon, onShown } = this.props;
         return (
-            <Dialog modalContainerTag="success-modal" className={styles.alertModal} onShown={onShown}>
+            <Dialog
+                modalContainerTag="success-modal"
+                className={styles.alertModal}
+                onShown={onShown}
+            >
                 <Content>
                     <Body>
-                    <div className="text-center">
-                        <Icon type="success" size="4x" icon="icon-check-circle" element="div"/>
-                        <h4>{this.props.title}</h4>
+                        <div className="text-center">
+                            <Icon type="success" size="4x" icon="icon-check-circle" element="div" />
+                            <h4>{this.props.title}</h4>
 
-                        <div>{content}</div>
-                    </div>
+                            <div>{content}</div>
+                        </div>
                     </Body>
                     {this.renderFooter()}
                 </Content>
@@ -65,10 +70,10 @@ class Success extends React.Component {
 }
 
 Success.defaultProps = {
-    title: i18n('Awesome!'),
-    closeBtn: i18n('Close'),
+    title: t`Awesome!`,
+    closeBtn: t`Close`,
     onClose: _.noop,
     onShown: _.noop
 };
 
-export default createComponent([Success, ModalComponent], { modules: ['Button', 'Icon'] });
+export default createComponent([Success, ModalComponent], { modules: ["Button", "Icon"] });

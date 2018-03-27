@@ -1,19 +1,15 @@
-import React from 'react';
-import {Webiny} from 'webiny-client';
-import filesize from 'filesize';
+import React from "react";
+import { createComponent } from "webiny-client";
+import filesize from "filesize";
 
-class FileSize extends Webiny.Ui.Component {
-
+class FileSize extends React.Component {
+    render() {
+        return <span>{filesize(this.props.value, this.props.options)}</span>;
+    }
 }
 
 FileSize.defaultProps = {
-    options: {},
-    renderer() {
-        return (
-            <span>{filesize(this.props.value, this.props.options)}</span>
-        );
-    }
+    options: {}
 };
 
-
-export default FileSize;
+export default createComponent(FileSize);

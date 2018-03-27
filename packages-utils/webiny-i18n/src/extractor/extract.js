@@ -1,16 +1,6 @@
 import hash from "short-hash";
 
 /**
- * Searches for import of webiny-i18n package.
- * @param source
- */
-const sourceImportsI18N = source => {
-    if (source.match(/import[ ].*i18n.*/)) {
-        return true;
-    }
-};
-
-/**
  * Searches for all declared namespaces.
  * Result contains an object with identifiers as keys, and namespaces they represent as values, for example:
  * {ns1: 'Webiny.Ns1', ns2: 'Webiny.Ns2', i18n: 'NewNamespace', t: 'Some.Other.Namespace'}
@@ -34,10 +24,6 @@ const getNamespaces = source => {
 };
 
 export default source => {
-    if (!sourceImportsI18N(source)) {
-        return {};
-    }
-
     const results = {};
     const allDeclaredNamespaces = getNamespaces(source);
 

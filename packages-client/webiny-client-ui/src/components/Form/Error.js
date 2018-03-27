@@ -1,10 +1,7 @@
-import React from 'react';
-import _ from 'lodash';
-import { createComponent } from 'webiny-client';
+import React from "react";
+import _ from "lodash";
+import { createComponent } from "webiny-client";
 
-/**
- * @i18n.namespace Webiny.Ui.Form.Error
- */
 class ContainerError extends React.Component {
     render() {
         if (this.props.render) {
@@ -23,21 +20,24 @@ class ContainerError extends React.Component {
         const { Alert } = this.props;
 
         if (_.isString(error)) {
-            return <Alert title={title} type={type} close={close}>{error}</Alert>;
+            return (
+                <Alert title={title} type={type} close={close}>
+                    {error}
+                </Alert>
+            );
         }
 
         const data = [];
         _.each(error.data.data, (value, key) => {
-            data.push(<li key={key}><strong>{key}</strong> {value}</li>);
+            data.push(
+                <li key={key}>
+                    <strong>{key}</strong> {value}
+                </li>
+            );
         });
 
         return (
-            <Alert
-                title={title}
-                type={type}
-                close={close}
-                onClose={onClose}
-                className={className}>
+            <Alert title={title} type={type} close={close} onClose={onClose} className={className}>
                 {message || error.data.message}
                 {data.length > 0 && <ul>{data}</ul>}
             </Alert>
@@ -47,12 +47,12 @@ class ContainerError extends React.Component {
 
 ContainerError.defaultProps = {
     error: null,
-    title: 'Oops',
-    type: 'error',
+    title: "Oops",
+    type: "error",
     message: null,
     className: null,
     close: true,
     onClose: _.noop
 };
 
-export default createComponent(ContainerError, { modules: ['Alert'] });
+export default createComponent(ContainerError, { modules: ["Alert"] });

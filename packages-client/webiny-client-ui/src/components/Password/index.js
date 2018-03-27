@@ -1,9 +1,7 @@
 import React from "react";
 import { createComponent, i18n } from "webiny-client";
 
-/**
- * @i18n.namespace Webiny.Ui.Password
- */
+const t = i18n.namespace("Webiny.Ui.Password");
 class Password extends React.Component {
     constructor(props) {
         super(props);
@@ -11,7 +9,7 @@ class Password extends React.Component {
         this.state = {
             showPassword: false,
             icon: "fa-eye",
-            msg: i18n("Show content")
+            msg: t`Show content`
         };
 
         this.togglePassword = this.togglePassword.bind(this);
@@ -22,13 +20,13 @@ class Password extends React.Component {
             this.setState({
                 showPassword: false,
                 icon: "fa-eye",
-                msg: i18n("Show content")
+                msg: t`Show content`
             });
         } else {
             this.setState({
                 showPassword: true,
                 icon: "fa-eye-slash",
-                msg: i18n("Hide content")
+                msg: t`Hide content`
             });
         }
     }

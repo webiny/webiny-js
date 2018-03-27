@@ -23,9 +23,7 @@ function isValidModelType(value) {
     return _.isArray(value) || _.isPlainObject(value) || /boolean|number|string/.test(type);
 }
 
-/**
- * @i18n.namespace Webiny.Ui.Form
- */
+const t = i18n.namespace("Webiny.Ui.Form");
 class Form extends React.Component {
     constructor(props) {
         super(props);
@@ -375,7 +373,7 @@ class Form extends React.Component {
         if (this.state.submitDisabled !== false) {
             this.growler.info(
                 this.state.submitDisabled,
-                i18n("Please wait! Your data is being processed...")
+                t`Please wait! Your data is being processed...`
             );
             return false;
         }

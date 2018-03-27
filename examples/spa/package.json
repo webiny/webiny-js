@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "develop": "./../../node_modules/.bin/webiny-scripts develop-app NewClient",
+    "develop": "./../../node_modules/.bin/webiny-scripts develop-app NewClient --require=babel-register",
     "production:build": "./../../node_modules/.bin/webiny-scripts build-app NewClient",
     "production:serve": "./../../node_modules/.bin/webiny-scripts serve NewClient",
     "develop:theme": "./../../node_modules/.bin/webiny-scripts develop-plugin Theme"
