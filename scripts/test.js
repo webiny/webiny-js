@@ -6,14 +6,14 @@ const config = [];
 const pkg = argv._[0];
 
 if (!pkg) {
-    config.push("packages-*/**/tests/**/*.test.js");
+    config.push("packages/**/tests/**/*.test.js");
 } else {
-    if (pkg.startsWith("packages-")) {
+    if (pkg.startsWith("packages")) {
         config.push(pkg);
     } else if (pkg.includes("/tests/")) {
-        config.push("packages-*/" + pkg);
+        config.push("packages/" + pkg);
     } else {
-        config.push("packages-*/" + pkg + "/tests/**/*.test.js");
+        config.push("packages/" + pkg + "/tests/**/*.test.js");
     }
 }
 

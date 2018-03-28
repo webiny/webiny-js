@@ -1,0 +1,437 @@
+.sign-in {
+  /*background: #FFFFFF url(../../../images/bg-login.png) repeat;*/
+  height: 100%;
+  padding: 20px;
+  text-align: center;
+  background-color: #F3F3F3;
+  a, p {
+    color: #FA5A28;
+  }
+  a.logo {
+    display: block;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  h2 {
+    margin-bottom: 25px;
+    font-weight: 300;
+    font-size: 24px;
+    position: relative;
+    text-align: center;
+    display: inline-block;
+    letter-spacing: -0.1px;
+    color: #FA5A28;
+    width: 100%;
+  }
+
+  p.desc {
+    font-size: 15px;
+    color: #FA5A28;
+    line-height: 120%;
+    font-weight: 300;
+    margin-bottom: 20px;
+  }
+  h2 span {
+    display: inline-block;
+    background: url(../../../images/icons.png) no-repeat -46px -3px;
+    width: 20px;
+    height: 26px;
+    margin-right: 5px;
+    margin-bottom: -2px;
+  }
+  label.chk {
+    margin-bottom: 25px;
+  }
+  .input-holder {
+    position: relative;
+    &.success span.not {
+      background: url(../../../images/icons.png) no-repeat 1px 2px;
+      width: 42px;
+      height: 39px;
+      display: block;
+      position: absolute;
+      right: 7px;
+      top: 38px;
+      z-index: 1;
+    }
+    &.error span.not {
+      background: url(../../../images/icons.png) no-repeat 1px -41px;
+      width: 42px;
+      height: 39px;
+      display: block;
+      position: absolute;
+      right: 7px;
+      top: 38px;
+      z-index: 1;
+    }
+    label.chk {
+      position: absolute;
+      right: 15px;
+      top: 44px;
+      z-index: 1;
+      .icheckbox_minimal {
+        background: url("../../../images/icons.png") no-repeat scroll -97px -6px rgba(0, 0, 0, 0);
+        border: 1px solid #DB840F;
+        &.checked {
+          background: url("../../../images/icons.png") no-repeat scroll -97px -30px rgba(0, 0, 0, 0);
+          border: 1px solid #DB840F;
+        }
+      }
+      span.remember {
+        color: #777;
+        font-size: 16px;
+      }
+    }
+  }
+  .icheckbox_minimal {
+    background: url(../../../images/icons.png) no-repeat -72px -6px;
+    display: block;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    float: left;
+    margin: 0 5px 0 0;
+    border: 2px solid #FA5A28;
+    &.checked {
+      background: url(../../../images/icons.png) no-repeat -99px -30px;
+      display: block;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      float: left;
+      margin: 0 5px 0 0;
+      border: 2px solid #FA5A28;
+    }
+  }
+  span.remember {
+    display: inline-block;
+    vertical-align: top;
+
+    color: #FA5A28;
+    font-size: 22px;
+    font-weight: 300;
+    line-height: 115%;
+
+    cursor: pointer;
+  }
+  a.info {
+    position: relative;
+
+    display: inline-block;
+    vertical-align: top;
+    width: 18px;
+    height: 18px;
+    margin: 5px 0 0 5px;
+
+    background: url(../../../images/icons.png) no-repeat -46px -40px;
+  }
+  span.info .notification {
+    display: block;
+    font-size: 14px;
+    position: absolute;
+    bottom: 25px;
+    right: -85px;
+    background: #3FBFB0;
+    -webkit-border-radius: 100px;
+    -moz-border-radius: 100px;
+    border-radius: 100px;
+    padding: 5px 10px;
+    white-space: nowrap;
+    font-weight: 300;
+  }
+  .form-footer {
+    margin-top: 25px;
+
+    .remember-wrapper {
+      display: block;
+      float: none;
+      clear: both;
+      text-align: center;
+    }
+
+    .submit-wrapper {
+      display: block;
+      float: none;
+      clear: both;
+    }
+  }
+  .alert {
+    padding-bottom: 15px;
+  }
+  .copyright {
+    clear: both;
+    margin-top: 40px;
+    margin-bottom: 0;
+    font-size: 14px;
+  }
+  a.site {
+    font-size: 14px;
+    border-bottom: 1px solid #FC9676;
+    font-weight: 300;
+    margin-top: 5px;
+    z-index: 50;
+    &:hover {
+      border-bottom: 1px solid #fff;
+      text-decoration: none;
+      color: #FA5A28;
+    }
+    &:focus {
+      text-decoration: none;
+      color: #fff;
+      border-bottom: 1px solid #fff;
+    }
+  }
+  &.overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5000;
+    background-color: rgba(243, 243, 243, 0.85);
+  }
+}
+
+.sign-in-holder {
+  position: relative;
+  margin: 50px auto;
+  max-width: 640px;
+
+  .form-signin {
+    background-color: #ffffff;
+    padding: 50px 40px;
+    position: relative;
+    overflow: hidden;
+    text-align: left;
+  }
+  &.password-rec a.logo {
+    margin-bottom: 25px;
+  }
+}
+
+.password-rec h2 {
+  margin-bottom: 10px;
+  font-size: 26px;
+}
+
+@media (min-width: 768px) {
+  .sign-in-holder {
+    .form-signin {
+      padding: 50px 100px 40px;
+    }
+  }
+  .sign-in-holder.password-rec h2 {
+    margin-bottom: 010px;
+    font-size: 35px;
+  }
+
+  .sign-in {
+    padding: 0;
+    h2 {
+      font-size: 28px;
+      margin-bottom: 41px;
+      span {
+        margin-right: 9px;
+      }
+    }
+    .form-footer {
+      text-align: left;
+
+      .remember-wrapper {
+        display: inline-block;
+      }
+      .submit-wrapper {
+        display: inline-block;
+        float: right;
+      }
+    }
+    .btn-primary {
+      text-align: left;
+      padding-left: 25px;
+      width: inherit;
+    }
+    label.chk {
+      margin-top: 15px;
+    }
+    a.info {
+      margin: 13px 0 0 5px;
+    }
+    .input-holder label.chk {
+      top: 39px;
+    }
+    input {
+      height: 57px;
+    }
+    .input-holder.success span.not {
+      top: 43px;
+    }
+    p.desc {
+      font-size: 18px;
+      color: #FA5A28;
+      line-height: 120%;
+      font-weight: 300;
+    }
+    .input-holder {
+      &.success span.not, &.error span.not {
+        top: 42px;
+      }
+    }
+  }
+}
+
+@media (min-width: 992px) {
+  .sign-in-holder.password-rec h2 {
+    margin-bottom: 010px;
+    font-size: 35px;
+  }
+
+  .sign-in {
+    padding: 0;
+
+    h2 {
+      font-size: 28px;
+      margin-bottom: 41px;
+      span {
+        margin-right: 9px;
+      }
+    }
+    a.info {
+      margin: 13px 0 0 5px;
+    }
+    .input-holder {
+      label.chk {
+        top: 39px;
+      }
+      &.success span.not {
+        top: 43px;
+      }
+    }
+    p.desc {
+      font-size: 18px;
+      color: #FA5A28;
+      line-height: 120%;
+      font-weight: 300;
+    }
+    .input-holder {
+      &.success span.not, &.error span.not {
+        top: 42px;
+      }
+    }
+  }
+}
+
+@media (min-width: 1200px) {
+  .sign-in-holder.password-rec h2 {
+    margin-bottom: 010px;
+    font-size: 35px;
+  }
+
+  .sign-in {
+    .input-holder.success span.not {
+      background: url("../../../images/icons.png") no-repeat scroll 1px 2px rgba(0, 0, 0, 0);
+    }
+    padding: 0;
+
+    h2 {
+      font-size: 28px;
+      margin-bottom: 41px;
+      span {
+        margin-right: 9px;
+      }
+    }
+    .btn-primary {
+      float: right;
+    }
+    a.info {
+      margin: 20px 0 0 5px;
+    }
+    .input-holder {
+      label.chk {
+        top: 39px;
+      }
+      &.success span.not {
+        top: 43px;
+      }
+    }
+
+    .desc {
+      font-size: 18px;
+      color: #FA5A28;
+      line-height: 120%;
+      font-weight: 300;
+    }
+
+    .input-holder {
+      &.success span.not, &.error span.not {
+        top: 42px;
+      }
+    }
+  }
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-o-min-device-pixel-ratio: 13 / 10), only screen and (min-resolution: 120dpi) {
+  .sign-in {
+    h2 span {
+      background: url(../../../images/icons_retina.png) no-repeat -51px -1px;
+      background-size: 180px 82px;
+    }
+    .input-holder.success span.not {
+      background: url(../../../images/icons_retina.png) no-repeat 1px 1px;
+      background-size: 180px 82px;
+    }
+    a.info {
+      background: url(../../../images/icons_retina.png) no-repeat -49px -33px;
+      background-size: 180px 82px;
+      width: 24px;
+      height: 24px;
+      margin-top: 3px;
+    }
+    .btn-primary {
+      span {
+        background: url(../../../images/icons_retina.png) no-repeat -79px -3px;
+        background-size: 180px 82px;
+      }
+      &:active span, &:hover span {
+        background: url(../../../images/icons_retina.png) no-repeat -79px -33px;
+        background-size: 180px 82px;
+      }
+    }
+    .input-holder.error span.not {
+      background: url(../../../images/icons_retina.png) no-repeat 1px -44px;
+      background-size: 180px 82px;
+    }
+    .btn-primary {
+      &.reset {
+        span, &:active span, &:hover span {
+          background: url(../../../images/icons_retina.png) no-repeat -113px -3px;
+          background-size: 180px 82px;
+        }
+      }
+      &.save {
+        span, &:active span, &:hover span {
+          background: url(../../../images/icons_retina.png) no-repeat -148px -3px;
+          background-size: 180px 82px;
+        }
+      }
+    }
+    .input-holder label.chk .icheckbox_minimal.checked {
+      background: url(../../../images/icons_retina.png) no-repeat -111px -63px;
+      background-size: 180px 82px;
+    }
+    .icheckbox_minimal.checked {
+      background: url(../../../images/icons_retina.png) no-repeat -81px -63px;
+      background-size: 180px 82px;
+    }
+    a.info .tooltip-inner {
+      background: #3FBFB0;
+      font-size: 14px;
+      white-space: nowrap;
+      font-weight: 300;
+      -webkit-border-radius: 100px;
+      -moz-border-radius: 100px;
+      border-radius: 100px;
+      padding: 5px 10px 5px 10px;
+      max-width: 300px;
+    }
+  }
+}

@@ -1,0 +1,226 @@
+.modal {
+	z-index: 2001;
+	display: none;
+	overflow: scroll; /* needs to be set to scroll in case the modal is bigger than the screen */
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	overflow-scrolling: touch;
+	outline: 0;
+}
+
+.backdrop {
+	z-index: 2000;
+	background-color: rgba(0, 0, 0, 1);
+	will-change: opacity;
+	backface-visibility: hidden;
+	opacity: 0;
+	transition: opacity 0.3s;
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+
+.backdrop.in {
+	opacity: 0.8;
+}
+
+.dialog {
+	width: 600px;
+	margin: 30px auto;
+}
+
+.dialog.fullWidth {
+	width: 90%;
+	max-height: 90%;
+	max-width: none;
+}
+
+.content {
+	border-radius: 0;
+	background-color: #fff;
+	animation: fadeIn 0.2s;
+	will-change: transform, opacity;
+	backface-visibility: hidden;
+	transform: translateY(20%);
+	opacity: 0;
+	transition: all 0.3s;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+	border-top: 2px solid #FA5723;
+}
+
+.dialog.show .content {
+	transform: translateY(0);
+	opacity: 1;
+}
+
+.header {
+	padding: 0 0 0 20px;
+	height: 65px;
+	background: #F0F0F0;
+	color: #393939;
+	border: none;
+}
+
+.footer {
+	background: #F0F0F0;
+	padding: 15px 20px 20px;
+	margin-top: 0;
+	border: none;
+	text-align: right;
+	overflow: hidden;
+}
+
+.body {
+	color: #666;
+	margin-top: 0;
+	position: relative;
+	padding: 15px;
+}
+
+/* Wide dialog */
+.wide .dialog {
+	width: 75%;
+}
+
+/* Full-screen dialog */
+.fullScreen .dialog {
+	width: 100%;
+	height: 100vh;
+	transform: none !important;
+	top: 0 !important;
+	margin: 0;
+}
+
+.fullScreen .dialog .content {
+	height: auto;
+	min-height: 100%;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	align-items: stretch;
+	align-content: stretch;
+}
+
+.fullScreen .dialog .content .body {
+	overflow: scroll;
+	padding: 25px;
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-basis: auto;
+	align-self: auto;
+	background-color: #fff;
+}
+
+.content h4 {
+	padding: 20px 0 10px;
+	text-align: left;
+	font-size: 26px;
+	display: inline-block;
+	margin: 0;
+}
+
+.close {
+	font-size: 32px;
+	display: inline-block;
+	float: right;
+	padding-right: 25px;
+	height: 100%;
+	background: transparent;
+	opacity: 0.4;
+	border: none;
+}
+
+.close:hover {
+	opacity: 1;
+}
+
+.alertModal .header {
+	background-color: transparent;
+}
+
+.alertModal .content {
+	text-align: center;
+}
+
+.alertModal .body {
+	padding: 35px 35px 0;
+	font-size: 1.2em;
+	color: #393939;
+	margin-bottom: 25px;
+	line-height: 150%;
+}
+
+.alertModal h2 {
+	font-size: 24px;
+	color: #F85721;
+	text-decoration: none;
+	border-bottom: 0;
+	text-transform: uppercase;
+}
+
+.alertModal .footer {
+	background-color: transparent;
+	padding: 35px;
+	text-align: center;
+}
+
+/* when we have a tab list in the root of modal body, we have to remove the padding */
+.body :global(.Tabs_tabs) {
+	margin: -15px;
+}
+
+/* make modal responsive */
+@media (max-width: 768px) {
+	.modal .dialog {
+		transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1) !important;
+		width: 100%;
+		height: 100vh;
+		margin: 0;
+	}
+
+	.modal .dialog .content {
+		height: auto;
+		min-height: 100%;
+		display: flex;
+		flex-direction: column;
+		flex-wrap: nowrap;
+		justify-content: flex-start;
+		align-items: stretch;
+		align-content: stretch;
+	}
+
+	.modal .dialog .content .body {
+		overflow: scroll;
+		padding: 15px;
+		/*min-height: 470px; sven:causes scroll, but doesn't seem it's needed*/
+		flex-grow: 1;
+		flex-shrink: 1;
+		flex-basis: auto;
+		align-self: auto;
+		background-color: #fff;
+	}
+
+	.modal .dialog .content .header {
+		height: auto;
+	}
+
+	.modal .dialog .content .footer {
+		display: flex;
+		flex-direction: column-reverse;
+	}
+
+	.modal .dialog .header h4 {
+		padding: 15px 0;
+		font-size: 1.5em;
+	}
+
+	.close {
+		padding: 17px;
+	}
+}

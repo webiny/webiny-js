@@ -1,0 +1,94 @@
+.alert {
+	all: initial;
+	background: #CC3300;
+	border-radius: 0;
+	padding: 12px 10px 12px 50px;
+	border: none;
+	position: relative;
+	font-size: 16px;
+	color: #fff;
+	line-height: 125%;
+	overflow: hidden;
+	font-weight: 300;
+	text-align: left;
+	display: block;
+	margin-bottom: 10px;
+
+	/*this should be set via variables*/
+	font-family: "Source Sans Pro";
+}
+
+.alert strong {
+	font-weight: 600;
+}
+
+.alert a {
+	text-decoration: underline;
+	color: #fff;
+}
+
+.close {
+	margin: 0 5px 0 5px;
+	color: #fff;
+	opacity: 1;
+	float: right;
+	font-size: 21px;
+	font-weight: bold;
+	line-height: 1;
+	text-shadow: 0 1px 0 #fff;
+	padding: 0;
+	cursor: pointer;
+	background: transparent;
+	border: 0;
+}
+
+.alert button.close:hover {
+	opacity: 0.6;
+}
+
+/* this is the icon */
+.alert>span {
+	font-size: 26px;
+	color: #fff;
+	position: absolute;
+	left: 8px;
+	top: 9px;
+}
+
+.alert ul, .alert ol {
+	margin: 20px 10px;
+	color: #fff;
+	font-size: 15px;
+}
+
+.alert ul li, .alert ol li {
+	padding-left: 0;
+	color: #fff;
+	font-size: 16px;
+	margin: 0 0 5px 0;
+}
+
+.alert ul li:last-child, .alert ol li:last-child {
+	margin-bottom: 0;
+}
+
+
+.alertDanger {
+	composes: alert;
+	background: #CC3300;
+}
+
+.alertSuccess {
+	composes: alert;
+	background: #3FBFB0;
+}
+
+.alertInfo {
+	composes: alert;
+	background: #3F89BF;
+}
+
+.alertWarning {
+	composes: alert;
+	background: #FAA32E;
+}

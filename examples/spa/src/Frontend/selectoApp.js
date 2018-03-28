@@ -1,6 +1,6 @@
 import React from "react";
-import { i18n } from "webiny-client";
-import { Menu } from "webiny-skeleton-app";
+import { i18n } from "webiny-app";
+import { Menu } from "webiny-app-admin";
 
 const t = i18n.namespace("NewClient.Frontend");
 
@@ -9,9 +9,9 @@ export default () => {
         const { app } = params;
 
         app.services.get("menu").add(
-            <Menu order="0" label={t`Dashboard`} route="Dashboard" icon="fa-home">
-                <Menu order="0" label={t`My Account`} route="Dashboard" icon="fa-home" />
-                <Menu order="1" label={t`Settings`} route="Dashboard" icon="fa-home" />
+            <Menu order="0" label={t`Dashboard`} icon="fa-home">
+                <Menu order="0" label={t`My Account`} route="Homepage" icon="fa-home" />
+                <Menu order="1" label={t`Settings`} route="Homepage" icon="fa-home" />
             </Menu>
         );
 
@@ -46,7 +46,7 @@ export default () => {
             path: "/login",
             exact: true,
             render: () =>
-                app.modules.load("Skeleton.Login").then(Login => {
+                app.modules.load("Admin.Login").then(Login => {
                     return (
                         <Login
                             identity={"user"}

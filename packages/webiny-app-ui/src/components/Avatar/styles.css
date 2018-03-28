@@ -1,0 +1,38 @@
+.avatar {
+	display: inline-block;
+	text-align: center;
+}
+
+.uploadBtn{
+	margin-right: 0 !important;
+}
+
+.image {
+	display: inline-block;
+	text-align: center;
+	max-width: 100%;
+	height: auto;
+	vertical-align: middle;
+	border: none;
+}
+
+.placeholder {
+	display: block;
+	width: 132px;
+	height: 132px;
+	margin: 0 auto 15px;
+	overflow: hidden;
+	border: 2px dashed #cdcdcd;
+	border-radius: 50%;
+	color: #777;
+	font-size: 44px;
+	text-align: center;
+	line-height: 275%;
+	background-color: #fbfbfb;
+}
+
+.smallText {
+	display: block;
+	color: #c6c6c6;
+	font-size: 12px;
+}

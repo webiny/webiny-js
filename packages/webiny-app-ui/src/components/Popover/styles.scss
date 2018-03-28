@@ -1,0 +1,29 @@
+.popover {
+  border-radius: 0;
+  padding: 0;
+  border-color: #ccc;
+
+  .popover-title {
+    background-color: #3FBFB0;
+    color: #fff;
+    border-radius: 0;
+    font-weight: 300;
+    font-size: 1.2em;
+    border-bottom: none;
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+
+  &.bottom > .arrow:after {
+    border-bottom-color: #3FBFB0;
+  }
+  &.top > .arrow:after {
+    border-top-color: #3FBFB0;
+  }
+  &.right > .arrow:after {
+    border-right-color: #3FBFB0;
+  }
+  &.left > .arrow:after {
+    border-left-color: #3FBFB0;
+  }
+}

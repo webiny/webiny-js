@@ -4,7 +4,7 @@ module.exports = spa.server({
     domain: "http://localhost",
     port: 8060,
     routes: {
-        "/admin/": "admin.html",
+        "/admin": "admin.html",
         "/": "index.html"
     },
     devMiddleware: {

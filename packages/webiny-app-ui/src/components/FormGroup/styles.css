@@ -1,0 +1,130 @@
+.wrapper {
+	margin-bottom: 15px;
+	position: relative;
+	/*text-align: left; sven: causes problems with alignment inside a list*/
+	overflow: visible;
+}
+
+.wrapper.error {
+
+}
+
+.wrapper.success {
+
+}
+
+.label {
+	font-size: 17px;
+	color: #393939;
+	clear: left;
+	cursor: pointer;
+	font-family: 'Source Sans Pro', sans-serif;
+	font-weight: 500;
+	line-height: 135%;
+	display: inline-block;
+	max-width: 100%;
+	margin-bottom: 5px;
+}
+
+.mandat {
+	color: #cc3300;
+	margin-left: 2px;
+}
+
+.infoMessage, .descriptionMessage, .validationMessage {
+	display: inline;
+	margin-top: 5px;
+	/*margin-bottom: 10px; sven: no need for this, looks better (removed mainly for .descriptionMessage)*/
+	color: #737373;
+	font-size: 13px;
+	opacity: 100;
+	top: 0;
+	float: right;
+}
+
+.infoMessage {
+	margin-bottom: 4px; /* sven: if higher it pushes the input field lower */
+}
+
+.descriptionMessage, .validationMessage {
+	float: none;
+	display: block; /* it needs to be block because when we have a switch element, the msg doesn't go into new line */
+}
+
+.validationMessage {
+	transition: all 250ms;
+	position: absolute;
+	z-index: 0;
+}
+
+.validationMessageHolder {
+	position: relative;
+	height: 25px;
+}
+
+.wrapper.error .validationMessage {
+	top: -50px;
+}
+
+.validationMessageError {
+	color: #cc3300;
+}
+
+.wrapper.success .validationMessage {
+	color: #3fbfb0;
+	top: -100px;
+}
+
+.validationIconError, .validationIconSuccess {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-47%);
+	right: 4px;
+	z-index: 10;
+	transition: all 225ms;
+	font-size: 41px;
+	line-height: 98%;
+	font-family: 'fontello';
+	font-style: normal;
+	font-weight: normal;
+}
+
+.validationIconError::before {
+	content: '\e81f';
+	color: #cc3300;
+}
+
+.validationIconSuccess {
+	right: 4px;
+	transform: translateY(-50%);
+}
+
+.validationIconSuccess::before {
+	content: '\e80e';
+	color: #3fbfb0;
+}
+
+:global(.inputGroup) {
+	position: relative;
+	display: table;
+	border-collapse: separate;
+	width: 100%;
+}
+
+.wrapper.error :global(.inputGroup) > input,
+.wrapper.error :global(.inputGroup) textarea,
+.wrapper.error :global(.inputGroup) select,
+.wrapper.error :global(.inputGroup .select2-selection),
+.wrapper.error :global(.inputGroup .File_input),
+.wrapper.error :global(.inputGroup .Search_search) {
+	border: 1px solid #cc3300;
+}
+
+.wrapper.success :global(.inputGroup) > input,
+.wrapper.success :global(.inputGroup) textarea,
+.wrapper.success :global(.inputGroup) select,
+.wrapper.success :global(.inputGroup .select2-selection),
+.wrapper.success :global(.inputGroup .File_input),
+.wrapper.success :global(.inputGroup .Search_search) {
+	border: 1px solid #3fbfb0;
+}

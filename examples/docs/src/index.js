@@ -1,11 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { createBrowserHistory } from "history";
-import { app, renderMiddleware, Router } from "webiny-client";
+import { app, renderMiddleware, Router } from "webiny-app";
 
 // Configure app router
 app.router.configure({
-    history: createBrowserHistory({ basename: "/" }),
+    history: createBrowserHistory({ basename: "/admin" }),
     middleware: [renderMiddleware()]
 });
 

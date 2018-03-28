@@ -1,0 +1,174 @@
+@media (max-width: 767px) {
+  .navigation {
+    top: 0;
+    right: 100%;
+    display: block;
+    position: fixed;
+    z-index: 1901;
+    background: #373737;
+    width: 100%;
+    height: 100vh;
+    padding-right: 15px;
+    padding-left: 15px;
+    border-top: 1px solid transparent;
+    box-shadow: inset 0 1px 0 hsla(0, 0%, 100%, .1);
+    transition: all .25s;
+
+    .shield {
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: #373737;
+    }
+
+    .main-menu {
+      .menu-list {
+        .level-1 {
+          position: fixed;
+          display: block;
+          margin: 0;
+          top: 0;
+          transition: all .25s;
+          left: -120%;
+          height: 100vh;
+          width: 100vw;
+          background-color: #373737;
+          z-index: 10000;
+        }
+        .level-2 {
+          overflow: hidden;
+          opacity: 0;
+          height: 0;
+          margin: 0;
+          transition: height .25s, opacity .25s;
+          width: 100%;
+          position: relative;
+          padding: 0 20px;
+          z-index: -1;
+
+          li {
+            background: #424242;
+            border-bottom: none;
+
+            &:first-child {
+              display: none;
+            }
+
+            a {
+              padding: 10px 10px 10px 25px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .mobile-nav {
+    .navigation {
+      right: 0;
+      .main-menu {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        z-index: 5;
+
+        &--close {
+          background: #2c2c2c;
+          height: 50px;
+          text-transform: uppercase;
+          color: #fff;
+          font-size: 14px;
+          z-index: 6;
+          left: 0;
+          position: relative;
+          top: 0;
+          width: 100%;
+          padding-top: 15px;
+          text-align: center;
+          &:before {
+            font-family: fontello;
+            content: "\E82B";
+            margin-right: 10px;
+          }
+          &.back {
+            &:before {
+              content: "\E83E";
+            }
+          }
+        }
+
+        ul {
+          li {
+            position: relative;
+            display: block;
+            padding-left: 0;
+            border-bottom: 1px solid #2d2d2d;
+
+            a {
+              position: relative;
+              display: block;
+              font-size: 13px;
+              font-weight: 600;
+              color: #fff;
+              text-transform: uppercase;
+              text-decoration: none;
+              line-height: 187%;
+              padding: 20px;
+              z-index: 500;
+              width: 100%;
+
+              span.icon {
+                font-size: 25px;
+                float: left;
+                color: #fff;
+                margin-right: 10px;
+              }
+
+              span.icon-caret-down {
+                font-size: 14px;
+                float: right;
+                color: #fff;
+                margin-right: 5px;
+                margin-top: 7px;
+                width: 1em;
+                transform: rotate(-90deg);
+              }
+            }
+
+            &.open {
+              > .level-1 {
+                left: 0;
+                > li {
+                  padding-bottom: 20px;
+                  > a {
+                    padding: 20px 20px 0;
+                  }
+                  &.open {
+                    span.icon-caret-down {
+                      transform: rotate(0deg);
+                      margin-top: 5px;
+                    }
+                  }
+                }
+              }
+
+              > .level-2 {
+                height: 100%;
+                overflow: visible;
+                opacity: 1;
+                z-index: 1;
+              }
+            }
+          }
+        }
+      }
+    }
+    .master-content {
+      position: fixed;
+      left: 0;
+    }
+  }
+}

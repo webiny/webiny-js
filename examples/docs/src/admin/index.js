@@ -1,41 +1,46 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { createBrowserHistory } from "history";
-import { app, renderMiddleware, Router } from "webiny-client";
+import axios from "axios";
+import { app, renderMiddleware, Router } from "webiny-app";
+import { app as adminApp } from "webiny-app-admin";
+import { app as securityApp, authenticationMiddleware } from "webiny-app-security";
+import { app as securityAdminApp } from "webiny-app-security-admin";
+import configs from "./configs";
+import addRoutes from "./routes";
+
+window.app = app;
+
+// Setup admin layout
+app.use(adminApp());
+// Setup authentication and authorization
+app.use(securityApp(configs.security));
+// Add admin security components (login route, user account, user menu,...)
+app.use(securityAdminApp());
+
+app.configure(() => {
+    axios.defaults.baseURL = "http://localhost:9000/api";
+});
 
 // Configure app router
 app.router.configure({
-    history: createBrowserHistory({ basename: "/admin/" }),
-    middleware: [renderMiddleware()]
+    basename: "/admin",
+    middleware: [
+        authenticationMiddleware({
+            onNotAuthenticated({ route }, next) {
+                if (route.name !== "Login") {
+                    app.router.goToRoute("Login");
+                }
+                next();
+            }
+        }),
+        renderMiddleware()
+    ]
 });
 
-app.router.addRoute({
-    name: "All",
-    exact: true,
-    path: "/",
-    render() {
-        return (
-            <div>
-                <h2>Hi, this is a dummy administration!</h2>
-                <a href="/second-page">Second page</a>
-            </div>
-        );
-    }
-});
+// Add routes
+addRoutes();
 
-app.router.addRoute({
-    name: "All",
-    path: "/second-page",
-    render() {
-        return (
-            <div>
-                <h2>Second page!</h2>
-                <a href="/">Go back</a>
-            </div>
-        );
-    }
-});
-
+// Configure all apps and render Router to run the app
 app.setup().then(() => {
     ReactDOM.render(<Router router={app.router} />, document.getElementById("root"));
 });

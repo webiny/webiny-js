@@ -1,0 +1,236 @@
+:global{
+  .expandable-list {
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 0px;
+
+    .flex-row {
+      box-sizing: border-box;
+      align-items: center;
+      display: flex;
+
+      @media (max-width: 768px) {
+        display: block;
+        width: 100%;
+      }
+    }
+
+    .flex-cell {
+      flex-grow: 1;
+      flex-basis: 0;
+    }
+
+    .flex-width-1 {
+      flex-basis: 8.33%;
+      max-width: 8.333%;
+    }
+
+    .flex-width-2 {
+      flex-basis: 16.66%;
+      max-width: 16.66%;
+    }
+
+    .flex-width-3 {
+      flex-basis: 25%;
+      max-width: 25%;
+    }
+
+    .flex-width-4 {
+      flex-basis: 33.33%;
+      max-width: 33.33%;
+    }
+
+    .flex-width-5 {
+      flex-basis: 41.65%;
+      max-width: 51.65%;
+    }
+
+    .flex-width-6 {
+      flex-basis: 50%;
+      max-width: 50%;
+    }
+
+    .flex-width-7 {
+      flex-basis: 58.33%;
+      max-width: 58.33%;
+    }
+
+    .flex-width-8 {
+      flex-basis: 66.66%;
+      max-width: 66.66%;
+    }
+
+    .flex-width-9 {
+      flex-basis: 75%;
+      max-width: 75%;
+    }
+
+    .flex-width-10 {
+      flex-basis: 83.33%;
+      max-width: 83.33%;
+    }
+
+    .flex-width-11 {
+      flex-basis: 91.66%;
+      max-width: 91.66%;
+    }
+
+    .flex-width-12 {
+      flex-basis: 100%;
+      max-width: 100%;
+    }
+
+    .expandable-list__title h4 {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #FA5A28;
+    }
+
+    .expandable-list__header {
+      width: 100%;
+      border: 1px solid #ddd;
+      font-weight: bold;
+      margin-bottom: -1px;
+      background-color: #ddd;
+      @media (max-width: 768px) {
+        display: none;
+      }
+
+      .expandable-list__header__field {
+        padding: 15px 10px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .expandable-list__action-set {
+      .dropdown-menu{
+        left: -65px;
+      }
+    }
+
+    .expandable-list__row {
+      width: 100%;
+      will-change: transform, -webkit-transform;
+      margin: 0;
+      outline: none;
+      position: relative;
+      border: 1px solid #ddd;
+      border-collapse: collapse;
+      margin-bottom: -1px;
+      background-color: #fff;
+      transition: all 225ms;
+      cursor: pointer;
+      z-index: 1;
+
+      .expandable-list__row__action-set {
+        text-align: right;
+      }
+
+      .expandable-list__row-wrapper {
+        .expandable-list__row__fields__field {
+          padding: 15px 10px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+
+          @media (max-width: 768px) {
+            max-width: 100%;
+            display: block;
+            text-align: center;
+          }
+
+          &.expandable-list__row__action-set {
+            padding-top: 0px;
+            padding-bottom: 0px;
+            overflow: visible;
+          }
+        }
+      }
+
+      &:hover {
+        background: #fafafa;
+      }
+
+      &.expandable-list__row--active-action-set {
+        z-index: 2;
+      }
+
+      &.expandable-list__row--active {
+        background-color: #ddd;
+        box-sizing: border-box;
+        outline: none;
+        padding: 20px 16px;
+        margin-top: 25px;
+        margin-bottom: 25px;
+        width: auto;
+        box-shadow: 0 0 0 10px #ddd;
+        cursor: auto;
+
+        &:last-child {
+          margin-bottom: 0px;
+        }
+
+        .expandable-list__row__fields {
+          margin: 0px;
+        }
+
+        .expandable-list__row__action-set {
+          padding-top: 7px;
+        }
+
+        .expandable-list__row__details {
+          opacity: 1;
+          visibility: visible;
+          margin: 0px;
+          cursor: auto;
+          border: none;
+
+          .porlet {
+            margin-bottom: 0px;
+          }
+
+          .rich-editor__editor, .rich-editor__root {
+            margin: 0px;
+            padding: 0px;
+            border: none;
+
+            .public-DraftEditor-content{
+              margin: 0px;
+              padding: 0px;
+            }
+          }
+
+          .expandable-list__row__details__list {
+
+          }
+
+          .expandable-list__row__details__content {
+            margin: 0px;
+            background-color: #fff;
+            padding: 15px;
+          }
+
+          .expandable-list {
+            margin-bottom: 0px;
+            padding: 20px;
+
+            @media (max-width: 768px) {
+              padding: 0;
+            }
+
+            .expandable-list__row--active {
+              margin: 0px;
+              background-color: #fff;
+              padding: 20px;
+              margin: 20px -25px;
+            }
+          }
+
+        }
+      }
+    }
+  }
+}

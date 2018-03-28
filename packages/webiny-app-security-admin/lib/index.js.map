@@ -1,0 +1,1 @@
+{"version":3,"sources":["../src/index.js"],"names":["default"],"mappings":";;;;;;;;;;;mDAASA,O;;;;;;;;;wCACAA,O","file":"index.js","sourcesContent":["export { default as authenticationMiddleware } from \"./middleware/authentication\";\nexport { default as app } from \"./app\";\n"]}

@@ -1,0 +1,149 @@
+.btn {
+	all: initial;
+	display: inline-block;
+	margin-right: 0px; /* sven: this margin needs to be 0 */
+	margin-left: 5px;
+	padding: 14px 20px;
+	vertical-align: top;
+	text-align: center;
+	font-size: 12px;
+	line-height: 1;
+	text-transform: uppercase;
+	border-radius: 60px;
+	will-change: opacity;
+	transition: all 0.2s;
+	cursor: pointer;
+	color: #fff;
+	background-color: #fff;
+	border: 1px solid #cdcdcd;
+	box-sizing: border-box;
+
+	font-family: "Source Sans Pro";
+}
+
+.btn:hover {
+	box-shadow: 0px 0px 0px 3px #cdcdcd;
+	text-decoration: none;
+}
+
+.btn:active, .btn.active {
+	border: 1px solid #cdcdcd;
+	box-shadow: inset 0px 0px 2px 0px rgba(50, 50, 50, 0.3);
+}
+
+.disabled {
+	cursor: not-allowed;
+	opacity: 0.6;
+	box-shadow: none !important;
+}
+
+.btnDefault {
+	composes: btn;
+	border: 1px solid #ccc;
+	color: #333;
+}
+
+.btnDefault:active,
+.btnDefault.active,
+.btnDefault:hover:active,
+.btnDefault.active:hover {
+	background: #F2F2F2;
+	box-shadow: inset 0px 0px 2px 0px rgba(50, 50, 50, 0.9);
+}
+
+.btnDefault:hover:not(:disabled) {
+	background: #F2F2F2;
+	box-shadow: 0px 0px 0px 3px #cdcdcd;
+}
+
+.btnPrimary {
+	composes: btn;
+	background-color: #FA5723;
+	border: 1px solid #ED4005;
+}
+
+.btnPrimary:hover:not(:disabled),
+.btnPrimary:focus:not(:disabled) {
+	background: #ED4005;
+	box-shadow: 0px 0px 0px 3px #FA5723;
+	border-color: #ED4005;
+	color: #fff;
+}
+
+.btnPrimary:active {
+	border: 1px solid #ED4005;
+	background: #ED4005;
+	box-shadow: inset 0px 0px 2px 0px rgba(50, 50, 50, 0.9);
+	color: #fff;
+}
+
+.btnSuccess {
+	composes: btn;
+
+	background: #3FBFB0;
+	border: 1px solid #3FBFB0;
+}
+
+.btnSuccess:focus:not(:disabled),
+.btnSuccess:active:focus:not(:disabled) {
+	background: #3FBFB0;
+	border: 1px solid #3FBFB0;
+	color: #fff;
+}
+
+.btnSuccess:hover:not(:disabled) {
+	background: #32988B;
+	box-shadow: 0px 0px 0px 3px #3FBFB0;
+	border: 1px solid #3FBFB0;
+	color: #fff;
+}
+
+.btnSuccess:active:not(:disabled) {
+	border: 1px solid #32988B;
+	background: #32988B;
+	box-shadow: inset 0px 0px 2px 0px rgba(50, 50, 50, 0.9);
+	color: #fff;
+}
+
+.btnLarge {
+	composes: btn;
+	font-size: 18px;
+	padding: 11px 15px 11px 15px;
+	line-height: 150%;
+	font-weight: 300;
+}
+
+.btnLarge .icon {
+	font-size: 21px;
+	height: 20px;
+	margin: 0px -8px 1px 0px;
+}
+
+.btnLarge .iconRight {
+	margin: 3px -8px 1px 2px; /* sven: top margin was originally 0, I set it to -2px to match the icon on login page */
+	float: right;
+}
+
+.btnLarge .iconLeft {
+	margin: 0px 0px 0px -7px;
+}
+
+/* make button responsive */
+@media (max-width: 768px) {
+	.btn {
+		width: 100%;
+		display: block;
+		margin: 10px 0;
+		/*padding: 15px 0; this causes problems with a longer word inside a button as it sticks to the edges */
+		padding: 15px;
+	}
+
+	.btnGroup, :global(.btn-group) {
+		width: 100%;
+	}
+
+	.btnLarge .iconRight {
+		margin: -2px 5px 0px 0px;
+		font-size: 32px;
+	}
+}

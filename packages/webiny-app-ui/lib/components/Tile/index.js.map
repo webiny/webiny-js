@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../../src/components/Tile/index.js"],"names":["Header","Body"],"mappings":";;;;;;AAAA;;;;AACA;;;;AACA;;;;;;AAEA,eAAKA,MAAL;AACA,eAAKC,IAAL","file":"index.js","sourcesContent":["import Body from './Body';\nimport Header from './Header';\nimport Tile from './Tile';\n\nTile.Header = Header;\nTile.Body = Body;\n\nexport default Tile;"]}

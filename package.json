@@ -1,9 +1,7 @@
 {
   "private": true,
   "workspaces": [
-    "packages-api/*",
-    "packages-client/*",
-    "packages-utils/*"
+    "packages/*"
   ],
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>",

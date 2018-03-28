@@ -1,6 +1,6 @@
 import React from "react";
-import { createComponent, i18n } from "webiny-client";
-import { ModalComponent } from "webiny-client-ui";
+import { createComponent, i18n } from "webiny-app";
+import { ModalComponent } from "webiny-app-ui";
 
 const t = i18n.namespace("NewClient.Frontend.Views.About");
 

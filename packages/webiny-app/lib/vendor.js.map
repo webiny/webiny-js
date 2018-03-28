@@ -1,0 +1,1 @@
+{"version":3,"sources":["../src/vendor.js"],"names":["module","exports"],"mappings":";;AAAAA,OAAOC,OAAP,GAAiB,CACb,4BADa,EAEb,OAFa,EAGb,WAHa,EAIb,WAJa,EAKb;AACA;AANa,CAAjB","file":"vendor.js","sourcesContent":["module.exports = [\n    \"jquery/dist/jquery.slim.js\",\n    \"react\",\n    \"react-dom\",\n    \"js-cookie\",\n    \"history\"\n    //\"webiny-app\"\n];\n"]}

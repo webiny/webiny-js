@@ -1,0 +1,313 @@
+/* table */
+table.table {
+	clear: both;
+	width: 100%;
+	max-width: 100%;
+	margin-bottom: 20px;
+	border-spacing: 0;
+	border-collapse: collapse;
+	background-color: transparent;
+}
+
+/* table head */
+table.table thead {
+	border-top: 2px solid #FA5723;
+	padding: 20px;
+	font-weight: 800;
+	font-size: 16px;
+	color: #464646;
+	text-align: center;
+}
+
+table.table thead th {
+	border-right: none;
+	border-bottom: none;
+	padding: 10px 15px;
+	vertical-align: middle;
+	white-space: nowrap;
+}
+
+table.table > thead:first-child > tr:first-child > th {
+	border-top: 0;
+}
+
+table.table thead th.sorted {
+	background: #EDEDED;
+}
+
+table.table thead th > a {
+	font-weight: 800;
+	font-size: 16px;
+	color: #464646;
+}
+
+table.table thead th > a:hover {
+	text-decoration: underline;
+	outline: 0;
+}
+
+/* table body */
+table.table tbody tr td {
+	padding: 10px 15px;
+	font-size: 14px;
+	color: #666666;
+	border-right: none;
+	vertical-align: middle;
+	border-top: 1px solid #ddd;
+	line-height: 150%;
+	word-break: break-all;
+}
+
+table.table > tbody > tr > td.sorted {
+	background: #EDEDED;
+}
+
+table.table > tbody > tr:hover > td,
+table.table > tbody > tr.selected > td {
+	background: #ffefea !important;
+}
+
+.footer{
+	text-align: right;
+}
+
+.multiAction{
+	text-align: left;
+}
+
+/* pagination */
+.paginationWrapper{
+	text-align: right;
+}
+
+.pagination {
+	display: inline-block;
+	padding-left: 0;
+	margin: 0 0 0 -10px;
+	border-radius: 4px;
+	float: right;
+}
+
+.pagination li {
+	margin-right: 2px;
+	display: inline-block;
+}
+
+.pagination li a {
+	display: block;
+	font-size: 14px;
+	color: #787878;
+	padding: 8px;
+	position: relative;
+	border: none;
+	float: left;
+	text-decoration: none;
+	line-height: 150%;
+}
+
+.pagination li a:hover {
+	background: #ECECEC;
+	color: #fa5722;
+	z-index: 2;
+	border-color: #ddd;
+}
+
+.pagination li.active a {
+	background: #ECECEC;
+	color: #fa5722;
+	z-index: inherit;
+	cursor: default;
+}
+
+.pagination li.active a:hover,
+.pagination li.active a:focus {
+	background: #ECECEC;
+	color: #fa5722;
+	z-index: 3;
+}
+
+.pagination > li:first-child > a,
+.pagination > li:first-child > span {
+	margin-left: 0;
+}
+
+.pagination li a:hover {
+	z-index: 2;
+	background: #ECECEC;
+}
+
+.pagination > .disabled > span,
+.pagination > .disabled > span:hover,
+.pagination > .disabled > span:focus,
+.pagination > .disabled > a,
+.pagination > .disabled > a:hover,
+.pagination > .disabled > a:focus {
+	color: #777777;
+	background-color: #fff;
+	border-color: #ddd;
+	cursor: not-allowed;
+	border-radius: 3px;
+}
+
+.pagination li :global span.icon {
+	width: 12px;
+	transform: rotate(90deg);
+	clear: none;
+	position: absolute;
+}
+
+.pagination li.previous a :global span.icon {
+	left: 5px;
+	top: 8px;
+}
+
+.pagination li.previous a {
+	padding-left: 20px;
+}
+
+.pagination li.next :global span.icon {
+	transform: rotate(-90deg);
+	top: 15px;
+	right: 5px;
+}
+
+.pagination li.next a {
+	padding-right: 20px;
+}
+
+/* empty container */
+.emptyContainer {
+	box-sizing: border-box;
+	margin-bottom: 20px;
+	background-color: #fff;
+	border-radius: 0;
+	box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.04);
+	border: 1px solid #E8E8E8;
+}
+
+.emptyContainer .content {
+	padding: 20px;
+	margin: 0 10px;
+	text-align: center;
+}
+
+.emptyContainer .content p {
+	margin-bottom: 0;
+	font-weight: 300;
+}
+
+.emptyContainer .content h2 {
+	margin-top: 0;
+	font-size: 2em;
+	float: none;
+}
+
+/* checkbox for selecting rows */
+.selectRow {
+	height: 19px; /* needs to match the checkbox height */
+	padding: 0;
+	margin: 0 !important;
+}
+
+/* expand button / row details */
+table.table td a.expand {
+	position: relative;
+	width: 22px;
+	height: 23px;
+	background: #D8D8D8;
+	font-size: 20px;
+	font-weight: 800;
+	float: left;
+	text-align: center;
+	margin-right: 15px;
+	line-height: 130%;
+	color: #fff;
+}
+
+table.table td a.expand:after {
+	content: '+';
+	position: absolute;
+	left: 6px;
+	top: -1px;
+}
+
+table.table td a.expand:hover {
+	text-decoration: none;
+	background: #999;
+}
+
+table.table td a.expand.close {
+	background: #3FBFB0;
+	opacity: 1;
+	line-height: 110%;
+}
+
+table.table td a.expand.close:after {
+	content: '-';
+	position: absolute;
+	left: 8px;
+	top: -1px;
+}
+
+table.table td.rowDetailsField {
+	max-width: 40px;
+}
+
+table.table tr.rowDetails:hover td {
+	background: #fff !important;
+}
+
+/** Make tables responsive **/
+table.table td {
+	display: block;
+}
+
+table.table td:before {
+	content: attr(data-th);
+	font-weight: bold;
+
+	width: 100%;
+	display: block;
+	text-align: center;
+}
+
+@media (max-width: 768px) {
+	table.table thead {
+		display: none;
+	}
+
+	table.table tbody tr td, table.table thead tr th {
+		text-align: center !important;
+		border-top: none;
+	}
+
+	table.table tbody tr {
+		border: 1px solid #ccc;
+		display: block;
+		margin-bottom: 10px;
+		padding: 10px;
+	}
+
+
+	.footer{
+		text-align: center;
+	}
+
+	.paginationWrapper, .multiAction{
+		text-align: center;
+	}
+
+	.pagination {
+		float: none;
+	}
+}
+
+@media (min-width: 768px) {
+	table.table td:before {
+		display: none;
+	}
+
+	table.table td, table.table th {
+		display: table-cell;
+	}
+}

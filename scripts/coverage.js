@@ -2,23 +2,21 @@
 const execa = require("execa");
 const { argv } = require("yargs");
 
-let glob = "packages-*/**/tests/**/*.test.js";
+let glob = "packages/**/tests/**/*.test.js";
 const pkg = argv._[0];
 
 if (pkg) {
-    if (pkg.startsWith("packages-")) {
+    if (pkg.startsWith("packages")) {
         glob = pkg;
     } else if (pkg.includes("/tests/")) {
-        glob = "packages-*/" + pkg;
+        glob = "packages/" + pkg;
     } else {
-        glob = "packages-*/" + pkg + "/tests/**/*.test.js";
+        glob = "packages/" + pkg + "/tests/**/*.test.js";
     }
 }
 
 const common = [
-    ...(pkg
-        ? ["--include", "packages-*/" + pkg + "/src"]
-        : ["--include", "packages-api/**/src", "--include", "packages-utils/**/src"]),
+    ...(pkg ? ["--include", "packages/" + pkg + "/src"] : ["--include", "packages/**/src"]),
     "mocha",
     "--require",
     "source-map-support/register",

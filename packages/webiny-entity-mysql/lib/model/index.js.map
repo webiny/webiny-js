@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/model/index.js"],"names":["default"],"mappings":";;;;;;;;;;;+CAASA,O","file":"index.js","sourcesContent":["export { default as MySQLModel } from \"./mysqlModel\";\n"]}

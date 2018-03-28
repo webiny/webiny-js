@@ -1,9 +1,7 @@
 {
   "lerna": "2.5.1",
   "workspaces": [
-    "packages-api/*",
-    "packages-client/*",
-    "packages-utils/*"
+    "packages/*"
   ],
   "version": "independent",
   "npmClient": "yarn",

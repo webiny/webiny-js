@@ -1,0 +1,45 @@
+{
+  "name": "webiny-app-ui",
+  "version": "0.0.0-semantically-released",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "animate.css": "^3.5.2",
+    "bootstrap-daterangepicker": "^2.1.30",
+    "bootstrap-sass": "^3.3.7",
+    "c3": "^0.4.18",
+    "clipboard": "^1.7.1",
+    "codemirror": "^5.33.0",
+    "codemirror-formatting": "^1.0.0",
+    "cropperjs": "^1.2.2",
+    "draft-js": "^0.10.5",
+    "dynamics.js": "1.1.5",
+    "eonasdan-bootstrap-datetimepicker": "^4.17.47",
+    "filesize": "^3.5.11",
+    "font-awesome": "^4.7.0",
+    "highlight.js": "^9.12.0",
+    "owl.carousel": "^2.2.0",
+    "pluralize": "^7.0.0",
+    "react-transition-group": "^1.2.0",
+    "quill": "^1.3.4",
+    "select2": "^4.0.6-rc.1",
+    "simplemde": "^1.11.2",
+    "webiny-app": "0.0.0-semantically-released"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0"
+  },
+  "scripts": {
+    "build": "babel src -d lib --source-maps --copy-files",
+    "build:watch": "babel src -d lib --source-maps --copy-files --watch"
+  }
+}
