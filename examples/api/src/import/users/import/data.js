@@ -1,4 +1,5 @@
 import { User, Role, RoleGroup, Permission } from "webiny-api-security";
+import { Page, Revision, Category } from "webiny-api-cms";
 
 export default [
     () => {
@@ -727,6 +728,18 @@ export default [
                     password: "16581128 7282",
                     firstName: "Stuart",
                     lastName: "Ryan"
+                }
+            ]
+        };
+    },
+    async () => {
+        return {
+            entity: Category,
+            data: [
+                {
+                    title: "Static",
+                    slug: "static",
+                    url: "/"
                 }
             ]
         };

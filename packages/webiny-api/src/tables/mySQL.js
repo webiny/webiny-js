@@ -1,3 +1,4 @@
+// @flow
 import { Table } from "webiny-sql-table";
 import { MySQLDriver } from "webiny-sql-table-mysql";
 

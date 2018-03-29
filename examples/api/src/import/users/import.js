@@ -10,7 +10,7 @@ import registerFileAttributes from "webiny-api/lib/attributes/registerFileAttrib
 import registerImageAttributes from "webiny-api/lib/attributes/registerImageAttributes";
 
 import importData from "./import/data";
-import { connection } from "./../configs/database";
+import { connection } from "./../../configs/database";
 
 export default async () => {
     Entity.driver = new MySQLDriver({ connection });

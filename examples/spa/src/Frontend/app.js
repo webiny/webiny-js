@@ -6,7 +6,7 @@ import { hot } from "react-hot-loader";
 import { app as adminApp } from "webiny-app-admin";
 import { app as securityApp, authenticationMiddleware } from "webiny-app-security";
 import { app as securityAdminApp } from "webiny-app-security-admin";
-import selectoApp from "./selectoApp";
+import project from "./project";
 
 if (!app.initialized) {
     app.use(adminApp());
@@ -32,7 +32,7 @@ if (!app.initialized) {
         })
     );
     app.use(securityAdminApp());
-    app.use(selectoApp());
+    app.use(project());
 
     app.configure(() => {
         if (process.env.NODE_ENV === "development") {

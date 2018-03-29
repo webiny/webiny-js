@@ -13,7 +13,7 @@ import {
 import { MySQLTable } from "webiny-api";
 
 // Configure MySQLTable driver
-import { connection } from "./../configs/database";
+import { connection } from "./../../configs/database";
 
 MySQLTable.getDriver().setConnection(connection);
 

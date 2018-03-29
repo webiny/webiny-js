@@ -3,22 +3,22 @@ const fs = require("fs-extra");
 const path = require("path");
 
 const packages = {
-    "webiny-api": "../../packages-api",
-    "webiny-api-security": "../../packages-api",
-    "webiny-compose": "../../packages-utils",
-    "webiny-data-extractor": "../../packages-utils",
-    "webiny-entity": "../../packages-utils",
-    "webiny-entity-mysql": "../../packages-utils",
-    "webiny-file-storage": "../../packages-utils",
-    "webiny-file-storage-local": "../../packages-utils",
-    "webiny-jimp": "../../packages-utils",
-    "webiny-model": "../../packages-utils",
-    "webiny-mysql-connection": "../../packages-utils",
-    "webiny-service-manager": "../../packages-utils",
-    "webiny-sql-table": "../../packages-utils",
-    "webiny-sql-table-mysql": "../../packages-utils",
-    "webiny-sql-table-sync": "../../packages-utils",
-    "webiny-validation": "../../packages-utils"
+    "webiny-api": "../../packages",
+    "webiny-api-security": "../../packages",
+    "webiny-compose": "../../packages",
+    "webiny-data-extractor": "../../packages",
+    "webiny-entity": "../../packages",
+    "webiny-entity-mysql": "../../packages",
+    "webiny-file-storage": "../../packages",
+    "webiny-file-storage-local": "../../packages",
+    "webiny-jimp": "../../packages",
+    "webiny-model": "../../packages",
+    "webiny-mysql-connection": "../../packages",
+    "webiny-service-manager": "../../packages",
+    "webiny-sql-table": "../../packages",
+    "webiny-sql-table-mysql": "../../packages",
+    "webiny-sql-table-sync": "../../packages",
+    "webiny-validation": "../../packages"
 };
 
 Object.keys(packages).forEach(name => {

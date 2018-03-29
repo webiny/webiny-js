@@ -62,12 +62,14 @@ var Navigation = (function(_React$Component) {
             value: function componentDidMount() {
                 var _this2 = this;
 
-                // Navigation is rendered based on user roles so we need to watch for changes
-                this.unwatch = this.auth.onIdentity(function(identity) {
-                    _this2.setState({ user: identity });
-                });
+                if (this.auth) {
+                    // Navigation is rendered based on user roles so we need to watch for changes
+                    this.unwatch = this.auth.onIdentity(function(identity) {
+                        _this2.setState({ user: identity });
+                    });
 
-                this.setState({ user: this.auth.identity });
+                    this.setState({ user: this.auth.identity });
+                }
 
                 this.checkDisplayInterval = setInterval(function() {
                     _this2.setState({ display: window.outerWidth > 768 ? "desktop" : "mobile" });
@@ -80,7 +82,7 @@ var Navigation = (function(_React$Component) {
                 clearInterval(this.checkDisplayInterval);
 
                 // Release data cursors
-                this.unwatch();
+                this.unwatch && this.unwatch();
             }
         },
         {

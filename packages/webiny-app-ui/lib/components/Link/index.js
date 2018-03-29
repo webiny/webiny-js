@@ -90,7 +90,7 @@ var Link = (function(_React$Component) {
                         if ((0, _isString3.default)(route)) {
                             route =
                                 route === "current"
-                                    ? _webinyApp.app.router.getActiveRoute()
+                                    ? _webinyApp.app.router.route
                                     : _webinyApp.app.router.getRoute(route);
                         }
 

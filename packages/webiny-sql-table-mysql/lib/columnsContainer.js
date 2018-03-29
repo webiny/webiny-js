@@ -20,7 +20,7 @@ function _interopRequireDefault(obj) {
  * Contains basic columns. If needed, this class can be extended to add additional columns,
  * and then be set as a new columns container as the default one.
  */
-class DefaultColumnsContainer extends _webinySqlTable.ColumnsContainer {
+class ColumnsContainer extends _webinySqlTable.ColumnsContainer {
     bigInt() {
         const column = new _columns.BigIntColumn(
             this.newColumnName,
@@ -214,5 +214,5 @@ class DefaultColumnsContainer extends _webinySqlTable.ColumnsContainer {
     }
 }
 
-exports.default = DefaultColumnsContainer;
+exports.default = ColumnsContainer;
 //# sourceMappingURL=columnsContainer.js.map

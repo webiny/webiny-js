@@ -80,10 +80,12 @@ var Router = (function(_React$Component) {
                             return;
                         }
 
-                        e.preventDefault();
+                        if (this.href.startsWith(window.location.origin)) {
+                            e.preventDefault();
 
-                        var url = (0, _urlParse2.default)(this.href, true);
-                        history.push(url.pathname);
+                            var url = (0, _urlParse2.default)(this.href, true);
+                            history.push(url.pathname, router.config.basename);
+                        }
                     });
 
                 router.matchRoute(history.location.pathname).then(function(route) {

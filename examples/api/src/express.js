@@ -13,8 +13,13 @@ export default () => {
     app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
     app.use(cors());
 
-    app.get("/setup", async (req, res) => {
-        await import("./setup");
+    app.get("/import/users", async (req, res) => {
+        await import("./import/users");
+        res.json({ data: "success" });
+    });
+
+    app.get("/import/cms", async (req, res) => {
+        await import("./import/cms");
         res.json({ data: "success" });
     });
 

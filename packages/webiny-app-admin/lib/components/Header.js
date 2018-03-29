@@ -55,9 +55,7 @@ var Header = (function(_React$Component) {
         {
             key: "render",
             value: function render() {
-                var _props = this.props,
-                    userMenu = _props.userMenu,
-                    logo = _props.logo;
+                var components = this.props.components;
 
                 return _react2.default.createElement(
                     "div",
@@ -72,14 +70,19 @@ var Header = (function(_React$Component) {
                             _react2.default.createElement("span", null),
                             _react2.default.createElement("span", null)
                         ),
-                        logo &&
-                            ((0, _react.isValidElement)(logo)
-                                ? logo
-                                : (0, _react.createElement)(logo)),
-                        userMenu &&
-                            ((0, _react.isValidElement)(userMenu)
-                                ? userMenu
-                                : (0, _react.createElement)(userMenu))
+                        components.map(function(cmp, index) {
+                            return (
+                                cmp &&
+                                _react2.default.cloneElement(
+                                    (0, _react.isValidElement)(cmp)
+                                        ? cmp
+                                        : (0, _react.createElement)(cmp),
+                                    {
+                                        key: index
+                                    }
+                                )
+                            );
+                        })
                     )
                 );
             }
@@ -91,8 +94,13 @@ var Header = (function(_React$Component) {
 exports.default = (0, _webinyApp.createComponent)(Header, {
     modules: [
         {
-            userMenu: "Skeleton.UserMenu",
-            logo: "Skeleton.Logo"
+            components: function components() {
+                return _webinyApp.app.modules.loadByTag("header-component").then(function(modules) {
+                    return Object.values(modules).filter(function(m) {
+                        return m;
+                    });
+                });
+            }
         }
     ]
 });

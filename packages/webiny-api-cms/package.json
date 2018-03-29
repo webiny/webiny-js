@@ -1,0 +1,21 @@
+{
+  "name": "webiny-api-cms",
+  "version": "0.0.0-semantically-released",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "author": "Pavel Denisjuk",
+  "license": "MIT",
+  "dependencies": {
+    "webiny-api": "0.0.0-semantically-released"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0"
+  },
+  "scripts": {
+    "build": "babel src -d lib --source-maps --copy-files",
+    "build:watch": "babel src -d lib --source-maps --copy-files --watch"
+  }
+}

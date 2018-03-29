@@ -48,6 +48,8 @@ var _queryString = require("query-string");
 
 var _queryString2 = _interopRequireDefault(_queryString);
 
+var _history = require("history");
+
 var _Route = require("./Route.cmp");
 
 var _Route2 = _interopRequireDefault(_Route);
@@ -59,6 +61,10 @@ var _matchPath2 = _interopRequireDefault(_matchPath);
 var _generatePath = require("./generatePath");
 
 var _generatePath2 = _interopRequireDefault(_generatePath);
+
+var _sortRoutes = require("./sortRoutes");
+
+var _sortRoutes2 = _interopRequireDefault(_sortRoutes);
 
 function _interopRequireDefault(obj) {
     return obj && obj.__esModule ? obj : { default: obj };
@@ -81,6 +87,10 @@ var Router = (function() {
                 this.history = config.history;
                 this.middleware = (0, _webinyCompose2.default)(config.middleware);
                 this.match = null;
+
+                if (!this.history) {
+                    this.history = (0, _history.createBrowserHistory)();
+                }
             }
         },
         {
@@ -108,7 +118,10 @@ var Router = (function() {
             key: "createHref",
             value: function createHref(name, params) {
                 var route = (0, _find3.default)(this.routes, { name: name });
-                return (0, _generatePath2.default)(route.path, params);
+                return (0, _generatePath2.default)(
+                    (this.config.basename || "") + route.path,
+                    params
+                );
             }
         },
         {
@@ -146,11 +159,24 @@ var Router = (function() {
                                         case 0:
                                             debug("Matching location %o", pathname);
                                             route = null;
+
+                                            if (pathname.startsWith(this.config.basename)) {
+                                                pathname = pathname.substring(
+                                                    this.config.basename.length
+                                                );
+                                            }
+
+                                            if (pathname === "") {
+                                                pathname = "/";
+                                            }
+
+                                            (0, _sortRoutes2.default)(this.routes);
+
                                             i = 0;
 
-                                        case 3:
+                                        case 6:
                                             if (!(i < this.routes.length)) {
-                                                _context.next = 18;
+                                                _context.next = 21;
                                                 break;
                                             }
 
@@ -161,13 +187,13 @@ var Router = (function() {
                                             });
 
                                             if (match) {
-                                                _context.next = 8;
+                                                _context.next = 11;
                                                 break;
                                             }
 
-                                            return _context.abrupt("continue", 15);
+                                            return _context.abrupt("continue", 18);
 
-                                        case 8:
+                                        case 11:
                                             match.query = _queryString2.default.parse(
                                                 this.history.location.search
                                             );
@@ -176,21 +202,21 @@ var Router = (function() {
                                             this.match = match;
 
                                             params = { route: route, output: null, match: match };
-                                            _context.next = 14;
+                                            _context.next = 17;
                                             return this.middleware(params);
 
-                                        case 14:
+                                        case 17:
                                             return _context.abrupt("return", params.output);
 
-                                        case 15:
+                                        case 18:
                                             i++;
-                                            _context.next = 3;
+                                            _context.next = 6;
                                             break;
 
-                                        case 18:
+                                        case 21:
                                             return _context.abrupt("return", route);
 
-                                        case 19:
+                                        case 22:
                                         case "end":
                                             return _context.stop();
                                     }

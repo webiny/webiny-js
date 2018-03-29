@@ -4,15 +4,6 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _authentication = require("./middleware/authentication");
-
-Object.defineProperty(exports, "authenticationMiddleware", {
-    enumerable: true,
-    get: function get() {
-        return _interopRequireDefault(_authentication).default;
-    }
-});
-
 var _app = require("./app");
 
 Object.defineProperty(exports, "app", {
