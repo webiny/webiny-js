@@ -10,7 +10,7 @@ class Role2Permission extends MySQLTable {
             .char(24)
             .setNotNull();
 
-        this.index("unique").unique("permission", "role");
+        this.index().key("permission", "role", "deleted");
     }
 }
 

@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../src/utils/i18n.js"],"names":[],"mappings":";;;;;;AAAA","file":"i18n.js","sourcesContent":["import i18n from \"webiny-i18n\";\nexport default i18n;\n"]}

@@ -2,83 +2,85 @@
 1 silly flags { _: [ 'run' ],
 1 silly flags   'reject-cycles': false,
 1 silly flags   rejectCycles: false,
-1 silly flags   scope: 'webiny-sql-table-mysql',
+1 silly flags   parallel: true,
 1 silly flags   script: 'build',
 1 silly flags   args: [] }
-2 verbose rootPath /Users/paveldenisjuk/webiny/js/monorepo
-3 info version 2.5.1
-4 info versioning independent
-5 silly existsSync /Users/paveldenisjuk/webiny/js/monorepo/VERSION
-6 info scope webiny-sql-table-mysql
-7 silly initialize attempt
-8 silly initialize success
-9 silly execute attempt
-10 silly runScriptInDir build [] webiny-sql-table-mysql
-11 silly getExecOpts { cwd: '/Users/paveldenisjuk/webiny/js/monorepo/packages/webiny-sql-table-mysql' }
-12 error build Errored while running script in 'webiny-sql-table-mysql'
-13 error execute callback with error
-14 error Error: Command failed: npm run build
-14 error { Error: ENOTDIR invalid cwd /Users/paveldenisjuk/webiny/js/monorepo/packages/webiny-sql-table-mysql/src/columnsContainer.js
-14 error     at Glob._readdirError (/Users/paveldenisjuk/webiny/js/monorepo/node_modules/glob/glob.js:592:21)
-14 error     at /Users/paveldenisjuk/webiny/js/monorepo/node_modules/glob/glob.js:553:12
-14 error     at FSReqWrap.oncomplete (fs.js:135:15)
-14 error   path: '/Users/paveldenisjuk/webiny/js/monorepo/packages/webiny-sql-table-mysql/src/columnsContainer.js',
-14 error   code: 'ENOTDIR' }
-14 error npm ERR! code ELIFECYCLE
-14 error npm ERR! errno 1
-14 error npm ERR! webiny-sql-table-mysql@0.0.0-semantically-released build: `babel src -d lib --source-maps --copy-files && flow-copy-source src/* lib`
-14 error npm ERR! Exit status 1
-14 error npm ERR!
-14 error npm ERR! Failed at the webiny-sql-table-mysql@0.0.0-semantically-released build script.
-14 error npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
-14 error npm WARN Local package.json exists, but node_modules missing, did you mean to install?
-14 error
-14 error npm ERR! A complete log of this run can be found in:
-14 error npm ERR!     /Users/paveldenisjuk/.npm/_logs/2018-03-29T10_58_21_868Z-debug.log
-14 error
-14 error > webiny-sql-table-mysql@0.0.0-semantically-released build /Users/paveldenisjuk/webiny/js/monorepo/packages/webiny-sql-table-mysql
-14 error > babel src -d lib --source-maps --copy-files && flow-copy-source src/* lib
-14 error
-14 error src/columns/bigIntColumn.js -> lib/columns/bigIntColumn.js
-14 error src/columns/blobColumn.js -> lib/columns/blobColumn.js
-14 error src/columns/charColumn.js -> lib/columns/charColumn.js
-14 error src/columns/column.js -> lib/columns/column.js
-14 error src/columns/dateColumn.js -> lib/columns/dateColumn.js
-14 error src/columns/dateTimeColumn.js -> lib/columns/dateTimeColumn.js
-14 error src/columns/decimalColumn.js -> lib/columns/decimalColumn.js
-14 error src/columns/doubleColumn.js -> lib/columns/doubleColumn.js
-14 error src/columns/enumColumn.js -> lib/columns/enumColumn.js
-14 error src/columns/floatColumn.js -> lib/columns/floatColumn.js
-14 error src/columns/index.js -> lib/columns/index.js
-14 error src/columns/intColumn.js -> lib/columns/intColumn.js
-14 error src/columns/jsonColumn.js -> lib/columns/jsonColumn.js
-14 error src/columns/longBlobColumn.js -> lib/columns/longBlobColumn.js
-14 error src/columns/longTextColumn.js -> lib/columns/longTextColumn.js
-14 error src/columns/mediumBlobColumn.js -> lib/columns/mediumBlobColumn.js
-14 error src/columns/mediumIntColumn.js -> lib/columns/mediumIntColumn.js
-14 error src/columns/mediumTextColumn.js -> lib/columns/mediumTextColumn.js
-14 error src/columns/smallIntColumn.js -> lib/columns/smallIntColumn.js
-14 error src/columns/textColumn.js -> lib/columns/textColumn.js
-14 error src/columns/timeColumn.js -> lib/columns/timeColumn.js
-14 error src/columns/timestampColumn.js -> lib/columns/timestampColumn.js
-14 error src/columns/tinyIntColumn.js -> lib/columns/tinyIntColumn.js
-14 error src/columns/tinyTextColumn.js -> lib/columns/tinyTextColumn.js
-14 error src/columns/varCharColumn.js -> lib/columns/varCharColumn.js
-14 error src/columns/yearColumn.js -> lib/columns/yearColumn.js
-14 error src/columnsContainer.js -> lib/columnsContainer.js
-14 error src/index.js -> lib/index.js
-14 error src/indexes/fullTextIndex.js -> lib/indexes/fullTextIndex.js
-14 error src/indexes/index.js -> lib/indexes/index.js
-14 error src/indexes/keyIndex.js -> lib/indexes/keyIndex.js
-14 error src/indexes/primaryIndex.js -> lib/indexes/primaryIndex.js
-14 error src/indexes/uniqueIndex.js -> lib/indexes/uniqueIndex.js
-14 error src/indexesContainer.js -> lib/indexesContainer.js
-14 error src/mysqlDriver.js -> lib/mysqlDriver.js
-14 error src/sql/alterTable.js -> lib/sql/alterTable.js
-14 error src/sql/createTable.js -> lib/sql/createTable.js
-14 error src/sql/dropTable.js -> lib/sql/dropTable.js
-14 error src/sql/index.js -> lib/sql/index.js
-14 error src/sql/truncateTable.js -> lib/sql/truncateTable.js
-14 error
-14 error     at Promise.all.then.arr (/Users/paveldenisjuk/.config/yarn/global/node_modules/lerna/node_modules/execa/index.js:236:11)
-14 error     at <anonymous>
+2 verbose rootPath /Users/adrian/dev/webiny-js
+3 info version 2.9.0
+4 silly existsSync /Users/adrian/dev/webiny-js/VERSION
+5 info versioning independent
+6 silly initialize attempt
+7 silly initialize success
+8 silly execute attempt
+9 info run in 27 package(s): npm run build
+10 silly runScriptInPackageStreaming [ 'build', [], 'webiny-api-cms' ]
+11 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-api-cms' }
+12 silly runScriptInPackageStreaming [ 'build', [], 'webiny-api-security' ]
+13 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-api-security' }
+14 silly runScriptInPackageStreaming [ 'build', [], 'webiny-api' ]
+15 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-api' }
+16 silly runScriptInPackageStreaming [ 'build', [], 'webiny-app-admin' ]
+17 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-app-admin' }
+18 silly runScriptInPackageStreaming [ 'build', [], 'webiny-app-security-admin' ]
+19 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-app-security-admin' }
+20 silly runScriptInPackageStreaming [ 'build', [], 'webiny-app-security' ]
+21 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-app-security' }
+22 silly runScriptInPackageStreaming [ 'build', [], 'webiny-app-ui' ]
+23 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-app-ui' }
+24 silly runScriptInPackageStreaming [ 'build', [], 'webiny-app' ]
+25 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-app' }
+26 silly runScriptInPackageStreaming [ 'build', [], 'webiny-compose' ]
+27 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-compose' }
+28 silly runScriptInPackageStreaming [ 'build', [], 'webiny-data-extractor' ]
+29 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-data-extractor' }
+30 silly runScriptInPackageStreaming [ 'build', [], 'webiny-entity-memory' ]
+31 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-entity-memory' }
+32 silly runScriptInPackageStreaming [ 'build', [], 'webiny-entity-mysql' ]
+33 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-entity-mysql' }
+34 silly runScriptInPackageStreaming [ 'build', [], 'webiny-entity' ]
+35 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-entity' }
+36 silly runScriptInPackageStreaming [ 'build', [], 'webiny-file-storage-local' ]
+37 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-file-storage-local' }
+38 silly runScriptInPackageStreaming [ 'build', [], 'webiny-file-storage-s3' ]
+39 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-file-storage-s3' }
+40 silly runScriptInPackageStreaming [ 'build', [], 'webiny-file-storage' ]
+41 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-file-storage' }
+42 silly runScriptInPackageStreaming [ 'build', [], 'webiny-i18n-react' ]
+43 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-i18n-react' }
+44 silly runScriptInPackageStreaming [ 'build', [], 'webiny-i18n' ]
+45 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-i18n' }
+46 silly runScriptInPackageStreaming [ 'build', [], 'webiny-jimp' ]
+47 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-jimp' }
+48 silly runScriptInPackageStreaming [ 'build', [], 'webiny-model' ]
+49 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-model' }
+50 silly runScriptInPackageStreaming [ 'build', [], 'webiny-mysql-connection' ]
+51 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-mysql-connection' }
+52 silly runScriptInPackageStreaming [ 'build', [], 'webiny-scripts' ]
+53 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-scripts' }
+54 silly runScriptInPackageStreaming [ 'build', [], 'webiny-service-manager' ]
+55 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-service-manager' }
+56 silly runScriptInPackageStreaming [ 'build', [], 'webiny-sql-table-mysql' ]
+57 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-sql-table-mysql' }
+58 silly runScriptInPackageStreaming [ 'build', [], 'webiny-sql-table-sync' ]
+59 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-sql-table-sync' }
+60 silly runScriptInPackageStreaming [ 'build', [], 'webiny-sql-table' ]
+61 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-sql-table' }
+62 silly runScriptInPackageStreaming [ 'build', [], 'webiny-validation' ]
+63 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-validation' }
+64 error execute callback with error
+65 error Error: Command failed: yarn run build
+65 error SyntaxError: src/index.js: Unexpected token, expected , (47:17)
+65 error   45 |         const parts = data.translation.split(/({.*?})/);
+65 error   46 |         return (
+65 error > 47 |             <i18n-text>
+65 error      |                  ^
+65 error   48 |                 {parts.map((part, index) => (
+65 error   49 |                     <i18n-text-part key={index}>
+65 error   50 |                         {processTextPart(part, data.values, data.i18n.modifiers)}
+65 error error Command failed with exit code 1.
+65 error
+65 error $ babel src -d lib --source-maps --copy-files
+65 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+65 error
+65 error     at Promise.all.then.arr (/Users/adrian/dev/webiny-js/node_modules/execa/index.js:236:11)
+65 error     at <anonymous>

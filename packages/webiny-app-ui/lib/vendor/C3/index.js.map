@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../src/vendor/C3/index.js"],"names":[],"mappings":";;;;;;AAAA;;AACA","file":"index.js","sourcesContent":["import './styles.scss?extract';\nimport c3 from 'c3';\n\nexport default c3;"]}

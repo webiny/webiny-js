@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../src/vendor/OwlCarousel/index.js"],"names":[],"mappings":";;AAAA;;AACA","file":"index.js","sourcesContent":["import './styles.scss?extract';\nimport 'imports-loader?$=jquery!owl.carousel';"]}

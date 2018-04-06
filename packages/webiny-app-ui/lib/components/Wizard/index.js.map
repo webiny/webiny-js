@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../src/components/Wizard/index.js"],"names":["Step"],"mappings":";;;;;;AAAA;;;;AACA;;;;;;AAEA,iBAAOA,IAAP","file":"index.js","sourcesContent":["import Wizard from './Wizard';\nimport Step from './Step';\n\nWizard.Step = Step;\n\nexport default Wizard;"]}

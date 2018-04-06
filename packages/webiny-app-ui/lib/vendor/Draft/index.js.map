@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../src/vendor/Draft/index.js"],"names":[],"mappings":";;;;;;AAAA;;AACA","file":"index.js","sourcesContent":["import './styles.scss?extract';\nimport Draft from 'draft-js';\n\nexport default Draft;"]}

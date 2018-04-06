@@ -13,7 +13,7 @@ class Identity2RoleTable extends MySQLTable {
             .char(24)
             .setNotNull();
 
-        this.index("unique").unique("identity", "role");
+        this.index().key("identity", "role", "deleted");
     }
 }
 

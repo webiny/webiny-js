@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../src/vendor/Moment/index.js"],"names":[],"mappings":";;;;;;AAAA","file":"index.js","sourcesContent":["import moment from 'moment';\n\nexport default moment;"]}

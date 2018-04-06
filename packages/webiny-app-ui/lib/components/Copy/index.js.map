@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../src/components/Copy/index.js"],"names":["Input","Button"],"mappings":";;;;;;AAAA;;;;AACA;;;;;;kBAEe;AACXA,8BADW;AAEXC;AAFW,C","file":"index.js","sourcesContent":["import CopyInput from './CopyInput';\nimport CopyButton from './CopyButton';\n\nexport default {\n    Input: CopyInput,\n    Button: CopyButton\n};\n"]}

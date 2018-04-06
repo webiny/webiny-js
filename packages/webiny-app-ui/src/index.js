@@ -87,6 +87,10 @@ const app = () => {
                 factory: () => import("./components/Data")
             },
             {
+                name: "Date",
+                factory: () => import("./components/Date")
+            },
+            {
                 name: "DelayedOnChange",
                 factory: () => import("./components/DelayedOnChange")
             },
@@ -293,6 +297,10 @@ const app = () => {
             {
                 name: "Vendor.Select2",
                 factory: () => import("./vendor/Select2")
+            },
+            {
+                name: "Vendor.FlatPickr",
+                factory: () => import("./vendor/FlatPickr")
             }
         ]);
 

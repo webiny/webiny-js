@@ -114,7 +114,7 @@ describe("search test", function() {
             page: 3,
             perPage: 7,
             query: { age: { $lte: 30 } },
-            order: [["createdOn", -1], ["id", 1]],
+            sort: { createdOn: -1, id: 1 },
             search: {
                 query: "this is",
                 fields: ["name", "slug"],

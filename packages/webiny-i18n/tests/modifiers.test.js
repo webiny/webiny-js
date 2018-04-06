@@ -2,6 +2,10 @@
 import { assert } from "chai";
 
 import i18n from "./..";
+import defaultProcessor from "./../src/processors/default";
+
+i18n.registerProcessor(defaultProcessor);
+
 const t = i18n.namespace("Random.Namespace");
 
 let text = null;

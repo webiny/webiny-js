@@ -1,0 +1,17 @@
+{
+    "presets": [
+        ["babel-preset-env", {
+            "targets": {
+                "node": "6.10"
+            }
+        }],
+        "babel-preset-flow",
+        "babel-preset-react"
+    ],
+    "plugins": [
+        ["babel-plugin-transform-object-rest-spread", {"useBuiltIns": true}],
+        ["babel-plugin-transform-builtin-extend", {"globals": ["Error"]}],
+        ["babel-plugin-transform-runtime"],
+        ["babel-plugin-dynamic-import-node"]
+    ]
+}

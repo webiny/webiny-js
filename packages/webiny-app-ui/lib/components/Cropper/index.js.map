@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../src/components/Cropper/index.js"],"names":["Modal","Inline"],"mappings":";;;;;;AAAA;;;;AACA;;;;;;kBAEe;AACXA,iCADW;AAEXC;AAFW,C","file":"index.js","sourcesContent":["import ModalCropper from './ModalCropper';\nimport InlineCropper from './InlineCropper';\n\nexport default {\n    Modal: ModalCropper,\n    Inline: InlineCropper\n};"]}

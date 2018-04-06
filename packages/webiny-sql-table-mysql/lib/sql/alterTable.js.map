@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../src/sql/alterTable.js"],"names":["table","getName"],"mappings":";;;;;;kBAGgBA,KAAD,IAA0B;AACrC,WAAQ,iBAAgBA,MAAMC,OAAN,EAAgB,IAAxC;AACH,C","file":"alterTable.js","sourcesContent":["// @flow\nimport type { Table } from \"webiny-sql-table\";\n\nexport default (table: Table): string => {\n    return `ALTER TABLE \\`${table.getName()}\\``;\n};\n"]}

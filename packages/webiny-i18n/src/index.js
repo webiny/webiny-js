@@ -4,7 +4,7 @@ import hash from "short-hash";
 import fecha from "fecha";
 import accounting from "accounting";
 
-import type { Modifier } from "./../types";
+import type { Modifier, Processor } from "./../types";
 
 import modifiers from "./modifiers";
 
@@ -16,6 +16,7 @@ class I18N {
     defaultFormats: Object;
     translations: Object;
     modifiers: Object;
+    processors: Object;
 
     constructor() {
         this.locale = null;
@@ -39,9 +40,16 @@ class I18N {
          */
         this.modifiers = {};
         this.registerModifiers(modifiers);
+
+        /**
+         * All registered processors.
+         * Default built-in processors are registered immediately below.
+         * @type {{}}
+         */
+        this.processors = {};
     }
 
-    translate(base: string, namespace: ?string): string | Function {
+    translate(base: string, namespace: ?string): mixed | Function {
         // Returns full translation for given base text in given namespace (optional).
         // If translation isn't found, base text will be returned.
         // We create a key out of given namespace and base text.
@@ -59,13 +67,25 @@ class I18N {
         }
 
         const hasVariables = base.includes("{") && base.includes("}");
-        if (!hasVariables) {
-            return translation;
+        if (hasVariables) {
+            return (values: Object) => {
+                const data = { translation, base, namespace, values, i18n: this };
+                for (let key in this.processors) {
+                    if (this.processors[key].canExecute(data)) {
+                        return this.processors[key].execute(data);
+                    }
+                }
+                return null;
+            };
         }
 
-        return (values: Object) => {
-            return this.__replaceVariables(translation, values);
-        };
+        const data = { translation, base, namespace, values: {}, i18n: this };
+        for (let key in this.processors) {
+            if (this.processors[key].canExecute(data)) {
+                return this.processors[key].execute(data);
+            }
+        }
+        return null;
     }
 
     namespace(namespace: string): Function {
@@ -297,6 +317,35 @@ class I18N {
     }
 
     /**
+     * Registers single processor.
+     * @returns {I18N}
+     */
+    registerProcessor(processor: Processor): I18N {
+        this.processors[processor.name] = processor;
+        return this;
+    }
+
+    /**
+     * Registers all processors in given array.
+     * @param processors
+     * @returns {I18N}
+     */
+    registerProcessors(processors: Array<Processor>): I18N {
+        processors.forEach(processor => this.registerProcessor(processor));
+        return this;
+    }
+
+    /**
+     * Unregisters given processor.
+     * @param name
+     * @returns {I18N}
+     */
+    unregisterProcessor(name: string): I18N {
+        delete this.processors[name];
+        return this;
+    }
+
+    /**
      * Returns default formats
      * @returns {{date: string, time: string, datetime: string, number: string}}
      */
@@ -353,60 +402,6 @@ class I18N {
      */
     getNumberFormat(): Object {
         return _.assign({}, this.defaultFormats.number, _.get(this.locale, "formats.number", {}));
-    }
-
-    __replaceVariables(text: string, values: Object): string {
-        const parts = text.split(/({.*?})/);
-        return parts.reduce((carry, part) => carry + this.__processTextPart(part, values), "");
-    }
-
-    __processTextPart(part: string, values: Object): string {
-        // If not a variable, but an ordinary text, just return it, we don't need to do any extra processing with it.
-        if (!_.startsWith(part, "{")) {
-            return part;
-        }
-
-        part = _.trim(part, "{}");
-        part = part.split("|");
-
-        let [variable, modifier] = part;
-
-        if (!_.has(values, variable)) {
-            return `{${variable}}`;
-        }
-
-        // Check if we have received {value: ..., format: ...} object.
-        const output = { value: values[variable], format: null };
-
-        // If variable value is an object, the it must have 'value' key set.
-        // We must also be sure we are not dealing with React component.
-        if (_.isPlainObject(output.value) /* && !React.isValidElement(output.value)*/) {
-            if (!_.has(output.value, "value")) {
-                throw Error(`Key "value" is missing for variable {${variable}}.`);
-            }
-
-            // Before assigning real value, let's check if we have a custom formatter set.
-            if (_.isFunction(output.value.format)) {
-                output.format = output.value.format;
-            }
-
-            output.value = output.value.value;
-        }
-
-        if (modifier) {
-            let parameters = modifier.split(":");
-            let name = parameters.shift();
-            if (this.modifiers[name]) {
-                const modifier = this.modifiers[name];
-                output.value = modifier.execute(output.value, parameters);
-            }
-        }
-
-        if (output.format) {
-            return output.format(output.value);
-        }
-
-        return output.value;
     }
 }
 
