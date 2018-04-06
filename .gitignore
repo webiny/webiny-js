@@ -4,6 +4,6 @@ node_modules
 .DS_Store
 coverage
 .nyc_output
-packages-*/*/lib
+packages/*/lib
 dist/
 examples/api/dist/
