@@ -1,19 +1,16 @@
 // @flow
-import { App } from "webiny-api";
-import PagesEndpoint from "./endpoints/pages";
-import CategoriesEndpoint from "./endpoints/categories";
+import Page from "./entities/page.entity";
+import Category from "./entities/category.entity";
+import Revision from "./entities/revision.entity";
 
-class CMS extends App {
-    constructor() {
-        super();
+export default () => {
+    return ({ app }: Object, next: Function) => {
+        app.graphql.schema(schema => {
+            schema.crud(Page);
+            schema.crud(Category);
+            schema.crud(Revision);
+        });
 
-        this.name = "CMS";
-
-        this.endpoints = [
-            PagesEndpoint,
-            CategoriesEndpoint
-        ];
-    }
-}
-
-export default CMS;
+        next();
+    };
+};

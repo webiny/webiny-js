@@ -68,7 +68,6 @@
     "test": "scripts/test.js"
   },
   "pre-commit": [
-    "flow",
     "lint-staged",
     "test"
   ],
