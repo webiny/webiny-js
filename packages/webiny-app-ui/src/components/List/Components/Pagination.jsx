@@ -1,12 +1,11 @@
-import React from 'react';
-import _ from 'lodash';
+import React from "react";
+import _ from "lodash";
 import classSet from "classnames";
-import { createComponent, i18n } from 'webiny-app';
-import styles from '../styles.css';
+import { createComponent, i18n } from "webiny-app";
+import styles from "../styles.css";
 
 const t = i18n.namespace("Webiny.Ui.List.Pagination");
 class Pagination extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -26,8 +25,8 @@ class Pagination extends React.Component {
         const tp = this.props.totalPages;
         let showLowDots = false;
         let showHighDots = false;
-        const showPages = this.props.size === 'large' ? 9 : 7;
-        const padding = this.props.size === 'large' ? 2 : 1;
+        const showPages = this.props.size === "large" ? 9 : 7;
+        const padding = this.props.size === "large" ? 2 : 1;
 
         let pages = [];
         if (tp <= showPages) {
@@ -61,12 +60,12 @@ class Pagination extends React.Component {
         }
 
         return _.map(pages, (page, i) => {
-            const key = page !== null ? page + '-' + i : 'dots-' + i;
+            const key = page !== null ? page + "-" + i : "dots-" + i;
             const onClick = page !== null ? this.pageChanged.bind(this, page) : null;
             const className = cp === page ? this.props.styles.active : null;
             return (
                 <li key={key} className={className} onClick={onClick}>
-                    <a href="javascript:void(0);">{page || '...'}</a>
+                    <a href="javascript:void(0);">{page || "..."}</a>
                 </li>
             );
         });
@@ -84,20 +83,14 @@ class Pagination extends React.Component {
         const { Grid, styles } = this.props;
         const cp = parseInt(this.props.currentPage);
         const previousPage = cp === 1 ? null : this.pageChanged.bind(this, cp - 1);
-        const previousClasses = classSet(
-            styles.previous,
-            {
-                [styles.disabled]: cp === 1
-            }
-        );
+        const previousClasses = classSet(styles.previous, {
+            [styles.disabled]: cp === 1
+        });
 
         const nextPage = cp === this.props.totalPages ? null : this.pageChanged.bind(this, cp + 1);
-        const nextClasses = classSet(
-            styles.next,
-            {
-                [styles.disabled]: cp === this.props.totalPages
-            }
-        );
+        const nextClasses = classSet(styles.next, {
+            [styles.disabled]: cp === this.props.totalPages
+        });
 
         return (
             <webiny-list-pagination>
@@ -106,7 +99,7 @@ class Pagination extends React.Component {
                         <ul className={classSet(styles.pagination)}>
                             <li className={previousClasses} onClick={previousPage}>
                                 <a href="javascript:void(0)">
-                                    <span className="icon icon-caret-down"/>
+                                    <span className="icon icon-caret-down" />
                                     <span>{t`PREVIOUS`}</span>
                                 </a>
                             </li>
@@ -114,14 +107,16 @@ class Pagination extends React.Component {
                             <li className={nextClasses} onClick={nextPage}>
                                 <a href="javascript:void(0)">
                                     <span>{t`NEXT`}</span>
-                                    <span className="icon icon-caret-down"/>
+                                    <span className="icon icon-caret-down" />
                                 </a>
                             </li>
                         </ul>
                     </Grid.Col>
                     <Grid.Col all={12}>
                         {this.props.renderPerPage.call(this)}
-                        <span>Total number of records: <strong>{this.props.totalCount}</strong></span>
+                        <span>
+                            Total number of records: <strong>{this.props.totalCount}</strong>
+                        </span>
                     </Grid.Col>
                 </Grid.Row>
             </webiny-list-pagination>
@@ -138,18 +133,33 @@ Pagination.defaultProps = {
     perPageOptions: [10, 25, 50, 100],
     count: 0,
     totalCount: 0,
-    size: 'large', // large or small
+    size: "large", // large or small
     renderPerPage() {
         const { Dropdown, perPageOptions } = this.props;
         return (
-            <Dropdown title={<span><strong>{this.props.perPage}</strong> per page</span>} type="balloon">
-                <Dropdown.Header title={t`Results per page`}/>
+            <Dropdown
+                title={
+                    <span>
+                        <strong>{this.props.perPage}</strong> per page
+                    </span>
+                }
+                type="balloon"
+            >
+                <Dropdown.Header title={t`Results per page`} />
                 {perPageOptions.map(option => (
-                    <Dropdown.Link key={option} title={option} onClick={() => this.props.onPerPageChange(option)}/>
+                    <Dropdown.Link
+                        key={option}
+                        title={option}
+                        onClick={() => this.props.onPerPageChange(option)}
+                    />
                 ))}
             </Dropdown>
         );
     }
 };
 
-export default createComponent(Pagination, { modules: ['Grid', 'Dropdown'], styles });
+export default createComponent(Pagination, {
+    modules: ["Grid", "Dropdown"],
+    styles,
+    listPaginationComponent: true
+});

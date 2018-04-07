@@ -1,1 +1,0 @@
-{"version":3,"sources":["../src/index.js"],"names":["default"],"mappings":";;;;;;;;;;;yCAASA,O;;;;;;;;;6CACAA,O;;;;;;;;;6CACAA,O","file":"index.js","sourcesContent":["export { default as Page } from \"./entities/page.entity\";\nexport { default as Category } from \"./entities/category.entity\";\nexport { default as Revision } from \"./entities/revision.entity\";\n"]}

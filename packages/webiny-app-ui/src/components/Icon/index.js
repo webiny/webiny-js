@@ -1,48 +1,49 @@
-import React from 'react';
-import _ from 'lodash';
-import { createComponent } from 'webiny-app';
-import classSet from "classnames";
+import React from "react";
+import { createComponent } from "webiny-app";
+import FontAwesomeIcon from "@fortawesome/react-fontawesome";
 import styles from "./styles.css";
 
 class Icon extends React.Component {
     render() {
-        if (this.props.render) {
-            return this.props.render.call(this);
-        }
+        const { styles, type, onClick, render, ...props } = this.props;
 
-        const { styles, icon, className, element, onClick } = this.props;
-        let iconSet = 'icon';
-        if (_.includes(icon, 'fa-')) {
-            iconSet = 'fa icon';
+        if (render) {
+            return render.call(this);
         }
 
         const typeClasses = {
-            default: '',
+            default: "",
             danger: styles.danger,
             success: styles.success,
             info: styles.info,
-            warning: styles.warning,
+            warning: styles.warning
         };
 
-        const sizeClasses = {
-            default: '',
-            '2x': styles.size2x,
-            '3x': styles.size3x,
-            '4x': styles.size4x
-        };
-
-        const classes = classSet(iconSet, icon, className, sizeClasses[this.props.size], typeClasses[this.props.type]);
-
-        return React.createElement(element, { className: classes, onClick });
+        return (
+            <span className="icon" onClick={onClick}>
+                <FontAwesomeIcon {...props} className={typeClasses[type]} />
+            </span>
+        );
     }
 }
 
 Icon.defaultProps = {
+    border: false,
+    className: "",
+    mask: null,
+    fixedWidth: false,
+    flip: null,
     icon: null,
-    className: null,
-    element: 'span', // span || i
-    type: 'default',
-    size: 'default'
+    listItem: false,
+    pull: null,
+    pulse: false,
+    name: "",
+    rotation: null,
+    size: null,
+    spin: false,
+    symbol: false,
+    transform: null,
+    type: "default"
 };
 
 export default createComponent(Icon, { styles });

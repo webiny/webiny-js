@@ -1,5 +1,8 @@
 // @flow
 import { app } from "webiny-app";
+import debug from "debug";
+
+const log = debug("webiny-app-security");
 
 /**
  * Authentication middleware factory.
@@ -22,6 +25,12 @@ export default (options: { onNotAuthenticated: Function }) => {
         try {
             params.route.identity = await app.services.get("authentication").authenticate();
         } catch (e) {
+            if (e.name === "AuthenticationError") {
+                log(`${e.name}: ${e.message}`);
+            } else {
+                console.error(e);
+            }
+
             if (typeof options.onNotAuthenticated === "function") {
                 return await options.onNotAuthenticated(params, next, finish);
             }

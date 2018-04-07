@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../src/mysql/index.js"],"names":["default"],"mappings":";;;;;;;;;;;yCAASA,O;;;;;;;;;6CACAA,O;;;;;;;;;6CACAA,O","file":"index.js","sourcesContent":["export { default as PageTable } from \"./page.mysql\";\nexport { default as RevisionTable } from \"./revision.mysql\";\nexport { default as CategoryTable } from \"./category.mysql\";\n"]}

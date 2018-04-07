@@ -121,8 +121,6 @@ FormComponent.defaultProps = {
             return null;
         }
 
-        !this.props.name && console.log(this.props);
-
         return (
             <FormGroup.ValidationMessage show={!success}>
                 {this.state.validationMessage}

@@ -39,7 +39,7 @@ class EditAction extends React.Component {
 
 EditAction.defaultProps = {
     label: 'Edit',
-    icon: 'icon-pencil'
+    icon: ['fas', 'pencil-alt']
 };
 
 export default createComponent(EditAction, { modules: ['Link', 'Icon'] });

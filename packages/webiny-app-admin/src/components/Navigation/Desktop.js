@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 import classSet from "classnames";
-import { app, createComponent } from 'webiny-app';
-import _ from 'lodash';
-import utils from './utils';
+import { app, createComponent } from "webiny-app";
+import _ from "lodash";
+import utils from "./utils";
 
 class Desktop extends React.Component {
     constructor(props) {
@@ -11,13 +11,13 @@ class Desktop extends React.Component {
         this.state = {};
         this.onClick = this.onClick.bind(this);
 
-        this.menu = app.services.get('menu');
+        this.menu = app.services.get("menu");
 
         /**
          * Menu renderer passed to <Menu>.
          * Note that `this` is still bound to `Desktop` class since we are passing an arrow function.
          */
-        this.renderer = (menu) => {
+        this.renderer = menu => {
             const props = _.clone(menu.props);
             if (!utils.canAccess(props)) {
                 return null;
@@ -25,17 +25,27 @@ class Desktop extends React.Component {
 
             const children = React.Children.toArray(props.children);
             const hasChildren = children.length > 0;
-            const { Link } = this.props;
-
-            const menuIconClass = classSet('icon app-icon', { 'fa': _.includes(props.icon, 'fa-') }, props.icon);
+            const { Link, Icon } = this.props;
 
             const linkProps = {
                 key: props.id,
                 label: props.label,
                 children: [
-                    props.icon ? <span key="icon" className={menuIconClass}/> : null,
-                    props.level > 1 ? props.label : <span key="title" className="app-title">{props.label}</span>,
-                    hasChildren && props.level > 0 ? <span key="caret" className="icon icon-caret-down"/> : null
+                    props.icon ? (
+                        <span key={"icon"} className={"icon app-icon"}>
+                            <Icon icon={props.icon} />
+                        </span>
+                    ) : null,
+                    props.level > 1 ? (
+                        props.label
+                    ) : (
+                        <span key="title" className="app-title">
+                            {props.label}
+                        </span>
+                    ),
+                    hasChildren && props.level > 0 ? (
+                        <span key="caret" className="icon icon-caret-down" />
+                    ) : null
                 ]
             };
 
@@ -65,13 +75,11 @@ class Desktop extends React.Component {
                 <li className={className} key={props.id} onClick={() => this.onClick(menu)}>
                     {utils.getLink(props.route, Link, linkProps)}
                     {hasChildren && (
-                        <ul className={'level-' + (props.level + 1)}>
-                            {childMenuItems}
-                        </ul>
+                        <ul className={"level-" + (props.level + 1)}>{childMenuItems}</ul>
                     )}
                 </li>
             );
-        }
+        };
     }
 
     componentDidMount() {
@@ -87,15 +95,15 @@ class Desktop extends React.Component {
     render() {
         return (
             <div className="navigation">
-                <div className="shield"/>
+                <div className="shield" />
                 <div className="main-menu">
                     <ul className="menu-list level-0">
-                        {this.menu.getMenu().map(menu => (
+                        {this.menu.getMenu().map(menu =>
                             React.cloneElement(menu, {
                                 key: menu.props.id,
                                 render: this.renderer
                             })
-                        ))}
+                        )}
                     </ul>
                 </div>
             </div>
@@ -103,4 +111,4 @@ class Desktop extends React.Component {
     }
 }
 
-export default createComponent(Desktop, { modules: ['Link'] });
+export default createComponent(Desktop, { modules: ["Link", "Icon"] });

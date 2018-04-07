@@ -1,7 +1,7 @@
 import React from "react";
 import { i18n, createComponent } from "webiny-app";
 
-const t = i18n.namespace("Webiny.Skeleton.Layout.Dashboard");
+const t = i18n.namespace("Webiny.Admin.Layout.Dashboard");
 class Dashboard extends React.Component {
     render() {
         const { View } = this.props;

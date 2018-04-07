@@ -36,7 +36,7 @@ class Revision extends Entity {
     }
 }
 
-Revision.classId = "Cms.Revision";
+Revision.classId = "CmsRevision";
 Revision.tableName = "Cms_Revisions";
 
 export default Revision;

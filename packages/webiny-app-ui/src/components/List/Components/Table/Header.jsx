@@ -1,7 +1,7 @@
-import React from 'react';
-import { createComponent } from 'webiny-app';
+import React from "react";
+import { createComponent } from "webiny-app";
 import classSet from "classnames";
-import styles from '../../styles.css';
+import styles from "../../styles.css";
 
 class Header extends React.Component {
     constructor(props) {
@@ -32,21 +32,28 @@ class Header extends React.Component {
         }
 
         let classes = {};
-        if(this.props.sorted && this.props.sorted !== 0){
+        if (this.props.sorted && this.props.sorted !== 0) {
             classes[styles.sorted] = true;
         }
 
-        classes[this.props.alignLeftClass] = this.props.align === 'left';
-        classes[this.props.alignRightClass] = this.props.align === 'right';
-        classes[this.props.alignCenterClass] = this.props.align === 'center';
+        classes[this.props.alignLeftClass] = this.props.align === "left";
+        classes[this.props.alignRightClass] = this.props.align === "right";
+        classes[this.props.alignCenterClass] = this.props.align === "center";
 
-        const sortIcon = {};
-        sortIcon[this.props.sortedAscendingIcon] = this.props.sorted === 1;
-        sortIcon[this.props.sortedDescendingIcon] = this.props.sorted === -1;
-        sortIcon[this.props.sortableIcon] = this.props.sorted === 0;
+        let sortIcon;
+        switch (this.props.sorted) {
+            case 1:
+                sortIcon = this.props.sortedAscendingIcon;
+                break;
+            case -1:
+                sortIcon = this.props.sortedDescendingIcon;
+                break;
+            default:
+                sortIcon = this.props.sortableIcon;
+        }
 
-        const {Icon} = this.props;
-        const icon = this.props.sortable ? <Icon icon={classSet(sortIcon)}/> : null;
+        const { Icon } = this.props;
+        const icon = this.props.sortable ? <Icon icon={sortIcon} /> : null;
 
         let content = this.props.label;
         if (this.props.sortable) {
@@ -68,13 +75,13 @@ class Header extends React.Component {
 }
 
 Header.defaultProps = {
-    align: 'left',
-    alignLeftClass: 'text-left',
-    alignRightClass: 'text-right',
-    alignCenterClass: 'text-center',
-    sortedAscendingIcon: 'icon-caret-up',
-    sortedDescendingIcon: 'icon-caret-down',
-    sortableIcon: 'icon-sort'
+    align: "left",
+    alignLeftClass: "text-left",
+    alignRightClass: "text-right",
+    alignCenterClass: "text-center",
+    sortedAscendingIcon: ["fas", "sort-up"],
+    sortedDescendingIcon: ["fas", "sort-down"],
+    sortableIcon: ["fas", "sort"]
 };
 
-export default createComponent(Header, {modules: ['Icon'], styles});
+export default createComponent(Header, { modules: ["Icon"], styles });

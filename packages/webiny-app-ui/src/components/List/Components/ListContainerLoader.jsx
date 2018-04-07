@@ -7,7 +7,7 @@ class ListContainerLoader extends React.Component {
             return this.props.render.call(this);
         }
 
-        if (!this.props.show) {
+        if (!this.props.loading) {
             return null;
         }
 
@@ -20,4 +20,4 @@ class ListContainerLoader extends React.Component {
     }
 }
 
-export default createComponent(ListContainerLoader, { modules: ['Loader'] });
+export default createComponent(ListContainerLoader, { modules: ['Loader'], listLoaderComponent: true });

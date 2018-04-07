@@ -1,6 +1,5 @@
 import React from 'react';
 import _ from 'lodash';
-import { createComponent } from 'webiny-app';
 import ModalAction from './ModalAction';
 
 class EditModalAction extends React.Component {
@@ -23,7 +22,8 @@ class EditModalAction extends React.Component {
 }
 
 EditModalAction.defaultProps = {
-    label: 'Edit'
+    label: 'Edit',
+    icon: ['fas', 'pencil-alt']
 };
 
 export default EditModalAction;

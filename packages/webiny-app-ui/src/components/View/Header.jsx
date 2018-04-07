@@ -5,7 +5,7 @@ import styles from './styles.css';
 class Header extends React.Component {
     render() {
         if (this.props.render) {
-            return this.props.render.call(this);
+            return this.props.render.call(this, {props: this.props, $this: this});
         }
         const { styles } = this.props;
 

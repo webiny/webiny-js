@@ -38,6 +38,10 @@ class Model {
                 return true;
             },
             get: (instance: Model, key: string) => {
+                if (["classId"].includes(key)) {
+                    return instance.constructor[key];
+                }
+
                 const attr = instance.getAttribute(key);
                 if (attr) {
                     return attr.getValue();

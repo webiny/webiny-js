@@ -9,13 +9,13 @@ class ServiceManager {
     }
 
     /**
-     * Add service
+     * Register a service
      * @param name
      * @param factory
      * @param singleton
      * @param tags
      */
-    add(
+    register(
         name: string,
         factory: Function,
         singleton: boolean = true,

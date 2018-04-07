@@ -1,39 +1,34 @@
 // @flow
-import { app, App } from "webiny-api";
-import BaseAuthEndpoint from "./endpoints/auth";
-import generateEndpoint from "./endpoints/generator";
-import { AuthenticationService, AuthorizationService } from "./index";
+import { User, Role, Permission, RoleGroup } from "./index";
+import AuthenticationService from "./services/authentication";
+import AuthorizationService from "./services/authorization";
 import registerAttributes from "./attributes/registerAttributes";
-import UsersEndpoint from "./endpoints/users";
-import PermissionsEndpoint from "./endpoints/permissions";
-import RolesEndpoint from "./endpoints/roles";
-import RoleGroupsEndpoint from "./endpoints/roleGroups";
-import type { Entity } from "webiny-entity";
+import createLoginQueries from "./utils/createLoginQueries";
+import attachAuthorization from "./utils/attachAuthorization";
 
-class Security extends App {
-    constructor(config: Object) {
-        super();
-
-        this.name = "Security";
-        app.services.add("authentication", () => new AuthenticationService(config.authentication));
-        app.services.add("authorization", () => new AuthorizationService());
-
-        this.endpoints = [
-            generateEndpoint(
-                BaseAuthEndpoint,
-                config.authentication,
-                app.services.get("authentication")
-            ),
-            UsersEndpoint,
-            PermissionsEndpoint,
-            RoleGroupsEndpoint,
-            RolesEndpoint
-        ];
-
+export default (config: Object = {}) => {
+    return ({ app }: Object, next: Function) => {
+        app.services.register(
+            "authentication",
+            () => new AuthenticationService(config.authentication)
+        );
+        app.services.register("authorization", () => new AuthorizationService());
         registerAttributes(app.services.get("authentication"));
 
+        app.graphql.schema(schema => {
+            schema.crud(User);
+            schema.crud(Role);
+            schema.crud(RoleGroup);
+            schema.crud(Permission);
+
+            // Create login queries
+            createLoginQueries(app, config, schema);
+        });
+
+        attachAuthorization(app);
+
         // Helper attributes
-        this.extendEntity("*", (entity: Entity) => {
+        /*this.extendEntity("*", (entity: Entity) => {
             // "savedBy" attribute - updated on both create and update events.
             entity.attr("savedByClassId").char();
             entity.attr("savedBy").identity({ classIdAttribute: "savedByClassId" });
@@ -61,8 +56,8 @@ class Security extends App {
                     entity.createdBy = identity;
                 }
             });
-        });
-    }
-}
+        });*/
 
-export default Security;
+        next();
+    };
+};

@@ -1,5 +1,5 @@
-import React from 'react';
-import { createComponent } from 'webiny-app';
+import React from "react";
+import { createComponent } from "webiny-app";
 
 class Filters extends React.Component {
     render() {
@@ -18,4 +18,4 @@ class Filters extends React.Component {
     }
 }
 
-export default createComponent(Filters);
+export default createComponent(Filters, { listFiltersComponent: true });

@@ -14,11 +14,15 @@ class Category extends Entity {
             .char()
             .setValidators("required");
 
+        this.attr("url")
+            .char()
+            .setValidators("required");
+
         this.attr("pages").entities(Page);
     }
 }
 
-Category.classId = "Cms.Category";
+Category.classId = "CmsCategory";
 Category.tableName = "Cms_Categories";
 
 export default Category;

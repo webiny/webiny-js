@@ -37,7 +37,7 @@ const generatePath = (pattern = "/", params = {}) => {
     const query = {};
     const paramKeys = Object.keys(params);
     paramKeys.map(p => {
-        if (!_.find(patternParams, { name: p })) {
+        if (!_.find(patternParams, { name: p }) && !_.isNil(params[p]) && params[p] !== "") {
             query[p] = params[p];
         }
     });

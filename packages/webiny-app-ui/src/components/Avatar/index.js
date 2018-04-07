@@ -164,7 +164,7 @@ class Avatar extends React.Component {
         const imageAction = (
             <Button
                 type="primary"
-                icon="fa-upload"
+                icon={['fa', 'upload']}
                 onClick={this.getFiles}
                 className={styles.uploadBtn}
             >

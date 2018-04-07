@@ -28,7 +28,7 @@ class Page extends Entity {
     }
 }
 
-Page.classId = "Cms.Page";
+Page.classId = "CmsPage";
 Page.tableName = "Cms_Pages";
 
 export default Page;

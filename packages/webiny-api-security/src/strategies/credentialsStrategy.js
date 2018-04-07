@@ -1,5 +1,6 @@
 // @flow
 import bcrypt from "bcryptjs";
+import { GraphQLString, GraphQLBoolean, GraphQLNonNull } from "graphql";
 import type { Identity } from "../index";
 import AuthenticationError from "../services/authenticationError";
 
@@ -7,7 +8,7 @@ import AuthenticationError from "../services/authenticationError";
  * Credentials strategy factory
  * @return {function(express$Request, Class<Identity>)}
  */
-export default (options: { usernameAttribute?: string, credentials?: Function } = {}) => {
+export default (options: { usernameAttribute?: string } = {}) => {
     const error = new AuthenticationError(
         "Invalid credentials.",
         AuthenticationError.INVALID_CREDENTIALS
@@ -15,44 +16,45 @@ export default (options: { usernameAttribute?: string, credentials?: Function } 
 
     const config = { ...options };
 
-    // Default credentials provider
-    if (typeof config.credentials !== "function") {
-        config.credentials = req => {
-            return {
-                username: req.body.username,
-                password: req.body.password
-            };
-        };
-    }
-
     if (!config.usernameAttribute) {
-        config.usernameAttribute = "username";
+        config.usernameAttribute = "email";
     }
 
-    /**
-     * Credentials authentication strategy.
-     * It extracts credentials from request and tries loading the identity instance using the provided Identity class.
-     * @param req
-     * @param identity
-     */
-    return (req: express$Request, identity: Class<Identity>): Promise<Identity> => {
-        return new Promise(async (resolve, reject) => {
-            const { username, password } = config.credentials(req);
-            const instance = await identity.findOne({
-                query: { [config.usernameAttribute]: username }
-            });
+    return {
+        args() {
+            return {
+                username: { type: new GraphQLNonNull(GraphQLString) },
+                password: { type: new GraphQLNonNull(GraphQLString) },
+                remember: { type: GraphQLBoolean }
+            };
+        },
+        /**
+         * Credentials authentication strategy.
+         * Tries loading the identity instance using the provided Identity class.
+         * @param args
+         * @param identity
+         */
+        authenticate(
+            args: { username: string, password: string },
+            identity: Class<Identity>
+        ): Promise<Identity> {
+            return new Promise(async (resolve, reject) => {
+                const instance = await identity.findOne({
+                    query: { [config.usernameAttribute]: args.username }
+                });
 
-            if (!instance) {
-                return reject(error);
-            }
-
-            bcrypt.compare(password, instance.password, (err, res) => {
-                if (err || !res) {
+                if (!instance) {
                     return reject(error);
                 }
 
-                resolve(instance);
+                bcrypt.compare(args.password, instance.password, (err, res) => {
+                    if (err || !res) {
+                        return reject(error);
+                    }
+
+                    resolve(instance);
+                });
             });
-        });
+        }
     };
 };

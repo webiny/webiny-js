@@ -457,7 +457,7 @@ class Profile extends React.Component {
 export default createComponent(Profile, {
     modulesProp: "Ui",
     modules: [
-        { AdminLayout: "Skeleton.AdminLayout" },
+        { AdminLayout: "Admin.Layout" },
         "Form",
         "View",
         "Grid",

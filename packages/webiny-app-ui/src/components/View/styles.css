@@ -20,6 +20,10 @@
 	padding: 0px;
 }
 
+.viewContent .panel .panelNoColor {
+	background-color: #f2f2f2;
+}
+
 .viewContent .panel .panelFooter {
 	padding: 25px 35px;
 	background-color: #fff;

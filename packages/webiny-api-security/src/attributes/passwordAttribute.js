@@ -3,8 +3,8 @@ import { CharAttribute } from "webiny-model";
 
 export default () => {
     return class PasswordAttribute extends CharAttribute {
-        constructor() {
-            super();
+        constructor(name, attributesContainer) {
+            super(name, attributesContainer);
 
             this.onSet(value => {
                 if (value) {

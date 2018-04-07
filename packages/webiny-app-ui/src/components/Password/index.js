@@ -8,7 +8,7 @@ class Password extends React.Component {
 
         this.state = {
             showPassword: false,
-            icon: "fa-eye",
+            icon: ['fa', 'eye'],
             msg: t`Show content`
         };
 
@@ -19,13 +19,13 @@ class Password extends React.Component {
         if (this.state.showPassword === true) {
             this.setState({
                 showPassword: false,
-                icon: "fa-eye",
+                icon: ['fa', 'eye'],
                 msg: t`Show content`
             });
         } else {
             this.setState({
                 showPassword: true,
-                icon: "fa-eye-slash",
+                icon: ['fa', 'eye-slash'],
                 msg: t`Hide content`
             });
         }

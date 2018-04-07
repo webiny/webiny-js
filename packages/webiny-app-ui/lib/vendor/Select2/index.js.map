@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../src/vendor/Select2/index.js"],"names":[],"mappings":";;AAAA;;AACA","file":"index.js","sourcesContent":["import './styles.scss?extract';\nimport 'select2';"]}

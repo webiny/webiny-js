@@ -3,10 +3,6 @@ import { createComponent } from 'webiny-app';
 import styles from './../styles.css';
 
 class HeaderRight extends React.Component {
-
-}
-
-HeaderRight.defaultProps = {
     render() {
         if (this.props.render) {
             return this.props.render.call(this);
@@ -20,6 +16,6 @@ HeaderRight.defaultProps = {
             </div>
         );
     }
-};
+}
 
 export default createComponent(HeaderRight, { styles });

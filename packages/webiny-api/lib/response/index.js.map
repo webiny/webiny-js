@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../src/response/index.js"],"names":["ApiResponse","ApiErrorResponse"],"mappings":";;;;;;;AAAA;;;;AACA;;;;;;QAESA,W;QAAaC,gB","file":"index.js","sourcesContent":["import ApiResponse from \"./apiResponse\";\nimport ApiErrorResponse from \"./apiErrorResponse\";\n\nexport { ApiResponse, ApiErrorResponse };\n"]}

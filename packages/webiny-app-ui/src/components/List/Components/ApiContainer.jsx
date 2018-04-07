@@ -1,24 +1,27 @@
-import React from 'react';
-import _ from 'lodash';
-import { app, createComponent, ApiComponent, i18n } from 'webiny-app';
-import BaseContainer from './BaseContainer';
-import sortersToString from './sortersToString';
-import styles from './../styles.css';
+import React from "react";
+import _ from "lodash";
+import debug from "debug";
+import { app, createComponent, ApiComponent, i18n } from "webiny-app";
+import BaseContainer from "./BaseContainer";
+import styles from "./../styles.css";
+
+const log = debug("webiny-app:ApiContainer");
 
 const t = i18n.namespace("Webiny.Ui.List.ApiContainer");
-class ApiContainer extends React.Component {
 
+class ApiContainer extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            loading: false,
             initiallyLoaded: false,
             routerParams: null
         };
 
         this.mounted = false;
 
-        ['loadData', 'recordUpdate', 'recordDelete'].map(m => this[m] = this[m].bind(this));
+        ["loadData", "recordUpdate", "recordDelete"].map(m => (this[m] = this[m].bind(this)));
     }
 
     componentWillMount() {
@@ -30,36 +33,45 @@ class ApiContainer extends React.Component {
                     return;
                 }
                 this.setState({ initiallyLoaded: true });
-                this.props.onInitialLoad({ list: _.get(data, 'list'), meta: _.get(data, 'meta') });
+                this.props.onInitialLoad({ list: _.get(data, "list"), meta: _.get(data, "meta") });
             });
         }
     }
 
+    componentDidUpdate() {
+        log("Did update");
+    }
+
     componentDidMount() {
+        this.props.onReady &&
+            this.props.onReady({
+                reload: this.loadData
+            });
+
         if (this.props.autoRefresh && _.isNumber(this.props.autoRefresh)) {
-            this.autoRefresh = setInterval(() => this.loadData(null, false), 1000 * this.props.autoRefresh);
+            this.autoRefresh = setInterval(
+                () => this.loadData(null, false),
+                1000 * this.props.autoRefresh
+            );
         }
     }
 
     componentWillUnmount() {
         this.mounted = false;
         clearInterval(this.autoRefresh);
-        if (this.request) {
-            // TODO: this.cancelRequest();
-        }
     }
 
     componentWillReceiveProps(props) {
         let shouldLoad = false;
 
-        const propKeys = ['sorters', 'filters', 'perPage', 'page', 'searchQuery', 'searchFields', 'searchOperator'];
+        const propKeys = ["sorters", "filters", "perPage", "page", "search"];
         if (!_.isEqual(_.pick(props, propKeys), _.pick(this.props, propKeys))) {
             shouldLoad = true;
         }
 
         if (this.props.autoLoad && shouldLoad) {
             this.loadData(props).then(data => {
-                this.props.onLoad({ list: _.get(data, 'list'), meta: _.get(data, 'meta') });
+                this.props.onLoad({ list: _.get(data, "list"), meta: _.get(data, "meta") });
             });
         }
     }
@@ -69,91 +81,101 @@ class ApiContainer extends React.Component {
             props = this.props;
         }
 
-        if (this.request) {
-            // TODO: this.cancelRequest();
-        }
+        const variables = {
+            filter: _.pickBy(props.filters, v => !_.isNil(v)),
+            sort: props.sorters || props.initialSorters,
+            perPage: props.perPage,
+            page: props.page
+        };
 
-        const query = _.assign({}, props.query, {
-            _sort: Object.keys(props.sorters).length ? sortersToString(props.sorters) : props.initialSorters,
-            _perPage: props.perPage,
-            _page: props.page,
-            _searchQuery: props.searchQuery,
-            _searchFields: props.searchFields,
-            _searchOperator: props.searchOperator
-        }, props.filters);
+        if (!_.isEmpty(props.search.query)) {
+            variables.search = props.search;
+        }
 
         if (showLoading) {
-            this.props.showLoading();
+            this.setState({ loading: true });
         }
 
-        this.request = props.api.request({ params: query }).then(response => {
-            const { data } = response.data;
-            if (!response.data.code && props.prepareLoadedData) {
-                data.list = props.prepareLoadedData({ list: data.list, meta: data.meta, $this: this });
+        log("Loading data");
+        return props.queries.list({ fields: props.fields, variables }).then(({ error, data }) => {
+            log("Loaded data");
+            if (!error && props.prepareLoadedData) {
+                data.list = props.prepareLoadedData({
+                    list: data.list,
+                    meta: data.meta,
+                    $this: this
+                });
             }
 
-            if (response.data.code) {
-                app.services.get('growler').danger(response.data.message, t`That didn\'t go as expected...`, true);
+            if (error) {
+                app.services
+                    .get("growler")
+                    .danger(error.message, t`That didn\'t go as expected...`, true);
             }
 
             if (this.mounted) {
-                props.setState({ loading: false, ...data, selectedRows: [] });
+                this.setState({ loading: false }, () =>
+                    props.setState({ ...data, selectedRows: [] })
+                );
             }
 
             return data;
         });
-
-        return this.request;
     }
 
-    recordUpdate(id, attributes) {
-        return this.props.api.patch(this.props.api.defaults.url + '/' + id, attributes).then(response => {
-            if (!response.data.code) {
-                this.loadData();
-            } else {
-                app.services.get('growler').danger(response.data.message, t`That didn\'t go as expected...`, true);
-            }
-            return response;
-        });
+    recordUpdate(id, data) {
+        return this.props.queries
+            .update({ fields: this.props.fields, variables: { id, data } })
+            .then(({ error, data }) => {
+                if (!error) {
+                    this.loadData();
+                } else {
+                    app.services
+                        .get("growler")
+                        .danger(error.message, t`That didn\'t go as expected...`, true);
+                }
+                return data;
+            });
     }
 
     recordDelete(id, autoRefresh = true) {
-        return this.props.api.delete(this.props.api.defaults.url + '/' + id).then(response => {
-            if (!response.data.code && autoRefresh) {
-                this.loadData();
-            } else {
-                app.services.get('growler').danger(response.data.message, t`That didn\'t go as expected...`, true);
-            }
-            return response;
-        });
+        return this.props.queries
+            .delete({ fields: this.props.fields, variables: { id } })
+            .then(({ error, data }) => {
+                if (!error && autoRefresh) {
+                    this.loadData();
+                } else {
+                    app.services
+                        .get("growler")
+                        .danger(error.message, t`That didn\'t go as expected...`, true);
+                }
+                return data;
+            });
     }
 
     render() {
+        log("Render begin");
         const content = this.props.getContent(this.props.children);
 
         if (!content) {
             return null;
         }
 
-        if (!this.props.layout) {
-            return <webiny-list>{React.Children.map(content, this.prepareElement, this)}</webiny-list>;
-        }
-
         const layoutProps = {
             ...this.props.prepareList(content, {
+                loading: this.state.loading,
                 actions: {
                     update: this.recordUpdate,
                     delete: this.recordDelete,
-                    reload: this.loadData,
-                    api: this.props.api
+                    reload: this.loadData
                 }
             }),
             list: this.state.list,
-            meta: this.state.meta,
-            container: this
+            meta: this.state.meta
         };
 
-        return this.props.layout.call(this, layoutProps)
+        log("Render layout");
+        return this.props.layout.call(this, layoutProps);
     }
 }
 
@@ -163,19 +185,19 @@ ApiContainer.defaultProps = {
     autoLoad: true,
     autoRefresh: null,
     prepareLoadedData: null,
-    layout({ filters, table, pagination, multiActions, loader }) {
+    layout({ filtersElement, dataElement, paginationElement, multiActionsElement, loaderElement }) {
         const { Grid, styles } = this.props;
         return (
             <webiny-list-layout>
-                {loader}
-                {filters}
-                {table}
+                {loaderElement}
+                {filtersElement}
+                {dataElement}
                 <Grid.Row className={styles.footer}>
                     <Grid.Col sm={4} className={styles.multiAction}>
-                        {multiActions}
+                        {multiActionsElement}
                     </Grid.Col>
                     <Grid.Col sm={8} className={styles.paginationWrapper}>
-                        {pagination}
+                        {paginationElement}
                     </Grid.Col>
                 </Grid.Row>
             </webiny-list-layout>
@@ -183,4 +205,7 @@ ApiContainer.defaultProps = {
     }
 };
 
-export default createComponent([ApiContainer, BaseContainer, ApiComponent], { modules: ['Grid'], styles });
+export default createComponent([ApiContainer, BaseContainer], {
+    modules: ["Grid"],
+    styles
+});

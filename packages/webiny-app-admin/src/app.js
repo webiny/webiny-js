@@ -7,40 +7,40 @@ export default () => {
         Promise.all([
             new Promise(res => uiApp()(params, res)),
         ]).then(() => {
-            app.services.add("menu", () => new Menu());
+            app.services.register("menu", () => new Menu());
 
             app.modules.register([
                 {
-                    name: "Skeleton.AdminLayout",
+                    name: "Admin.Layout",
                     factory: () => import("./components/Layouts/AdminLayout")
                 },
                 {
-                    name: "Skeleton.EmptyLayout",
+                    name: "Admin.EmptyLayout",
                     factory: () => import("./components/Layouts/EmptyLayout")
                 },
                 {
-                    name: "Skeleton.Header",
+                    name: "Admin.Header",
                     factory: () => import("./components/Header")
                 },
                 {
-                    name: "Skeleton.Footer",
+                    name: "Admin.Footer",
                     factory: () => import("./components/Footer")
                 },
                 {
-                    name: "Skeleton.Logo",
+                    name: "Admin.Logo",
                     factory: () => import("./components/Logo"),
                     tags: ['header-component']
                 },
                 {
-                    name: "Skeleton.Navigation",
+                    name: "Admin.Navigation",
                     factory: () => import("./components/Navigation")
                 },
                 {
-                    name: "Skeleton.Navigation.Desktop",
+                    name: "Admin.Navigation.Desktop",
                     factory: () => import("./components/Navigation/Desktop")
                 },
                 {
-                    name: "Skeleton.Navigation.Mobile",
+                    name: "Admin.Navigation.Mobile",
                     factory: () => import("./components/Navigation/Mobile")
                 }
             ]);

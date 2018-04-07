@@ -174,6 +174,10 @@ class EntityAttribute extends Attribute {
         return this.classes.entity.class;
     }
 
+    getEntityClasses() {
+        return this.classes.entity.class;
+    }
+
     getClassIdAttribute(): ?Attribute {
         return this.getParentModel().getAttribute(this.options.classIdAttribute);
     }

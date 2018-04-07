@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../src/components/ViewSwitcher/index.js"],"names":["View"],"mappings":";;;;;;AAAA;;;;AACA;;;;;;AAEA,mBAAaA,IAAb","file":"index.js","sourcesContent":["import ViewSwitcher from './Switcher';\nimport View from './View';\n\nViewSwitcher.View = View;\n\nexport default ViewSwitcher;"]}

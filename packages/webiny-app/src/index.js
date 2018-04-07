@@ -9,6 +9,7 @@ const document = new DocumentUtils();
 export { app, document };
 
 export { default as createComponent } from "./utils/createComponent";
+export { default as linkState } from "./utils/linkState";
 export { default as isElementOfType } from "./utils/isElementOfType";
 export { default as elementHasFlag } from "./utils/elementHasFlag";
 export { default as LazyLoad } from "./components/LazyLoad.cmp";

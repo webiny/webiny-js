@@ -11,6 +11,12 @@ class Actions extends React.Component {
         this.shouldHideItem = this.shouldHideItem.bind(this);
     }
 
+    shouldComponentUpdate(props) {
+        const check = ["data", "hide"];
+
+        return !_.isEqual(_.pick(this.props, check), _.pick(props, check));
+    }
+
     shouldHideItem(item) {
         let hide = item.props.hide || false;
         if (hide) {

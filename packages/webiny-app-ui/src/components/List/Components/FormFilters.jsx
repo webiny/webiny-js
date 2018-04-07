@@ -55,4 +55,4 @@ FormFilters.defaultProps = {
     }
 };
 
-export default createComponent(FormFilters, { modules: ['Form'] });
+export default createComponent(FormFilters, { modules: ['Form'], listFiltersComponent: true });

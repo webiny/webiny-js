@@ -64,8 +64,8 @@ export default createComponent(Navigation, {
     modules: [
         "Link",
         {
-            Desktop: "Skeleton.Navigation.Desktop",
-            Mobile: "Skeleton.Navigation.Mobile"
+            Desktop: "Admin.Navigation.Desktop",
+            Mobile: "Admin.Navigation.Mobile"
         }
     ]
 });

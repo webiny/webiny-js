@@ -7,8 +7,8 @@
     clear: both;
   }
 
-  /** FontAwesome css fix to match behavior from Fontello **/
-  [class^="fa-"]:before, [class*=" fa-"]:before {
+  // Wrapper around <FontAwesome/> React component to help with styling
+  span.icon > svg {
     font-family: "FontAwesome";
     font-style: normal;
     font-weight: normal;

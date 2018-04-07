@@ -48,10 +48,6 @@ class LazyLoad extends React.Component<Props, State> {
     }
 
     render() {
-        if (this.props.render) {
-            return this.props.render.call(this);
-        }
-
         if (this.state.loaded) {
             try {
                 return this.props.children(this.state.modules);

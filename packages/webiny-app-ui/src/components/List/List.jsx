@@ -3,7 +3,7 @@ import ApiContainer from './Components/ApiContainer';
 import StaticContainer from './Components/StaticContainer';
 
 const List = (props) => {
-    return props.api ? <ApiContainer {...props}/> : <StaticContainer {...props}/>;
+    return props.queries ? <ApiContainer {...props}/> : <StaticContainer {...props}/>;
 };
 
 export default List;

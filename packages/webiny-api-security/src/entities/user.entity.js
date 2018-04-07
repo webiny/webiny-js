@@ -22,7 +22,7 @@ class User extends Identity {
     }
 }
 
-User.classId = "Security.User";
+User.classId = "SecurityUser";
 User.tableName = "Security_Users";
 
 export default User;

@@ -28,7 +28,6 @@ class Table extends React.Component {
 
         this.state = {
             selectAll: false,
-            selectedRows: props.selectedRows,
             expandedRows: []
         };
 
@@ -47,15 +46,9 @@ class Table extends React.Component {
         ].map(m => this[m] = this[m].bind(this));
     }
 
-    componentWillMount() {
-        this.tempProps = this.props; // assign props to tempProps to be accessible without passing through method args
-        this.prepareChildren(this.props.children);
-    }
-
-    componentWillReceiveProps(props) {
-        this.setState({ selectedRows: props.selectedRows });
-        this.tempProps = props; // assign props to tempProps to be accessible without passing through method args
-        this.prepareChildren(props.children);
+    shouldComponentUpdate(props) {
+        const check = ['data', 'selectedRows'];
+        return !_.isEqual(_.pick(props, check), _.pick(this.props, check));
     }
 
     attachToTable(row, index) {
@@ -74,22 +67,20 @@ class Table extends React.Component {
 
         this.setState({
             selectAll: selected,
-            selectedRows: data
         }, () => {
             if (this.props.onSelect) {
-                this.props.onSelect(this.state.selectedRows);
+                this.props.onSelect(data);
             }
         });
     }
 
     onSelect(data, selected) {
-        const selectedRows = this.state.selectedRows;
+        const selectedRows = [...this.props.selectedRows];
         if (selected) {
             selectedRows.push(data);
         } else {
             selectedRows.splice(_.findIndex(selectedRows, data), 1);
         }
-        this.setState({ selectedRows });
         this.props.onSelect(selectedRows);
     }
 
@@ -129,7 +120,7 @@ class Table extends React.Component {
 
                     const headerProps = _.omit(rowChild.props, ['render', 'renderHeader']);
                     headerProps.sortable = headerProps.sort || false;
-                    headerProps.sorted = this.tempProps.sorters[headerProps.sort] || 0;
+                    headerProps.sorted = this.props.sorters[headerProps.sort] || 0;
                     headerProps.children = React.Children.map(rowChild.props.children, ch => {
                         if (isElementOfType(ch, FieldInfo)) {
                             return ch;
@@ -193,14 +184,13 @@ class Table extends React.Component {
     renderRow(data, index, element, key) {
         const props = _.omit(element.props, ['children']);
         _.assign(props, {
-            table: this,
             attachToTable: this.attachToTable,
             index,
             key,
             data,
             fieldsCount: this.headers.length + (this.props.onSelect ? 1 : 0),
             expanded: this.state.expandedRows.indexOf(index) > -1,
-            selected: !!_.find(this.state.selectedRows, { id: data.id }),
+            selected: !!_.find(this.props.selectedRows, { id: data.id }),
             sorters: _.clone(this.props.sorters),
             actions: _.assign({}, this.props.actions, {
                 showRowDetails: this.showRowDetails,
@@ -233,6 +223,8 @@ class Table extends React.Component {
             return this.props.render.call(this);
         }
 
+        this.prepareChildren(this.props.children);
+
         const typeClasses = {
             simple: styles.simple
         };
@@ -243,7 +235,7 @@ class Table extends React.Component {
             this.props.className
         ]);
 
-        if (!this.props.data || !this.props.data.length && this.props.showEmpty) {
+        if (!this.props.data || !this.props.data.length && !this.props.loading) {
             return this.emptyElement || <Empty/>;
         }
 
@@ -286,4 +278,4 @@ Table.defaultProps = {
     className: null
 };
 
-export default createComponent(Table, { styles });
+export default createComponent(Table, { styles, listDataComponent: true });

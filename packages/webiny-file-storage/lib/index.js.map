@@ -1,1 +1,0 @@
-{"version":3,"sources":["../src/index.js"],"names":["default"],"mappings":";;;;;;;;;;;4CAASA,O;;;;;;;;;iDACAA,O;;;;;;;;;yCACAA,O","file":"index.js","sourcesContent":["export { default as Storage } from './storage';\nexport { default as StorageError } from './storageError';\nexport { default as File } from './file';"]}

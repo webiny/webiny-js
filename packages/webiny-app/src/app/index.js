@@ -6,6 +6,7 @@ import { ServiceManager } from "webiny-service-manager";
 
 import ModuleLoader from "./ModuleLoader";
 import Router from "./../router/Router";
+import GraphQLCLient from "./../graphql/Client";
 
 const debug = debugFactory("webiny-app");
 
@@ -20,12 +21,14 @@ class App {
     services: ServiceManager;
     router: Router;
     initialized: boolean;
+    graphql: GraphQLCLient;
 
     constructor() {
         this.configurators = [];
         this.modules = new ModuleLoader();
         this.services = new ServiceManager();
         this.router = new Router();
+        this.graphql = new GraphQLCLient();
         this.initialized = false;
         this.configLoader = () => Promise.resolve({});
 

@@ -35,4 +35,4 @@ MultiActions.defaultProps = {
     label: t`With selected...`
 };
 
-export default createComponent(MultiActions, { modules: ['Dropdown'] });
+export default createComponent(MultiActions, { modules: ['Dropdown'], listMultiActionsComponent: true });

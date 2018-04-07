@@ -1,3 +1,8 @@
+import fontawesome from "@fortawesome/fontawesome";
+import solid from "@fortawesome/fontawesome-free-solid";
+import regular from "@fortawesome/fontawesome-free-regular";
+fontawesome.library.add(solid, regular);
+
 if (window) {
     window.jQuery = window.$ = require("jquery");
 }
@@ -18,8 +23,8 @@ export { default as OptionComponent } from "./components/Option/OptionComponent"
 
 const app = () => {
     return ({ app }, next) => {
-        app.services.add("growler", () => growler);
-        app.services.add("modal", () => new ModalService());
+        app.services.register("growler", () => growler);
+        app.services.register("modal", () => new ModalService());
 
         app.modules.register([
             {

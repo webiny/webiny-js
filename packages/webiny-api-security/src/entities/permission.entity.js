@@ -15,7 +15,7 @@ class Permission extends Entity {
     }
 }
 
-Permission.classId = "Security.Permission";
+Permission.classId = "SecurityPermission";
 Permission.tableName = "Security_Permissions";
 
 export default Permission;
@@ -31,7 +31,7 @@ class RuleMethodModel extends Model {
     }
 }
 
-RuleMethodModel.classId = "Security.RuleMethodModel";
+RuleMethodModel.classId = "SecurityRuleMethodModel";
 
 export class RuleModel extends Model {
     constructor() {
@@ -43,4 +43,4 @@ export class RuleModel extends Model {
     }
 }
 
-RuleModel.classId = "Security.RuleModel";
+RuleModel.classId = "SecurityRuleModel";

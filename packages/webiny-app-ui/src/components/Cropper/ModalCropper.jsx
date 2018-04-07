@@ -72,7 +72,8 @@ class ModalCropper extends React.Component {
                                 src={props.image && (props.image.data || props.image.src) + props.getCacheBust()}
                                 style={{ maxWidth: '100%' }}/>
                             <div className="clearfix"/>
-                            {t`Cropped image size: {size}`({size: <strong>{props.width}x{props.height}</strong>})}
+                            {/*  TODO: @i18nRefactor */}
+                            {t`Cropped image size: {size}`({size: props.width + 'x' + props.height})}
                         </div>
                     </Modal.Body>
                     <Modal.Footer>

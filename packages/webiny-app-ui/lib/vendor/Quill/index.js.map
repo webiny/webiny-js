@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../src/vendor/Quill/index.js"],"names":[],"mappings":";;;;;;AAAA;;AACA","file":"index.js","sourcesContent":["import './styles.scss?extract';\nimport Quill from 'quill';\n\nexport default Quill;"]}

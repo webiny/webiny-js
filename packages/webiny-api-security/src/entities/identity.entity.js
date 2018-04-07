@@ -62,6 +62,6 @@ class Identity extends Entity implements IAuthorizable {
     }
 }
 
-Identity.classId = "Security.Identity";
+Identity.classId = "SecurityIdentity";
 
 export default Identity;

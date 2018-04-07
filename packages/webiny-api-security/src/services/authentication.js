@@ -56,18 +56,18 @@ class Authentication implements IAuthentication {
 
     /**
      * Authenticate request.
-     * @param req
+     * @param data
      * @param identity
      * @param strategy
      * @returns {Identity} A valid system Identity.
      */
     authenticate(
-        req: express$Request,
+        data: Object,
         identity: Class<Identity>,
         strategy: string
     ): Promise<Identity> {
-        const strategyFn = this.config.strategies[strategy];
-        if (!strategyFn) {
+        const strategyObject = this.config.strategies[strategy];
+        if (!strategyObject) {
             return Promise.reject(
                 new AuthenticationError(
                     `Strategy "${strategy}" not found!`,
@@ -77,7 +77,7 @@ class Authentication implements IAuthentication {
             );
         }
 
-        return strategyFn(req, identity);
+        return strategyObject.authenticate(data, identity);
     }
 
     /**

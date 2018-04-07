@@ -33,6 +33,7 @@ class Login extends React.Component {
                 return this.props.onSuccess(result);
             }
         } catch (e) {
+            console.log(e);
             return form.handleApiError(e.data.response);
         }
     }
@@ -91,7 +92,7 @@ class Login extends React.Component {
                                             style={{ float: 'right' }}
                                             size="large"
                                             onClick={form.submit}
-                                            icon="icon-next"
+                                            icon={['fas', 'arrow-alt-circle-right']}
                                             className={styles.btnLogin}>
                                             <span>{t`Submit`}</span>
                                         </Button>

@@ -9,6 +9,7 @@ import Route from "./Route.cmp";
 import matchPath from "./matchPath";
 import generatePath from "./generatePath";
 import sortRoutes from "./sortRoutes";
+import parseBoolean from "./parseBoolean";
 
 const debug = debugFactory("webiny-app:router");
 
@@ -94,6 +95,7 @@ class Router {
             }
 
             match.query = qs.parse(this.history.location.search);
+            parseBoolean(match.query);
 
             this.route = route;
             this.match = match;

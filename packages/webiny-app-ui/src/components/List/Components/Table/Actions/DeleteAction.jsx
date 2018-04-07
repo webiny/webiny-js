@@ -1,13 +1,17 @@
-import React from 'react';
-import _ from 'lodash';
-import { createComponent, i18n } from 'webiny-app';
-import ModalAction from './ModalAction';
+import React from "react";
+import _ from "lodash";
+import { createComponent, i18n } from "webiny-app";
+import ModalAction from "./ModalAction";
 
 const t = i18n.namespace("Webiny.Ui.List.Table.Actions");
 class DeleteAction extends React.Component {
     constructor() {
         super();
-        this.dialogId = _.uniqueId('delete-action-modal-');
+        this.dialogId = _.uniqueId("delete-action-modal-");
+    }
+
+    shouldComponentUpdate(props) {
+        return !_.isEqual(props.data, this.props.data);
     }
 
     render() {
@@ -15,12 +19,14 @@ class DeleteAction extends React.Component {
             return this.props.render.call(this);
         }
 
-        const {message, Modal} = this.props;
+        const { message, Modal: { Confirmation } } = this.props;
         const $this = this;
 
         return (
-            <ModalAction {..._.pick(this.props, 'data', 'actions', 'label', 'hide', 'afterDelete', 'icon')}>
-                {function render({data, actions, dialog}) {
+            <ModalAction
+                {..._.pick(this.props, "data", "actions", "label", "hide", "afterDelete", "icon")}
+            >
+                {function render({ data, actions, dialog }) {
                     const props = {
                         name: $this.dialogId,
                         title: $this.props.title,
@@ -31,12 +37,10 @@ class DeleteAction extends React.Component {
                             actions.reload();
                         },
                         onConfirm: () => {
-                            $this.props.onConfirm.call($this, {data, actions, dialog});
+                            $this.props.onConfirm.call($this, { data, actions, dialog });
                         }
                     };
-                    return (
-                        <Modal.Confirmation {...props}/>
-                    );
+                    return <Confirmation {...props} />;
                 }}
             </ModalAction>
         );
@@ -46,17 +50,17 @@ class DeleteAction extends React.Component {
 DeleteAction.defaultProps = {
     label: t`Delete`,
     title: t`Delete confirmation`,
-    icon: 'icon-cancel',
+    icon: ["fas", "times"],
     message: t`Are you sure you want to delete this record?`,
     confirmButtonLabel: t`Yes, delete!`,
     cancelButtonLabel: t`No`,
     hide: _.noop,
     afterDelete: _.noop,
-    onConfirm({data, actions, dialog}) {
+    onConfirm({ data, actions }) {
         return actions.delete(data.id, false).then(res => {
             return Promise.resolve(this.props.afterDelete(res)).then(() => res);
         });
     }
 };
 
-export default createComponent(DeleteAction, {modules: ['Modal']});
+export default createComponent(DeleteAction, { modules: ["Modal"] });

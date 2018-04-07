@@ -14,7 +14,8 @@ class Body extends React.Component {
         const classes = classSet(
             styles.panelBody,
             {
-                [styles.panelNoPadding]: this.props.noPadding
+                [styles.panelNoPadding]: this.props.noPadding,
+                [styles.panelNoColor]: this.props.noColor
             }
         );
 
@@ -27,7 +28,8 @@ class Body extends React.Component {
 }
 
 Body.defaultProps = {
-    noPadding: false
+    noPadding: false,
+    noColor: false,
 };
 
 export default createComponent(Body, { modules: ['Panel'], styles });

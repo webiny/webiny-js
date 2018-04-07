@@ -39,7 +39,7 @@ TabHeader.defaultProps = {
             const { Icon } = this.props;
             label = (
                 <a href="javascript:void(0)">
-                    {this.props.icon ? <Icon icon={'left ' + this.props.icon}/> : null}
+                    {this.props.icon ? <Icon icon={this.props.icon}/> : null}
                     <span className={styles.headerLabel}>{label}</span>
                 </a>
             );

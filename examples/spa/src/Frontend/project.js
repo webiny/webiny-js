@@ -9,9 +9,9 @@ export default () => {
         const { app } = params;
 
         app.services.get("menu").add(
-            <Menu order="0" label={t`Dashboard`} icon="fa-home">
-                <Menu order="0" label={t`My Account`} route="Homepage" icon="fa-home" />
-                <Menu order="1" label={t`Settings`} route="Homepage" icon="fa-home" />
+            <Menu order="0" label={t`Dashboard`} icon="home">
+                <Menu order="0" label={t`My Account`} route="Homepage"/>
+                <Menu order="1" label={t`Settings`} route="Homepage"/>
             </Menu>
         );
 
@@ -24,7 +24,11 @@ export default () => {
         app.router.addRoute({
             name: "About",
             path: "/about",
-            component: () => import("./views/About").then(m => m.default)
+            render() {
+                return import("./views/About").then(m => {
+                   return React.createElement(m.default);
+                });
+            }
         });
 
         app.router.addRoute({
@@ -49,7 +53,7 @@ export default () => {
                 app.modules.load("Admin.Login").then(Login => {
                     return (
                         <Login
-                            identity={"user"}
+                            identity={"SecurityUser"}
                             strategy={"credentials"}
                             onSuccess={() => {
                                 app.router.goToRoute("About");

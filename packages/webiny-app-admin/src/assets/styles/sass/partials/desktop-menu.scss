@@ -39,7 +39,6 @@
         > li > a {
           font-size: 13px;
           font-weight: 600;
-          padding: 20px 0;
           text-transform: uppercase;
           line-height: 187%;
           z-index: 500;
@@ -48,7 +47,7 @@
           position: relative;
           display: block;
           text-align: left;
-          padding-left: 5px;
+          padding: 20px 0 20px 5px;
           height: 75px;
           width: 200px;
           overflow: hidden;
@@ -68,6 +67,8 @@
               -webkit-font-smoothing: subpixel-antialiased;
             }
             &.icon {
+              width: 50px;
+              text-align: center;
               font-size: 35px;
               color: #676767;
               margin-right: 0;

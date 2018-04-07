@@ -11,7 +11,7 @@ class Role2RoleGroup extends Entity {
     }
 }
 
-Role2RoleGroup.classId = "Security.Role2RoleGroup";
+Role2RoleGroup.classId = "SecurityRole2RoleGroup";
 Role2RoleGroup.tableName = "Security_Role2RoleGroup";
 
 export default Role2RoleGroup;

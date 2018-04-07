@@ -1,6 +1,5 @@
 // @flow
 import { app } from "webiny-api";
-import { ApiErrorResponse } from "webiny-api";
 
 /**
  * Authentication middleware factory.
@@ -20,7 +19,7 @@ export default (options: { token: Function | string }) => {
      * @param next
      * @return {Promise<void>}
      */
-    return async (params: Object, next: Function, finish: Function) => {
+    return async (params: Object, next: Function) => {
         const { req } = params;
         const token =
             typeof options.token === "function" ? options.token(req) : req.get(options.token);
@@ -28,11 +27,7 @@ export default (options: { token: Function | string }) => {
             return next();
         }
 
-        try {
-            req.identity = await app.services.get("authentication").verifyToken(token);
-        } catch (e) {
-            return finish(new ApiErrorResponse(e.data, e.toString(), e.code, 401));
-        }
+        req.identity = await app.services.get("authentication").verifyToken(token);
         next();
     };
 };

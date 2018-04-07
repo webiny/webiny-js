@@ -10,7 +10,7 @@ export class Role2Permission extends Entity {
     }
 }
 
-Role2Permission.classId = "Security.Role2Permission";
+Role2Permission.classId = "SecurityRole2Permission";
 Role2Permission.tableName = "Security_Role2Permission";
 
 export default Role2Permission;

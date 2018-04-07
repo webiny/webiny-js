@@ -26,8 +26,8 @@ class AdminLayout extends React.Component {
 
 export default createComponent(AdminLayout, {
     modules: [{
-        Header: 'Skeleton.Header',
-        Navigation: 'Skeleton.Navigation',
-        Footer: 'Skeleton.Footer'
+        Header: 'Admin.Header',
+        Navigation: 'Admin.Navigation',
+        Footer: 'Admin.Footer'
     }]
 });

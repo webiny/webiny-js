@@ -1,14 +1,13 @@
-import React from 'react';
-import _ from 'lodash';
+import React from "react";
+import _ from "lodash";
 import classSet from "classnames";
-import { createComponent, isElementOfType, elementHasFlag } from 'webiny-app';
-import SelectRowField from './Fields/SelectRowField';
-import Actions from './Actions';
-import FieldInfo from './FieldInfo';
-import styles from '../../styles.css';
+import { createComponent, isElementOfType, elementHasFlag } from "webiny-app";
+import SelectRowField from "./Fields/SelectRowField";
+import Actions from "./Actions";
+import FieldInfo from "./FieldInfo";
+import styles from "../../styles.css";
 
 class Row extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -17,7 +16,9 @@ class Row extends React.Component {
         this.selectRowElement = null;
         this.data = props.data;
 
-        ['prepareChildren', 'prepareChild', 'renderField', 'onClick', 'isDisabled'].map(m => this[m] = this[m].bind(this));
+        ["prepareChildren", "prepareChild", "renderField", "onClick", "isDisabled"].map(
+            m => (this[m] = this[m].bind(this))
+        );
     }
 
     componentWillMount() {
@@ -35,17 +36,23 @@ class Row extends React.Component {
         }
     }
 
+    shouldComponentUpdate(props) {
+        const check = ["data", "expanded", "selected", "sorters"];
+
+        return !_.isEqual(_.pick(this.props, check), _.pick(props, check));
+    }
+
     isDisabled() {
         const { disabled } = this.props;
         return _.isFunction(disabled) ? disabled(this.props.data) : disabled;
     }
 
     prepareChild(child) {
-        if (typeof child !== 'object' || child === null) {
+        if (typeof child !== "object" || child === null) {
             return child;
         }
 
-        const tableField = elementHasFlag(child, 'tableField');
+        const tableField = elementHasFlag(child, "tableField");
         if (tableField) {
             if (isElementOfType(child, SelectRowField)) {
                 this.selectRowElement = true;
@@ -73,14 +80,14 @@ class Row extends React.Component {
         this.fields = [];
         this.actionsElement = null;
 
-        if (typeof children !== 'object' || children === null) {
+        if (typeof children !== "object" || children === null) {
             return children;
         }
         return React.Children.map(children, this.prepareChild);
     }
 
     renderField(field, i) {
-        const props = _.omit(field.props, ['children']);
+        const props = _.omit(field.props, ["children"]);
         _.assign(props, {
             data: this.data,
             name: props.name,
@@ -97,7 +104,9 @@ class Row extends React.Component {
         });
 
         // Filter Field children
-        const childrenArray = _.isArray(field.props.children) ? field.props.children : [field.props.children];
+        const childrenArray = _.isArray(field.props.children)
+            ? field.props.children
+            : [field.props.children];
         const children = [];
         _.filter(childrenArray).map(fieldChild => {
             // Do not include FieldInfo in Field children
@@ -111,7 +120,7 @@ class Row extends React.Component {
 
     onClick() {
         const onClick = this.props.onClick;
-        if (_.isString(onClick) && onClick === 'toggleRowDetails') {
+        if (_.isString(onClick) && onClick === "toggleRowDetails") {
             this.props.actions.toggleRowDetails(this.props.index)();
         } else if (_.isFunction(onClick)) {
             onClick.call(this, { data: this.data, $this: this });
@@ -124,7 +133,7 @@ class Row extends React.Component {
         }
 
         if (this.props.onSelect && !this.selectRowElement) {
-            this.fields.splice(0, 0, <SelectRowField/>);
+            this.fields.splice(0, 0, <SelectRowField />);
         }
 
         let classes = this.props.className;
@@ -133,9 +142,14 @@ class Row extends React.Component {
         }
 
         return (
-            <tr className={classSet(classes, (this.props.selected && styles.selected))} onClick={this.onClick}>
+            <tr
+                className={classSet(classes, this.props.selected && styles.selected)}
+                onClick={this.onClick}
+            >
                 {this.fields.map(this.renderField)}
-                {this.actionsElement ? <td className={this.props.actionsClass}>{this.actionsElement}</td> : null}
+                {this.actionsElement ? (
+                    <td className={this.props.actionsClass}>{this.actionsElement}</td>
+                ) : null}
             </tr>
         );
     }
@@ -145,7 +159,7 @@ Row.defaultProps = {
     className: null,
     onClick: _.noop,
     disabled: false,
-    actionsClass: 'text-center'
+    actionsClass: "text-center"
 };
 
 export default createComponent(Row, { styles });

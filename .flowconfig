@@ -1,5 +1,5 @@
 [ignore]
-./packages/**/lib/**/*.js
+.*/examples/.*
 [include]
 [libs]
 flow-typed

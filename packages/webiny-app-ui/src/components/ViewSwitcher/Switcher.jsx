@@ -1,7 +1,7 @@
-import React from 'react';
-import _ from 'lodash';
-import { createComponent, isElementOfType } from 'webiny-app';
-import View from './View';
+import React from "react";
+import _ from "lodash";
+import { createComponent, isElementOfType } from "webiny-app";
+import View from "./View";
 
 class Switcher extends React.Component {
     constructor(props) {
@@ -12,20 +12,25 @@ class Switcher extends React.Component {
         this.viewProps = {
             container: this,
             attachView: view => {
-                this.views[view.props.view] = view;
+                this.views[view.props.name] = view;
             },
             detachView: view => {
-                delete this.views[view.props.view];
+                delete this.views[view.props.name];
             }
         };
 
-        ['showView', 'renderView'].map(m => this[m] = this[m].bind(this));
+        ["showView", "renderView"].map(m => (this[m] = this[m].bind(this)));
     }
 
     componentDidMount() {
         if (this.defaultView) {
             this.views[this.defaultView].show();
         }
+
+        this.props.onReady &&
+            this.props.onReady({
+                showView: this.showView
+            });
     }
 
     showView(name) {
@@ -55,9 +60,9 @@ class Switcher extends React.Component {
     renderView(view) {
         if (isElementOfType(view, View)) {
             if (view.props.defaultView) {
-                this.defaultView = view.props.view;
+                this.defaultView = view.props.name;
             }
-            return React.cloneElement(view, _.assign({}, this.viewProps, { key: view.props.view }));
+            return React.cloneElement(view, _.assign({}, this.viewProps, { key: view.props.name }));
         }
         return null;
     }
@@ -68,7 +73,9 @@ class Switcher extends React.Component {
         }
 
         return (
-            <webiny-view-switcher>{React.Children.map(this.props.children, this.renderView)}</webiny-view-switcher>
+            <webiny-view-switcher>
+                {React.Children.map(this.props.children, this.renderView)}
+            </webiny-view-switcher>
         );
     }
 }

@@ -11,7 +11,7 @@ class SelectRowField extends React.Component {
         }
 
         return (
-            <List.Table.Field {...props} className="row-details">
+            <List.Table.Field {...props} rowSelected={rowSelected} className="row-details">
                 {() => (
                     <Checkbox
                         disabled={rowDisabled}

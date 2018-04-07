@@ -1,0 +1,41 @@
+.editorContent {
+  border: 1px solid #DCDCDC;
+  padding: 30px 30px 30px 38px;
+  margin-top: 15px;
+  background-color: #ffffff;
+}
+
+.editorWidgetHolder {
+  border-left: 2px solid #C0C0C0;
+  position: relative;
+  margin-left: -17px;
+  margin-bottom: 10px;
+  padding: 20px 10px 20px 20px;
+
+  &:before {
+    content: " ";
+    white-space: pre;
+    border-left: 2px solid #C0C0C0;
+    position: absolute;
+    top: -7px;
+    left: 6px;
+    font-size: 12px;
+    transform: rotate(90deg);
+    width: 4px;
+    display: block;
+  }
+
+  &:after {
+    content: " ";
+    white-space: pre;
+    border-left: 2px solid #C0C0C0;
+    position: absolute;
+    bottom: -10px;
+    left: 6px;
+    transform: rotate(90deg);
+  }
+
+  :global(.FormGroup_wrapper) {
+    margin: 0;
+  }
+}
