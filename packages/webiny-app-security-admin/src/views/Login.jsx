@@ -3,7 +3,7 @@ import classSet from "classnames";
 import invariant from "invariant";
 import { app, createComponent, i18n } from 'webiny-app';
 import logoOrange from 'webiny-app-admin/lib/assets/images/logo_orange.png';
-import styles from './styles/Login.css';
+import styles from './Login.css';
 
 const t = i18n.namespace("Webiny.Skeleton.Auth.Login");
 class Login extends React.Component {

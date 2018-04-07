@@ -67,6 +67,11 @@
     "release:dry": "scripts/release.js --preview --branch=development",
     "test": "scripts/test.js"
   },
+  "pre-commit": [
+    "flow",
+    "lint-staged",
+    "test"
+  ],
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-lerna-changelog"

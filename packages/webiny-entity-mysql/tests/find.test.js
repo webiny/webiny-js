@@ -78,7 +78,7 @@ describe("find test", function() {
             page: 3,
             perPage: 7,
             query: { age: 30 },
-            order: [["createdOn", -1], ["id", 1]]
+            sort: { createdOn: -1, id: 1 }
         });
 
         assert.deepEqual(querySpy.getCall(0).args[0], [

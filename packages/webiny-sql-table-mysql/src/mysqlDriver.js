@@ -66,7 +66,7 @@ class MySQLDriver extends Driver {
         return this.create(table, options);
     }
 
-    async execute(sql: string): Promise<mixed> {
+    async execute(sql: string): Promise<Array<mixed>> {
         const connection = this.getConnection();
         if (connection instanceof MySQLConnection) {
             return await connection.query(sql);

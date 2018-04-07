@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import webiny from "webiny-api";
+import { app as webiny } from "webiny-api";
 import bodyParser from "body-parser";
 //import monitor from "express-status-monitor";
 import middleware from "./configs/middleware";
@@ -23,18 +23,42 @@ export default () => {
         res.json({ data: "success" });
     });
 
-    app.get("/discover", async (req, res) => {
-        const methods = {};
-        Object.keys(webiny.endpoints).forEach(key => {
-            methods[key] = [];
-            const endpoint = webiny.endpoints[key];
+    app.get("/api/discover", async (req, res) => {
+        const onlySpecificEndpoints = Array.isArray(req.query.include);
+        const excludeEndpoints = Array.isArray(req.query.exclude);
+        const usages = req.query.usages;
+
+        const endpoints = [];
+        for (let i in webiny.endpoints) {
+            const endpoint = webiny.endpoints[i];
+            if (onlySpecificEndpoints) {
+                if (!req.query.include.includes(endpoint.classId)) {
+                    continue;
+                }
+            }
+            const current = { classId: endpoint.classId, url: i, methods: [] };
             const instance = new endpoint.versions[endpoint.latest]();
             const apiMethods = instance.getApi().getMethods();
             Object.keys(apiMethods).forEach(name => {
-                methods[key].push(apiMethods[name].toJSON());
+                current["methods"].push(apiMethods[name].toJSON());
             });
-        });
-        res.json(methods);
+
+            if (excludeEndpoints) {
+                if (req.query.exclude.includes(current.classId)) {
+                    continue;
+                }
+            }
+
+            if (usages) {
+                if (req.query.exclude.includes(current.classId)) {
+                    continue;
+                }
+            }
+
+            endpoints.push(current);
+        }
+
+        res.json({ data: { list: endpoints } });
     });
 
     const mw = middleware(process.env);

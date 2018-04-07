@@ -209,9 +209,13 @@ class Form extends React.Component {
                 .catch(this.__catchApiError);
         }
 
-        return this.props.api[this.props.createHttpMethod](this.props.api.defaults.url, model, {
-            cancelToken: this.__createCancelToken()
-        })
+        return this.props.api[this.props.createHttpMethod](
+            this.props.api.defaults.url + "/",
+            model,
+            {
+                cancelToken: this.__createCancelToken()
+            }
+        )
             .then(res => this.__processSubmitResponse(model, res))
             .catch(this.__catchApiError);
     }

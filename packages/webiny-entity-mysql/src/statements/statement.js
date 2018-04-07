@@ -1,7 +1,6 @@
 // @flow
 import SqlString from "sqlstring";
 import _ from "lodash";
-import type { OrderTuple } from "webiny-entity/types";
 import type { Entity } from "webiny-entity";
 import type { Operator, Payload } from "../../types";
 
@@ -38,16 +37,16 @@ class Statement {
         return " WHERE " + this.process({ $and: options.where });
     }
 
-    getOrder(options: { order?: Array<OrderTuple> }): string {
-        if (!options.order || !options.order.length) {
+    getOrder(options: { sort?: Object }): string {
+        if (!options.sort || !(options.sort instanceof Object)) {
             return "";
         }
 
         let query = [];
 
-        options.order.forEach(order => {
-            query.push(`${order[0]} ${order[1] === 1 ? "ASC" : "DESC"}`);
-        });
+        for (let key in options.sort) {
+            query.push(`${key} ${options.sort[key] === 1 ? "ASC" : "DESC"}`);
+        }
 
         return " ORDER BY " + query.join(", ");
     }

@@ -47,33 +47,6 @@ describe("translate test with namespaces", () => {
         );
     });
 
-    it("if variable is in format {value, format}, format function must be called", () => {
-        assert.equal(
-            t`this {var1} is missing for the {count} time`({
-                count: { value: "1st", format: value => `<strong>${value}</strong>` }
-            }),
-            "this {var1} is missing for the <strong>1st</strong> time"
-        );
-
-        assert.equal(
-            t`this {var1} is missing for the {count} time`({ count: { value: "1st" } }),
-            "this {var1} is missing for the 1st time"
-        );
-    });
-
-    it('if variable is format {format} (without the key "value"), error must be thrown', () => {
-        try {
-            t`this {var1} is missing for the {count} time`({
-                count: { format: value => `<strong>${value}</strong>` }
-            });
-        } catch (e) {
-            assert.equal(e.message, `Key "value" is missing for variable {count}.`);
-            return;
-        }
-
-        throw Error(`Error should've been thrown`);
-    });
-
     it("translate method should throw an error if namespace is not set", () => {
         try {
             i18n.translate("Test");

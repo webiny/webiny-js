@@ -12,7 +12,8 @@ class ModelsAttribute extends Attribute {
         super(name, attributesContainer);
 
         // If provided class is not a subclass of Model, we must throw an error.
-        if (!(model.prototype instanceof Model)) {
+        const validInstance = model.prototype instanceof Model;
+        if (!validInstance) {
             throw Error(
                 `"models" attribute "${name}" received an invalid class (subclass of Model is required).`
             );

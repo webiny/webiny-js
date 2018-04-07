@@ -10,7 +10,7 @@ class Role2RoleGroup extends MySQLTable {
             .char(24)
             .setNotNull();
 
-        this.index("unique").unique("roleGroup", "role");
+        this.index().key("roleGroup", "role", "deleted");
     }
 }
 

@@ -1,0 +1,12 @@
+.endpointPermissionsWrapper {
+	position: relative;
+}
+
+.addAction {
+	margin-bottom: 20px;
+}
+
+.accessBoxesWrapper {
+	display: flex;
+	flex-wrap: wrap;
+}

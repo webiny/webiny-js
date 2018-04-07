@@ -17,27 +17,27 @@ describe("Services test", () => {
     });
 
     it("should return a value !== undefined", () => {
-        serviceManager.add("Number", () => 12);
+        serviceManager.register("Number", () => 12);
         assert.isNumber(serviceManager.get("Number"));
     });
 
     it("should return the same value on subsequent calls", () => {
-        serviceManager.add("Number", () => 12);
+        serviceManager.register("Number", () => 12);
         const firstRun = serviceManager.get("Number");
         const secondRun = serviceManager.get("Number");
         assert.strictEqual(firstRun, secondRun);
     });
 
     it("should return different value on subsequent calls", () => {
-        serviceManager.add("Number", () => Math.random() * (100 - 1) + 1, false);
+        serviceManager.register("Number", () => Math.random() * (100 - 1) + 1, false);
         const firstRun = serviceManager.get("Number");
         const secondRun = serviceManager.get("Number");
         assert.notStrictEqual(firstRun, secondRun);
     });
 
     it("should return services by tag", () => {
-        serviceManager.add("Number", () => 12, true, ["number", "common"]);
-        serviceManager.add("String", () => "string", true, ["string", "common"]);
+        serviceManager.register("Number", () => 12, true, ["number", "common"]);
+        serviceManager.register("String", () => "string", true, ["string", "common"]);
 
         const numbers = serviceManager.getByTag("number");
         assert.lengthOf(numbers, 1);

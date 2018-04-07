@@ -13,7 +13,7 @@ describe("DELETE statement test", function() {
                 where: { name: "Test", enabled: true, deletedOn: null },
                 limit: 10,
                 offset: 0,
-                order: [["name", -1], ["createdOn", 1]]
+                sort: { name: -1, createdOn: 1 }
             },
             Entity
         ).generate();
