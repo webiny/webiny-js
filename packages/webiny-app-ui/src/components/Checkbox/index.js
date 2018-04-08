@@ -1,19 +1,18 @@
-import React from 'react';
-import _ from 'lodash';
+import React from "react";
+import _ from "lodash";
 import classSet from "classnames";
-import { createComponent } from 'webiny-app';
+import { createComponent, LazyLoad } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
-import styles from './styles.css';
+import styles from "./styles.css";
 
 class Checkbox extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {
             ...props.initialState
         };
 
-        this.id = _.uniqueId('checkbox-');
+        this.id = _.uniqueId("checkbox-");
         this.onChange = this.onChange.bind(this);
         this.isChecked = this.isChecked.bind(this);
     }
@@ -62,17 +61,16 @@ class Checkbox extends React.Component {
 
         return (
             <div className={css} style={this.props.style}>
-                <input id={this.id} type="checkbox" {...checkboxProps}/>
+                <input id={this.id} type="checkbox" {...checkboxProps} />
                 <label htmlFor={this.id}>{this.renderLabel()}</label>
                 {this.props.name && this.props.renderValidationMessage.call(this)}
             </div>
         );
     }
-
 }
 
 Checkbox.defaultProps = {
-    label: '',
+    label: "",
     className: null,
     style: null,
     option: null,
@@ -81,14 +79,20 @@ Checkbox.defaultProps = {
         let tooltip = null;
         if (this.props.tooltip) {
             tooltip = (
-                <LazyLoad modules={['Tooltip', 'Icon']}>
+                <LazyLoad modules={["Tooltip", "Icon"]}>
                     {({ Tooltip, Icon }) => (
-                        <Tooltip key="label" target={<Icon icon="icon-info-circle"/>}>{this.props.tooltip}</Tooltip>
+                        <Tooltip key="label" target={<Icon icon="info-circle" />}>
+                            {this.props.tooltip}
+                        </Tooltip>
                     )}
                 </LazyLoad>
             );
         }
-        return <span>{this.props.label} {tooltip}</span>;
+        return (
+            <span>
+                {this.props.label} {tooltip}
+            </span>
+        );
     }
 };
 

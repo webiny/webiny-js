@@ -13,7 +13,7 @@ class Label extends React.Component {
             tooltip = (
                 <LazyLoad modules={['Tooltip', 'Icon']}>
                     {({ Tooltip, Icon }) => (
-                        <Tooltip key="label" target={<Icon icon="icon-info-circle"/>}>{this.props.tooltip}</Tooltip>
+                        <Tooltip key="label" target={<Icon icon="info-circle"/>}>{this.props.tooltip}</Tooltip>
                     )}
                 </LazyLoad>
             );

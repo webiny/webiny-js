@@ -1,16 +1,15 @@
-import React from 'react';
-import _ from 'lodash';
-import { createComponent } from 'webiny-app';
+import React from "react";
+import _ from "lodash";
+import { createComponent } from "webiny-app";
 import classSet from "classnames";
-import AlertContainer from './Container';
-import styles from './styles.css';
+import AlertContainer from "./Container";
+import styles from "./styles.css";
 
 class Alert extends React.Component {
     render() {
         if (this.props.render) {
             return this.props.render.call(this);
         }
-
 
         const { styles, type, Icon, onClose } = this.props;
 
@@ -23,24 +22,20 @@ class Alert extends React.Component {
         };
 
         const iconClasses = {
-            info: 'icon-info-circle',
-            success: 'icon-check-circle-o',
-            warning: 'icon-exclamation-circle',
-            error: 'icon-cancel',
-            danger: 'icon-cancel'
+            info: ["fas", "info-circle"],
+            success: ["fas", "check-circle"],
+            warning: ["fas", "exclamation-circle"],
+            error: ["fas", "times"],
+            danger: ["fas", "times"]
         };
 
-        const classes = classSet(
-            typeClasses[type],
-            this.props.className
-        );
-
+        const classes = classSet(typeClasses[type], this.props.className);
 
         let icon = null;
         if (this.props.icon) {
-            icon = <Icon icon={this.props.icon}/>;
+            icon = <Icon icon={this.props.icon} />;
         } else {
-            icon = <Icon icon={iconClasses[type]}/>;
+            icon = <Icon icon={iconClasses[type]} />;
         }
 
         const title = this.props.title ? <strong>{this.props.title}:</strong> : null;
@@ -64,7 +59,7 @@ class Alert extends React.Component {
 }
 
 Alert.defaultProps = {
-    type: 'info',
+    type: "info",
     icon: null,
     title: null,
     close: false,
@@ -72,4 +67,4 @@ Alert.defaultProps = {
     className: null
 };
 
-export default createComponent(Alert, { styles, modules: ['Icon'] });
+export default createComponent(Alert, { styles, modules: ["Icon"] });

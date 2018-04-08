@@ -1,14 +1,14 @@
-import _ from 'lodash';
+import _ from "lodash";
 
 export default (component, key, callback, defaultValue = null) => {
-    const getValue = (key) => {
+    const getValue = key => {
         return _.get(component.state, key, defaultValue);
     };
 
     const createStateKeySetter = () => {
-        return function stateKeySetter(value, callback = _.noop) {
+        return function stateKeySetter(value, inlineCallback = _.noop) {
             return new Promise(resolve => {
-                if (typeof value === 'undefined') {
+                if (typeof value === "undefined") {
                     value = false;
                 }
                 const oldValue = getValue(key);
@@ -24,8 +24,8 @@ export default (component, key, callback, defaultValue = null) => {
                     let partialState = component.state;
                     _.set(partialState, key, value);
                     component.setState(partialState, () => {
-                        if (_.isFunction(callback)) {
-                            callback(value, oldValue);
+                        if (_.isFunction(inlineCallback)) {
+                            inlineCallback(value, oldValue);
                         }
                         partialState = null;
                         resolve(value);

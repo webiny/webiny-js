@@ -23,9 +23,11 @@ class FieldInfo extends React.Component {
             return this.props.render.call(this);
         }
 
+        const { Icon } = this.props;
+
         const info = (
             <a onClick={this.showInfo} href="javascript:void(0);">
-                <span className="icon icon-info"/>
+                <Icon icon="icon-info"/>
             </a>
         );
 
@@ -52,4 +54,4 @@ class FieldInfo extends React.Component {
     }
 }
 
-export default createComponent(FieldInfo, { modules: ['Modal', 'Button'] });
+export default createComponent(FieldInfo, { modules: ['Modal', 'Button', 'Icon'] });

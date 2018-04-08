@@ -42,21 +42,21 @@ class UsersList extends React.Component {
                         }
                     >
                         <Link type="primary" route="Users.Create" align="right">
-                            <Icon icon="icon-plus-circled" />
+                            <Icon icon="plus-circle" />
                             {t`Create user`}
                         </Link>
                     </View.Header>
                     <View.Body>
                         <List
-                            connectToRouter
-                            api="/security/users"
-                            fields="id,enabled,firstName,lastName,email,createdOn,gravatar"
-                            searchFields="firstName,lastName,email"
+                            withRouter
+                            entity="SecurityUser"
+                            fields="id enabled firstName lastName email createdOn gravatar"
+                            search={{ fields: ["firstName", "lastName", "email"] }}
                         >
                             <List.FormFilters>
                                 {({ apply }) => (
                                     <Input
-                                        name="_searchQuery"
+                                        name="search.query"
                                         placeholder={t`Search by name or email`}
                                         onEnter={apply()}
                                     />
@@ -108,5 +108,5 @@ class UsersList extends React.Component {
 }
 
 export default createComponent(UsersList, {
-    modules: [{ AdminLayout: "Skeleton.AdminLayout" }, "View", "List", "Link", "Icon", "Input"]
+    modules: [{ AdminLayout: "Admin.Layout" }, "View", "List", "Link", "Icon", "Input"]
 });

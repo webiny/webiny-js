@@ -38,7 +38,7 @@ class Statement {
     }
 
     getOrder(options: { sort?: Object }): string {
-        if (!options.sort || !(options.sort instanceof Object)) {
+        if (!(options.sort instanceof Object) || _.isEmpty(options.sort)) {
             return "";
         }
 

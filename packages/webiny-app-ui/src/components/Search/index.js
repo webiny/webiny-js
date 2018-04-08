@@ -122,8 +122,7 @@ class Search extends React.Component {
         } else if (id && _.isPlainObject(value)) {
             newState["preview"] = this.renderPreview(value);
         } else if (id) {
-            this.props.api.get(this.props.api.defaults.url + "/" + value).then(response => {
-                const data = response.data.data.entity;
+            this.props.api.get({ variables: { id: value } }).then(({ data }) => {
                 this.setState({ selectedData: data, preview: this.renderPreview(data) });
             });
         }
@@ -139,10 +138,7 @@ class Search extends React.Component {
     applyFilter(newValue, name, filter) {
         // If filter is a function, it needs to return a config for api created using new value
         if (_.isFunction(filter)) {
-            const config = filter(newValue, this.api);
-            if (_.isPlainObject(config)) {
-                this.filters = config;
-            }
+            this.filters = filter(newValue);
         } else {
             // If filter is a string, create a filter object using that string as field name
             const filters = {};
@@ -167,9 +163,17 @@ class Search extends React.Component {
             if (this.mounted) {
                 this.setState({ loading: true });
                 this.props.api
-                    .request({ params: { _searchQuery: this.state.query, ...this.filters } })
-                    .then(response => {
-                        const { data } = response.data;
+                    .list({
+                        variables: {
+                            search: {
+                                query: this.state.query,
+                                fields: this.props.search.fields || ["name"],
+                                operator: this.props.search.operator || "or"
+                            },
+                            filter: { ...this.filters }
+                        }
+                    })
+                    .then(({ data }) => {
                         this.setState(
                             { options: _.get(data, "list", data), loading: false },
                             () => {
@@ -411,8 +415,8 @@ Search.defaultProps = {
     onChange: _.noop,
     onReset: _.noop,
     onLoadOptions: _.noop,
-    inputIcon: "icon-search",
-    loadingIcon: "icon-search",
+    inputIcon: "search",
+    loadingIcon: "search",
     placeholder: t`Type to search`,
     useDataAsValue: false,
     allowFreeInput: false,

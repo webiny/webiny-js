@@ -56,7 +56,7 @@ class Success extends React.Component {
                 <Content>
                     <Body>
                         <div className="text-center">
-                            <Icon type="success" size="4x" icon="icon-check-circle" element="div" />
+                            <Icon type="success" size="4x" icon="check-circle" element="div" />
                             <h4>{this.props.title}</h4>
 
                             <div>{content}</div>

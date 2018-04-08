@@ -2,6 +2,7 @@ import React from "react";
 import _ from "lodash";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import LazyLoad from "./../components/LazyLoad.cmp";
+import ErrorBoundary from "./ErrorBoundary";
 
 const hocCompose = components => {
     return props => {
@@ -68,13 +69,13 @@ export default (components, options = {}) => {
                             } else {
                                 _.assign(props, modules);
                             }
-                            return createElement(props);
+                            return <ErrorBoundary>{createElement(props)}</ErrorBoundary>;
                         }}
                     </LazyLoad>
                 );
             }
 
-            return createElement(props);
+            return <ErrorBoundary>{createElement(props)}</ErrorBoundary>;
         }
     }
 

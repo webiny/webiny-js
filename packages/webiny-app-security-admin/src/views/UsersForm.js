@@ -121,7 +121,7 @@ class UsersForm extends React.Component {
                                 <Ui.Grid.Row>
                                     <Ui.Grid.Col all={12}>
                                         <Ui.Tabs>
-                                            <Ui.Tabs.Tab label={t`Roles`} icon="fa-user">
+                                            <Ui.Tabs.Tab label={t`Roles`} icon="user">
                                                 <Ui.SecurityToggleList
                                                     options={this.state.roles}
                                                     value={model.roles}
@@ -148,7 +148,7 @@ class UsersForm extends React.Component {
                                                     }}
                                                 />
                                             </Ui.Tabs.Tab>
-                                            <Ui.Tabs.Tab label={t`Role Groups`} icon="fa-users">
+                                            <Ui.Tabs.Tab label={t`Role Groups`} icon="users">
                                                 <Ui.SecurityToggleList
                                                     options={this.state.roleGroups}
                                                     value={model.roleGroups}

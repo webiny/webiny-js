@@ -17,6 +17,13 @@ class Select extends React.Component {
         this.props.attachToForm && this.props.attachToForm(this);
     }
 
+    shouldComponentUpdate(props) {
+        return (
+            !_.isEqual(props.options, this.props.options) ||
+            !_.isEqual(props.value, this.props.value)
+        );
+    }
+
     render() {
         if (this.props.render) {
             return this.props.render.call(this);

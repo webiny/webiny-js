@@ -1,12 +1,5 @@
 // @flow
-import {
-    GraphQLString,
-    GraphQLBoolean,
-    GraphQLSchema,
-    GraphQLObjectType,
-    GraphQLInt,
-    GraphQLNonNull
-} from "graphql";
+import { GraphQLString, GraphQLBoolean, GraphQLInt, GraphQLNonNull } from "graphql";
 import GraphQLJSON from "graphql-type-json";
 import type { Entity } from "webiny-api";
 import pluralize from "pluralize";
@@ -25,7 +18,7 @@ export default (entityClass: Class<Entity>, schema: Object) => {
         description: `Get a single ${entityClass.classId} entity by ID.`,
         type: entityType,
         args: {
-            id: { type: GraphQLString }
+            id: { type: new GraphQLNonNull(GraphQLString) }
         },
         resolve(root, args) {
             return entityClass.findById(args.id);
@@ -54,10 +47,10 @@ export default (entityClass: Class<Entity>, schema: Object) => {
                 };
             }
             const list = await entityClass.find({
+                query,
                 page: args.page,
                 perPage: args.perPage,
-                query
-                // TODO: sort: args.sort,
+                sort: args.sort
             });
             const meta = list.getParams();
             meta.count = list.length;

@@ -1,20 +1,18 @@
-import React from 'react';
-import _ from 'lodash';
+import React from "react";
+import _ from "lodash";
 import classSet from "classnames";
-import { createComponent, isElementOfType, elementHasFlag } from 'webiny-app';
-import Row from './Row';
-import FieldInfo from './FieldInfo';
-import Actions from './Actions';
-import Footer from './Footer';
-import RowDetails from './RowDetails';
-import Header from './Header';
-import Empty from './Empty';
-import SelectRowField from './Fields/SelectRowField';
-import styles from '../../styles.css';
-
+import { createComponent, isElementOfType, elementHasFlag } from "webiny-app";
+import Row from "./Row";
+import FieldInfo from "./FieldInfo";
+import Actions from "./Actions";
+import Footer from "./Footer";
+import RowDetails from "./RowDetails";
+import Header from "./Header";
+import Empty from "./Empty";
+import SelectRowField from "./Fields/SelectRowField";
+import styles from "../../styles.css";
 
 class Table extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -32,22 +30,22 @@ class Table extends React.Component {
         };
 
         [
-            'attachToTable',
-            'prepareChildren',
-            'prepareChild',
-            'renderRow',
-            'renderHeader',
-            'onSort',
-            'onSelect',
-            'selectAll',
-            'showRowDetails',
-            'hideRowDetails',
-            'toggleRowDetails'
-        ].map(m => this[m] = this[m].bind(this));
+            "attachToTable",
+            "prepareChildren",
+            "prepareChild",
+            "renderRow",
+            "renderHeader",
+            "onSort",
+            "onSelect",
+            "selectAll",
+            "showRowDetails",
+            "hideRowDetails",
+            "toggleRowDetails"
+        ].map(m => (this[m] = this[m].bind(this)));
     }
 
     shouldComponentUpdate(props) {
-        const check = ['data', 'selectedRows'];
+        const check = ["data", "selectedRows", "sort"];
         return !_.isEqual(_.pick(props, check), _.pick(this.props, check));
     }
 
@@ -65,13 +63,16 @@ class Table extends React.Component {
             });
         }
 
-        this.setState({
-            selectAll: selected,
-        }, () => {
-            if (this.props.onSelect) {
-                this.props.onSelect(data);
+        this.setState(
+            {
+                selectAll: selected
+            },
+            () => {
+                if (this.props.onSelect) {
+                    this.props.onSelect(data);
+                }
             }
-        });
+        );
     }
 
     onSelect(data, selected) {
@@ -87,7 +88,7 @@ class Table extends React.Component {
     onSort(name, sort) {
         this.selectAll(false);
         this.setState({ expandedRows: [] });
-        const sorters = _.clone(this.props.sorters);
+        const sorters = {...this.props.sort};
         if (sort !== 0) {
             sorters[name] = sort;
         } else {
@@ -98,7 +99,7 @@ class Table extends React.Component {
     }
 
     prepareChild(child) {
-        if (typeof child !== 'object' || child === null) {
+        if (typeof child !== "object" || child === null) {
             return child;
         }
 
@@ -108,7 +109,7 @@ class Table extends React.Component {
             // Parse Row fields to extract headers
             this.headers = [];
             React.Children.map(child.props.children, rowChild => {
-                if (elementHasFlag(rowChild, 'tableField')) {
+                if (elementHasFlag(rowChild, "tableField")) {
                     if (isElementOfType(rowChild, SelectRowField)) {
                         this.selectAllRowsElement = true;
                     }
@@ -118,16 +119,16 @@ class Table extends React.Component {
                         return;
                     }
 
-                    const headerProps = _.omit(rowChild.props, ['render', 'renderHeader']);
+                    const headerProps = _.omit(rowChild.props, ["render", "renderHeader"]);
                     headerProps.sortable = headerProps.sort || false;
-                    headerProps.sorted = this.props.sorters[headerProps.sort] || 0;
+                    headerProps.sorted = this.props.sort[headerProps.sort] || 0;
                     headerProps.children = React.Children.map(rowChild.props.children, ch => {
                         if (isElementOfType(ch, FieldInfo)) {
                             return ch;
                         }
                     });
 
-                    if (_.has(rowChild.props, 'renderHeader')) {
+                    if (_.has(rowChild.props, "renderHeader")) {
                         headerProps.render = rowChild.props.renderHeader;
                     }
                     this.headers.push(headerProps);
@@ -175,14 +176,14 @@ class Table extends React.Component {
     }
 
     prepareChildren(children) {
-        if (typeof children !== 'object' || children === null) {
+        if (typeof children !== "object" || children === null) {
             return children;
         }
         return React.Children.map(children, this.prepareChild);
     }
 
     renderRow(data, index, element, key) {
-        const props = _.omit(element.props, ['children']);
+        const props = _.omit(element.props, ["children"]);
         _.assign(props, {
             attachToTable: this.attachToTable,
             index,
@@ -191,7 +192,7 @@ class Table extends React.Component {
             fieldsCount: this.headers.length + (this.props.onSelect ? 1 : 0),
             expanded: this.state.expandedRows.indexOf(index) > -1,
             selected: !!_.find(this.props.selectedRows, { id: data.id }),
-            sorters: _.clone(this.props.sorters),
+            sort: { ...this.props.sort },
             actions: _.assign({}, this.props.actions, {
                 showRowDetails: this.showRowDetails,
                 hideRowDetails: this.hideRowDetails,
@@ -213,9 +214,7 @@ class Table extends React.Component {
         header.onSort = this.onSort;
         header.allRowsSelected = this.state.selectAll;
         header.onSelectAll = this.selectAll;
-        return (
-            <Header {...header}/>
-        );
+        return <Header {...header} />;
     }
 
     render() {
@@ -235,15 +234,22 @@ class Table extends React.Component {
             this.props.className
         ]);
 
-        if (!this.props.data || !this.props.data.length && !this.props.loading) {
-            return this.emptyElement || <Empty/>;
+        if (!this.props.data || (!this.props.data.length && !this.props.loading)) {
+            return this.emptyElement || <Empty />;
         }
 
         const rows = [];
         this.props.data.map((data, index) => {
             rows.push(this.renderRow(data, data.id || index, this.rowElement, data.id || index));
             if (this.rowDetailsElement) {
-                rows.push(this.renderRow(data, data.id || index, this.rowDetailsElement, 'details-' + (data.id || index)));
+                rows.push(
+                    this.renderRow(
+                        data,
+                        data.id || index,
+                        this.rowDetailsElement,
+                        "details-" + (data.id || index)
+                    )
+                );
             }
         });
 
@@ -251,9 +257,7 @@ class Table extends React.Component {
         if (this.props.showHeader) {
             header = (
                 <thead>
-                <tr>
-                    {this.headers.map(this.renderHeader)}
-                </tr>
+                    <tr>{this.headers.map(this.renderHeader)}</tr>
                 </thead>
             );
         }
@@ -270,10 +274,10 @@ class Table extends React.Component {
 Table.defaultProps = {
     formSkip: true, // tells Form to stop descending into this element's children when looking for form components
     data: [],
-    type: 'simple',
+    type: "simple",
     onSelect: null,
     selectedRows: [],
-    sorters: {},
+    sort: {},
     showHeader: true,
     className: null
 };

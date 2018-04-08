@@ -18,7 +18,6 @@ export {
     default as ModalConfirmationComponent
 } from "./components/Modal/Components/ModalConfirmationComponent";
 export { default as FormComponent } from "./components/Form/FormComponent";
-export { default as LinkState } from "./components/Form/LinkState";
 export { default as OptionComponent } from "./components/Option/OptionComponent";
 
 const app = () => {

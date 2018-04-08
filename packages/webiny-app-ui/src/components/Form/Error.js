@@ -28,7 +28,7 @@ class ContainerError extends React.Component {
         }
 
         const data = [];
-        _.each(error.data.data, (value, key) => {
+        _.each(error.data, (value, key) => {
             data.push(
                 <li key={key}>
                     <strong>{key}</strong> {value}
@@ -38,7 +38,7 @@ class ContainerError extends React.Component {
 
         return (
             <Alert title={title} type={type} close={close} onClose={onClose} className={className}>
-                {message || error.data.message}
+                {message || error.message}
                 {data.length > 0 && <ul>{data}</ul>}
             </Alert>
         );

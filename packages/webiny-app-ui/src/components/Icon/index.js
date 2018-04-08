@@ -1,4 +1,5 @@
 import React from "react";
+import classSet from "classnames";
 import { createComponent } from "webiny-app";
 import FontAwesomeIcon from "@fortawesome/react-fontawesome";
 import styles from "./styles.css";
@@ -19,11 +20,13 @@ class Icon extends React.Component {
             warning: styles.warning
         };
 
-        return (
-            <span className="icon" onClick={onClick}>
-                <FontAwesomeIcon {...props} className={typeClasses[type]} />
-            </span>
-        );
+        const iconProps = {
+            className: classSet("icon", this.props.className),
+            onClick,
+            children: <FontAwesomeIcon {...props} className={typeClasses[type]} />
+        };
+
+        return React.createElement(this.props.element, iconProps);
     }
 }
 
@@ -43,7 +46,8 @@ Icon.defaultProps = {
     spin: false,
     symbol: false,
     transform: null,
-    type: "default"
+    type: "default",
+    element: "span"
 };
 
 export default createComponent(Icon, { styles });

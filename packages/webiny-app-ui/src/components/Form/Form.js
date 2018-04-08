@@ -6,13 +6,12 @@ import {
     createComponent,
     isElementOfType,
     elementHasFlag,
+    linkState,
     ApiComponent
 } from "webiny-app";
 import validation from "./validation";
-import LinkState from "./LinkState";
 import Error from "./Error";
 import Loader from "./Loader";
-import axios from "axios";
 
 function isValidModelType(value) {
     const type = typeof value;
@@ -46,7 +45,6 @@ class Form extends React.Component {
 
         this.parsingTabsIndex = 0;
         this.mounted = false;
-        this.cancelRequest = null;
 
         [
             "resetForm",
@@ -68,8 +66,6 @@ class Form extends React.Component {
             "enableSubmit",
             "disableSubmit",
             "handleApiError",
-            "__createCancelToken",
-            "__catchApiError",
             "__renderContent",
             "__processSubmitResponse",
             "__focusTab",
@@ -202,22 +198,15 @@ class Form extends React.Component {
 
         if (model.id) {
             return this.props.api
-                .patch(this.props.api.defaults.url + "/" + model.id, model, {
-                    cancelToken: this.__createCancelToken()
-                })
+                .update({ fields: this.props.fields, variables: { id: model.id, data: model } })
                 .then(res => this.__processSubmitResponse(model, res))
-                .catch(this.__catchApiError);
+                .catch(err => this.handleApiError(err));
         }
 
-        return this.props.api[this.props.createHttpMethod](
-            this.props.api.defaults.url + "/",
-            model,
-            {
-                cancelToken: this.__createCancelToken()
-            }
-        )
+        return this.props.api
+            .create({ fields: this.props.fields, variables: { data: model } })
             .then(res => this.__processSubmitResponse(model, res))
-            .catch(this.__catchApiError);
+            .catch(err => this.handleApiError(err));
     }
 
     onInvalid() {
@@ -288,64 +277,47 @@ class Form extends React.Component {
 
     loadModel(id = null, model = null) {
         if (!id) {
-            if (this.props.connectToRouter) {
+            if (this.props.withRouter) {
                 id = app.router.getParams("id");
             }
         }
 
         if (id) {
-            if (this.request) {
-                return this.request;
-            }
-
             this.showLoading();
-            this.request = this.props.api
-                .request({
-                    url: this.props.api.defaults.url + "/" + id,
-                    cancelToken: this.__createCancelToken()
-                })
-                .then(response => {
-                    this.request = null;
-                    this.cancelRequest = null;
-                    if (response.statusText === "abort") {
-                        return;
-                    }
 
-                    if (response.data.code) {
-                        if (this.props.onFailure) {
-                            this.props.onFailure({ response, form: this });
-                        }
-                        return;
+            return this.props.api.get({ variables: { id } }).then(({ error, data }) => {
+                if (error) {
+                    if (this.props.onFailure) {
+                        this.props.onFailure({ error, form: this });
                     }
+                    return;
+                }
 
-                    let newModel;
-                    const entity = response.data.data.entity;
-                    if (
-                        _.isFunction(this.props.prepareLoadedData) &&
-                        this.props.prepareLoadedData !== _.noop
-                    ) {
-                        newModel = _.merge(
-                            {},
-                            this.props.defaultModel || {},
-                            this.props.prepareLoadedData({ data: entity })
-                        );
-                    } else {
-                        newModel = _.merge({}, this.props.defaultModel || {}, entity);
-                    }
-
-                    this.setState(
-                        { model: newModel, initialModel: _.cloneDeep(newModel), loading: false },
-                        () => {
-                            // Execute optional `onLoad` callback
-                            if (_.isFunction(this.props.onLoad)) {
-                                this.props.onLoad({ model: this.getModel(), form: this });
-                            }
-                            this.__processWatches();
-                        }
+                let newModel;
+                if (
+                    _.isFunction(this.props.prepareLoadedData) &&
+                    this.props.prepareLoadedData !== _.noop
+                ) {
+                    newModel = _.merge(
+                        {},
+                        this.props.defaultModel || {},
+                        this.props.prepareLoadedData({ data })
                     );
-                })
-                .catch(this.__catchApiError);
-            return this.request;
+                } else {
+                    newModel = _.merge({}, this.props.defaultModel || {}, data);
+                }
+
+                this.setState(
+                    { model: newModel, initialModel: _.cloneDeep(newModel), loading: false },
+                    () => {
+                        // Execute optional `onLoad` callback
+                        if (_.isFunction(this.props.onLoad)) {
+                            this.props.onLoad({ model: this.getModel(), form: this });
+                        }
+                        this.__processWatches();
+                    }
+                );
+            });
         }
 
         if (model) {
@@ -543,19 +515,18 @@ class Form extends React.Component {
             };
 
             // Assign value and onChange props
-            const ls = new LinkState(
+            const ls = linkState(
                 this,
                 "model." + input.props.name,
                 changeCallback,
                 input.props.defaultValue
             );
-            const linkState = ls.create();
 
             _.assign(newProps, {
-                value: linkState.value,
+                value: ls.value,
                 onChange: (newValue, cb) => {
                     // When linkState is done processing the value change...
-                    return linkState.onChange(newValue, cb).then(value => {
+                    return ls.onChange(newValue, cb).then(value => {
                         // call the Form onChange with updated model
                         if (_.isFunction(this.props.onChange)) {
                             this.props.onChange(this.getModel(), this);
@@ -695,25 +666,28 @@ class Form extends React.Component {
             });
     }
 
-    handleApiError(response) {
+    handleApiError(error) {
         this.hideLoading();
         this.enableSubmit();
-        this.setState({ error: response, showError: true }, () => {
+        this.setState({ error, showError: true }, () => {
             // error callback
-            this.props.onSubmitError({ response, form: this });
+            this.props.onSubmitError({ error, form: this });
 
             // Check error data and if validation error - try highlighting invalid fields
-            const data = _.get(response, "data.data");
-            if (_.isPlainObject(data)) {
+            const { invalidAttributes } = error.data;
+            if (invalidAttributes && _.isPlainObject(invalidAttributes)) {
                 let tabFocused = false;
-                _.each(data, (message, name) => {
+                _.each(invalidAttributes, ({ data }, name) => {
                     const input = this.getInput(name);
                     if (input) {
                         if (!tabFocused) {
                             this.__focusTab(input);
                             tabFocused = true;
                         }
-                        this.getInput(name).setInvalid(message);
+                        this.getInput(name).setState({
+                            isValid: false,
+                            validationMessage: data.message
+                        });
                     }
                 });
             }
@@ -735,28 +709,14 @@ class Form extends React.Component {
         );
     }
 
-    __createCancelToken() {
-        return new axios.CancelToken(cancel => {
-            this.cancelRequest = cancel;
-        });
-    }
-
-    __catchApiError(err) {
-        if (axios.isCancel(err)) {
-            return;
-        }
-        this.handleApiError(err.response);
-    }
-
-    __processSubmitResponse(model, response) {
+    __processSubmitResponse(model, { data }) {
         this.request = null;
         this.cancelRequest = null;
         this.enableSubmit();
         this.growler.remove(this.growlId);
         this.hideLoading();
 
-        const responseData = response.data.data;
-        const newModel = _.has(responseData, "entity") ? responseData.entity : responseData;
+        const newModel = data;
         this.setState({
             model: newModel,
             initialModel: _.cloneDeep(newModel),
@@ -764,19 +724,17 @@ class Form extends React.Component {
             showError: false
         });
         if (_.isFunction(this.props.onSuccessMessage)) {
-            this.growler.success(this.props.onSuccessMessage({ model, response, form: this }));
+            this.growler.success(this.props.onSuccessMessage({ model, form: this }));
         }
 
         const onSubmitSuccess = this.props.onSubmitSuccess;
         if (_.isFunction(onSubmitSuccess)) {
-            return onSubmitSuccess({ model, response, form: this });
+            return onSubmitSuccess({ model, form: this });
         }
 
         if (_.isString(onSubmitSuccess)) {
             return app.router.goToRoute(onSubmitSuccess);
         }
-
-        return response;
     }
 
     __focusTab(input) {
@@ -831,7 +789,7 @@ class Form extends React.Component {
 Form.defaultProps = {
     disabled: false,
     defaultModel: {},
-    connectToRouter: false,
+    withRouter: false,
     createHttpMethod: "post",
     validateOnFirstSubmit: false,
     onSubmit: null,

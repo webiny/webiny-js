@@ -2,7 +2,6 @@ import React from "react";
 import _ from "lodash";
 import { createComponent, ApiComponent } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
-import axios from "axios";
 
 class OptionComponent extends React.Component {
     constructor(props) {
@@ -13,12 +12,12 @@ class OptionComponent extends React.Component {
             loading: false
         };
 
+        this.filter = {};
         this.mounted = false;
-        this.cancelRequest = null;
 
         this.loadOptions = this.loadOptions.bind(this);
         this.normalizeOptions = this.normalizeOptions.bind(this);
-        this.setFilters = this.setFilters.bind(this);
+        this.setFilter = this.setFilter.bind(this);
         this.applyFilter = this.applyFilter.bind(this);
 
         if (this.props.filterBy) {
@@ -76,10 +75,6 @@ class OptionComponent extends React.Component {
         if (this.unwatch) {
             this.unwatch();
         }
-
-        if (this.cancelRequest) {
-            this.cancelRequest();
-        }
     }
 
     applyFilter(newValue, name, filter, loadIfEmpty) {
@@ -93,7 +88,7 @@ class OptionComponent extends React.Component {
         if (_.isFunction(filter)) {
             const config = filter(newValue, this.props.api);
             if (_.isPlainObject(config)) {
-                this.setFilters(config);
+                this.setFilter(config);
             } else {
                 this.loadOptions();
             }
@@ -101,14 +96,13 @@ class OptionComponent extends React.Component {
             // If filter is a string, create a filter object using that string as field name
             const filters = {};
             filters[filter] = _.isObject(newValue) ? newValue.id : newValue;
-            this.setFilters(filters);
+            this.setFilter(filters);
         }
     }
 
-    setFilters(filters) {
-        this.props.api.defaults.params = { ...this.props.api.defaults.params, ...filters };
+    setFilter(filter) {
+        this.filter = filter;
         this.loadOptions();
-        return this;
     }
 
     loadOptions(props = null) {
@@ -135,7 +129,13 @@ class OptionComponent extends React.Component {
         }
 
         if (this.props.api) {
-            const query = {};
+            const query = {
+                perPage: this.props.perPage || 10,
+                page: this.props.page || 1,
+                sort: { ...this.props.sort },
+                filter: { ...this.filter }
+            };
+
             if (this.props.filterBy) {
                 // Get current value of the field that filters current field
                 let filter = null;
@@ -149,29 +149,19 @@ class OptionComponent extends React.Component {
                 if (_.isFunction(this.filterField)) {
                     filter = this.filterField(filteredByValue, this.props.api);
                     if (_.isPlainObject(filter)) {
-                        _.merge(query, filter);
+                        _.merge(query.filter, filter);
                     }
                 }
 
                 if (_.isString(this.filterField)) {
-                    query[this.filterField] = filteredByValue;
+                    query.filter[this.filterField] = filteredByValue;
                 }
-
-                this.props.api.defaults.params = { ...this.props.api.defaults.params, ...query };
             }
 
             this.setState({ loading: true });
-            this.request = this.props.api
-                .request({
-                    cancelToken: new axios.CancelToken(cancel => {
-                        this.cancelRequest = cancel;
-                    })
-                })
-                .then(apiResponse => {
-                    this.request = null;
-                    this.cancelRequest = null;
-
-                    let { data } = apiResponse.data;
+            return this.props.api
+                .list({ fields: this.props.fields, variables: query })
+                .then(({ data }) => {
                     if (_.isPlainObject(data) && Array.isArray(data.list)) {
                         data = data.list;
                     }
@@ -181,15 +171,7 @@ class OptionComponent extends React.Component {
                     }
 
                     this.setState({ options: this.normalizeOptions(props, data), loading: false });
-                })
-                .catch(err => {
-                    if (axios.isCancel(err)) {
-                        return this.mounted ? this.setState({ loading: false }) : null;
-                    }
-                    console.log(err);
                 });
-
-            return this.request;
         }
 
         /**
@@ -237,8 +219,8 @@ class OptionComponent extends React.Component {
     }
 
     renderOptionText(props, option) {
-        if (props.optionRenderer) {
-            return props.optionRenderer({ option: { data: option } });
+        if (props.renderOption) {
+            return props.renderOption({ option: { data: option } });
         } else if (_.isPlainObject(option) && !React.isValidElement(option)) {
             return _.get(option, props.textAttr);
         } else if (_.isString(option)) {

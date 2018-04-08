@@ -1,7 +1,8 @@
 import React from "react";
 import { app, createComponent, i18n } from "webiny-app";
-import { ModalComponent } from "webiny-app-ui";
 import CustomDialog from "./CustomDialog";
+
+const t = i18n.namespace("NewClient.Frontend.Views.Profile");
 
 class Profile extends React.Component {
     showDialog(name) {
@@ -42,9 +43,9 @@ class Profile extends React.Component {
         } = this.props;
 
         const formProps = {
-            api: "/security/users",
-            connectToRouter: true,
-            fields: "id,firstName,lastName,email,enabled",
+            entity: "SecurityUser",
+            withRouter: true,
+            fields: "id firstName lastName email enabled",
             onCancel: "About",
             onSubmitSuccess: "About"
         };
@@ -61,9 +62,9 @@ class Profile extends React.Component {
         const checkboxGroup = {
             label: "Select owners",
             name: "owners",
-            api: "/security/users",
-            fields: "id,email",
-            sort: "email",
+            entity: "SecurityUser",
+            fields: "id email",
+            sort: { email: 1 },
             perPage: 5,
             textAttr: "email",
             filterBy: "enabled"
@@ -73,10 +74,10 @@ class Profile extends React.Component {
             label: "Select assignee",
             placeholder: "Select a value",
             name: "assignee",
-            api: "/security/users",
-            fields: "id,email",
-            sort: "email",
-            perPage: 100,
+            entity: "SecurityUser",
+            fields: "id email",
+            sort: { email: 1 },
+            perPage: 20,
             textAttr: "email",
             filterBy: "enabled"
         };
@@ -84,11 +85,11 @@ class Profile extends React.Component {
         const searchProps = {
             label: "Search manager",
             name: "manager",
-            api: "/security/users",
-            fields: "id,email,createdOn",
-            sort: "email",
+            entity: "SecurityUser",
+            fields: "id email createdOn",
+            sort: { email: 1 },
             textAttr: "email",
-            searchFields: "email",
+            search: { fields: ["email"] },
             renderOptionLabel: ({ option }) => (
                 <div>
                     <strong>{option.data.email}</strong>
@@ -103,9 +104,9 @@ class Profile extends React.Component {
         const radioGroup = {
             label: t`Select assignee`,
             name: "assignee",
-            api: "/security/users",
-            fields: "id,email",
-            sort: "email",
+            entity: "SecurityUser",
+            fields: "id email",
+            sort: { email: 1 },
             perPage: 5,
             textAttr: "email",
             filterBy: "enabled",
@@ -198,7 +199,7 @@ class Profile extends React.Component {
                             </View.Header>
                             <View.Body noPadding>
                                 <Tabs size="large">
-                                    <Tabs.Tab label="User" icon="fa-home">
+                                    <Tabs.Tab label="User" icon="home">
                                         <Grid.Row>
                                             <Grid.Col all={6}>
                                                 <Section title={t`Info`} />
@@ -218,7 +219,7 @@ class Profile extends React.Component {
                                                             label={t`Email`}
                                                             name="email"
                                                             description={t`Your email`}
-                                                            validators="required,email"
+                                                            validators="email"
                                                         />
                                                         <Tags
                                                             name={"tags"}
@@ -258,9 +259,7 @@ class Profile extends React.Component {
                                                         <Password
                                                             label={t`New password`}
                                                             name="password"
-                                                            placeholder={i18n(
-                                                                "Type a new password"
-                                                            )}
+                                                            placeholder={t`Type a new password`}
                                                         />
                                                     </Grid.Col>
                                                 </Grid.Row>
@@ -286,7 +285,7 @@ class Profile extends React.Component {
                                             </Grid.Col>
                                         </Grid.Row>
                                     </Tabs.Tab>
-                                    <Tabs.Tab label="Tab 2" icon="fa-cog">
+                                    <Tabs.Tab label="Tab 2" icon="cog">
                                         <Grid.Row>
                                             <Grid.Col all={6}>
                                                 <Section title={t`Info`} />
@@ -314,7 +313,7 @@ class Profile extends React.Component {
                                             </Grid.Col>
                                         </Grid.Row>
                                     </Tabs.Tab>
-                                    <Tabs.Tab label="Tab 3" icon="fa-money">
+                                    <Tabs.Tab label="Tab 3" icon={["fas", "money-bill-alt"]}>
                                         <Grid.Row>
                                             <Grid.Col all={12}>
                                                 <ViewSwitcher>

@@ -49,7 +49,7 @@ export default () => {
         const securityManageUsers = "webiny-security-manager";
 
         app.services.get("menu").add(
-            <Menu label={t`Security`} icon="icon-users">
+            <Menu label={t`Security`} icon="user-secret">
                 <Menu label={t`User Management`} role={securityManageUsers}>
                     <Menu label={t`Permissions`} route="Permissions.List" order={1} />
                     <Menu label={t`Roles`} route="Roles.List" order={2} />

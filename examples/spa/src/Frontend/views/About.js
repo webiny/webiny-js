@@ -1,56 +1,8 @@
 import React from "react";
-import gql from "graphql-tag";
-import { app, createComponent, i18n } from "webiny-app";
+import { createComponent, i18n } from "webiny-app";
 import { ModalComponent } from "webiny-app-ui";
 
 const t = i18n.namespace("NewClient.Frontend.Views.About");
-
-const listQuery = ({ fields, variables }) => {
-    const query = gql`
-        query list($filter: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SearchInput) {
-            listSecurityUsers(filter: $filter, sort: $sort, page: $page, perPage: $perPage, search: $search) {
-                list {
-                    ${fields}
-                }
-                meta {
-                    count
-                    totalCount
-                    totalPages
-                }
-            }
-        }
-    `;
-
-    return app.graphql.query({ query, variables }).then(({ errors, data }) => {
-        return { data: data.listSecurityUsers, error: errors && errors[0] };
-    });
-};
-
-const updateQuery = ({ variables }) => {
-    const mutation = gql`
-        mutation update($id: String!, $data: JSON!) {
-            updateSecurityUser(id: $id, data: $data) {
-                id
-            }
-        }
-    `;
-
-    return app.graphql.mutate({ mutation, variables }).then(({ errors, data }) => {
-        return { data: data.updateSecurityUser, error: errors && errors[0] };
-    });
-};
-
-const deleteQuery = ({ variables }) => {
-    const mutation = gql`
-        mutation delete($id: String!) {
-            deleteSecurityUser(id: $id)
-        }
-    `;
-
-    return app.graphql.mutate({ mutation, variables }).then(({ errors, data }) => {
-        return { data: data.deleteSecurityUser, error: errors && errors[0] };
-    });
-};
 
 class About extends React.Component {
     render() {
@@ -81,13 +33,9 @@ class About extends React.Component {
                     </View.Header>
                     <View.Body>
                         <List
-                            queries={{
-                                list: listQuery,
-                                update: updateQuery,
-                                delete: deleteQuery
-                            }}
-                            connectToRouter={true}
-                            sort="email"
+                            entity={"SecurityUsers"}
+                            withRouter={true}
+                            sort={{ email: -1 }}
                             fields={"id firstName email createdOn enabled"}
                             search={{ fields: ["email", "firstName"] }}
                         >
@@ -107,7 +55,7 @@ class About extends React.Component {
                                         </Grid.Col>
                                         <Grid.Col all={6}>
                                             <Input
-                                                name="_searchQuery"
+                                                name="search.query"
                                                 placeholder={t`Search by email`}
                                                 onEnter={apply()}
                                             />

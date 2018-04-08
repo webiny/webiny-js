@@ -4,6 +4,7 @@ import { createComponent, i18n } from "webiny-app";
 import icons from "./icons";
 
 const t = i18n.namespace("Webiny.Ui.IconPicker");
+
 class IconPicker extends React.Component {
     constructor(props) {
         super(props);
@@ -19,7 +20,7 @@ class IconPicker extends React.Component {
         const { Icon } = this.props;
         return (
             <div>
-                <Icon icon={"fa " + option.id} /> {option.text}
+                <Icon icon={[option.data.prefix, option.data.icon]} /> {option.data.icon}
             </div>
         );
     }
@@ -32,9 +33,13 @@ class IconPicker extends React.Component {
         const { Icon } = this.props;
         return (
             <div>
-                <Icon icon={"fa " + option.id} /> {option.text}
+                <Icon icon={[option.data.prefix, option.data.icon]} /> {option.data.icon}
             </div>
         );
+    }
+
+    shouldComponentUpdate(props) {
+        return !_.isEqual(props.value, this.props.value);
     }
 
     render() {
@@ -54,7 +59,8 @@ IconPicker.defaultProps = {
     minimumInputLength: 2,
     tooltip: t`Visit http://fontawesome.io for full list`,
     renderOption: null,
-    renderSelected: null
+    renderSelected: null,
+    useDataAsValue: true
 };
 
 export default createComponent(IconPicker, { modules: ["Select", "Icon"], formComponent: true });

@@ -1,7 +1,7 @@
 import React from 'react';
 import { createComponent } from 'webiny-app';
 
-class ListContainerLoader extends React.Component {
+class ListLoader extends React.Component {
     render() {
         if (this.props.render) {
             return this.props.render.call(this);
@@ -20,4 +20,4 @@ class ListContainerLoader extends React.Component {
     }
 }
 
-export default createComponent(ListContainerLoader, { modules: ['Loader'], listLoaderComponent: true });
+export default createComponent(ListLoader, { modules: ['Loader'], listLoaderComponent: true });

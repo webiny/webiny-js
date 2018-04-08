@@ -17,7 +17,8 @@ class Field extends React.Component {
             return true;
         }
 
-        return !_.isEqual(this.props.data, props.data);
+        const check = ['data', 'sorted', 'rowSelected'];
+        return !_.isEqual(_.pick(this.props, check), _.pick(props, check));
     }
 
     getTdClasses(classes = {}) {

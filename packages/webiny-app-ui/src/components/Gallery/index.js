@@ -3,8 +3,8 @@ import ReactDOM from "react-dom";
 import _ from "lodash";
 import $ from "jquery";
 import classSet from "classnames";
-import { createComponent, i18n } from "webiny-app";
-import { FormComponent, LinkState } from "webiny-app-ui";
+import { createComponent, i18n, linkState } from "webiny-app";
+import { FormComponent } from "webiny-app-ui";
 import Image from "./Image";
 import styles from "./styles.css";
 
@@ -73,7 +73,7 @@ class Gallery extends React.Component {
     }
 
     bindTo(key) {
-        return new LinkState(this, key).create();
+        return linkState(this, key);
     }
 
     getImageIndex(image) {

@@ -35,7 +35,6 @@
     "quill": "^1.3.4",
     "react-transition-group": "^1.2.0",
     "react-flatpickr": "^3.6.4",
-    "react-transition-group": "^1.2.0",
     "select2": "^4.0.6-rc.1",
     "simplemde": "^1.11.2",
     "webiny-app": "0.0.0-semantically-released"

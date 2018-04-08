@@ -33,7 +33,9 @@ class Client {
     interceptors: Array<Function>;
 
     constructor() {
-        this.config = {};
+        this.config = {
+            errorPolicy: "all"
+        };
         this.interceptors = [];
         this.apolloClient = null;
 

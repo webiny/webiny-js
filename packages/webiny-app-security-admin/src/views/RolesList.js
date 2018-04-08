@@ -51,7 +51,7 @@ class RolesList extends React.Component {
                                         <Ui.Button
                                             type="secondary"
                                             onClick={showView("importModal")}
-                                            icon="fa-upload"
+                                            icon="upload"
                                             label={t`Import`}
                                         />
                                     </Ui.ButtonGroup>
@@ -100,7 +100,7 @@ class RolesList extends React.Component {
                                                     <Table.EditAction route="Roles.Edit" />
                                                     <Table.Action
                                                         label={t`Export`}
-                                                        icon="fa-download"
+                                                        icon="download"
                                                         onClick={showView("exportModal")}
                                                     />
                                                     <Table.DeleteAction />

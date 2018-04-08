@@ -27,7 +27,7 @@ export default (config: Object = {}) => {
 
         attachAuthorization(app);
 
-        // Helper attributes
+        // TODO: Helper attributes
         /*this.extendEntity("*", (entity: Entity) => {
             // "savedBy" attribute - updated on both create and update events.
             entity.attr("savedByClassId").char();

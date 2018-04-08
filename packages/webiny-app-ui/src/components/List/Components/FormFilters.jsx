@@ -7,22 +7,22 @@ class FormFilters extends React.Component {
     constructor(props) {
         super(props);
 
-        ['submit', 'applyFilters'].map(m => this[m] = this[m].bind(this));
+        ['submit', 'applyFilter'].map(m => this[m] = this[m].bind(this));
     }
 
     shouldComponentUpdate(nextProps) {
         return !_.isEqual(nextProps, this.props);
     }
 
-    applyFilters(filters) {
-        this.props.onFilter(filters);
+    applyFilter(filter) {
+        this.props.onFilter(filter);
     }
 
     submit({ model, form }) {
         if (typeof this.props.onSubmit === "function") {
-            this.props.onSubmit({ model, form, apply: this.applyFilters });
+            this.props.onSubmit({ model, form, apply: this.applyFilter });
         } else {
-            this.applyFilters(model);
+            this.applyFilter(model);
         }
     }
 
@@ -36,12 +36,12 @@ class FormFilters extends React.Component {
         return (
             <Form
                 defaultModel={this.props.defaultModel}
-                model={this.props.filters}
+                model={this.props.filter}
                 onSubmit={this.submit}
             >
                 {({ form }) => this.props.children({
                     apply: () => () => form.submit(),
-                    reset: () => () => this.applyFilters({})
+                    reset: () => () => this.applyFilter({})
                 })}
             </Form>
         );

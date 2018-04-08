@@ -37,7 +37,7 @@ class Row extends React.Component {
     }
 
     shouldComponentUpdate(props) {
-        const check = ["data", "expanded", "selected", "sorters"];
+        const check = ["data", "expanded", "selected", "sort"];
 
         return !_.isEqual(_.pick(this.props, check), _.pick(props, check));
     }
@@ -93,7 +93,7 @@ class Row extends React.Component {
             name: props.name,
             label: props.label,
             key: i,
-            sorted: this.props.sorters[props.name] || null,
+            sorted: this.props.sort[props.name] || null,
             actions: this.props.actions,
             rowIndex: this.props.index,
             rowDetailsExpanded: this.props.expanded,
