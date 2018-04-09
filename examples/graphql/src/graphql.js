@@ -17,10 +17,7 @@ export default () => {
 
     app.use(
         "/graphql",
-        webiny.middleware([
-            authentication({ token: "Authorization" }),
-            graphql({ graphiql: true })
-        ])
+        webiny.middleware([authentication({ token: "Authorization" }), graphql({ graphiql: true })])
     );
 
     return app;

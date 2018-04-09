@@ -3,6 +3,7 @@ npm-debug.log
 node_modules
 .DS_Store
 coverage
+yarn.lock
 .nyc_output
 packages/*/lib
 dist/

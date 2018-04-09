@@ -32,7 +32,9 @@ class WidgetsModal extends React.Component {
                                     <Tabs.Tab key={name} label={title} icon={icon}>
                                         <div className={styles.widgets}>
                                             <ul>
-                                                {cms.getEditorWidgets(name).map(this.renderWidget.bind(this))}
+                                                {cms
+                                                    .getEditorWidgets(name)
+                                                    .map(this.renderWidget.bind(this))}
                                             </ul>
                                         </div>
                                     </Tabs.Tab>

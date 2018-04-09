@@ -4,7 +4,13 @@ import styles from "./WidgetFunctions.scss";
 
 class WidgetFunctions extends React.Component {
     render() {
-        const { modules: { Icon, ClickConfirm }, moveUp, moveDown, onRemoved, beforeRemove } = this.props;
+        const {
+            modules: { Icon, ClickConfirm },
+            moveUp,
+            moveDown,
+            onRemoved,
+            beforeRemove
+        } = this.props;
 
         return (
             <div className={styles.widgetFunctions}>
@@ -24,7 +30,10 @@ class WidgetFunctions extends React.Component {
                             </a>
                         </li>
                         <li>
-                            <ClickConfirm message={"Are you sure you want to delete this widget?"} onComplete={onRemoved}>
+                            <ClickConfirm
+                                message={"Are you sure you want to delete this widget?"}
+                                onComplete={onRemoved}
+                            >
                                 <a href="javascript:void(0)" onClick={beforeRemove}>
                                     <Icon icon={["fas", "times"]} />
                                 </a>

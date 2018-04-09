@@ -34,7 +34,9 @@ class File extends Entity {
         this.attr("src").dynamic(() => {
             return /^(https?:)?\/\//.test(this.key) ? this.key : this.getURL();
         });
-        this.attr("tags").array().setDefaultValue([]);
+        this.attr("tags")
+            .array()
+            .setDefaultValue([]);
 
         // `ref` can be linked with any Entity class so we have to provide a `classIdAttribute` to store related Entity classId
         this.attr("ref").entity([], { classIdAttribute: "refClassId" });

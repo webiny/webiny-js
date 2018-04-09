@@ -51,7 +51,9 @@ class CategoryModal extends React.Component {
                                         <Input
                                             label="URL"
                                             placeholder="Enter category URL"
-                                            description={"This URL will be added to all pages in this category."}
+                                            description={
+                                                "This URL will be added to all pages in this category."
+                                            }
                                             name="url"
                                             validators={["required", categoryURL]}
                                         />

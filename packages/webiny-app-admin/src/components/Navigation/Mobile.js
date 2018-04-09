@@ -1,16 +1,16 @@
-import React from 'react';
+import React from "react";
 import classSet from "classnames";
-import { app, createComponent } from 'webiny-app';
-import _ from 'lodash';
-import $ from 'jquery';
-import utils from './utils';
+import { app, createComponent } from "webiny-app";
+import _ from "lodash";
+import $ from "jquery";
+import utils from "./utils";
 
 class Mobile extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {};
-        this.menu = app.services.get('menu');
+        this.menu = app.services.get("menu");
 
         this.onClick = this.onClick.bind(this);
 
@@ -18,7 +18,7 @@ class Mobile extends React.Component {
          * Menu renderer passed to <Menu>.
          * Note that `this` is still bound to `Mobile` class since we are passing an arrow function.
          */
-        this.renderer = (menu) => {
+        this.renderer = menu => {
             const props = _.clone(menu.props);
             if (!utils.canAccess(props)) {
                 return null;
@@ -29,16 +29,28 @@ class Mobile extends React.Component {
             const children = React.Children.toArray(props.children);
             const hasChildren = children.length > 0;
 
-            const menuIconClass = classSet('icon app-icon', { 'fa': _.includes(props.icon, 'fa-') }, props.icon);
+            const menuIconClass = classSet(
+                "icon app-icon",
+                { fa: _.includes(props.icon, "fa-") },
+                props.icon
+            );
 
             const linkProps = {
                 key: props.id,
                 label: props.label,
                 onClick: this.closeMobileMenu,
                 children: [
-                    props.icon ? <span key="icon" className={menuIconClass}/> : null,
-                    level > 1 ? props.label : <span key="title" className="app-title">{props.label}</span>,
-                    hasChildren ? <span key="caret" className="icon icon-caret-down mobile-caret"/> : null
+                    props.icon ? <span key="icon" className={menuIconClass} /> : null,
+                    level > 1 ? (
+                        props.label
+                    ) : (
+                        <span key="title" className="app-title">
+                            {props.label}
+                        </span>
+                    ),
+                    hasChildren ? (
+                        <span key="caret" className="icon icon-caret-down mobile-caret" />
+                    ) : null
                 ]
             };
 
@@ -69,8 +81,13 @@ class Mobile extends React.Component {
                 <li className={className} key={props.id}>
                     {utils.getLink(props.route, Link, linkProps)}
                     {hasChildren && (
-                        <ul className={'level-' + (level + 1)}>
-                            <li className="main-menu--close back" onClick={e => this.onClick(menu, e)}>Go Back</li>
+                        <ul className={"level-" + (level + 1)}>
+                            <li
+                                className="main-menu--close back"
+                                onClick={e => this.onClick(menu, e)}
+                            >
+                                Go Back
+                            </li>
                             {childMenuItems}
                         </ul>
                     )}
@@ -87,22 +104,24 @@ class Mobile extends React.Component {
     }
 
     closeMobileMenu() {
-        $('body').removeClass('mobile-nav');
+        $("body").removeClass("mobile-nav");
     }
 
     render() {
         return (
             <div className="navigation">
-                <div className="shield"/>
+                <div className="shield" />
                 <div className="main-menu">
                     <ul className="menu-list level-0">
-                        <li className="main-menu--close" onClick={this.closeMobileMenu}>Close</li>
-                        {this.menu.getMenu().map(menu => (
+                        <li className="main-menu--close" onClick={this.closeMobileMenu}>
+                            Close
+                        </li>
+                        {this.menu.getMenu().map(menu =>
                             React.cloneElement(menu, {
                                 key: menu.props.id,
                                 render: this.renderer
                             })
-                        ))}
+                        )}
                     </ul>
                 </div>
             </div>
@@ -110,4 +129,4 @@ class Mobile extends React.Component {
     }
 }
 
-export default createComponent(Mobile, { modules: ['Link'] });
+export default createComponent(Mobile, { modules: ["Link"] });

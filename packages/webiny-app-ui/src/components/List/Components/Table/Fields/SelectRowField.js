@@ -4,7 +4,14 @@ import styles from "../../../styles.css";
 
 class SelectRowField extends React.Component {
     render() {
-        const { rowSelected, rowDisabled, onSelect, modules: { Checkbox, List }, render, ...props } = this.props;
+        const {
+            rowSelected,
+            rowDisabled,
+            onSelect,
+            modules: { Checkbox, List },
+            render,
+            ...props
+        } = this.props;
 
         if (render) {
             return render.call(this);

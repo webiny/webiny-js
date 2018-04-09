@@ -59,7 +59,6 @@ class UserMenu extends React.Component {
             return null;
         }
 
-
         const { userMenuItems } = this.props.modules;
         return (
             <div className="dropdown profile-holder">

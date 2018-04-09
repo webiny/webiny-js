@@ -22,7 +22,7 @@ class Next extends React.Component {
                 this.wizard.form.validate().then(valid => valid && wizard.nextStep());
             },
             align: "right",
-            icon: ['fa', 'arrow-circle-right'],
+            icon: ["fa", "arrow-circle-right"],
             ...props
         };
 

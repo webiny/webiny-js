@@ -3,7 +3,6 @@ import { createComponent } from "webiny-app";
 import CategoryModal from "./CategoryModal";
 
 class CategoryList extends React.Component {
-
     render() {
         const listProps = {
             onReady: actions => (this.list = actions),
@@ -43,7 +42,10 @@ class CategoryList extends React.Component {
                                             >
                                                 {({ data }) => (
                                                     <div>
-                                                        <a href="#" onClick={() => showView("form")(data)}>
+                                                        <a
+                                                            href="#"
+                                                            onClick={() => showView("form")(data)}
+                                                        >
                                                             <strong>{data.title}</strong>
                                                         </a>
                                                         <br />

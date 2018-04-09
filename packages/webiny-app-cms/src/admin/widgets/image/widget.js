@@ -8,7 +8,7 @@ class ImageWidget extends React.Component {
             <EditorWidget {...{ value, onChange }}>
                 <Image
                     name={"image"}
-                    onChange={({value, oldValue}) => {
+                    onChange={({ value, oldValue }) => {
                         if (!value) {
                             console.log("DELETE IMAGE", oldValue);
                         }

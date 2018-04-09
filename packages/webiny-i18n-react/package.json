@@ -15,7 +15,7 @@
   "dependencies": {
     "babel-runtime": "^6.26.0",
     "lodash": "^4.17.4",
-    "react": "16.2.0"
+    "react": "^16.3.1"
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",

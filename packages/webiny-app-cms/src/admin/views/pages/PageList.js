@@ -8,14 +8,14 @@ const t = i18n.namespace("Cms.Admin.Views.PageList");
 class PageList extends React.Component {
     render() {
         const {
-            List,
+            //List,
             View,
             Link,
             Icon,
             Dropdown,
-            Modal,
-            Button,
-            Input,
+            //Modal,
+            //Button,
+            //Input,
             Select,
             Grid,
             Tabs,
@@ -98,8 +98,7 @@ class PageList extends React.Component {
                                         </div>
                                     </div>
                                 </Tabs.Tab>
-                                <Tabs.Tab label="Revisions">
-                                </Tabs.Tab>
+                                <Tabs.Tab label="Revisions" />
                             </Tabs>
                         </Grid.Col>
                     </Grid.Row>

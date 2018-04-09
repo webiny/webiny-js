@@ -1,10 +1,9 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import _ from 'lodash';
-import { createComponent } from 'webiny-app';
-import { FormComponent } from 'webiny-app-ui';
-import SimpleMDE from 'simplemde';
-import styles from './styles.scss';
+import React from "react";
+import _ from "lodash";
+import { createComponent } from "webiny-app";
+import { FormComponent } from "webiny-app-ui";
+import SimpleMDE from "simplemde";
+import styles from "./styles.scss";
 
 class MarkdownEditor extends React.Component {
     constructor(props) {
@@ -14,12 +13,13 @@ class MarkdownEditor extends React.Component {
             ...props.initialState
         };
 
-
         this.mdEditor = null;
         this.options = null;
         this.textarea = null;
 
-        ['getTextareaElement', 'setValue', 'getEditor', 'getHtml'].map(m => this[m] = this[m].bind(this));
+        ["getTextareaElement", "setValue", "getEditor", "getHtml"].map(
+            m => (this[m] = this[m].bind(this))
+        );
     }
 
     componentDidMount() {
@@ -33,14 +33,14 @@ class MarkdownEditor extends React.Component {
             renderingConfig: {
                 codeSyntaxHighlighting: true
             },
-            hideIcons: ['side-by-side', 'fullscreen'],
+            hideIcons: ["side-by-side", "fullscreen"],
             indentWithTabs: true,
             tabSize: 4
         };
 
         this.mdEditor = new SimpleMDE(mdConfig);
 
-        this.mdEditor.codemirror.on('change', () => {
+        this.mdEditor.codemirror.on("change", () => {
             this.props.onChange(this.mdEditor.codemirror.getValue());
         });
 
@@ -50,7 +50,7 @@ class MarkdownEditor extends React.Component {
         // Set new renderer that will use the original renderer first, then apply custom renderers
         this.mdEditor.options.previewRender = plainText => {
             let html = this.originalRenderer(plainText);
-            _.each(this.props.customParsers, p => html = p(html));
+            _.each(this.props.customParsers, p => (html = p(html)));
             return html;
         };
     }
@@ -58,7 +58,7 @@ class MarkdownEditor extends React.Component {
     componentWillReceiveProps(props) {
         if (this.mdEditor.codemirror.getValue() !== props.value && !_.isNull(props.value)) {
             // the "+ ''" sort a strange with splitLines method within CodeMirror
-            this.mdEditor.codemirror.setValue(props.value + '');
+            this.mdEditor.codemirror.setValue(props.value + "");
         }
     }
 
@@ -89,7 +89,7 @@ class MarkdownEditor extends React.Component {
 
         return (
             <div className="smde">
-                <textarea ref={ref => this.textarea = ref}/>
+                <textarea ref={ref => (this.textarea = ref)} />
             </div>
         );
     }

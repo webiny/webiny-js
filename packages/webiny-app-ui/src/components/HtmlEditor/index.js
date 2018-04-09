@@ -1,6 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import { app, i18n, createComponent, Uploader } from "webiny-app";
+import { app, i18n, createComponent } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
 
 const t = i18n.namespace("Webiny.Ui.HtmlEditor");
@@ -19,7 +19,6 @@ class HtmlEditor extends React.Component {
         this.editor = null;
         this.delay = null;
         this.index = 0;
-
 
         // TODO: create `upload` graphql query
         // Maybe think of a separate express url that handles file uploads?
