@@ -10,7 +10,7 @@ class Settings extends React.Component {
 
         const growler = app.services.get("growler");
 
-        const { Form } = this.props;
+        const { Form } = this.props.modules;
         const formProps = {
             api: this.props.api,
             createHttpMethod: "patch",

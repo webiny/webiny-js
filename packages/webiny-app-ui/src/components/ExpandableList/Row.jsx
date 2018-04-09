@@ -1,15 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import _ from 'lodash';
-import $ from 'jquery';
-import { createComponent, isElementOfType } from 'webiny-app';
-import Field from './Field';
-import ActionSet from './ActionSet';
-import RowDetailsList from './RowDetailsList';
-import RowDetailsContent from './RowDetailsContent';
+import React from "react";
+import ReactDOM from "react-dom";
+import _ from "lodash";
+import $ from "jquery";
+import { createComponent, isElementOfType } from "webiny-app";
+import Field from "./Field";
+import ActionSet from "./ActionSet";
+import RowDetailsList from "./RowDetailsList";
+import RowDetailsContent from "./RowDetailsContent";
 
 class Row extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -17,20 +16,20 @@ class Row extends React.Component {
             active: false,
             mounted: false,
             actionSetActive: false,
-            rowClass: 'expandable-list__row'
+            rowClass: "expandable-list__row"
         };
 
         [
-            'hideRowDetails',
-            'showRowDetails',
-            'handleClickOutside',
-            'renderField',
-            'attachCloseListener',
-            'deatachCloseListener',
-            'showActionSet',
-            'hideActionSet',
-            'getCurrentRowClass'
-        ].map(m => this[m] = this[m].bind(this));
+            "hideRowDetails",
+            "showRowDetails",
+            "handleClickOutside",
+            "renderField",
+            "attachCloseListener",
+            "deatachCloseListener",
+            "showActionSet",
+            "hideActionSet",
+            "getCurrentRowClass"
+        ].map(m => (this[m] = this[m].bind(this)));
     }
 
     componentWillUnmount() {
@@ -53,15 +52,18 @@ class Row extends React.Component {
     }
 
     attachCloseListener() {
-        document.addEventListener('click', this.handleClickOutside, true);
+        document.addEventListener("click", this.handleClickOutside, true);
     }
 
     deatachCloseListener() {
-        document.removeEventListener('click', this.handleClickOutside, true);
+        document.removeEventListener("click", this.handleClickOutside, true);
     }
 
     handleClickOutside(e) {
-        if ((this.state.active === false && this.state.actionSetActive === false) || !this.state.mounted) {
+        if (
+            (this.state.active === false && this.state.actionSetActive === false) ||
+            !this.state.mounted
+        ) {
             return true;
         }
 
@@ -84,23 +86,22 @@ class Row extends React.Component {
         }
 
         // hide row details
-        const details = this.dom.find('.expandable-list__row__details:first');
-        this.dom.removeClass('expandable-list__row--active');
+        const details = this.dom.find(".expandable-list__row__details:first");
+        this.dom.removeClass("expandable-list__row--active");
         details.hide();
 
         // show row content
-        this.dom.find('div.expandable-list__row-wrapper:first').show();
-
+        this.dom.find("div.expandable-list__row-wrapper:first").show();
 
         this.setState({ active: false });
     }
 
     getCurrentRowClass() {
         if (this.state.active) {
-            return 'expandable-list__row--active expandable-list__row';
+            return "expandable-list__row--active expandable-list__row";
         }
 
-        return 'expandable-list__row';
+        return "expandable-list__row";
     }
 
     showRowDetails() {
@@ -109,12 +110,14 @@ class Row extends React.Component {
         }
 
         // show row details
-        const details = $(this.dom).find('.expandable-list__row__details:first');
-        $(this.dom).addClass('expandable-list__row--active');
+        const details = $(this.dom).find(".expandable-list__row__details:first");
+        $(this.dom).addClass("expandable-list__row--active");
         details.show();
 
         // hide row content and action set
-        $(this.dom).find('div.expandable-list__row-wrapper:first').hide();
+        $(this.dom)
+            .find("div.expandable-list__row-wrapper:first")
+            .hide();
 
         this.setState({ active: true });
     }
@@ -122,7 +125,7 @@ class Row extends React.Component {
     showActionSet() {
         this.setState({
             actionSetActive: true,
-            rowClass: this.getCurrentRowClass() + ' expandable-list__row--active-action-set'
+            rowClass: this.getCurrentRowClass() + " expandable-list__row--active-action-set"
         });
     }
 
@@ -134,7 +137,7 @@ class Row extends React.Component {
     }
 
     renderField(field, i) {
-        const props = _.omit(field.props, ['children']);
+        const props = _.omit(field.props, ["children"]);
         _.assign(props, {
             data: this.data,
             key: i,
@@ -153,11 +156,14 @@ class Row extends React.Component {
 
         let fields = [];
         let actionSet = false;
-        let details = '';
+        let details = "";
         this.props.children.map(child => {
             if (isElementOfType(child, Field)) {
                 fields.push(child);
-            } else if (isElementOfType(child, RowDetailsContent) || isElementOfType(child, RowDetailsList)) {
+            } else if (
+                isElementOfType(child, RowDetailsContent) ||
+                isElementOfType(child, RowDetailsList)
+            ) {
                 details = child;
             } else if (isElementOfType(child, ActionSet)) {
                 actionSet = child;
@@ -166,24 +172,30 @@ class Row extends React.Component {
 
         // render action set
         if (actionSet) {
-            const className = 'expandable-list__row__action-set expandable-list__row__fields__field flex-cell flex-width-2';
-            actionSet = <div className={className} onClick={this.showActionSet}>{actionSet}</div>;
+            const className =
+                "expandable-list__row__action-set expandable-list__row__fields__field flex-cell flex-width-2";
+            actionSet = (
+                <div className={className} onClick={this.showActionSet}>
+                    {actionSet}
+                </div>
+            );
         }
 
         // render fields
         fields = fields.map(this.renderField);
 
-        const { Grid } = this.props;
+        const { modules: { Grid } } = this.props;
 
         return (
-            <div className={this.state.rowClass} ref={ref => this.dom = ref}>
+            <div className={this.state.rowClass} ref={ref => (this.dom = ref)}>
                 <div className="expandable-list__row-wrapper flex-row">
                     {fields}
                     {actionSet}
                 </div>
-                <Grid.Row className="expandable-list__row__details" style={{ display: 'none' }}>
+                <Grid.Row className="expandable-list__row__details" style={{ display: "none" }}>
                     <div className="flex-row">
-                        <div className="expandable-list__title flex-cell flex-width-10"><h4>{details.props.title}</h4>
+                        <div className="expandable-list__title flex-cell flex-width-10">
+                            <h4>{details.props.title}</h4>
                         </div>
                         {actionSet}
                     </div>
@@ -198,4 +210,4 @@ Row.defaultProps = {
     onClick: _.noop
 };
 
-export default createComponent(Row, { modules: ['Grid'] });
+export default createComponent(Row, { modules: ["Grid"] });

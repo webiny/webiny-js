@@ -8,7 +8,7 @@ class MultiActions extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { Dropdown } = this.props;
+        const { Dropdown } = this.props.modules;
         return (
             <Dropdown title={this.props.label}>
                 <Dropdown.Header title={t`Actions`}/>

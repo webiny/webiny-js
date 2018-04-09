@@ -8,7 +8,7 @@ class Header extends React.Component {
     }
 
     render() {
-        const { components } = this.props;
+        const { components } = this.props.modules;
         return (
             <div className="navbar navbar-inverse" role="navigation">
                 <div className="navbar-header">

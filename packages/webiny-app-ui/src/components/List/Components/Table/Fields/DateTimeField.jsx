@@ -4,7 +4,7 @@ import { createComponent, i18n } from 'webiny-app';
 
 class DateTimeField extends React.Component {
     render() {
-        const { List, format, render, ...props } = this.props;
+        const { modules: { List }, format, render, ...props } = this.props;
 
         if (render) {
             return render.call(this);

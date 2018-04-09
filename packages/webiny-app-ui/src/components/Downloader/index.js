@@ -3,6 +3,10 @@ import _ from "lodash";
 import axios from "axios";
 import { createComponent } from "webiny-app";
 
+/**
+ * TODO: Downloader
+ * This component needs to be reviewed in context of GraphQL and how we plan on performing downloads (ex: PDF)
+ */
 class Downloader extends React.Component {
     constructor(props) {
         super(props);

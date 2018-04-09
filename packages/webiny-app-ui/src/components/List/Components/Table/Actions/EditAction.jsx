@@ -1,7 +1,7 @@
-import React from 'react';
-import _ from 'lodash';
-import { createComponent } from 'webiny-app';
-import RouteAction from './RouteAction';
+import React from "react";
+import _ from "lodash";
+import { createComponent } from "webiny-app";
+import RouteAction from "./RouteAction";
 
 class EditAction extends React.Component {
     render() {
@@ -9,11 +9,11 @@ class EditAction extends React.Component {
             return this.props.render.call(this);
         }
 
-        const props = _.pick(this.props, ['data', 'label', 'icon']);
-        const { Link, Icon } = this.props;
+        const props = _.pick(this.props, ["data", "label", "icon"]);
+        const { modules: { Link, Icon } } = this.props;
 
         if (this.props.onClick) {
-            const icon = props.icon ? <Icon icon={props.icon}/> : null;
+            const icon = props.icon ? <Icon icon={props.icon} /> : null;
             props.onClick = () => this.props.onClick({ data: this.props.data });
             return (
                 <Link {...props}>
@@ -31,15 +31,13 @@ class EditAction extends React.Component {
             props.route = route;
         }
 
-        return (
-            <RouteAction {...props}/>
-        );
+        return <RouteAction {...props} />;
     }
 }
 
 EditAction.defaultProps = {
-    label: 'Edit',
-    icon: ['fas', 'pencil-alt']
+    label: "Edit",
+    icon: ["fas", "pencil-alt"]
 };
 
-export default createComponent(EditAction, { modules: ['Link', 'Icon'] });
+export default createComponent(EditAction, { modules: ["Link", "Icon"] });

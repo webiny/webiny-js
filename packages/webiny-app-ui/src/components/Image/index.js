@@ -88,7 +88,7 @@ class Image extends React.Component {
     }
 
     getCropper(children = null) {
-        const { cropper, Cropper } = this.props;
+        const { cropper, modules: { Cropper } } = this.props;
 
         if (!cropper) {
             return null;
@@ -165,7 +165,7 @@ class Image extends React.Component {
             return this.getCropper();
         }
 
-        const { FileReader, FormGroup, styles } = this.props;
+        const { modules: { FileReader, FormGroup }, styles } = this.props;
 
         let message = null;
         if (!this.props.value) {

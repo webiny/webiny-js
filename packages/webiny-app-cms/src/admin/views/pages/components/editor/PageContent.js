@@ -99,7 +99,7 @@ class PageContent extends React.Component {
     }
 
     render() {
-        const { Button, Grid, Tabs } = this.props;
+        const { Button, Grid, Tabs } = this.props.modules;
 
         return (
             <page-content>

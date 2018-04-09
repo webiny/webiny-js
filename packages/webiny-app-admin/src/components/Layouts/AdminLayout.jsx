@@ -7,7 +7,7 @@ import { createComponent } from 'webiny-app';
  */
 class AdminLayout extends React.Component {
     render() {
-        const { Navigation, Header, Footer } = this.props;
+        const { Navigation, Header, Footer } = this.props.modules;
 
         return (
             <div className="master minimized">

@@ -4,7 +4,7 @@ import { ModalComponent } from "webiny-app-ui";
 
 class CustomDialog extends React.Component {
     render() {
-        const { Modal, Button } = this.props;
+        const { Modal, Button } = this.props.modules;
         return (
             <Modal.Dialog>
                 <Modal.Content>

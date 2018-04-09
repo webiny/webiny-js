@@ -13,6 +13,8 @@ export default () => {
     app.use(cors());
     app.use(bodyParser.json({ limit: "50mb" }));
 
+    // TODO: think of a way to provide file uploads, downloads and graphql all in one webiny setup.
+
     app.use(
         "/graphql",
         webiny.middleware([

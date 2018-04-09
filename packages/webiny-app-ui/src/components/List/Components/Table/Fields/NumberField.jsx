@@ -4,7 +4,7 @@ import { createComponent, i18n } from 'webiny-app';
 
 class PriceField extends React.Component {
     render() {
-        const { List, render, ...props } = this.props;
+        const { modules: { List }, render, ...props } = this.props;
 
         if (render) {
             return render.call(this);

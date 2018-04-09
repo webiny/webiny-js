@@ -47,7 +47,7 @@ class ImageAttribute extends FileAttribute {
             newValue.setPresets(this.presets);
             newValue.setQuality(this.quality);
             newValue.setProcessor(this.processor);
-            newValue.tags = _.uniqWith(this.tags.concat(newValue.tags), _.isEqual);
+            newValue.tags = _.uniqWith([...this.tags, ...(newValue.tags || [])], _.isEqual);
             if (this.storage) {
                 newValue.setStorage(this.storage).setStorageFolder(this.storageFolder);
             }

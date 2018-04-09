@@ -1,5 +1,4 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import _ from "lodash";
 import $ from "jquery";
 import classSet from "classnames";
@@ -17,7 +16,6 @@ class Gallery extends React.Component {
     constructor(props) {
         super(props);
 
-        this.lastId = null;
         this.dragged = null;
 
         this.state = {
@@ -61,8 +59,6 @@ class Gallery extends React.Component {
     }
 
     setupComponent(props) {
-        // TODO: @i18nRefactor ESLint Do not use findDOMNode (react/no-find-dom-node)
-        this.dom = ReactDOM.findDOMNode(this); // eslint-disable-line
         if (props.value) {
             const images = props.value.map(img => {
                 img.key = _.uniqueId("image-");
@@ -278,7 +274,7 @@ class Gallery extends React.Component {
             return null;
         }
 
-        const { Cropper } = this.props;
+        const { Cropper } = this.props.modules;
 
         if (cropper.inline) {
             return (
@@ -314,7 +310,7 @@ class Gallery extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { FileReader, Alert, Input, FormGroup, styles } = this.props;
+        const { modules: { FileReader, Alert, Input, FormGroup }, styles } = this.props;
 
         let message = null;
         if (this.state.images.length === 0) {

@@ -52,7 +52,7 @@ class Header extends React.Component {
                 sortIcon = this.props.sortableIcon;
         }
 
-        const { Icon } = this.props;
+        const { Icon } = this.props.modules;
         const icon = this.props.sortable ? <Icon icon={sortIcon} /> : null;
 
         let content = this.props.label;

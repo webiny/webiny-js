@@ -117,30 +117,31 @@ class List extends React.Component {
     }
 
     updateRecord(id, data) {
-        // TODO: @error handling
-        return this.props.api.update({ variables: { id, data } }).then(({ error, data }) => {
-            if (!error) {
+        return this.props.api
+            .update({ variables: { id, data } })
+            .then(({ data }) => {
                 this.loadRecords();
-            } else {
+                return data;
+            })
+            .catch(({ error }) => {
                 app.services
                     .get("growler")
                     .danger(error.message, t`That didn\'t go as expected...`, true);
-            }
-            return data;
-        });
+            });
     }
 
     deleteRecord(id, autoRefresh = true) {
-        return this.props.api.delete({ variables: { id } }).then(({ error, data }) => {
-            if (!error) {
+        return this.props.api
+            .delete({ variables: { id } })
+            .then(({ data }) => {
                 autoRefresh && this.loadRecords();
-            } else {
+                return data;
+            })
+            .catch(({ error }) => {
                 app.services
                     .get("growler")
                     .danger(error.message, t`That didn\'t go as expected...`, true);
-            }
-            return data;
-        });
+            });
     }
 
     onSelect(selectedRows) {
@@ -183,6 +184,7 @@ class List extends React.Component {
     /**
      * @private
      * @param children
+     * @param listProps
      */
     prepareList(children, listProps) {
         React.Children.map(
@@ -286,7 +288,7 @@ List.defaultProps = {
         multiActionsElement,
         loaderElement
     }) {
-        const { Grid, styles } = this.props;
+        const { modules: { Grid }, styles } = this.props;
         return (
             <webiny-list-layout>
                 {loaderElement}

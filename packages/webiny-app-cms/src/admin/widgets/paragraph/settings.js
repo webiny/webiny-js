@@ -3,7 +3,7 @@ import { createComponent } from "webiny-app";
 
 class ParagraphWidgetSettings extends React.Component {
     render() {
-        const { EditorWidgetSettings, Select } = this.props;
+        const { EditorWidgetSettings, Select } = this.props.modules;
         return (
             <EditorWidgetSettings>
                 <Select name={"align"}>

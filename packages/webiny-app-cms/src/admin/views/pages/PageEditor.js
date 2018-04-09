@@ -8,7 +8,7 @@ const t = i18n.namespace("Cms.Admin.Views.PageEditor");
 
 class PageEditor extends React.Component {
     render() {
-        const { View, Link, Form, Icon, Grid, Button } = this.props;
+        const { View, Link, Form, Icon, Grid, Button } = this.props.modules;
 
         const formProps = {
             model: data

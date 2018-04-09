@@ -86,7 +86,7 @@ class ChangeConfirm extends React.Component {
             onComplete: this.props.onComplete
         };
 
-        const { Modal } = this.props;
+        const { modules: { Modal } } = this.props;
         const dialog = _.isFunction(this.props.renderDialog) ? (
             this.props.renderDialog()
         ) : (

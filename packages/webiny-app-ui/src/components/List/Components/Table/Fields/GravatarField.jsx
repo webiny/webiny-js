@@ -4,7 +4,7 @@ import { createComponent } from 'webiny-app';
 
 class GravatarField extends React.Component {
     render() {
-        const { Gravatar, List, size, render, ...props } = this.props;
+        const { modules: { Gravatar, List }, size, render, ...props } = this.props;
 
         if (render) {
             return render.call(this);

@@ -41,7 +41,7 @@ class UserAccount extends React.Component {
             }
         };
 
-        const { Ui } = this.props;
+        const { modules: Ui } = this.props;
 
         return (
             <Ui.AdminLayout>
@@ -126,7 +126,6 @@ class UserAccount extends React.Component {
 }
 
 export default createComponent(UserAccount, {
-    modulesProp: "Ui",
     modules: [
         { AdminLayout: "Skeleton.AdminLayout" },
         "View",

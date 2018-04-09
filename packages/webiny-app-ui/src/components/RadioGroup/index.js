@@ -1,10 +1,10 @@
-import React from 'react';
-import _ from 'lodash';
+import React from "react";
+import _ from "lodash";
 import classSet from "classnames";
-import { createComponent } from 'webiny-app';
-import { OptionComponent } from 'webiny-app-ui';
-import Radio from './Radio';
-import styles from './styles.css';
+import { createComponent } from "webiny-app";
+import { OptionComponent } from "webiny-app-ui";
+import Radio from "./Radio";
+import styles from "./styles.css";
 
 class RadioGroup extends React.Component {
     constructor(props) {
@@ -24,7 +24,10 @@ class RadioGroup extends React.Component {
     }
 
     shouldComponentUpdate(nextProps) {
-        return !_.isEqual(nextProps.options, this.props.options) || !_.isEqual(nextProps.value, this.props.value);
+        return (
+            !_.isEqual(nextProps.options, this.props.options) ||
+            !_.isEqual(nextProps.value, this.props.value)
+        );
     }
 
     /**
@@ -41,7 +44,9 @@ class RadioGroup extends React.Component {
                 // If value is an object we need to fetch a single value to compare against option id.
                 // `valueKey` should be used for this purpose but we also use `valueAttr` as a fallback
                 // (although `valueAttr` should only be used for generating options, it contains the default identification attribute name)
-                checked = _.get(this.props.value, this.props.valueKey || this.props.valueAttr) === item.id;
+                checked =
+                    _.get(this.props.value, this.props.valueKey || this.props.valueAttr) ===
+                    item.id;
             } else {
                 checked = this.props.value === item.id;
             }
@@ -54,7 +59,10 @@ class RadioGroup extends React.Component {
                 optionIndex: key,
                 value: checked,
                 onChange: newValue => {
-                    this.props.onChange(this.props.useDataAsValue ? newValue.data : newValue.id, this.validate);
+                    this.props.onChange(
+                        this.props.useDataAsValue ? newValue.data : newValue.id,
+                        this.validate
+                    );
                 }
             };
 
@@ -66,7 +74,7 @@ class RadioGroup extends React.Component {
                 props.renderLabel = this.props.renderRadioLabel;
             }
 
-            const radio = <Radio {...props}/>;
+            const radio = <Radio {...props} />;
 
             if (callback) {
                 return callback(radio, key);
@@ -81,18 +89,17 @@ class RadioGroup extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { FormGroup, styles, className, disabled } = this.props;
+        const { modules: { FormGroup }, styles, className, disabled } = this.props;
 
         return (
-            <FormGroup className={classSet(className, (disabled && styles.disabled))}>
+            <FormGroup className={classSet(className, disabled && styles.disabled)}>
                 {this.props.renderLabel.call(this)}
-                <div className="clearfix"/>
+                <div className="clearfix" />
                 {this.renderOptions()}
                 {this.props.renderValidationMessage.call(this)}
             </FormGroup>
         );
     }
-
 }
 
 RadioGroup.Radio = Radio;
@@ -102,4 +109,8 @@ RadioGroup.defaultProps = {
     renderRadio: null
 };
 
-export default createComponent([RadioGroup, OptionComponent], { modules: ['FormGroup'], styles, formComponent: true });
+export default createComponent([RadioGroup, OptionComponent], {
+    modules: ["FormGroup"],
+    styles,
+    formComponent: true
+});

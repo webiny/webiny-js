@@ -1,6 +1,6 @@
-import React from 'react';
-import _ from 'lodash';
-import { createComponent } from 'webiny-app';
+import React from "react";
+import _ from "lodash";
+import { createComponent } from "webiny-app";
 
 class ModalAction extends React.Component {
     render() {
@@ -12,7 +12,7 @@ class ModalAction extends React.Component {
             return null;
         }
 
-        const { Icon, Link, Downloader } = this.props;
+        const { modules: { Icon, Link, Downloader } } = this.props;
 
         const download = (httpMethod, url, params = null) => {
             this.downloader.download(httpMethod, url, params);
@@ -33,14 +33,14 @@ class ModalAction extends React.Component {
             }
         });
 
-        const icon = this.props.icon ? <Icon icon={this.props.icon}/> : null;
+        const icon = this.props.icon ? <Icon icon={this.props.icon} /> : null;
 
         return (
             <Link onClick={() => this.dialog.show()}>
                 {icon}
                 {this.props.label}
-                {React.cloneElement(modal, { onReady: dialog => this.dialog = dialog })}
-                <Downloader ref={ref => this.downloader = ref}/>
+                {React.cloneElement(modal, { onReady: dialog => (this.dialog = dialog) })}
+                <Downloader ref={ref => (this.downloader = ref)} />
             </Link>
         );
     }
@@ -53,4 +53,4 @@ ModalAction.defaultProps = {
     download: false
 };
 
-export default createComponent(ModalAction, { modules: ['Icon', 'Link', 'Downloader'] });
+export default createComponent(ModalAction, { modules: ["Icon", "Link", "Downloader"] });

@@ -1,7 +1,7 @@
-import React from 'react';
-import { createComponent } from 'webiny-app';
-import classSet from 'classnames';
-import styles from './../styles.css';
+import React from "react";
+import { createComponent } from "webiny-app";
+import classSet from "classnames";
+import styles from "./../styles.css";
 
 class ValidationMessage extends React.Component {
     render() {
@@ -9,7 +9,7 @@ class ValidationMessage extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { Animate, children, show } = this.props;
+        const { modules: { Animate }, children, show } = this.props;
 
         let css = show ? styles.validationMessageError : null;
 
@@ -18,7 +18,8 @@ class ValidationMessage extends React.Component {
                 trigger={show}
                 hide={this.props.hideValidationAnimation}
                 show={this.props.showValidationAnimation}
-                className={styles.validationMessageHolder}>
+                className={styles.validationMessageHolder}
+            >
                 <span className={classSet(styles.validationMessage, css)}>{children}</span>
             </Animate>
         );
@@ -31,4 +32,4 @@ ValidationMessage.defaultProps = {
     showValidationAnimation: { translateY: 50, opacity: 1, duration: 225 }
 };
 
-export default createComponent(ValidationMessage, { modules: ['Animate'], styles });
+export default createComponent(ValidationMessage, { modules: ["Animate"], styles });

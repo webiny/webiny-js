@@ -9,7 +9,7 @@ class Section extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { Icon, styles, title, children } = this.props;
+        const { modules: { Icon }, styles, title, children } = this.props;
         let icon = null;
         if (this.props.icon) {
             icon = <Icon icon={this.props.icon} />;

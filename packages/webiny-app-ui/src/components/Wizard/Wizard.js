@@ -1,7 +1,7 @@
-import React from 'react';
-import { Webiny } from 'webiny-app';
-import _ from 'lodash';
-import Container from './Container';
+import React from "react";
+import { Webiny } from "webiny-app";
+import _ from "lodash";
+import Container from "./Container";
 
 class Wizard extends Webiny.Ui.Component {
     constructor() {
@@ -14,14 +14,14 @@ class Wizard extends Webiny.Ui.Component {
             return this.props.render.call(this);
         }
 
-        const { Form } = this.props;
+        const { modules: { Form } } = this.props;
 
         return (
             <Form
                 {...this.props.form}
                 onSubmit={async params => {
                     // This callback won't be implemented by developers probably, because there are other valid Wizard callbacks.
-                    const onSubmit = _.get(this.props.form, 'onSubmit');
+                    const onSubmit = _.get(this.props.form, "onSubmit");
                     if (_.isFunction(onSubmit)) {
                         await this.props.form.onSubmit(params);
                     }
@@ -33,11 +33,14 @@ class Wizard extends Webiny.Ui.Component {
                     }
 
                     return container.nextStep();
-                }}>
+                }}
+            >
                 {({ form }) => (
                     <Container
-                        ref={container => this.container = container}
-                        form={form} {..._.omit(this.props, ['Form', 'form', 'render', 'children'])}>
+                        ref={container => (this.container = container)}
+                        form={form}
+                        {..._.omit(this.props, ["Form", "form", "render", "children"])}
+                    >
                         {this.props.children}
                     </Container>
                 )}
@@ -59,5 +62,5 @@ Wizard.defaultProps = {
 };
 
 export default createComponent(Wizard, {
-    modules: ['Form', 'Loader']
+    modules: ["Form"]
 });

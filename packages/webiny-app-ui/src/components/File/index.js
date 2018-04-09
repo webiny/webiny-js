@@ -77,7 +77,7 @@ class SimpleFile extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { FileReader, FormGroup, styles } = this.props;
+        const { modules: { FileReader, FormGroup }, styles } = this.props;
 
         const fileReaderProps = {
             accept: this.props.accept,
@@ -146,7 +146,7 @@ SimpleFile.defaultProps = {
     readAs: "data", // or binary
     onGetFiles: null,
     renderError() {
-        const { Alert } = this.props;
+        const { modules: { Alert } } = this.props;
         return (
             <Alert title={t`A file could not be selected`} type="error" close>
                 <ul>
@@ -158,7 +158,7 @@ SimpleFile.defaultProps = {
         );
     },
     renderErrors() {
-        const { Alert } = this.props;
+        const { modules: { Alert } } = this.props;
         const data = [];
         _.each(this.state.errors, (err, key) => {
             data.push(

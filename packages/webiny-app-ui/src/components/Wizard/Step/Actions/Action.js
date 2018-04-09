@@ -3,7 +3,7 @@ import { createComponent } from "webiny-app";
 
 class Action extends React.Component {
     render() {
-        const { render, Button, ...props } = this.props;
+        const { render, modules: { Button }, ...props } = this.props;
 
         if (render) {
             return render.call(this);

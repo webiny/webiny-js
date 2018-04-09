@@ -14,7 +14,7 @@ class PageFilter extends React.Component {
     }
 
     render() {
-        const { Icon } = this.props;
+        const { Icon } = this.props.modules;
 
         return (
             <div className={styles["filter-bar"]}>

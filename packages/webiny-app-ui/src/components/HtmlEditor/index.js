@@ -2,7 +2,6 @@ import React from "react";
 import _ from "lodash";
 import { app, i18n, createComponent, Uploader } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
-import axios from "axios";
 
 const t = i18n.namespace("Webiny.Ui.HtmlEditor");
 class HtmlEditor extends React.Component {
@@ -21,10 +20,10 @@ class HtmlEditor extends React.Component {
         this.delay = null;
         this.index = 0;
 
-        const api = axios.create({
-            url: props.api
-        });
-        this.uploader = new Uploader(api);
+
+        // TODO: create `upload` graphql query
+        // Maybe think of a separate express url that handles file uploads?
+        // this.uploader = new Uploader(api);
 
         [
             "getTextareaElement",
@@ -44,7 +43,7 @@ class HtmlEditor extends React.Component {
             this.props.attachToForm(this);
         }
 
-        const { Quill } = this.props;
+        const { Quill } = this.props.modules;
         this.editor = new Quill(this.getTextareaElement(), {
             modules: {
                 toolbar: this.props.toolbar
@@ -135,7 +134,7 @@ class HtmlEditor extends React.Component {
     }
 
     getCropper(children = null) {
-        const { cropper, Cropper } = this.props;
+        const { cropper, modules: { Cropper } } = this.props;
 
         if (!cropper) {
             return null;
@@ -185,7 +184,7 @@ class HtmlEditor extends React.Component {
     renderError() {
         let error = null;
         if (this.state.error) {
-            const { Alert } = this.props;
+            const { Alert } = this.props.modules;
             error = <Alert type="error">{this.state.error.message}</Alert>;
         }
         return error;
@@ -196,7 +195,7 @@ class HtmlEditor extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { Alert, Progress, FileReader, FormGroup } = this.props;
+        const { Alert, Progress, FileReader, FormGroup } = this.props.modules;
 
         let uploader = null;
         if (this.state.uploadPercentage !== null) {

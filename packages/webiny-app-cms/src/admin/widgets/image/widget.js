@@ -3,7 +3,7 @@ import { createComponent } from "webiny-app";
 
 class ImageWidget extends React.Component {
     render() {
-        const { EditorWidget, Image, value, onChange } = this.props;
+        const { modules: { EditorWidget, Image }, value, onChange } = this.props;
         return (
             <EditorWidget {...{ value, onChange }}>
                 <Image

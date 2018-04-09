@@ -3,7 +3,7 @@ import { createComponent } from "webiny-app";
 
 class TimeAgo extends React.Component {
     render() {
-        const { moment } = this.props;
+        const { modules: { moment } } = this.props;
         const timeAgo = moment(this.props.value, moment.ISO_8601);
 
         return <span>{timeAgo.isValid() ? timeAgo.fromNow() : this.props.invalidMessage}</span>;

@@ -17,7 +17,7 @@ class IconPicker extends React.Component {
             return this.props.renderOption({ option, ...params });
         }
 
-        const { Icon } = this.props;
+        const { Icon } = this.props.modules;
         return (
             <div>
                 <Icon icon={[option.data.prefix, option.data.icon]} /> {option.data.icon}
@@ -30,7 +30,7 @@ class IconPicker extends React.Component {
             return this.props.renderSelected({ option, ...params });
         }
 
-        const { Icon } = this.props;
+        const { Icon } = this.props.modules;
         return (
             <div>
                 <Icon icon={[option.data.prefix, option.data.icon]} /> {option.data.icon}
@@ -47,7 +47,7 @@ class IconPicker extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { Select, ...props } = _.omit(this.props, ["render"]);
+        const { modules: { Select }, ...props } = _.omit(this.props, ["render"]);
         props.renderOption = this.renderOption;
         props.renderSelected = this.renderSelected;
 
@@ -57,7 +57,7 @@ class IconPicker extends React.Component {
 
 IconPicker.defaultProps = {
     minimumInputLength: 2,
-    tooltip: t`Visit http://fontawesome.io for full list`,
+    tooltip: t`Visit https://fontawesome.com/ for a full list`,
     renderOption: null,
     renderSelected: null,
     useDataAsValue: true

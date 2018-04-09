@@ -124,7 +124,7 @@ class BaseCropper extends React.Component {
     }
 
     initCropper(element) {
-        const { Cropper } = this.props;
+        const { Cropper } = this.props.modules;
         const data = _.merge({}, this.options, this.props.config);
         data.crop = e => {
             this.setState({ width: Math.floor(e.detail.width), height: Math.floor(e.detail.height) });
@@ -185,7 +185,7 @@ class BaseCropper extends React.Component {
 
     render() {
         return React.cloneElement(this.props.children, {
-            ..._.omit(this.props, ['children']),
+            ..._.omit(this.props, ['children', 'modules']),
             width: this.state.width,
             height: this.state.height,
             initCropper: this.initCropper.bind(this),

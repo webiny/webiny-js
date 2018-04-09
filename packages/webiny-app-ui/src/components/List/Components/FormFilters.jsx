@@ -31,7 +31,7 @@ class FormFilters extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { Form } = this.props;
+        const { Form } = this.props.modules;
 
         return (
             <Form

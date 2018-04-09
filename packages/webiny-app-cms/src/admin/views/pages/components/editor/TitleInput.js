@@ -31,4 +31,4 @@ class TitleInput extends React.Component {
     }
 }
 
-export default createComponent(TitleInput, { modules: [] });
+export default createComponent(TitleInput);

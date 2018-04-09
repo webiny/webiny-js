@@ -29,7 +29,7 @@ class Select extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { FormGroup } = this.props;
+        const { FormGroup } = this.props.modules;
 
         const selectProps = {
             ..._.pick(this.props, _.keys(SimpleSelect.defaultProps)),

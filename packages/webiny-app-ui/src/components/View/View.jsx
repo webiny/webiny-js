@@ -1,12 +1,11 @@
-import React from 'react';
-import { createComponent, isElementOfType } from 'webiny-app';
-import Header from './Header';
-import Body from './Body';
-import Footer from './Footer';
-import styles from './styles.css';
+import React from "react";
+import { createComponent, isElementOfType } from "webiny-app";
+import Header from "./Header";
+import Body from "./Body";
+import Footer from "./Footer";
+import styles from "./styles.css";
 
 class View extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -18,7 +17,7 @@ class View extends React.Component {
         this.bodyComponent = null;
         this.footerComponent = null;
 
-        if (typeof children !== 'object' || children === null) {
+        if (typeof children !== "object" || children === null) {
             return children;
         }
 
@@ -51,7 +50,7 @@ class View extends React.Component {
         if (this.props.render) {
             return this.props.render.call(this);
         }
-        const { Panel, styles } = this.props;
+        const { modules: { Panel }, styles } = this.props;
         return (
             <div>
                 {this.headerComponent}
@@ -66,4 +65,4 @@ class View extends React.Component {
     }
 }
 
-export default createComponent(View, { modules: ['Panel'], styles });
+export default createComponent(View, { modules: ["Panel"], styles });

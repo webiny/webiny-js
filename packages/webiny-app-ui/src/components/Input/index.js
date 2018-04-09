@@ -1,11 +1,10 @@
-import React from 'react';
-import _ from 'lodash';
-import { createComponent } from 'webiny-app';
+import React from "react";
+import _ from "lodash";
+import { createComponent } from "webiny-app";
 import FormComponent from "./../Form/FormComponent";
-import styles from './styles.css';
+import styles from "./styles.css";
 
 class Input extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -28,7 +27,7 @@ class Input extends React.Component {
         }
 
         switch (event.key) {
-            case 'Enter':
+            case "Enter":
                 if (this.props.onEnter && this.props.onEnter !== _.noop) {
                     event.preventDefault();
                     this.props.onEnter({ event, component: this });
@@ -48,22 +47,25 @@ class Input extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { DelayedOnChange, Icon, styles, FormGroup } = this.props;
+        const { modules: { DelayedOnChange, Icon, FormGroup }, styles } = this.props;
 
         const props = {
-            'data-on-enter': this.props.onEnter !== _.noop,
+            "data-on-enter": this.props.onEnter !== _.noop,
             onBlur: this.props.validate ? this.props.validate : this.props.onBlur,
             disabled: this.props.isDisabled(),
             readOnly: this.props.readOnly,
             type: this.props.type,
             className: styles.input,
-            value: this.props.value || '',
+            value: this.props.value || "",
             placeholder: this.props.placeholder,
             onKeyUp: event => this.props.onKeyUp({ event, component: this }),
-            onKeyDown: event => (this.props.onKeyDown !== _.noop ? this.props.onKeyDown : this.onKeyDown.bind(this))({
-                event,
-                component: this
-            }),
+            onKeyDown: event =>
+                (this.props.onKeyDown !== _.noop
+                    ? this.props.onKeyDown
+                    : this.onKeyDown.bind(this))({
+                    event,
+                    component: this
+                }),
             onChange: this.props.onChange,
             autoFocus: this.props.autoFocus,
             ref: ref => {
@@ -73,33 +75,37 @@ class Input extends React.Component {
         };
 
         let showValidationIcon = true;
-        let addonLeft = '';
+        let addonLeft = "";
         if (this.props.addonLeft) {
             addonLeft = <span className={styles.addon}>{this.props.addonLeft}</span>;
             showValidationIcon = false;
         }
 
-        let addonRight = '';
+        let addonRight = "";
         if (this.props.addonRight) {
             addonRight = <span className={styles.addon}>{this.props.addonRight}</span>;
             showValidationIcon = false;
         }
 
-        let wrapperClassName = this.props.wrapperClassName + ' inputGroup';
-        let iconLeft = '';
+        let wrapperClassName = this.props.wrapperClassName + " inputGroup";
+        let iconLeft = "";
         if (this.props.iconLeft) {
-            wrapperClassName += ' ' + styles.iconLeft;
-            iconLeft = <Icon icon={this.props.iconLeft}/>;
+            wrapperClassName += " " + styles.iconLeft;
+            iconLeft = <Icon icon={this.props.iconLeft} />;
         }
 
-        let iconRight = '';
+        let iconRight = "";
         if (this.props.iconRight) {
-            wrapperClassName += ' ' + styles.iconRight;
-            iconRight = <Icon icon={this.props.iconRight}/>;
+            wrapperClassName += " " + styles.iconRight;
+            iconRight = <Icon icon={this.props.iconRight} />;
         }
 
         return (
-            <FormGroup ref={ref => this.ref = ref} valid={this.state.isValid} className={this.props.className}>
+            <FormGroup
+                ref={ref => (this.ref = ref)}
+                valid={this.state.isValid}
+                className={this.props.className}
+            >
                 {this.props.renderLabel.call(this)}
                 {this.props.renderInfo.call(this)}
 
@@ -107,7 +113,7 @@ class Input extends React.Component {
                     {iconLeft}
                     {addonLeft}
                     <DelayedOnChange delay={this.props.delay}>
-                        <input {...props}/>
+                        <input {...props} />
                     </DelayedOnChange>
                     {addonRight}
                     {iconRight}
@@ -126,29 +132,29 @@ Input.defaultProps = {
     onKeyDown: _.noop,
     onKeyUp: _.noop,
     onRef: _.noop,
-    type: 'text',
+    type: "text",
     autoFocus: null,
     addonLeft: null,
     addonRight: null,
     iconLeft: null,
     iconRight: null,
-    wrapperClassName: '',
+    wrapperClassName: "",
     renderValidationIcon() {
         if (!this.props.showValidationIcon || this.state.isValid === null) {
             return null;
         }
 
-        const { FormGroup } = this.props;
+        const { FormGroup } = this.props.modules;
 
         if (this.state.isValid === true) {
-            return <FormGroup.ValidationIcon/>;
+            return <FormGroup.ValidationIcon />;
         }
-        return <FormGroup.ValidationIcon error/>;
+        return <FormGroup.ValidationIcon error />;
     }
 };
 
 export default createComponent([Input, FormComponent], {
     formComponent: true,
-    modules: ['DelayedOnChange', 'Icon', 'FormGroup'],
+    modules: ["DelayedOnChange", "Icon", "FormGroup"],
     styles
 });

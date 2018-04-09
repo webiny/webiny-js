@@ -1,11 +1,10 @@
-import React from 'react';
-import _ from 'lodash';
-import { createComponent } from 'webiny-app';
+import React from "react";
+import _ from "lodash";
+import { createComponent } from "webiny-app";
 import classSet from "classnames";
-import styles from './styles.css';
+import styles from "./styles.css";
 
 class Button extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -23,27 +22,27 @@ class Button extends React.Component {
     }
 
     render() {
-        if (this.props.render) {
-            return this.props.render.call(this);
+        const { render, ...props } = this.props;
+        if (render) {
+            return render.call(this);
         }
 
-        const props = _.clone(this.props);
-        const { Tooltip, Icon, styles } = props;
+        const { modules: { Tooltip, Icon }, styles } = props;
 
         if (props.disabled || !this.state.enabled) {
-            props['disabled'] = true;
+            props["disabled"] = true;
         }
 
         const sizeClasses = {
-            normal: '',
-            large: styles.btnLarge,
+            normal: "",
+            large: styles.btnLarge
             //small: 'btn-sm' // sven: this option doesn't exist in css
         };
 
         const alignClasses = {
-            normal: '',
-            left: 'pull-left',
-            right: 'pull-right'
+            normal: "",
+            left: "pull-left",
+            right: "pull-right"
         };
 
         const typeClasses = {
@@ -59,24 +58,33 @@ class Button extends React.Component {
             props.className
         );
 
-        const icon = this.props.icon ?
-            <Icon icon={this.props.icon} className={styles.icon + ' ' + styles.iconRight}/> : null;
+        const icon = this.props.icon ? (
+            <Icon icon={this.props.icon} className={styles.icon + " " + styles.iconRight} />
+        ) : null;
         let content = props.children || props.label;
         if (icon) {
             content = <span>{content}</span>;
         }
 
-        const buttonProps = _.pick(props, ['style', 'disabled']);
+        const buttonProps = _.pick(props, ["style", "disabled"]);
         buttonProps.onClick = e => this.props.onClick({ event: e });
         _.assign(buttonProps, {
-            type: 'button',
+            type: "button",
             className: classes,
             ref: this.props.onRef
         });
-        let button = <button {...buttonProps}>{icon} {content}</button>;
+        let button = (
+            <button {...buttonProps}>
+                {icon} {content}
+            </button>
+        );
 
         if (this.props.tooltip) {
-            button = <Tooltip target={button} placement="top">{this.props.tooltip}</Tooltip>;
+            button = (
+                <Tooltip target={button} placement="top">
+                    {this.props.tooltip}
+                </Tooltip>
+            );
         }
 
         return button;
@@ -84,9 +92,9 @@ class Button extends React.Component {
 }
 
 Button.defaultProps = {
-    size: 'normal',
-    type: 'default',
-    align: 'normal',
+    size: "normal",
+    type: "default",
+    align: "normal",
     icon: null,
     className: null,
     style: null,
@@ -97,4 +105,4 @@ Button.defaultProps = {
     onRef: _.noop
 };
 
-export default createComponent(Button, { styles, modules: ['Tooltip', 'Icon'] });
+export default createComponent(Button, { styles, modules: ["Tooltip", "Icon"] });

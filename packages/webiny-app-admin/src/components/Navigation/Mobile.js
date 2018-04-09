@@ -25,7 +25,7 @@ class Mobile extends React.Component {
             }
 
             const { level } = props;
-            const { Link } = this.props;
+            const { Link } = this.props.modules;
             const children = React.Children.toArray(props.children);
             const hasChildren = children.length > 0;
 

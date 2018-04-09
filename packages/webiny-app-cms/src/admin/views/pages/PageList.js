@@ -20,7 +20,7 @@ class PageList extends React.Component {
             Grid,
             Tabs,
             Checkbox
-        } = this.props;
+        } = this.props.modules;
 
         return (
             <View.List>

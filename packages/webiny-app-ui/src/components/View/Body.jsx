@@ -9,7 +9,7 @@ class Body extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { Panel, styles } = this.props;
+        const { modules: { Panel }, styles } = this.props;
 
         const classes = classSet(
             styles.panelBody,

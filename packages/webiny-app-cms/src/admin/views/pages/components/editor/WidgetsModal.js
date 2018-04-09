@@ -18,7 +18,7 @@ class WidgetsModal extends React.Component {
         );
     }
     render() {
-        const { Modal, Button, Tabs } = this.props;
+        const { Modal, Button, Tabs } = this.props.modules;
         const cms = app.services.get("cms");
 
         return (

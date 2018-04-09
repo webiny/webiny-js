@@ -1,6 +1,6 @@
-import React from 'react';
-import { createComponent } from 'webiny-app';
-import BaseCropper from './BaseCropper';
+import React from "react";
+import { createComponent } from "webiny-app";
+import BaseCropper from "./BaseCropper";
 
 class InlineCropper extends BaseCropper {
     render() {
@@ -8,12 +8,12 @@ class InlineCropper extends BaseCropper {
             return this.props.render.call(this);
         }
 
-        const props = this.props;
+        const props = { ...this.props };
         if (!props.image) {
             return null;
         }
 
-        const { Button } = props;
+        const { Button } = props.modules;
 
         return (
             <webiny-image-cropper>
@@ -22,21 +22,26 @@ class InlineCropper extends BaseCropper {
                     <img
                         onLoad={e => props.initCropper(e.currentTarget)}
                         width="100%"
-                        style={{ maxWidth: '100%' }}
-                        src={props.image && (props.image.data || props.image.src) + props.getCacheBust()}/>
-                    Cropped image size: <strong>{props.width}x{props.height}</strong>
+                        style={{ maxWidth: "100%" }}
+                        src={
+                            props.image &&
+                            (props.image.data || props.image.src) + props.getCacheBust()
+                        }
+                    />
+                    Cropped image size:{" "}
+                    <strong>
+                        {props.width}x{props.height}
+                    </strong>
                 </div>
                 <div className="col-xs-12">
                     <Button
                         type="primary"
                         className="pull-right ml5"
-                        onClick={this.props.applyCropping}>
+                        onClick={this.props.applyCropping}
+                    >
                         {this.props.action}
                     </Button>
-                    <Button
-                        type="default"
-                        className="pull-right ml5"
-                        onClick={this.props.onHidden}>
+                    <Button type="default" className="pull-right ml5" onClick={this.props.onHidden}>
                         Cancel
                     </Button>
                 </div>
@@ -45,4 +50,4 @@ class InlineCropper extends BaseCropper {
     }
 }
 
-export default createComponent([InlineCropper, BaseCropper], { modules: ['Button'] });
+export default createComponent([InlineCropper, BaseCropper], { modules: ["Button"] });

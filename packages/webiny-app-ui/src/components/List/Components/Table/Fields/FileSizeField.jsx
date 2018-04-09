@@ -5,7 +5,7 @@ import filesize from 'filesize';
 
 class FileSizeField extends React.Component {
     render() {
-        const { List, render, options, ...props } = this.props;
+        const { modules: { List }, render, options, ...props } = this.props;
         if (render) {
             return render.call(this);
         }

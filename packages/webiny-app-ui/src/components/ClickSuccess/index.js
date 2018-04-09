@@ -59,15 +59,7 @@ class ClickSuccess extends React.Component {
             }
         };
 
-        if (_.isFunction(this.props.renderDialog)) {
-            // TODO: finish this part
-            dialogProps["render"] = this.props.renderDialog.bind(this, {
-                data: this.state.data,
-                close: dialogProps.onClose
-            });
-        }
-
-        const { Modal } = this.props;
+        const { Modal } = this.props.modules;
 
         return (
             <webiny-click-success>

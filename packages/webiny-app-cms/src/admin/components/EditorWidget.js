@@ -4,7 +4,7 @@ import { FormComponent } from "webiny-app-ui";
 
 class EditorWidget extends React.Component {
     render() {
-        const { Form, value } = this.props;
+        const { modules: { Form }, value } = this.props;
         return (
             <Form model={value.data} onChange={this.props.onChange}>
                 {() => React.cloneElement(this.props.children, { value })}

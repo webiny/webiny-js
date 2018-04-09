@@ -6,7 +6,7 @@ import styles from '../../../styles.css';
 
 class RowDetailsField extends React.Component {
     render() {
-        const { Link, List, styles, render, ...tdProps } = this.props;
+        const { modules: { Link, List }, styles, render, ...tdProps } = this.props;
 
         if (render) {
             return render.call(this);

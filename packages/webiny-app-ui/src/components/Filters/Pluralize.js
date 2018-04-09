@@ -10,7 +10,7 @@ class Pluralize extends React.Component {
         }
 
         if (!this.props.plural && this.props.count !== 1) {
-            noun = this.props.pluralize(this.props.noun, this.props.count);
+            noun = this.props.modules.pluralize(this.props.noun, this.props.count);
         }
 
         const result = this.props.pattern

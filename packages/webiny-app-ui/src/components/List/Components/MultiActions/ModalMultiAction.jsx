@@ -1,6 +1,6 @@
-import React from 'react';
-import _ from 'lodash';
-import { createComponent } from 'webiny-app';
+import React from "react";
+import _ from "lodash";
+import { createComponent } from "webiny-app";
 
 class ModalMultiAction extends React.Component {
     constructor(props) {
@@ -38,7 +38,7 @@ class ModalMultiAction extends React.Component {
             }
         };
 
-        const { Link } = this.props;
+        const { modules: { Link } } = this.props;
 
         const dialogProps = {
             onReady: dialog => {
@@ -68,4 +68,4 @@ ModalMultiAction.defaultProps = {
     hide: _.noop
 };
 
-export default createComponent(ModalMultiAction, { modules: ['Link'] });
+export default createComponent(ModalMultiAction, { modules: ["Link"] });

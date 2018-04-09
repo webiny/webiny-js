@@ -1,6 +1,6 @@
-import React from 'react';
-import _ from 'lodash';
-import { createComponent } from 'webiny-app';
+import React from "react";
+import _ from "lodash";
+import { createComponent } from "webiny-app";
 
 class Action extends React.Component {
     render() {
@@ -20,15 +20,12 @@ class Action extends React.Component {
             });
         }
 
-        const { Icon, Link, DownloadLink } = this.props;
-        const icon = this.props.icon ? <Icon icon={this.props.icon}/> : null;
+        const { modules: { Icon, Link, DownloadLink } } = this.props;
+        const icon = this.props.icon ? <Icon icon={this.props.icon} /> : null;
 
         if (this.props.download) {
             return (
-                <DownloadLink
-                    download={this.props.download}
-                    params={this.props.data}
-                >
+                <DownloadLink download={this.props.download} params={this.props.data}>
                     {icon} {this.props.label}
                 </DownloadLink>
             );
@@ -37,11 +34,14 @@ class Action extends React.Component {
         return (
             <Link
                 data={this.props.data}
-                onClick={() => this.props.onClick.call(this, {
-                    data: this.props.data,
-                    actions: this.props.actions,
-                    $this: this
-                })}>
+                onClick={() =>
+                    this.props.onClick.call(this, {
+                        data: this.props.data,
+                        actions: this.props.actions,
+                        $this: this
+                    })
+                }
+            >
                 {icon}
                 {this.props.label}
             </Link>
@@ -58,4 +58,4 @@ Action.defaultProps = {
     hide: false
 };
 
-export default createComponent(Action, { modules: ['Icon', 'Link', 'DownloadLink'] });
+export default createComponent(Action, { modules: ["Icon", "Link", "DownloadLink"] });

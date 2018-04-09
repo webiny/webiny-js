@@ -4,7 +4,7 @@ import styles from "./WidgetFunctions.scss";
 
 class WidgetFunctions extends React.Component {
     render() {
-        const { Icon, ClickConfirm, moveUp, moveDown, onRemoved, beforeRemove } = this.props;
+        const { modules: { Icon, ClickConfirm }, moveUp, moveDown, onRemoved, beforeRemove } = this.props;
 
         return (
             <div className={styles.widgetFunctions}>

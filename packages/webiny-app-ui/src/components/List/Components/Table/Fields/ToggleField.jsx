@@ -1,10 +1,10 @@
-import React from 'react';
-import _ from 'lodash';
-import { createComponent } from 'webiny-app';
+import React from "react";
+import _ from "lodash";
+import { createComponent } from "webiny-app";
 
 class ToggleField extends React.Component {
     render() {
-        const { ChangeConfirm, Switch, List, render, ...tdProps } = this.props;
+        const { modules: { ChangeConfirm, Switch, List }, render, ...tdProps } = this.props;
 
         if (render) {
             return render.call(this);
@@ -21,14 +21,16 @@ class ToggleField extends React.Component {
                 }
             },
             value: _.get(this.props.data, this.props.name),
-            disabled: _.isFunction(this.props.disabled) ? this.props.disabled(this.props.data) : this.props.disabled
+            disabled: _.isFunction(this.props.disabled)
+                ? this.props.disabled(this.props.data)
+                : this.props.disabled
         };
 
         return (
             <List.Table.Field {...tdProps}>
                 {() => (
                     <ChangeConfirm message={this.props.message}>
-                        <Switch {...props}/>
+                        <Switch {...props} />
                     </ChangeConfirm>
                 )}
             </List.Table.Field>
@@ -42,4 +44,7 @@ ToggleField.defaultProps = {
     disabled: false
 };
 
-export default createComponent(ToggleField, { modules: ['List', 'ChangeConfirm', 'Switch'], tableField: true });
+export default createComponent(ToggleField, {
+    modules: ["List", "ChangeConfirm", "Switch"],
+    tableField: true
+});

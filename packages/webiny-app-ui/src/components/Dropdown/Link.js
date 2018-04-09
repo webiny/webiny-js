@@ -8,7 +8,7 @@ class Link extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { Link, Icon, ...props } = this.props;
+        const { modules: { Link, Icon }, ...props } = this.props;
         const icon = props.icon ? <Icon icon={props.icon} /> : null;
         let link = (
             <Link onClick={this.props.onClick} route={this.props.route}>

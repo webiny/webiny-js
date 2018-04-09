@@ -11,36 +11,34 @@ class Profile extends React.Component {
 
     render() {
         const {
-            Ui: {
-                AdminLayout,
-                Form,
-                View,
-                Grid,
-                Avatar,
-                Section,
-                Input,
-                Button,
-                Password,
-                Switch,
-                Modal,
-                ClickConfirm,
-                ClickSuccess,
-                ChangeConfirm,
-                CheckboxGroup,
-                Dynamic,
-                Gallery,
-                ButtonGroup,
-                File,
-                RadioGroup,
-                Select,
-                Search,
-                IconPicker,
-                Tabs,
-                Tags,
-                Tile,
-                ViewSwitcher
-            }
-        } = this.props;
+            AdminLayout,
+            Form,
+            View,
+            Grid,
+            Avatar,
+            Section,
+            Input,
+            Button,
+            Password,
+            Switch,
+            Modal,
+            ClickConfirm,
+            ClickSuccess,
+            ChangeConfirm,
+            CheckboxGroup,
+            Dynamic,
+            Gallery,
+            ButtonGroup,
+            File,
+            RadioGroup,
+            Select,
+            Search,
+            IconPicker,
+            Tabs,
+            Tags,
+            Tile,
+            ViewSwitcher
+        } = this.props.modules;
 
         const formProps = {
             entity: "SecurityUser",
@@ -454,7 +452,6 @@ class Profile extends React.Component {
 }
 
 export default createComponent(Profile, {
-    modulesProp: "Ui",
     modules: [
         { AdminLayout: "Admin.Layout" },
         "Form",

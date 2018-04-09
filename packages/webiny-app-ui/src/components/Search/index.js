@@ -58,9 +58,6 @@ class Search extends React.Component {
                 filter = this.props.filterBy.filter;
             }
 
-            this.filterName = name;
-            this.filterField = filter;
-
             this.unwatch = this.props.form.watch(name, newValue =>
                 this.applyFilter(newValue, name, filter)
             );
@@ -389,7 +386,7 @@ class Search extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { FormGroup } = this.props;
+        const { FormGroup } = this.props.modules;
 
         return (
             <FormGroup valid={this.state.isValid} className={this.props.className}>
@@ -481,7 +478,7 @@ Search.defaultProps = {
         }
 
         // Create search input
-        const { Link, Icon } = this.props;
+        const { Link, Icon } = this.props.modules;
         return (
             <div className={styles.search}>
                 <Link className={styles.btn}>

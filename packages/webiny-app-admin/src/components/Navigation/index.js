@@ -47,7 +47,7 @@ class Navigation extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { Desktop, Mobile } = this.props;
+        const { Desktop, Mobile } = this.props.modules;
         const props = {
             highlight: this.state.highlight
         };

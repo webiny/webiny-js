@@ -64,11 +64,7 @@ export default (components, options = {}) => {
                 return (
                     <LazyLoad modules={modules} options={{ props }}>
                         {modules => {
-                            if (options.modulesProp) {
-                                props[options.modulesProp] = modules;
-                            } else {
-                                _.assign(props, modules);
-                            }
+                            props[options.modulesProp || "modules"] = modules;
                             return <ErrorBoundary>{createElement(props)}</ErrorBoundary>;
                         }}
                     </LazyLoad>

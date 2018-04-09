@@ -1,15 +1,13 @@
 import React from "react";
 import _ from "lodash";
 import { app, createComponent, ApiComponent } from "webiny-app";
-import axios from "axios";
 
+// TODO: handle API from scratch
 class Data extends React.Component {
     constructor(props) {
         super(props);
         this.autoRefreshInterval = null; // Ony when 'autoRefresh' prop is used
         this.mounted = false;
-        this.request = null;
-        this.cancelRequest = null;
 
         this.state = {
             data: null,
@@ -115,7 +113,7 @@ class Data extends React.Component {
             return null;
         }
 
-        const { Loader } = this.props;
+        const { Loader } = this.props.modules;
         const loader = this.state.loading ? <Loader /> : null;
 
         return (

@@ -25,7 +25,7 @@ class CopyButton extends React.Component {
     }
 
     setup() {
-        this.clipboard = new this.props.Clipboard(this.dom, {
+        this.clipboard = new this.props.modules.Clipboard(this.dom, {
             text: () => {
                 return this.props.value;
             }
@@ -47,7 +47,7 @@ class CopyButton extends React.Component {
         }
 
         const props = _.omit(this.props, ['renderer', 'onSuccessMessage', 'onCopy', 'value']);
-        const { Button } = props;
+        const { Button } = props.modules;
 
         return <Button onRef={ref => this.dom = ref} {...props}/>;
     }

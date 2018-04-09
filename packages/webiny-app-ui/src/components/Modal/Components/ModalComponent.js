@@ -170,7 +170,7 @@ class ModalComponent extends React.Component {
         if (this.state.isShown) {
             // Animate previously hidden dialog
             return new Promise(resolve => {
-                const { dynamics } = this.props;
+                const { dynamics } = this.props.modules;
                 this.setState({ animating: true });
                 const prevContainer = $(this.modalContainer);
                 const prevDialog = prevContainer.find('[data-role="dialog"]');
@@ -256,7 +256,7 @@ class ModalComponent extends React.Component {
             return null;
         }
 
-        const { Animate, styles } = this.props;
+        const { modules: { Animate }, styles } = this.props;
         const className = classSet(styles.modal, {
             [styles.wide]: this.props.wide,
             [styles.fullScreen]: this.props.fullScreen

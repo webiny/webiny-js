@@ -10,7 +10,7 @@ import Footer from "./Footer";
 const t = i18n.namespace("Webiny.Ui.Modal.Confirmation");
 class Confirmation extends React.Component {
     render() {
-        const { Loader, Button, styles, title, render } = this.props;
+        const { modules: { Loader, Button }, styles, title, render } = this.props;
         if (render) {
             return render.call(this);
         }

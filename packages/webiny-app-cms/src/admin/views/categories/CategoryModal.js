@@ -12,12 +12,12 @@ const categoryURL = value => {
 
 class CategoryModal extends React.Component {
     render() {
-        const { Modal, Button, Form, Input, Grid } = this.props;
+        const { Modal, Button, Form, Input, Grid } = this.props.modules;
 
         const formProps = {
-            api: "/cms/categories",
+            entity: "CmsCategory",
             loadModel: () => Promise.resolve(this.props.data || {}),
-            fields: "id,title,slug,url",
+            fields: "id title slug url",
             onSubmitSuccess: () => {
                 this.props.hide().then(() => {
                     this.props.onSuccess();

@@ -9,9 +9,10 @@ import Footer from "./Footer";
 import styles from "../styles.css";
 
 const t = i18n.namespace("Webiny.Ui.Modal.Success");
+
 class Success extends React.Component {
     renderFooter() {
-        let { Button, closeBtn, onClose } = this.props;
+        let { modules: { Button }, closeBtn, onClose } = this.props;
         let button = null;
 
         if (_.isFunction(closeBtn)) {
@@ -46,7 +47,7 @@ class Success extends React.Component {
             content = content(this);
         }
 
-        const { Icon, onShown } = this.props;
+        const { modules: { Icon }, onShown } = this.props;
         return (
             <Dialog
                 modalContainerTag="success-modal"

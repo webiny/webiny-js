@@ -3,7 +3,7 @@ import { createComponent } from "webiny-app";
 
 class Email extends React.Component {
     render() {
-        const { render, Input, ...props } = this.props;
+        const { modules: { Input }, render, ...props } = this.props;
         if (render) {
             return render.call(this);
         }

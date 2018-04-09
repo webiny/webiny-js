@@ -1,10 +1,10 @@
-import React from 'react';
-import _ from 'lodash';
-import { createComponent, isElementOfType, i18n } from 'webiny-app';
+import React from "react";
+import _ from "lodash";
+import { createComponent, isElementOfType, i18n } from "webiny-app";
 
 const t = i18n.namespace("Ui.List.Table.Actions");
-class Actions extends React.Component {
 
+class Actions extends React.Component {
     constructor(props) {
         super(props);
 
@@ -40,17 +40,20 @@ class Actions extends React.Component {
             return null;
         }
 
-        const { Dropdown } = this.props;
+        const { Dropdown } = this.props.modules;
 
         return (
             <Dropdown title={this.props.label} type="balloon">
-                <Dropdown.Header title={t`Actions`}/>
+                <Dropdown.Header title={t`Actions`} />
                 {React.Children.map(this.props.children, child => {
                     if (this.shouldHideItem(child)) {
                         return null;
                     }
 
-                    if (isElementOfType(child, Dropdown.Divider) || isElementOfType(child, Dropdown.Header)) {
+                    if (
+                        isElementOfType(child, Dropdown.Divider) ||
+                        isElementOfType(child, Dropdown.Header)
+                    ) {
                         return child;
                     }
 
@@ -69,8 +72,8 @@ class Actions extends React.Component {
 }
 
 Actions.defaultProps = {
-    label: 'Actions',
+    label: "Actions",
     hide: false
 };
 
-export default createComponent(Actions, { modules: ['Dropdown'] });
+export default createComponent(Actions, { modules: ["Dropdown"] });

@@ -25,7 +25,7 @@ class ImagePreview extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { image, Link, styles } = this.props;
+        const { image, modules: { Link }, styles } = this.props;
         let cacheBust = '';
         if (image.modifiedOn && !image.data) {
             cacheBust = '?ts=' + new Date(image.modifiedOn).getTime();

@@ -79,7 +79,7 @@ class ClickConfirm extends React.Component {
             onComplete: this.props.onComplete
         };
 
-        const { Modal } = this.props;
+        const { Modal } = this.props.modules;
         const dialog = _.isFunction(this.props.renderDialog) ? (
             this.props.renderDialog()
         ) : (

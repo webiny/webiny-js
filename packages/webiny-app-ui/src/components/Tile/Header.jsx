@@ -9,7 +9,7 @@ class Header extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { Icon, icon, styles, className, style, children, title } = this.props;
+        const { modules: { Icon }, icon, styles, className, style, children, title } = this.props;
 
         const classes = classSet(styles.header, className);
         return (

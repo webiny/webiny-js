@@ -1,6 +1,6 @@
-import React from 'react';
-import _ from 'lodash';
-import { createComponent } from 'webiny-app';
+import React from "react";
+import _ from "lodash";
+import { createComponent } from "webiny-app";
 
 class MultiAction extends React.Component {
     constructor(props) {
@@ -18,7 +18,7 @@ class MultiAction extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { Link, DownloadLink } = this.props;
+        const { modules: { Link, DownloadLink } } = this.props;
 
         if (!this.props.data.length && !this.props.allowEmpty) {
             return <Link onClick={_.noop}>{this.props.label}</Link>;
@@ -26,13 +26,13 @@ class MultiAction extends React.Component {
 
         if (this.props.download) {
             return (
-                <DownloadLink download={this.props.download} params={this.props.data}>{this.props.label}</DownloadLink>
+                <DownloadLink download={this.props.download} params={this.props.data}>
+                    {this.props.label}
+                </DownloadLink>
             );
         }
 
-        return (
-            <Link onClick={this.onAction}>{this.props.label}</Link>
-        );
+        return <Link onClick={this.onAction}>{this.props.label}</Link>;
     }
 }
 
@@ -44,4 +44,4 @@ MultiAction.defaultProps = {
     data: []
 };
 
-export default createComponent(MultiAction, { modules: ['Link', 'DownloadLink'] });
+export default createComponent(MultiAction, { modules: ["Link", "DownloadLink"] });

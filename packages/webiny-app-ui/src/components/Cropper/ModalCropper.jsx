@@ -1,7 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
 import { app, createComponent, i18n } from 'webiny-app';
-import { ModalComponent } from 'webiny-app-ui';
 import BaseCropper from './BaseCropper';
 import CropperDialog from "./CropperDialog";
 
@@ -48,7 +47,7 @@ class ModalCropper extends React.Component {
     }
 
     render() {
-        const { Modal, Button, ...props } = this.props;
+        const { modules: { Modal, Button }, ...props } = this.props;
 
         const modalProps = {
             name: this.dialogId,

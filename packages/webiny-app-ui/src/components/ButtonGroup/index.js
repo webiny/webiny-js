@@ -9,8 +9,8 @@ class ButtonGroup extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { styles, className } = this.props;
-        return <div className={classSet(styles.btnGroup, className)}>{this.props.children}</div>;
+        const { styles, className, children } = this.props;
+        return <div className={classSet(styles.btnGroup, className)}>{children}</div>;
     }
 }
 

@@ -15,7 +15,7 @@ class FormLoader extends React.Component {
             return this.props.children();
         }
 
-        const { Loader } = this.props;
+        const { modules: { Loader } } = this.props;
 
         return <Loader>{this.props.children}</Loader>;
     }

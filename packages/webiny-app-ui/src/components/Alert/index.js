@@ -11,7 +11,7 @@ class Alert extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { styles, type, Icon, onClose } = this.props;
+        const { styles, type, onClose, modules: { Icon } } = this.props;
 
         const typeClasses = {
             info: styles.alertInfo,

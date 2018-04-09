@@ -1,9 +1,9 @@
-import React from 'react';
-import _ from 'lodash';
+import React from "react";
+import _ from "lodash";
 import classSet from "classnames";
-import { createComponent } from 'webiny-app';
-import { FormComponent } from 'webiny-app-ui';
-import styles from './styles.css';
+import { createComponent } from "webiny-app";
+import { FormComponent } from "webiny-app-ui";
+import styles from "./styles.css";
 
 class CodeEditor extends React.Component {
     constructor(props) {
@@ -31,16 +31,19 @@ class CodeEditor extends React.Component {
             this.props.attachToForm(this);
         }
 
-        this.codeMirror = this.props.CodeMirror.fromTextArea(this.getTextareaElement(), this.options);
+        this.codeMirror = this.props.CodeMirror.fromTextArea(
+            this.getTextareaElement(),
+            this.options
+        );
 
-        this.codeMirror.on('change', () => {
+        this.codeMirror.on("change", () => {
             clearTimeout(this.delayedOnChange);
             this.delayedOnChange = setTimeout(() => {
                 this.props.onChange(this.codeMirror.getValue());
             }, this.props.delay);
         });
 
-        this.codeMirror.on('focus', () => {
+        this.codeMirror.on("focus", () => {
             this.props.onFocus();
         });
 
@@ -54,8 +57,8 @@ class CodeEditor extends React.Component {
     componentWillReceiveProps(props) {
         this.setValue(props);
 
-        const checkProps = ['mode', 'readOnly'];
-        _.each(checkProps, (prop) => {
+        const checkProps = ["mode", "readOnly"];
+        _.each(checkProps, prop => {
             if (this.props[prop] !== props[prop]) {
                 this.codeMirror.setOption(prop, props[prop]);
             }
@@ -69,7 +72,7 @@ class CodeEditor extends React.Component {
     setValue(props) {
         if (this.codeMirror.getValue() !== props.value && !_.isNull(props.value)) {
             // the "+ ''" sort a strange with splitLines method within CodeMirror
-            this.codeMirror.setValue(props.value + '');
+            this.codeMirror.setValue(props.value + "");
             if (this.props.autoFormat) {
                 this.autoFormat();
             }
@@ -90,22 +93,29 @@ class CodeEditor extends React.Component {
             return this.props.render.call(this);
         }
 
-        const props = _.pick(this.props, ['value', 'onChange', 'onFocus', 'theme', 'mode', 'readOnly']);
+        const props = _.pick(this.props, [
+            "value",
+            "onChange",
+            "onFocus",
+            "theme",
+            "mode",
+            "readOnly"
+        ]);
 
         _.assign(props, {
-            ref: editor => this.editor = editor,
+            ref: editor => (this.editor = editor),
             onBlur: this.props.validate,
-            className: 'inputGroup',
+            className: "inputGroup",
             placeholder: this.props.placeholder
         });
 
-        const { styles, FormGroup } = this.props;
+        const { styles, modules: { FormGroup } } = this.props;
 
         return (
             <FormGroup valid={this.state.isValid} className={classSet(this.props.className)}>
                 {this.props.renderLabel.call(this)}
                 <div className={styles.wrapper}>
-                    <textarea ref={ref => this.textarea = ref}/>
+                    <textarea ref={ref => (this.textarea = ref)} />
                 </div>
                 <div>
                     {this.props.renderDescription.call(this)}
@@ -118,8 +128,8 @@ class CodeEditor extends React.Component {
 
 CodeEditor.defaultProps = {
     delay: 400,
-    mode: 'text/html',
-    theme: 'monokai',
+    mode: "text/html",
+    theme: "monokai",
     readOnly: false, // set 'nocursor' to disable cursor
     onFocus: _.noop,
     value: null,
@@ -130,5 +140,5 @@ CodeEditor.defaultProps = {
 
 export default createComponent([CodeEditor, FormComponent], {
     styles,
-    modules: ['FormGroup', { CodeMirror: 'Vendor.CodeMirror' }]
+    modules: ["FormGroup", { CodeMirror: "Vendor.CodeMirror" }]
 });

@@ -19,7 +19,7 @@ class DeleteAction extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { message, Modal: { Confirmation } } = this.props;
+        const { message, modules: { Modal: { Confirmation } } } = this.props;
         const $this = this;
 
         return (

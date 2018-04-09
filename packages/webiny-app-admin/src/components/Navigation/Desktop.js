@@ -25,7 +25,7 @@ class Desktop extends React.Component {
 
             const children = React.Children.toArray(props.children);
             const hasChildren = children.length > 0;
-            const { Link, Icon } = this.props;
+            const { Link, Icon } = this.props.modules;
 
             const linkProps = {
                 key: props.id,

@@ -80,7 +80,7 @@ class Pagination extends React.Component {
             return null;
         }
 
-        const { Grid, styles } = this.props;
+        const { modules: { Grid }, styles } = this.props;
         const cp = parseInt(this.props.currentPage);
         const previousPage = cp === 1 ? null : this.pageChanged.bind(this, cp - 1);
         const previousClasses = classSet(styles.previous, {
@@ -135,7 +135,7 @@ Pagination.defaultProps = {
     totalCount: 0,
     size: "large", // large or small
     renderPerPage() {
-        const { Dropdown, perPageOptions } = this.props;
+        const { modules: { Dropdown }, perPageOptions } = this.props;
         return (
             <Dropdown
                 title={

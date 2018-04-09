@@ -14,6 +14,7 @@ if (!app.initialized) {
         securityApp({
             authentication: {
                 cookie: "webiny-token",
+                // TODO: define strategies like on server side
                 identities: [userIdentity],
                 onLogout() {
                     app.router.goToRoute("Login");
@@ -32,7 +33,7 @@ if (!app.initialized) {
                 defaultOptions: {
                     watchQuery: {
                         fetchPolicy: "network-only",
-                        errorPolicy: "ignore"
+                        errorPolicy: "all"
                     },
                     query: {
                         fetchPolicy: "network-only",
@@ -59,6 +60,8 @@ if (!app.initialized) {
     });
 }
 
-export default hot(module)(() => {
+const App = () => {
     return <Router router={app.router} />;
-});
+};
+
+export default hot(module)(App);

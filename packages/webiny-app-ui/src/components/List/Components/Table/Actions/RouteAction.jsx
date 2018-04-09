@@ -1,28 +1,30 @@
-import React from 'react';
-import _ from 'lodash';
-import { app, createComponent } from 'webiny-app';
+import React from "react";
+import _ from "lodash";
+import { app, createComponent } from "webiny-app";
 
 class RouteAction extends React.Component {
     constructor(props) {
         super(props);
 
-        ['getRoute','getParams'].map(m => this[m] = this[m].bind(this));
+        ["getRoute", "getParams"].map(m => (this[m] = this[m].bind(this)));
     }
 
     getRoute() {
-        return _.isFunction(this.props.route) ? this.props.route(this.props.data) : this.props.route;
+        return _.isFunction(this.props.route)
+            ? this.props.route(this.props.data)
+            : this.props.route;
     }
 
     getParams() {
         let params = {};
 
-        if(!this.props.params) {
+        if (!this.props.params) {
             const routeParams = app.router.getRoute(this.getRoute()).params;
             routeParams.map(p => {
                 params[p.name] = this.props.data[p.name];
             });
         } else {
-            params = {...this.props.params}
+            params = { ...this.props.params };
         }
 
         if (_.isFunction(params)) {
@@ -42,11 +44,11 @@ class RouteAction extends React.Component {
             return null;
         }
 
-        const {Link, Icon} = this.props;
+        const { modules: { Link, Icon } } = this.props;
 
         return (
             <Link route={this.getRoute()} params={this.getParams()}>
-                {this.props.icon ? <Icon icon={this.props.icon}/> : null}
+                {this.props.icon ? <Icon icon={this.props.icon} /> : null}
                 {this.props.label || this.props.children}
             </Link>
         );
@@ -61,4 +63,4 @@ RouteAction.defaultProps = {
     hide: null
 };
 
-export default createComponent(RouteAction, {modules: ['Link', 'Icon']});
+export default createComponent(RouteAction, { modules: ["Link", "Icon"] });

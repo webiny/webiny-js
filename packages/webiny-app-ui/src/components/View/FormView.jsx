@@ -28,7 +28,7 @@ class FormView extends React.Component {
             return children;
         }
 
-        const { Form } = this.props;
+        const { Form } = this.props.modules;
         // Loop through View elements and detect header/body/footer components
         React.Children.map(children, child => {
             if (isElementOfType(child, Header)) {
@@ -90,7 +90,7 @@ class FormView extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { Panel, styles } = this.props;
+        const { modules: { Panel }, styles } = this.props;
         return (
             <div>
                 {this.headerComponent}

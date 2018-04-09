@@ -39,7 +39,6 @@ class MarkdownEditor extends React.Component {
         };
 
         this.mdEditor = new SimpleMDE(mdConfig);
-        window.sme = this.mdEditor;
 
         this.mdEditor.codemirror.on('change', () => {
             this.props.onChange(this.mdEditor.codemirror.getValue());

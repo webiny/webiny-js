@@ -14,7 +14,7 @@ class Textarea extends React.Component {
     }
 
     render() {
-        const { FormGroup, styles } = this.props;
+        const { modules: { FormGroup, DelayedOnChange }, styles } = this.props;
 
         const props = {
             onBlur: this.validate,
@@ -27,8 +27,6 @@ class Textarea extends React.Component {
             onKeyDown: this.props.onKeyDown,
             onKeyUp: this.props.onKeyUp
         };
-
-        const { DelayedOnChange } = this.props;
 
         return (
             <FormGroup valid={this.state.isValid} className={this.props.className}>

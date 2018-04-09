@@ -4,6 +4,7 @@ import { createComponent, i18n } from 'webiny-app';
 import styles from '../../styles.css';
 
 const t = i18n.namespace("Webiny.Ui.List.Table.Empty");
+
 class Empty extends React.Component {
     render() {
         const { render, children, message } = this.props;

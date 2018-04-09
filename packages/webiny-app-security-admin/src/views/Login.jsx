@@ -39,7 +39,7 @@ class Login extends React.Component {
     }
 
     render() {
-        const { Form, Input, Password, Button, Email } = this.props;
+        const { Form, Input, Password, Button, Email } = this.props.modules;
 
         return (
             <sign-in-form class={classSet('sign-in', (this.props.overlay && 'overlay'))}>

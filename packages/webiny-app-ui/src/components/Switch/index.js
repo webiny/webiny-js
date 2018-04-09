@@ -35,7 +35,7 @@ class Switch extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { FormGroup, styles } = this.props;
+        const { modules: { FormGroup }, styles } = this.props;
         let classes = classSet(styles.switch, styles.switchInline);
         if (this.props.disabled) {
             classes += " " + styles.disabled;

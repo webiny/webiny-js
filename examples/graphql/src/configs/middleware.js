@@ -31,7 +31,8 @@ export default () => {
                 imageAttributes({
                     entity: Image,
                     processor: imageProcessor(),
-                    quality: 90
+                    quality: 90,
+                    storage: new Storage(localDriver)
                 });
             }
         }

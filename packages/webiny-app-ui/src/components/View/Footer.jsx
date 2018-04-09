@@ -8,15 +8,13 @@ class Footer extends React.Component {
         if (this.props.render) {
             return this.props.render.call(this);
         }
-        const { styles } = this.props;
+        const { modules: { Panel }, styles } = this.props;
 
         const css = classSet(
             styles.panelFooter,
             this.props.align === 'right' ? 'text-right' : null,
             this.props.className
         );
-
-        const { Panel } = this.props;
 
         return (
             <Panel.Footer className={css}>

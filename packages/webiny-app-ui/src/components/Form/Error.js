@@ -8,7 +8,17 @@ class ContainerError extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { error, onClose, close, title, type, className, message } = this.props;
+        const {
+            modules: { Alert },
+            error,
+            onClose,
+            close,
+            title,
+            type,
+            className,
+            message
+        } = this.props;
+
         if (!error) {
             return null;
         }
@@ -16,8 +26,6 @@ class ContainerError extends React.Component {
         if (_.isFunction(this.props.children)) {
             return this.props.children({ error });
         }
-
-        const { Alert } = this.props;
 
         if (_.isString(error)) {
             return (
@@ -27,19 +35,19 @@ class ContainerError extends React.Component {
             );
         }
 
-        const data = [];
-        _.each(error.data, (value, key) => {
+        /*const data = [];
+        _.each(Object.values(error.data), (value, key) => {
             data.push(
                 <li key={key}>
-                    <strong>{key}</strong> {value}
+                    <strong>{key}</strong> {value.message}
                 </li>
             );
-        });
+        });*/
 
         return (
             <Alert title={title} type={type} close={close} onClose={onClose} className={className}>
                 {message || error.message}
-                {data.length > 0 && <ul>{data}</ul>}
+                {/*{data.length > 0 && <ul>{data}</ul>}*/}
             </Alert>
         );
     }

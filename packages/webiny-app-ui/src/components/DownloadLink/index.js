@@ -2,6 +2,10 @@ import React from "react";
 import _ from "lodash";
 import { createComponent } from "webiny-app";
 
+/**
+ * TODO: DownloadLink
+ * This component needs to be reviewed in context of GraphQL and how we plan on performing downloads (ex: PDF)
+ */
 class DownloadLink extends React.Component {
     constructor(props) {
         super(props);
@@ -38,7 +42,7 @@ class DownloadLink extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { Downloader, Link, ...props } = this.props;
+        const { modules: { Downloader, Link }, ...props } = this.props;
         const downloader = <Downloader onReady={downloader => (this.downloader = downloader)} />;
         props.onClick = () => {
             if (this.props.disabled) {

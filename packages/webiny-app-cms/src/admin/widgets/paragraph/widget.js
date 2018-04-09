@@ -3,7 +3,7 @@ import { createComponent } from "webiny-app";
 
 class ParagraphWidget extends React.Component {
     render() {
-        const { EditorWidget, Textarea, value, onChange } = this.props;
+        const { modules: { EditorWidget, Textarea }, value, onChange } = this.props;
         return (
             <EditorWidget {...{ value, onChange }}>
                 <Textarea name={"text"} />

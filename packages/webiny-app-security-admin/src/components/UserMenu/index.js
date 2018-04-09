@@ -35,7 +35,7 @@ class UserMenu extends React.Component {
     }
 
     renderLogoutMenuItem() {
-        const item = this.props.logoutMenuItem;
+        const item = this.props.modules.logoutMenuItem;
         if (!item) {
             return null;
         }
@@ -59,6 +59,8 @@ class UserMenu extends React.Component {
             return null;
         }
 
+
+        const { userMenuItems } = this.props.modules;
         return (
             <div className="dropdown profile-holder">
                 <a href="#" className="profile" data-toggle="dropdown">
@@ -69,7 +71,7 @@ class UserMenu extends React.Component {
                 <div className="drop dropdown-menu" role="menu">
                     <span className="top-arr" />
                     <ul>
-                        {this.props.userMenuItems.map((item, i) => (
+                        {userMenuItems.map((item, i) => (
                             <li key={i}>
                                 {React.isValidElement(item) ? item : React.createElement(item)}
                             </li>

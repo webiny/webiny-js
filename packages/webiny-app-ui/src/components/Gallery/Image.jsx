@@ -1,15 +1,14 @@
-import React from 'react';
-import _ from 'lodash';
-import { createComponent } from 'webiny-app';
-import filesize from 'filesize';
-import styles from './styles.css';
+import React from "react";
+import _ from "lodash";
+import { createComponent } from "webiny-app";
+import filesize from "filesize";
+import styles from "./styles.css";
 
 class Image extends React.Component {
-
     constructor(props) {
         super(props);
 
-        ['editImage', 'deleteImage'].map(m => this[m] = this[m].bind(this));
+        ["editImage", "deleteImage"].map(m => (this[m] = this[m].bind(this)));
     }
 
     editImage(e) {
@@ -27,15 +26,15 @@ class Image extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { Link, image, styles } = this.props;
-        const title = image.title || image.name || '';
-        let cacheBust = '';
+        const { modules: { Link }, image, styles } = this.props;
+        const title = image.title || image.name || "";
+        let cacheBust = "";
         if (image.modifiedOn && !image.data) {
-            cacheBust = '?ts=' + new Date(image.modifiedOn).getTime();
+            cacheBust = "?ts=" + new Date(image.modifiedOn).getTime();
         }
 
         const draggable = {
-            'data-id': this.props.index,
+            "data-id": this.props.index,
             draggable: true,
             onDragStart: this.props.onDragStart,
             onDragEnd: this.props.onDragEnd,
@@ -43,8 +42,8 @@ class Image extends React.Component {
         };
 
         let editBtn = null;
-        if (!_.has(image, 'progress')) {
-            editBtn = <Link onClick={this.editImage} className={styles.fileEdit}/>;
+        if (!_.has(image, "progress")) {
+            editBtn = <Link onClick={this.editImage} className={styles.fileEdit} />;
         }
 
         return (
@@ -55,14 +54,15 @@ class Image extends React.Component {
                     alt={title}
                     title={title}
                     width="133"
-                    height="133"/>
+                    height="133"
+                />
                 {editBtn}
-                <Link onClick={this.deleteImage} className={styles.fileRemove}/>
+                <Link onClick={this.deleteImage} className={styles.fileRemove} />
                 <span className={styles.fileName}>{image.name}</span>
-                <span className={styles.fileSize}>{image.id ? filesize(image.size) : '-'}</span>
+                <span className={styles.fileSize}>{image.id ? filesize(image.size) : "-"}</span>
             </div>
         );
     }
 }
 
-export default createComponent(Image, { modules: ['Link'], styles });
+export default createComponent(Image, { modules: ["Link"], styles });

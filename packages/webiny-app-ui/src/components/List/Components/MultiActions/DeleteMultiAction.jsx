@@ -41,7 +41,7 @@ class DeleteMultiAction extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { Modal, actions, label, data, children } = this.props;
+        const { modules: { Modal }, actions, label, data, children } = this.props;
 
         const content = _.isFunction(children) ? children : ({ data, actions, dialog }) => {
             const props = {

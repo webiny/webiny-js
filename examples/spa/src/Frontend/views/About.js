@@ -18,7 +18,7 @@ class About extends React.Component {
             Input,
             Select,
             Grid
-        } = this.props;
+        } = this.props.modules;
 
         return (
             <AdminLayout>
@@ -33,8 +33,8 @@ class About extends React.Component {
                     </View.Header>
                     <View.Body>
                         <List
-                            entity={"SecurityUsers"}
-                            withRouter={true}
+                            entity={"SecurityUser"}
+                            withRouter={false}
                             sort={{ email: -1 }}
                             fields={"id firstName email createdOn enabled"}
                             search={{ fields: ["email", "firstName"] }}

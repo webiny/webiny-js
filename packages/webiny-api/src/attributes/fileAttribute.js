@@ -11,6 +11,7 @@ class FileAttribute extends EntityAttribute {
 
     constructor(name: string, attributesContainer: EntityAttributesContainer, entity: Class<File>) {
         super(name, attributesContainer, entity);
+        this.tags = [];
         this.auto.delete = {
             enabled: true,
             options: { permanent: true }
@@ -70,7 +71,7 @@ class FileAttribute extends EntityAttribute {
     // $FlowIgnore
     setValue(value) {
         if (Array.isArray(_.get(value, "tags"))) {
-            value.tags = _.uniqWith(this.tags.concat(value.tags || []), _.isEqual);
+            value.tags = _.uniqWith([...this.tags, ...(value.tags || [])], _.isEqual);
         }
 
         super.setValue(value);

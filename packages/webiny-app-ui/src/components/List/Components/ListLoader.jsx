@@ -15,7 +15,7 @@ class ListLoader extends React.Component {
             return this.props.children();
         }
 
-        const { Loader } = this.props;
+        const { Loader } = this.props.modules;
         return <Loader/>;
     }
 }

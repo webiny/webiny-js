@@ -1,10 +1,9 @@
-import React from 'react';
-import _ from 'lodash';
-import { createComponent } from 'webiny-app';
+import React from "react";
+import { createComponent } from "webiny-app";
 
 class TimeAgoField extends React.Component {
     render() {
-        const {List, moment, data, name, render, ...props} = this.props;
+        const { modules: { List, moment }, data, name, render, ...props } = this.props;
 
         if (render) {
             return render.call(this);
@@ -15,13 +14,11 @@ class TimeAgoField extends React.Component {
             value = moment(value).fromNow();
         }
 
-
-        return (
-            <List.Table.Field {...props}>
-                {() => value || this.props.default}
-            </List.Table.Field>
-        );
+        return <List.Table.Field {...props}>{() => value || this.props.default}</List.Table.Field>;
     }
 }
 
-export default createComponent(TimeAgoField, {modules: ['List', {moment: 'Vendor.Moment'}], tableField: true});
+export default createComponent(TimeAgoField, {
+    modules: ["List", { moment: "Vendor.Moment" }],
+    tableField: true
+});

@@ -51,7 +51,7 @@ class ListView extends React.Component {
         if (this.props.render) {
             return this.props.render.call(this);
         }
-        const { Panel, styles } = this.props;
+        const { modules: { Panel }, styles } = this.props;
 
         return (
             <div>

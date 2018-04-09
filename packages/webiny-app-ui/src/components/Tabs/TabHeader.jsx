@@ -36,7 +36,7 @@ TabHeader.defaultProps = {
         // TODO: const i18n = React.isValidElement(label) && isElementOfType(label, i18n.getComponent());
         // if (_.isString(this.props.label) || i18n) {
         if (_.isString(this.props.label)) {
-            const { Icon } = this.props;
+            const { Icon } = this.props.modules;
             label = (
                 <a href="javascript:void(0)">
                     {this.props.icon ? <Icon icon={this.props.icon}/> : null}

@@ -7,11 +7,11 @@ class CategoryList extends React.Component {
     render() {
         const listProps = {
             onReady: actions => (this.list = actions),
-            api: "/cms/categories",
-            fields: "id,title,slug,url,createdOn"
+            entity: "CmsCategory",
+            fields: "id title slug url createdOn"
         };
 
-        const { View, ViewSwitcher, Link, Icon, List, List: { Table } } = this.props;
+        const { View, ViewSwitcher, Link, Icon, List, List: { Table } } = this.props.modules;
 
         return (
             <View.List>

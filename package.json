@@ -65,6 +65,8 @@
     "prettier": "prettier --config .prettierrc.js --write",
     "release": "scripts/release.js",
     "release:dry": "scripts/release.js --preview --branch=development",
+    "release-private": "node scripts/private --branch=development --require=babel-register",
+    "release-private:dry": "node scripts/private --preview --branch=development --require=babel-register",
     "test": "scripts/test.js"
   },
   "pre-commit": [

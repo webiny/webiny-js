@@ -11,4 +11,4 @@ class EditorWidgetSettings extends React.Component {
     }
 }
 
-export default createComponent(EditorWidgetSettings, { modules: [] });
+export default createComponent(EditorWidgetSettings);

@@ -47,7 +47,7 @@ class CheckboxGroup extends React.Component {
      * @returns {Array}
      */
     renderOptions(callback = null) {
-        const { Checkbox } = this.props;
+        const { Checkbox } = this.props.modules;
         return this.props.options.map((item, key) => {
             const checked = _.find(this.props.value, opt => {
                 if (_.isPlainObject(opt)) {
@@ -88,7 +88,7 @@ class CheckboxGroup extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { FormGroup, styles } = this.props;
+        const { modules: { FormGroup }, styles } = this.props;
 
         return (
             <FormGroup valid={this.state.isValid} className={this.props.className}>

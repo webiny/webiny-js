@@ -13,6 +13,7 @@ class User extends Identity {
         this.attr("password").password();
         this.attr("firstName").char();
         this.attr("lastName").char();
+        // this.attr("avatar").image();
         this.attr("gravatar").dynamic(() => import("md5").then(md5 => md5(this.email)));
         this.attr("enabled")
             .boolean()

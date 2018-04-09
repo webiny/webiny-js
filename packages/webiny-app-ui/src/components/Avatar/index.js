@@ -88,7 +88,7 @@ class Avatar extends React.Component {
     }
 
     getCropper() {
-        const { cropper, Cropper } = this.props;
+        const { cropper, modules: { Cropper } } = this.props;
 
         if (!cropper) {
             return null;
@@ -153,8 +153,8 @@ class Avatar extends React.Component {
             return this.getCropper();
         }
 
-        const model = this.props.value;
-        const { Alert, Button, FileReader, styles } = this.props;
+        const model = { ...this.props.value };
+        const { modules: { Alert, Button, FileReader }, styles } = this.props;
 
         let imageSrc = this.props.defaultImage;
         if (model) {
@@ -164,7 +164,7 @@ class Avatar extends React.Component {
         const imageAction = (
             <Button
                 type="primary"
-                icon={['fa', 'upload']}
+                icon={["fa", "upload"]}
                 onClick={this.getFiles}
                 className={styles.uploadBtn}
             >

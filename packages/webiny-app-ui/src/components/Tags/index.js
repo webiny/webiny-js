@@ -97,7 +97,7 @@ class Tags extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { FormGroup, styles } = this.props;
+        const { modules: { FormGroup }, styles } = this.props;
 
         const input = {
             type: "text",
@@ -134,7 +134,7 @@ Tags.defaultProps = {
     placeholder: t`Type and hit ENTER`,
     onInvalidTag: _.noop,
     renderTag({ value, index }) {
-        const { Icon, styles } = this.props;
+        const { modules: { Icon }, styles } = this.props;
         return (
             <div key={value} className={styles.block}>
                 <p>{value}</p>

@@ -5,7 +5,7 @@ import _ from "lodash";
 const t = i18n.namespace("Webiny.Ui.Wizard.Actions.Previous");
 class Next extends React.Component {
     render() {
-        const { Button, onClick, render, wizard, ...props } = this.props;
+        const { modules: { Button }, onClick, render, wizard, ...props } = this.props;
 
         if (render) {
             return render.call(this);
