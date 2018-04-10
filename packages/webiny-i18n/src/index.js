@@ -104,7 +104,7 @@ class I18N {
     date(
         value: Date | string | number,
         outputFormat: ?string = null,
-        inputFormat: string = "Y-m-dTH:i:sO"
+        inputFormat: string = "YYYY-MM-DDTHH:mm:ss.SSSZ"
     ): string {
         if (!outputFormat) {
             outputFormat = this.getDateFormat();
@@ -127,7 +127,7 @@ class I18N {
     time(
         value: Date | string | number,
         outputFormat: ?string = null,
-        inputFormat: string = "Y-m-dTH:i:sO"
+        inputFormat: string = "YYYY-MM-DDTHH:mm:ss.SSSZ"
     ): string {
         if (!outputFormat) {
             outputFormat = this.getTimeFormat();
@@ -150,7 +150,7 @@ class I18N {
     dateTime(
         value: Date | string | number,
         outputFormat: ?string = null,
-        inputFormat: string = "Y-m-dTH:i:sO"
+        inputFormat: string = "YYYY-MM-DDTHH:mm:ss.SSSZ"
     ): string {
         if (!outputFormat) {
             outputFormat = this.getDateTimeFormat();
