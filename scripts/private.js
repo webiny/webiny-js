@@ -41,6 +41,7 @@ const toPublish = [
     "webiny-jimp",
     "webiny-model",
     "webiny-mysql-connection",
+    "webiny-react-router",
     "webiny-scripts",
     "webiny-service-manager",
     "webiny-sql-table-mysql",
@@ -63,7 +64,16 @@ const config = {
             next();
         },
         wsr.npmVerify({ registry }),
-        wsr.analyzeCommits(),
+        wsr.analyzeCommits({
+            isRelevant: (pkg, commit) => {
+                if (commit.message.match(/affects:(.*)/)) {
+                    return RegExp.$1
+                        .split(",")
+                        .map(n => n.trim())
+                        .filter(name => pkg.name === name).length;
+                }
+            }
+        }),
         wsr.releaseNotes(),
         // Make sure "main" field does not start with `src/`
         ({ packages, logger }, next) => {
@@ -86,7 +96,7 @@ const config = {
             });
             next();
         },
-        wsr.npmPublish({ registry, tag: "next" }),
+        wsr.npmPublish({ registry }),
         async ({ packages, config }, next) => {
             if (config.preview) {
                 return;
@@ -94,6 +104,10 @@ const config = {
 
             for (let i = 0; i < packages.length; i++) {
                 const pkg = packages[i];
+                if (!pkg.nextRelease || !pkg.nextRelease.gitTag) {
+                    continue;
+                }
+
                 fs.writeJsonSync(path.join(pkg.location, "package.json"), pkg.jsonBackup, {
                     spaces: 2
                 });

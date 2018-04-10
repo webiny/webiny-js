@@ -17,7 +17,7 @@ export default () => {
         publicUrl: "https://cdn.domain.com"
     });
 
-    app.setConfig({
+    app.configure({
         entity: {
             // Instantiate driver with DB connection
             driver: new MySQLDriver({ connection }),
