@@ -1,0 +1,19 @@
+.switchColumn {
+    width: 100px;
+}
+
+.field {
+    display: inline-block;
+    border: 1px solid #cdcdcd;
+    text-align: left;
+    min-height: 100px;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    cursor: pointer;
+    background-color: #fbfbfb;
+}
+
+.active {
+    background-color: #00ccb0;
+}

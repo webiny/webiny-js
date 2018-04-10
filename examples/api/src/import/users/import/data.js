@@ -10,33 +10,18 @@ export default [
                     name: "Manage users",
                     slug: "manage-users",
                     description: "Manage system users",
-                    rules: [
-                        {
-                            classId: "Security.Users",
-                            methods: [
-                                { method: "List.Security.Users" },
-                                { method: "Create.Security.Users" },
-                                { method: "Get.Security.Users" },
-                                { method: "Update.Security.Users" }
-                            ]
-                        }
+                    fields: [
+                        "listSecurityUsers",
+                        "createSecurityUsers",
+                        "getSecurityUsers",
+                        "updateSecurityUsers"
                     ]
                 },
                 {
                     name: "Write blog post",
                     slug: "write-blog-post",
                     description: "Allow user to create and edit blog posts",
-                    rules: [
-                        {
-                            classId: "Cms.Pages",
-                            methods: [
-                                { method: "List.Cms.Pages" },
-                                { method: "Get.Cms.Pages" },
-                                { method: "Create.Cms.Pages" },
-                                { method: "Update.Cms.Pages" }
-                            ]
-                        }
-                    ]
+                    fields: ["listCmsPages", "createCmsPages", "getCmsPages", "updateCmsPages"]
                 }
             ]
         };
