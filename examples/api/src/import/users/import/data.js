@@ -12,16 +12,16 @@ export default [
                     description: "Manage system users",
                     fields: [
                         "listSecurityUsers",
-                        "createSecurityUsers",
-                        "getSecurityUsers",
-                        "updateSecurityUsers"
+                        "createSecurityUser",
+                        "getSecurityUser",
+                        "updateSecurityUser"
                     ]
                 },
                 {
                     name: "Write blog post",
                     slug: "write-blog-post",
                     description: "Allow user to create and edit blog posts",
-                    fields: ["listCmsPages", "createCmsPages", "getCmsPages", "updateCmsPages"]
+                    fields: ["listCmsPages", "createCmsPage", "getCmsPage", "updateCmsPage"]
                 }
             ]
         };
