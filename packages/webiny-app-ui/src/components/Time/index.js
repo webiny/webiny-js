@@ -1,107 +1,109 @@
-import React from 'react';
-import _ from 'lodash';
-import $ from 'jquery';
-import { Webiny } from 'webiny-app';
+import React from "react";
+import _ from "lodash";
+import { i18n, createComponent } from "webiny-app";
+import { FormComponent } from "webiny-app-ui";
+import styles from "./styles.css";
 
-class Time extends Webiny.Ui.FormComponent {
+class Time extends React.Component {
     constructor(props) {
         super(props);
-        this.valueChanged = false;
+        this.initialized = false;
+        this.state = {
+            ...props.initialState
+        };
 
-        this.bindMethods('setup,onChange');
+        this.init = this.init.bind(this);
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        if (nextProps['disabledBy']) {
-            return true;
+    componentDidMount() {
+        this.props.attachToForm && this.props.attachToForm(this);
+    }
+
+    init(element) {
+        if (this.initialized) {
+            return;
         }
 
-        const omit = ['children', 'key', 'ref', 'onChange'];
-        const oldProps = _.omit(this.props, omit);
-        const newProps = _.omit(nextProps, omit);
-
-        return !_.isEqual(newProps, oldProps) || !_.isEqual(nextState, this.state);
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        super.componentDidUpdate();
-        if (prevState.isValid !== this.state.isValid) {
-            this.input.setState({
-                isValid: this.state.isValid,
-                validationMessage: this.state.validationMessage
-            });
-        }
-    }
-
-    setup() {
-        this.element = $(this.dom);
-
-        let format = this.props.inputFormat || Webiny.I18n.getTimeFormat();
-        format = Webiny.I18n.convertPhpToJsDateTimeFormat(format);
-
-        this.element.datetimepicker({
-            format,
-            stepping: this.props.stepping,
-            keepOpen: false,
-            debug: this.props.debug || false,
-            minDate: this.props.minDate ? new Date(this.props.minDate) : false,
-            widgetPositioning: {
-                horizontal: this.props.positionHorizontal || 'auto',
-                vertical: this.props.positionVertical || 'bottom'
+        this.initialized = true;
+        element.flatpickr({
+            defaultDate: this.props.value,
+            enableTime: true,
+            noCalendar: true,
+            formatDate: date => {
+                return i18n.time(date, this.getInputFormat());
+            },
+            onChange: values => {
+                let value = values[0];
+                if (value) {
+                    value = i18n.time(value, this.getModelFormat());
+                }
+                this.props.onChange(value, this.validate);
             }
-        }).on('dp.hide', e => {
-            if (this.valueChanged) {
-                this.onChange(e.target.value);
-            }
-            this.valueChanged = false;
-        }).on('dp.change', () => {
-            this.valueChanged = true;
         });
     }
 
-    onChange(newValue) {
-        if (newValue) {
-            newValue = Webiny.I18n.time(newValue, this.props.modelFormat, this.props.inputFormat || Webiny.I18n.getTimeFormat());
-        }
-
-        if (newValue !== this.props.value) {
-            this.props.onChange(newValue, this.validate);
-        }
+    getInputFormat() {
+        return this.props.inputFormat || i18n.getTimeFormat();
     }
 
-    renderPreview() {
-        if (!_.isEmpty(this.props.value)) {
-            return Webiny.I18n.time(this.props.value, this.props.inputFormat, this.props.modelFormat);
+    getModelFormat() {
+        return this.props.modelFormat;
+    }
+
+    getInputValue() {
+        if (_.isEmpty(this.props.value)) {
+            return "";
         }
 
-        return this.getPlaceholder();
+        return i18n.time(this.props.value, this.getInputFormat(), this.getModelFormat());
+    }
+
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
+
+        const { InputLayout } = this.props.modules;
+
+        const props = {
+            onBlur: this.props.validate ? this.props.validate : this.props.onBlur,
+            disabled: this.props.isDisabled(),
+            readOnly: this.props.readOnly,
+            type: "text",
+            value: this.getInputValue(),
+            placeholder: this.props.placeholder,
+            onChange: this.props.onChange,
+            autoFocus: this.props.autoFocus,
+            className: styles.input,
+            ref: ref => {
+                this.init(ref);
+                this.props.onRef(ref);
+            }
+        };
+
+        return (
+            <InputLayout
+                iconRight="icon-calendar"
+                valid={this.state.isValid}
+                className={this.props.className}
+                input={<input {...props} />}
+                label={this.props.renderLabel.call(this)}
+                description={this.props.renderDescription.call(this)}
+                info={this.props.renderInfo.call(this)}
+                validationMessage={this.props.renderValidationMessage.call(this)}
+            />
+        );
     }
 }
 
 Time.defaultProps = {
-    onChange: _.noop,
-    debug: false,
-    disabled: false,
-    readOnly: false,
-    placeholder: '',
+    onRef: _.noop,
     inputFormat: null,
-    modelFormat: 'H:i:s',
-    stepping: 15,
-    renderer() {
-        const omitProps = ['attachToForm', 'attachValidators', 'detachFromForm', 'validateInput', 'form', 'renderer', 'name', 'onChange'];
-        const props = _.omit(this.props, omitProps);
-        const { Input, Icon } = props;
-        props.value = this.renderPreview();
-        props.addonRight = <Icon icon="icon-calendar"/>;
-        props.onRef = input => {
-            this.dom = input;
-            this.setup();
-        };
-
-        return <Input ref={ref => this.input = ref} {...props}/>;
-    }
+    modelFormat: "HH:mm"
 };
 
-export default Webiny.createComponent(Time, {
-    modules: ['Icon', 'Input', 'Webiny/Vendors/DateTimePicker']
+export default createComponent([Time, FormComponent], {
+    modulesProp: "modules",
+    modules: ["Icon", "InputLayout", { flatpickr: "Vendor.FlatPickr" }],
+    formComponent: true
 });

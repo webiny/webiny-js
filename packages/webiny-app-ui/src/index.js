@@ -95,6 +95,10 @@ const app = () => {
                 factory: () => import("./components/Date")
             },
             {
+                name: "DateTime",
+                factory: () => import("./components/DateTime")
+            },
+            {
                 name: "DelayedOnChange",
                 factory: () => import("./components/DelayedOnChange")
             },
@@ -265,6 +269,10 @@ const app = () => {
             {
                 name: "Tile",
                 factory: () => import("./components/Tile")
+            },
+            {
+                name: "Time",
+                factory: () => import("./components/Time")
             },
             {
                 name: "Tooltip",

@@ -1,108 +1,108 @@
-import React from 'react';
-import _ from 'lodash';
-import $ from 'jquery';
-import { Webiny } from 'webiny-app';
+import React from "react";
+import _ from "lodash";
+import { i18n, createComponent } from "webiny-app";
+import { FormComponent } from "webiny-app-ui";
+import styles from "./styles.css";
 
-class DateTime extends Webiny.Ui.FormComponent {
-
+class DateTime extends React.Component {
     constructor(props) {
         super(props);
-        this.valueChanged = false;
+        this.initialized = false;
+        this.state = {
+            ...props.initialState
+        };
 
-        this.bindMethods('setup,onChange');
+        this.init = this.init.bind(this);
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        if (nextProps['disabledBy']) {
-            return true;
+    componentDidMount() {
+        this.props.attachToForm && this.props.attachToForm(this);
+    }
+
+    init(element) {
+        if (this.initialized) {
+            return;
         }
 
-        const omit = ['children', 'key', 'ref', 'onChange'];
-        const oldProps = _.omit(this.props, omit);
-        const newProps = _.omit(nextProps, omit);
-
-        return !_.isEqual(newProps, oldProps) || !_.isEqual(nextState, this.state);
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        super.componentDidUpdate();
-        if (prevState.isValid !== this.state.isValid) {
-            this.input.setState({
-                isValid: this.state.isValid,
-                validationMessage: this.state.validationMessage
-            });
-        }
-    }
-
-    setup() {
-        this.element = $(this.input);
-
-        let format = this.props.inputFormat || Webiny.I18n.getDatetimeFormat();
-        format = Webiny.I18n.convertPhpToJsDateTimeFormat(format);
-
-        this.element.datetimepicker({
-            format,
-            stepping: this.props.stepping,
-            keepOpen: false,
-            debug: this.props.debug || false,
-            minDate: this.props.minDate ? new Date(this.props.minDate) : false,
-            viewMode: this.props.viewMode,
-            widgetPositioning: {
-                horizontal: this.props.positionHorizontal || 'auto',
-                vertical: this.props.positionVertical || 'bottom'
+        this.initialized = true;
+        element.flatpickr({
+            defaultDate: this.props.value,
+            enableTime: true,
+            time_24hr: true,
+            formatDate: date => {
+                // Here we have a date object, in user's tz, so we can directly pass it into i18n.dateTime.
+                // In getInputValue method, we have a string, so we'll need to create a Date instance first.
+                return i18n.dateTime(date, this.getInputFormat());
+            },
+            onChange: values => {
+                let value = values[0];
+                if (value) {
+                    value = value.toISOString();
+                }
+                this.props.onChange(value, this.validate);
             }
-        }).on('dp.hide', e => {
-            if (this.valueChanged) {
-                this.onChange(e.target.value);
-            }
-            this.valueChanged = false;
-        }).on('dp.change', () => {
-            this.valueChanged = true;
         });
     }
 
-    onChange(newValue) {
-        if (newValue) {
-            newValue = Webiny.I18n.datetime(newValue, this.props.modelFormat, this.props.inputFormat || Webiny.I18n.getDatetimeFormat());
-        }
-
-        if (newValue !== this.props.value) {
-            this.props.onChange(newValue, this.validate);
-        }
+    getInputFormat() {
+        return this.props.inputFormat || i18n.getDateTimeFormat();
     }
 
-    renderPreview() {
-        if (!_.isEmpty(this.props.value)) {
-            return Webiny.I18n.datetime(this.props.value, this.props.inputFormat, this.props.modelFormat);
+    getInputValue() {
+        if (_.isEmpty(this.props.value)) {
+            return "";
         }
 
-        return this.getPlaceholder();
+        // Here we have a "toISOString" string, in UTC, so we have to create an instance of Date, so user's tz is applied.
+        // In flatpickr's "formatDate" function, we receive Date object directly, so no additional actions were needed.
+        return i18n.dateTime(new Date(this.props.value), this.getInputFormat());
+    }
+
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
+
+        const { InputLayout } = this.props.modules;
+
+        const props = {
+            onBlur: this.props.validate ? this.props.validate : this.props.onBlur,
+            disabled: this.props.isDisabled(),
+            readOnly: this.props.readOnly,
+            type: "text",
+            value: this.getInputValue(),
+            placeholder: this.props.placeholder,
+            onChange: this.props.onChange,
+            autoFocus: this.props.autoFocus,
+            className: styles.input,
+            ref: ref => {
+                this.init(ref);
+                this.props.onRef(ref);
+            }
+        };
+
+        return (
+            <InputLayout
+                iconRight="icon-calendar"
+                valid={this.state.isValid}
+                className={this.props.className}
+                input={<input {...props} />}
+                label={this.props.renderLabel.call(this)}
+                description={this.props.renderDescription.call(this)}
+                info={this.props.renderInfo.call(this)}
+                validationMessage={this.props.renderValidationMessage.call(this)}
+            />
+        );
     }
 }
 
-DateTime.defaultProps = Webiny.Ui.FormComponent.extendProps({
-    debug: false,
-    inputFormat: null,
-    modelFormat: 'Y-m-d H:i:s',
-    positionHorizontal: 'auto',
-    positionVertical: 'bottom',
-    viewMode: 'days',
-    renderer() {
-        const omitProps = ['attachToForm', 'attachValidators', 'detachFromForm', 'validateInput', 'form', 'renderer', 'name', 'onChange'];
-        const props = _.omit(this.props, omitProps);
-        const { Input, Icon } = props;
-        props.value = this.renderPreview();
-        props.addonRight = <Icon icon="icon-calendar"/>;
-        props.onRef = ref => this.input = ref;
-        props.onComponentDidMount = input => {
-            this.input = input;
-            this.setup();
-        };
+DateTime.defaultProps = {
+    onRef: _.noop,
+    inputFormat: null
+};
 
-        return <Input {...props}/>;
-    }
-});
-
-export default Webiny.createComponent(DateTime, {
-    modules: ['Icon', 'Input', 'Webiny/Vendors/DateTimePicker']
+export default createComponent([DateTime, FormComponent], {
+    modulesProp: "modules",
+    modules: ["Icon", "InputLayout", { flatpickr: "Vendor.FlatPickr" }],
+    formComponent: true
 });

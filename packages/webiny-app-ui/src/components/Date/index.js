@@ -1,50 +1,59 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent, i18n } from "webiny-app";
+import { i18n, createComponent } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
+import styles from "./styles.css";
 
 class Date extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
-        this.element = null;
-        this.input = null;
-    }
+        this.initialized = false;
+        this.state = {
+            ...props.initialState
+        };
 
-    shouldComponentUpdate(nextProps, nextState) {
-        if (nextProps["disabledBy"]) {
-            return true;
-        }
-
-        const omit = ["children", "key", "ref", "onChange"];
-        const oldProps = _.omit(this.props, omit);
-        const newProps = _.omit(nextProps, omit);
-
-        return !_.isEqual(newProps, oldProps) || !_.isEqual(nextState, this.state);
+        this.init = this.init.bind(this);
     }
 
     componentDidMount() {
         this.props.attachToForm && this.props.attachToForm(this);
     }
 
-    init() {
-        let altFormat = this.props.inputFormat;
-        if (!altFormat) {
-            altFormat = i18n.getDateFormat();
+    init(element) {
+        if (this.initialized) {
+            return;
         }
 
-        this.element.flatpickr({
-            altInput: true,
-            altFormat,
+        this.initialized = true;
+        element.flatpickr({
+            defaultDate: this.props.value,
             formatDate: date => {
-                console.log("aaa", date);
+                return i18n.date(date, this.getInputFormat());
             },
-            onChange: (datesArray, newValue) => {
-                if (newValue !== this.props.value) {
-                    this.props.onChange(newValue, this.props.validate);
+            onChange: values => {
+                let value = values[0];
+                if (value) {
+                    value = i18n.date(value, this.getModelFormat());
                 }
+                this.props.onChange(value, this.validate);
             }
         });
+    }
+
+    getInputFormat() {
+        return this.props.inputFormat || i18n.getDateFormat();
+    }
+
+    getModelFormat() {
+        return this.props.modelFormat;
+    }
+
+    getInputValue() {
+        if (_.isEmpty(this.props.value)) {
+            return "";
+        }
+
+        return i18n.date(this.props.value, this.getInputFormat(), this.getModelFormat());
     }
 
     render() {
@@ -52,33 +61,47 @@ class Date extends React.Component {
             return this.props.render.call(this);
         }
 
-        const omitProps = [
-            "attachToForm",
-            "attachValidators",
-            "detachFromForm",
-            "validateInput",
-            "form",
-            "name",
-            "onChange"
-        ];
-        const props = _.omit(this.props, omitProps);
-        const { Input, Icon } = props;
+        const { InputLayout } = this.props.modules;
 
-        props.addonRight = <Icon icon="icon-calendar" />;
-        props.onRef = element => {
-            this.element = element;
-            this.element && !this.initialized && this.init();
+        const props = {
+            onBlur: this.props.validate ? this.props.validate : this.props.onBlur,
+            disabled: this.props.isDisabled(),
+            readOnly: this.props.readOnly,
+            type: "text",
+            value: this.getInputValue(),
+            placeholder: this.props.placeholder,
+            onChange: this.props.onChange,
+            autoFocus: this.props.autoFocus,
+            className: styles.input,
+            ref: ref => {
+                this.init(ref);
+                this.props.onRef(ref);
+            }
         };
-        return <Input ref={ref => (this.input = ref)} {...props} />;
+
+        return (
+            <InputLayout
+                iconRight="icon-calendar"
+                valid={this.state.isValid}
+                className={this.props.className}
+                input={<input {...props} />}
+                label={this.props.renderLabel.call(this)}
+                description={this.props.renderDescription.call(this)}
+                info={this.props.renderInfo.call(this)}
+                validationMessage={this.props.renderValidationMessage.call(this)}
+            />
+        );
     }
 }
 
 Date.defaultProps = {
+    onRef: _.noop,
     inputFormat: null,
-    modelFormat: "Y-m-d"
+    modelFormat: "YYYY-MM-DD"
 };
 
 export default createComponent([Date, FormComponent], {
-    modules: ["Icon", "Input", { flatpickr: "Vendor.FlatPickr" }],
+    modulesProp: "modules",
+    modules: ["Icon", "InputLayout", { flatpickr: "Vendor.FlatPickr" }],
     formComponent: true
 });
