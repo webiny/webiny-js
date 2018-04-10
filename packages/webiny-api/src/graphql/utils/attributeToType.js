@@ -6,8 +6,7 @@ import {
     GraphQLFloat,
     GraphQLBoolean,
     GraphQLNonNull,
-    GraphQLObjectType,
-    GraphQLUnionType
+    GraphQLObjectType
 } from "graphql";
 
 import GraphQLJSON from "graphql-type-json";
@@ -15,13 +14,15 @@ import * as attrs from "webiny-model";
 import { EntityAttribute, EntitiesAttribute } from "webiny-entity";
 import { ModelAttribute, ModelsAttribute } from "webiny-model";
 import type { Attribute } from "webiny-model";
+import type { Entity } from "webiny-entity";
 
 export default (
     attr: Attribute,
     types: { [type: string]: GraphQLObjectType },
     modelToType: Function
 ) => {
-    let type = null;
+    let type = null,
+        resolve = null;
     if (attr instanceof attrs.BooleanAttribute) {
         type = GraphQLBoolean;
     }
@@ -78,6 +79,14 @@ export default (
         type = GraphQLJSON;
     }
 
+    if (attr instanceof attrs.DateAttribute) {
+        type = GraphQLString;
+        resolve = (entity: Entity) => {
+            const value = entity.getAttribute(attr.getName()).getValue();
+            return value instanceof Date ? value.toISOString() : null;
+        };
+    }
+
     if (!type) {
         type = GraphQLString;
     }
@@ -87,5 +96,5 @@ export default (
         type = new GraphQLNonNull(type);
     }
 
-    return type;
+    return { type, resolve };
 };

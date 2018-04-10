@@ -26,7 +26,7 @@ const modelToType = (
                     return;
                 }
 
-                fields[attr.getName()] = { type: attributeToType(attr, types, modelToType) };
+                fields[attr.getName()] = attributeToType(attr, types, modelToType);
             });
 
             return fields;
