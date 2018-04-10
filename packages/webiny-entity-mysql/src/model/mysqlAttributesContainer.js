@@ -3,6 +3,7 @@ import type { Entity } from "webiny-entity";
 import type { Model } from "webiny-model";
 import { EntityAttributesContainer } from "webiny-entity";
 import {
+    ArrayAttribute,
     BooleanAttribute,
     DateAttribute,
     ModelAttribute,
@@ -24,6 +25,12 @@ class MySQLAttributesContainer extends EntityAttributesContainer {
     date(): DateAttribute {
         const model = this.getParentModel();
         model.setAttribute(this.name, new DateAttribute(this.name, this));
+        return model.getAttribute(this.name);
+    }
+
+    array(): ArrayAttribute {
+        const model = this.getParentModel();
+        model.setAttribute(this.name, new ArrayAttribute(this.name, this));
         return model.getAttribute(this.name);
     }
 
