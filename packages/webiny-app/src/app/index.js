@@ -5,7 +5,7 @@ import debugFactory from "debug";
 import { ServiceManager } from "webiny-service-manager";
 
 import ModuleLoader from "./ModuleLoader";
-import Router from "./../router/Router";
+import { Router } from "webiny-react-router";
 import GraphQLCLient from "./../graphql/Client";
 
 const debug = debugFactory("webiny-app");
