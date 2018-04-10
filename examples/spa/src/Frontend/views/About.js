@@ -34,7 +34,7 @@ class About extends React.Component {
                     <View.Body>
                         <List
                             entity={"SecurityUser"}
-                            withRouter={false}
+                            withRouter={true}
                             sort={{ email: -1 }}
                             fields={"id firstName email createdOn enabled"}
                             search={{ fields: ["email", "firstName"] }}

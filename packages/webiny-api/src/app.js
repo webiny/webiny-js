@@ -29,7 +29,7 @@ class Api {
         return this.namespace.get("req");
     }
 
-    setConfig(config: Object) {
+    configure(config: Object) {
         this.config = config;
 
         // Configure Entity layer

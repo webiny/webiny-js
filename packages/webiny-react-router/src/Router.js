@@ -1,3 +1,4 @@
+// @flow
 import invariant from "invariant";
 import compose from "webiny-compose";
 import debugFactory from "debug";
@@ -5,13 +6,17 @@ import pathToRegExp from "path-to-regexp";
 import _ from "lodash";
 import qs from "query-string";
 import { createBrowserHistory } from "history";
-import Route from "./Route.cmp";
-import matchPath from "./matchPath";
-import generatePath from "./generatePath";
-import sortRoutes from "./sortRoutes";
-import parseBoolean from "./parseBoolean";
+import matchPath from "./utils/matchPath";
+import generatePath from "./utils/generatePath";
+import sortRoutes from "./utils/sortRoutes";
+import parseBoolean from "./utils/parseBoolean";
 
-const debug = debugFactory("webiny-app:router");
+const debug = debugFactory("webiny-react-router");
+
+declare type Route = {
+    name: string,
+    path: string
+} & Object;
 
 class Router {
     config: {
@@ -19,10 +24,17 @@ class Router {
         basename: string,
         middleware: Array<Function>
     };
+    history: any;
     middleware: Function;
     routes: Array<Route>;
-    match: Object;
-    route: Object;
+    match: {
+        path: string,
+        url: string,
+        isExact: boolean,
+        params: Object,
+        query: Object
+    };
+    route: Route;
 
     constructor() {
         this.routes = [];
@@ -32,7 +44,6 @@ class Router {
         this.config = { ...config };
         this.history = config.history;
         this.middleware = compose(config.middleware);
-        this.match = null;
 
         if (!this.history) {
             this.history = createBrowserHistory();
@@ -58,15 +69,15 @@ class Router {
         return generatePath((this.config.basename || "") + route.path, params);
     }
 
-    getParams(name = null) {
+    getParams(name: ?string = null): mixed {
         return name ? this.match.params[name] : this.match.params;
     }
 
-    getQuery(name = null) {
+    getQuery(name: ?string = null) {
         return name ? this.match.query[name] : this.match.query;
     }
 
-    getRoute(name) {
+    getRoute(name: string) {
         return _.find(this.routes, { name });
     }
 

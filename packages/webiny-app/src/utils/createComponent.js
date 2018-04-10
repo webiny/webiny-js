@@ -1,8 +1,8 @@
 import React from "react";
 import _ from "lodash";
 import hoistNonReactStatics from "hoist-non-react-statics";
+import ErrorBoundary from "react-error-boundary";
 import LazyLoad from "./../components/LazyLoad.cmp";
-import ErrorBoundary from "./ErrorBoundary";
 
 const hocCompose = components => {
     return props => {
@@ -14,6 +14,11 @@ const hocCompose = components => {
             return React.createElement(Cmp, props, Res);
         }, null);
     };
+};
+
+const errorHandler = (error: Error, componentStack: string) => {
+    console.error(error);
+    console.log(componentStack);
 };
 
 /**
@@ -65,13 +70,17 @@ export default (components, options = {}) => {
                     <LazyLoad modules={modules} options={{ props }}>
                         {modules => {
                             props[options.modulesProp || "modules"] = modules;
-                            return <ErrorBoundary>{createElement(props)}</ErrorBoundary>;
+                            return (
+                                <ErrorBoundary onError={errorHandler}>
+                                    {createElement(props)}
+                                </ErrorBoundary>
+                            );
                         }}
                     </LazyLoad>
                 );
             }
 
-            return <ErrorBoundary>{createElement(props)}</ErrorBoundary>;
+            return <ErrorBoundary onError={errorHandler}>{createElement(props)}</ErrorBoundary>;
         }
     }
 

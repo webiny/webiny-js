@@ -13,7 +13,6 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.18.0",
     "apollo-cache-inmemory": "^1.1.12",
     "apollo-client": "^2.2.8",
     "apollo-link": "^1.2.1",
@@ -24,19 +23,15 @@
     "console-polyfill": "^0.3.0",
     "graphql": "^0.13.2",
     "graphql-tag": "^2.8.0",
-    "history": "^4.7.2",
     "hoist-non-react-statics": "^2.3.1",
-    "invariant": "^2.2.2",
     "jquery": "^3.3.1",
     "js-cookie": "^2.2.0",
     "lodash": "^4.17.4",
-    "path-to-regexp": "^1.7.0",
-    "query-string": "^6.0.0",
     "react": "^16.3.1",
     "react-dom": "^16.3.1",
+    "react-error-boundary": "^1.2.1",
     "react-hot-loader": "^4.0.0",
-    "url-parse": "^1.2.0",
-    "warning": "^3.0.0"
+    "webiny-react-router": "0.0.0-semantically-released"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0"
