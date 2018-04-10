@@ -1,8 +1,118 @@
 import React from "react";
-import _ from "lodash";
-import EndpointPermissions from "./PermissionsForm/EndpointPermissions";
+import FieldsList from "./PermissionsForm/FieldsList";
 import { i18n, app, createComponent } from "webiny-app";
 const t = i18n.namespace("Security.PermissionsForm");
+
+const graph = {
+    data: {
+        query: {
+            name: "Query",
+            fields: [
+                {
+                    name: "getSecurityUser",
+                    description: "Get a single SecurityUser entity by ID."
+                },
+                {
+                    name: "listSecurityUsers",
+                    description: "Get a list of SecurityUser entities."
+                },
+                {
+                    name: "getSecurityRole",
+                    description: "Get a single SecurityRole entity by ID."
+                },
+                {
+                    name: "listSecurityRoles",
+                    description: "Get a list of SecurityRole entities."
+                },
+                {
+                    name: "getSecurityRoleGroup",
+                    description: "Get a single SecurityRoleGroup entity by ID."
+                },
+                {
+                    name: "listSecurityRoleGroups",
+                    description: "Get a list of SecurityRoleGroup entities."
+                },
+                {
+                    name: "getSecurityPermission",
+                    description: "Get a single SecurityPermission entity by ID."
+                },
+                {
+                    name: "listSecurityPermissions",
+                    description: "Get a list of SecurityPermission entities."
+                },
+                {
+                    name: "loginSecurityUser",
+                    description: null
+                },
+                {
+                    name: "getIdentity",
+                    description: null
+                },
+                {
+                    name: "sendInvoiceToUser",
+                    description: "Send email with invoice in the attachment"
+                }
+            ]
+        },
+        mutation: {
+            name: "Mutation",
+            fields: [
+                {
+                    name: "createSecurityUser",
+                    description: "Create a single SecurityUser entity."
+                },
+                {
+                    name: "updateSecurityUser",
+                    description: "Update a single SecurityUser entity."
+                },
+                {
+                    name: "deleteSecurityUser",
+                    description: "Delete a single SecurityUser entity."
+                },
+                {
+                    name: "createSecurityRole",
+                    description: "Create a single SecurityRole entity."
+                },
+                {
+                    name: "updateSecurityRole",
+                    description: "Update a single SecurityRole entity."
+                },
+                {
+                    name: "deleteSecurityRole",
+                    description: "Delete a single SecurityRole entity."
+                },
+                {
+                    name: "createSecurityRoleGroup",
+                    description: "Create a single SecurityRoleGroup entity."
+                },
+                {
+                    name: "updateSecurityRoleGroup",
+                    description: "Update a single SecurityRoleGroup entity."
+                },
+                {
+                    name: "deleteSecurityRoleGroup",
+                    description: "Delete a single SecurityRoleGroup entity."
+                },
+                {
+                    name: "createSecurityPermission",
+                    description: "Create a single SecurityPermission entity."
+                },
+                {
+                    name: "updateSecurityPermission",
+                    description: "Update a single SecurityPermission entity."
+                },
+                {
+                    name: "deleteSecurityPermission",
+                    description: "Delete a single SecurityPermission entity."
+                },
+                {
+                    name: "updateIdentity",
+                    description: null
+                }
+            ]
+        }
+    }
+};
 
 class PermissionsForm extends React.Component {
     constructor(props) {
@@ -10,44 +120,35 @@ class PermissionsForm extends React.Component {
         this.state = {};
     }
 
-    onToggleMethod(model, form, classId, method) {
-        let rule = _.find(model.rules, { classId });
-        let methodIndex = _.findIndex(rule.methods, { method });
-        if (methodIndex >= 0) {
-            rule.methods.splice(methodIndex, 1);
-        } else {
-            rule.methods.push({ method });
-        }
-        form.setState({ model });
-    }
+    onToggleField(model, form, field) {
+        form.setState(state => {
+            if (!state.model.fields) {
+                state.model.fields = [];
+            }
 
-    onAddEndpoint(model, form, endpoint) {
-        model.rules.push({
-            classId: endpoint.classId,
-            methods: []
+            let fieldIndex = state.model.fields.indexOf(field);
+            if (fieldIndex >= 0) {
+                state.model.fields.splice(fieldIndex, 1);
+            } else {
+                state.model.fields.push(field);
+            }
+            return state;
         });
-        form.setState({ model });
-    }
-
-    onRemoveEndpoint(model, form, endpoint) {
-        const pIndex = _.findIndex(model.rules, { classId: endpoint.classId });
-        model.rules.splice(pIndex, 1);
-        form.setState({ model });
     }
 
     render() {
         const newUserPermission = !app.router.getParams("id");
-        const { Ui } = this.props;
+        const { AdminLayout, Form, Section, View, Grid, Tabs, Input, Button } = this.props.modules;
 
         return (
-            <Ui.AdminLayout>
-                <Ui.Form
-                    api="/security/permissions"
-                    fields="id,name,slug,description,rules[classId,methods.method]"
-                    connectToRouter
+            <AdminLayout>
+                <Form
+                    entity="SecurityPermission"
+                    withRouter
+                    fields="id name slug description fields"
                     onSubmitSuccess="Permissions.List"
                     onCancel="Permissions.List"
-                    defaultModel={{ rules: [] }}
+                    defaultModel={{ fields: [] }}
                     onSuccessMessage={({ model }) => {
                         return (
                             <span>
@@ -60,104 +161,101 @@ class PermissionsForm extends React.Component {
                 >
                     {({ model, form }) => {
                         return (
-                            <Ui.View.Form>
-                                <Ui.View.Header
+                            <View.Form>
+                                <View.Header
                                     title={
                                         model.id
                                             ? t`Security - Edit permission`
                                             : t`Security - Create permission`
                                     }
                                 />
-                                <Ui.View.Body>
-                                    <Ui.Section title={t`General`} />
-                                    <Ui.Grid.Row>
-                                        <Ui.Grid.Col all={6}>
-                                            <Ui.Input
+                                <View.Body>
+                                    <Section title={t`General`} />
+                                    <Grid.Row>
+                                        <Grid.Col all={6}>
+                                            <Input
                                                 label={t`Name`}
                                                 name="name"
                                                 validate="required"
                                             />
-                                        </Ui.Grid.Col>
-                                        <Ui.Grid.Col all={6}>
-                                            <Ui.Input label={t`Slug`} name="slug" />
-                                        </Ui.Grid.Col>
-                                    </Ui.Grid.Row>
-                                    <Ui.Grid.Row>
-                                        <Ui.Grid.Col all={12}>
-                                            <Ui.Input
+                                        </Grid.Col>
+                                        <Grid.Col all={6}>
+                                            <Input label={t`Slug`} name="slug" />
+                                        </Grid.Col>
+                                    </Grid.Row>
+                                    <Grid.Row>
+                                        <Grid.Col all={12}>
+                                            <Input
                                                 label={t`Description`}
                                                 name="description"
                                                 validate="required"
                                             />
-                                            <Ui.Tabs>
-                                                <Ui.Tabs.Tab label={t`Entities`}>
+                                            <Tabs>
+                                                <Tabs.Tab label={t`Queries`}>
                                                     {(newUserPermission || model.id) && (
-                                                        <EndpointPermissions
+                                                        <FieldsList
                                                             model={model}
-                                                            onToggleMethod={(classId, method) =>
-                                                                this.onToggleMethod(
+                                                            fields={graph.data.query.fields}
+                                                            onToggleField={field =>
+                                                                this.onToggleField(
                                                                     model,
                                                                     form,
-                                                                    classId,
-                                                                    method
-                                                                )
-                                                            }
-                                                            onAddEndpoint={endpoint =>
-                                                                this.onAddEndpoint(
-                                                                    model,
-                                                                    form,
-                                                                    endpoint
-                                                                )
-                                                            }
-                                                            onRemoveEndpoint={endpoint =>
-                                                                this.onRemoveEndpoint(
-                                                                    model,
-                                                                    form,
-                                                                    endpoint
+                                                                    field
                                                                 )
                                                             }
                                                         />
                                                     )}
-                                                </Ui.Tabs.Tab>
-                                            </Ui.Tabs>
-                                        </Ui.Grid.Col>
-                                    </Ui.Grid.Row>
-                                </Ui.View.Body>
-                                <Ui.View.Footer>
-                                    <Ui.Button
+                                                </Tabs.Tab>
+                                                <Tabs.Tab label={t`Mutations`}>
+                                                    {(newUserPermission || model.id) && (
+                                                        <FieldsList
+                                                            model={model}
+                                                            fields={graph.data.mutation.fields}
+                                                            onToggleField={field =>
+                                                                this.onToggleField(
+                                                                    model,
+                                                                    form,
+                                                                    field
+                                                                )
+                                                            }
+                                                        />
+                                                    )}
+                                                </Tabs.Tab>
+                                            </Tabs>
+                                        </Grid.Col>
+                                    </Grid.Row>
+                                </View.Body>
+                                <View.Footer>
+                                    <Button
                                         type="default"
                                         onClick={form.cancel}
                                         label={t`Go back`}
                                     />
-                                    <Ui.Button
+                                    <Button
                                         type="primary"
                                         onClick={form.submit}
                                         label={t`Save permission`}
                                         align="right"
                                     />
-                                </Ui.View.Footer>
-                            </Ui.View.Form>
+                                </View.Footer>
+                            </View.Form>
                         );
                     }}
-                </Ui.Form>
-            </Ui.AdminLayout>
+                </Form>
+            </AdminLayout>
         );
     }
 }
 
 export default createComponent(PermissionsForm, {
-    modulesProp: "Ui",
     modules: [
-        { AdminLayout: "Skeleton.AdminLayout" },
+        { AdminLayout: "Admin.Layout" },
         "Form",
         "Section",
         "View",
         "Grid",
         "Tabs",
         "Input",
-        "Label",
-        "Button",
-        "Switch",
-        "Date"
+        "Button"
     ]
 });

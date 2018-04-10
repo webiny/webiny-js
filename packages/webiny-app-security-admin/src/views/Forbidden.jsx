@@ -1,7 +1,7 @@
 import React from 'react';
 import { createComponent, i18n } from 'webiny-app';
 
-const t = i18n.namespace("Webiny.Skeleton.Auth.Forbidden");
+const t = i18n.namespace("Webiny.Admin.Auth.Forbidden");
 
 class Forbidden extends React.Component {
     render() {

@@ -1,6 +1,8 @@
 import React from "react";
 import _ from "lodash";
 import axios from "axios";
+import { app } from "webiny-app";
+import gql from "graphql-tag";
 
 import { i18n, createComponent } from "webiny-app";
 const t = i18n.namespace("Security.RolesForm");
@@ -12,6 +14,19 @@ class RolesForm extends React.Component {
     }
 
     async componentWillMount() {
+        const query = gql`
+            {
+                listSecurityPermissions {
+                    list {
+                        id
+                        firstName
+                    }
+                }
+            }
+        `;
+
+        app.graphql.query({ query });
+
         const response = await axios.get("/security/permissions", {
             params: {
                 _fields: "description,name,slug",
@@ -23,15 +38,24 @@ class RolesForm extends React.Component {
     }
 
     render() {
-        const { Ui } = this.props;
+        const {
+            AdminLayout,
+            SecurityToggleList,
+            Form,
+            Section,
+            View,
+            Grid,
+            Input,
+            Button
+        } = this.props.modules;
 
         return (
-            <Ui.AdminLayout>
-                <Ui.Form
-                    api="/security/roles"
-                    fields="name,slug,description,permissions.id"
+            <AdminLayout>
+                <Form
+                    entity="SecurityRole"
+                    withRouter
+                    fields="id name slug description permissions { id }"
                     defaultModel={{ permissions: [] }}
-                    connectToRouter={true}
                     onSubmitSuccess="Roles.List"
                     onCancel="Roles.List"
                     onSuccessMessage={({ model }) => {
@@ -45,32 +69,32 @@ class RolesForm extends React.Component {
                     }}
                 >
                     {({ model, form }) => (
-                        <Ui.View.Form>
-                            <Ui.View.Header
+                        <View.Form>
+                            <View.Header
                                 title={
                                     model.id ? t`Security - Edit Role` : t`Security - Create Role`
                                 }
                             />
-                            <Ui.View.Body>
-                                <Ui.Section title={t`General`} />
-                                <Ui.Grid.Row>
-                                    <Ui.Grid.Col all={6}>
-                                        <Ui.Input label={t`Name`} name="name" validate="required" />
-                                    </Ui.Grid.Col>
-                                    <Ui.Grid.Col all={6}>
-                                        <Ui.Input label={t`Slug`} name="slug" validate="required" />
-                                    </Ui.Grid.Col>
-                                </Ui.Grid.Row>
-                                <Ui.Grid.Row>
-                                    <Ui.Grid.Col all={12}>
-                                        <Ui.Input
+                            <View.Body>
+                                <Section title={t`General`} />
+                                <Grid.Row>
+                                    <Grid.Col all={6}>
+                                        <Input label={t`Name`} name="name" validate="required" />
+                                    </Grid.Col>
+                                    <Grid.Col all={6}>
+                                        <Input label={t`Slug`} name="slug" validate="required" />
+                                    </Grid.Col>
+                                </Grid.Row>
+                                <Grid.Row>
+                                    <Grid.Col all={12}>
+                                        <Input
                                             label={t`Description`}
                                             name="description"
                                             validate="required"
                                         />
-                                    </Ui.Grid.Col>
-                                </Ui.Grid.Row>
-                                <Ui.SecurityToggleList
+                                    </Grid.Col>
+                                </Grid.Row>
+                                <SecurityToggleList
                                     options={this.state.permissions}
                                     value={model.permissions}
                                     onChange={permission => {
@@ -90,42 +114,35 @@ class RolesForm extends React.Component {
                                         });
                                     }}
                                 />
-                            </Ui.View.Body>
-                            <Ui.View.Footer>
-                                <Ui.Button
-                                    type="default"
-                                    onClick={form.cancel}
-                                    label={t`Go back`}
-                                />
-                                <Ui.Button
+                            </View.Body>
+                            <View.Footer>
+                                <Button type="default" onClick={form.cancel} label={t`Go back`} />
+                                <Button
                                     type="primary"
                                     onClick={form.submit}
                                     label={t`Save role`}
                                     align="right"
                                 />
-                            </Ui.View.Footer>
-                        </Ui.View.Form>
+                            </View.Footer>
+                        </View.Form>
                     )}
-                </Ui.Form>
-            </Ui.AdminLayout>
+                </Form>
+            </AdminLayout>
         );
     }
 }
 
 export default createComponent(RolesForm, {
-    modulesProp: "Ui",
     modules: [
-        "Switch",
         "Form",
         "View",
-        "Tabs",
         "Input",
         "Button",
         "Grid",
         "Section",
         {
             SecurityToggleList: "Security.SecurityToggleList",
-            AdminLayout: "Skeleton.AdminLayout"
+            AdminLayout: "Admin.Layout"
         }
     ]
 });

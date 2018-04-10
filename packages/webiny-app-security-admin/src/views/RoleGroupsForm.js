@@ -23,15 +23,24 @@ class RoleGroupsForm extends React.Component {
     }
 
     render() {
-        const { Ui } = this.props;
+        const {
+            AdminLayout,
+            SecurityToggleList,
+            Form,
+            Section,
+            View,
+            Grid,
+            Input,
+            Button
+        } = this.props.modules;
 
         return (
-            <Ui.AdminLayout>
-                <Ui.Form
-                    api="/security/role-groups"
-                    fields="name,slug,description,roles.id"
+            <AdminLayout>
+                <Form
+                    entity="SecurityRoleGroup"
+                    withRouter
+                    fields="id name slug description roles { id }"
                     defaultModel={{ roles: [] }}
-                    connectToRouter
                     onSubmitSuccess="RoleGroups.List"
                     onCancel="RoleGroups.List"
                     onSuccessMessage={({ model }) => (
@@ -41,34 +50,34 @@ class RoleGroupsForm extends React.Component {
                     )}
                 >
                     {({ model, form }) => (
-                        <Ui.View.Form>
-                            <Ui.View.Header
+                        <View.Form>
+                            <View.Header
                                 title={
                                     model.id
                                         ? t`Security - Edit Role Group`
                                         : t`Security - Create Role Group`
                                 }
                             />
-                            <Ui.View.Body>
-                                <Ui.Section title={t`General`} />
-                                <Ui.Grid.Row>
-                                    <Ui.Grid.Col all={6}>
-                                        <Ui.Input label={t`Name`} name="name" validate="required" />
-                                    </Ui.Grid.Col>
-                                    <Ui.Grid.Col all={6}>
-                                        <Ui.Input label={t`Slug`} name="slug" validate="required" />
-                                    </Ui.Grid.Col>
-                                </Ui.Grid.Row>
-                                <Ui.Grid.Row>
-                                    <Ui.Grid.Col all={12}>
-                                        <Ui.Input
+                            <View.Body>
+                                <Section title={t`General`} />
+                                <Grid.Row>
+                                    <Grid.Col all={6}>
+                                        <Input label={t`Name`} name="name" validate="required" />
+                                    </Grid.Col>
+                                    <Grid.Col all={6}>
+                                        <Input label={t`Slug`} name="slug" validate="required" />
+                                    </Grid.Col>
+                                </Grid.Row>
+                                <Grid.Row>
+                                    <Grid.Col all={12}>
+                                        <Input
                                             label={t`Description`}
                                             name="description"
                                             validate="required"
                                         />
-                                    </Ui.Grid.Col>
-                                </Ui.Grid.Row>
-                                <Ui.SecurityToggleList
+                                    </Grid.Col>
+                                </Grid.Row>
+                                <SecurityToggleList
                                     options={this.state.roles}
                                     value={model.roles}
                                     onChange={role => {
@@ -87,41 +96,34 @@ class RoleGroupsForm extends React.Component {
                                         });
                                     }}
                                 />
-                            </Ui.View.Body>
-                            <Ui.View.Footer>
-                                <Ui.Button
-                                    type="default"
-                                    onClick={form.cancel}
-                                    label={t`Go back`}
-                                />
-                                <Ui.Button
+                            </View.Body>
+                            <View.Footer>
+                                <Button type="default" onClick={form.cancel} label={t`Go back`} />
+                                <Button
                                     type="primary"
                                     onClick={form.submit}
                                     label={t`Save role group`}
                                     align="right"
                                 />
-                            </Ui.View.Footer>
-                        </Ui.View.Form>
+                            </View.Footer>
+                        </View.Form>
                     )}
-                </Ui.Form>
-            </Ui.AdminLayout>
+                </Form>
+            </AdminLayout>
         );
     }
 }
 
 export default createComponent(RoleGroupsForm, {
-    modulesProp: "Ui",
     modules: [
-        "Switch",
         "Form",
         "View",
-        "Tabs",
         "Input",
         "Button",
         "Grid",
         "Section",
         {
-            AdminLayout: "Skeleton.AdminLayout",
+            AdminLayout: "Admin.Layout",
             SecurityToggleList: "Security.SecurityToggleList"
         }
     ]

@@ -1,7 +1,7 @@
 import React from "react";
 import { createComponent, i18n } from "webiny-app";
 
-const t = i18n.namespace("Webiny.Skeleton.Layout.UserMenu.Logout");
+const t = i18n.namespace("Webiny.Admin.Layout.UserMenu.Logout");
 const Logout = props => {
     return (
         <div className="drop-footer">

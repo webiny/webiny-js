@@ -1,7 +1,7 @@
 import React from "react";
 import { createComponent, i18n } from "webiny-app";
 
-const t = i18n.namespace("Webiny.Skeleton.UserAccount.TwoFactorAuthConfirmation");
+const t = i18n.namespace("Webiny.Admin.UserAccount.TwoFactorAuthConfirmation");
 
 // TODO: @i18nRefactor Class extended old "Webiny.Ui.ModalComponent".
 class TwoFactorAuthConfirmation extends React.Component {

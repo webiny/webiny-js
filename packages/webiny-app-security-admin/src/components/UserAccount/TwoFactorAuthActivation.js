@@ -2,7 +2,7 @@ import React from "react";
 import { app, createComponent, i18n } from "webiny-app";
 import { ModalConfirmationComponent } from "webiny-app-ui";
 
-const t = i18n.namespace("Webiny.Skeleton.UserAccount.TwoFactorAuthActivation");
+const t = i18n.namespace("Webiny.Admin.UserAccount.TwoFactorAuthActivation");
 class TwoFactorAuthActivation extends React.Component {
     render() {
         const { Ui, onCancel, onConfirm } = this.props;

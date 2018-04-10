@@ -23,7 +23,7 @@ class UsersList extends React.Component {
     }
 
     render() {
-        const { View, List, Link, Icon, Input, AdminLayout } = this.props;
+        const { View, List, Link, Icon, Input, AdminLayout } = this.props.modules;
         const Table = List.Table;
 
         const roles = <Link route="Roles.List">{t`Roles`}</Link>;

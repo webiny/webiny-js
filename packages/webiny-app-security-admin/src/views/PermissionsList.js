@@ -7,28 +7,29 @@ const t = i18n.namespace("Security.PermissionsList");
 
 class PermissionsList extends React.Component {
     render() {
-        const { Ui } = this.props;
-        const Table = Ui.List.Table;
+        const {
+            Link,
+            ViewSwitcher,
+            View,
+            List,
+            Button,
+            ButtonGroup,
+            AdminLayout,
+            Grid,
+            Icon,
+            Input
+        } = this.props.modules;
+        const Table = List.Table;
 
-        const listProps = {
-            ref: ref => (this.list = ref),
-            api: "/security/permissions",
-            fields: "id,name,slug,createdOn,description",
-            connectToRouter: true,
-            query: { _sort: "name" },
-            searchFields: "name,slug",
-            perPage: 25
-        };
-
-        const rolesLink = <Ui.Link route="Roles.List">{t`Roles`}</Ui.Link>;
+        const rolesLink = <Link route="Roles.List">{t`Roles`}</Link>;
 
         return (
-            <Ui.AdminLayout>
-                <Ui.ViewSwitcher>
-                    <Ui.ViewSwitcher.View view="permissionsList" defaultView>
+            <AdminLayout>
+                <ViewSwitcher>
+                    <ViewSwitcher.View name="permissionsList" defaultView>
                         {({ showView }) => (
-                            <Ui.View.List>
-                                <Ui.View.Header
+                            <View.List>
+                                <View.Header
                                     title={t`Security - Permissions`}
                                     description={
                                         <span>
@@ -39,34 +40,39 @@ class PermissionsList extends React.Component {
                                         </span>
                                     }
                                 >
-                                    <Ui.ButtonGroup>
-                                        <Ui.Link type="primary" route="Permissions.Create">
-                                            <Ui.Icon icon="icon-plus-circled" />
+                                    <ButtonGroup>
+                                        <Link type="primary" route="Permissions.Create">
+                                            <Icon icon="plus-circle" />
                                             {t`Create`}
-                                        </Ui.Link>
-                                        <Ui.Button
+                                        </Link>
+                                        <Button
                                             type="secondary"
                                             onClick={showView("importModal")}
-                                            icon="fa-upload"
+                                            icon="upload"
                                             label={t`Import`}
                                         />
-                                    </Ui.ButtonGroup>
-                                </Ui.View.Header>
-                                <Ui.View.Body>
-                                    <Ui.List {...listProps}>
-                                        <Ui.List.FormFilters>
+                                    </ButtonGroup>
+                                </View.Header>
+                                <View.Body>
+                                    <List
+                                        withRouter
+                                        entity="SecurityPermission"
+                                        fields="id name slug description createdOn"
+                                        search={{ fields: ["name", "slug"] }}
+                                    >
+                                        <List.FormFilters>
                                             {({ apply }) => (
-                                                <Ui.Grid.Row>
-                                                    <Ui.Grid.Col all={12}>
-                                                        <Ui.Input
-                                                            name="_searchQuery"
+                                                <Grid.Row>
+                                                    <Grid.Col all={12}>
+                                                        <Input
+                                                            name="search.query"
                                                             placeholder={t`Search by name or slug`}
                                                             onEnter={apply()}
                                                         />
-                                                    </Ui.Grid.Col>
-                                                </Ui.Grid.Row>
+                                                    </Grid.Col>
+                                                </Grid.Row>
                                             )}
-                                        </Ui.List.FormFilters>
+                                        </List.FormFilters>
                                         <Table>
                                             <Table.Row>
                                                 <Table.Field
@@ -76,12 +82,12 @@ class PermissionsList extends React.Component {
                                                 >
                                                     {({ data }) => (
                                                         <span>
-                                                            <Ui.Link
+                                                            <Link
                                                                 route="Permissions.Edit"
                                                                 params={{ id: data.id }}
                                                             >
                                                                 <strong>{data.name}</strong>
-                                                            </Ui.Link>
+                                                            </Link>
                                                             <br />
                                                             {data.description}
                                                         </span>
@@ -96,21 +102,21 @@ class PermissionsList extends React.Component {
                                                     <Table.EditAction route="Permissions.Edit" />
                                                     <Table.Action
                                                         label={t`Export`}
-                                                        icon="fa-download"
+                                                        icon="download"
                                                         onClick={showView("exportModal")}
                                                     />
                                                     <Table.DeleteAction />
                                                 </Table.Actions>
                                             </Table.Row>
                                         </Table>
-                                        <Ui.List.Pagination />
-                                    </Ui.List>
-                                </Ui.View.Body>
-                            </Ui.View.List>
+                                        <List.Pagination />
+                                    </List>
+                                </View.Body>
+                            </View.List>
                         )}
-                    </Ui.ViewSwitcher.View>
+                    </ViewSwitcher.View>
 
-                    {/*         <Ui.ViewSwitcher.View view="exportModal" modal>
+                    {/*         <ViewSwitcher.View name="exportModal" modal>
                         {({ data: { data } }) => (
                             <ExportPermissionModal
                                 data={data}
@@ -119,9 +125,9 @@ class PermissionsList extends React.Component {
                                 label={t`Permission`}
                             />
                         )}
-                    </Ui.ViewSwitcher.View>
+                    </ViewSwitcher.View>
 
-                    <Ui.ViewSwitcher.View view="importModal" modal>
+                    <ViewSwitcher.View name="importModal" modal>
                         {() => (
                             <ImportPermissionModal
                                 api="/security/permissions"
@@ -129,17 +135,16 @@ class PermissionsList extends React.Component {
                                 onImported={() => this.list.loadData()}
                             />
                         )}
-                    </Ui.ViewSwitcher.View>*/}
-                </Ui.ViewSwitcher>
-            </Ui.AdminLayout>
+                    </ViewSwitcher.View>*/}
+                </ViewSwitcher>
+            </AdminLayout>
         );
     }
 }
 
 export default createComponent(PermissionsList, {
-    modulesProp: "Ui",
     modules: [
-        { AdminLayout: "Skeleton.AdminLayout" },
+        { AdminLayout: "Admin.Layout" },
         "ViewSwitcher",
         "Link",
         "View",

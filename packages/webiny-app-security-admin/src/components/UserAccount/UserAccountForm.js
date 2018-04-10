@@ -4,7 +4,7 @@ import TwoFactorAuthActivation from "./TwoFactorAuthActivation";
 
 // import TwoFactorAuthConfirmation from './TwoFactorAuthConfirmation';
 
-const t = i18n.namespace("Webiny.Skeleton.UserAccount");
+const t = i18n.namespace("Webiny.Admin.UserAccount");
 class UserAccount extends React.Component {
     constructor(props) {
         super(props);
@@ -127,7 +127,7 @@ class UserAccount extends React.Component {
 
 export default createComponent(UserAccount, {
     modules: [
-        { AdminLayout: "Skeleton.AdminLayout" },
+        { AdminLayout: "Admin.Layout" },
         "View",
         "Form",
         "Grid",

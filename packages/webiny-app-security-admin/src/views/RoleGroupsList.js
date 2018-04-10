@@ -7,28 +7,29 @@ const t = i18n.namespace("Security.RoleGroupsList");
 
 class RoleGroupsList extends React.Component {
     render() {
-        const listProps = {
-            ref: ref => (this.list = ref),
-            api: "/security/role-groups",
-            fields: "id,name,slug,description,createdOn",
-            connectToRouter: true,
-            query: { _sort: "name" },
-            searchFields: "name,slug,description",
-            perPage: 25
-        };
+        const {
+            Link,
+            ViewSwitcher,
+            View,
+            List,
+            Button,
+            ButtonGroup,
+            AdminLayout,
+            Grid,
+            Icon,
+            Input
+        } = this.props.modules;
+        const Table = List.Table;
 
-        const { Ui } = this.props;
-        const Table = Ui.List.Table;
-
-        const users = <Ui.Link route="Users.List">{t`Users`}</Ui.Link>;
-        const roles = <Ui.Link route="Roles.List">{t`Roles`}</Ui.Link>;
+        const users = <Link route="Users.List">{t`Users`}</Link>;
+        const roles = <Link route="Roles.List">{t`Roles`}</Link>;
         return (
-            <Ui.AdminLayout>
-                <Ui.ViewSwitcher>
-                    <Ui.ViewSwitcher.View view="listView" defaultView>
+            <AdminLayout>
+                <ViewSwitcher>
+                    <ViewSwitcher.View name="listView" defaultView>
                         {({ showView }) => (
-                            <Ui.View.List>
-                                <Ui.View.Header
+                            <View.List>
+                                <View.Header
                                     title={t`Security - Role Groups`}
                                     description={
                                         <span>
@@ -39,34 +40,39 @@ class RoleGroupsList extends React.Component {
                                         </span>
                                     }
                                 >
-                                    <Ui.ButtonGroup>
-                                        <Ui.Link type="primary" route="RoleGroups.Create">
-                                            <Ui.Icon icon="icon-plus-circled" />
+                                    <ButtonGroup>
+                                        <Link type="primary" route="RoleGroups.Create">
+                                            <Icon icon="plus-circle" />
                                             {t`Create`}
-                                        </Ui.Link>
-                                        <Ui.Button
+                                        </Link>
+                                        <Button
                                             type="secondary"
                                             onClick={showView("importModal")}
-                                            icon="fa-upload"
+                                            icon="upload"
                                             label={t`Import`}
                                         />
-                                    </Ui.ButtonGroup>
-                                </Ui.View.Header>
-                                <Ui.View.Body>
-                                    <Ui.List {...listProps}>
-                                        <Ui.List.FormFilters>
+                                    </ButtonGroup>
+                                </View.Header>
+                                <View.Body>
+                                    <List
+                                        withRouter
+                                        entity="SecurityRoleGroup"
+                                        fields="id name slug description createdOn"
+                                        search={{ fields: ["name", "slug", "description"] }}
+                                    >
+                                        <List.FormFilters>
                                             {({ apply }) => (
-                                                <Ui.Grid.Row>
-                                                    <Ui.Grid.Col all={12}>
-                                                        <Ui.Input
-                                                            name="_searchQuery"
+                                                <Grid.Row>
+                                                    <Grid.Col all={12}>
+                                                        <Input
+                                                            name="search.query"
                                                             placeholder={t`Search by name, description or slug`}
                                                             onEnter={apply()}
                                                         />
-                                                    </Ui.Grid.Col>
-                                                </Ui.Grid.Row>
+                                                    </Grid.Col>
+                                                </Grid.Row>
                                             )}
-                                        </Ui.List.FormFilters>
+                                        </List.FormFilters>
                                         <Table>
                                             <Table.Row>
                                                 <Table.Field
@@ -76,12 +82,12 @@ class RoleGroupsList extends React.Component {
                                                 >
                                                     {({ data }) => (
                                                         <span>
-                                                            <Ui.Link
+                                                            <Link
                                                                 route="RoleGroups.Edit"
                                                                 params={{ id: data.id }}
                                                             >
                                                                 <strong>{data.name}</strong>
-                                                            </Ui.Link>
+                                                            </Link>
                                                             <br />
                                                             {data.description}
                                                         </span>
@@ -96,21 +102,21 @@ class RoleGroupsList extends React.Component {
                                                     <Table.EditAction route="RoleGroups.Edit" />
                                                     <Table.Action
                                                         label={t`Export`}
-                                                        icon="fa-download"
+                                                        icon="download"
                                                         onClick={showView("exportModal")}
                                                     />
                                                     <Table.DeleteAction />
                                                 </Table.Actions>
                                             </Table.Row>
                                         </Table>
-                                        <Ui.List.Pagination />
-                                    </Ui.List>
-                                </Ui.View.Body>
-                            </Ui.View.List>
+                                        <List.Pagination />
+                                    </List>
+                                </View.Body>
+                            </View.List>
                         )}
-                    </Ui.ViewSwitcher.View>
+                    </ViewSwitcher.View>
 
-                    {/* <Ui.ViewSwitcher.View view="exportModal" modal>
+                    {/* <Ui.ViewSwitcher.View name="exportModal" modal>
                         {({ data: { data } }) => (
                             <ExportModal
                                 data={data}
@@ -122,7 +128,7 @@ class RoleGroupsList extends React.Component {
                         )}
                     </Ui.ViewSwitcher.View>
 
-                    <Ui.ViewSwitcher.View view="importModal" modal>
+                    <Ui.ViewSwitcher.View name="importModal" modal>
                         {() => (
                             <ImportModal
                                 api="/security/role-groups"
@@ -131,16 +137,15 @@ class RoleGroupsList extends React.Component {
                             />
                         )}
                     </Ui.ViewSwitcher.View>*/}
-                </Ui.ViewSwitcher>
-            </Ui.AdminLayout>
+                </ViewSwitcher>
+            </AdminLayout>
         );
     }
 }
 
 export default createComponent(RoleGroupsList, {
-    modulesProp: "Ui",
     modules: [
-        { AdminLayout: "Skeleton.AdminLayout" },
+        { AdminLayout: "Admin.Layout" },
         "ViewSwitcher",
         "View",
         "Link",

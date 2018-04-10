@@ -33,14 +33,26 @@ class UsersForm extends React.Component {
     }
 
     render() {
-        const { Ui } = this.props;
+        const {
+            AdminLayout,
+            SecurityToggleList,
+            Form,
+            Section,
+            View,
+            Grid,
+            Tabs,
+            Input,
+            Button,
+            Switch,
+            Password
+        } = this.props.modules;
 
         return (
-            <Ui.AdminLayout>
-                <Ui.Form
-                    api="security/users"
-                    fields="id,firstName,lastName,email,roles.id,roleGroups.id,enabled,createdOn"
-                    connectToRouter
+            <AdminLayout>
+                <Form
+                    entity="SecurityUser"
+                    withRouter
+                    fields="id firstName lastName email roles { id } roleGroups { id enabled createdOn }"
                     onSubmitSuccess="Users.List"
                     onCancel="Users.List"
                     defaultModel={{ roleGroups: [], roles: [] }}
@@ -53,53 +65,48 @@ class UsersForm extends React.Component {
                     )}
                 >
                     {({ model, form }) => (
-                        <Ui.View.Form>
-                            <Ui.View.Header
+                        <View.Form>
+                            <View.Header
                                 title={
                                     model.id ? t`Security - Edit User` : t`Security - Create User`
                                 }
                             />
-                            <Ui.Form.Error message={t`Something went wrong during save`} />
-                            <Ui.View.Body>
-                                <Ui.Grid.Row>
-                                    <Ui.Grid.Col all={6}>
-                                        <Ui.Section title={t`Info`} />
-                                        <Ui.Grid.Row>
-                                            <Ui.Grid.Col all={12}>
-                                                <Ui.Date
-                                                    label={t`Created`}
-                                                    name="createdOn"
-                                                    validate="required"
-                                                />
-                                                <Ui.Input
+                            <Form.Error message={t`Something went wrong during save`} />
+                            <View.Body>
+                                <Grid.Row>
+                                    <Grid.Col all={6}>
+                                        <Section title={t`Info`} />
+                                        <Grid.Row>
+                                            <Grid.Col all={12}>
+                                                <Input
                                                     label={t`First name`}
                                                     name="firstName"
                                                     validate="required"
                                                 />
-                                                <Ui.Input
+                                                <Input
                                                     label={t`Last name`}
                                                     name="lastName"
                                                     validate="required"
                                                 />
-                                                <Ui.Input
+                                                <Input
                                                     label={t`Email`}
                                                     name="email"
                                                     description={t`Your email`}
                                                     validate="required,email"
                                                 />
-                                            </Ui.Grid.Col>
-                                        </Ui.Grid.Row>
-                                    </Ui.Grid.Col>
-                                    <Ui.Grid.Col all={6}>
-                                        <Ui.Section title={t`Password`} />
-                                        <Ui.Grid.Row>
-                                            <Ui.Grid.Col all={12}>
-                                                <Ui.Password
+                                            </Grid.Col>
+                                        </Grid.Row>
+                                    </Grid.Col>
+                                    <Grid.Col all={6}>
+                                        <Section title={t`Password`} />
+                                        <Grid.Row>
+                                            <Grid.Col all={12}>
+                                                <Password
                                                     label={t`New password`}
                                                     name="password"
                                                     placeholder={t`Type a new password`}
                                                 />
-                                                <Ui.Password
+                                                <Password
                                                     label={t`Confirm password`}
                                                     name="confirmPassword"
                                                     validate="eq:@password"
@@ -108,21 +115,21 @@ class UsersForm extends React.Component {
                                                     <validator name="eq">
                                                         {t`Passwords do not match`}
                                                     </validator>
-                                                </Ui.Password>
-                                            </Ui.Grid.Col>
-                                        </Ui.Grid.Row>
-                                    </Ui.Grid.Col>
-                                </Ui.Grid.Row>
-                                <Ui.Grid.Row>
-                                    <Ui.Grid.Col all={12}>
-                                        <Ui.Switch label={t`Enabled`} name="enabled" />
-                                    </Ui.Grid.Col>
-                                </Ui.Grid.Row>
-                                <Ui.Grid.Row>
-                                    <Ui.Grid.Col all={12}>
-                                        <Ui.Tabs>
-                                            <Ui.Tabs.Tab label={t`Roles`} icon="user">
-                                                <Ui.SecurityToggleList
+                                                </Password>
+                                            </Grid.Col>
+                                        </Grid.Row>
+                                    </Grid.Col>
+                                </Grid.Row>
+                                <Grid.Row>
+                                    <Grid.Col all={12}>
+                                        <Switch label={t`Enabled`} name="enabled" />
+                                    </Grid.Col>
+                                </Grid.Row>
+                                <Grid.Row>
+                                    <Grid.Col all={12}>
+                                        <Tabs>
+                                            <Tabs.Tab label={t`Roles`} icon="user">
+                                                <SecurityToggleList
                                                     options={this.state.roles}
                                                     value={model.roles}
                                                     onChange={role => {
@@ -147,9 +154,9 @@ class UsersForm extends React.Component {
                                                         });
                                                     }}
                                                 />
-                                            </Ui.Tabs.Tab>
-                                            <Ui.Tabs.Tab label={t`Role Groups`} icon="users">
-                                                <Ui.SecurityToggleList
+                                            </Tabs.Tab>
+                                            <Tabs.Tab label={t`Role Groups`} icon="users">
+                                                <SecurityToggleList
                                                     options={this.state.roleGroups}
                                                     value={model.roleGroups}
                                                     onChange={roleGroup => {
@@ -174,34 +181,29 @@ class UsersForm extends React.Component {
                                                         });
                                                     }}
                                                 />
-                                            </Ui.Tabs.Tab>
-                                        </Ui.Tabs>
-                                    </Ui.Grid.Col>
-                                </Ui.Grid.Row>
-                            </Ui.View.Body>
-                            <Ui.View.Footer>
-                                <Ui.Button
-                                    type="default"
-                                    onClick={form.cancel}
-                                    label={t`Go back`}
-                                />
-                                <Ui.Button
+                                            </Tabs.Tab>
+                                        </Tabs>
+                                    </Grid.Col>
+                                </Grid.Row>
+                            </View.Body>
+                            <View.Footer>
+                                <Button type="default" onClick={form.cancel} label={t`Go back`} />
+                                <Button
                                     type="primary"
                                     onClick={form.submit}
                                     label={t`Save user`}
                                     align="right"
                                 />
-                            </Ui.View.Footer>
-                        </Ui.View.Form>
+                            </View.Footer>
+                        </View.Form>
                     )}
-                </Ui.Form>
-            </Ui.AdminLayout>
+                </Form>
+            </AdminLayout>
         );
     }
 }
 
 export default createComponent(UsersForm, {
-    modulesProp: "Ui",
     modules: [
         "View",
         "Form",
@@ -212,9 +214,8 @@ export default createComponent(UsersForm, {
         "Switch",
         "Button",
         "Section",
-        "Date",
         {
-            AdminLayout: "Skeleton.AdminLayout",
+            AdminLayout: "Admin.Layout",
             SecurityToggleList: "Security.SecurityToggleList"
         }
     ]
