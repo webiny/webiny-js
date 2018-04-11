@@ -1,5 +1,4 @@
 // @flow
-import axios from "axios";
 import compose from "webiny-compose";
 import debugFactory from "debug";
 import { ServiceManager } from "webiny-service-manager";
@@ -31,12 +30,6 @@ class App {
         this.graphql = new GraphQLCLient();
         this.initialized = false;
         this.configLoader = () => Promise.resolve({});
-
-        axios.defaults.validateStatus = status => {
-            return status >= 200 && status < 500;
-        };
-
-        axios.defaults.timeout = 6000;
     }
 
     use(configurator: Configurator) {
