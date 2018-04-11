@@ -30,7 +30,13 @@ class GraphQLOptions extends React.Component {
 
         this.actions = actions;
 
-        this.loadOptions(this.props);
+        this.loadOptions({
+            perPage: this.props.perPage || 10,
+            page: this.props.page || 1,
+            sort: { ...this.props.sort },
+            filter: { ...this.props.filter },
+            search: { ...this.props.search }
+        });
     }
 
     componentWillReceiveProps(props) {
@@ -42,7 +48,13 @@ class GraphQLOptions extends React.Component {
         }
 
         if (shouldLoad) {
-            this.loadOptions(props);
+            this.loadOptions({
+                perPage: props.perPage || 10,
+                page: props.page || 1,
+                sort: { ...props.sort },
+                filter: { ...props.filter },
+                search: { ...props.search }
+            });
         }
     }
 
@@ -50,15 +62,17 @@ class GraphQLOptions extends React.Component {
         this.mounted = false;
     }
 
-    loadOptions(props) {
-        const query = {
-            perPage: props.perPage || 10,
-            page: props.page || 1,
-            sort: { ...props.sort },
-            filter: { ...props.filter },
-            search: { ...props.search }
-        };
+    setSearch({ query }) {
+        this.loadOptions({
+            perPage: this.props.perPage || 10,
+            page: this.props.page || 1,
+            sort: { ...this.props.sort },
+            filter: { ...this.props.filter },
+            search: { ...this.props.search, query }
+        });
+    }
 
+    loadOptions(query) {
         this.setState({ loading: true });
 
         return this.actions.list({ fields: props.fields, variables: query }).then(({ data }) => {
@@ -91,7 +105,11 @@ class GraphQLOptions extends React.Component {
     }
 
     render() {
-        return this.props.children({ options: this.state.options, loading: this.state.loading });
+        return this.props.children({
+            options: this.state.options,
+            loading: this.state.loading,
+            setSearch: this.setSearch
+        });
     }
 }
 
