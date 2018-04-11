@@ -1,6 +1,5 @@
 import React from "react";
 import _ from "lodash";
-// import axios from "axios";
 import { createComponent } from "webiny-app";
 
 /**
@@ -43,11 +42,6 @@ class Downloader extends React.Component {
             return null;
         }
 
-        let action = this.state.url;
-        if (!action.startsWith("http")) {
-            // action = axios.defaults.baseURL + action;
-        }
-
         let params = null;
         if (this.state.params) {
             params = [];
@@ -82,7 +76,6 @@ class Downloader extends React.Component {
         return (
             <form
                 ref={ref => (this.downloader = ref)}
-                action={action}
                 method={this.state.httpMethod}
                 target="_blank"
             >

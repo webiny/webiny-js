@@ -30,7 +30,9 @@ class ToggleField extends React.Component {
             <List.Table.Field {...tdProps}>
                 {() => (
                     <ChangeConfirm message={this.props.message}>
-                        <Switch {...props} />
+                        {({ showConfirmation }) => (
+                            <Switch {...props} onChange={value => showConfirmation(value, props.onChange)} />
+                        )}
                     </ChangeConfirm>
                 )}
             </List.Table.Field>

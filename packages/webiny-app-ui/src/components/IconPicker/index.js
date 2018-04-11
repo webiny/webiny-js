@@ -63,4 +63,4 @@ IconPicker.defaultProps = {
     useDataAsValue: true
 };
 
-export default createComponent(IconPicker, { modules: ["Select", "Icon"], formComponent: true });
+export default createComponent(IconPicker, { modules: ["Select", "Icon"] });

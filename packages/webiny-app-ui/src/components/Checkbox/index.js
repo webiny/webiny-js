@@ -49,12 +49,12 @@ class Checkbox extends React.Component {
         const { styles } = this.props;
         const css = classSet(
             styles.checkbox,
-            this.props.isDisabled() && styles.checkboxDisabled,
+            this.props.disabled && styles.checkboxDisabled,
             this.props.className
         );
 
         const checkboxProps = {
-            disabled: this.props.isDisabled(),
+            disabled: this.props.disabled,
             onChange: this.onChange,
             checked: this.isChecked()
         };
@@ -96,4 +96,4 @@ Checkbox.defaultProps = {
     }
 };
 
-export default createComponent([Checkbox, FormComponent], { styles, formComponent: true });
+export default createComponent([Checkbox, FormComponent], { styles });

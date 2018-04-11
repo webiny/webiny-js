@@ -27,7 +27,7 @@ class Settings extends React.Component {
                             t`That didn't go as expected...`,
                             true
                         );
-                        return form.handleApiError(response);
+                        return form.setError(response);
                     }
                     return response.data.data;
                 });

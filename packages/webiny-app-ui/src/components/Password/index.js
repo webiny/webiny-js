@@ -55,6 +55,5 @@ Password.defaultProps = {
 };
 
 export default createComponent(Password, {
-    modules: ["Link", "Icon", "Input"],
-    formComponent: true
+    modules: ["Link", "Icon", "Input"]
 });

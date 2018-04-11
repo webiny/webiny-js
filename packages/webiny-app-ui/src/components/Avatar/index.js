@@ -220,6 +220,5 @@ Avatar.defaultProps = {
 
 export default createComponent([Avatar, FormComponent], {
     modules: ["Alert", "FileReader", "Cropper", "Button"],
-    formComponent: true,
     styles
 });

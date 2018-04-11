@@ -457,7 +457,7 @@ Search.defaultProps = {
             onBlur: this.onBlur,
             value: this.state.query || this.state.preview || "",
             onChange: this.inputChanged,
-            disabled: this.props.isDisabled()
+            disabled: this.props.disabled
         };
 
         // Render option
@@ -496,6 +496,5 @@ Search.defaultProps = {
 
 export default createComponent([Search, ApiComponent, FormComponent], {
     modules: ["Link", "Icon", "FormGroup"],
-    styles,
-    formComponent: true
+    styles
 });

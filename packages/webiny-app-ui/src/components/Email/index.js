@@ -22,4 +22,4 @@ Email.defaultProps = {
     defaultValidators: "email"
 };
 
-export default createComponent(Email, { modules: ["Input"], formComponent: true });
+export default createComponent(Email, { modules: ["Input"] });

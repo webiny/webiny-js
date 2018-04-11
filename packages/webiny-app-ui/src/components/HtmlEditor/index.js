@@ -257,13 +257,5 @@ HtmlEditor.defaultProps = {
 };
 
 export default createComponent([HtmlEditor, FormComponent], {
-    modules: [
-        "Alert",
-        "Cropper",
-        "FileReader",
-        "Progress",
-        "FormGroup",
-        { Quill: "Vendors/Quill" }
-    ],
-    formComponent: true
+    modules: ["Alert", "Cropper", "FileReader", "Progress", "FormGroup", { Quill: "Vendors/Quill" }]
 });

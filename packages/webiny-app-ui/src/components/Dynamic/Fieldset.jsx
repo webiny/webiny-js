@@ -175,4 +175,4 @@ Fieldset.defaultProps = {
     defaultValue: []
 };
 
-export default createComponent([Fieldset, FormComponent], {formComponent: true});
+export default createComponent([Fieldset, FormComponent]);

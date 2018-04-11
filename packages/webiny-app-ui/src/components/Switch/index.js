@@ -24,7 +24,7 @@ class Switch extends React.Component {
     }
 
     switch() {
-        if (this.props.isDisabled()) {
+        if (this.props.disabled) {
             return;
         }
         this.props.onChange(!this.dom.checked);
@@ -71,6 +71,5 @@ Switch.defaultProps = {
 
 export default createComponent([Switch, FormComponent], {
     modules: ["FormGroup"],
-    styles,
-    formComponent: true
+    styles
 });

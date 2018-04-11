@@ -8,10 +8,6 @@ class Input extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            ...props.initialState
-        };
-
         this.focus = this.focus.bind(this);
     }
 
@@ -52,7 +48,7 @@ class Input extends React.Component {
         const props = {
             "data-on-enter": this.props.onEnter !== _.noop,
             onBlur: this.props.validate ? this.props.validate : this.props.onBlur,
-            disabled: this.props.isDisabled(),
+            disabled: this.props.disabled,
             readOnly: this.props.readOnly,
             type: this.props.type,
             className: styles.input,
@@ -103,7 +99,7 @@ class Input extends React.Component {
         return (
             <FormGroup
                 ref={ref => (this.ref = ref)}
-                valid={this.state.isValid}
+                valid={_.get(this.props, "validation.isValid", true)}
                 className={this.props.className}
             >
                 {this.props.renderLabel.call(this)}
@@ -140,13 +136,13 @@ Input.defaultProps = {
     iconRight: null,
     wrapperClassName: "",
     renderValidationIcon() {
-        if (!this.props.showValidationIcon || this.state.isValid === null) {
+        if (!this.props.showValidationIcon || this.props.validation.isValid === null) {
             return null;
         }
 
         const { FormGroup } = this.props.modules;
 
-        if (this.state.isValid === true) {
+        if (this.props.validation.isValid === true) {
             return <FormGroup.ValidationIcon />;
         }
         return <FormGroup.ValidationIcon error />;
@@ -154,7 +150,6 @@ Input.defaultProps = {
 };
 
 export default createComponent([Input, FormComponent], {
-    formComponent: true,
     modules: ["DelayedOnChange", "Icon", "FormGroup"],
     styles
 });

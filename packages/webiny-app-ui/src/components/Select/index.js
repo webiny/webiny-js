@@ -1,22 +1,10 @@
 import React from "react";
 import _ from "lodash";
 import { createComponent } from "webiny-app";
-import { OptionComponent } from "webiny-app-ui";
+import { FormComponent } from "webiny-app-ui";
 import SimpleSelect from "./SimpleSelect";
 
 class Select extends React.Component {
-    constructor(props) {
-        super();
-
-        this.state = {
-            ...props.initialState
-        };
-    }
-
-    componentDidMount() {
-        this.props.attachToForm && this.props.attachToForm(this);
-    }
-
     shouldComponentUpdate(props) {
         return (
             !_.isEqual(props.options, this.props.options) ||
@@ -35,12 +23,12 @@ class Select extends React.Component {
             ..._.pick(this.props, _.keys(SimpleSelect.defaultProps)),
             ...{
                 options: this.props.options,
-                disabled: this.props.isDisabled(),
+                disabled: this.props.disabled,
                 placeholder: this.props.placeholder,
                 onChange: newValue => {
                     this.props.onChange(
                         newValue,
-                        !this.state.isValid ? this.props.validate : _.noop
+                        !this.props.validation.isValid ? this.props.validate : _.noop
                     );
                 }
             }
@@ -68,7 +56,6 @@ Select.defaultProps = {
     renderSelected: null
 };
 
-export default createComponent([Select, OptionComponent], {
-    modules: ["FormGroup"],
-    formComponent: true
+export default createComponent([Select, FormComponent], {
+    modules: ["FormGroup"]
 });

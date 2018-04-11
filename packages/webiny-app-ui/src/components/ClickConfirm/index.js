@@ -21,7 +21,7 @@ class ClickConfirm extends React.Component {
         this.onCancel = this.onCancel.bind(this);
     }
 
-    onClick() {
+    onClick(realOnClick) {
         let msg = this.props.message;
         if (_.isFunction(msg)) {
             msg = msg();
@@ -32,14 +32,11 @@ class ClickConfirm extends React.Component {
             return;
         }
 
+        this.realOnClick = realOnClick;
         this.message = msg;
         this.setState({ time: _.now() }, () => {
             app.services.get("modal").show(this.dialogId);
         });
-    }
-
-    getInput(props) {
-        return React.Children.toArray(props.children)[0];
     }
 
     onCancel() {
@@ -65,12 +62,6 @@ class ClickConfirm extends React.Component {
             return this.props.render.call(this);
         }
 
-        // Input
-        const input = this.getInput(this.props);
-        this.realOnClick = input.props.onClick;
-        const props = _.omit(input.props, ["onClick"]);
-        props.onClick = this.onClick;
-
         const dialogProps = {
             name: this.dialogId,
             message: this.message,
@@ -88,7 +79,7 @@ class ClickConfirm extends React.Component {
 
         return (
             <webiny-click-confirm>
-                {React.cloneElement(input, props)}
+                {this.props.children({ showConfirmation: this.onClick })}
                 {React.cloneElement(dialog, dialogProps)}
             </webiny-click-confirm>
         );

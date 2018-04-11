@@ -18,7 +18,7 @@ class Textarea extends React.Component {
 
         const props = {
             onBlur: this.validate,
-            disabled: this.props.isDisabled(),
+            disabled: this.props.disabled,
             className: classSet("inputGroup", styles.textarea),
             value: this.props.value || "",
             placeholder: this.props.placeholder,
@@ -47,6 +47,5 @@ Textarea.defaultProps = {
 
 export default createComponent([Textarea, FormComponent], {
     modules: ["DelayedOnChange", "FormGroup"],
-    styles,
-    formComponent: true
+    styles
 });

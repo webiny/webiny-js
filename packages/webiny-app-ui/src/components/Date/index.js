@@ -63,6 +63,14 @@ class Date extends React.Component {
         return this.props.modelFormat;
     }
 
+    getInputValue() {
+        if (_.isEmpty(this.props.value)) {
+            return "";
+        }
+
+        return i18n.date(this.props.value, this.getInputFormat(), this.getModelFormat());
+    }
+
     render() {
         if (this.props.render) {
             return this.props.render.call(this);
@@ -72,9 +80,10 @@ class Date extends React.Component {
 
         const props = {
             onBlur: this.props.validate ? this.props.validate : this.props.onBlur,
-            disabled: this.props.isDisabled(),
+            disabled: this.props.disabled,
             readOnly: this.props.readOnly,
             type: "text",
+            value: this.getInputValue(),
             placeholder: this.props.placeholder,
             onChange: this.props.onChange,
             autoFocus: this.props.autoFocus,
@@ -108,6 +117,5 @@ Date.defaultProps = {
 };
 
 export default createComponent([Date, FormComponent], {
-    modules: ["Icon", "InputLayout", { Flatpickr: "Vendor.FlatPickr" }],
-    formComponent: true
+    modules: ["Icon", "InputLayout", { Flatpickr: "Vendor.FlatPickr" }]
 });

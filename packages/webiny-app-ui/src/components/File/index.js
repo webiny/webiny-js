@@ -178,6 +178,5 @@ SimpleFile.defaultProps = {
 
 export default createComponent([SimpleFile, FormComponent], {
     modules: ["FileReader", "FormGroup", "Alert"],
-    styles,
-    formComponent: true
+    styles
 });

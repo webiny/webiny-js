@@ -76,7 +76,7 @@ class Time extends React.Component {
 
         const props = {
             onBlur: this.props.validate ? this.props.validate : this.props.onBlur,
-            disabled: this.props.isDisabled(),
+            disabled: this.props.disabled,
             readOnly: this.props.readOnly,
             type: "text",
             placeholder: this.props.placeholder,
@@ -112,6 +112,5 @@ Time.defaultProps = {
 };
 
 export default createComponent([Time, FormComponent], {
-    modules: ["Icon", "InputLayout", { Flatpickr: "Vendor.FlatPickr" }],
-    formComponent: true
+    modules: ["Icon", "InputLayout", { Flatpickr: "Vendor.FlatPickr" }]
 });

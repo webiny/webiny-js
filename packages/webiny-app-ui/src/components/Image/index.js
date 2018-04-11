@@ -236,6 +236,5 @@ Image.defaultProps = {
 
 export default createComponent([Image, FormComponent], {
     modules: ["FileReader", "Alert", "Cropper", "FormGroup"],
-    formComponent: true,
     styles
 });

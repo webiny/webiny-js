@@ -10,7 +10,7 @@ import userIdentity from "./userIdentity";
 
 if (!app.initialized) {
     app.use(adminApp());
-    app.use(
+    /*app.use(
         securityApp({
             authentication: {
                 cookie: "webiny-token",
@@ -22,7 +22,7 @@ if (!app.initialized) {
             }
         })
     );
-    app.use(securityAdminApp());
+    app.use(securityAdminApp());*/
     // app.use(cmsAdminApp());
     app.use(project());
 
@@ -46,14 +46,14 @@ if (!app.initialized) {
 
     app.router.configure({
         middleware: [
-            authenticationMiddleware({
+            /*authenticationMiddleware({
                 onNotAuthenticated({ route }, next) {
                     if (route.name !== "Login") {
                         app.router.goToRoute("Login");
                     }
                     next();
                 }
-            }),
+            }),*/
             resolveMiddleware(),
             renderMiddleware()
         ]

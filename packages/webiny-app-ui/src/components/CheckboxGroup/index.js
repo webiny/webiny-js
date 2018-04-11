@@ -1,25 +1,15 @@
 import React from "react";
 import _ from "lodash";
 import { createComponent } from "webiny-app";
-import { OptionComponent } from "webiny-app-ui";
+import { FormComponent } from "webiny-app-ui";
 import styles from "./styles.css";
 
 class CheckboxGroup extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            ...props.initialState
-        };
-
         this.renderOptions = this.renderOptions.bind(this);
         this.onChange = this.onChange.bind(this);
-    }
-
-    componentDidMount() {
-        if (this.props.attachToForm) {
-            this.props.attachToForm(this);
-        }
     }
 
     onChange(key, newValue) {
@@ -49,7 +39,7 @@ class CheckboxGroup extends React.Component {
      * @returns {Array}
      */
     renderOptions(callback = null) {
-        const { Checkbox } = this.props.modules;
+        const { modules: { Checkbox }, disabled } = this.props;
         return this.props.options.map((item, key) => {
             const checked = _.find(this.props.value, opt => {
                 if (_.isPlainObject(opt)) {
@@ -61,7 +51,7 @@ class CheckboxGroup extends React.Component {
             const props = {
                 key, // React key
                 label: item.text,
-                disabled: this.props.isDisabled(),
+                disabled,
                 value: checked, // true/false
                 onChange: this.onChange,
                 option: item,
@@ -93,7 +83,7 @@ class CheckboxGroup extends React.Component {
         const { modules: { FormGroup }, styles } = this.props;
 
         return (
-            <FormGroup valid={this.state.isValid} className={this.props.className}>
+            <FormGroup valid={this.props.validation.isValid} className={this.props.className}>
                 {this.props.renderLabel.call(this)}
                 <div className="clearfix" />
                 <div className={"inputGroup " + (this.props.disabled && styles.disabled)}>
@@ -111,8 +101,7 @@ CheckboxGroup.defaultProps = {
     formatOptionValue: ({ value }) => value
 };
 
-export default createComponent([CheckboxGroup, OptionComponent], {
+export default createComponent([CheckboxGroup, FormComponent], {
     modules: ["Checkbox", "FormGroup"],
-    formComponent: true,
     styles
 });

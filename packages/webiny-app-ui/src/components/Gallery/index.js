@@ -414,6 +414,5 @@ Gallery.Image = Image;
 
 export default createComponent([Gallery, FormComponent], {
     modules: ["Alert", "Cropper", "FileReader", "Input", "FormGroup"],
-    styles,
-    formComponent: true
+    styles
 });

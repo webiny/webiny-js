@@ -1,7 +1,7 @@
 import React from "react";
-import _ from "lodash";
 import { isElementOfType, createComponent } from "webiny-app";
 import Header from "./Header";
+import Error from "./Error";
 import Body from "./Body";
 import Footer from "./Footer";
 import styles from "./styles.css";
@@ -14,11 +14,6 @@ class FormView extends React.Component {
     }
 
     parseLayout(children) {
-        if (!this.props.form) {
-            console.error("<View.Form> must be a child of a Form element!");
-            return;
-        }
-
         this.headerComponent = null;
         this.bodyComponent = null;
         this.footerComponent = null;
@@ -28,8 +23,7 @@ class FormView extends React.Component {
             return children;
         }
 
-        const { Form } = this.props.modules;
-        // Loop through View elements and detect header/body/footer components
+        // Loop through View elements and detect header/error/body/footer components
         React.Children.map(children, child => {
             if (isElementOfType(child, Header)) {
                 this.headerComponent = child;
@@ -37,44 +31,19 @@ class FormView extends React.Component {
             }
 
             if (isElementOfType(child, Body)) {
-                // Check if form loader exists in body
-                let loader = null;
-                React.Children.map(child.props.children, bodyChild => {
-                    if (isElementOfType(bodyChild, Form.Loader)) {
-                        loader = true;
-                    }
-                });
+                this.bodyComponent = child;
+                return;
+            }
 
-                if (loader) {
-                    // We have our body element
-                    this.bodyComponent = child;
-                } else {
-                    // We need to create form loader ourselves
-                    const bodyChildren = React.Children.toArray(child.props.children);
-                    bodyChildren.push(
-                        <Form.Loader key="loader" show={this.props.form.isLoading()} />
-                    );
-                    this.bodyComponent = React.cloneElement(child, child.props, bodyChildren);
-                }
+            if (isElementOfType(child, Error)) {
+                this.errorComponent = child;
                 return;
             }
 
             if (isElementOfType(child, Footer)) {
                 this.footerComponent = child;
-                return;
-            }
-
-            if (isElementOfType(child, Form.Error)) {
-                this.errorComponent = React.cloneElement(
-                    child,
-                    _.merge(child.props, { error: this.props.form.getError() })
-                );
             }
         });
-
-        if (!this.errorComponent) {
-            this.errorComponent = <Form.Error error={this.props.form.getError()} />;
-        }
     }
 
     componentWillMount() {
@@ -106,8 +75,4 @@ class FormView extends React.Component {
     }
 }
 
-FormView.defaultProps = {
-    formInject: true
-};
-
-export default createComponent(FormView, { modules: ["Panel", "Form"], styles });
+export default createComponent(FormView, { modules: ["Panel"], styles });

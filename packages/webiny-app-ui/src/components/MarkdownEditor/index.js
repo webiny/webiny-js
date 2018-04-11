@@ -100,4 +100,4 @@ MarkdownEditor.defaultProps = {
     customParsers: []
 };
 
-export default createComponent([MarkdownEditor, FormComponent], { formComponent: true, styles });
+export default createComponent([MarkdownEditor, FormComponent], { styles });

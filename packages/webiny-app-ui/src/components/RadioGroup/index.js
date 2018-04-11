@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
 import { createComponent } from "webiny-app";
-import { OptionComponent } from "webiny-app-ui";
+import { FormComponent } from "webiny-app-ui";
 import Radio from "./Radio";
 import styles from "./styles.css";
 
@@ -10,17 +10,7 @@ class RadioGroup extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            ...props.initialState
-        };
-
         this.renderOptions = this.renderOptions.bind(this);
-    }
-
-    componentDidMount() {
-        if (this.props.attachToForm) {
-            this.props.attachToForm(this);
-        }
     }
 
     shouldComponentUpdate(nextProps) {
@@ -54,7 +44,7 @@ class RadioGroup extends React.Component {
             const props = {
                 key,
                 label: item.text,
-                disabled: this.props.isDisabled(),
+                disabled: this.props.disabled,
                 option: item,
                 optionIndex: key,
                 value: checked,
@@ -109,8 +99,7 @@ RadioGroup.defaultProps = {
     renderRadio: null
 };
 
-export default createComponent([RadioGroup, OptionComponent], {
+export default createComponent([RadioGroup, FormComponent], {
     modules: ["FormGroup"],
-    styles,
-    formComponent: true
+    styles
 });

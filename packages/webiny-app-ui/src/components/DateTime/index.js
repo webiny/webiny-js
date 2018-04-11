@@ -71,7 +71,7 @@ class DateTime extends React.Component {
 
         const props = {
             onBlur: this.props.validate ? this.props.validate : this.props.onBlur,
-            disabled: this.props.isDisabled(),
+            disabled: this.props.disabled,
             readOnly: this.props.readOnly,
             type: "text",
             placeholder: this.props.placeholder,
@@ -106,6 +106,5 @@ DateTime.defaultProps = {
 };
 
 export default createComponent([DateTime, FormComponent], {
-    modules: ["Icon", "InputLayout", { Flatpickr: "Vendor.FlatPickr" }],
-    formComponent: true
+    modules: ["Icon", "InputLayout", { Flatpickr: "Vendor.FlatPickr" }]
 });

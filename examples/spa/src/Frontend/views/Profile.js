@@ -180,17 +180,21 @@ class Profile extends React.Component {
                                             message="This will charge your card with $15.99. Proceed?"
                                             onComplete={success}
                                         >
-                                            <Button
-                                                type="primary"
-                                                label="Charge my credit card"
-                                                onClick={() => {
-                                                    return new Promise(r =>
-                                                        setTimeout(() => {
-                                                            r({ status: "processing" });
-                                                        }, 1500)
-                                                    );
-                                                }}
-                                            />
+                                            {({ showConfirmation }) => (
+                                                <Button
+                                                    type="primary"
+                                                    label="Charge my credit card"
+                                                    onClick={() =>
+                                                        showConfirmation(() => {
+                                                            return new Promise(r =>
+                                                                setTimeout(() => {
+                                                                    r({ status: "processing" });
+                                                                }, 1500)
+                                                            );
+                                                        })
+                                                    }
+                                                />
+                                            )}
                                         </ClickConfirm>
                                     )}
                                 </ClickSuccess>

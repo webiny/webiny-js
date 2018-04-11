@@ -10,10 +10,16 @@ export default () => {
 
         app.services.get("menu").add(
             <Menu order="0" label={t`Dashboard`} icon="home">
-                <Menu order="0" label={t`My Account`} route="Homepage"/>
-                <Menu order="1" label={t`Settings`} route="Homepage"/>
+                <Menu order="0" label={t`My Account`} route="Homepage" />
+                <Menu order="1" label={t`Settings`} route="Homepage" />
             </Menu>
         );
+
+        app.router.addRoute({
+            name: "Contact",
+            path: "/contact/:id",
+            component: () => import("./views/Contact").then(m => m.default)
+        });
 
         app.router.addRoute({
             name: "Profile",
@@ -26,7 +32,7 @@ export default () => {
             path: "/about",
             render() {
                 return import("./views/About").then(m => {
-                   return React.createElement(m.default);
+                    return React.createElement(m.default);
                 });
             }
         });

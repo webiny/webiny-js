@@ -146,6 +146,5 @@ Tags.defaultProps = {
 
 export default createComponent([Tags, FormComponent], {
     modules: ["Icon", "FormGroup"],
-    styles,
-    formComponent: true
+    styles
 });

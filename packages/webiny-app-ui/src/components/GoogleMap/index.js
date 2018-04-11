@@ -1,14 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import _ from 'lodash';
-import { createComponent, document } from 'webiny-app';
-import { FormComponent } from 'webiny-app';
-import styles from './styles.css';
+import React from "react";
+import _ from "lodash";
+import { createComponent, document } from "webiny-app";
+import { FormComponent } from "webiny-app";
+import styles from "./styles.css";
 
 // TODO: https://www.npmjs.com/package/react-google-maps
 
 class GoogleMap extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -22,7 +20,7 @@ class GoogleMap extends React.Component {
         this.geoCoder = null;
         this.loading = null;
 
-        ['positionMarker', 'setupMap', 'search'].map(m => this[m] = this[m].bind(this));
+        ["positionMarker", "setupMap", "search"].map(m => (this[m] = this[m].bind(this)));
     }
 
     componentDidMount() {
@@ -31,9 +29,11 @@ class GoogleMap extends React.Component {
         }
 
         if (!window.google) {
-            return document.loadScript('https://maps.googleapis.com/maps/api/js?key=' + this.props.apiKey).then(() => {
-                this.setupMap();
-            });
+            return document
+                .loadScript("https://maps.googleapis.com/maps/api/js?key=" + this.props.apiKey)
+                .then(() => {
+                    this.setupMap();
+                });
         }
 
         if (this.props.onReady) {
@@ -63,8 +63,8 @@ class GoogleMap extends React.Component {
     }
 
     setupMap() {
-        const lat = _.get(this.props, 'value.lat', this.props.center.lat);
-        const lng = _.get(this.props, 'value.lng', this.props.center.lng);
+        const lat = _.get(this.props, "value.lat", this.props.center.lat);
+        const lng = _.get(this.props, "value.lng", this.props.center.lng);
 
         this.map = new google.maps.Map(this.dom, {
             center: new google.maps.LatLng(parseFloat(lat), parseFloat(lng)),
@@ -78,7 +78,7 @@ class GoogleMap extends React.Component {
         });
 
         if (!this.props.readOnly) {
-            google.maps.event.addListener(this.marker, 'dragend', () => {
+            google.maps.event.addListener(this.marker, "dragend", () => {
                 this.props.onChange({
                     lat: this.marker.getPosition().lat(),
                     lng: this.marker.getPosition().lng()
@@ -90,8 +90,8 @@ class GoogleMap extends React.Component {
     }
 
     positionMarker() {
-        const lat = _.get(this.props, 'value.lat');
-        const lng = _.get(this.props, 'value.lng');
+        const lat = _.get(this.props, "value.lat");
+        const lng = _.get(this.props, "value.lng");
 
         if (lat && lng) {
             const latLng = new google.maps.LatLng(parseFloat(lat), parseFloat(lng));
@@ -108,7 +108,7 @@ class GoogleMap extends React.Component {
 
         this.geoCoder.geocode({ address: query }, results => {
             if (!_.isEmpty(results)) {
-                const location = _.get(results[0], 'geometry.location');
+                const location = _.get(results[0], "geometry.location");
                 this.props.onChange({
                     lat: location.lat(),
                     lng: location.lng()
@@ -125,7 +125,9 @@ class GoogleMap extends React.Component {
         const { styles } = this.props;
         return (
             <div className={styles.container} style={this.props.style}>
-                <div ref={ref =>this.dom = ref} className={styles.map}>{this.props.children}</div>
+                <div ref={ref => (this.dom = ref)} className={styles.map}>
+                    {this.props.children}
+                </div>
             </div>
         );
     }
@@ -144,4 +146,4 @@ GoogleMap.defaultProps = {
     onChange: _.noop
 };
 
-export default createComponent([GoogleMap, FormComponent], { styles, formComponent: true });
+export default createComponent([GoogleMap, FormComponent], { styles });
