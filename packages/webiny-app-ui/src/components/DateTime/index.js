@@ -19,43 +19,47 @@ class DateTime extends React.Component {
         this.props.attachToForm && this.props.attachToForm(this);
     }
 
+    componentWillReceiveProps(props) {
+        if (props.hasOwnProperty("value") && props.value !== this.props.value) {
+            this.element.setDate(props.value, false);
+        }
+    }
+
+    componentWillUnmount() {
+        this.element.destroy();
+    }
+
     init(element) {
         if (this.initialized) {
             return;
         }
 
         this.initialized = true;
-        element.flatpickr({
-            defaultDate: this.props.value,
-            enableTime: true,
-            time_24hr: true,
-            formatDate: date => {
-                // Here we have a date object, in user's tz, so we can directly pass it into i18n.dateTime.
-                // In getInputValue method, we have a string, so we'll need to create a Date instance first.
-                return i18n.dateTime(date, this.getInputFormat());
-            },
-            onChange: values => {
-                let value = values[0];
-                if (value) {
-                    value = value.toISOString();
+
+        const options = _.assign(
+            {
+                defaultDate: this.props.value,
+                enableTime: true,
+                time_24hr: true,
+                formatDate: date => {
+                    return i18n.dateTime(date, this.getInputFormat());
+                },
+                onChange: values => {
+                    let value = values[0];
+                    if (value) {
+                        value = value.toISOString();
+                    }
+                    this.props.onChange(value, this.validate);
                 }
-                this.props.onChange(value, this.validate);
-            }
-        });
+            },
+            this.props.options
+        );
+
+        this.element = new this.props.modules.Flatpickr(element, options);
     }
 
     getInputFormat() {
         return this.props.inputFormat || i18n.getDateTimeFormat();
-    }
-
-    getInputValue() {
-        if (_.isEmpty(this.props.value)) {
-            return "";
-        }
-
-        // Here we have a "toISOString" string, in UTC, so we have to create an instance of Date, so user's tz is applied.
-        // In flatpickr's "formatDate" function, we receive Date object directly, so no additional actions were needed.
-        return i18n.dateTime(new Date(this.props.value), this.getInputFormat());
     }
 
     render() {
@@ -70,7 +74,6 @@ class DateTime extends React.Component {
             disabled: this.props.isDisabled(),
             readOnly: this.props.readOnly,
             type: "text",
-            value: this.getInputValue(),
             placeholder: this.props.placeholder,
             onChange: this.props.onChange,
             autoFocus: this.props.autoFocus,
@@ -83,7 +86,7 @@ class DateTime extends React.Component {
 
         return (
             <InputLayout
-                iconRight="icon-calendar"
+                iconRight="calendar-alt"
                 valid={this.state.isValid}
                 className={this.props.className}
                 input={<input {...props} />}
@@ -98,11 +101,11 @@ class DateTime extends React.Component {
 
 DateTime.defaultProps = {
     onRef: _.noop,
-    inputFormat: null
+    inputFormat: null,
+    options: null
 };
 
 export default createComponent([DateTime, FormComponent], {
-    modulesProp: "modules",
-    modules: ["Icon", "InputLayout", { flatpickr: "Vendor.FlatPickr" }],
+    modules: ["Icon", "InputLayout", { Flatpickr: "Vendor.FlatPickr" }],
     formComponent: true
 });

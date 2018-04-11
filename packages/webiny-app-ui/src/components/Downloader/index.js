@@ -1,6 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import axios from "axios";
+// import axios from "axios";
 import { createComponent } from "webiny-app";
 
 /**
@@ -45,7 +45,7 @@ class Downloader extends React.Component {
 
         let action = this.state.url;
         if (!action.startsWith("http")) {
-            action = axios.defaults.baseURL + action;
+            // action = axios.defaults.baseURL + action;
         }
 
         let params = null;

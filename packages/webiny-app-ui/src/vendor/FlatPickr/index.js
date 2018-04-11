@@ -1,2 +1,4 @@
 import "flatpickr/dist/flatpickr.css?extract";
-export * from "flatpickr";
+import Flatpickr from "flatpickr";
+
+export default Flatpickr;

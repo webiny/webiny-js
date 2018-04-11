@@ -19,25 +19,40 @@ class Date extends React.Component {
         this.props.attachToForm && this.props.attachToForm(this);
     }
 
+    componentWillReceiveProps(props) {
+        if (props.hasOwnProperty("value") && props.value !== this.props.value) {
+            this.element.setDate(props.value, false);
+        }
+    }
+
+    componentWillUnmount() {
+        this.element.destroy();
+    }
+
     init(element) {
         if (this.initialized) {
             return;
         }
 
         this.initialized = true;
-        element.flatpickr({
-            defaultDate: this.props.value,
-            formatDate: date => {
-                return i18n.date(date, this.getInputFormat());
-            },
-            onChange: values => {
-                let value = values[0];
-                if (value) {
-                    value = i18n.date(value, this.getModelFormat());
+        const options = _.assign(
+            {
+                defaultDate: this.props.value,
+                formatDate: date => {
+                    return i18n.date(date, this.getInputFormat());
+                },
+                onChange: values => {
+                    let value = values[0];
+                    if (value) {
+                        value = i18n.date(value, this.getModelFormat());
+                    }
+                    this.props.onChange(value, this.validate);
                 }
-                this.props.onChange(value, this.validate);
-            }
-        });
+            },
+            this.props.options
+        );
+
+        this.element = new this.props.modules.Flatpickr(element, options);
     }
 
     getInputFormat() {
@@ -46,14 +61,6 @@ class Date extends React.Component {
 
     getModelFormat() {
         return this.props.modelFormat;
-    }
-
-    getInputValue() {
-        if (_.isEmpty(this.props.value)) {
-            return "";
-        }
-
-        return i18n.date(this.props.value, this.getInputFormat(), this.getModelFormat());
     }
 
     render() {
@@ -68,7 +75,6 @@ class Date extends React.Component {
             disabled: this.props.isDisabled(),
             readOnly: this.props.readOnly,
             type: "text",
-            value: this.getInputValue(),
             placeholder: this.props.placeholder,
             onChange: this.props.onChange,
             autoFocus: this.props.autoFocus,
@@ -81,7 +87,7 @@ class Date extends React.Component {
 
         return (
             <InputLayout
-                iconRight="icon-calendar"
+                iconRight="calendar-alt"
                 valid={this.state.isValid}
                 className={this.props.className}
                 input={<input {...props} />}
@@ -97,11 +103,11 @@ class Date extends React.Component {
 Date.defaultProps = {
     onRef: _.noop,
     inputFormat: null,
-    modelFormat: "YYYY-MM-DD"
+    modelFormat: "YYYY-MM-DD",
+    options: null
 };
 
 export default createComponent([Date, FormComponent], {
-    modulesProp: "modules",
-    modules: ["Icon", "InputLayout", { flatpickr: "Vendor.FlatPickr" }],
+    modules: ["Icon", "InputLayout", { Flatpickr: "Vendor.FlatPickr" }],
     formComponent: true
 });

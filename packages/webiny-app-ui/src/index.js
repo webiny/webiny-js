@@ -95,6 +95,10 @@ const app = () => {
                 factory: () => import("./components/Date")
             },
             {
+                name: "DateRange",
+                factory: () => import("./components/DateRange")
+            },
+            {
                 name: "DateTime",
                 factory: () => import("./components/DateTime")
             },
@@ -181,6 +185,10 @@ const app = () => {
             {
                 name: "Input",
                 factory: () => import("./components/Input")
+            },
+            {
+                name: "InputLayout",
+                factory: () => import("./components/InputLayout")
             },
             {
                 name: "Label",

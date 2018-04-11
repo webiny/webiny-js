@@ -19,27 +19,44 @@ class Time extends React.Component {
         this.props.attachToForm && this.props.attachToForm(this);
     }
 
+    componentWillReceiveProps(props) {
+        if (props.hasOwnProperty("value") && props.value !== this.props.value) {
+            this.element.setDate(props.value, false);
+        }
+    }
+
+    componentWillUnmount() {
+        this.element.destroy();
+    }
+
     init(element) {
         if (this.initialized) {
             return;
         }
 
         this.initialized = true;
-        element.flatpickr({
-            defaultDate: this.props.value,
-            enableTime: true,
-            noCalendar: true,
-            formatDate: date => {
-                return i18n.time(date, this.getInputFormat());
-            },
-            onChange: values => {
-                let value = values[0];
-                if (value) {
-                    value = i18n.time(value, this.getModelFormat());
+
+        const options = _.assign(
+            {
+                defaultDate: this.props.value,
+                enableTime: true,
+                noCalendar: true,
+                time_24hr: true,
+                formatDate: date => {
+                    return i18n.time(date, this.getInputFormat());
+                },
+                onChange: values => {
+                    let value = values[0];
+                    if (value) {
+                        value = i18n.time(value, this.getModelFormat());
+                    }
+                    this.props.onChange(value, this.validate);
                 }
-                this.props.onChange(value, this.validate);
-            }
-        });
+            },
+            this.props.options
+        );
+
+        this.element = new this.props.modules.Flatpickr(element, options);
     }
 
     getInputFormat() {
@@ -48,14 +65,6 @@ class Time extends React.Component {
 
     getModelFormat() {
         return this.props.modelFormat;
-    }
-
-    getInputValue() {
-        if (_.isEmpty(this.props.value)) {
-            return "";
-        }
-
-        return i18n.time(this.props.value, this.getInputFormat(), this.getModelFormat());
     }
 
     render() {
@@ -70,7 +79,6 @@ class Time extends React.Component {
             disabled: this.props.isDisabled(),
             readOnly: this.props.readOnly,
             type: "text",
-            value: this.getInputValue(),
             placeholder: this.props.placeholder,
             onChange: this.props.onChange,
             autoFocus: this.props.autoFocus,
@@ -83,7 +91,7 @@ class Time extends React.Component {
 
         return (
             <InputLayout
-                iconRight="icon-calendar"
+                iconRight="clock"
                 valid={this.state.isValid}
                 className={this.props.className}
                 input={<input {...props} />}
@@ -99,11 +107,11 @@ class Time extends React.Component {
 Time.defaultProps = {
     onRef: _.noop,
     inputFormat: null,
-    modelFormat: "HH:mm"
+    modelFormat: "HH:mm",
+    options: null
 };
 
 export default createComponent([Time, FormComponent], {
-    modulesProp: "modules",
-    modules: ["Icon", "InputLayout", { flatpickr: "Vendor.FlatPickr" }],
+    modules: ["Icon", "InputLayout", { Flatpickr: "Vendor.FlatPickr" }],
     formComponent: true
 });

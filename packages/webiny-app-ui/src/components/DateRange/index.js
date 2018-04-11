@@ -1,253 +1,118 @@
 import React from "react";
 import _ from "lodash";
-import $ from "jquery";
-import { Webiny } from "webiny-app";
-import "bootstrap-daterangepicker";
-import "./styles.scss?extract";
+import { i18n, createComponent } from "webiny-app";
+import { FormComponent } from "webiny-app-ui";
+import styles from "./styles.css";
 
-/**
- * TODO: complete I18N support needed.
- */
-class DateRange extends Webiny.Ui.FormComponent {
+class Date extends React.Component {
     constructor(props) {
         super(props);
+        this.initialized = false;
+        this.element = null;
+        this.id = _.uniqueId("dateRange");
 
-        this.input = null;
-
-        _.assign(this.state, {
-            date: {
-                start: null,
-                end: null
-            },
-            rangeType: _.get(this.props, "rangeType", "")
-        });
-
-        const { moment } = props;
-
-        this.options = {
-            autoApply: true,
-            alwaysShowCalendars: true,
-            opens: "left",
-            locale: {
-                format: "DD/MMM/YY"
-            },
-            ranges: {
-                Today: [moment(), moment()],
-                Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
-                "Last 7 Days": [moment().subtract(6, "days"), moment()],
-                "Last 30 Days": [moment().subtract(29, "days"), moment()],
-                "This Month": [moment().startOf("month"), moment().endOf("month")],
-                "Last Month": [
-                    moment()
-                        .subtract(1, "month")
-                        .startOf("month"),
-                    moment()
-                        .subtract(1, "month")
-                        .endOf("month")
-                ]
-            }
+        this.state = {
+            ...props.initialState
         };
 
-        this.availableOptions = [
-            "startDate",
-            "endDate",
-            "minDate",
-            "maxDate",
-            "dateLimit",
-            "showDropdowns",
-            "showWeekNumbers",
-            "timePicker",
-            "timePickerIncrement",
-            "timePicker24hour",
-            "timePickerSeconds",
-            "ranges",
-            "opens",
-            "drops",
-            "buttonClasses",
-            "applyClasses",
-            "cancelClasses",
-            "locale",
-            "singleDatePicker",
-            "autoApply",
-            "linkedCalendars",
-            "parentEl",
-            "isInvalidDate",
-            "autoUpdateInput",
-            "alwaysShowCalendars"
-        ];
-
-        this.bindMethods("setup,onChange,setInitialRange");
+        this.init = this.init.bind(this);
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        super.componentDidUpdate();
-        if (prevState.isValid !== this.state.isValid) {
-            this.input.setState({
-                isValid: this.state.isValid,
-                validationMessage: this.state.validationMessage
-            });
-        }
+    componentDidMount() {
+        this.props.attachToForm && this.props.attachToForm(this);
     }
 
-    componentWillUnmount(props) {
-        super.componentWillUnmount(props);
-        this.unregisterListeners();
+    componentWillUnmount() {
+        this.element.destroy();
     }
 
     componentWillReceiveProps(props) {
-        if (!this.getInput()) {
+        if (props.hasOwnProperty("value") && props.value !== this.props.value) {
+            this.element.setDate(props.value, false);
+        }
+    }
+
+    init(element) {
+        if (this.initialized) {
             return;
         }
 
-        if (!props.value) {
-            this.getInput().value = this.getPlaceholder() || "";
-        } else {
-            const dates = props.value.split(this.props.rangeDelimiter);
-            this.element.data("daterangepicker").setStartDate(dates[0]);
-            this.element.data("daterangepicker").setEndDate(dates[1]);
+        this.initialized = true;
+
+        const options = _.assign(
+            {
+                defaultDate: this.props.value,
+                mode: "range",
+                formatDate: date => {
+                    return i18n.date(date, this.getInputFormat());
+                },
+                onChange: values => {
+                    const formatted = values.map(value => {
+                        return i18n.date(value, this.getModelFormat());
+                    });
+
+                    this.props.onChange(formatted, this.validate);
+                }
+            },
+            this.props.options
+        );
+
+        this.element = new this.props.modules.Flatpickr(element, options);
+    }
+
+    getInputFormat() {
+        return this.props.inputFormat || i18n.getDateFormat();
+    }
+
+    getModelFormat() {
+        return this.props.modelFormat;
+    }
+
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
         }
-    }
 
-    setInitialRange(start, end) {
-        const { moment } = this.props;
-        const from = moment(start, this.options.locale.format, true);
-        const to = moment(end, this.options.locale.format, true);
-        if (from.isValid() && to.isValid()) {
-            this.options.startDate = start;
-            this.options.endDate = end;
-        }
-    }
+        const { InputLayout } = this.props.modules;
 
-    getInput() {
-        return this.input;
-    }
-
-    setup() {
-        this.element = $(this.getInput());
-
-        // detect to which side we need to open the range selector in case opens is set to auto
-        let opens = "left";
-        if (this.props.opens === "auto") {
-            let left = this.element.offset().left;
-            let windowWidth = window.innerWidth;
-
-            let offset = left / windowWidth * 100;
-
-            // if within first 30% of the screen, open to left
-            if (offset <= 30) {
-                opens = "right";
-            } else if (offset > 30 && offset <= 60) {
-                opens = "center";
-            } else {
-                opens = "left";
+        const props = {
+            onBlur: this.props.validate ? this.props.validate : this.props.onBlur,
+            disabled: this.props.isDisabled(),
+            readOnly: this.props.readOnly,
+            type: "text",
+            placeholder: this.props.placeholder,
+            onChange: this.props.onChange,
+            autoFocus: this.props.autoFocus,
+            className: styles.input,
+            ref: ref => {
+                this.init(ref);
+                this.props.onRef(ref);
             }
-        }
+        };
 
-        const range = _.get(this.options.ranges, _.get(this.props, "rangeType"));
-        _.assign(this.options, this.props.options || {}, _.pick(this.props, this.availableOptions));
-        this.options.locale.format = this.props.inputFormat;
-        this.options.opens = opens;
-
-        const value = this.getValue();
-        if (value) {
-            const parts = value.split(this.props.rangeDelimiter);
-            this.setInitialRange(parts[0], parts[1]);
-        } else if (range) {
-            this.setInitialRange(range[0], range[1]);
-        }
-
-        this.element.daterangepicker(this.options);
-        this.element.on("apply.daterangepicker", (ev, picker) => {
-            this.onChange(picker);
-        });
-
-        if (!value) {
-            this.element[0].value = this.getPlaceholder() || "";
-        }
-
-        return this;
-    }
-
-    onChange(picker = {}) {
-        try {
-            if (!this.getInput()) {
-                return this;
-            }
-
-            const { moment } = this.props;
-            const dates = this.getInput().value.split(" - ");
-            const from = moment(dates[0], this.props.inputFormat, true);
-            const to = moment(dates[1], this.props.inputFormat, true);
-
-            if (from.isValid() && to.isValid()) {
-                const fromYmd = from.format(this.props.modelFormat);
-                const toYmd = to.format(this.props.modelFormat);
-                const state = {
-                    date: {
-                        range: fromYmd + this.props.rangeDelimiter + toYmd,
-                        from: fromYmd,
-                        to: toYmd
-                    },
-                    rangeType: _.get(picker, "chosenLabel", this.state.rangeType)
-                };
-                this.setState(state, () => {
-                    this.props.onChange(this.state.date.range, this.validate);
-                });
-            }
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    unregisterListeners() {
-        this.element.off("apply.daterangepicker");
-        return this;
-    }
-
-    renderPreview() {
-        if (!this.state.date.range) {
-            return null;
-        }
-
-        const { moment } = this.props;
-        const dates = this.state.date.range.split(this.props.rangeDelimiter);
-        const from = moment(dates[0], this.props.modelFormat, true);
-        const to = moment(dates[1], this.props.modelFormat, true);
-
-        return from.format(this.props.inputFormat + " - " + to.format(this.props.inputFormat));
+        return (
+            <InputLayout
+                iconRight="calendar-alt"
+                valid={this.state.isValid}
+                className={this.props.className}
+                input={<input {...props} />}
+                label={this.props.renderLabel.call(this)}
+                description={this.props.renderDescription.call(this)}
+                info={this.props.renderInfo.call(this)}
+                validationMessage={this.props.renderValidationMessage.call(this)}
+            />
+        );
     }
 }
 
-DateRange.defaultProps = Webiny.Ui.FormComponent.extendProps({
-    inputFormat: "YYYY-MM-DD",
+Date.defaultProps = {
+    onRef: _.noop,
+    inputFormat: null,
     modelFormat: "YYYY-MM-DD",
-    rangeDelimiter: ":",
-    rangeType: "Last 30 Days", // initial date range
-    opens: "auto",
-    renderer() {
-        const omitProps = [
-            "attachToForm",
-            "attachValidators",
-            "detachFromForm",
-            "validateInput",
-            "form",
-            "renderer",
-            "name",
-            "onChange"
-        ];
-        const props = _.omit(this.props, omitProps);
-        const { Input, Icon } = props;
-        props.addonRight = <Icon icon="icon-calendar" />;
-        props.value = this.renderPreview();
-        props.onComponentDidMount = input => {
-            this.input = input;
-            this.setup();
-        };
+    options: null
+};
 
-        return <Input onRef={ref => (this.input = ref)} {...props} />;
-    }
-});
-
-export default Webiny.createComponent(DateRange, {
-    modules: ["Icon", "Input", { moment: "Webiny/Vendors/Moment" }]
+export default createComponent([Date, FormComponent], {
+    modules: ["Icon", "InputLayout", { Flatpickr: "Vendor.FlatPickr" }],
+    formComponent: true
 });
