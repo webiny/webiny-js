@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import _ from "lodash";
 
 import { i18n, createComponent } from "webiny-app";
@@ -13,7 +12,7 @@ class UsersForm extends React.Component {
     }
 
     async componentWillMount() {
-        let response = await axios.get("/security/roles", {
+        /*   let response = await axios.get("/security/roles", {
             params: {
                 _fields: "description,name,slug",
                 _perPage: 1000,
@@ -29,7 +28,7 @@ class UsersForm extends React.Component {
                 _sort: "name"
             }
         });
-        this.setState({ roleGroups: response.data.data.list });
+        this.setState({ roleGroups: response.data.data.list });*/
     }
 
     render() {

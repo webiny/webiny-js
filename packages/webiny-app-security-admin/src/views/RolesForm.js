@@ -1,6 +1,5 @@
 import React from "react";
 import _ from "lodash";
-import axios from "axios";
 import { app } from "webiny-app";
 import gql from "graphql-tag";
 
@@ -27,14 +26,14 @@ class RolesForm extends React.Component {
 
         app.graphql.query({ query });
 
-        const response = await axios.get("/security/permissions", {
+        /* const response = await axios.get("/security/permissions", {
             params: {
                 _fields: "description,name,slug",
                 _perPage: 1000,
                 _sort: "name"
             }
         });
-        this.setState({ permissions: response.data.data.list });
+        this.setState({ permissions: response.data.data.list });*/
     }
 
     render() {

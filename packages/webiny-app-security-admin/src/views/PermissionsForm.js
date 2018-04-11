@@ -138,14 +138,27 @@ class PermissionsForm extends React.Component {
 
     render() {
         const newUserPermission = !app.router.getParams("id");
-        const { AdminLayout, Form, Section, View, Grid, Tabs, Input, Button } = this.props.modules;
+        const {
+            AdminLayout,
+            Form,
+            Section,
+            View,
+            Grid,
+            Tabs,
+            Input,
+            Button,
+            Date,
+            DateTime,
+            Time,
+            DateRange
+        } = this.props.modules;
 
         return (
             <AdminLayout>
                 <Form
                     entity="SecurityPermission"
                     withRouter
-                    fields="id name slug description fields"
+                    fields="id name slug description fields createdOn customDate customTime customDateRange"
                     onSubmitSuccess="Permissions.List"
                     onCancel="Permissions.List"
                     defaultModel={{ fields: [] }}
@@ -171,6 +184,12 @@ class PermissionsForm extends React.Component {
                                 />
                                 <View.Body>
                                     <Section title={t`General`} />
+
+                                    <DateTime label={t`Created On`} name="createdOn" />
+                                    <Date label={t`Date`} name="customDate" />
+                                    <Time label={t`Time`} name="customTime" />
+                                    <DateRange label={t`DateRange`} name="customDateRange" />
+
                                     <Grid.Row>
                                         <Grid.Col all={6}>
                                             <Input
@@ -251,6 +270,10 @@ export default createComponent(PermissionsForm, {
     modules: [
         { AdminLayout: "Admin.Layout" },
         "Form",
+        "Date",
+        "DateTime",
+        "Time",
+        "DateRange",
         "Section",
         "View",
         "Grid",

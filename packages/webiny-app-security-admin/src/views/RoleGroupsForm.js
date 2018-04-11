@@ -1,6 +1,5 @@
 import React from "react";
 import { i18n, createComponent } from "webiny-app";
-import axios from "axios";
 import _ from "lodash";
 
 const t = i18n.namespace("Security.RoleGroupsForm");
@@ -12,14 +11,14 @@ class RoleGroupsForm extends React.Component {
     }
 
     async componentWillMount() {
-        const response = await axios.get("/security/roles", {
+        /*    const response = await axios.get("/security/roles", {
             params: {
                 _fields: "description,name,slug",
                 _perPage: 1000,
                 _sort: "name"
             }
         });
-        this.setState({ roles: response.data.data.list });
+        this.setState({ roles: response.data.data.list });*/
     }
 
     render() {
