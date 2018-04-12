@@ -24,6 +24,7 @@ if (!app.initialized) {
     );
     app.use(securityAdminApp());*/
     // app.use(cmsAdminApp());
+    app.use(securityAdminApp());
     app.use(project());
 
     app.configure(() => {
