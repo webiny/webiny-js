@@ -43,7 +43,7 @@ class Tags extends React.Component {
         return _.find(this.props.value, data => data === tag);
     }
 
-    addTag(e) {
+    async addTag(e) {
         if (e.ctrlKey || e.metaKey) {
             return;
         }
@@ -76,29 +76,24 @@ class Tags extends React.Component {
             tags = [];
         }
 
-        this.validateTag(input.value)
-            .then(() => {
-                tags.push(input.value);
-                input.value = "";
-                this.props.onChange(tags);
-                this.setState({ tag: "" });
-            })
-            .catch(e => {
-                this.props.onInvalidTag({ value: input.value, event: e });
-            });
+        try {
+            await this.validateTag(input.value);
+            tags.push(input.value);
+            input.value = "";
+            this.props.onChange(tags);
+            this.setState({ tag: "" });
+        } catch (e) {
+            this.props.onInvalidTag({ value: input.value, event: e });
+        }
     }
 
     validateTag(value = null) {
-        return validation.validate(value, this.props.validateTags);
+        if (typeof this.props.validate === "string") {
+            return validation.validate(value, this.props.validateTags);
+        }
     }
 
-    render() {
-        if (this.props.render) {
-            return this.props.render.call(this);
-        }
-
-        const { modules: { FormGroup }, styles } = this.props;
-
+    renderInput() {
         const input = {
             type: "text",
             className: styles.input,
@@ -109,6 +104,16 @@ class Tags extends React.Component {
             readOnly: _.get(this.props, "readOnly", false)
         };
 
+        return <input {...input} />;
+    }
+
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
+
+        const { modules: { FormGroup }, styles } = this.props;
+
         return (
             <FormGroup valid={this.state.isValid} className={this.props.className}>
                 {this.props.renderLabel.call(this)}
@@ -118,7 +123,7 @@ class Tags extends React.Component {
                             this.props.value.map((value, index) =>
                                 this.props.renderTag.call(this, { value, index })
                             )}
-                        <input {...input} />
+                        {this.renderInput()}
                     </div>
                 </div>
                 {this.props.renderDescription.call(this)}
@@ -138,7 +143,7 @@ Tags.defaultProps = {
         return (
             <div key={value} className={styles.block}>
                 <p>{value}</p>
-                <Icon icon="icon-cancel" onClick={() => this.removeTag(index)} />
+                <Icon icon="times" onClick={() => this.removeTag(index)} />
             </div>
         );
     }
