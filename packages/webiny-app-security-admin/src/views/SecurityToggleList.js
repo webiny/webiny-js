@@ -6,17 +6,21 @@ const t = i18n.namespace("Security.Permissions");
 
 class PermissionsSettings extends React.Component {
     render() {
-        const { List, Switch, Link } = this.props;
+        const { List, Switch, Link } = this.props.modules;
+
+        console.log("rerender");
         return (
-            <List.Table data={this.props.options}>
+            <List.Table data={this.props.options} key={this.props.value}>
                 <List.Table.Row>
                     <List.Table.Field style={{ width: 140 }}>
-                        {({ data }) => (
-                            <Switch
-                                value={_.find(this.props.value, { id: data.id }) !== undefined}
-                                onChange={() => this.props.onChange(data)}
-                            />
-                        )}
+                        {({ data }) => {
+                            return (
+                                <Switch
+                                    value={_.find(this.props.value, { id: data.id }) !== undefined}
+                                    onChange={() => this.props.onChange(data)}
+                                />
+                            );
+                        }}
                     </List.Table.Field>
                     <List.Table.Field label={t`Permission`}>
                         {({ data }) => (

@@ -1,123 +1,15 @@
 import React from "react";
-import FieldsList from "./PermissionsForm/FieldsList";
-import { i18n, app, createComponent } from "webiny-app";
-const t = i18n.namespace("Security.PermissionsForm");
+import { FormData } from "webiny-graphql-ui";
 
-const graph = {
-    data: {
-        query: {
-            name: "Query",
-            fields: [
-                {
-                    name: "getSecurityUser",
-                    description: "Get a single SecurityUser entity by ID."
-                },
-                {
-                    name: "listSecurityUsers",
-                    description: "Get a list of SecurityUser entities."
-                },
-                {
-                    name: "getSecurityRole",
-                    description: "Get a single SecurityRole entity by ID."
-                },
-                {
-                    name: "listSecurityRoles",
-                    description: "Get a list of SecurityRole entities."
-                },
-                {
-                    name: "getSecurityRoleGroup",
-                    description: "Get a single SecurityRoleGroup entity by ID."
-                },
-                {
-                    name: "listSecurityRoleGroups",
-                    description: "Get a list of SecurityRoleGroup entities."
-                },
-                {
-                    name: "getSecurityPermission",
-                    description: "Get a single SecurityPermission entity by ID."
-                },
-                {
-                    name: "listSecurityPermissions",
-                    description: "Get a list of SecurityPermission entities."
-                },
-                {
-                    name: "loginSecurityUser",
-                    description: null
-                },
-                {
-                    name: "getIdentity",
-                    description: null
-                },
-                {
-                    name: "sendInvoiceToUser",
-                    description: "Send email with invoice in the attachment"
-                }
-            ]
-        },
-        mutation: {
-            name: "Mutation",
-            fields: [
-                {
-                    name: "createSecurityUser",
-                    description: "Create a single SecurityUser entity."
-                },
-                {
-                    name: "updateSecurityUser",
-                    description: "Update a single SecurityUser entity."
-                },
-                {
-                    name: "deleteSecurityUser",
-                    description: "Delete a single SecurityUser entity."
-                },
-                {
-                    name: "createSecurityRole",
-                    description: "Create a single SecurityRole entity."
-                },
-                {
-                    name: "updateSecurityRole",
-                    description: "Update a single SecurityRole entity."
-                },
-                {
-                    name: "deleteSecurityRole",
-                    description: "Delete a single SecurityRole entity."
-                },
-                {
-                    name: "createSecurityRoleGroup",
-                    description: "Create a single SecurityRoleGroup entity."
-                },
-                {
-                    name: "updateSecurityRoleGroup",
-                    description: "Update a single SecurityRoleGroup entity."
-                },
-                {
-                    name: "deleteSecurityRoleGroup",
-                    description: "Delete a single SecurityRoleGroup entity."
-                },
-                {
-                    name: "createSecurityPermission",
-                    description: "Create a single SecurityPermission entity."
-                },
-                {
-                    name: "updateSecurityPermission",
-                    description: "Update a single SecurityPermission entity."
-                },
-                {
-                    name: "deleteSecurityPermission",
-                    description: "Delete a single SecurityPermission entity."
-                },
-                {
-                    name: "updateIdentity",
-                    description: null
-                }
-            ]
-        }
-    }
-};
+import { i18n, createComponent } from "webiny-app";
+const t = i18n.namespace("Security.PermissionsForm");
 
 class PermissionsForm extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            graphql: null
+        };
     }
 
     onToggleField(model, form, field) {
@@ -137,25 +29,11 @@ class PermissionsForm extends React.Component {
     }
 
     render() {
-        const newUserPermission = !app.router.getParams("id");
-        const {
-            AdminLayout,
-            Form,
-            Section,
-            View,
-            Grid,
-            Tabs,
-            Input,
-            Button,
-            Date,
-            DateTime,
-            Time,
-            DateRange
-        } = this.props.modules;
+        const { AdminLayout, Form, Section, View, Grid, Input, Button, Tags } = this.props.modules;
 
         return (
             <AdminLayout>
-                <Form
+                <FormData
                     entity="SecurityPermission"
                     withRouter
                     fields="id name slug description fields createdOn customDate customTime customDateRange"
@@ -172,95 +50,74 @@ class PermissionsForm extends React.Component {
                         );
                     }}
                 >
-                    {({ model, form }) => {
-                        return (
-                            <View.Form>
-                                <View.Header
-                                    title={
-                                        model.id
-                                            ? t`Security - Edit permission`
-                                            : t`Security - Create permission`
-                                    }
-                                />
-                                <View.Body>
-                                    <Section title={t`General`} />
-
-                                    <DateTime label={t`Created On`} name="createdOn" />
-                                    <Date label={t`Date`} name="customDate" />
-                                    <Time label={t`Time`} name="customTime" />
-                                    <DateRange label={t`DateRange`} name="customDateRange" />
-
-                                    <Grid.Row>
-                                        <Grid.Col all={6}>
-                                            <Input
-                                                label={t`Name`}
-                                                name="name"
-                                                validate="required"
-                                            />
-                                        </Grid.Col>
-                                        <Grid.Col all={6}>
-                                            <Input label={t`Slug`} name="slug" />
-                                        </Grid.Col>
-                                    </Grid.Row>
-                                    <Grid.Row>
-                                        <Grid.Col all={12}>
-                                            <Input
-                                                label={t`Description`}
-                                                name="description"
-                                                validate="required"
-                                            />
-                                            <Tabs>
-                                                <Tabs.Tab label={t`Queries`}>
-                                                    {(newUserPermission || model.id) && (
-                                                        <FieldsList
-                                                            model={model}
-                                                            fields={graph.data.query.fields}
-                                                            onToggleField={field =>
-                                                                this.onToggleField(
-                                                                    model,
-                                                                    form,
-                                                                    field
-                                                                )
-                                                            }
+                    {({ model, onSubmit, invalidFields }) => (
+                        <Form model={model} onSubmit={onSubmit} invalidFields={invalidFields}>
+                            {({ model, form, Bind }) => {
+                                return (
+                                    <View.Form>
+                                        <View.Header
+                                            title={
+                                                model.id
+                                                    ? t`Security - Edit permission`
+                                                    : t`Security - Create permission`
+                                            }
+                                        />
+                                        <View.Body>
+                                            <Section title={t`General`} />
+                                            <Grid.Row>
+                                                <Grid.Col all={6}>
+                                                    <Bind>
+                                                        <Input
+                                                            label={t`Name`}
+                                                            name="name"
+                                                            validate="required"
                                                         />
-                                                    )}
-                                                </Tabs.Tab>
-                                                <Tabs.Tab label={t`Mutations`}>
-                                                    {(newUserPermission || model.id) && (
-                                                        <FieldsList
-                                                            model={model}
-                                                            fields={graph.data.mutation.fields}
-                                                            onToggleField={field =>
-                                                                this.onToggleField(
-                                                                    model,
-                                                                    form,
-                                                                    field
-                                                                )
-                                                            }
+                                                    </Bind>
+                                                </Grid.Col>
+                                                <Grid.Col all={6}>
+                                                    <Bind>
+                                                        <Input label={t`Slug`} name="slug" />
+                                                    </Bind>
+                                                </Grid.Col>
+                                            </Grid.Row>
+                                            <Grid.Row>
+                                                <Grid.Col all={12}>
+                                                    <Bind>
+                                                        <Input
+                                                            label={t`Description`}
+                                                            name="description"
+                                                            validate="required"
                                                         />
-                                                    )}
-                                                </Tabs.Tab>
-                                            </Tabs>
-                                        </Grid.Col>
-                                    </Grid.Row>
-                                </View.Body>
-                                <View.Footer>
-                                    <Button
-                                        type="default"
-                                        onClick={form.cancel}
-                                        label={t`Go back`}
-                                    />
-                                    <Button
-                                        type="primary"
-                                        onClick={form.submit}
-                                        label={t`Save permission`}
-                                        align="right"
-                                    />
-                                </View.Footer>
-                            </View.Form>
-                        );
-                    }}
-                </Form>
+                                                    </Bind>
+                                                </Grid.Col>
+                                            </Grid.Row>
+                                            <Grid.Row>
+                                                <Grid.Col all={12}>
+                                                    <Bind>
+                                                        <Tags label={t`Scope`} name="scope" />
+                                                    </Bind>
+                                                </Grid.Col>
+                                            </Grid.Row>
+                                        </View.Body>
+                                        <View.Footer>
+                                            <Button
+                                                type="default"
+                                                onClick={form.cancel}
+                                                label={t`Go back`}
+                                            />
+                                            <Button
+                                                type="primary"
+                                                onClick={form.submit}
+                                                label={t`Save permission`}
+                                                align="right"
+                                            />
+                                        </View.Footer>
+                                    </View.Form>
+                                );
+                            }}
+                        </Form>
+                    )}
+                </FormData>
             </AdminLayout>
         );
     }
@@ -270,15 +127,11 @@ export default createComponent(PermissionsForm, {
     modules: [
         { AdminLayout: "Admin.Layout" },
         "Form",
-        "Date",
-        "DateTime",
-        "Time",
-        "DateRange",
         "Section",
         "View",
         "Grid",
-        "Tabs",
         "Input",
+        "Tags",
         "Button"
     ]
 });

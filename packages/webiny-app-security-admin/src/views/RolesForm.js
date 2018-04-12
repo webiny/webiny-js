@@ -18,22 +18,17 @@ class RolesForm extends React.Component {
                 listSecurityPermissions {
                     list {
                         id
-                        firstName
+                        description
+                        name
+                        slug
                     }
                 }
             }
         `;
 
-        app.graphql.query({ query });
-
-        /* const response = await axios.get("/security/permissions", {
-            params: {
-                _fields: "description,name,slug",
-                _perPage: 1000,
-                _sort: "name"
-            }
+        app.graphql.query({ query }).then(response => {
+            this.setState({ permissions: response.data.listSecurityPermissions.list });
         });
-        this.setState({ permissions: response.data.data.list });*/
     }
 
     render() {
@@ -109,6 +104,7 @@ class RolesForm extends React.Component {
                                                 state.model.permissions.push({ id: permission.id });
                                             }
 
+                                            console.log("setao se state");
                                             return state;
                                         });
                                     }}
