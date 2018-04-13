@@ -24,10 +24,6 @@ class GoogleMap extends React.Component {
     }
 
     componentDidMount() {
-        if (this.props.attachToForm) {
-            this.props.attachToForm(this);
-        }
-
         if (!window.google) {
             return document
                 .loadScript("https://maps.googleapis.com/maps/api/js?key=" + this.props.apiKey)

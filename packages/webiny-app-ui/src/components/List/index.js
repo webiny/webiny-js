@@ -9,7 +9,6 @@ import Header from "./Components/Table/Header";
 import Footer from "./Components/Table/Footer";
 import Filters from "./Components/Filters";
 import FormFilters from "./Components/FormFilters";
-import Loader from "./Components/ListLoader";
 import Pagination from "./Components/Pagination";
 import MultiActions from "./Components/MultiActions";
 import MultiAction from "./Components/MultiActions/MultiAction";
@@ -44,8 +43,7 @@ _.assign(List, {
     DeleteMultiAction,
     Filters,
     FormFilters,
-    Pagination,
-    Loader
+    Pagination
 });
 
 _.assign(Table, {

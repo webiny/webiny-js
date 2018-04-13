@@ -34,9 +34,6 @@ class Tabs extends React.Component {
 
     componentWillMount() {
         this.setState({ selected: app.router.getParams('tab') || this.props.selected || 0 });
-        if (this.props.attachToForm) {
-            this.props.attachToForm(this);
-        }
     }
 
     componentDidMount() {

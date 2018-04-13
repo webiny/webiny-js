@@ -11,12 +11,6 @@ class Input extends React.Component {
         this.focus = this.focus.bind(this);
     }
 
-    componentDidMount() {
-        if (this.props.attachToForm) {
-            this.props.attachToForm(this);
-        }
-    }
-
     onKeyDown({ event }) {
         if (event.metaKey || event.ctrlKey) {
             return;

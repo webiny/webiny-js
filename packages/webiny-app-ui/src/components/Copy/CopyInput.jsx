@@ -12,10 +12,6 @@ class CopyInput extends React.Component {
     }
 
     componentDidMount() {
-        if (this.props.attachToForm) {
-            this.props.attachToForm(this);
-        }
-
         this.interval = setInterval(() => {
             if (this.button) {
                 clearInterval(this.interval);

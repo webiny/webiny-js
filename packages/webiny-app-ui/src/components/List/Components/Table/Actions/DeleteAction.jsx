@@ -34,7 +34,7 @@ class DeleteAction extends React.Component {
                         cancel: $this.props.cancelButtonLabel,
                         message,
                         onComplete: () => {
-                            actions.reload();
+                            actions.loadRecords();
                         },
                         onConfirm: () => {
                             $this.props.onConfirm.call($this, { data, actions, dialog });
@@ -57,7 +57,7 @@ DeleteAction.defaultProps = {
     hide: _.noop,
     afterDelete: _.noop,
     onConfirm({ data, actions }) {
-        return actions.delete(data.id, false).then(res => {
+        return actions.deleteRecord(data.id).then(res => {
             return Promise.resolve(this.props.afterDelete(res)).then(() => res);
         });
     }

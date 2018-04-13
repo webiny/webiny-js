@@ -18,9 +18,9 @@ class FormFilters extends React.Component {
         this.props.onFilter(filter);
     }
 
-    submit({ model, form }) {
+    submit(model) {
         if (typeof this.props.onSubmit === "function") {
-            this.props.onSubmit({ model, form, apply: this.applyFilter });
+            this.props.onSubmit({ model, apply: this.applyFilter });
         } else {
             this.applyFilter(model);
         }
@@ -35,13 +35,13 @@ class FormFilters extends React.Component {
 
         return (
             <Form
-                defaultModel={this.props.defaultModel}
                 model={this.props.filter}
                 onSubmit={this.submit}
             >
                 {({ form }) => this.props.children({
                     apply: () => () => form.submit(),
-                    reset: () => () => this.applyFilter({})
+                    reset: () => () => this.applyFilter({}),
+                    Bind: form.registerComponent
                 })}
             </Form>
         );

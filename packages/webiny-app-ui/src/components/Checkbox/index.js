@@ -17,12 +17,6 @@ class Checkbox extends React.Component {
         this.isChecked = this.isChecked.bind(this);
     }
 
-    componentDidMount() {
-        if (this.props.attachToForm) {
-            this.props.attachToForm(this);
-        }
-    }
-
     onChange(e, value = e.target.checked) {
         if (this.props.optionIndex !== null) {
             this.props.onChange(this.props.optionIndex, value);

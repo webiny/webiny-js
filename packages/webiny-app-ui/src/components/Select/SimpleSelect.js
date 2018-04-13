@@ -1,18 +1,24 @@
-import React from 'react';
-import _ from 'lodash';
-import $ from 'jquery';
-import { createComponent } from 'webiny-app';
-import ReactDOMServer from 'react-dom/server';
-
+import React from "react";
+import _ from "lodash";
+import $ from "jquery";
+import { createComponent } from "webiny-app";
+import ReactDOMServer from "react-dom/server";
 
 class SimpleSelect extends React.Component {
-
     constructor(props) {
         super(props);
 
         this.select2 = null;
         this.options = null;
-        ['getConfig', 'getValue', 'triggerChange', 'getSelect2InputElement', 'itemRenderer', 'getCurrentData', 'getPreviousData'].map(m => this[m] = this[m].bind(this));
+        [
+            "getConfig",
+            "getValue",
+            "triggerChange",
+            "getSelect2InputElement",
+            "itemRenderer",
+            "getCurrentData",
+            "getPreviousData"
+        ].map(m => (this[m] = this[m].bind(this)));
     }
 
     componentDidMount() {
@@ -35,11 +41,13 @@ class SimpleSelect extends React.Component {
             this.select2.empty();
             this.getSelect2InputElement().select2(this.getConfig(this.props));
             setTimeout(() => {
-                this.select2.val(this.getValue()).trigger('change');
+                this.select2.val(this.getValue()).trigger("change");
             }, 100);
         }
 
-        $(this.dom).find('select').prop('disabled', !!this.props.disabled);
+        $(this.dom)
+            .find("select")
+            .prop("disabled", !!this.props.disabled);
 
         if (value !== null && !inPossibleValues && possibleValues.length > 0) {
             this.triggerChange(null);
@@ -47,41 +55,43 @@ class SimpleSelect extends React.Component {
         }
 
         if (value !== null && inPossibleValues) {
-            this.select2.val(value).trigger('change');
+            this.select2.val(value).trigger("change");
             return;
         }
 
         // Select first value if model is empty and "autoSelectFirstOptionOption" is enabled
         if (value === null && this.props.autoSelectFirstOption) {
-            const firstValue = _.get(this.props.options, '0.id');
+            const firstValue = _.get(this.props.options, "0.id");
             if (firstValue) {
                 this.triggerChange(firstValue);
             }
             return;
         }
 
-        this.select2.val('').trigger('change');
+        this.select2.val("").trigger("change");
     }
 
     instantiate() {
         if (!this.select2) {
             this.select2 = this.getSelect2InputElement().select2(this.getConfig(this.props));
-            this.select2.on('select2:select', e => {
+            this.select2.on("select2:select", e => {
                 this.triggerChange(e.target.value);
             });
-            this.select2.on('select2:unselect', () => {
+            this.select2.on("select2:unselect", () => {
                 this.triggerChange(null);
             });
-            this.select2.val(this.getValue()).trigger('change');
+            this.select2.val(this.getValue()).trigger("change");
 
             if (this.props.dropdownClassName) {
-                setTimeout(() => this.select2.data('select2').$dropdown.addClass(this.props.dropdownClassName));
+                setTimeout(() =>
+                    this.select2.data("select2").$dropdown.addClass(this.props.dropdownClassName)
+                );
             }
         }
     }
 
     getSelect2InputElement() {
-        return $(this.dom).find('select');
+        return $(this.dom).find("select");
     }
 
     getValue() {
@@ -90,7 +100,7 @@ class SimpleSelect extends React.Component {
             return value;
         }
 
-        return _.isObject(value) ? value.id : '' + value;
+        return _.isObject(value) ? value.id : "" + value;
     }
 
     getCurrentData() {
@@ -115,7 +125,9 @@ class SimpleSelect extends React.Component {
         if (this.props.useDataAsValue && value) {
             const selectedOption = _.find(this.options, { id: value });
             if (!selectedOption.data) {
-                console.warn('Warning: attempting to use item data but data is not present in option items!');
+                console.warn(
+                    "Warning: attempting to use item data but data is not present in option items!"
+                );
             } else {
                 value = selectedOption.data;
             }
@@ -138,14 +150,14 @@ class SimpleSelect extends React.Component {
 
     getOptionText(text) {
         if (!text) {
-            return '';
+            return "";
         }
 
-        if (text.startsWith('<')) {
+        if (text.startsWith("<")) {
             return $(text);
         }
 
-        return text || '';
+        return text || "";
     }
 
     /**
@@ -174,13 +186,13 @@ class SimpleSelect extends React.Component {
             minimumInputLength: props.minimumInputLength,
             placeholder: props.placeholder,
             allowClear: props.allowClear,
-            templateResult: item => this.itemRenderer(item, 'renderOption'),
-            templateSelection: item => this.itemRenderer(item, 'renderSelected')
+            templateResult: item => this.itemRenderer(item, "renderOption"),
+            templateSelection: item => this.itemRenderer(item, "renderSelected")
         };
 
         if (_.isFunction(this.props.matcher)) {
             config.matcher = (params, data) => {
-                const term = (params.term || '').trim();
+                const term = (params.term || "").trim();
                 if (!term || term.length === 0) {
                     return data;
                 }
@@ -189,19 +201,21 @@ class SimpleSelect extends React.Component {
         }
 
         if (this.props.dropdownParent) {
-            config['dropdownParent'] = $(this.dom).find(props.dropdownParent);
+            config["dropdownParent"] = $(this.dom).find(props.dropdownParent);
         }
 
         if (!this.options || !_.isEqual(props.options, this.options) || !this.select2) {
             // Prepare options
             const options = [];
             _.each(props.options, option => {
+                option.id = option.value;
+                option.text = option.label;
                 if (React.isValidElement(option.text)) {
                     option.text = ReactDOMServer.renderToStaticMarkup(option.text);
                 }
                 options.push(option);
             });
-            config['data'] = this.options = options;
+            config["data"] = this.options = options;
         }
 
         return config;
@@ -213,10 +227,10 @@ class SimpleSelect extends React.Component {
         }
 
         return (
-            <div className="inputGroup" ref={ref => this.dom = ref}>
-                <select style={{ 'width': '100%' }}/>
+            <div className="inputGroup" ref={ref => (this.dom = ref)}>
+                <select style={{ width: "100%" }} />
 
-                <div className="dropdown-wrapper"/>
+                <div className="dropdown-wrapper" />
             </div>
         );
     }
@@ -231,7 +245,7 @@ SimpleSelect.defaultProps = {
     minimumInputLength: 0,
     minimumResultsForSearch: 15,
     useDataAsValue: false,
-    dropdownParent: '.dropdown-wrapper',
+    dropdownParent: ".dropdown-wrapper",
     dropdownClassName: null,
     renderOption: null,
     renderSelected: null,
@@ -239,5 +253,5 @@ SimpleSelect.defaultProps = {
 };
 
 export default createComponent(SimpleSelect, {
-    modules: ['Vendor.Select2']
+    modules: ["Vendor.Select2"]
 });

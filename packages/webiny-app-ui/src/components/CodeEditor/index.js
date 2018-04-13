@@ -27,10 +27,6 @@ class CodeEditor extends React.Component {
     }
 
     componentDidMount() {
-        if (this.props.attachToForm) {
-            this.props.attachToForm(this);
-        }
-
         this.codeMirror = this.props.CodeMirror.fromTextArea(
             this.getTextareaElement(),
             this.options

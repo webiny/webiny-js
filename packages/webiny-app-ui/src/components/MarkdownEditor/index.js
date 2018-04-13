@@ -23,10 +23,6 @@ class MarkdownEditor extends React.Component {
     }
 
     componentDidMount() {
-        if (this.props.attachToForm) {
-            this.props.attachToForm(this);
-        }
-
         const mdConfig = {
             autoDownloadFontAwesome: false,
             element: this.getTextareaElement(),
