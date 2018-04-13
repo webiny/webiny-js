@@ -5,12 +5,10 @@ export default (component, key, callback, defaultValue = null) => {
         return _.get(component.state, key, defaultValue);
     };
 
-    const createStateKeySetter = () => {
-        return function stateKeySetter(value, inlineCallback = _.noop) {
+    return {
+        value: getValue(key),
+        onChange: (value, inlineCallback = _.noop) => {
             return new Promise(resolve => {
-                if (typeof value === "undefined") {
-                    value = false;
-                }
                 const oldValue = getValue(key);
 
                 let promise = Promise.resolve(value);
@@ -21,22 +19,20 @@ export default (component, key, callback, defaultValue = null) => {
                 }
 
                 return promise.then(value => {
-                    let partialState = component.state;
-                    _.set(partialState, key, value);
-                    component.setState(partialState, () => {
-                        if (_.isFunction(inlineCallback)) {
-                            inlineCallback(value, oldValue);
+                    component.setState(
+                        state => {
+                            _.set(state, key, value);
+                            return state;
+                        },
+                        () => {
+                            if (_.isFunction(inlineCallback)) {
+                                inlineCallback(value, oldValue);
+                            }
+                            resolve(value);
                         }
-                        partialState = null;
-                        resolve(value);
-                    });
+                    );
                 });
             });
-        };
-    };
-
-    return {
-        value: getValue(key),
-        onChange: createStateKeySetter()
+        }
     };
 };
