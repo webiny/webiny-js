@@ -1,6 +1,6 @@
 import React from "react";
 import { createComponent } from "webiny-app";
-import { FormData, FormError, OptionsData } from "webiny-graphql-ui";
+import { GraphQLFormData, GraphQLFormError, GraphQLOptionsData } from "webiny-data-ui";
 
 class View extends React.Component {
     render() {
@@ -29,7 +29,7 @@ class View extends React.Component {
         );
 
         return (
-            <FormData
+            <GraphQLFormData
                 entity="SecurityUser"
                 withRouter
                 fields={"id firstName lastName email enabled"}
@@ -41,7 +41,7 @@ class View extends React.Component {
                                 <View.Header title={"New form implementation"} />
                                 {error && (
                                     <View.Error>
-                                        <FormError error={error} />
+                                        <GraphQLFormError error={error} />
                                     </View.Error>
                                 )}
                                 <View.Body>
@@ -70,10 +70,10 @@ class View extends React.Component {
                                                     validators="email"
                                                 />
                                             </Bind>
-                                            <OptionsData
+                                            <GraphQLOptionsData
                                                 entity={"SecurityUsers"}
                                                 fields={"id email"}
-                                                textAttr={"email"}
+                                                labelField={"email"}
                                                 perPage={5}
                                                 filter={{ enabled: model.enabled }}
                                             >
@@ -87,7 +87,7 @@ class View extends React.Component {
                                                         />
                                                     </Bind>
                                                 )}
-                                            </OptionsData>
+                                            </GraphQLOptionsData>
                                             <ChangeConfirm message="Are you sure you want to toggle this switch?">
                                                 {({ showConfirmation }) => (
                                                     <Bind beforeChange={showConfirmation}>
@@ -133,7 +133,7 @@ class View extends React.Component {
                         )}
                     </Form>
                 )}
-            </FormData>
+            </GraphQLFormData>
         );
     }
 }
