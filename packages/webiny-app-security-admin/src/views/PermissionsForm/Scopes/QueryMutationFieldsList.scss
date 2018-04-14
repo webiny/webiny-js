@@ -8,6 +8,15 @@
       cursor: pointer;
       border-bottom: 1px solid #8080800a;
       border-left: 4px solid transparent;
+      .listItemWrapper {
+        display: inline-block;
+        vertical-align: top;
+        &.checkbox {
+          label {
+            margin: 10px 4px 0 6px;
+          }
+        }
+      }
       &.selected {
         border-left: 4px solid #28afa6;
         .name {

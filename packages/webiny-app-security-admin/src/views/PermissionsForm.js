@@ -1,48 +1,11 @@
 import React from "react";
 import { FormData } from "webiny-graphql-ui";
-import query from "./permissionsFormQuery";
 import Scopes from "./PermissionsForm/Scopes";
-
-import fetch from "isomorphic-fetch";
 
 import { i18n, createComponent } from "webiny-app";
 const t = i18n.namespace("Security.PermissionsForm");
 
 class PermissionsForm extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            graphql: null
-        };
-
-        fetch("http://localhost:9000/graphql", {
-            method: "post",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query })
-        }).then(response => {
-            this.setState({ graphql: response.json() });
-            setTimeout(() => {
-                console.log(this.state.graphql);
-            }, 500);
-        });
-    }
-
-    onToggleField(model, form, field) {
-        form.setState(state => {
-            if (!state.model.fields) {
-                state.model.fields = [];
-            }
-
-            let fieldIndex = state.model.fields.indexOf(field);
-            if (fieldIndex >= 0) {
-                state.model.fields.splice(fieldIndex, 1);
-            } else {
-                state.model.fields.push(field);
-            }
-            return state;
-        });
-    }
-
     render() {
         const { AdminLayout, Form, Section, View, Grid, Input, Button } = this.props.modules;
 
@@ -51,7 +14,7 @@ class PermissionsForm extends React.Component {
                 <FormData
                     entity="SecurityPermission"
                     withRouter
-                    fields="id name slug description fields createdOn"
+                    fields="id name slug description scope createdOn"
                     onSubmitSuccess="Permissions.List"
                     onCancel="Permissions.List"
                     defaultModel={{ scope: {} }}
