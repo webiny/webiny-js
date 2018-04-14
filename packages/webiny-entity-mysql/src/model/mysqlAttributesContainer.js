@@ -8,7 +8,8 @@ import {
     DateAttribute,
     ModelAttribute,
     ModelsAttribute,
-    EntitiesAttribute
+    EntitiesAttribute,
+    ObjectAttribute
 } from "./attributes";
 
 /**
@@ -31,6 +32,12 @@ class MySQLAttributesContainer extends EntityAttributesContainer {
     array(): ArrayAttribute {
         const model = this.getParentModel();
         model.setAttribute(this.name, new ArrayAttribute(this.name, this));
+        return model.getAttribute(this.name);
+    }
+
+    object(): ObjectAttribute {
+        const model = this.getParentModel();
+        model.setAttribute(this.name, new ObjectAttribute(this.name, this));
         return model.getAttribute(this.name);
     }
 
