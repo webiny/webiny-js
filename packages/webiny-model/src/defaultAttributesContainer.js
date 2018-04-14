@@ -10,7 +10,8 @@ import {
     DateAttribute,
     DynamicAttribute,
     ModelAttribute,
-    ModelsAttribute
+    ModelsAttribute,
+    ObjectAttribute
 } from "./attributes";
 
 /**
@@ -38,6 +39,12 @@ class DefaultAttributesContainer extends AttributesContainer {
     boolean(): BooleanAttribute {
         const model = this.getParentModel();
         model.setAttribute(this.name, new BooleanAttribute(this.name, this));
+        return model.getAttribute(this.name);
+    }
+
+    date(): DateAttribute {
+        const model = this.getParentModel();
+        model.setAttribute(this.name, new DateAttribute(this.name, this));
         return model.getAttribute(this.name);
     }
 
@@ -71,9 +78,9 @@ class DefaultAttributesContainer extends AttributesContainer {
         return parent.getAttribute(this.name);
     }
 
-    date(): DateAttribute {
+    object(): ObjectAttribute {
         const model = this.getParentModel();
-        model.setAttribute(this.name, new DateAttribute(this.name, this));
+        model.setAttribute(this.name, new ObjectAttribute(this.name, this));
         return model.getAttribute(this.name);
     }
 }

@@ -13,3 +13,4 @@ export { default as DynamicAttribute } from "./attributes/dynamicAttribute";
 export { default as DateAttribute } from "./attributes/dateAttribute";
 export { default as ModelAttribute } from "./attributes/modelAttribute";
 export { default as ModelsAttribute } from "./attributes/modelsAttribute";
+export { default as ObjectAttribute } from "./attributes/objectAttribute";
