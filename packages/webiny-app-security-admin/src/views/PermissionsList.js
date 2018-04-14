@@ -1,4 +1,5 @@
-import React from "react";
+import React, { Fragment } from "react";
+import { GraphQLListData } from "webiny-data-ui";
 
 // import ExportPermissionModal from "./Modal/ExportModal";
 // import ImportPermissionModal from "./Modal/ImportModal";
@@ -17,7 +18,8 @@ class PermissionsList extends React.Component {
             AdminLayout,
             Grid,
             Icon,
-            Input
+            Input,
+            Loader
         } = this.props.modules;
         const Table = List.Table;
 
@@ -54,63 +56,75 @@ class PermissionsList extends React.Component {
                                     </ButtonGroup>
                                 </View.Header>
                                 <View.Body>
-                                    <List
+                                    <GraphQLListData
                                         withRouter
                                         entity="SecurityPermission"
                                         fields="id name slug description createdOn"
                                         search={{ fields: ["name", "slug"] }}
                                     >
-                                        <List.FormFilters>
-                                            {({ apply }) => (
-                                                <Grid.Row>
-                                                    <Grid.Col all={12}>
-                                                        <Input
-                                                            name="search.query"
-                                                            placeholder={t`Search by name or slug`}
-                                                            onEnter={apply()}
-                                                        />
-                                                    </Grid.Col>
-                                                </Grid.Row>
-                                            )}
-                                        </List.FormFilters>
-                                        <Table>
-                                            <Table.Row>
-                                                <Table.Field
-                                                    name="name"
-                                                    label={t`Name`}
-                                                    sort="name"
-                                                >
-                                                    {({ data }) => (
-                                                        <span>
-                                                            <Link
-                                                                route="Permissions.Edit"
-                                                                params={{ id: data.id }}
+                                        {({ loading, ...listProps }) => (
+                                            <Fragment>
+                                                {loading && <Loader />}
+
+                                                <List {...listProps}>
+                                                    <List.FormFilters>
+                                                        {({ apply }) => (
+                                                            <Grid.Row>
+                                                                <Grid.Col all={12}>
+                                                                    <Input
+                                                                        name="search.query"
+                                                                        placeholder={t`Search by name or slug`}
+                                                                        onEnter={apply()}
+                                                                    />
+                                                                </Grid.Col>
+                                                            </Grid.Row>
+                                                        )}
+                                                    </List.FormFilters>
+                                                    <Table>
+                                                        <Table.Row>
+                                                            <Table.Field
+                                                                name="name"
+                                                                label={t`Name`}
+                                                                sort="name"
                                                             >
-                                                                <strong>{data.name}</strong>
-                                                            </Link>
-                                                            <br />
-                                                            {data.description}
-                                                        </span>
-                                                    )}
-                                                </Table.Field>
-                                                <Table.Field
-                                                    name="slug"
-                                                    label={t`Slug`}
-                                                    sort="slug"
-                                                />
-                                                <Table.Actions>
-                                                    <Table.EditAction route="Permissions.Edit" />
-                                                    <Table.Action
-                                                        label={t`Export`}
-                                                        icon="download"
-                                                        onClick={showView("exportModal")}
-                                                    />
-                                                    <Table.DeleteAction />
-                                                </Table.Actions>
-                                            </Table.Row>
-                                        </Table>
-                                        <List.Pagination />
-                                    </List>
+                                                                {({ data }) => (
+                                                                    <span>
+                                                                        <Link
+                                                                            route="Permissions.Edit"
+                                                                            params={{ id: data.id }}
+                                                                        >
+                                                                            <strong>
+                                                                                {data.name}
+                                                                            </strong>
+                                                                        </Link>
+                                                                        <br />
+                                                                        {data.description}
+                                                                    </span>
+                                                                )}
+                                                            </Table.Field>
+                                                            <Table.Field
+                                                                name="slug"
+                                                                label={t`Slug`}
+                                                                sort="slug"
+                                                            />
+                                                            <Table.Actions>
+                                                                <Table.EditAction route="Permissions.Edit" />
+                                                                <Table.Action
+                                                                    label={t`Export`}
+                                                                    icon="download"
+                                                                    onClick={showView(
+                                                                        "exportModal"
+                                                                    )}
+                                                                />
+                                                                <Table.DeleteAction />
+                                                            </Table.Actions>
+                                                        </Table.Row>
+                                                    </Table>
+                                                    <List.Pagination />
+                                                </List>
+                                            </Fragment>
+                                        )}
+                                    </GraphQLListData>
                                 </View.Body>
                             </View.List>
                         )}
@@ -153,6 +167,7 @@ export default createComponent(PermissionsList, {
         "Grid",
         "Input",
         "Button",
+        "Loader",
         "ButtonGroup"
     ]
 });

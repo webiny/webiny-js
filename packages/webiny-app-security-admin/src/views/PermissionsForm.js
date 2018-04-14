@@ -1,5 +1,5 @@
 import React from "react";
-import { FormData } from "webiny-graphql-ui";
+import { GraphQLFormData } from "webiny-data-ui";
 import Scopes from "./PermissionsForm/Scopes";
 
 import { i18n, createComponent } from "webiny-app";
@@ -11,7 +11,7 @@ class PermissionsForm extends React.Component {
 
         return (
             <AdminLayout>
-                <FormData
+                <GraphQLFormData
                     entity="SecurityPermission"
                     withRouter
                     fields="id name slug description scope createdOn"
@@ -94,7 +94,7 @@ class PermissionsForm extends React.Component {
                             }}
                         </Form>
                     )}
-                </FormData>
+                </GraphQLFormData>
             </AdminLayout>
         );
     }

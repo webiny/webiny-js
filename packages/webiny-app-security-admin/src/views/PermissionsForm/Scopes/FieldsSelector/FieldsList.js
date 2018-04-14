@@ -33,9 +33,9 @@ class FieldsList extends React.Component {
                     let fieldPath = `${initialPath}.${field.name}`;
                     const active = _.has(this.props.model.scope, fieldPath);
                     return (
-                        <li key={field.name}>
+                        <li key={fieldPath}>
                             <div
-                                className={classNames("animated fadeIn", css.field, {
+                                className={classNames(css.field, {
                                     [css.active]: active
                                 })}
                                 onClick={event => {

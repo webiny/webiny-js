@@ -14,7 +14,10 @@ class Scopes extends React.Component {
         super(props);
         this.state = {
             schema: null,
-            selectedQueryMutationField: null
+            queriesAndMutations: {
+                list: null,
+                selected: null
+            }
         };
 
         fetch("http://localhost:9000/graphql", {
@@ -23,14 +26,20 @@ class Scopes extends React.Component {
             body: JSON.stringify({ query })
         }).then(async response => {
             const data = await response.json();
-            this.setState({ schema: data.data.__schema });
-        });
-    }
+            const schema = data.data.__schema;
+            const filteredQueriesAndMutations = _.merge(
+                _.find(schema.types, { name: "Query" }).fields,
+                _.find(schema.types, { name: "Mutation" }).fields
+            );
 
-    getQueriesAndMutations() {
-        const queries = _.find(this.state.schema.types, { name: "Query" }).fields;
-        const mutations = _.find(this.state.schema.types, { name: "Mutation" }).fields;
-        return queries.concat(mutations);
+            this.setState({
+                schema,
+                queriesAndMutations: {
+                    list: filteredQueriesAndMutations,
+                    selected: filteredQueriesAndMutations[0]
+                }
+            });
+        });
     }
 
     render() {
@@ -49,10 +58,13 @@ class Scopes extends React.Component {
                         <QueryMutationFieldsList
                             model={this.props.model}
                             schema={this.state.schema}
-                            queriesAndMutations={this.getQueriesAndMutations()}
-                            selected={this.state.selectedQueryMutationField}
+                            queriesAndMutations={this.state.queriesAndMutations.list}
+                            selected={this.state.queriesAndMutations.selected}
                             onSelect={selectedQueryMutationField => {
-                                this.setState({ selectedQueryMutationField });
+                                this.setState(state => {
+                                    state.queriesAndMutations.selected = selectedQueryMutationField;
+                                    return state;
+                                });
                             }}
                             onToggle={selectedQueryMutationField => {
                                 this.props.form.setState(state => {
@@ -86,7 +98,7 @@ class Scopes extends React.Component {
                         <FieldsSelector
                             model={this.props.model}
                             schema={this.state.schema}
-                            selectedQueryMutationField={this.state.selectedQueryMutationField}
+                            selectedQueryMutationField={this.state.queriesAndMutations.selected}
                             onToggle={path => {
                                 this.props.form.setState(state => {
                                     if (_.get(state.model, "scope." + path)) {
@@ -123,6 +135,9 @@ class Scopes extends React.Component {
     }
 }
 
-Scopes.defaultProps = {};
+Scopes.defaultProps = {
+    model: null,
+    form: null
+};
 
 export default createComponent(Scopes, { modules: ["Grid"] });

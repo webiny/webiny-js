@@ -31,10 +31,6 @@ class FieldsSelector extends React.Component {
     }
 
     render() {
-        if (!this.props.selectedQueryMutationField) {
-            return <span>baja</span>;
-        }
-
         return (
             <div className={css.fieldsSelector}>
                 <FieldsList
