@@ -39,6 +39,10 @@ export default (
         type = new GraphQLList(GraphQLJSON);
     }
 
+    if (attr instanceof attrs.ObjectAttribute) {
+        type = GraphQLJSON;
+    }
+
     if (attr instanceof ModelAttribute) {
         const model = attr.getModelInstance();
         const typeName = model.classId;
