@@ -243,6 +243,10 @@ const app = () => {
                 factory: () => import("./components/RadioGroup")
             },
             {
+                name: "Scrollbar",
+                factory: () => import("./components/Scrollbar")
+            },
+            {
                 name: "Search",
                 factory: () => import("./components/Search")
             },
@@ -307,6 +311,10 @@ const app = () => {
                 factory: () => import("./vendor/CodeMirror")
             },
             {
+                name: "Vendor.FlatPickr",
+                factory: () => import("./vendor/FlatPickr")
+            },
+            {
                 name: "Vendor.OwlCarousel",
                 factory: () => import("./vendor/OwlCarousel")
             },
@@ -315,12 +323,12 @@ const app = () => {
                 factory: () => import("./vendor/Quill")
             },
             {
-                name: "Vendor.Select2",
-                factory: () => import("./vendor/Select2")
+                name: "Vendor.ReactCustomScrollbars",
+                factory: () => import("./vendor/ReactCustomScrollbars")
             },
             {
-                name: "Vendor.FlatPickr",
-                factory: () => import("./vendor/FlatPickr")
+                name: "Vendor.Select2",
+                factory: () => import("./vendor/Select2")
             }
         ]);
 
