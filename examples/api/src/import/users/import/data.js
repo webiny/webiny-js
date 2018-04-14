@@ -1,5 +1,6 @@
 import { User, Role, RoleGroup, Permission } from "webiny-api-security";
 import { Page, Revision, Category } from "webiny-api-cms";
+import { managePermissions, manageUsers } from "./scopes";
 
 export default [
     () => {
@@ -10,18 +11,24 @@ export default [
                     name: "Manage users",
                     slug: "manage-users",
                     description: "Manage system users",
-                    fields: [
-                        "listSecurityUsers",
-                        "createSecurityUser",
-                        "getSecurityUser",
-                        "updateSecurityUser"
-                    ]
+                    scope: manageUsers
+                },
+                {
+                    name: "Manage permissions",
+                    slug: "manage-permissions",
+                    description: "Manage system permissions.",
+                    scope: managePermissions
                 },
                 {
                     name: "Write blog post",
                     slug: "write-blog-post",
                     description: "Allow user to create and edit blog posts",
-                    fields: ["listCmsPages", "createCmsPage", "getCmsPage", "updateCmsPage"]
+                    scope: {
+                        listCmsPages: {},
+                        createCmsPage: {},
+                        getCmsPage: {},
+                        updateCmsPage: {}
+                    }
                 }
             ]
         };
