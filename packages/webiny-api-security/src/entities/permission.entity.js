@@ -7,7 +7,7 @@ class Permission extends Entity {
     constructor() {
         super();
         nameSlugDesc(this);
-        this.attr("fields").array();
+        this.attr("scope").object();
         this.attr("roles")
             .entities(Role)
             .setUsing(Role2Permission);
