@@ -1,5 +1,9 @@
 import React from "react";
 import { FormData } from "webiny-graphql-ui";
+import query from "./permissionsFormQuery";
+import Scopes from "./PermissionsForm/Scopes";
+
+import fetch from "isomorphic-fetch";
 
 import { i18n, createComponent } from "webiny-app";
 const t = i18n.namespace("Security.PermissionsForm");
@@ -10,6 +14,17 @@ class PermissionsForm extends React.Component {
         this.state = {
             graphql: null
         };
+
+        fetch("http://localhost:9000/graphql", {
+            method: "post",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query })
+        }).then(response => {
+            this.setState({ graphql: response.json() });
+            setTimeout(() => {
+                console.log(this.state.graphql);
+            }, 500);
+        });
     }
 
     onToggleField(model, form, field) {
@@ -29,17 +44,17 @@ class PermissionsForm extends React.Component {
     }
 
     render() {
-        const { AdminLayout, Form, Section, View, Grid, Input, Button, Tags } = this.props.modules;
+        const { AdminLayout, Form, Section, View, Grid, Input, Button } = this.props.modules;
 
         return (
             <AdminLayout>
                 <FormData
                     entity="SecurityPermission"
                     withRouter
-                    fields="id name slug description fields createdOn customDate customTime customDateRange"
+                    fields="id name slug description fields createdOn"
                     onSubmitSuccess="Permissions.List"
                     onCancel="Permissions.List"
-                    defaultModel={{ fields: [] }}
+                    defaultModel={{ scope: {} }}
                     onSuccessMessage={({ model }) => {
                         return (
                             <span>
@@ -91,11 +106,10 @@ class PermissionsForm extends React.Component {
                                                     </Bind>
                                                 </Grid.Col>
                                             </Grid.Row>
+                                            <br />
                                             <Grid.Row>
                                                 <Grid.Col all={12}>
-                                                    <Bind>
-                                                        <Tags label={t`Scope`} name="scope" />
-                                                    </Bind>
+                                                    <Scopes model={model} form={form} />
                                                 </Grid.Col>
                                             </Grid.Row>
                                         </View.Body>
@@ -124,14 +138,5 @@ class PermissionsForm extends React.Component {
 }
 
 export default createComponent(PermissionsForm, {
-    modules: [
-        { AdminLayout: "Admin.Layout" },
-        "Form",
-        "Section",
-        "View",
-        "Grid",
-        "Input",
-        "Tags",
-        "Button"
-    ]
+    modules: [{ AdminLayout: "Admin.Layout" }, "Form", "Section", "View", "Grid", "Input", "Button"]
 });
