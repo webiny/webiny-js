@@ -17,12 +17,6 @@ class SimpleFile extends React.Component {
         );
     }
 
-    componentDidMount() {
-        if (this.props.attachToForm) {
-            this.props.attachToForm(this);
-        }
-    }
-
     clearFiles() {
         this.props.onChange(null).then(() => {
             this.setState({ isValid: null });

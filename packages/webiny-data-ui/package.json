@@ -1,5 +1,5 @@
 {
-  "name": "webiny-graphql-ui",
+  "name": "webiny-data-ui",
   "description": "A set of components that load data via GraphQL for faster development of lists and forms.",
   "version": "0.0.0-semantically-released",
   "repository": {

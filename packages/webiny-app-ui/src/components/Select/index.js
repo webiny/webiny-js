@@ -35,7 +35,7 @@ class Select extends React.Component {
         };
 
         return (
-            <FormGroup valid={this.state.isValid} className={this.props.className}>
+            <FormGroup valid={this.props.validation.isValid} className={this.props.className}>
                 {this.props.renderLabel.call(this)}
                 <SimpleSelect {...selectProps} />
                 {this.props.renderDescription.call(this)}
@@ -48,6 +48,7 @@ class Select extends React.Component {
 Select.defaultProps = {
     allowClear: false,
     autoSelectFirstOption: false,
+    useDataAsValue: false,
     minimumInputLength: 0,
     minimumResultsForSearch: 15,
     dropdownParent: ".dropdown-wrapper",

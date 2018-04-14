@@ -11,12 +11,6 @@ class InputLayout extends React.Component {
         };
     }
 
-    componentDidMount() {
-        if (this.props.attachToForm) {
-            this.props.attachToForm(this);
-        }
-    }
-
     onKeyDown({ event }) {
         if (event.metaKey || event.ctrlKey) {
             return;

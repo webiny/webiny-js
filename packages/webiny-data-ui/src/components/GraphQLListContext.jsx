@@ -51,7 +51,7 @@ class ListContext extends React.Component {
                 }
 
                 filter._page = 1;
-                filter._searchQuery = search.query;
+                filter._searchQuery = _.get(search, "query");
                 goToRoute(filter);
             },
             setPage(page) {
@@ -95,7 +95,7 @@ class ListContext extends React.Component {
                 listProps.filter[name] = value;
             }
         });
-        
+
         return listProps;
     }
 

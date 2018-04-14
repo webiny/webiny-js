@@ -30,28 +30,27 @@ class RadioGroup extends React.Component {
     renderOptions(callback = null) {
         return this.props.options.map((item, key) => {
             let checked = false;
-            if (_.isPlainObject(this.props.value)) {
+            const { useDataAsValue, value, valueKey, valueField } = this.props;
+            if (useDataAsValue) {
                 // If value is an object we need to fetch a single value to compare against option id.
-                // `valueKey` should be used for this purpose but we also use `valueAttr` as a fallback
-                // (although `valueAttr` should only be used for generating options, it contains the default identification attribute name)
-                checked =
-                    _.get(this.props.value, this.props.valueKey || this.props.valueAttr) ===
-                    item.id;
+                // `valueKey` should be used for this purpose but we also use `valueField` as a fallback
+                // (although `valueField` should only be used for generating options, it contains the default identification attribute name)
+                checked = _.get(value, valueKey || valueField) === item.value;
             } else {
-                checked = this.props.value === item.id;
+                checked = this.props.value === item.value;
             }
 
             const props = {
                 key,
-                label: item.text,
+                label: item.label,
                 disabled: this.props.disabled,
                 option: item,
                 optionIndex: key,
                 value: checked,
                 onChange: newValue => {
                     this.props.onChange(
-                        this.props.useDataAsValue ? newValue.data : newValue.id,
-                        this.validate
+                        this.props.useDataAsValue ? newValue.data : newValue.value,
+                        this.props.validate
                     );
                 }
             };
@@ -95,6 +94,8 @@ class RadioGroup extends React.Component {
 RadioGroup.Radio = Radio;
 
 RadioGroup.defaultProps = {
+    valueField: "id",
+    useDataAsValue: false,
     renderRadioLabel: null,
     renderRadio: null
 };

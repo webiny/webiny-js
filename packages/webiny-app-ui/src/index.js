@@ -18,7 +18,6 @@ export {
     default as ModalConfirmationComponent
 } from "./components/Modal/Components/ModalConfirmationComponent";
 export { default as FormComponent } from "./components/Form/FormComponent";
-export { default as OptionComponent } from "./components/Option/OptionComponent";
 
 const app = () => {
     return ({ app }, next) => {
@@ -85,10 +84,6 @@ const app = () => {
             {
                 name: "Cropper",
                 factory: () => import("./components/Cropper")
-            },
-            {
-                name: "Data",
-                factory: () => import("./components/Data")
             },
             {
                 name: "Date",

@@ -38,10 +38,6 @@ class HtmlEditor extends React.Component {
     }
 
     componentDidMount() {
-        if (this.props.attachToForm) {
-            this.props.attachToForm(this);
-        }
-
         const { Quill } = this.props.modules;
         this.editor = new Quill(this.getTextareaElement(), {
             modules: {

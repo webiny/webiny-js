@@ -1,147 +1,15 @@
 import React from "react";
 import _ from "lodash";
-import { app, createComponent, elementHasFlag, i18n, ApiComponent } from "webiny-app";
-import ListContext from "./Components/ListContext";
-import Loader from "./Components/ListLoader";
+import { createComponent, elementHasFlag } from "webiny-app";
 import styles from "./styles.css";
-
-const t = i18n.namespace("Webiny.Ui.List");
 
 class List extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            initialSorters: { ...props.sort },
-            loading: false,
-            initiallyLoaded: false,
-            list: [],
-            meta: {},
             selectedRows: []
         };
-
-        this.mounted = false;
-
-        ["loadRecords", "updateRecord", "deleteRecord"].map(m => (this[m] = this[m].bind(this)));
-    }
-
-    componentWillMount() {
-        this.mounted = true;
-
-        if (this.props.autoLoad) {
-            this.loadRecords().then(data => {
-                if (!this.mounted) {
-                    return;
-                }
-                this.setState({ initiallyLoaded: true });
-                this.props.onInitialLoad({ list: _.get(data, "list"), meta: _.get(data, "meta") });
-            });
-        }
-    }
-
-    componentDidMount() {
-        this.props.onReady &&
-            this.props.onReady({
-                reload: this.loadRecords
-            });
-
-        if (this.props.autoRefresh && _.isNumber(this.props.autoRefresh)) {
-            this.autoRefresh = setInterval(
-                () => this.loadRecords(null, false),
-                1000 * this.props.autoRefresh
-            );
-        }
-    }
-
-    componentWillUnmount() {
-        this.mounted = false;
-        clearInterval(this.autoRefresh);
-    }
-
-    componentWillReceiveProps(props) {
-        let shouldLoad = false;
-
-        const propKeys = ["sort", "filter", "perPage", "page", "search"];
-        if (!_.isEqual(_.pick(props, propKeys), _.pick(this.props, propKeys))) {
-            shouldLoad = true;
-        }
-
-        if (this.props.autoLoad && shouldLoad) {
-            this.loadRecords(props).then(data => {
-                this.props.onLoad({ list: _.get(data, "list"), meta: _.get(data, "meta") });
-            });
-        }
-    }
-
-    loadRecords(props = null, showLoading = true) {
-        if (!props) {
-            props = this.props;
-        }
-
-        const variables = {
-            filter: _.pickBy(props.filter, v => !_.isNil(v)),
-            sort: props.sort || props.initialSorters,
-            perPage: props.perPage,
-            page: props.page
-        };
-
-        if (!_.isEmpty(props.search.query)) {
-            variables.search = props.search;
-        }
-
-        if (showLoading) {
-            this.setState({ loading: true });
-        }
-
-        return props.api.list({ variables }).then(({ error, data }) => {
-            if (!error && props.prepareLoadedData) {
-                data.list = props.prepareLoadedData({
-                    list: data.list,
-                    meta: data.meta,
-                    $this: this
-                });
-            }
-
-            if (error) {
-                app.services
-                    .get("growler")
-                    .danger(error.message, t`That didn\'t go as expected...`, true);
-            }
-
-            if (this.mounted) {
-                this.setState({ loading: false, ...data, selectedRows: [] });
-            }
-
-            return data;
-        });
-    }
-
-    updateRecord(id, data) {
-        return this.props.api
-            .update({ variables: { id, data } })
-            .then(({ data }) => {
-                this.loadRecords();
-                return data;
-            })
-            .catch(({ error }) => {
-                app.services
-                    .get("growler")
-                    .danger(error.message, t`That didn\'t go as expected...`, true);
-            });
-    }
-
-    deleteRecord(id, autoRefresh = true) {
-        return this.props.api
-            .delete({ variables: { id } })
-            .then(({ data }) => {
-                autoRefresh && this.loadRecords();
-                return data;
-            })
-            .catch(({ error }) => {
-                app.services
-                    .get("growler")
-                    .danger(error.message, t`That didn\'t go as expected...`, true);
-            });
     }
 
     onSelect(selectedRows) {
@@ -150,7 +18,7 @@ class List extends React.Component {
 
     tableProps(tableProps) {
         _.assign(tableProps, {
-            data: _.cloneDeep(this.state.list),
+            data: _.cloneDeep(this.props.list),
             sort: _.cloneDeep(this.props.sort),
             onSort: this.props.setSort.bind(this),
             selectedRows: [...this.state.selectedRows]
@@ -165,9 +33,9 @@ class List extends React.Component {
             onPerPageChange: this.props.setPerPage.bind(this),
             currentPage: this.props.page,
             perPage: this.props.perPage,
-            count: _.get(this.state.meta, "count", 0),
-            totalCount: _.get(this.state.meta, "totalCount", 0),
-            totalPages: _.get(this.state.meta, "totalPages", 0)
+            count: _.get(this.props.meta, "count", 0),
+            totalCount: _.get(this.props.meta, "totalCount", 0),
+            totalPages: _.get(this.props.meta, "totalPages", 0)
         });
 
         return paginationProps;
@@ -213,10 +81,6 @@ class List extends React.Component {
                     });
                 }
 
-                if (elementHasFlag(child, "listLoaderComponent")) {
-                    this.loaderElement = child;
-                }
-
                 if (elementHasFlag(child, "listMultiActionsComponent")) {
                     this.multiActionsElement = React.cloneElement(child, {
                         ...this.multiActionsProps(props),
@@ -226,12 +90,6 @@ class List extends React.Component {
             },
             this
         );
-
-        if (!this.loaderElement) {
-            this.loaderElement = React.createElement(Loader, listProps);
-        } else {
-            this.loaderElement = React.cloneElement(this.loaderElement, listProps);
-        }
 
         // If MultiActions are present, pass an onSelect callback to Table which will tell Table to allow selection
         // and execute onSelect callback when selection is changed
@@ -250,24 +108,18 @@ class List extends React.Component {
         }
 
         const listProps = {
-            loading: this.state.loading,
-            actions: {
-                update: this.updateRecord,
-                delete: this.deleteRecord,
-                reload: this.loadRecords
-            }
+            actions: this.props.actions
         };
 
         this.prepareList(content, listProps);
 
         const layoutProps = {
-            list: this.state.list,
-            meta: this.state.meta,
+            list: this.props.list,
+            meta: this.props.meta,
             filterElement: this.filterElement,
             dataElement: this.dataElement,
             paginationElement: this.paginationElement,
             multiActionsElement: this.multiActionsElement,
-            loaderElement: this.loaderElement,
             ...listProps
         };
 
@@ -285,13 +137,11 @@ List.defaultProps = {
         filterElement,
         dataElement,
         paginationElement,
-        multiActionsElement,
-        loaderElement
+        multiActionsElement
     }) {
         const { modules: { Grid }, styles } = this.props;
         return (
             <webiny-list-layout>
-                {loaderElement}
                 {filterElement}
                 {dataElement}
                 <Grid.Row className={styles.footer}>
@@ -307,7 +157,7 @@ List.defaultProps = {
     }
 };
 
-export default createComponent([List, ApiComponent, ListContext], {
+export default createComponent(List, {
     modules: ["Grid"],
     styles
 });

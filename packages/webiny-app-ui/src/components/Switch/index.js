@@ -13,14 +13,8 @@ class Switch extends React.Component {
             ...props.initialState
         };
 
-        this.switch = this.switch.bind(this);
-    }
-
-    componentWillMount() {
         this.id = _.uniqueId("switch-");
-        if (this.props.attachToForm) {
-            this.props.attachToForm(this);
-        }
+        this.switch = this.switch.bind(this);
     }
 
     switch() {

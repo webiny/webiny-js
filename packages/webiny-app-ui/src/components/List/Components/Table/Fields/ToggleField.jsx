@@ -15,7 +15,7 @@ class ToggleField extends React.Component {
                 if (_.isNull(this.props.onChange)) {
                     const attributes = {};
                     _.set(attributes, this.props.name, newValue);
-                    this.props.actions.update(this.props.data.id, attributes);
+                    this.props.actions.updateRecord(this.props.data.id, attributes);
                 } else {
                     this.props.onChange(newValue);
                 }

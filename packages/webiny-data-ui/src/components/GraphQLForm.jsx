@@ -58,7 +58,8 @@ class GraphQLForm extends React.Component {
             return this.actions
                 .get({ variables: { id } })
                 .then(({ data }) => {
-                    this.setState({ model: data, loading: false }, () => {
+                    const model = _.merge({}, this.props.defaultModel || {}, data);
+                    this.setState({ model, loading: false }, () => {
                         // Execute optional `onLoad` callback
                         if (_.isFunction(this.props.onLoad)) {
                             this.props.onLoad({ model: this.state.model });
@@ -148,6 +149,7 @@ class GraphQLForm extends React.Component {
 }
 
 GraphQLForm.defaultProps = {
+    defaultModel: {},
     withRouter: false,
     onSubmitSuccess: null,
     onSubmitError: _.noop,

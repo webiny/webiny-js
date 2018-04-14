@@ -35,12 +35,6 @@ class Image extends React.Component {
         ].map(m => (this[m] = this[m].bind(this)));
     }
 
-    componentDidMount() {
-        if (this.props.attachToForm) {
-            this.props.attachToForm(this);
-        }
-    }
-
     applyCropping(newImage) {
         this.props.onChange(newImage).then(() => this.setState({ cropImage: null }));
     }

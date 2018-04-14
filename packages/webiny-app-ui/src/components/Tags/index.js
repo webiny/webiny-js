@@ -20,10 +20,6 @@ class Tags extends React.Component {
     }
 
     componentDidMount() {
-        if (this.props.attachToForm) {
-            this.props.attachToForm(this);
-        }
-
         if (this.props.autoFocus) {
             this.tagInput.focus();
         }

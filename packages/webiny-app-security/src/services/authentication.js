@@ -48,7 +48,7 @@ class Authentication {
             if (token) {
                 return {
                     headers: {
-                        [this.config.header]: token
+                        [this.config.header]: "Bearer " + token
                     }
                 };
             }

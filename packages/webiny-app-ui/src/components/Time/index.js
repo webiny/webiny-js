@@ -15,10 +15,6 @@ class Time extends React.Component {
         this.init = this.init.bind(this);
     }
 
-    componentDidMount() {
-        this.props.attachToForm && this.props.attachToForm(this);
-    }
-
     componentWillReceiveProps(props) {
         if (props.hasOwnProperty("value") && props.value !== this.props.value) {
             this.element.setDate(props.value, false);

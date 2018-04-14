@@ -35,12 +35,6 @@ class Avatar extends React.Component {
         };
     }
 
-    componentDidMount() {
-        if (this.props.attachToForm) {
-            this.props.attachToForm(this);
-        }
-    }
-
     applyCropping(newImage) {
         this.props.onChange(newImage).then(() => this.setState({ cropImage: null }));
     }

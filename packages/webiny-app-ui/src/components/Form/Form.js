@@ -3,28 +3,17 @@ import _ from "lodash";
 import { createComponent, linkState } from "webiny-app";
 import validation from "./validation";
 
-function isValidModelType(value) {
-    const type = typeof value;
-    if (type === "undefined" || type === "function") {
-        return false;
-    }
-
-    return _.isArray(value) || _.isPlainObject(value) || /boolean|number|string/.test(type);
-}
-
 class Form extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
             model: {},
-            initialModel: {},
             wasSubmitted: false,
             validation: {}
         };
 
         this.isValid = null;
-        this.watches = {};
         this.inputs = {};
         this.lastRender = [];
         this.mounted = false;
@@ -43,8 +32,7 @@ class Form extends React.Component {
     }
 
     componentWillMount() {
-        const model = _.merge({}, this.props.defaultModel || {});
-        this.setState({ model, initialModel: model });
+        this.setState({ model: _.cloneDeep(this.props.model) });
     }
 
     componentWillReceiveProps({ model, invalidFields = {} }) {
@@ -57,10 +45,15 @@ class Form extends React.Component {
             });
 
             return {
-                model,
                 validation
             };
         });
+
+        if (!_.isEqual(model, this.props.model)) {
+            this.setState(() => {
+                return { model: _.cloneDeep(model) };
+            });
+        }
     }
 
     componentDidMount() {
@@ -83,22 +76,6 @@ class Form extends React.Component {
                 });
             }
         });
-    }
-
-    /**
-     * Add a callback that will be triggered each time a given input name value is changed
-     *
-     * @param name
-     * @param callback
-     * @returns {Function}
-     */
-    watch(name, callback) {
-        const watches = this.watches[name] || new Set();
-        watches.add(callback);
-        this.watches[name] = watches;
-        return () => {
-            this.watches[name].delete(callback);
-        };
     }
 
     onInvalid() {
@@ -280,28 +257,13 @@ class Form extends React.Component {
         }
 
         // Create an onChange callback
-        const formatValue = props.formatValue;
-
-        // Input changed callback, triggered on each input change
         const changeCallback = (value, oldValue) => {
-            const inputConfig = this.inputs[props.name];
-            const inputProps = inputConfig && inputConfig.props;
+            const { props: inputProps } = this.inputs[props.name];
 
             // Bind onChange callback params (we do it here because later we no longer have access to these values)
             if (_.isFunction(afterChange)) {
                 afterChange = afterChange.bind(null, { value, oldValue, props: inputProps });
             }
-
-            // Format value
-            if (inputProps && _.isFunction(formatValue)) {
-                // If component formatValue returns a value we will use that as our new value
-                const cbValue = formatValue({ value, oldValue, inputProps });
-                if (isValidModelType(cbValue)) {
-                    value = cbValue;
-                }
-            }
-
-            return value;
         };
 
         // Assign value and onChange props
@@ -314,11 +276,6 @@ class Form extends React.Component {
                 if (_.isFunction(this.props.onChange)) {
                     this.props.onChange({ ...this.state.model }, this);
                 }
-
-                // see if there is a watch registered for changed input
-                const inputProps = this.inputs[props.name];
-                const watches = this.watches[props.name] || new Set();
-                _.map(Array.from(watches), w => w(value, inputProps));
 
                 // Execute onAfterChange
                 afterChange && afterChange();

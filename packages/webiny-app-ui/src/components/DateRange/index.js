@@ -18,10 +18,6 @@ class Date extends React.Component {
         this.init = this.init.bind(this);
     }
 
-    componentDidMount() {
-        this.props.attachToForm && this.props.attachToForm(this);
-    }
-
     componentWillUnmount() {
         this.element.destroy();
     }

@@ -47,10 +47,6 @@ class Gallery extends React.Component {
     }
 
     componentDidMount() {
-        if (this.props.attachToForm) {
-            this.props.attachToForm(this);
-        }
-
         this.setupComponent(this.props);
     }
 

@@ -56,18 +56,7 @@ class Fieldset extends React.Component {
         this.parseLayout(this.props.children);
     }
 
-    componentDidMount() {
-        if (this.props.attachToForm) {
-            this.props.attachToForm(this);
-        }
-    }
-
     componentWillReceiveProps(props) {
-        if (props.form.isSubmitDisabled()) {
-            // prevent modifying model and updating keys if props are received during form submit
-            return;
-        }
-
         this.setState({ model: insertKey(_.cloneDeep(props.value)) });
         this.parseLayout(props.children);
     }
@@ -117,8 +106,6 @@ class Fieldset extends React.Component {
         if (child.props && child.props.name) {
             const $key = this.currentKey;
             const newProps = _.assign({}, child.props, {
-                __tabs: this.props.__tabs,
-                attachToForm: this.props.attachToForm,
                 form: this.props.form,
                 value: _.get(this.state.model, $key + '.' + child.props.name),
                 name: $key + '.' + child.props.name,

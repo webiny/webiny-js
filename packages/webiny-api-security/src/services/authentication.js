@@ -31,7 +31,7 @@ class Authentication implements IAuthentication {
      * @return {Promise<null|Identity>} Identity instance.
      */
     async verifyToken(token: string): Promise<Identity> {
-        const decoded = await this.config.token.decode(token);
+        const decoded = await this.config.token.decode(token.replace("Bearer ", ""));
         let identity = this.getIdentityClass(decoded.data.classId);
 
         if (!identity) {
@@ -61,11 +61,7 @@ class Authentication implements IAuthentication {
      * @param strategy
      * @returns {Identity} A valid system Identity.
      */
-    authenticate(
-        data: Object,
-        identity: Class<Identity>,
-        strategy: string
-    ): Promise<Identity> {
+    authenticate(data: Object, identity: Class<Identity>, strategy: string): Promise<Identity> {
         const strategyObject = this.config.strategies[strategy];
         if (!strategyObject) {
             return Promise.reject(
