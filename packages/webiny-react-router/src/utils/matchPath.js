@@ -5,6 +5,10 @@ const cacheLimit = 10000;
 let cacheCount = 0;
 
 const compilePath = (pattern, options) => {
+    if (pattern === "*") {
+        pattern = "(.*)";
+    }
+
     const cacheKey = `${options.end}${options.strict}${options.sensitive}`;
     const cache = patternCache[cacheKey] || (patternCache[cacheKey] = {});
 
