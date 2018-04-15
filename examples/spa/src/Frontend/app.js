@@ -3,7 +3,7 @@ import { app, resolveMiddleware, renderMiddleware, Router } from "webiny-app";
 import { hot } from "react-hot-loader";
 import { app as adminApp } from "webiny-app-admin";
 import { app as securityApp, authenticationMiddleware } from "webiny-app-security";
-import { app as securityAdminApp } from "webiny-app-security-admin";
+import { app as securityAdminApp } from "webiny-app-security/lib/admin";
 import project from "./project";
 import userIdentity from "./userIdentity";
 
@@ -23,11 +23,7 @@ if (!app.initialized) {
             }
         })
     );
-    app.use(
-        securityAdminApp({
-            identity: "SecurityUser"
-        })
-    );
+    app.use(securityAdminApp({ manager: true }));
     app.use(cmsAdminApp());
     app.use(project());
 
