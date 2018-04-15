@@ -4,6 +4,7 @@ import cls from "cls-hooked";
 import compose from "webiny-compose";
 import { ServiceManager } from "webiny-service-manager";
 import GraphQL from "./graphql/GraphQL";
+import EntityManager from "./entities/EntityManager";
 import { Entity } from "./index";
 
 // Attributes registration functions
@@ -15,6 +16,7 @@ class Api {
     config: Object;
     graphql: GraphQL;
     services: ServiceManager;
+    entities: EntityManager;
     namespace: cls$Namespace;
     apps: Array<Function>;
 
@@ -22,6 +24,7 @@ class Api {
         this.config = {};
         this.graphql = new GraphQL();
         this.services = new ServiceManager();
+        this.entities = new EntityManager();
         this.apps = [];
     }
 
