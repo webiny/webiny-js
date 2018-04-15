@@ -1,0 +1,30 @@
+{
+  "name": "webiny-entity-mongodb",
+  "version": "0.0.0-semantically-released",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "babel-runtime": "^6.26.0",
+    "fecha": "^2.3.2",
+    "lodash": "^4.17.4",
+    "mdbid": "^1.0.0",
+    "mongodb": "^3.0.6",
+    "webiny-entity": "0.0.0-semantically-released"
+  },
+  "devDependencies": {
+    "sinon": "^4.2.0"
+  },
+  "scripts": {
+    "build": "babel src -d lib --source-maps --copy-files",
+    "build:watch": "babel src -d lib --source-maps --copy-files --watch"
+  }
+}
