@@ -28,7 +28,7 @@ export default () => {
         });
 
         app.router.addRoute({
-            name: "About",
+            name: "Dashboard",
             path: "/about",
             render() {
                 return import("./views/About").then(m => {
@@ -49,25 +49,6 @@ export default () => {
                     </div>
                 );
             }
-        });
-
-        app.router.addRoute({
-            name: "Login",
-            path: "/login",
-            exact: true,
-            render: () =>
-                app.modules.load("Admin.Login").then(Login => {
-                    return (
-                        <Login
-                            identity={"SecurityUser"}
-                            strategy={"credentials"}
-                            onSuccess={() => {
-                                app.router.goToRoute("About");
-                            }}
-                        />
-                    );
-                }),
-            title: "Login"
         });
 
         app.router.addRoute({
