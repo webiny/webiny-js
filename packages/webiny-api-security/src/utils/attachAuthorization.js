@@ -5,24 +5,18 @@ const log = debug("webiny-api-security");
  */
 export default app => {
     app.graphql.beforeSchema(schema => {
-        Object.keys(schema.query).map(name => {
-            const query = schema.query[name];
-            const { resolve } = query;
-            schema.query[name].resolve = (root, args, context, info) => {
-                // TODO: run authorization checks
-                log("Checking authorization for query %o", name);
-                return resolve(root, args, context, info);
-            };
-        });
-
-        Object.keys(schema.mutation).map(name => {
-            const mutation = schema.mutation[name];
-            const { resolve } = mutation;
-            schema.mutation[name].resolve = (root, args, context, info) => {
-                // TODO: run authorization checks
-                log("Checking authorization for query %o", name);
-                return resolve(root, args, context, info);
-            };
+        ["query", "mutation"].map(operation => {
+            Object.keys(schema[operation]).map(name => {
+                const query = schema[operation][name];
+                const { resolve } = query;
+                schema[operation][name].resolve = (root, args, context, info) => {
+                    // TODO: run authorization checks
+                    log("Checking authorization for %s %o", operation, name);
+                    const data = resolve(root, args, context, info);
+                    // TODO: return only exposed fields
+                    return data;
+                };
+            });
         });
     });
 };

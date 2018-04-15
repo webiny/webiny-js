@@ -34,9 +34,14 @@ class WidgetFunctions extends React.Component {
                                 message={"Are you sure you want to delete this widget?"}
                                 onComplete={onRemoved}
                             >
-                                <a href="javascript:void(0)" onClick={beforeRemove}>
-                                    <Icon icon={["fas", "times"]} />
-                                </a>
+                                {({ showConfirmation }) => (
+                                    <a
+                                        href="javascript:void(0)"
+                                        onClick={() => showConfirmation(beforeRemove)}
+                                    >
+                                        <Icon icon={["fas", "times"]} />
+                                    </a>
+                                )}
                             </ClickConfirm>
                         </li>
                         <li>

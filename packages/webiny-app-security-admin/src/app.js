@@ -29,17 +29,7 @@ export default () => {
             {
                 name: "Admin.UserAccountForm",
                 factory: () => import("./components/UserAccount/UserAccountForm")
-            }
-        ]);
-
-        app.router.addRoute({
-            name: "Me.Account",
-            path: "/me/account",
-            component: () => app.modules.load("Admin.UserAccountForm"),
-            title: "My Account"
-        });
-
-        app.modules.register([
+            },
             {
                 name: "Security.SecurityToggleList",
                 factory: () => import("./views/securityToggleList")
@@ -58,6 +48,35 @@ export default () => {
                 </Menu>
             </Menu>
         );
+
+        app.router.addRoute({
+            name: "Login",
+            path: "/login",
+            exact: true,
+            render: () =>
+                app.modules.load("Admin.Login").then(Login => {
+                    return (
+                        <Login
+                            identity={"SecurityUser"}
+                            strategy={"credentials"}
+                            onSuccess={() => {
+                                app.router.goToRoute("Dashboard");
+                            }}
+                        />
+                    );
+                }),
+            title: "Login"
+        });
+
+        app.router.addRoute({
+            name: "Me.Account",
+            path: "/me",
+            render: () =>
+                app.modules.load("Admin.UserAccountForm").then(AccountForm => {
+                    return <AccountForm />;
+                }),
+            title: "My Account"
+        });
 
         app.router.addRoute({
             name: "Users.Create",
@@ -153,19 +172,6 @@ export default () => {
             component: () => import("./views/PermissionsList").then(m => m.default),
             title: "Security - Permissions",
             role: securityManageUsers
-        });
-
-        app.router.addRoute({
-            name: "NotMatched",
-            path: "*",
-            render() {
-                return (
-                    <div>
-                        <h1>{t`404 Not Found`}</h1>
-                        <a href={"/"}>{t`Get me out of here`}</a>
-                    </div>
-                );
-            }
         });
 
         next();

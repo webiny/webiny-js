@@ -8,7 +8,7 @@ const t = i18n.namespace("Cms.Admin.Views.PageEditor");
 
 class PageEditor extends React.Component {
     render() {
-        const { View, Link, Form, Icon, Grid, Button } = this.props.modules;
+        const { View, Link, Form, Icon } = this.props.modules;
 
         const formProps = {
             model: data
@@ -16,7 +16,7 @@ class PageEditor extends React.Component {
 
         return (
             <Form {...formProps}>
-                {({ model, form }) => (
+                {({ Bind }) => (
                     <View.Form>
                         <View.Header
                             render={({ props }) => (
@@ -25,10 +25,9 @@ class PageEditor extends React.Component {
                                     style={{ padding: "20px 50px" }}
                                 >
                                     <div className={props.styles.titleWrapper}>
-                                        <TitleInput
-                                            value={model.title || ""}
-                                            onChange={title => form.setModel({ title })}
-                                        />
+                                        <Bind>
+                                            <TitleInput name={"title"} />
+                                        </Bind>
                                     </div>
                                     <div className={props.styles.titleRight}>{props.children}</div>
                                 </div>
@@ -42,7 +41,9 @@ class PageEditor extends React.Component {
                             </Link>
                         </View.Header>
                         <View.Body noPadding noColor style={{ paddingTop: 15 }}>
-                            <PageContent name={"content"} />
+                            <Bind>
+                                <PageContent name={"content"} />
+                            </Bind>
                         </View.Body>
                     </View.Form>
                 )}

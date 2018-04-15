@@ -4,9 +4,10 @@ import { hot } from "react-hot-loader";
 import { app as adminApp } from "webiny-app-admin";
 import { app as securityApp, authenticationMiddleware } from "webiny-app-security";
 import { app as securityAdminApp } from "webiny-app-security-admin";
-//import { app as cmsAdminApp } from "webiny-app-cms/lib/admin";
 import project from "./project";
 import userIdentity from "./userIdentity";
+
+import { app as cmsAdminApp } from "webiny-app-cms/lib/admin";
 
 if (!app.initialized) {
     app.use(adminApp());
@@ -22,9 +23,12 @@ if (!app.initialized) {
             }
         })
     );
-    /*app.use(securityAdminApp());*/
-    // app.use(cmsAdminApp());
-    app.use(securityAdminApp());
+    app.use(
+        securityAdminApp({
+            identity: "SecurityUser"
+        })
+    );
+    app.use(cmsAdminApp());
     app.use(project());
 
     app.configure(() => {

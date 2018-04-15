@@ -14,18 +14,15 @@ class UserMenu extends React.Component {
     }
 
     componentDidMount() {
-        // TODO: bring back when authentication is finished.
-        /*this.unwatch = this.auth.onIdentity(identity => {
+        this.unwatch = this.auth.onIdentity(identity => {
             this.setState({ user: identity });
         });
 
         this.setState({ user: this.auth.identity });
-        */
     }
 
     componentWillUnmount() {
-        // TODO: bring back when authentication is finished.
-        // this.unwatch();
+        this.unwatch();
     }
 
     getUserName() {

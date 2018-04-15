@@ -10,8 +10,7 @@ const createApi = (promise, dataKey) => {
             return { data: data[dataKey] };
         })
         .catch(error => {
-            const { message, code, data } = error.graphQLErrors[0];
-            throw new GraphQLError(message, code, data, error);
+            throw GraphQLError.from(error);
         });
 };
 
