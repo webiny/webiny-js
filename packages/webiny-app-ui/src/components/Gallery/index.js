@@ -2,7 +2,8 @@ import React from "react";
 import _ from "lodash";
 import $ from "jquery";
 import classSet from "classnames";
-import { createComponent, i18n, linkState } from "webiny-app";
+import { createComponent, i18n } from "webiny-app";
+import { linkState } from "webiny-form";
 import { FormComponent } from "webiny-app-ui";
 import Image from "./Image";
 import styles from "./styles.css";
@@ -19,7 +20,6 @@ class Gallery extends React.Component {
         this.dragged = null;
 
         this.state = {
-            ...props.initialState,
             cropImage: null,
             actualWidth: 0,
             actualHeight: 0,

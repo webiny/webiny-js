@@ -17,7 +17,7 @@ export { default as ModalComponent } from "./components/Modal/Components/ModalCo
 export {
     default as ModalConfirmationComponent
 } from "./components/Modal/Components/ModalConfirmationComponent";
-export { default as FormComponent } from "./components/Form/FormComponent";
+export { default as FormComponent } from "./components/FormComponent";
 
 const app = () => {
     return ({ app }, next) => {
@@ -135,7 +135,7 @@ const app = () => {
             },
             {
                 name: "Form",
-                factory: () => import("./components/Form")
+                factory: () => import("webiny-form").then(m => m.Form)
             },
             {
                 name: "FormGroup",

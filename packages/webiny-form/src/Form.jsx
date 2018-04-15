@@ -1,6 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent, linkState } from "webiny-app";
+import linkState from "./linkState";
 import validation from "./validation";
 
 class Form extends React.Component {
@@ -16,7 +16,6 @@ class Form extends React.Component {
         this.isValid = null;
         this.inputs = {};
         this.lastRender = [];
-        this.mounted = false;
 
         [
             "registerComponent",
@@ -352,4 +351,4 @@ Form.defaultProps = {
     onSubmit: null
 };
 
-export default createComponent(Form);
+export default Form;
