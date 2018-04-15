@@ -11,9 +11,13 @@ class ImageWidget extends React.Component {
             return null;
         }
 
-        return <img style={{ width: "100%" }} src={src} />;
+        return (
+            <div>
+                <img style={{ width: "100%" }} src={src} />
+                <h5>{value.data.caption}</h5>
+            </div>
+        );
     }
 }
-
 
 export default createComponent(ImageWidget);

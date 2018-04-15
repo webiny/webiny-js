@@ -133,9 +133,7 @@ class PageContent extends React.Component {
                                     {this.props.value &&
                                         this.props.value.map(this.renderPreviewWidget.bind(this))}
                                 </Tabs.Tab>
-                                <Tabs.Tab label={"Model"}>
-                                    <pre>{JSON.stringify(this.props.form.getModel(), null, 2)}</pre>
-                                </Tabs.Tab>
+                                <Tabs.Tab label={"Model"} />
                             </Tabs>
                         </div>
                     </Grid.Col>
@@ -146,6 +144,5 @@ class PageContent extends React.Component {
 }
 
 export default createComponent([PageContent, FormComponent], {
-    modules: ["Button", "Grid", "Tabs"],
-    formComponent: true
+    modules: ["Button", "Grid", "Tabs"]
 });

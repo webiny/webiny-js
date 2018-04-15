@@ -6,7 +6,11 @@ class ParagraphWidget extends React.Component {
         const { modules: { EditorWidget, Textarea }, value, onChange } = this.props;
         return (
             <EditorWidget {...{ value, onChange }}>
-                <Textarea name={"text"} />
+                {({ Bind }) => (
+                    <Bind>
+                        <Textarea name={"text"} />
+                    </Bind>
+                )}
             </EditorWidget>
         );
     }

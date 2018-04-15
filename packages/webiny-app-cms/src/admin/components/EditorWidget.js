@@ -7,13 +7,12 @@ class EditorWidget extends React.Component {
         const { modules: { Form }, value } = this.props;
         return (
             <Form model={value.data} onChange={this.props.onChange}>
-                {() => React.cloneElement(this.props.children, { value })}
+                {this.props.children}
             </Form>
         );
     }
 }
 
 export default createComponent([EditorWidget, FormComponent], {
-    modules: ["Form"],
-    formComponent: true
+    modules: ["Form"]
 });
