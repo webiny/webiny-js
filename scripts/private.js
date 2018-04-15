@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 const { argv } = require("yargs");
+require("dotenv").config();
 const fs = require("fs-extra");
 const path = require("path");
+const _ = require("lodash");
 const execa = require("execa");
 const packages = require("./utils/lernaPackages");
 
@@ -31,6 +33,7 @@ const toPublish = [
     "webiny-compose",
     "webiny-data-extractor",
     "webiny-entity-memory",
+    "webiny-entity-mongodb",
     "webiny-entity-mysql",
     "webiny-entity",
     "webiny-file-storage-local",
@@ -59,7 +62,7 @@ const config = {
     plugins: [
         ({ packages }, next) => {
             packages.map(pkg => {
-                pkg.jsonBackup = { ...pkg.package };
+                pkg.jsonBackup = _.cloneDeep(pkg.package);
             });
             next();
         },
