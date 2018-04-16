@@ -79,7 +79,6 @@ class Date extends React.Component {
             disabled: this.props.disabled,
             readOnly: this.props.readOnly,
             type: "text",
-            value: this.getInputValue(),
             placeholder: this.props.placeholder,
             onChange: this.props.onChange,
             autoFocus: this.props.autoFocus,
