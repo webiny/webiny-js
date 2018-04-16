@@ -153,7 +153,7 @@ class LocalStorageDriver implements IFileStorageDriver {
             return key;
         }
 
-        return this.config.publicUrl + key;
+        return this.config.publicUrl + "/" + _.trimStart(key, "/");
     }
 
     /**

@@ -11,7 +11,7 @@ import { Storage } from "webiny-file-storage";
 import LocalDriver from "./../src";
 
 describe("LocalStorageDriver class test", function() {
-    const publicUrl = "https://cdn.domain.com";
+    const publicUrl = "https://cdn.domain.com/";
     const storageRoot = __dirname + "/storage";
 
     const localDriver = new LocalDriver({
