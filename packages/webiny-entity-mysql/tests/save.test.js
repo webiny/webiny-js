@@ -20,7 +20,7 @@ describe("save test", function() {
 
         assert.deepEqual(
             queryStub.getCall(0).args[0],
-            "INSERT INTO `SimpleEntity` (id, name, slug, enabled, tags) VALUES ('" +
+            "INSERT INTO `SimpleEntity` (`id`, `name`, `slug`, `enabled`, `tags`) VALUES ('" +
                 simpleEntity.id +
                 "', NULL, '', true, NULL)"
         );
@@ -28,9 +28,9 @@ describe("save test", function() {
         await simpleEntity.save();
         assert.deepEqual(
             queryStub.getCall(1).args[0],
-            "UPDATE `SimpleEntity` SET id = '" +
+            "UPDATE `SimpleEntity` SET `id` = '" +
                 simpleEntity.id +
-                "', name = NULL, slug = '', enabled = true, tags = NULL WHERE (id = '" +
+                "', `name` = NULL, `slug` = '', `enabled` = true, `tags` = NULL WHERE (id = '" +
                 simpleEntity.id +
                 "') LIMIT 1"
         );

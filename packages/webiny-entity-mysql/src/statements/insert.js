@@ -4,7 +4,9 @@ import _ from "lodash";
 class Insert extends Statement {
     generate() {
         const options = this.options;
-        const columns = _.keys(options.data).join(", ");
+        const columns = _.keys(options.data)
+            .map(c => "`" + c + "`")
+            .join(", ");
         const insertValues = _.values(options.data)
             .map(value => this.escape(value))
             .join(", ");

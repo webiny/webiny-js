@@ -15,7 +15,7 @@ describe("UPDATE statement test", function() {
             Entity
         ).generate();
 
-        assert.equal(sql, "UPDATE `TestTable` SET name = 'Test', enabled = 1");
+        assert.equal(sql, "UPDATE `TestTable` SET `name` = 'Test', `enabled` = 1");
     });
 
     it("should generate an UPDATE statement and preserve false in query", () => {
@@ -29,7 +29,7 @@ describe("UPDATE statement test", function() {
             Entity
         ).generate();
 
-        assert.equal(sql, "UPDATE `TestTable` SET name = 'Test', enabled = false");
+        assert.equal(sql, "UPDATE `TestTable` SET `name` = 'Test', `enabled` = false");
     });
 
     it("should generate an UPDATE statement with additional conditions", () => {
@@ -46,7 +46,7 @@ describe("UPDATE statement test", function() {
 
         assert.equal(
             sql,
-            "UPDATE `TestTable` SET name = 'Test', enabled = false WHERE ((age = 30 OR deletedOn IS NOT NULL))"
+            "UPDATE `TestTable` SET `name` = 'Test', `enabled` = false WHERE ((age = 30 OR deletedOn IS NOT NULL))"
         );
     });
 });

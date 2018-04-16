@@ -5,7 +5,7 @@ class Update extends Statement {
         const values = [],
             options = this.options;
         for (const [key, value] of Object.entries(options.data)) {
-            values.push(key + " = " + this.escape(value));
+            values.push("`" + key + "` = " + this.escape(value));
         }
 
         let output = `UPDATE \`${options.table}\` SET ${values.join(", ")}`;
