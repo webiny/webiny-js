@@ -3,19 +3,24 @@ import { createComponent } from "webiny-app";
 
 class ImageWidget extends React.Component {
     render() {
-        const { modules: { EditorWidget, Image, Input }, value, onChange } = this.props;
+        const {
+            modules: { Image, Input, EditorWidget },
+            value,
+            onChange,
+            handleImage
+        } = this.props;
         return (
-            <EditorWidget {...{ value, onChange }}>
+            <EditorWidget value={value} onChange={onChange}>
                 {({ Bind }) => (
                     <React.Fragment>
-                        <Bind>
+                        <Bind
+                            beforeChange={(value, onChange) =>
+                                handleImage(this.props, value, onChange)
+                            }
+                        >
                             <Image
                                 name={"image"}
-                                onChange={({ value, oldValue }) => {
-                                    if (!value) {
-                                        console.log("DELETE IMAGE", oldValue);
-                                    }
-                                }}
+                                sizeLimit={10000000}
                                 cropper={{
                                     title: `Crop your image`,
                                     action: `Save image`,
@@ -26,7 +31,7 @@ class ImageWidget extends React.Component {
                             />
                         </Bind>
                         <Bind>
-                            <Input name={"caption"} label={"Caption"} />
+                            <Input placeholder={"Image caption"} name={"caption"} />
                         </Bind>
                     </React.Fragment>
                 )}
@@ -35,4 +40,4 @@ class ImageWidget extends React.Component {
     }
 }
 
-export default createComponent(ImageWidget, { modules: ["Image", "EditorWidget", "Input"] });
+export default createComponent(ImageWidget, { modules: ["Image", "Input", "EditorWidget"] });

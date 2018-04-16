@@ -5,7 +5,7 @@ import styles from "./WidgetsModal.scss";
 
 class WidgetsModal extends React.Component {
     renderWidget(widget) {
-        const { Icon, onSelect } = this.props;
+        const { modules: { Icon }, onSelect } = this.props;
         return (
             <li key={widget.type} onClick={() => this.props.hide().then(() => onSelect(widget))}>
                 <a href="#">

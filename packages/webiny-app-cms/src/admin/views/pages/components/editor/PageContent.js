@@ -5,6 +5,7 @@ import { FormComponent } from "webiny-app-ui";
 import shortid from "shortid";
 import WidgetsModal from "./WidgetsModal";
 import WidgetFunctions from "./WidgetFunctions";
+import WidgetHolder from "./WidgetHolder";
 import styles from "./PageContent.scss";
 
 class PageContent extends React.Component {
@@ -36,10 +37,7 @@ class PageContent extends React.Component {
 
     showWidgetSettings() {}
 
-    beforeRemoveWidget(index) {
-        const { value } = this.props;
-        const data = value[index];
-
+    beforeRemoveWidget(data) {
         const widget = this.cms.getEditorWidget(data.type);
         if (typeof widget.removeWidget === "function") {
             return widget.removeWidget(data);
@@ -47,9 +45,9 @@ class PageContent extends React.Component {
         return Promise.resolve();
     }
 
-    removeWidget(index) {
+    removeWidget(data) {
         const widgets = _.cloneDeep(this.props.value);
-        widgets.splice(index, 2);
+        widgets.splice(_.findIndex(widgets, { id: data.id }), 1);
         this.props.onChange(widgets);
     }
 
@@ -71,13 +69,13 @@ class PageContent extends React.Component {
         const editorWidget = widget.renderWidget(data);
 
         return (
-            <div key={data.id} className={styles.editorWidgetHolder}>
+            <WidgetHolder key={data.id}>
                 {/*<WidgetSettingsModal name={data.id + "-settings"} widget={widget} data={data} />*/}
                 <WidgetFunctions
                     moveUp={() => this.swapWidgets(index, index - 1)}
                     showSettings={this.showWidgetSettings}
-                    beforeRemove={() => this.beforeRemoveWidget(index)}
-                    onRemoved={this.removeWidget}
+                    beforeRemove={() => this.beforeRemoveWidget(data)}
+                    onRemoved={() => this.removeWidget(data)}
                     moveDown={() => this.swapWidgets(index, index + 1)}
                 />
                 {React.cloneElement(editorWidget, {
@@ -87,7 +85,7 @@ class PageContent extends React.Component {
                         onChange(value);
                     }
                 })}
-            </div>
+            </WidgetHolder>
         );
     }
 
@@ -133,7 +131,11 @@ class PageContent extends React.Component {
                                     {this.props.value &&
                                         this.props.value.map(this.renderPreviewWidget.bind(this))}
                                 </Tabs.Tab>
-                                <Tabs.Tab label={"Model"} />
+                                <Tabs.Tab label={"Model"}>
+                                    <pre>
+                                        {JSON.stringify(this.props.form.state.model, null, 2)}
+                                    </pre>
+                                </Tabs.Tab>
                             </Tabs>
                         </div>
                     </Grid.Col>

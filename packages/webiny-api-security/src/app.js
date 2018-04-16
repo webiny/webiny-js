@@ -5,6 +5,7 @@ import AuthorizationService from "./services/authorization";
 import registerAttributes from "./attributes/registerAttributes";
 import createLoginQueries from "./utils/createLoginQueries";
 import attachAuthorization from "./utils/attachAuthorization";
+import type { Entity } from "webiny-api";
 
 export default (config: Object = {}) => {
     return ({ app }: Object, next: Function) => {
@@ -27,8 +28,7 @@ export default (config: Object = {}) => {
 
         attachAuthorization(app);
 
-        // TODO: Helper attributes
-        /*this.extendEntity("*", (entity: Entity) => {
+        app.entities.extend("*", (entity: Entity) => {
             // "savedBy" attribute - updated on both create and update events.
             entity.attr("savedByClassId").char();
             entity.attr("savedBy").identity({ classIdAttribute: "savedByClassId" });
@@ -56,7 +56,7 @@ export default (config: Object = {}) => {
                     entity.createdBy = identity;
                 }
             });
-        });*/
+        });
 
         next();
     };

@@ -1,6 +1,12 @@
 // @flow
 import _ from "lodash";
 import mdbid from "mdbid";
+import debug from "debug";
+
+const logSelect = debug("webiny-entity-mysql:select");
+const logInsert = debug("webiny-entity-mysql:insert");
+const logUpdate = debug("webiny-entity-mysql:update");
+const logDelete = debug("webiny-entity-mysql:delete");
 
 import type { Connection, Pool } from "mysql";
 import { Entity, Driver, QueryResult } from "webiny-entity";
@@ -88,6 +94,7 @@ class MySQLDriver extends Driver {
                 entity
             ).generate();
 
+            logUpdate(sql);
             await this.getConnection().query(sql);
             return new QueryResult(true);
         }
@@ -102,6 +109,7 @@ class MySQLDriver extends Driver {
             entity
         ).generate();
 
+        logInsert(sql);
         try {
             await this.getConnection().query(sql);
         } catch (e) {
@@ -125,6 +133,7 @@ class MySQLDriver extends Driver {
             entity
         ).generate();
 
+        logDelete(sql);
         await this.getConnection().query(sql);
         return new QueryResult(true);
     }
@@ -149,6 +158,7 @@ class MySQLDriver extends Driver {
         clonedOptions.calculateFoundRows = true;
 
         const sql = new Select(clonedOptions, entity).generate();
+        logSelect(sql);
         const results = await this.getConnection().query([sql, "SELECT FOUND_ROWS() as count"]);
 
         return new QueryResult(results[0], { totalCount: results[1][0].count });
@@ -170,6 +180,7 @@ class MySQLDriver extends Driver {
         MySQLDriver.__prepareSearchOption(clonedOptions);
 
         const sql = new Select(clonedOptions, entity).generate();
+        logSelect(sql);
 
         const results = await this.getConnection().query(sql);
         return new QueryResult(results[0]);
@@ -194,6 +205,7 @@ class MySQLDriver extends Driver {
         MySQLDriver.__prepareSearchOption(clonedOptions);
 
         const sql = new Select(clonedOptions, entity).generate();
+        logSelect(sql);
 
         const results = await this.getConnection().query(sql);
         return new QueryResult(results[0].count);

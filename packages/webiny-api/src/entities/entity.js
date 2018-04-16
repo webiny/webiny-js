@@ -6,10 +6,7 @@ class Entity extends BaseEntity {
     constructor() {
         super();
 
-        /* TODO: @api
-        app.apps.map(app => {
-            app.applyEntityExtensions(this);
-        });*/
+        app.entities.applyExtensions(this);
     }
 }
 

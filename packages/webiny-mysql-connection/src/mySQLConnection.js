@@ -1,6 +1,9 @@
 // @flow
 import PoolClass from "mysql/lib/Pool";
+import debug from "debug";
 import ConnectionClass from "mysql/lib/Connection";
+
+const log = debug("webiny-mysql-connection");
 
 class MySQLConnection {
     instance: PoolClass | ConnectionClass;
@@ -35,6 +38,8 @@ class MySQLConnection {
     query(sql: string | Array<any>): Promise<any> {
         let results: Array<mixed> = [],
             queries: Array<string> = sql instanceof Array ? sql : [sql];
+
+        log(sql);
 
         return new Promise(async (resolve, reject) => {
             if (this.isConnectionPool()) {
