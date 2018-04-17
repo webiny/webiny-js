@@ -82,7 +82,7 @@ class EntitiesAttribute extends Attribute {
             }
 
             if (this.getAutoSave()) {
-                // If we are using an link class, we only need to save links, and child entities will be automatically
+                // If we are using a link class, we only need to save links, and child entities will be automatically
                 // saved if they were loaded.
                 if (this.getUsingClass()) {
                     const entities = this.value.getCurrentLinks();

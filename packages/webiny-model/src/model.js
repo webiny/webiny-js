@@ -7,12 +7,12 @@ import type Attribute from "./attribute";
 
 class Model {
     attributes: { [string]: Attribute };
-    validating: boolean;
+    processing: { validation: boolean, dirty: boolean };
     attributesContainer: DefaultAttributesContainer;
 
     constructor(params?: Function) {
         this.attributes = {};
-        this.validating = false;
+        this.processing = { validation: false, dirty: false };
         this.attributesContainer = this.createAttributesContainer();
 
         if (params) {
@@ -81,18 +81,26 @@ class Model {
 
     clean(): void {
         _.each(this.attributes, (attribute: Attribute) => {
-            attribute.value.clean();
+            attribute.value.isDirty() && attribute.value.clean();
         });
     }
 
     isDirty(): boolean {
+        if (this.processing.dirty) {
+            return false;
+        }
+
+        this.processing.dirty = true;
+
         let name;
         for (name in this.attributes) {
             const attribute: Attribute = this.attributes[name];
             if (attribute.value.isDirty()) {
+                this.processing.dirty = false;
                 return true;
             }
         }
+        this.processing.dirty = false;
         return false;
     }
 
@@ -128,10 +136,10 @@ class Model {
      * Validates values of all attributes.
      */
     async validate(): Promise<void> {
-        if (this.validating) {
+        if (this.processing.validation) {
             return;
         }
-        this.validating = true;
+        this.processing.validation = true;
 
         const invalidAttributes = {};
         await Promise.all(
@@ -157,7 +165,7 @@ class Model {
             })
         );
 
-        this.validating = false;
+        this.processing.validation = false;
 
         if (!_.isEmpty(invalidAttributes)) {
             throw new ModelError("Validation failed.", ModelError.INVALID_ATTRIBUTES, {
@@ -239,7 +247,7 @@ class Model {
         for (let name in this.getAttributes()) {
             const attribute = this.getAttribute(name);
             // $FlowIgnore - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
-            if (attribute.getToStorage()) {
+            if (attribute.getToStorage() && attribute.value.isDirty()) {
                 // $FlowIgnore - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
                 json[name] = await attribute.getStorageValue();
             }

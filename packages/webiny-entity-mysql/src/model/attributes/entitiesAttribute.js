@@ -6,8 +6,7 @@ class EntitiesAttribute extends BaseEntitiesAttribute {
     }
 
     setStorageValue(value) {
-        super.setStorageValue(JSON.parse(value));
-        return this;
+        return super.setStorageValue(JSON.parse(value));
     }
 }
 

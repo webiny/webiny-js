@@ -27,7 +27,7 @@ describe("entity with logs enabled test", function() {
 
     it("it must update createdOn, updatedOn and savedOn correctly when saving entity", async () => {
         const entity = new EntityWithLogs();
-
+        entity.name = "newOne";
         await entity.save();
 
         const savedOn = entity.savedOn;
@@ -38,6 +38,7 @@ describe("entity with logs enabled test", function() {
         expect(createdOn).to.be.instanceOf(Date);
         expect(updatedOn).to.equal(null);
 
+        entity.name = "newOneUpdated";
         await entity.save();
 
         expect(entity.savedOn).to.be.instanceOf(Date);

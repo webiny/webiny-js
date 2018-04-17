@@ -329,17 +329,14 @@ describe("attribute model test", function() {
         assert.deepEqual(data, {
             firstName: "John",
             lastName: "Doe",
-            age: null,
             company: {
                 name: "Webiny LTD",
                 city: "London",
                 image: {
                     file: "webiny.jpg",
                     size: {
-                        height: null,
                         width: 12.5
-                    },
-                    visible: false
+                    }
                 }
             }
         });

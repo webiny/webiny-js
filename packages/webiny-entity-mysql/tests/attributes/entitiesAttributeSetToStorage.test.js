@@ -63,27 +63,13 @@ describe("entity attribute test", function() {
 
         let actual = await entity.toStorage();
         let expected = {
-            id: null,
-            firstName: null,
-            lastName: null,
-            verification: null,
-            tags: "[]",
-            simpleEntity: null,
             simpleEntities: `["54759eb3c090d83494e2d804","54759eb3c090d83494e2d805","54759eb3c090d83494e2d806"]`
         };
         assert.deepEqual(actual, expected);
 
         entity = new ComplexEntity();
         actual = await entity.toStorage();
-        expected = {
-            id: null,
-            firstName: null,
-            lastName: null,
-            verification: null,
-            tags: "[]",
-            simpleEntity: null,
-            simpleEntities: "[]"
-        };
+        expected = {};
         assert.deepEqual(actual, expected);
     });
 

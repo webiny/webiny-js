@@ -307,30 +307,25 @@ describe("attribute models test", function() {
             attribute1: [
                 {
                     name: "Enlai",
-                    number: null,
                     type: "dog"
                 },
                 {
                     name: "Rocky",
-                    number: null,
                     type: "dog"
                 },
                 {
                     name: "Lina",
-                    number: null,
                     type: "parrot"
                 }
             ],
             attribute2: [
                 {
                     firstName: "John",
-                    lastName: "Doe",
-                    enabled: null
+                    lastName: "Doe"
                 },
                 {
                     firstName: "Jane",
-                    lastName: "Doe",
-                    enabled: null
+                    lastName: "Doe"
                 }
             ]
         });

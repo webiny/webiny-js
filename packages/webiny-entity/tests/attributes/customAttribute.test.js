@@ -73,11 +73,16 @@ describe("custom attribute test", function() {
         assert.equal(issue.id, "xyz");
 
         let storage = await issue.toStorage();
+        assert.deepEqual(storage, {});
+
+        issue.title = "new one";
+        issue.assignedTo = "abcd";
+        issue.assignedToClassId = "UserUpdated";
+        storage = await issue.toStorage();
         assert.deepEqual(storage, {
-            id: "xyz",
-            title: null,
-            assignedTo: "abc",
-            assignedToClassId: "User"
+            assignedTo: "abcd",
+            assignedToClassId: "UserUpdated",
+            title: "new one"
         });
 
         entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
@@ -89,10 +94,9 @@ describe("custom attribute test", function() {
 
         storage = await issue.toStorage();
         assert.deepEqual(storage, {
-            id: "xyz",
-            title: null,
-            assignedTo: "abc",
-            assignedToClassId: "User"
+            title: "new one",
+            assignedTo: "abcd",
+            assignedToClassId: "UserUpdated"
         });
     });
 });

@@ -142,7 +142,14 @@ describe("events test", function() {
     it("event handler should be triggered only once", async () => {
         const invoice1 = new Invoice();
         await invoice1.save();
+        assert.equal(invoice1.beforeSaveCalled, 1);
+        assert.equal(invoice1.afterSaveCalled, 1);
+
         await invoice1.save();
+
+        assert.equal(invoice1.beforeSaveCalled, 1);
+        assert.equal(invoice1.afterSaveCalled, 2);
+
         await invoice1.save();
         await invoice1.save();
 

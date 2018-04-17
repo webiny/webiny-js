@@ -81,32 +81,34 @@ describe("custom attribute test", function() {
     it("should return correct storage value", async () => {
         let entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({
-                id: "xyz",
-                verifications: [
-                    {
-                        updatedOn: null,
-                        document: "ghi",
-                        status: "pending"
-                    },
-                    {
-                        updatedOn: new Date(),
-                        document: "def",
-                        status: "declined"
-                    },
-                    {
-                        updatedOn: new Date(),
-                        document: "abc",
-                        status: "declined"
-                    }
-                ]
+                id: "xyz"
             });
         });
 
-        const user = await User.findById("xyz");
+        const user = new User();
+        user.populate({
+            verifications: [
+                {
+                    updatedOn: null,
+                    document: "ghi",
+                    status: "pending"
+                },
+                {
+                    updatedOn: new Date(),
+                    document: "def",
+                    status: "declined"
+                },
+                {
+                    updatedOn: new Date(),
+                    document: "abc",
+                    status: "declined"
+                }
+            ]
+        });
+
         entityFind.restore();
 
         let storage = await user.toStorage();
-        assert.equal(storage.id, "xyz");
         assert.equal(storage.firstName, null);
         assert.equal(storage.verification, null);
 
@@ -163,7 +165,6 @@ describe("custom attribute test", function() {
 
         entityFind.restore();
 
-        assert.equal(storage.id, "xyz");
         assert.equal(storage.firstName, null);
         assert.equal(storage.verification, null);
 

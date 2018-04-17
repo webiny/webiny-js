@@ -107,26 +107,27 @@ describe("attribute entities (using an additional aggregation class) - saving te
 
         user.groups = groups;
 
-        // Here we care only for save calls that actually created an ID, we don't care about updates.
+        // Here we care only for save calls that actually created an ID, we don't care about updates. We should have
+        // four saves: link for 1st item, link and the item itself for 2nd, and again only link for the last item.
         entitySave = sandbox
             .stub(user.getDriver(), "save")
             .callsFake(() => new QueryResult())
-            .onCall(6)
+            .onCall(4)
             .callsFake(entity => {
                 entity.id = "usersGroups6th";
                 return new QueryResult();
             })
-            .onCall(7)
+            .onCall(5)
             .callsFake(entity => {
                 entity.id = "J";
                 return new QueryResult();
             })
-            .onCall(8)
+            .onCall(6)
             .callsFake(entity => {
                 entity.id = "usersGroups7th";
                 return new QueryResult();
             })
-            .onCall(10)
+            .onCall(8)
             .callsFake(entity => {
                 entity.id = "usersGroups8th";
                 return new QueryResult();
@@ -135,7 +136,7 @@ describe("attribute entities (using an additional aggregation class) - saving te
         await user.save();
         entitySave.restore();
 
-        expect(entitySave.callCount).to.equal(11);
+        expect(entitySave.callCount).to.equal(9);
 
         expect(user.getAttribute("groups").value.initial).to.have.lengthOf(5);
         expect(user.getAttribute("groups").value.initial[0].id).to.equal("P");
@@ -174,7 +175,7 @@ describe("attribute entities (using an additional aggregation class) - saving te
         entitySave = sandbox.stub(user.getDriver(), "save");
         await user.save();
 
-        expect(entitySave.callCount).to.equal(7);
+        expect(entitySave.callCount).to.equal(4);
         expect(entityDelete.callCount).to.equal(2);
 
         entitySave.restore();

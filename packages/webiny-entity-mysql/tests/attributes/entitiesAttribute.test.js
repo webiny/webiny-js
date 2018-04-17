@@ -121,29 +121,17 @@ describe("entities attribute test", function() {
             { id: 3, name: "Test-3" }
         ];
 
+        entity.simpleEntities = [];
+
         let actual = await entity.toStorage();
         let expected = {
-            id: null,
-            firstName: null,
-            lastName: null,
-            verification: null,
-            tags: "[]",
-            simpleEntity: null,
             simpleEntities: "[]"
         };
         assert.deepEqual(actual, expected);
 
         entity = new ComplexEntity();
         actual = await entity.toStorage();
-        expected = {
-            id: null,
-            firstName: null,
-            lastName: null,
-            verification: null,
-            tags: "[]",
-            simpleEntity: null,
-            simpleEntities: "[]"
-        };
+        expected = {};
         assert.deepEqual(actual, expected);
     });
 
@@ -274,6 +262,10 @@ describe("entities attribute test", function() {
         assert.isNull(simpleEntities[1].id);
         assert.isNull(simpleEntities[2].id);
 
+        simpleEntities[0].name = "Test-1-UPDATE";
+        simpleEntities[1].name = "Test-2-UPDATE";
+        simpleEntities[2].name = "Test-3-UPDATE";
+
         assert.isTrue(entity.getAttribute("simpleEntitiesLoadedFromTable").value.isDirty());
 
         // Now let's try to save entity with auto save enabled on "simpleEntitiesLoadedFromTable" attribute.
@@ -314,6 +306,7 @@ describe("entities attribute test", function() {
             });
 
         await entity.save();
+
         assert.equal(entitySave.callCount, 4);
 
         entity

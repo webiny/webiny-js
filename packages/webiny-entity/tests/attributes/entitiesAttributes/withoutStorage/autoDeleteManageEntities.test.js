@@ -113,7 +113,7 @@ describe("entity attribute current / initial values syncing", function() {
         await mainEntity.save();
 
         assert.equal(entityDelete.callCount, 4);
-        assert.equal(entitySave.callCount, 3);
+        assert.equal(entitySave.callCount, 0);
 
         entityDelete.restore();
         entitySave.restore();

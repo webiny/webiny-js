@@ -77,10 +77,6 @@ class MySQLDriver extends Driver {
 
     // eslint-disable-next-line
     async save(entity: Entity, options: EntitySaveParams & {}): Promise<QueryResult> {
-        if (!entity.isExisting()) {
-            entity.id = MySQLDriver.__generateID();
-        }
-
         if (entity.isExisting()) {
             const data = await entity.toStorage();
             const sql = new Update(
@@ -88,7 +84,7 @@ class MySQLDriver extends Driver {
                     operators: this.operators,
                     table: this.getTableName(entity),
                     data,
-                    where: { id: data.id },
+                    where: { id: entity.id },
                     limit: 1
                 },
                 entity
@@ -99,6 +95,7 @@ class MySQLDriver extends Driver {
             return new QueryResult(true);
         }
 
+        entity.id = MySQLDriver.__generateID();
         const data = await entity.toStorage();
         const sql = new Insert(
             {
@@ -122,12 +119,11 @@ class MySQLDriver extends Driver {
 
     // eslint-disable-next-line
     async delete(entity: Entity, options: EntityDeleteParams & {}): Promise<QueryResult> {
-        const id = await entity.getAttribute("id").getStorageValue();
         const sql = new Delete(
             {
                 operators: this.operators,
                 table: this.getTableName(entity),
-                where: { id },
+                where: { id: entity.id },
                 limit: 1
             },
             entity
@@ -259,24 +255,6 @@ class MySQLDriver extends Driver {
         }
 
         return this.tables.prefix + params.classId;
-    }
-
-    static MySQLDriver(clonedOptions: Object): void {
-        // Here we handle search (if passed) - we transform received arguments into linked LIKE statements.
-        if (clonedOptions.search instanceof Object) {
-            const { query, operator, fields: columns } = clonedOptions.search;
-            const search = { $search: { operator, columns, query } };
-
-            if (clonedOptions.where instanceof Object) {
-                clonedOptions.where = {
-                    $and: [search, clonedOptions.where]
-                };
-            } else {
-                clonedOptions.where = search;
-            }
-
-            delete clonedOptions.search;
-        }
     }
 
     static __preparePerPageOption(clonedOptions: Object): void {

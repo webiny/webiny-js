@@ -58,17 +58,7 @@ describe("custom attribute test", function() {
         entityFind.restore();
 
         let storage = await user.toStorage();
-        assert.deepEqual(storage, {
-            id: "xyz",
-            firstName: null,
-            lastName: null,
-            verification: {
-                status: "pending",
-                updatedOn: null,
-                document: "abc"
-            },
-            verifications: []
-        });
+        assert.deepEqual(storage, {});
 
         entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({ id: "abc", file: "verification.pdf", size: 10, type: "jpg" });
@@ -78,16 +68,19 @@ describe("custom attribute test", function() {
         entityFind.restore();
 
         storage = await user.toStorage();
+        assert.deepEqual(storage, {});
+
+        user.verification = {
+            status: "pending",
+            updatedOn: null,
+            document: "abc"
+        };
+        storage = await user.toStorage();
         assert.deepEqual(storage, {
-            id: "xyz",
-            firstName: null,
-            lastName: null,
             verification: {
-                status: "pending",
-                updatedOn: null,
-                document: "abc"
-            },
-            verifications: []
+                document: "abc",
+                status: "pending"
+            }
         });
     });
 });

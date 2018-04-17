@@ -282,21 +282,22 @@ class Entity {
             events.beforeSave !== false && (await this.emit("beforeSave"));
 
             if (existing) {
-                if (logs) {
+                events.beforeUpdate !== false && (await this.emit("beforeUpdate"));
+                if (logs && this.isDirty()) {
                     this.savedOn = new Date();
                     this.updatedOn = new Date();
                 }
-                events.beforeUpdate !== false && (await this.emit("beforeUpdate"));
             } else {
-                if (logs) {
+                events.beforeCreate !== false && (await this.emit("beforeCreate"));
+                if (logs && this.isDirty()) {
                     this.savedOn = new Date();
                     this.createdOn = new Date();
                 }
-                events.beforeCreate !== false && (await this.emit("beforeCreate"));
             }
 
-            await this.getDriver().save(this, params);
-            this.setExisting();
+            if (this.isDirty()) {
+                await this.getDriver().save(this, params);
+            }
 
             events.afterSave !== false && (await this.emit("afterSave"));
             if (existing) {
@@ -305,6 +306,7 @@ class Entity {
                 events.afterCreate !== false && (await this.emit("afterCreate"));
             }
 
+            this.setExisting();
             this.getModel().clean();
 
             this.getEntityPool().add(this);
@@ -531,6 +533,14 @@ class Entity {
                 await this.listeners[name][i].execute({ ...data, entity: this });
             }
         }
+    }
+
+    isDirty(): boolean {
+        return this.getModel().isDirty();
+    }
+
+    isClean(): boolean {
+        return !this.isDirty();
     }
 
     /**

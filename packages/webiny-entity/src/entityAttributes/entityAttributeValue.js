@@ -89,6 +89,17 @@ class EntityAttributeValue extends AttributeValue {
         return this.initial instanceof this.attribute.getEntityClass();
     }
 
+    isDirty(): boolean {
+        if (super.isDirty()) {
+            return true;
+        }
+        return this.current instanceof Entity && this.current.isDirty();
+    }
+
+    isClean(): boolean {
+        return !this.isDirty();
+    }
+
     /**
      * Value cannot be set as clean if there is no ID present.
      * @returns {EntityAttributeValue}
@@ -102,20 +113,20 @@ class EntityAttributeValue extends AttributeValue {
     }
 
     isDifferentFrom(value: mixed): boolean {
-        const differentIds = _.get(this.current, "id", this.current) !== _.get(value, "id", value);
-        if (differentIds) {
-            return true;
+        const currentId = _.get(this.current, "id", this.current);
+
+        if (value instanceof Entity) {
+            return !value.id || value.id !== currentId;
         }
 
-        // IDs are the same at this point.
         if (value instanceof Object) {
-            if (value.id) {
-                return Object.keys(value).length > 1;
+            if (!value.id) {
+                return true;
             }
-            return true;
+            return value.id !== currentId || Object.keys(value).length > 1;
         }
 
-        return false;
+        return currentId !== value;
     }
 
     async __executeQueue() {

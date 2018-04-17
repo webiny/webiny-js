@@ -25,7 +25,8 @@ describe("multiple delete / save prevention test", async function() {
 
         await promise;
 
-        expect(save.callCount).to.equal(1);
+        expect(user.isClean()).to.equal(true);
+        expect(save.callCount).to.equal(0);
     });
 
     it("should only call delete once", async () => {

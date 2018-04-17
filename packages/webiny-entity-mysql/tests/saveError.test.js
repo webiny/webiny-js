@@ -44,6 +44,7 @@ describe("save error test", function() {
             });
 
         try {
+            simpleEntity.name = "test";
             await simpleEntity.save();
         } catch (e) {
             return;
@@ -61,6 +62,7 @@ describe("save error test", function() {
         });
 
         const customIdEntity = new CustomIdEntity();
+        customIdEntity.name = "test";
 
         try {
             await customIdEntity.save();

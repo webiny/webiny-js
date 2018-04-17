@@ -285,6 +285,24 @@ class EntitiesAttributeValue extends AttributeValue {
         return super.clean();
     }
 
+    isDirty(): boolean {
+        if (super.isDirty()) {
+            return true;
+        }
+        if (Array.isArray(this.current)) {
+            for (let i = 0; i < this.current.length; i++) {
+                if (this.current[i] instanceof Entity && this.current[i].isDirty()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    isClean(): boolean {
+        return !this.isDirty();
+    }
+
     async __executeQueue() {
         if (this.queue.length) {
             for (let i = 0; i < this.queue.length; i++) {

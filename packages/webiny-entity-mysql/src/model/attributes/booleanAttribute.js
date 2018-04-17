@@ -6,7 +6,7 @@ class BooleanAttribute extends BaseBooleanAttribute {
      * @param value
      */
     setStorageValue(value) {
-        return this.setValue(!!value);
+        return super.setStorageValue(!!value);
     }
 }
 

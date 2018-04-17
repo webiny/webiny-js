@@ -11,6 +11,7 @@ describe("entity pool test", function() {
 
     it("after save, entity should be present in the pool and after delete it must be removed", async () => {
         const user = new User();
+        user.age = 30;
         sandbox.stub(user.getDriver(), "save").callsFake(entity => {
             entity.id = "A";
             return new QueryResult();
@@ -31,6 +32,7 @@ describe("entity pool test", function() {
 
     it("has and get methods should return true / false correctly (whether is called with a entity class or an instance)", async () => {
         const user = new User();
+        user.age = 30;
         sandbox.stub(user.getDriver(), "save").callsFake(entity => {
             entity.id = "A";
             return new QueryResult();

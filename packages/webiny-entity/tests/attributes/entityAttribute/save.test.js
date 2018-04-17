@@ -116,7 +116,7 @@ describe("entity attribute test", function() {
         assert.equal(user.id, "A");
         assert.equal(await user.get("company.id"), "B");
 
-        // Finally, let's put auto save on image entity too.
+        // Finally, let's set auto save on image entity too.
 
         user
             .getAttribute("company")
@@ -143,14 +143,10 @@ describe("entity attribute test", function() {
                 return new QueryResult();
             });
 
-        try {
-            await user.save();
-        } catch (e) {
-            const bbb = 123;
-        }
+        await user.save();
         save.restore();
 
-        assert(save.calledThrice);
+        assert.equal(save.callCount, 2);
         assert.equal(user.id, "A");
         assert.equal(await user.get("company.id"), "B");
         assert.equal(await user.get("company.image.id"), "C");
@@ -261,9 +257,13 @@ describe("entity attribute test", function() {
             });
 
         await one.save();
-        save.restore();
+        assert.equal(save.callCount, 0);
 
-        assert(save.calledOnce);
+        one.name = "asd";
+        await one.save();
+
+        assert.equal(save.callCount, 1);
+        save.restore();
     });
 
     it("should create new entity and save links correctly", async () => {
@@ -423,7 +423,7 @@ describe("entity attribute test", function() {
         assert.equal(entityFindById.callCount, 1);
         entityFindById.restore();
 
-        one.two = "anotherTwo";
+        await one.set("two", "anotherTwo");
 
         entityFindById = sandbox
             .stub(One.getDriver(), "findOne")
@@ -437,7 +437,7 @@ describe("entity attribute test", function() {
         await one.save();
 
         assert.equal(entityFindById.callCount, 1);
-        assert.equal(entitySave.callCount, 2);
+        assert.equal(entitySave.callCount, 1);
 
         entityFindById.restore();
         entitySave.restore();

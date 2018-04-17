@@ -1,5 +1,6 @@
 // @flow
 import Attribute from "./../attribute";
+import ObjectAttributeValue from "./objectAttributeValue";
 
 class ObjectAttribute extends Attribute {
     /**
@@ -10,6 +11,14 @@ class ObjectAttribute extends Attribute {
             return;
         }
         this.expected("object", typeof value);
+    }
+
+    /**
+     * Returns AttributeValue class to be used on construct.
+     * @returns {AttributeValue}
+     */
+    getAttributeValueClass() {
+        return ObjectAttributeValue;
     }
 }
 

@@ -99,4 +99,49 @@ describe("dirty flag test", function() {
         entity.two = { id: "two", someAttr: 1 };
         assert.isTrue(twoAttribute.value.dirty);
     });
+
+    it("should not be dirty when loading value from storage", async () => {
+        const one = await getEntity();
+        const twoAttribute = one.getAttribute("two");
+        assert.isFalse(twoAttribute.value.dirty);
+
+        let findById = sandbox.stub(One.getDriver(), "findOne").callsFake(() => {
+            return new QueryResult({ id: "two", name: "Two" });
+        });
+
+        const two = await one.two;
+        assert.isFalse(twoAttribute.value.isDirty());
+
+        two.name = "anotherName";
+
+        assert.isTrue(twoAttribute.value.isDirty());
+
+        findById.restore();
+    });
+
+    it("should save entity only if dirty, amd set it as clean after save", async () => {
+        const one = await getEntity();
+
+        let findById = sandbox.stub(One.getDriver(), "findOne").callsFake(() => {
+            return new QueryResult({ id: "two", name: "Two" });
+        });
+
+        const two = await one.two;
+        findById.restore();
+
+        const entitySaveSpy = sandbox.spy(One.getDriver(), "save");
+
+        await one.save();
+        assert.equal(entitySaveSpy.callCount, 0);
+
+        two.name = "anotherName";
+        assert.isTrue(two.isDirty());
+        await one.save();
+        assert.equal(entitySaveSpy.callCount, 1);
+        assert.isTrue(two.isClean());
+
+        await one.save();
+        assert.equal(entitySaveSpy.callCount, 1);
+        assert.isTrue(two.isClean());
+    });
 });

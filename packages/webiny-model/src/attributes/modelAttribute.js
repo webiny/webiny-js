@@ -1,5 +1,7 @@
 // @flow
 import Attribute from "./../attribute";
+import ModelAttributeValue from "./modelAttributeValue";
+
 import Model from "./../model";
 import _ from "lodash";
 import { AttributesContainer } from "../index";
@@ -89,6 +91,14 @@ class ModelAttribute extends Attribute {
     async validateValue(value: mixed): Promise<void> {
         const currentValue = ((value: any): Model);
         await currentValue.validate();
+    }
+
+    /**
+     * Returns AttributeValue class to be used on construct.
+     * @returns {AttributeValue}
+     */
+    getAttributeValueClass() {
+        return ModelAttributeValue;
     }
 }
 

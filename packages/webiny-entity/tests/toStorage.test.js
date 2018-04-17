@@ -16,7 +16,7 @@ describe("toStorage test", function() {
 
         const data = await user.toStorage();
 
-        assert.hasAllKeys(data, ["id", "firstName", "lastName", "enabled", "age"]);
+        assert.hasAllKeys(data, ["firstName", "lastName", "enabled", "age"]);
         assert.strictEqual(data["firstName"], "A");
         assert.strictEqual(data["lastName"], "B");
         assert.strictEqual(data["age"], 10);
@@ -79,7 +79,7 @@ describe("toStorage test", function() {
 
         const data1 = await customEntity1.toStorage();
 
-        assert.hasAllKeys(data1, ["id", "firstName", "lastName", "enabled", "age"]);
+        assert.hasAllKeys(data1, ["firstName", "lastName", "enabled", "age"]);
         assert.strictEqual(data1["firstName"], "A");
         assert.strictEqual(data1["lastName"], "B");
         assert.strictEqual(data1["enabled"], 1);
@@ -96,7 +96,7 @@ describe("toStorage test", function() {
 
         const data2 = await customEntity2.toStorage();
 
-        assert.hasAllKeys(data2, ["id", "firstName", "lastName", "enabled", "age"]);
+        assert.hasAllKeys(data2, ["firstName", "lastName", "enabled", "age"]);
         assert.strictEqual(data2["firstName"], "A");
         assert.strictEqual(data2["lastName"], "B");
         assert.strictEqual(data2["enabled"], 0);

@@ -99,44 +99,64 @@ describe("attribute entities (using an additional aggregation class) - loading t
         expect(entityFindById.callCount).to.equal(0);
 
         await user.save();
-        expect(entitySave.callCount).to.equal(1);
+        expect(entitySave.callCount).to.equal(0);
         expect(entityFind.callCount).to.equal(0);
         expect(entityFindById.callCount).to.equal(0);
 
         await user.save();
-        expect(entitySave.callCount).to.equal(2);
+        expect(entitySave.callCount).to.equal(0);
         expect(entityFind.callCount).to.equal(0);
         expect(entityFindById.callCount).to.equal(0);
 
         await user.save();
-        expect(entitySave.callCount).to.equal(3);
+        expect(entitySave.callCount).to.equal(0);
         expect(entityFind.callCount).to.equal(0);
         expect(entityFindById.callCount).to.equal(0);
 
         await user.groups;
         await user.save();
 
-        expect(entitySave.callCount).to.equal(4);
+        expect(entitySave.callCount).to.equal(0);
         expect(entityFind.callCount).to.equal(0);
         expect(entityFindById.callCount).to.equal(0);
 
         const user2 = new User();
 
         await user2.save();
-        expect(entitySave.callCount).to.equal(5);
+        expect(entitySave.callCount).to.equal(0);
         expect(entityFind.callCount).to.equal(0);
         expect(entityFindById.callCount).to.equal(0);
 
         await user2.save();
-        expect(entitySave.callCount).to.equal(6);
+        expect(entitySave.callCount).to.equal(0);
         expect(entityFind.callCount).to.equal(0);
         expect(entityFindById.callCount).to.equal(0);
 
         await user2.groups;
         await user2.save();
 
-        expect(entitySave.callCount).to.equal(7);
+        expect(entitySave.callCount).to.equal(0);
         expect(entityFind.callCount).to.equal(1);
+        expect(entityFindById.callCount).to.equal(0);
+
+        // 'firstName' attribute doesn't exist, so save shouldn't still do anything - entity is still clean.
+        user2.firstName = "test";
+        await user2.save();
+
+        await user2.groups;
+
+        expect(entitySave.callCount).to.equal(0);
+        expect(entityFind.callCount).to.equal(1);
+        expect(entityFindById.callCount).to.equal(0);
+
+        const user3 = new User();
+        user3.name = "test";
+        await user3.save();
+
+        await user3.groups;
+
+        expect(entitySave.callCount).to.equal(1);
+        expect(entityFind.callCount).to.equal(2);
         expect(entityFindById.callCount).to.equal(0);
 
         entitySave.restore();

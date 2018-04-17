@@ -4,7 +4,7 @@ import fecha from "fecha";
 class DateAttribute extends BaseDateAttribute {
     setStorageValue(value) {
         if (value === null) {
-            return super.setValue(value);
+            return super.setStorageValue(value);
         }
 
         if (value instanceof Date) {
