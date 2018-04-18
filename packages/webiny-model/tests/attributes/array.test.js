@@ -22,12 +22,12 @@ describe("attribute models test", function() {
                 invalidAttributes: {
                     attribute1: {
                         code: "INVALID_ATTRIBUTE",
-                        data: {},
+                        data: null,
                         message: "Validation failed, received object, expecting array."
                     },
                     attribute2: {
                         code: "INVALID_ATTRIBUTE",
-                        data: {},
+                        data: null,
                         message: "Validation failed, received object, expecting array."
                     }
                 }
@@ -55,18 +55,15 @@ describe("attribute models test", function() {
                 invalidAttributes: {
                     attribute2: {
                         code: "INVALID_ATTRIBUTE",
-                        data: {
-                            items: [
-                                {
-                                    code: "INVALID_ATTRIBUTE",
-                                    data: {
-                                        index: 1
-                                    },
-                                    message:
-                                        "Validation failed, item at index 1 not a primitive value."
-                                }
-                            ]
-                        },
+                        data: [
+                            {
+                                code: "INVALID_ATTRIBUTE",
+                                data: {
+                                    index: 1
+                                },
+                                message: "Validation failed, item at index 1 not a primitive value."
+                            }
+                        ],
                         message: "Validation failed."
                     }
                 }
@@ -93,18 +90,15 @@ describe("attribute models test", function() {
                 invalidAttributes: {
                     attribute1: {
                         code: "INVALID_ATTRIBUTE",
-                        data: {
-                            items: [
-                                {
-                                    code: "INVALID_ATTRIBUTE",
-                                    data: {
-                                        index: 2
-                                    },
-                                    message:
-                                        "Validation failed, item at index 2 not a primitive value."
-                                }
-                            ]
-                        },
+                        data: [
+                            {
+                                code: "INVALID_ATTRIBUTE",
+                                data: {
+                                    index: 2
+                                },
+                                message: "Validation failed, item at index 2 not a primitive value."
+                            }
+                        ],
                         message: "Validation failed."
                     }
                 }

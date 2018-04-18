@@ -38,33 +38,30 @@ describe("attribute entities test", function() {
             await entity.validate();
         } catch (e) {
             const attr1 = e.data.invalidAttributes.attribute1;
-            assert.lengthOf(attr1.data.items, 2);
-            assert.equal(attr1.data.items[0].data.index, 0);
+            assert.lengthOf(attr1.data, 2);
+            assert.equal(attr1.data[0].data.index, 0);
             assert.equal(
-                attr1.data.items[0].data.invalidAttributes.name.code,
+                attr1.data[0].data.invalidAttributes.name.code,
                 ModelError.INVALID_ATTRIBUTE
             );
-            assert.equal(
-                attr1.data.items[0].data.invalidAttributes.name.data.validator,
-                "required"
-            );
-            assert.notExists(attr1.data.items[0].data.invalidAttributes.type);
+            assert.equal(attr1.data[0].data.invalidAttributes.name.data.validator, "required");
+            assert.notExists(attr1.data[0].data.invalidAttributes.type);
 
             const attr2 = e.data.invalidAttributes.attribute2;
-            assert.lengthOf(attr2.data.items, 3);
-            assert.equal(attr2.data.items[0].data.index, 0);
-            assert.equal(attr2.data.items[1].data.index, 1);
-            assert.equal(attr2.data.items[2].data.index, 2);
+            assert.lengthOf(attr2.data, 3);
+            assert.equal(attr2.data[0].data.index, 0);
+            assert.equal(attr2.data[1].data.index, 1);
+            assert.equal(attr2.data[2].data.index, 2);
 
             assert.equal(
-                attr2.data.items[0].data.invalidAttributes.firstName.code,
+                attr2.data[0].data.invalidAttributes.firstName.code,
                 ModelError.INVALID_ATTRIBUTE
             );
             assert.equal(
-                attr2.data.items[0].data.invalidAttributes.lastName.code,
+                attr2.data[0].data.invalidAttributes.lastName.code,
                 ModelError.INVALID_ATTRIBUTE
             );
-            assert.notExists(attr2.data.items[0].data.invalidAttributes.enabled);
+            assert.notExists(attr2.data[0].data.invalidAttributes.enabled);
 
             return;
         }
@@ -100,13 +97,13 @@ describe("attribute entities test", function() {
             await entity.validate();
         } catch (e) {
             const attr1 = e.data.invalidAttributes.attribute1;
-            assert.lengthOf(attr1.data.items, 1);
-            assert.equal(attr1.data.items[0].data.index, 2);
+            assert.lengthOf(attr1.data, 1);
+            assert.equal(attr1.data[0].data.index, 2);
             assert.equal(
-                attr1.data.items[0].data.invalidAttributes.type.code,
+                attr1.data[0].data.invalidAttributes.type.code,
                 ModelError.INVALID_ATTRIBUTE
             );
-            assert.equal(attr1.data.items[0].data.invalidAttributes.type.data.validator, "in");
+            assert.equal(attr1.data[0].data.invalidAttributes.type.data.validator, "in");
         }
     });
 
@@ -147,34 +144,32 @@ describe("attribute entities test", function() {
             error = e;
         }
 
-        assert.deepEqual(error.data, {
-            items: [
-                {
-                    code: "INVALID_ATTRIBUTE",
-                    data: {
-                        index: 0
-                    },
-                    message:
-                        "Validation failed, item at index 0 not an instance of correct Entity class."
+        assert.deepEqual(error.data, [
+            {
+                code: "INVALID_ATTRIBUTE",
+                data: {
+                    index: 0
                 },
-                {
-                    code: "INVALID_ATTRIBUTE",
-                    data: {
-                        index: 1
-                    },
-                    message:
-                        "Validation failed, item at index 1 not an instance of correct Entity class."
+                message:
+                    "Validation failed, item at index 0 not an instance of correct Entity class."
+            },
+            {
+                code: "INVALID_ATTRIBUTE",
+                data: {
+                    index: 1
                 },
-                {
-                    code: "INVALID_ATTRIBUTE",
-                    data: {
-                        index: 4
-                    },
-                    message:
-                        "Validation failed, item at index 4 not an instance of correct Entity class."
-                }
-            ]
-        });
+                message:
+                    "Validation failed, item at index 1 not an instance of correct Entity class."
+            },
+            {
+                code: "INVALID_ATTRIBUTE",
+                data: {
+                    index: 4
+                },
+                message:
+                    "Validation failed, item at index 4 not an instance of correct Entity class."
+            }
+        ]);
 
         await mainEntity.getAttribute("attribute2").validate();
 
@@ -266,36 +261,34 @@ describe("attribute entities test", function() {
                 invalidAttributes: {
                     attribute1: {
                         code: "INVALID_ATTRIBUTE",
-                        data: {
-                            items: [
-                                {
-                                    code: "INVALID_ATTRIBUTES",
-                                    data: {
-                                        index: 0,
-                                        invalidAttributes: {
-                                            name: {
-                                                code: "INVALID_ATTRIBUTE",
-                                                data: {
-                                                    message: "Value is required.",
-                                                    value: null,
-                                                    validator: "required"
-                                                },
-                                                message: "Invalid attribute."
-                                            }
+                        data: [
+                            {
+                                code: "INVALID_ATTRIBUTES",
+                                data: {
+                                    index: 0,
+                                    invalidAttributes: {
+                                        name: {
+                                            code: "INVALID_ATTRIBUTE",
+                                            data: {
+                                                message: "Value is required.",
+                                                value: null,
+                                                validator: "required"
+                                            },
+                                            message: "Invalid attribute."
                                         }
-                                    },
-                                    message: "Validation failed."
+                                    }
                                 },
-                                {
-                                    code: "INVALID_ATTRIBUTE",
-                                    data: {
-                                        index: 1
-                                    },
-                                    message:
-                                        "Validation failed, item at index 1 not an instance of correct Entity class."
-                                }
-                            ]
-                        },
+                                message: "Validation failed."
+                            },
+                            {
+                                code: "INVALID_ATTRIBUTE",
+                                data: {
+                                    index: 1
+                                },
+                                message:
+                                    "Validation failed, item at index 1 not an instance of correct Entity class."
+                            }
+                        ],
                         message: "Validation failed."
                     }
                 }
@@ -316,7 +309,7 @@ describe("attribute entities test", function() {
             assert.deepEqual(e.data.invalidAttributes, {
                 attribute1: {
                     code: "INVALID_ATTRIBUTE",
-                    data: {},
+                    data: null,
                     message:
                         "Validation failed, received number, expecting instance of Array or EntityCollection."
                 }

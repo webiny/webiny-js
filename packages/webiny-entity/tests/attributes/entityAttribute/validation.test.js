@@ -197,7 +197,7 @@ describe("entity attribute test", function() {
             invalidAttributes: {
                 two: {
                     code: "INVALID_ATTRIBUTE",
-                    data: {},
+                    data: null,
                     message:
                         "Validation failed, received string, expecting instance of Entity class."
                 }

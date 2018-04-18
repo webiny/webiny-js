@@ -72,7 +72,7 @@ describe("multiple Entity classes test", function() {
                 invalidAttributes: {
                     assignedTo: {
                         code: "INVALID_ATTRIBUTE",
-                        data: {},
+                        data: null,
                         message:
                             'Entity attribute "assignedTo" accepts multiple Entity classes but does not have "classIdAttribute" option defined.'
                     }
@@ -97,7 +97,7 @@ describe("multiple Entity classes test", function() {
                 invalidAttributes: {
                     assignedTo: {
                         code: "INVALID_ATTRIBUTE",
-                        data: {},
+                        data: null,
                         message:
                             'Entity attribute "assignedTo" accepts multiple Entity classes but classId attribute is missing.'
                     }

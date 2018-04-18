@@ -134,9 +134,7 @@ class ModelsAttribute extends Attribute {
         }
 
         if (!_.isEmpty(errors)) {
-            throw new ModelError("Validation failed.", ModelError.INVALID_ATTRIBUTE, {
-                items: errors
-            });
+            throw new ModelError("Validation failed.", ModelError.INVALID_ATTRIBUTE, errors);
         }
     }
 }

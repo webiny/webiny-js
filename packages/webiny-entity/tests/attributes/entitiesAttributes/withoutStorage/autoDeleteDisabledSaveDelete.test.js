@@ -57,9 +57,9 @@ describe("save and delete entities attribute test", () => {
         }
 
         assert.equal(error.data.invalidAttributes.attribute1.code, "INVALID_ATTRIBUTE");
-        assert.lengthOf(error.data.invalidAttributes.attribute1.data.items, 2);
+        assert.lengthOf(error.data.invalidAttributes.attribute1.data, 2);
 
-        let items = error.data.invalidAttributes.attribute1.data.items;
+        let items = error.data.invalidAttributes.attribute1.data;
         assert.equal(items[0].data.index, 0);
         assert.equal(items[0].data.invalidAttributes.type.data.validator, "in");
 
@@ -77,13 +77,13 @@ describe("save and delete entities attribute test", () => {
         }
 
         assert.equal(error.data.invalidAttributes.attribute2.code, "INVALID_ATTRIBUTE");
-        assert.lengthOf(error.data.invalidAttributes.attribute2.data.items, 2);
+        assert.lengthOf(error.data.invalidAttributes.attribute2.data, 2);
 
-        items = error.data.invalidAttributes.attribute2.data.items;
+        items = error.data.invalidAttributes.attribute2.data;
         assert.equal(items[0].data.index, 0);
-        assert.lengthOf(items[0].data.invalidAttributes.entity1Entities.data.items, 1);
+        assert.lengthOf(items[0].data.invalidAttributes.entity1Entities.data, 1);
         assert.deepEqual(
-            items[0].data.invalidAttributes.entity1Entities.data.items[0],
+            items[0].data.invalidAttributes.entity1Entities.data[0],
 
             {
                 code: "INVALID_ATTRIBUTES",
@@ -107,8 +107,8 @@ describe("save and delete entities attribute test", () => {
         );
 
         assert.equal(items[1].data.index, 1);
-        assert.lengthOf(items[1].data.invalidAttributes.entity1Entities.data.items, 1);
-        assert.deepEqual(items[1].data.invalidAttributes.entity1Entities.data.items[0], {
+        assert.lengthOf(items[1].data.invalidAttributes.entity1Entities.data, 1);
+        assert.deepEqual(items[1].data.invalidAttributes.entity1Entities.data[0], {
             code: "INVALID_ATTRIBUTES",
             data: {
                 index: 0,
@@ -137,12 +137,12 @@ describe("save and delete entities attribute test", () => {
         }
 
         assert.equal(error.data.invalidAttributes.attribute2.code, "INVALID_ATTRIBUTE");
-        assert.lengthOf(error.data.invalidAttributes.attribute2.data.items, 1);
+        assert.lengthOf(error.data.invalidAttributes.attribute2.data, 1);
 
-        items = error.data.invalidAttributes.attribute2.data.items;
+        items = error.data.invalidAttributes.attribute2.data;
         assert.equal(items[0].data.index, 0);
-        assert.lengthOf(items[0].data.invalidAttributes.entity1Entities.data.items, 1);
-        assert.deepEqual(items[0].data.invalidAttributes.entity1Entities.data.items[0], {
+        assert.lengthOf(items[0].data.invalidAttributes.entity1Entities.data, 1);
+        assert.deepEqual(items[0].data.invalidAttributes.entity1Entities.data[0], {
             code: "INVALID_ATTRIBUTES",
             data: {
                 index: 2,

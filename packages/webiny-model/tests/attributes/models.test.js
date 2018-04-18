@@ -86,33 +86,30 @@ describe("attribute models test", function() {
             await model.validate();
         } catch (e) {
             const attr1 = e.data.invalidAttributes.attribute1;
-            assert.lengthOf(attr1.data.items, 2);
-            assert.equal(attr1.data.items[0].data.index, 0);
+            assert.lengthOf(attr1.data, 2);
+            assert.equal(attr1.data[0].data.index, 0);
             assert.equal(
-                attr1.data.items[0].data.invalidAttributes.name.code,
+                attr1.data[0].data.invalidAttributes.name.code,
                 ModelError.INVALID_ATTRIBUTE
             );
-            assert.equal(
-                attr1.data.items[0].data.invalidAttributes.name.data.validator,
-                "required"
-            );
-            assert.notExists(attr1.data.items[0].data.invalidAttributes.type);
+            assert.equal(attr1.data[0].data.invalidAttributes.name.data.validator, "required");
+            assert.notExists(attr1.data[0].data.invalidAttributes.type);
 
             const attr2 = e.data.invalidAttributes.attribute2;
-            assert.lengthOf(attr2.data.items, 3);
-            assert.equal(attr2.data.items[0].data.index, 0);
-            assert.equal(attr2.data.items[1].data.index, 1);
-            assert.equal(attr2.data.items[2].data.index, 2);
+            assert.lengthOf(attr2.data, 3);
+            assert.equal(attr2.data[0].data.index, 0);
+            assert.equal(attr2.data[1].data.index, 1);
+            assert.equal(attr2.data[2].data.index, 2);
 
             assert.equal(
-                attr2.data.items[0].data.invalidAttributes.firstName.code,
+                attr2.data[0].data.invalidAttributes.firstName.code,
                 ModelError.INVALID_ATTRIBUTE
             );
             assert.equal(
-                attr2.data.items[0].data.invalidAttributes.lastName.code,
+                attr2.data[0].data.invalidAttributes.lastName.code,
                 ModelError.INVALID_ATTRIBUTE
             );
-            assert.notExists(attr2.data.items[0].data.invalidAttributes.enabled);
+            assert.notExists(attr2.data[0].data.invalidAttributes.enabled);
 
             return;
         }
@@ -147,13 +144,13 @@ describe("attribute models test", function() {
             await model.validate();
         } catch (e) {
             const attr1 = e.data.invalidAttributes.attribute1;
-            assert.lengthOf(attr1.data.items, 1);
-            assert.equal(attr1.data.items[0].data.index, 2);
+            assert.lengthOf(attr1.data, 1);
+            assert.equal(attr1.data[0].data.index, 2);
             assert.equal(
-                attr1.data.items[0].data.invalidAttributes.type.code,
+                attr1.data[0].data.invalidAttributes.type.code,
                 ModelError.INVALID_ATTRIBUTE
             );
-            assert.equal(attr1.data.items[0].data.invalidAttributes.type.data.validator, "in");
+            assert.equal(attr1.data[0].data.invalidAttributes.type.data.validator, "in");
         }
     });
 
@@ -172,18 +169,16 @@ describe("attribute models test", function() {
                 invalidAttributes: {
                     attribute1: {
                         code: "INVALID_ATTRIBUTE",
-                        data: {
-                            items: [
-                                {
-                                    code: "INVALID_ATTRIBUTE",
-                                    data: {
-                                        index: 2
-                                    },
-                                    message:
-                                        "Validation failed, item at index 2 not an instance of Model class."
-                                }
-                            ]
-                        },
+                        data: [
+                            {
+                                code: "INVALID_ATTRIBUTE",
+                                data: {
+                                    index: 2
+                                },
+                                message:
+                                    "Validation failed, item at index 2 not an instance of Model class."
+                            }
+                        ],
                         message: "Validation failed."
                     }
                 }

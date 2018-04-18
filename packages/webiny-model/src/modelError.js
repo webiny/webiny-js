@@ -7,9 +7,9 @@ class ModelError extends Error {
 
     message: string;
     code: ?string;
-    data: ?Object;
+    data: mixed;
 
-    constructor(message: string = "", type: ?string = "", data: ?Object = {}) {
+    constructor(message: string = "", type: ?string = "", data: mixed = null) {
         super();
         this.message = message;
         this.code = type;

@@ -34,6 +34,6 @@ describe("ModelError class test", function() {
         const error = new ModelError();
         assert.equal(error.code, "");
         assert.equal(error.message, "");
-        assert.deepEqual(error.data, {});
+        assert.deepEqual(error.data, null);
     });
 });
