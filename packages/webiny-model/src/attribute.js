@@ -266,7 +266,7 @@ class Attribute {
     getValue(): mixed | Promise<mixed> {
         const value = this.value.getCurrent();
         if (Attribute.isEmptyValue(value)) {
-            this.value.setCurrent(this.getDefaultValue());
+            this.setValue(this.getDefaultValue());
         }
 
         return this.onGetCallback(this.value.getCurrent(), ...arguments);
