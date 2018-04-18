@@ -54,12 +54,6 @@ class Attribute {
         this.skipOnPopulate = false;
 
         /**
-         * Determines if attribute is asynchronous or not.
-         * @var bool
-         */
-        this.async = false;
-
-        /**
          * Default value.
          * @var null
          */
@@ -100,23 +94,6 @@ class Attribute {
      */
     getName(): string {
         return this.name;
-    }
-
-    /**
-     * Sets this attribute as async.
-     * @param flag
-     * @returns {Attribute}
-     */
-    setAsync(flag: boolean = true): Attribute {
-        this.async = flag;
-        return this;
-    }
-
-    /**
-     * Returns whether or not this attribute is an async attribute.
-     */
-    getAsync(): boolean {
-        return this.async;
     }
 
     /**
