@@ -37,29 +37,25 @@ class ModelsAttribute extends Attribute {
             return;
         }
 
-        this.value.set = true;
+        const finalValues = this.onSetCallback(values);
 
         // Even if the value is invalid (eg. a string), we allow it here, but calling validate() will fail.
-        if (!(values instanceof Array)) {
-            this.value.setCurrent(values);
+        if (!(finalValues instanceof Array)) {
+            this.value.setCurrent(finalValues);
             return;
         }
 
         let newValues = [];
-        for (let i = 0; i < values.length; i++) {
-            if (_.isPlainObject(values[i])) {
+        for (let i = 0; i < finalValues.length; i++) {
+            if (_.isPlainObject(finalValues[i])) {
                 const newValue = this.getModelInstance();
-                newValue.populate(_.clone(values[i]));
+                newValue.populate(_.clone(finalValues[i]));
                 newValues.push(newValue);
             } else {
-                newValues.push(values[i]);
+                newValues.push(finalValues[i]);
             }
         }
         this.value.setCurrent(newValues);
-    }
-
-    getValue(): Array<Model> | null {
-        return (super.getValue(): any);
     }
 
     async getJSONValue(): Promise<mixed> {

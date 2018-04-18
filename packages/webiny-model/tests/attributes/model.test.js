@@ -341,4 +341,31 @@ describe("attribute model test", function() {
             }
         });
     });
+
+    it("onSet/onGet must be triggered correctly", async () => {
+        const user = new User();
+        user.getAttribute("company").onSet(() => {
+            return { name: "onSet Name Value", city: "onSet City Value" };
+        });
+
+        user.populate({
+            company: {
+                name: "Webiny LTD",
+                city: "London"
+            }
+        });
+
+        assert.equal(user.company.name, "onSet Name Value");
+        assert.equal(user.company.city, "onSet City Value");
+
+        user.getAttribute("company").onGet(() => {
+            return { random: "Something overridden randomly." };
+        });
+
+        assert.deepEqual(await user.toJSON("company"), {
+            company: {
+                random: "Something overridden randomly."
+            }
+        });
+    });
 });

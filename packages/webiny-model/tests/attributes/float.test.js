@@ -46,4 +46,23 @@ describe("attribute float test", function() {
         model.attribute += 5;
         assert.equal(model.attribute, 15);
     });
+
+    it("onSet/onGet must be triggered correctly", async () => {
+        const someModel = new Model(function() {
+            this.attr("someNumber").float();
+        });
+
+        someModel.getAttribute("someNumber").onSet(() => {
+            return 555;
+        });
+
+        someModel.someNumber = 10;
+        assert.equal(someModel.someNumber, 555);
+
+        someModel.getAttribute("someNumber").onGet(() => {
+            return "random";
+        });
+
+        assert.equal(someModel.someNumber, "random");
+    });
 });

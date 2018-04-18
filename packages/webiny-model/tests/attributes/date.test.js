@@ -43,4 +43,23 @@ describe("attribute boolean test", function() {
         assert.instanceOf(model.attribute, Date);
         assert.equal(model.attribute.toISOString(), "2018-02-01T21:29:35.917Z");
     });
+
+    it("onSet/onGet must be triggered correctly", async () => {
+        const someModel = new Model(function() {
+            this.attr("createdOn").char();
+        });
+
+        someModel.getAttribute("createdOn").onSet(() => {
+            return new Date(2018, 4, 1);
+        });
+
+        someModel.createdOn = new Date();
+        assert.equal(String(someModel.createdOn), "Tue May 01 2018 00:00:00 GMT+0200 (CEST)");
+
+        someModel.getAttribute("createdOn").onGet(() => {
+            return "random";
+        });
+
+        assert.equal(someModel.createdOn, "random");
+    });
 });

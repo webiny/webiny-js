@@ -67,4 +67,18 @@ describe("attribute boolean test", function() {
         assert.equal(await model.get("dynamicSum:1:2:3:4"), "12341234");
         assert.deepEqual(await model.toJSON("dynamicSum:1:2:3:4"), { dynamicSum: "12341234" });
     });
+
+    it("onGet must be triggered correctly", async () => {
+        const someModel = new Model(function() {
+            this.attr("dynamicAttr").dynamic(() => {
+                return 5;
+            });
+        });
+
+        someModel.getAttribute("dynamicAttr").onGet(() => {
+            return "random";
+        });
+
+        assert.equal(someModel.dynamicAttr, "random");
+    });
 });

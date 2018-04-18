@@ -35,4 +35,30 @@ describe("attribute boolean test", function() {
             assert.equal(error.code, ModelError.INVALID_ATTRIBUTES);
         });
     });
+
+    it("onSet/onGet must be triggered correctly", async () => {
+        const someModel = new Model(function() {
+            this.attr("enabled").boolean();
+        });
+
+        someModel.getAttribute("enabled").onSet(() => {
+            return false;
+        });
+
+        someModel.enabled = "test";
+        assert.isFalse(someModel.enabled);
+
+        someModel.getAttribute("enabled").onSet(() => {
+            return true;
+        });
+
+        someModel.enabled = "test222";
+        assert.isTrue(someModel.enabled);
+
+        someModel.getAttribute("enabled").onGet(() => {
+            return "random";
+        });
+
+        assert.equal(someModel.enabled, "random");
+    });
 });

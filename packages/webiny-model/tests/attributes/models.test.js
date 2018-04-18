@@ -397,4 +397,40 @@ describe("attribute models test", function() {
         newModel.attribute1 = [{ name: 123, age: 123 }, { name: 234, age: 456 }];
         assert.deepEqual(await newModel.getAttribute("attribute1").getJSONValue(), [{}, {}]);
     });
+
+    it("onSet/onGet must be triggered correctly", async () => {
+        const newModel = new Model(function() {
+            this.attr("someModels").models(Model1);
+        });
+
+        newModel.getAttribute("someModels").onSet(value => {
+            const final = [];
+            value.forEach((value, index) => {
+                final.push({ name: "index-" + index });
+            });
+            return final;
+        });
+
+        newModel.populate({
+            someModels: [
+                {
+                    name: "Webiny LTD",
+                    city: "London"
+                },
+                {
+                    name: "Webiny LTD 2",
+                    city: "London 2"
+                }
+            ]
+        });
+
+        assert.equal(newModel.someModels[0].name, "index-0");
+        assert.equal(newModel.someModels[1].name, "index-1");
+
+        newModel.getAttribute("someModels").onGet(() => {
+            return "random";
+        });
+
+        assert.equal(newModel.someModels, "random");
+    });
 });

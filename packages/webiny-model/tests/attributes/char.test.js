@@ -46,4 +46,23 @@ describe("attribute char test", function() {
         model.attribute += "work";
         assert.equal(model.attribute, "this should work");
     });
+
+    it("onSet/onGet must be triggered correctly", async () => {
+        const someModel = new Model(function() {
+            this.attr("name").char();
+        });
+
+        someModel.getAttribute("name").onSet(() => {
+            return "OVERRIDE";
+        });
+
+        someModel.name = "test";
+        assert.equal(someModel.name, "OVERRIDE");
+
+        someModel.getAttribute("name").onGet(() => {
+            return "random";
+        });
+
+        assert.equal(someModel.name, "random");
+    });
 });

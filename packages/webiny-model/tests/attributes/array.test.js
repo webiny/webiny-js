@@ -140,4 +140,28 @@ describe("attribute models test", function() {
 
         await newModel.validate();
     });
+
+    it("onSet/onGet must be triggered correctly", async () => {
+        const someModel = new Model(function() {
+            this.attr("company").array();
+        });
+
+        someModel.getAttribute("company").onSet(() => {
+            return ["one", "two", "three"];
+        });
+
+        someModel.populate({
+            company: ["x", "y", "z"]
+        });
+
+        assert.deepEqual(someModel.company, ["one", "two", "three"]);
+
+        someModel.getAttribute("company").onGet(() => {
+            return ["onGetOverridden"];
+        });
+
+        assert.deepEqual(await someModel.toJSON("company"), {
+            company: ["onGetOverridden"]
+        });
+    });
 });

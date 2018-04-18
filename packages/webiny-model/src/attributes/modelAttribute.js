@@ -37,14 +37,16 @@ class ModelAttribute extends Attribute {
             return;
         }
 
+        const finalValue = this.onSetCallback(value);
+
         let newValue = null;
-        if (value instanceof Model) {
-            newValue = value;
-        } else if (_.isObject(value)) {
+        if (finalValue instanceof Model) {
+            newValue = finalValue;
+        } else if (_.isObject(finalValue)) {
             newValue = this.getModelInstance();
-            newValue.populate(value);
+            newValue.populate(finalValue);
         } else {
-            newValue = value;
+            newValue = finalValue;
         }
 
         this.value.setCurrent(newValue);
