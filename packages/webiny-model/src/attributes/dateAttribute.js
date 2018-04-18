@@ -1,6 +1,7 @@
 // @flow
 import Attribute from "./../attribute";
 import _ from "lodash";
+import DateAttributeValue from "./dateAttributeValue";
 
 class DateAttribute extends Attribute {
     async validateType(value: mixed) {
@@ -13,6 +14,14 @@ class DateAttribute extends Attribute {
         } else {
             this.value.setCurrent(value);
         }
+    }
+
+    /**
+     * Returns AttributeValue class to be used on construct.
+     * @returns {AttributeValue}
+     */
+    getAttributeValueClass() {
+        return DateAttributeValue;
     }
 }
 
