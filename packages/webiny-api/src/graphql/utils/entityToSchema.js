@@ -2,10 +2,12 @@
 import { GraphQLString, GraphQLBoolean, GraphQLInt, GraphQLNonNull } from "graphql";
 import GraphQLJSON from "graphql-type-json";
 import type { Entity } from "webiny-api";
+import { ModelError } from "webiny-model";
 import pluralize from "pluralize";
 import modelToType from "./modelToType";
 import parseBoolean from "./parseBoolean";
 import { List, SearchInput } from "./types";
+import FormattedInvalidAttributesModelError from "./FormattedInvalidAttributesModelError";
 
 export default (entityClass: Class<Entity>, schema: Object) => {
     const name = entityClass.classId;
@@ -68,7 +70,14 @@ export default (entityClass: Class<Entity>, schema: Object) => {
         },
         async resolve(root, args) {
             const entity = new entityClass();
-            await entity.populate(args.data).save();
+            try {
+                await entity.populate(args.data).save();
+            } catch (e) {
+                if (e instanceof ModelError && e.code === ModelError.INVALID_ATTRIBUTES) {
+                    throw new FormattedInvalidAttributesModelError(e);
+                }
+                throw e;
+            }
             return entity;
         }
     };
@@ -82,7 +91,14 @@ export default (entityClass: Class<Entity>, schema: Object) => {
         },
         async resolve(root, args) {
             const entity = await entityClass.findById(args.id);
-            await entity.populate(args.data).save();
+            try {
+                await entity.populate(args.data).save();
+            } catch (e) {
+                if (e instanceof ModelError && e.code === ModelError.INVALID_ATTRIBUTES) {
+                    throw new FormattedInvalidAttributesModelError(e);
+                }
+                throw e;
+            }
             return entity;
         }
     };
