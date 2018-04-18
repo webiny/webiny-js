@@ -6,7 +6,28 @@ class BooleanAttribute extends BaseBooleanAttribute {
      * @param value
      */
     setStorageValue(value) {
-        return super.setStorageValue(!!value);
+        if (value === 1) {
+            return super.setStorageValue(true);
+        }
+
+        if (value === 0) {
+            return super.setStorageValue(false);
+        }
+
+        return super.setStorageValue(value);
+    }
+
+    async getStorageValue() {
+        const value = await BaseBooleanAttribute.prototype.getStorageValue.call(this);
+        if (value === true) {
+            return 1;
+        }
+
+        if (value === false) {
+            return 0;
+        }
+
+        return value;
     }
 }
 

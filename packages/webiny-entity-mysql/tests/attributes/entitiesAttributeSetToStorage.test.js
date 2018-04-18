@@ -73,6 +73,20 @@ describe("entity attribute test", function() {
         assert.deepEqual(actual, expected);
     });
 
+    it("when setting storage value, attribute must not be set as dirty ", async () => {
+        const entity = new ComplexEntity();
+        const attribute = entity.getAttribute("simpleEntities");
+        attribute.setStorageValue(
+            `["54759eb3c090d83494e2d804","54759eb3c090d83494e2d805","54759eb3c090d83494e2d806"]`
+        );
+        assert.deepEqual(attribute.value.current, [
+            "54759eb3c090d83494e2d804",
+            "54759eb3c090d83494e2d805",
+            "54759eb3c090d83494e2d806"
+        ]);
+        assert.isFalse(attribute.value.isDirty());
+    });
+
     it("it should return null because no data was assigned", async () => {
         const entity = new ComplexEntity();
         assert.isNull(await entity.simpleEntity);

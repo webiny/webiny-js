@@ -1,5 +1,15 @@
 import { assert } from "chai";
-import DateEntity from "./../entities/dateEntity";
+
+import Entity from "./../entities/entity";
+class DateEntity extends Entity {
+    constructor() {
+        super();
+        this.attr("name").char();
+        this.attr("createdOn").date();
+    }
+}
+
+DateEntity.classId = "DateEntity";
 
 describe("date attribute test", function() {
     it("must return YYYY-MM-DD hh:mm:ss format when sending Date to storage", async () => {
@@ -26,6 +36,12 @@ describe("date attribute test", function() {
         assert.instanceOf(entity.createdOn, Date);
     });
 
+    it("must not be dirty when storage value is set", async () => {
+        const entity = new DateEntity();
+        entity.populateFromStorage({ name: "Test", createdOn: new Date(2000, 0, 1, 0) });
+        assert.isFalse(entity.getAttribute("createdOn").value.isDirty());
+    });
+
     it("must return null when sending to storage", async () => {
         const entity = new DateEntity();
         entity.name = "Test";
@@ -40,5 +56,14 @@ describe("date attribute test", function() {
         entity.populateFromStorage({ name: "Test", createdOn: null });
         assert.equal(entity.name, "Test");
         assert.isNull(entity.createdOn);
+    });
+
+    it("must return value if not instance of Date", async () => {
+        const entity = new DateEntity();
+        entity.createdOn = new Date();
+        assert.instanceOf(entity.createdOn, Date);
+
+        entity.createdOn = null;
+        assert.isNull(await entity.getAttribute("createdOn").getStorageValue());
     });
 });

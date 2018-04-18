@@ -327,5 +327,7 @@ describe("entities attribute test", function() {
         assert.equal(simpleEntities[2].id, "two");
         assert.equal(simpleEntities[1].id, "three");
         assert.equal(simpleEntities[0].id, "four");
+
+        generateIDStub.restore();
     });
 });
