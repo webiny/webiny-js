@@ -34,7 +34,7 @@ describe("save test", function() {
         await simpleEntity.save();
         assert.deepEqual(
             queryStub.getCall(1).args[0],
-            "UPDATE `SimpleEntity` SET `name` = 'test case', `slug` = 'testCase', `enabled` = 0, `tags` = '[\\\"test1\\\",\\\"test2\\\"]' WHERE (id = '" +
+            "UPDATE `SimpleEntity` SET `name` = 'test case', `slug` = 'testCase', `enabled` = 0, `tags` = '[\\\"test1\\\",\\\"test2\\\"]' WHERE (`id` = '" +
                 simpleEntity.id +
                 "') LIMIT 1"
         );

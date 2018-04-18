@@ -11,7 +11,7 @@ const like: Operator = {
         return _.has(value, "$like");
     },
     process: ({ key, value, statement }) => {
-        return key + " LIKE " + statement.escape(value["$like"]);
+        return "`" + key + "` LIKE " + statement.escape(value["$like"]);
     }
 };
 

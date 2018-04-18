@@ -33,7 +33,7 @@ const inOperator: Operator = {
             return or.process({ key, value: andValue, statement });
         }
 
-        return key + " IN(" + value.map(item => statement.escape(item)).join(", ") + ")";
+        return "`" + key + "` IN(" + value.map(item => statement.escape(item)).join(", ") + ")";
     }
 };
 export default inOperator;

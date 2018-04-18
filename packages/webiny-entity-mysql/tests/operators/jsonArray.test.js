@@ -28,12 +28,12 @@ describe("JSON comparison operator test", function() {
         const output = stmt.getWhere({
             where: { tags: { $jsonArrayStrictEquality: ["user", "avatar"] } }
         });
-        assert.equal(output, ` WHERE (tags = JSON_ARRAY('user', 'avatar'))`);
+        assert.equal(output, ` WHERE (\`tags\` = JSON_ARRAY('user', 'avatar'))`);
     });
 
     it("$jsonArrayFindValue must create a JSON_SEARCH query", () => {
         const output = stmt.getWhere({ where: { tags: { $jsonArrayFindValue: "user" } } });
-        assert.equal(output, ` WHERE (JSON_SEARCH(tags, 'one', 'user') IS NOT NULL)`);
+        assert.equal(output, ` WHERE (JSON_SEARCH(\`tags\`, 'one', 'user') IS NOT NULL)`);
     });
 
     it("multiple $jsonArrayFindValue using $or", () => {
@@ -47,7 +47,7 @@ describe("JSON comparison operator test", function() {
         });
         assert.equal(
             output,
-            ` WHERE ((JSON_SEARCH(tags, 'one', 'user') IS NOT NULL OR JSON_SEARCH(tags, 'one', 'profile') IS NOT NULL))`
+            ` WHERE ((JSON_SEARCH(\`tags\`, 'one', 'user') IS NOT NULL OR JSON_SEARCH(\`tags\`, 'one', 'profile') IS NOT NULL))`
         );
     });
 
@@ -62,7 +62,7 @@ describe("JSON comparison operator test", function() {
         });
         assert.equal(
             output,
-            ` WHERE ((JSON_SEARCH(tags, 'one', 'user') IS NOT NULL AND JSON_SEARCH(tags, 'one', 'profile') IS NOT NULL))`
+            ` WHERE ((JSON_SEARCH(\`tags\`, 'one', 'user') IS NOT NULL AND JSON_SEARCH(\`tags\`, 'one', 'profile') IS NOT NULL))`
         );
     });
 });

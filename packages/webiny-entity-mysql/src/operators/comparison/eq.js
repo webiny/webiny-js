@@ -28,7 +28,7 @@ const eq: Operator = {
     process: ({ key, value, statement }) => {
         value = _.get(value, "$eq", value);
         if (value === null) {
-            return key + " IS NULL";
+            return "`" + key + "` IS NULL";
         }
 
         const instance =
@@ -51,7 +51,7 @@ const eq: Operator = {
             }
         }
 
-        return key + " = " + statement.escape(value);
+        return "`" + key + "` = " + statement.escape(value);
     }
 };
 

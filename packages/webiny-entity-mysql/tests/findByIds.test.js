@@ -18,7 +18,7 @@ describe("findByIds test", function() {
         await SimpleEntity.findByIds(["a", "b", "c"]);
 
         assert.deepEqual(queryStub.getCall(0).args[0], [
-            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE (id IN('a', 'b', 'c')) LIMIT 10",
+            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE (`id` IN('a', 'b', 'c')) LIMIT 10",
             "SELECT FOUND_ROWS() as count"
         ]);
 

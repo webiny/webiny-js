@@ -7,7 +7,7 @@ const lt: Operator = {
         return _.has(value, "$lt");
     },
     process: ({ key, value, statement }) => {
-        return key + " < " + statement.escape(value["$lt"]);
+        return "`" + key + "` < " + statement.escape(value["$lt"]);
     }
 };
 export default lt;

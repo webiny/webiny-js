@@ -8,7 +8,7 @@ const jsonArrayFindValue: Operator = {
     },
     process: ({ key, value, statement }) => {
         value = value["$jsonArrayFindValue"];
-        return "JSON_SEARCH(" + key + ", 'one', " + statement.escape(value) + ") IS NOT NULL";
+        return "JSON_SEARCH(`" + key + "`, 'one', " + statement.escape(value) + ") IS NOT NULL";
     }
 };
 export default jsonArrayFindValue;

@@ -63,7 +63,7 @@ describe("findOne test", function() {
 
         assert.deepEqual(
             queryStub.getCall(0).args[0],
-            "SELECT * FROM `SimpleEntity` WHERE (((name LIKE '%this is%') AND age > 30)) LIMIT 1"
+            "SELECT * FROM `SimpleEntity` WHERE (((`name` LIKE '%this is%') AND `age` > 30)) LIMIT 1"
         );
 
         queryStub.restore();

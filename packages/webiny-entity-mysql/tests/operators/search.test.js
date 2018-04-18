@@ -11,7 +11,7 @@ describe("$search operator test", function() {
     });
 
     it("should generate LIKE statements, connected with OR operator", () => {
-        const sql = ` WHERE ((firstName LIKE '%adr%' OR lastName LIKE '%adr%' OR email LIKE '%adr%'))`;
+        const sql = ` WHERE ((\`firstName\` LIKE '%adr%' OR \`lastName\` LIKE '%adr%' OR \`email\` LIKE '%adr%'))`;
         let output = stmt.getWhere({
             where: {
                 $search: {
@@ -46,7 +46,7 @@ describe("$search operator test", function() {
         });
         assert.equal(
             output,
-            ` WHERE ((firstName LIKE '%adr%' AND lastName LIKE '%adr%' AND email LIKE '%adr%'))`
+            ` WHERE ((\`firstName\` LIKE '%adr%' AND \`lastName\` LIKE '%adr%' AND \`email\` LIKE '%adr%'))`
         );
     });
 });

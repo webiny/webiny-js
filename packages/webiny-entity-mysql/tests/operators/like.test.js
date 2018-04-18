@@ -12,12 +12,12 @@ describe("$like operator test", function() {
 
     it("should generate correct LIKE statements", () => {
         let output = stmt.getWhere({ where: { firstName: { $like: "John" } } });
-        assert.equal(output, ` WHERE (firstName LIKE 'John')`);
+        assert.equal(output, ` WHERE (\`firstName\` LIKE 'John')`);
 
         output = stmt.getWhere({ where: { firstName: { $like: "%ohn" } } });
-        assert.equal(output, ` WHERE (firstName LIKE '%ohn')`);
+        assert.equal(output, ` WHERE (\`firstName\` LIKE '%ohn')`);
 
         output = stmt.getWhere({ where: { firstName: { $like: "%oh%" } } });
-        assert.equal(output, ` WHERE (firstName LIKE '%oh%')`);
+        assert.equal(output, ` WHERE (\`firstName\` LIKE '%oh%')`);
     });
 });

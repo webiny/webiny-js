@@ -17,7 +17,7 @@ describe("findById test", function() {
 
         assert.deepEqual(
             queryStub.getCall(0).args[0],
-            "SELECT * FROM `SimpleEntity` WHERE (id = 'customId') LIMIT 1"
+            "SELECT * FROM `SimpleEntity` WHERE (`id` = 'customId') LIMIT 1"
         );
 
         queryStub.restore();

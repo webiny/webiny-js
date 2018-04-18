@@ -12,7 +12,10 @@ describe("$and logical operator test", function() {
 
     it("should generate correct statement", () => {
         const output = stmt.getWhere({ where: { firstName: "John", lastName: "Doe", age: 35 } });
-        assert.equal(output, ` WHERE (firstName = 'John' AND lastName = 'Doe' AND age = 35)`);
+        assert.equal(
+            output,
+            ` WHERE (\`firstName\` = 'John' AND \`lastName\` = 'Doe' AND \`age\` = 35)`
+        );
     });
 
     it("should generate correct statement with nested $and operators", () => {
@@ -25,7 +28,7 @@ describe("$and logical operator test", function() {
         });
         assert.equal(
             output,
-            ` WHERE (firstName = 'John' AND lastName = 'Doe' AND (age = 35 AND height = 6.2 AND weight = 225))`
+            ` WHERE (\`firstName\` = 'John' AND \`lastName\` = 'Doe' AND (\`age\` = 35 AND \`height\` = 6.2 AND \`weight\` = 225))`
         );
     });
 
@@ -54,7 +57,7 @@ describe("$and logical operator test", function() {
 
         assert.equal(
             output,
-            ` WHERE (firstName = 'John' AND lastName = 'Doe' AND (age = 35 AND age = 50 AND height = 6.2 AND weight = 225))`
+            ` WHERE (\`firstName\` = 'John' AND \`lastName\` = 'Doe' AND (\`age\` = 35 AND \`age\` = 50 AND \`height\` = 6.2 AND \`weight\` = 225))`
         );
     });
 });

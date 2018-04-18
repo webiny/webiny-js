@@ -46,7 +46,7 @@ describe("UPDATE statement test", function() {
 
         assert.equal(
             sql,
-            "UPDATE `TestTable` SET `name` = 'Test', `enabled` = false WHERE ((age = 30 OR deletedOn IS NOT NULL))"
+            "UPDATE `TestTable` SET `name` = 'Test', `enabled` = false WHERE ((`age` = 30 OR `deletedOn` IS NOT NULL))"
         );
     });
 });

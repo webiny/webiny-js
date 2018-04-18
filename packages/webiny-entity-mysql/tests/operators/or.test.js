@@ -20,13 +20,13 @@ describe("$or logical operator test", function() {
         });
         assert.equal(
             output,
-            " WHERE (firstName = 'John' AND lastName = 'Doe' AND (age = 35 OR height = 6.2 OR weight = 225))"
+            " WHERE (`firstName` = 'John' AND `lastName` = 'Doe' AND (`age` = 35 OR `height` = 6.2 OR `weight` = 225))"
         );
     });
 
     it("should generate correct statement with root $or operators", () => {
         const output = stmt.getWhere({ where: { $or: { firstName: "John", lastName: "Doe" } } });
-        assert.equal(output, " WHERE ((firstName = 'John' OR lastName = 'Doe'))");
+        assert.equal(output, " WHERE ((`firstName` = 'John' OR `lastName` = 'Doe'))");
     });
 
     it("should generate correct statement root $or operators", () => {
@@ -41,7 +41,7 @@ describe("$or logical operator test", function() {
         });
         assert.equal(
             output,
-            " WHERE ((firstName = 'John' OR lastName = 'Doe' OR (age = 35 AND height = 6.2 AND weight = 225)))"
+            " WHERE ((`firstName` = 'John' OR `lastName` = 'Doe' OR (`age` = 35 AND `height` = 6.2 AND `weight` = 225)))"
         );
     });
 
@@ -74,7 +74,7 @@ describe("$or logical operator test", function() {
 
         assert.equal(
             output,
-            " WHERE (firstName = 'John' AND lastName = 'Doe' AND (age = 35 OR age = 50 OR height = 6.2 OR weight = 225))"
+            " WHERE (`firstName` = 'John' AND `lastName` = 'Doe' AND (`age` = 35 OR `age` = 50 OR `height` = 6.2 OR `weight` = 225))"
         );
     });
 });

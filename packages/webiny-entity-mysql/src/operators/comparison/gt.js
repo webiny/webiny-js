@@ -7,7 +7,7 @@ const gt: Operator = {
         return _.has(value, "$gt");
     },
     process: ({ key, value, statement }) => {
-        return key + " > " + statement.escape(value["$gt"]);
+        return "`" + key + "` > " + statement.escape(value["$gt"]);
     }
 };
 export default gt;

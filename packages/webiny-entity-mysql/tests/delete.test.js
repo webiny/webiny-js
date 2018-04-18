@@ -21,7 +21,7 @@ describe("delete test", function() {
 
         assert.deepEqual(
             queryStub.getCall(0).args[0],
-            "DELETE FROM `SimpleEntity` WHERE (id = '507f1f77bcf86cd799439011') LIMIT 1"
+            "DELETE FROM `SimpleEntity` WHERE (`id` = '507f1f77bcf86cd799439011') LIMIT 1"
         );
 
         queryStub.restore();

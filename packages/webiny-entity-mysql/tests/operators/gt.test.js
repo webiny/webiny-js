@@ -12,11 +12,11 @@ describe("$gt operator test", function() {
 
     it("should generate correct statement using $gt equality operator", () => {
         const output = stmt.getWhere({ where: { age: { $gt: 30 } } });
-        assert.equal(output, ` WHERE (age > 30)`);
+        assert.equal(output, ` WHERE (\`age\` > 30)`);
     });
 
     it("should generate NULL - no conversion to number should be made", () => {
         const output = stmt.getWhere({ where: { age: { $gt: null } } });
-        assert.equal(output, ` WHERE (age > NULL)`);
+        assert.equal(output, ` WHERE (\`age\` > NULL)`);
     });
 });

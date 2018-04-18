@@ -24,7 +24,7 @@ describe("search test", function() {
         });
 
         assert.deepEqual(queryStub.getCall(0).args[0], [
-            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE ((name LIKE '%this is%' OR slug LIKE '%this is%')) LIMIT 10",
+            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE ((`name` LIKE '%this is%' OR `slug` LIKE '%this is%')) LIMIT 10",
             "SELECT FOUND_ROWS() as count"
         ]);
 
@@ -47,7 +47,7 @@ describe("search test", function() {
         });
 
         assert.deepEqual(queryStub.getCall(0).args[0], [
-            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE ((name LIKE '%this is%' AND slug LIKE '%this is%')) LIMIT 10",
+            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE ((`name` LIKE '%this is%' AND `slug` LIKE '%this is%')) LIMIT 10",
             "SELECT FOUND_ROWS() as count"
         ]);
 
@@ -69,7 +69,7 @@ describe("search test", function() {
         });
 
         assert.deepEqual(queryStub.getCall(0).args[0], [
-            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE ((name LIKE '%this is%')) LIMIT 10",
+            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE ((`name` LIKE '%this is%')) LIMIT 10",
             "SELECT FOUND_ROWS() as count"
         ]);
 
@@ -96,7 +96,7 @@ describe("search test", function() {
         });
 
         assert.deepEqual(queryStub.getCall(0).args[0], [
-            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE (((name LIKE '%this is%' OR slug LIKE '%this is%') AND age > 30 AND country = 'HR')) LIMIT 10",
+            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE (((`name` LIKE '%this is%' OR `slug` LIKE '%this is%') AND `age` > 30 AND `country` = 'HR')) LIMIT 10",
             "SELECT FOUND_ROWS() as count"
         ]);
 
@@ -123,7 +123,7 @@ describe("search test", function() {
         });
 
         assert.deepEqual(queryStub.getCall(0).args[0], [
-            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE (((name LIKE '%this is%' OR slug LIKE '%this is%') AND age <= 30)) ORDER BY createdOn DESC, id ASC LIMIT 7 OFFSET 14",
+            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE (((`name` LIKE '%this is%' OR `slug` LIKE '%this is%') AND `age` <= 30)) ORDER BY createdOn DESC, id ASC LIMIT 7 OFFSET 14",
             "SELECT FOUND_ROWS() as count"
         ]);
     });

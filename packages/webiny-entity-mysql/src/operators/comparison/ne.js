@@ -8,10 +8,10 @@ const ne: Operator = {
     },
     process: ({ key, value, statement }) => {
         if (value["$ne"] === null) {
-            return key + " IS NOT NULL";
+            return "`" + key + "` IS NOT NULL";
         }
 
-        return key + " <> " + statement.escape(value["$ne"]);
+        return "`" + key + "` <> " + statement.escape(value["$ne"]);
     }
 };
 export default ne;

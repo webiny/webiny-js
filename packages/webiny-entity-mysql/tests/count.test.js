@@ -56,7 +56,7 @@ describe("count test", function() {
 
         assert.deepEqual(
             queryStub.getCall(0).args[0],
-            "SELECT COUNT(*) AS count FROM `SimpleEntity` WHERE (((name LIKE '%this is%') AND age > 30))"
+            "SELECT COUNT(*) AS count FROM `SimpleEntity` WHERE (((`name` LIKE '%this is%') AND `age` > 30))"
         );
 
         queryStub.restore();
