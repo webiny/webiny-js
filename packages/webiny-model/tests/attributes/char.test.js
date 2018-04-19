@@ -18,7 +18,7 @@ describe("attribute char test", function() {
         assert.equal(model.attribute, null);
 
         model.attribute = undefined;
-        assert.isNull(model.attribute);
+        assert.isUndefined(model.attribute);
     });
 
     [123, 0, 0.5, {}, [], false].forEach(value => {

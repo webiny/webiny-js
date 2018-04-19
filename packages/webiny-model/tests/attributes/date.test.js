@@ -16,7 +16,7 @@ describe("attribute boolean test", function() {
         assert.equal(model.attribute, null);
 
         model.attribute = undefined;
-        assert.isNull(model.attribute);
+        assert.isUndefined(model.attribute);
     });
 
     [{}, [], true, false].forEach(value => {

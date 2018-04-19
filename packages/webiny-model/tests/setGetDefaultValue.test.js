@@ -1,7 +1,6 @@
 import { assert } from "chai";
 import Model from "./../src/model";
 import sinon from "sinon";
-const sandbox = sinon.sandbox.create();
 
 describe("setDefaultValue test", function() {
     it("should set/get default values", async () => {
@@ -19,7 +18,7 @@ describe("setDefaultValue test", function() {
                 .setDefaultValue(555);
             this.attr("something3")
                 .integer()
-                .setDefaultValue(() => 666);
+                .setDefaultValue(666);
             this.attr("createdOn")
                 .date()
                 .setValidators()
@@ -43,14 +42,7 @@ describe("setDefaultValue test", function() {
                 .setDefaultValue("test@gmail.com");
         });
 
-        const setValueSpy = sandbox.spy(model.getAttribute("email"), "setValue");
-        await model.populate({});
-
         assert.equal(model.email, "test@gmail.com");
         assert.isTrue(model.getAttribute("email").value.isDirty());
-        assert.equal(setValueSpy.callCount, 1);
-        assert.equal(setValueSpy.getCall(0).args[0], "test@gmail.com");
-
-        setValueSpy.restore();
     });
 });
