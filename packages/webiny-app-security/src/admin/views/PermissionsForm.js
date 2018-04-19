@@ -1,5 +1,5 @@
 import React from "react";
-import { GraphQLFormData } from "webiny-data-ui";
+import { GraphQLFormData, GraphQLFormError } from "webiny-data-ui";
 import Scopes from "./PermissionsForm/Scopes";
 
 import { app, i18n, createComponent } from "webiny-app";
@@ -7,7 +7,16 @@ const t = i18n.namespace("Security.PermissionsForm");
 
 class PermissionsForm extends React.Component {
     render() {
-        const { AdminLayout, Form, Section, View, Grid, Input, Button } = this.props.modules;
+        const {
+            AdminLayout,
+            Form,
+            Section,
+            View,
+            Grid,
+            Input,
+            Button,
+            Loader
+        } = this.props.modules;
 
         return (
             <AdminLayout>
@@ -28,7 +37,7 @@ class PermissionsForm extends React.Component {
                         );
                     }}
                 >
-                    {({ model, onSubmit, invalidFields }) => (
+                    {({ model, onSubmit, error, loading, invalidFields }) => (
                         <Form model={model} onSubmit={onSubmit} invalidFields={invalidFields}>
                             {({ model, form, Bind }) => {
                                 return (
@@ -40,7 +49,13 @@ class PermissionsForm extends React.Component {
                                                     : t`Security - Create permission`
                                             }
                                         />
+                                        {error && (
+                                            <View.Error>
+                                                <GraphQLFormError error={error} />
+                                            </View.Error>
+                                        )}
                                         <View.Body>
+                                            {loading && <Loader />}
                                             <Section title={t`General`} />
                                             <Grid.Row>
                                                 <Grid.Col all={6}>
@@ -103,5 +118,14 @@ class PermissionsForm extends React.Component {
 }
 
 export default createComponent(PermissionsForm, {
-    modules: [{ AdminLayout: "Admin.Layout" }, "Form", "Section", "View", "Grid", "Input", "Button"]
+    modules: [
+        { AdminLayout: "Admin.Layout" },
+        "Form",
+        "Section",
+        "View",
+        "Grid",
+        "Input",
+        "Button",
+        "Loader"
+    ]
 });

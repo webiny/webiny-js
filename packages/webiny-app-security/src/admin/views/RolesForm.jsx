@@ -1,51 +1,24 @@
 import React from "react";
-import _ from "lodash";
-import { app } from "webiny-app";
-import gql from "graphql-tag";
-
-import { i18n, createComponent } from "webiny-app";
+import { GraphQLFormData, GraphQLFormError } from "webiny-data-ui";
+import { app, i18n, createComponent } from "webiny-app";
 const t = i18n.namespace("Security.RolesForm");
 
 class RolesForm extends React.Component {
-    constructor() {
-        super();
-        this.state = { permissions: [] };
-    }
-
-    async componentWillMount() {
-        const query = gql`
-            {
-                listSecurityPermissions {
-                    list {
-                        id
-                        description
-                        name
-                        slug
-                    }
-                }
-            }
-        `;
-
-        app.graphql.query({ query }).then(response => {
-            this.setState({ permissions: response.data.listSecurityPermissions.list });
-        });
-    }
-
     render() {
         const {
             AdminLayout,
-            SecurityToggleList,
             Form,
             Section,
             View,
             Grid,
             Input,
-            Button
+            Button,
+            Loader
         } = this.props.modules;
 
         return (
             <AdminLayout>
-                <Form
+                <GraphQLFormData
                     entity="SecurityRole"
                     withRouter
                     fields="id name slug description permissions { id }"
@@ -62,66 +35,77 @@ class RolesForm extends React.Component {
                         );
                     }}
                 >
-                    {({ model, form }) => (
-                        <View.Form>
-                            <View.Header
-                                title={
-                                    model.id ? t`Security - Edit Role` : t`Security - Create Role`
-                                }
-                            />
-                            <View.Body>
-                                <Section title={t`General`} />
-                                <Grid.Row>
-                                    <Grid.Col all={6}>
-                                        <Input label={t`Name`} name="name" validate="required" />
-                                    </Grid.Col>
-                                    <Grid.Col all={6}>
-                                        <Input label={t`Slug`} name="slug" validate="required" />
-                                    </Grid.Col>
-                                </Grid.Row>
-                                <Grid.Row>
-                                    <Grid.Col all={12}>
-                                        <Input
-                                            label={t`Description`}
-                                            name="description"
-                                            validate="required"
-                                        />
-                                    </Grid.Col>
-                                </Grid.Row>
-                                <SecurityToggleList
-                                    options={this.state.permissions}
-                                    value={model.permissions}
-                                    onChange={permission => {
-                                        form.setState(state => {
-                                            const permissionIndex = _.findIndex(
-                                                state.model.permissions,
-                                                { id: permission.id }
-                                            );
-
-                                            if (permissionIndex >= 0) {
-                                                state.model.permissions.splice(permissionIndex, 1);
-                                            } else {
-                                                state.model.permissions.push({ id: permission.id });
+                    {({ model, onSubmit, invalidFields, error, loading }) => (
+                        <Form model={model} onSubmit={onSubmit} invalidFields={invalidFields}>
+                            {({ model, form, Bind }) => {
+                                return (
+                                    <View.Form>
+                                        <View.Header
+                                            title={
+                                                model.id
+                                                    ? t`Security - Edit Role`
+                                                    : t`Security - Create Role`
                                             }
-
-                                            console.log("setao se state");
-                                            return state;
-                                        });
-                                    }}
-                                />
-                            </View.Body>
-                            <View.Footer>
-                                <Button type="default" onClick={form.cancel} label={t`Go back`} />
-                                <Button
-                                    type="primary"
-                                    onClick={form.submit}
-                                    label={t`Save role`}
-                                    align="right"
-                                />
-                            </View.Footer>
-                        </View.Form>
+                                        />
+                                        {error && (
+                                            <View.Error>
+                                                <GraphQLFormError error={error} />
+                                            </View.Error>
+                                        )}
+                                        <View.Body>
+                                            {loading && <Loader />}
+                                            <Section title={t`General`} />
+                                            <Grid.Row>
+                                                <Grid.Col all={6}>
+                                                    <Bind>
+                                                        <Input
+                                                            label={t`Name`}
+                                                            name="name"
+                                                            validate="required"
+                                                        />
+                                                    </Bind>
+                                                </Grid.Col>
+                                                <Grid.Col all={6}>
+                                                    <Bind>
+                                                        <Input
+                                                            label={t`Slug`}
+                                                            name="slug"
+                                                            validate="required"
+                                                        />
+                                                    </Bind>
+                                                </Grid.Col>
+                                            </Grid.Row>
+                                            <Grid.Row>
+                                                <Grid.Col all={12}>
+                                                    <Bind>
+                                                        <Input
+                                                            label={t`Description`}
+                                                            name="description"
+                                                            validate="required"
+                                                        />
+                                                    </Bind>
+                                                </Grid.Col>
+                                            </Grid.Row>
+                                        </View.Body>
+                                        <View.Footer>
+                                            <Button
+                                                type="default"
+                                                onClick={() => app.router.goToRoute("Roles.List")}
+                                                label={t`Go back`}
+                                            />
+                                            <Button
+                                                type="primary"
+                                                onClick={form.submit}
+                                                label={t`Save role`}
+                                                align="right"
+                                            />
+                                        </View.Footer>
+                                    </View.Form>
+                                );
+                            }}
+                        </Form>
                     )}
-                </Form>
+                </GraphQLFormData>
             </AdminLayout>
         );
     }
@@ -135,8 +119,8 @@ export default createComponent(RolesForm, {
         "Button",
         "Grid",
         "Section",
+        "Loader",
         {
-            SecurityToggleList: "Security.SecurityToggleList",
             AdminLayout: "Admin.Layout"
         }
     ]
