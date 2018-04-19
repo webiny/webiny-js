@@ -2,7 +2,7 @@ import React from "react";
 import { GraphQLFormData } from "webiny-data-ui";
 import Scopes from "./PermissionsForm/Scopes";
 
-import { i18n, createComponent } from "webiny-app";
+import { app, i18n, createComponent } from "webiny-app";
 const t = i18n.namespace("Security.PermissionsForm");
 
 class PermissionsForm extends React.Component {
@@ -79,7 +79,9 @@ class PermissionsForm extends React.Component {
                                         <View.Footer>
                                             <Button
                                                 type="default"
-                                                onClick={form.cancel}
+                                                onClick={() =>
+                                                    app.router.goToRoute("Permissions.List")
+                                                }
                                                 label={t`Go back`}
                                             />
                                             <Button
