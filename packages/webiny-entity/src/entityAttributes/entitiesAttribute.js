@@ -17,9 +17,6 @@ class EntitiesAttribute extends Attribute {
     ) {
         super(name, attributesContainer, entity);
 
-        // This attribute is async because we need to load entities both on set and get calls.
-        this.async = true;
-
         this.classes = {
             parent: this.getParentModel().getParentEntity().constructor.name,
             entities: { class: entity, attribute: attributeName },
