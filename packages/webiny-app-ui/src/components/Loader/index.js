@@ -32,7 +32,6 @@ class Loader extends React.Component {
         }
 
         if (this.state.show) {
-            console.log("Loader rendered!");
             const { styles } = this.props;
             return (
                 <div
