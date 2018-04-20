@@ -25,7 +25,7 @@ const includeManager = app => {
 
     app.router.addRoute({
         name: "Users.Create",
-        path: "/views/Users/new",
+        path: "/Users/new",
         component: () => import("./views/UsersForm").then(m => m.default),
         title: "Security - Create User",
         role: securityManageUsers
@@ -33,7 +33,7 @@ const includeManager = app => {
 
     app.router.addRoute({
         name: "Users.Edit",
-        path: "/views/users/:id",
+        path: "/users/:id",
         component: () => import("./views/UsersForm").then(m => m.default),
         title: "Security - Edit User",
         role: securityManageUsers
@@ -41,7 +41,7 @@ const includeManager = app => {
 
     app.router.addRoute({
         name: "Users.List",
-        path: "/views/users",
+        path: "/users",
         component: () => import("./views/UsersList").then(m => m.default),
         title: "Security - Users",
         role: securityManageUsers
@@ -49,7 +49,7 @@ const includeManager = app => {
 
     app.router.addRoute({
         name: "Roles.Create",
-        path: "/views/roles/new",
+        path: "/roles/new",
         component: () => import("./views/RolesForm").then(m => m.default),
         title: "Security - Create Role",
         role: securityManageUsers
@@ -57,7 +57,7 @@ const includeManager = app => {
 
     app.router.addRoute({
         name: "Roles.Edit",
-        path: "/views/roles/:id",
+        path: "/roles/:id",
         component: () => import("./views/RolesForm").then(m => m.default),
         title: "Security - Edit Role",
         role: securityManageUsers
@@ -65,7 +65,7 @@ const includeManager = app => {
 
     app.router.addRoute({
         name: "Roles.List",
-        path: "/views/roles",
+        path: "/roles",
         component: () => import("./views/RolesList").then(m => m.default),
         title: "Security - Roles",
         role: securityManageUsers
@@ -73,7 +73,7 @@ const includeManager = app => {
 
     app.router.addRoute({
         name: "RoleGroups.Create",
-        path: "/views/role-groups/new",
+        path: "/role-groups/new",
         component: () => import("./views/RoleGroupsForm").then(m => m.default),
         title: "Security - Create Role Group",
         role: securityManageUsers
@@ -81,7 +81,7 @@ const includeManager = app => {
 
     app.router.addRoute({
         name: "RoleGroups.Edit",
-        path: "/views/role-groups/:id",
+        path: "/role-groups/:id",
         component: () => import("./views/RoleGroupsForm").then(m => m.default),
         title: "Security - Edit Role Group",
         role: securityManageUsers
@@ -89,7 +89,7 @@ const includeManager = app => {
 
     app.router.addRoute({
         name: "RoleGroups.List",
-        path: "/views/role-groups",
+        path: "/role-groups",
         component: () => import("./views/RoleGroupsList").then(m => m.default),
         title: "Security - Role Groups",
         role: securityManageUsers
@@ -97,7 +97,7 @@ const includeManager = app => {
 
     app.router.addRoute({
         name: "Permissions.Create",
-        path: "/views/permissions/new",
+        path: "/permissions/new",
         component: () => import("./views/PermissionsForm").then(m => m.default),
         title: "Security - Create Permission",
         role: securityManageUsers
@@ -105,7 +105,7 @@ const includeManager = app => {
 
     app.router.addRoute({
         name: "Permissions.Edit",
-        path: "/views/permissions/:id",
+        path: "/permissions/:id",
         component: () => import("./views/PermissionsForm").then(m => m.default),
         title: "Security - Edit Permission",
         role: securityManageUsers
@@ -113,7 +113,7 @@ const includeManager = app => {
 
     app.router.addRoute({
         name: "Permissions.List",
-        path: "/views/permissions",
+        path: "/permissions",
         component: () => import("./views/PermissionsList").then(m => m.default),
         title: "Security - Permissions",
         role: securityManageUsers

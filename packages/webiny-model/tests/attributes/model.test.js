@@ -333,6 +333,7 @@ describe("attribute model test", function() {
                 name: "Webiny LTD",
                 city: "London",
                 image: {
+                    visible: false,
                     file: "webiny.jpg",
                     size: {
                         width: 12.5

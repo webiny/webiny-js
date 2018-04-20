@@ -189,7 +189,7 @@ describe("attribute models test", function() {
         throw Error("Error should've been thrown.");
     });
 
-    it("validation must be execute on both attribute and model level", async () => {
+    it("validation must be executed on both attribute and model level", async () => {
         const newModel = new Model(function() {
             this.attr("attribute1")
                 .models(Model1)
@@ -210,7 +210,7 @@ describe("attribute models test", function() {
                     code: "INVALID_ATTRIBUTE",
                     data: {
                         message: "Value is required.",
-                        value: [],
+                        value: null,
                         validator: "required"
                     },
                     message: "Invalid attribute."

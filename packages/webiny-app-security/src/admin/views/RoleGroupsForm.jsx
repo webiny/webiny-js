@@ -1,11 +1,10 @@
 import React from "react";
 import { GraphQLFormData, GraphQLFormError } from "webiny-data-ui";
-import Scopes from "./PermissionsForm/Scopes";
-
 import { app, i18n, createComponent } from "webiny-app";
-const t = i18n.namespace("Security.PermissionsForm");
 
-class PermissionsForm extends React.Component {
+const t = i18n.namespace("Security.RoleGroupsForm");
+
+class RoleGroupsForm extends React.Component {
     render() {
         const {
             AdminLayout,
@@ -21,23 +20,19 @@ class PermissionsForm extends React.Component {
         return (
             <AdminLayout>
                 <GraphQLFormData
-                    entity="SecurityPermission"
+                    entity="SecurityRoleGroup"
                     withRouter
-                    fields="id name slug description scope createdOn"
-                    onSubmitSuccess="Permissions.List"
-                    onCancel="Permissions.List"
-                    defaultModel={{ scope: {} }}
-                    onSuccessMessage={({ model }) => {
-                        return (
-                            <span>
-                                {t`Permission {permission} was saved successfully!`({
-                                    permission: <strong>{model.name}</strong>
-                                })}
-                            </span>
-                        );
-                    }}
+                    fields="id name slug description roles { id }"
+                    defaultModel={{ roles: [] }}
+                    onSubmitSuccess="RoleGroups.List"
+                    onCancel="RoleGroups.List"
+                    onSuccessMessage={({ model }) => (
+                        <span>
+                            {t`Role group {group} was saved successfully!`({ group: model.name })}
+                        </span>
+                    )}
                 >
-                    {({ model, onSubmit, error, loading, invalidFields }) => (
+                    {({ model, onSubmit, error, invalidFields, loading }) => (
                         <Form model={model} onSubmit={onSubmit} invalidFields={invalidFields}>
                             {({ model, form, Bind }) => {
                                 return (
@@ -45,8 +40,8 @@ class PermissionsForm extends React.Component {
                                         <View.Header
                                             title={
                                                 model.id
-                                                    ? t`Security - Edit permission`
-                                                    : t`Security - Create permission`
+                                                    ? t`Security - Edit Role Group`
+                                                    : t`Security - Create Role Group`
                                             }
                                         />
                                         {error && (
@@ -69,7 +64,11 @@ class PermissionsForm extends React.Component {
                                                 </Grid.Col>
                                                 <Grid.Col all={6}>
                                                     <Bind>
-                                                        <Input label={t`Slug`} name="slug" />
+                                                        <Input
+                                                            label={t`Slug`}
+                                                            name="slug"
+                                                            validate="required"
+                                                        />
                                                     </Bind>
                                                 </Grid.Col>
                                             </Grid.Row>
@@ -84,25 +83,19 @@ class PermissionsForm extends React.Component {
                                                     </Bind>
                                                 </Grid.Col>
                                             </Grid.Row>
-                                            <br />
-                                            <Grid.Row>
-                                                <Grid.Col all={12}>
-                                                    <Scopes model={model} form={form} />
-                                                </Grid.Col>
-                                            </Grid.Row>
                                         </View.Body>
                                         <View.Footer>
                                             <Button
                                                 type="default"
                                                 onClick={() =>
-                                                    app.router.goToRoute("Permissions.List")
+                                                    app.router.goToRoute("RoleGroups.List")
                                                 }
                                                 label={t`Go back`}
                                             />
                                             <Button
                                                 type="primary"
                                                 onClick={form.submit}
-                                                label={t`Save permission`}
+                                                label={t`Save role group`}
                                                 align="right"
                                             />
                                         </View.Footer>
@@ -117,15 +110,17 @@ class PermissionsForm extends React.Component {
     }
 }
 
-export default createComponent(PermissionsForm, {
+export default createComponent(RoleGroupsForm, {
     modules: [
-        { AdminLayout: "Admin.Layout" },
         "Form",
-        "Section",
         "View",
-        "Grid",
         "Input",
         "Button",
-        "Loader"
+        "Grid",
+        "Section",
+        "Loader",
+        {
+            AdminLayout: "Admin.Layout"
+        }
     ]
 });

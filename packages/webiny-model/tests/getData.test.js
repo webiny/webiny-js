@@ -13,12 +13,7 @@ describe("setOnce test", function() {
                 .setValidators("required");
         });
 
-        let error = null;
-        try {
-            await model.populate({ email: "john@gmail.com", something: "cool" });
-        } catch (e) {
-            error = e;
-        }
+        await model.populate({ email: "john@gmail.com", something: "cool" });
 
         model.something = "warm";
         model.email = "john2@gmail.com";

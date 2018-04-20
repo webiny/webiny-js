@@ -1,5 +1,4 @@
 // @flow
-import _ from "lodash";
 import { validation } from "webiny-validation";
 import ModelError from "./modelError";
 import AttributeValue from "./attributeValue";
@@ -134,7 +133,7 @@ class Attribute {
      * @returns {boolean}
      */
     hasValidators(): boolean {
-        return !_.isEmpty(this.validators);
+        return !!this.validators;
     }
 
     async getValidationValue() {
@@ -146,12 +145,12 @@ class Attribute {
      * @throws AttributeValidationException
      */
     async validate(): Promise<void> {
-        const value = await this.getValidationValue();
-        const valueValidation = this.isSet() && !Attribute.isEmptyValue(value);
+        const validationValue = this.isSet() ? await this.getValidationValue() : null;
+        const validateTypeValue = this.isSet() && !Attribute.isEmptyValue(validationValue);
 
-        valueValidation && (await this.validateType(value));
-        await this.validateAttribute(value);
-        valueValidation && (await this.validateValue(value));
+        validateTypeValue && (await this.validateType(validationValue));
+        this.hasValidators() && (await this.validateAttribute(validationValue));
+        validateTypeValue && (await this.validateValue(validationValue));
     }
 
     /**
@@ -264,11 +263,6 @@ class Attribute {
      * @returns {*}
      */
     getValue(): mixed | Promise<mixed> {
-        const value = this.value.getCurrent();
-        if (Attribute.isEmptyValue(value)) {
-            this.setValue(this.getDefaultValue());
-        }
-
         return this.onGetCallback(this.value.getCurrent(), ...arguments);
     }
 
@@ -314,16 +308,8 @@ class Attribute {
      * Sets default attribute value.
      */
     setDefaultValue(defaultValue: ?mixed): this {
-        this.defaultValue = defaultValue;
+        this.setValue(defaultValue);
         return this;
-    }
-
-    /**
-     * Returns default attribute value.
-     */
-    getDefaultValue() {
-        let defaultValue = this.defaultValue;
-        return typeof defaultValue === "function" ? defaultValue() : defaultValue;
     }
 
     /**

@@ -18,7 +18,7 @@ describe("attribute float test", function() {
         assert.equal(model.attribute, null);
 
         model.attribute = undefined;
-        assert.isNull(model.attribute);
+        assert.isUndefined(model.attribute);
     });
 
     ["1", "0", "0.5", {}, [], true, false].forEach(value => {
