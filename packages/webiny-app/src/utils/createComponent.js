@@ -2,6 +2,7 @@ import React from "react";
 import _ from "lodash";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import ErrorBoundary from "react-error-boundary";
+import { app } from "./../index";
 import LazyLoad from "./../components/LazyLoad.cmp";
 
 const hocCompose = components => {
@@ -57,6 +58,14 @@ export default (components, options = {}) => {
             props.ref = c => (this.component = c);
 
             props.styles = { ...defaultStyles };
+
+            // Inject services
+            if (options.services) {
+                props.services = options.services.reduce((services, name) => {
+                    services[name] = app.services.get(name);
+                    return services;
+                }, {});
+            }
 
             // If new styles are given, merge them with default styles
             if (_.isPlainObject(this.props.styles)) {
