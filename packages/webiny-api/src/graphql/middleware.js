@@ -3,6 +3,7 @@ import expressGraphQL from "express-graphql";
 import { app } from "webiny-api";
 
 const formatError = err => {
+    console.error(err);
     return {
         message: err.message,
         code: err.originalError && err.originalError.code,

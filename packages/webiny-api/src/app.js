@@ -5,9 +5,11 @@ import compose from "webiny-compose";
 import { ServiceManager } from "webiny-service-manager";
 import GraphQL from "./graphql/GraphQL";
 import EntityManager from "./entities/EntityManager";
-import { Entity } from "./index";
+import { Entity, File, Image } from "./index";
+import type Schema from "./graphql/Schema";
 
 // Attributes registration functions
+import convertToGraphQL from "./attributes/convertToGraphQL";
 import registerBufferAttribute from "./attributes/registerBufferAttribute";
 import registerFileAttributes from "./attributes/registerFileAttributes";
 import registerImageAttributes from "./attributes/registerImageAttributes";
@@ -26,6 +28,12 @@ class Api {
         this.services = new ServiceManager();
         this.entities = new EntityManager();
         this.apps = [];
+
+        this.graphql.schema((schema: Schema) => {
+            schema.addAttributeConverter(convertToGraphQL);
+            schema.addEntity(File);
+            schema.addEntity(Image);
+        });
     }
 
     getRequest(): express$Request {

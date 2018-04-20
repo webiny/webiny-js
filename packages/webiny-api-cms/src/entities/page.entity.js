@@ -1,7 +1,8 @@
 // @flow
 import { Entity } from "webiny-api";
-import Revision from "./revision.entity";
 import Category from "./category.entity";
+import WidgetModel from "./widget.model";
+import Revision from "./revision.entity";
 
 class Page extends Entity {
     constructor() {
@@ -15,7 +16,12 @@ class Page extends Entity {
             .char()
             .setValidators("required");
 
-        this.attr("revisions").entities(Revision);
+        this.attr("content").models(WidgetModel);
+
+        this.attr("activeRevision").dynamic(async () => {
+            const rev = await Revision.findOne({ query: { page: this.id, active: true } });
+            return rev ? rev.toJSON("id") : {};
+        });
 
         this.attr("category")
             .entity(Category)
@@ -25,6 +31,18 @@ class Page extends Entity {
             .char()
             .setValidators("in:draft:published:trash")
             .setDefaultValue("draft");
+
+        this.on("afterCreate", async () => {
+            const revision = new Revision();
+            revision.populate({
+                page: this,
+                title: this.title,
+                slug: this.slug,
+                name: "Revision #1",
+                active: true
+            });
+            await revision.save();
+        }).setOnce();
     }
 }
 

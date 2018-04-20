@@ -5,4 +5,4 @@ export { app };
 
 export { default as graphql } from "./graphql/middleware";
 export { Entity, File, Image } from "./entities";
-export { default as MySQLTable } from "./tables/mySQL";
+export { default as MySQLTable } from "./mysql/mysql";

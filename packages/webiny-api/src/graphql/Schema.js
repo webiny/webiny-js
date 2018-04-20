@@ -1,9 +1,16 @@
 // @flow
 import { GraphQLSchema, GraphQLObjectType, GraphQLDirective } from "graphql";
 import type { Entity } from "webiny-api";
-import entityToSchema from "./utils/entityToSchema";
+import addEntityToSchema from "./utils/addEntityToSchema";
+import addCrudOperations from "./utils/addCrudOperations";
+import addDefaultTypes from "./utils/addDefaultTypes";
+
+declare type SchemaEntityOptions = {
+    crud: boolean
+};
 
 class Schema {
+    attributeConverters: Array<Function>;
     types: Object;
     query: Object;
     mutation: Object;
@@ -12,20 +19,36 @@ class Schema {
     beforeGraphQLSchema: Array<Function>;
 
     constructor() {
+        this.attributeConverters = [];
         this.types = {};
         this.query = {};
         this.mutation = {};
         this.directives = [];
         this.schemaHandlers = [];
         this.beforeGraphQLSchema = [];
+
+        addDefaultTypes(this);
     }
 
-    crud(entityClass: Class<Entity>) {
-        try {
-            entityToSchema(entityClass, this);
-        } catch (e) {
-            console.error(e);
+    addType(data: { meta: Object, type: GraphQLObjectType }) {
+        this.types[data.type.name] = data;
+    }
+
+    getType(name: string) {
+        return (this.types[name] && this.types[name].type) || null;
+    }
+
+    addEntity(entityClass: Class<Entity>, options?: SchemaEntityOptions = { crud: true }) {
+        // 1. Create entity type (and all related types recursively)
+        addEntityToSchema(entityClass, this);
+        // 2. optionally create CRUD fields
+        if (options && options.crud) {
+            addCrudOperations(entityClass, this);
         }
+    }
+
+    addAttributeConverter(converter: Function) {
+        this.attributeConverters.unshift(converter);
     }
 
     generate(): GraphQLSchema {

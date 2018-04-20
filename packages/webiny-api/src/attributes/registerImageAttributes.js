@@ -1,6 +1,6 @@
 // @flow
 import { EntityAttributesContainer } from "webiny-entity";
-import { Entity } from "webiny-api";
+import { Entity, Image } from "webiny-api";
 import ImageAttribute from "./imageAttribute";
 import type { ImageProcessor } from "../../types";
 import type { Storage } from "webiny-file-storage";
@@ -12,6 +12,10 @@ export default (config: {
     storage: Storage,
     quality: number
 }) => {
+    Image.prototype.storage = config.storage;
+    Image.prototype.processor = config.processor;
+    Image.prototype.quality = config.quality;
+
     /**
      * Image attribute
      * @package webiny-api

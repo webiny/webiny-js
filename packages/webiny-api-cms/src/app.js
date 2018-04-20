@@ -1,14 +1,19 @@
 // @flow
 import Page from "./entities/page.entity";
-import Category from "./entities/category.entity";
 import Revision from "./entities/revision.entity";
+import Category from "./entities/category.entity";
+import Widget from "./entities/widget.entity";
+import addPageQueries from "./queries/page";
 
 export default () => {
     return ({ app }: Object, next: Function) => {
         app.graphql.schema(schema => {
-            schema.crud(Page);
-            schema.crud(Category);
-            schema.crud(Revision);
+            schema.addEntity(Page);
+            schema.addEntity(Category);
+            schema.addEntity(Revision);
+            schema.addEntity(Widget);
+
+            addPageQueries(schema);
         });
 
         next();
