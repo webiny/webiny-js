@@ -31,7 +31,7 @@ export default function(functions: Array<Function> = []): Function {
                         return next();
                     })
                     .then(() => {
-                        parentResolve();
+                        parentResolve(params);
                     })
                     .catch(e => {
                         parentReject(e);
