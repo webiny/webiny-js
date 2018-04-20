@@ -1,5 +1,6 @@
 import React from "react";
 import _ from "lodash";
+import invariant from "invariant";
 import linkState from "./linkState";
 import validation from "./validation";
 
@@ -228,6 +229,8 @@ class Form extends React.Component {
     registerComponent({ children: input, beforeChange, afterChange }) {
         const props = { ...input.props };
 
+        invariant(props.name, "To bind a component you must specify a `name` prop!");
+
         this.lastRender.push(props.name);
 
         this.inputs[props.name] = {};
@@ -337,6 +340,7 @@ class Form extends React.Component {
                 {children.call(this, {
                     model: _.cloneDeep(this.state.model),
                     form: this,
+                    submit: this.submit,
                     Bind: this.registerComponent
                 })}
             </webiny-form-container>
