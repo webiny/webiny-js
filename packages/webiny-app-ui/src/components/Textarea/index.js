@@ -5,14 +5,6 @@ import { FormComponent } from "webiny-app-ui";
 import styles from "./styles.css";
 
 class Textarea extends React.Component {
-    constructor(props) {
-        super();
-
-        this.state = {
-            ...props.initialState
-        };
-    }
-
     render() {
         const { modules: { FormGroup, DelayedOnChange }, styles } = this.props;
 
@@ -29,10 +21,14 @@ class Textarea extends React.Component {
         };
 
         return (
-            <FormGroup valid={this.state.isValid} className={this.props.className}>
+            <FormGroup valid={this.props.validation.isValid} className={this.props.className}>
                 {this.props.renderLabel.call(this)}
-                <DelayedOnChange delay={this.props.delay}>
-                    <textarea {...props} />
+                <DelayedOnChange
+                    delay={this.props.delay}
+                    value={this.props.value}
+                    onChange={this.props.onChange}
+                >
+                    {doc => <textarea {...props} {...doc} />}
                 </DelayedOnChange>
                 {this.props.renderDescription.call(this)}
                 {this.props.renderValidationMessage.call(this)}

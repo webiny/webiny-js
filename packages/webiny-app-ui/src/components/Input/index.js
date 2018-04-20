@@ -41,12 +41,17 @@ class Input extends React.Component {
 
         const props = {
             "data-on-enter": this.props.onEnter !== _.noop,
-            onBlur: this.props.validate ? this.props.validate : this.props.onBlur,
+            onBlur: () => {
+                if (this.props.validate) {
+                    this.props.validate().then(this.props.onBlur);
+                } else {
+                    this.props.onBlur();
+                }
+            },
             disabled: this.props.disabled,
             readOnly: this.props.readOnly,
             type: this.props.type,
             className: styles.input,
-            value: this.props.value || "",
             placeholder: this.props.placeholder,
             onKeyUp: event => this.props.onKeyUp({ event, component: this }),
             onKeyDown: event =>
@@ -56,7 +61,6 @@ class Input extends React.Component {
                     event,
                     component: this
                 }),
-            onChange: this.props.onChange,
             autoFocus: this.props.autoFocus,
             ref: ref => {
                 this.dom = ref;
@@ -102,8 +106,12 @@ class Input extends React.Component {
                 <div className={wrapperClassName}>
                     {iconLeft}
                     {addonLeft}
-                    <DelayedOnChange delay={this.props.delay}>
-                        <input {...props} />
+                    <DelayedOnChange
+                        delay={this.props.delay}
+                        value={this.props.value || ""}
+                        onChange={this.props.onChange}
+                    >
+                        {doc => <input {...props} {...doc} />}
                     </DelayedOnChange>
                     {addonRight}
                     {iconRight}

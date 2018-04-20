@@ -1,5 +1,5 @@
-import React from 'react';
-import _ from 'lodash';
+import React from "react";
+import _ from "lodash";
 
 /**
  * This component is used to wrap Input and Textarea components to optimize form re-render.
@@ -11,13 +11,12 @@ import _ from 'lodash';
  * a user stops typing for given period of time (400ms by default).
  */
 class DelayedOnChange extends React.Component {
-
     constructor(props) {
         super(props);
 
         this.delay = null;
         this.state = {
-            value: this.getChildElement(props).props.value
+            value: props.value || ""
         };
 
         this.applyValue = this.applyValue.bind(this);
@@ -25,15 +24,15 @@ class DelayedOnChange extends React.Component {
     }
 
     componentWillReceiveProps(props) {
-        if (!this.delay) {
-            this.setState({ value: this.getChildElement(props).props.value });
+        if (props.value !== this.props.value) {
+            this.setState({ value: props.value || "" });
         }
     }
 
     applyValue(value, callback = _.noop) {
         clearTimeout(this.delay);
         this.delay = null;
-        this.realOnChange(value, callback);
+        this.props.onChange(value, callback);
     }
 
     changed() {
@@ -42,38 +41,32 @@ class DelayedOnChange extends React.Component {
         this.delay = setTimeout(() => this.applyValue(this.state.value), this.props.delay);
     }
 
-    getChildElement(props = null) {
-        if (!props) {
-            props = this.props;
-        }
-
-        return React.Children.toArray(props.children)[0];
-    }
-
     render() {
-        const childElement = this.getChildElement();
-        this.realOnChange = childElement.props.onChange;
-        const props = _.omit(childElement.props, ['onChange']);
-        props.value = this.state.value;
-        props.onChange = e => {
-            const value = _.isString(e) ? e : e.target.value;
-            this.setState({ value }, this.changed);
-        };
+        const childElement = this.props.children({
+            value: this.state.value,
+            onChange: e => {
+                const value = _.isString(e) ? e : e.target.value;
+                this.setState({ value }, this.changed);
+            }
+        });
+
+        const props = { ...childElement.props };
+
         const realOnKeyDown = props.onKeyDown || _.noop;
         const realOnBlur = props.onBlur || _.noop;
-        
+
         // Need to apply value if input lost focus
-        props.onBlur = (e) => {
+        props.onBlur = e => {
             e.persist();
             this.applyValue(e.target.value, () => realOnBlur(e));
         };
 
         // Need to listen for TAB key to apply new value immediately, without delay. Otherwise validation will be triggered with old value.
-        props.onKeyDown = (e) => {
+        props.onKeyDown = e => {
             e.persist();
-            if (e.key === 'Tab') {
+            if (e.key === "Tab") {
                 this.applyValue(e.target.value, () => realOnKeyDown(e));
-            } else if (e.key === 'Enter' && props['data-on-enter']) {
+            } else if (e.key === "Enter" && props["data-on-enter"]) {
                 this.applyValue(e.target.value, () => realOnKeyDown(e));
             } else {
                 realOnKeyDown(e);

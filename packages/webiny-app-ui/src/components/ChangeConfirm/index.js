@@ -54,7 +54,10 @@ class ChangeConfirm extends React.Component {
             message: () => this.message,
             onConfirm: this.onConfirm,
             onCancel: this.onCancel,
-            onComplete: this.props.onComplete
+            onComplete: this.props.onComplete,
+            title: this.props.title,
+            confirm: this.props.confirm,
+            cancel: this.props.cancel
         };
 
         const { modules: { Modal } } = this.props;
@@ -74,7 +77,10 @@ class ChangeConfirm extends React.Component {
 }
 
 ChangeConfirm.defaultProps = {
+    title: t`Confirmation required`,
     message: t`Confirm value change?`,
+    confirm: t`Yes`,
+    cancel: t`No`,
     onComplete: _.noop,
     onCancel: _.noop,
     renderDialog: null
