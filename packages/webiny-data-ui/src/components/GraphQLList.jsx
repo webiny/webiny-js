@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { app, createComponent } from "webiny-app";
 import ListContext from "./GraphQLListContext";
-import crud from "./../utils/crud";
+import crud from "./../utils/operationGenerator";
 
 class GraphQLList extends React.Component {
     constructor(props) {
@@ -13,8 +13,6 @@ class GraphQLList extends React.Component {
             meta: {},
             loading: false
         };
-
-        this.mounted = false;
 
         this.loadRecords = this.loadRecords.bind(this);
         this.updateRecord = this.updateRecord.bind(this);
@@ -28,9 +26,9 @@ class GraphQLList extends React.Component {
 
         if (entity) {
             actions = actions || {};
-            actions.list = actions.list || crud.createListQuery(entity, fields);
-            actions.update = actions.update || crud.createUpdateQuery(entity, fields);
-            actions.delete = actions.delete || crud.createDeleteQuery(entity, fields);
+            actions.list = actions.list || crud.generateList(entity, fields);
+            actions.update = actions.update || crud.generateUpdate(entity, fields);
+            actions.delete = actions.delete || crud.generateDelete(entity, fields);
         }
 
         this.actions = actions;
@@ -61,10 +59,6 @@ class GraphQLList extends React.Component {
         if (shouldLoad) {
             this.loadRecords(props);
         }
-    }
-
-    componentWillUnmount() {
-        this.mounted = false;
     }
 
     loadRecords(props = null, showLoading = true) {
@@ -139,6 +133,7 @@ class GraphQLList extends React.Component {
 }
 
 GraphQLList.defaultProps = {
+    onReady: _.noop,
     autoRefresh: false
 };
 
