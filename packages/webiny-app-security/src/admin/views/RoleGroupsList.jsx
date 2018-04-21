@@ -1,5 +1,4 @@
 import React, { Fragment } from "react";
-import { GraphQLListData } from "webiny-data-ui";
 
 // import ExportModal from "./Modal/ExportModal";
 // import ImportModal from "./Modal/ImportModal";
@@ -13,6 +12,7 @@ class RoleGroupsList extends React.Component {
             ViewSwitcher,
             View,
             List,
+            ListData,
             Button,
             ButtonGroup,
             AdminLayout,
@@ -56,7 +56,7 @@ class RoleGroupsList extends React.Component {
                                     </ButtonGroup>
                                 </View.Header>
                                 <View.Body>
-                                    <GraphQLListData
+                                    <ListData
                                         withRouter
                                         entity="SecurityRoleGroup"
                                         fields="id name slug description createdOn"
@@ -123,7 +123,7 @@ class RoleGroupsList extends React.Component {
                                                 </List>
                                             </Fragment>
                                         )}
-                                    </GraphQLListData>
+                                    </ListData>
                                 </View.Body>
                             </View.List>
                         )}
@@ -166,6 +166,7 @@ export default createComponent(RoleGroupsList, {
         "Grid",
         "Input",
         "List",
+        "ListData",
         "Button",
         "Loader",
         "ButtonGroup"

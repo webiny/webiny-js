@@ -16,7 +16,7 @@
 	height: 35px;
 	line-height: 156%;
 	position: relative;
-	z-index: 99; /* sven: before it was set to 110, I changed it to 99 so it's behind Loader_overlay*/
+	z-index: 99;
 	margin-right: 0;
 	background-color: #fbfbfb;
 	color: #444;
@@ -124,13 +124,14 @@
 	height: 35px;
 	line-height: 156%;
 	position: relative;
-	z-index: 99; /* sven: before it was set to 110, I changed it to 99 so it's behind Loader_overlay*/
+	z-index: 99;
 	margin-right: 0;
 	background-color: #fbfbfb;
 	color: #444;
 	border: 1px solid #C1C4C9;
 	text-transform: uppercase;
 	font-size: 12px;
+	white-space: nowrap
 }
 
 .dropdown.opened .dropdownToggle {

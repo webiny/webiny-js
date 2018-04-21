@@ -1,5 +1,4 @@
 import React from "react";
-import { GraphQLFormData, GraphQLFormError } from "webiny-data-ui";
 import { app, i18n, createComponent } from "webiny-app";
 
 const t = i18n.namespace("Security.RoleGroupsForm");
@@ -9,6 +8,8 @@ class RoleGroupsForm extends React.Component {
         const {
             AdminLayout,
             Form,
+            FormData,
+            FormError,
             Section,
             View,
             Grid,
@@ -19,7 +20,7 @@ class RoleGroupsForm extends React.Component {
 
         return (
             <AdminLayout>
-                <GraphQLFormData
+                <FormData
                     entity="SecurityRoleGroup"
                     withRouter
                     fields="id name slug description roles { id }"
@@ -46,7 +47,7 @@ class RoleGroupsForm extends React.Component {
                                         />
                                         {error && (
                                             <View.Error>
-                                                <GraphQLFormError error={error} />
+                                                <FormError error={error} />
                                             </View.Error>
                                         )}
                                         <View.Body>
@@ -104,7 +105,7 @@ class RoleGroupsForm extends React.Component {
                             }}
                         </Form>
                     )}
-                </GraphQLFormData>
+                </FormData>
             </AdminLayout>
         );
     }

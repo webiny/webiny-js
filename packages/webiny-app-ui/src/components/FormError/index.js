@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { createComponent } from "webiny-app";
 
-class GraphQLFormError extends React.Component {
+class FormError extends React.Component {
     render() {
         if (this.props.render) {
             return this.props.render.call(this);
@@ -46,7 +46,7 @@ class GraphQLFormError extends React.Component {
     }
 }
 
-GraphQLFormError.defaultProps = {
+FormError.defaultProps = {
     error: null,
     title: "Oops",
     type: "error",
@@ -56,4 +56,4 @@ GraphQLFormError.defaultProps = {
     onClose: _.noop
 };
 
-export default createComponent(GraphQLFormError, { modules: ["Alert"] });
+export default createComponent(FormError, { modules: ["Alert"] });

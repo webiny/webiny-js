@@ -1,9 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-app";
-import crud from "./../utils/operationGenerator";
+import { app, createComponent } from "webiny-app";
 
-class GraphQLOptions extends React.Component {
+class OptionsData extends React.Component {
     constructor(props) {
         super(props);
 
@@ -26,8 +25,8 @@ class GraphQLOptions extends React.Component {
 
         if (entity) {
             actions = actions || {};
-            actions.list = actions.list || crud.generateList(entity, fields);
-            actions.get = actions.get || crud.generateGet(entity, fields);
+            actions.list = actions.list || app.graphql.generateList(entity, fields);
+            actions.get = actions.get || app.graphql.generateGet(entity, fields);
         }
 
         this.actions = actions;
@@ -130,11 +129,11 @@ class GraphQLOptions extends React.Component {
     }
 }
 
-GraphQLOptions.defaultProps = {
+OptionsData.defaultProps = {
     searchOnly: false,
     valueField: "id", // Attribute to use as option value (when option is a an object, usually used with API)
     labelField: "name", // Attribute to use as option text (when option is a an object, usually used with API)
     valueKey: null // used only for rendering to map complex options to model values (only used when component value is an object)
 };
 
-export default createComponent(GraphQLOptions);
+export default createComponent(OptionsData);

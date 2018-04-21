@@ -138,6 +138,10 @@ const app = () => {
                 factory: () => import("webiny-form").then(m => m.Form)
             },
             {
+                name: "FormError",
+                factory: () => import("./components/FormError")
+            },
+            {
                 name: "FormGroup",
                 factory: () => import("./components/FormGroup")
             },

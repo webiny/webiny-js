@@ -1,6 +1,5 @@
 import React from "react";
 import { app, createComponent, i18n } from "webiny-app";
-import { GraphQLFormError, GraphQLError } from "webiny-data-ui";
 import gql from "graphql-tag";
 import TwoFactorAuthActivation from "./TwoFactorAuthActivation";
 
@@ -72,7 +71,7 @@ class UserAccount extends React.Component {
                 this.auth.refresh();
             })
             .catch(error => {
-                this.setState({ error: GraphQLError.from(error), loading: false });
+                this.setState({ error: Error.from(error), loading: false });
             });
     }
 
@@ -81,6 +80,7 @@ class UserAccount extends React.Component {
             modules: {
                 AdminLayout,
                 Form,
+                FormError,
                 View,
                 Grid,
                 Input,
@@ -103,7 +103,7 @@ class UserAccount extends React.Component {
                             <View.Header title={t`Account Settings`} />
                             {this.state.error && (
                                 <View.Error>
-                                    <GraphQLFormError error={this.state.error} />
+                                    <FormError error={this.state.error} />
                                 </View.Error>
                             )}
                             <View.Body>
@@ -201,6 +201,7 @@ export default createComponent(UserAccount, {
         { AdminLayout: "Admin.Layout" },
         "View",
         "Form",
+        "FormError",
         "Grid",
         "Gravatar",
         "Loader",

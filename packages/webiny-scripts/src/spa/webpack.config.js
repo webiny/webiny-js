@@ -59,10 +59,6 @@ export default ({ projectRoot, appRoot, urlGenerator }) => {
                 ]
             }
         }),
-        new webpack.ProvidePlugin({
-            $: "jquery",
-            jQuery: "jquery"
-        }),
         new CleanWebpackPlugin(["dist/" + process.env.NODE_ENV], { root: projectRoot }),
         new ModuleIdsPlugin(),
         new ChunkIdsPlugin({ projectRoot }),
@@ -85,8 +81,7 @@ export default ({ projectRoot, appRoot, urlGenerator }) => {
                     reduceInitial: { disable: true }
                 }
             })
-        ),
-        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
+        )
     ]);
 
     const fileExtensionRegex = /\.(png|jpg|gif|jpeg|mp4|mp3|woff2?|ttf|otf|eot|svg|ico)$/;
@@ -115,7 +110,7 @@ export default ({ projectRoot, appRoot, urlGenerator }) => {
     return {
         cache: true,
         context: appRoot,
-        devtool: ifDevelopment("eval-source-map", "cheap-module-source-map"),
+        devtool: ifDevelopment("inline-eval-cheap-source-map", "cheap-module-source-map"),
         entry: {},
         output: {
             path: path.resolve(path.join(projectRoot, "dist", process.env.NODE_ENV)),

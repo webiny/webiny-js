@@ -1,5 +1,4 @@
 import "babel-polyfill";
-
 import App from "./app";
 import DocumentUtils from "./utils/document";
 
@@ -16,6 +15,5 @@ export {
 export { default as createComponent } from "./utils/createComponent";
 export { default as isElementOfType } from "./utils/isElementOfType";
 export { default as elementHasFlag } from "./utils/elementHasFlag";
-export { default as LazyLoad } from "./components/LazyLoad.cmp";
-export { default as ApiComponent } from "./components/ApiComponent.cmp";
+export { default as LazyLoad } from "./components/LazyLoad";
 export { default as i18n } from "./utils/i18n";

@@ -3,7 +3,7 @@ import _ from "lodash";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import ErrorBoundary from "react-error-boundary";
 import { app } from "./../index";
-import LazyLoad from "./../components/LazyLoad.cmp";
+import LazyLoad from "./../components/LazyLoad";
 
 const hocCompose = components => {
     return props => {

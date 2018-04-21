@@ -1,5 +1,4 @@
 import React, { Fragment } from "react";
-import { GraphQLListData } from "webiny-data-ui";
 
 import _ from "lodash";
 import { i18n, createComponent } from "webiny-app";
@@ -25,7 +24,7 @@ class UsersList extends React.Component {
     }
 
     render() {
-        const { View, List, Link, Icon, Input, AdminLayout, Loader } = this.props.modules;
+        const { View, List, ListData, Link, Icon, Input, AdminLayout, Loader } = this.props.modules;
         const Table = List.Table;
 
         const roles = <Link route="Roles.List">{t`Roles`}</Link>;
@@ -49,7 +48,7 @@ class UsersList extends React.Component {
                         </Link>
                     </View.Header>
                     <View.Body>
-                        <GraphQLListData
+                        <ListData
                             withRouter
                             entity="SecurityUser"
                             fields="id enabled firstName lastName email createdOn gravatar"
@@ -112,7 +111,7 @@ class UsersList extends React.Component {
                                     </List>
                                 </Fragment>
                             )}
-                        </GraphQLListData>
+                        </ListData>
                     </View.Body>
                 </View.List>
             </AdminLayout>
@@ -121,5 +120,14 @@ class UsersList extends React.Component {
 }
 
 export default createComponent(UsersList, {
-    modules: [{ AdminLayout: "Admin.Layout" }, "View", "List", "Link", "Icon", "Loader", "Input"]
+    modules: [
+        { AdminLayout: "Admin.Layout" },
+        "View",
+        "List",
+        "ListData",
+        "Link",
+        "Icon",
+        "Loader",
+        "Input"
+    ]
 });

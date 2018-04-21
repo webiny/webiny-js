@@ -1,10 +1,9 @@
 import React from "react";
 import _ from "lodash";
 import { app, createComponent } from "webiny-app";
-import ListContext from "./GraphQLListContext";
-import crud from "./../utils/operationGenerator";
+import ListContext from "./ListContext";
 
-class GraphQLList extends React.Component {
+class ListData extends React.Component {
     constructor(props) {
         super(props);
 
@@ -26,9 +25,9 @@ class GraphQLList extends React.Component {
 
         if (entity) {
             actions = actions || {};
-            actions.list = actions.list || crud.generateList(entity, fields);
-            actions.update = actions.update || crud.generateUpdate(entity, fields);
-            actions.delete = actions.delete || crud.generateDelete(entity, fields);
+            actions.list = actions.list || app.graphql.generateList(entity, fields);
+            actions.update = actions.update || app.graphql.generateUpdate(entity, fields);
+            actions.delete = actions.delete || app.graphql.generateDelete(entity, fields);
         }
 
         this.actions = actions;
@@ -132,9 +131,9 @@ class GraphQLList extends React.Component {
     }
 }
 
-GraphQLList.defaultProps = {
+ListData.defaultProps = {
     onReady: _.noop,
     autoRefresh: false
 };
 
-export default createComponent([GraphQLList, ListContext]);
+export default createComponent([ListData, ListContext]);

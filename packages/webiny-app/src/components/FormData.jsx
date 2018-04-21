@@ -1,9 +1,8 @@
 import React from "react";
 import _ from "lodash";
 import { app, createComponent } from "webiny-app";
-import crud from "./../utils/operationGenerator";
 
-class GraphQLForm extends React.Component {
+class FormData extends React.Component {
     constructor() {
         super();
         this.state = {
@@ -24,9 +23,9 @@ class GraphQLForm extends React.Component {
 
         if (entity) {
             actions = actions || {};
-            actions.get = actions.get || crud.generateGet(entity, fields);
-            actions.create = actions.create || crud.generateCreate(entity, fields);
-            actions.update = actions.update || crud.generateUpdate(entity, fields);
+            actions.get = actions.get || app.graphql.generateGet(entity, fields);
+            actions.create = actions.create || app.graphql.generateCreate(entity, fields);
+            actions.update = actions.update || app.graphql.generateUpdate(entity, fields);
         }
 
         this.actions = actions;
@@ -148,7 +147,7 @@ class GraphQLForm extends React.Component {
     }
 }
 
-GraphQLForm.defaultProps = {
+FormData.defaultProps = {
     defaultModel: {},
     withRouter: false,
     onSubmitSuccess: null,
@@ -160,4 +159,4 @@ GraphQLForm.defaultProps = {
     }
 };
 
-export default createComponent(GraphQLForm);
+export default createComponent(FormData);

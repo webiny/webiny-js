@@ -1,5 +1,4 @@
 import React, { Fragment } from "react";
-import { GraphQLListData } from "webiny-data-ui";
 
 // import ExportPermissionModal from "./Modal/ExportModal";
 // import ImportPermissionModal from "./Modal/ImportModal";
@@ -13,6 +12,7 @@ class PermissionsList extends React.Component {
             ViewSwitcher,
             View,
             List,
+            ListData,
             Button,
             ButtonGroup,
             AdminLayout,
@@ -56,7 +56,7 @@ class PermissionsList extends React.Component {
                                     </ButtonGroup>
                                 </View.Header>
                                 <View.Body>
-                                    <GraphQLListData
+                                    <ListData
                                         withRouter
                                         entity="SecurityPermission"
                                         fields="id name slug description createdOn"
@@ -124,7 +124,7 @@ class PermissionsList extends React.Component {
                                                 </List>
                                             </Fragment>
                                         )}
-                                    </GraphQLListData>
+                                    </ListData>
                                 </View.Body>
                             </View.List>
                         )}
@@ -163,6 +163,7 @@ export default createComponent(PermissionsList, {
         "Link",
         "View",
         "List",
+        "ListData",
         "Icon",
         "Grid",
         "Input",

@@ -1,5 +1,4 @@
 import React from "react";
-import { GraphQLFormData, GraphQLFormError } from "webiny-data-ui";
 import Scopes from "./PermissionsForm/Scopes";
 
 import { app, i18n, createComponent } from "webiny-app";
@@ -10,6 +9,8 @@ class PermissionsForm extends React.Component {
         const {
             AdminLayout,
             Form,
+            FormData,
+            FormError,
             Section,
             View,
             Grid,
@@ -20,7 +21,7 @@ class PermissionsForm extends React.Component {
 
         return (
             <AdminLayout>
-                <GraphQLFormData
+                <FormData
                     entity="SecurityPermission"
                     withRouter
                     fields="id name slug description scope createdOn"
@@ -51,7 +52,7 @@ class PermissionsForm extends React.Component {
                                         />
                                         {error && (
                                             <View.Error>
-                                                <GraphQLFormError error={error} />
+                                                <FormError error={error} />
                                             </View.Error>
                                         )}
                                         <View.Body>
@@ -111,7 +112,7 @@ class PermissionsForm extends React.Component {
                             }}
                         </Form>
                     )}
-                </GraphQLFormData>
+                </FormData>
             </AdminLayout>
         );
     }
@@ -121,6 +122,8 @@ export default createComponent(PermissionsForm, {
     modules: [
         { AdminLayout: "Admin.Layout" },
         "Form",
+        "FormData",
+        "FormError",
         "Section",
         "View",
         "Grid",
