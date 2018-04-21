@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import { createComponent } from "webiny-app";
-import crud from "./../utils/crud";
+import crud from "./../utils/operationGenerator";
 
 class GraphQLOptions extends React.Component {
     constructor(props) {
@@ -13,7 +13,6 @@ class GraphQLOptions extends React.Component {
         };
 
         this.resolves = {};
-        this.mounted = false;
 
         this.loadOptions = this.loadOptions.bind(this);
         this.loadById = this.loadById.bind(this);
@@ -27,8 +26,8 @@ class GraphQLOptions extends React.Component {
 
         if (entity) {
             actions = actions || {};
-            actions.list = actions.list || crud.createListQuery(entity, fields);
-            actions.get = actions.get || crud.createGetQuery(entity, fields);
+            actions.list = actions.list || crud.generateList(entity, fields);
+            actions.get = actions.get || crud.generateGet(entity, fields);
         }
 
         this.actions = actions;

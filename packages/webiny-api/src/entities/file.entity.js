@@ -60,26 +60,19 @@ class File extends Entity {
     /**
      * @inheritDoc
      */
-    populate(data: Object) {
-        if (this.isExisting()) {
-            data["data"] ? this.deleteFileFromStorage() : delete data["name"];
-        }
-
-        return super.populate(data);
-    }
-
-    /**
-     * @inheritDoc
-     */
     // eslint-disable-next-line
     async save(params: EntitySaveParams & Object = {}) {
         // If new file contents is being saved...
         if (this.data) {
             this.ensureStorage();
 
-            let key = this.key || File.createKey(this.name);
+            let key = File.createKey(this.name);
             if (this.storageFolder !== "" && !key.startsWith(this.storageFolder + "/")) {
                 key = path.join(this.storageFolder, key);
+            }
+
+            if (this.isExisting()) {
+                await this.deleteFileFromStorage();
             }
 
             this.key = await this.storage.setFile(key, { body: this.data });

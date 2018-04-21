@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import { app, createComponent } from "webiny-app";
-import crud from "./../utils/crud";
+import crud from "./../utils/operationGenerator";
 
 class GraphQLForm extends React.Component {
     constructor() {
@@ -19,17 +19,19 @@ class GraphQLForm extends React.Component {
 
     componentWillMount() {
         // Prepare actions
-        const { entity, fields } = this.props;
+        const { entity, fields, defaultModel = {} } = this.props;
         let { actions } = this.props;
 
         if (entity) {
             actions = actions || {};
-            actions.get = actions.get || crud.createGetQuery(entity, fields);
-            actions.create = actions.create || crud.createCreateQuery(entity, fields);
-            actions.update = actions.update || crud.createUpdateQuery(entity, fields);
+            actions.get = actions.get || crud.generateGet(entity, fields);
+            actions.create = actions.create || crud.generateCreate(entity, fields);
+            actions.update = actions.update || crud.generateUpdate(entity, fields);
         }
 
         this.actions = actions;
+
+        this.setState({ model: _.merge({}, defaultModel) });
 
         // Prepare model
         this.loadModel(this.props.id);
@@ -72,12 +74,14 @@ class GraphQLForm extends React.Component {
                     }
                 });
         }
+
+        this.setState({ model: _.merge({}, this.props.defaultModel || {}) });
     }
 
     onSubmit(model) {
         this.showLoading();
 
-        this.setState({ model });
+        this.setState({ model, error: null });
 
         if (model.id) {
             return this.actions
@@ -107,7 +111,7 @@ class GraphQLForm extends React.Component {
 
         const { onSubmitSuccess } = this.props;
         if (_.isFunction(onSubmitSuccess)) {
-            return onSubmitSuccess({ model });
+            return onSubmitSuccess({ model: data });
         }
 
         if (_.isString(onSubmitSuccess)) {
@@ -125,22 +129,18 @@ class GraphQLForm extends React.Component {
     }
 
     getInvalidFields() {
-        if (!this.state.error) {
+        if (!this.state.error || !this.state.error.data) {
             return null;
         }
 
-        const { invalidAttributes = {} } = this.state.error.data;
-        const simplified = {};
-        _.each(invalidAttributes, (value, key) => {
-            simplified[key] = value.data.message;
-        });
-        return simplified;
+        return _.get(this.state.error, 'data.invalidAttributes', {});
     }
 
     render() {
         return this.props.children({
             model: _.cloneDeep(this.state.model),
             onSubmit: this.onSubmit,
+            submit: this.onSubmit,
             loading: this.state.loading,
             error: this.state.error,
             invalidFields: this.getInvalidFields()

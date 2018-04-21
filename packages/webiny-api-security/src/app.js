@@ -1,7 +1,9 @@
 // @flow
+import { GraphQLUnionType } from "graphql";
 import { User, Role, Permission, RoleGroup } from "./index";
 import AuthenticationService from "./services/authentication";
 import AuthorizationService from "./services/authorization";
+import convertToGraphQL from "./attributes/convertToGraphQL";
 import registerAttributes from "./attributes/registerAttributes";
 import createLoginQueries from "./utils/createLoginQueries";
 import attachAuthorization from "./utils/attachAuthorization";
@@ -17,10 +19,27 @@ export default (config: Object = {}) => {
         registerAttributes(app.services.get("authentication"));
 
         app.graphql.schema(schema => {
-            schema.crud(User);
-            schema.crud(Role);
-            schema.crud(RoleGroup);
-            schema.crud(Permission);
+            schema.addType({
+                meta: {
+                    type: "union"
+                },
+                type: new GraphQLUnionType({
+                    name: "IdentityType",
+                    types: () =>
+                        config.authentication.identities.map(({ identity: Identity }) => {
+                            return schema.getType(Identity.classId);
+                        }),
+                    resolveType(identity) {
+                        return schema.getType(identity.classId);
+                    }
+                })
+            });
+
+            schema.addAttributeConverter(convertToGraphQL);
+            schema.addEntity(User);
+            schema.addEntity(Role);
+            schema.addEntity(RoleGroup);
+            schema.addEntity(Permission);
 
             // Create login queries
             createLoginQueries(app, config, schema);

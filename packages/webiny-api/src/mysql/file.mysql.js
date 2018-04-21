@@ -1,4 +1,4 @@
-import MySQLTable from "./../index";
+import { MySQLTable } from "./../index";
 
 class FileTable extends MySQLTable {
     constructor() {
@@ -11,6 +11,7 @@ class FileTable extends MySQLTable {
             .setUnsigned();
         this.column("type").varChar(20);
         this.column("ext").varChar(5);
+        this.column("key").varChar(250);
         this.column("src").varChar(250);
         this.column("tags").json();
         this.column("ref").char(24);

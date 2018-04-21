@@ -23,7 +23,11 @@ class Router extends React.Component {
         $(document)
             .off("click", "a")
             .on("click", "a", function(e) {
-                if (this.href.startsWith("javascript:void(0)") || this.href.endsWith("#")) {
+                if (
+                    this.href.startsWith("javascript:void(0)") ||
+                    this.href.endsWith("#") ||
+                    this.target === "_blank"
+                ) {
                     return;
                 }
 

@@ -36,7 +36,8 @@ class Image extends React.Component {
     }
 
     applyCropping(newImage) {
-        this.props.onChange(newImage).then(() => this.setState({ cropImage: null }));
+        this.props.onChange(newImage);
+        this.setState({ cropImage: null });
     }
 
     onCropperHidden() {
@@ -144,7 +145,7 @@ class Image extends React.Component {
     renderError() {
         let error = null;
         if (this.state.error) {
-            const { Alert } = this.props;
+            const { Alert } = this.props.modules;
             error = <Alert type="error">{this.state.error.message}</Alert>;
         }
         return error;

@@ -4,7 +4,7 @@ import _ from "lodash";
 import pluralize from "pluralize";
 import GraphQLError from "./Error";
 
-const createApi = (promise, dataKey) => {
+const generateApi = (promise, dataKey) => {
     return promise
         .then(({ data }) => {
             return { data: data[dataKey] };
@@ -14,7 +14,7 @@ const createApi = (promise, dataKey) => {
         });
 };
 
-const createListQuery = (entity, fields) => ({ fields: newFields, variables }) => {
+const generateList = (entity, fields) => ({ fields: newFields, variables }) => {
     const methodName = "list" + pluralize.plural(entity);
     const query = gql`
         query ${_.upperFirst(
@@ -33,10 +33,10 @@ const createListQuery = (entity, fields) => ({ fields: newFields, variables }) =
         }
     `;
 
-    return createApi(app.graphql.query({ query, variables }), methodName);
+    return generateApi(app.graphql.query({ query, variables }), methodName);
 };
 
-const createGetQuery = (entity, fields) => ({ fields: newFields, variables }) => {
+const generateGet = (entity, fields) => ({ fields: newFields, variables }) => {
     const methodName = "get" + entity;
     const query = gql`
         query ${_.upperFirst(methodName)}($id: String!) {
@@ -46,10 +46,10 @@ const createGetQuery = (entity, fields) => ({ fields: newFields, variables }) =>
         }
     `;
 
-    return createApi(app.graphql.query({ query, variables }), methodName);
+    return generateApi(app.graphql.query({ query, variables }), methodName);
 };
 
-const createCreateQuery = (entity, fields) => ({ fields: newFields, variables }) => {
+const generateCreate = (entity, fields) => ({ fields: newFields, variables }) => {
     const methodName = "create" + entity;
     const mutation = gql`
         mutation ${_.upperFirst(methodName)}($data: JSON!) {
@@ -59,10 +59,10 @@ const createCreateQuery = (entity, fields) => ({ fields: newFields, variables })
         }
     `;
 
-    return createApi(app.graphql.mutate({ mutation, variables }), methodName);
+    return generateApi(app.graphql.mutate({ mutation, variables }), methodName);
 };
 
-const createUpdateQuery = (entity, fields) => ({ fields: newFields, variables }) => {
+const generateUpdate = (entity, fields) => ({ fields: newFields, variables }) => {
     const methodName = "update" + entity;
     const mutation = gql`
         mutation ${_.upperFirst(methodName)}($id: String!, $data: JSON!) {
@@ -72,24 +72,24 @@ const createUpdateQuery = (entity, fields) => ({ fields: newFields, variables })
         }
     `;
 
-    return createApi(app.graphql.mutate({ mutation, variables }), methodName);
+    return generateApi(app.graphql.mutate({ mutation, variables }), methodName);
 };
 
-const createDeleteQuery = entity => ({ variables }) => {
-    const methodName = "update" + entity;
+const generateDelete = entity => ({ variables }) => {
+    const methodName = "delete" + entity;
     const mutation = gql`
         mutation ${_.upperFirst(methodName)}($id: String!) {
-            deleteSecurityUser(id: $id)
+            ${methodName}(id: $id)
         }
     `;
 
-    return createApi(app.graphql.mutate({ mutation, variables }), methodName);
+    return generateApi(app.graphql.mutate({ mutation, variables }), methodName);
 };
 
 export default {
-    createGetQuery,
-    createListQuery,
-    createCreateQuery,
-    createUpdateQuery,
-    createDeleteQuery
+    generateGet,
+    generateList,
+    generateCreate,
+    generateUpdate,
+    generateDelete
 };

@@ -1,11 +1,5 @@
 import invariant from "invariant";
-import {
-    GraphQLObjectType,
-    GraphQLString,
-    GraphQLInt,
-    GraphQLUnionType,
-    GraphQLNonNull
-} from "graphql";
+import { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLNonNull } from "graphql";
 import GraphQLJSON from "graphql-type-json";
 
 const createLoginDataForIdentity = (Identity, schema) => {
@@ -13,7 +7,7 @@ const createLoginDataForIdentity = (Identity, schema) => {
         name: Identity.classId + "LoginData",
         fields: {
             token: { type: GraphQLString },
-            identity: { type: schema.types[Identity.classId] },
+            identity: { type: schema.getType(Identity.classId) },
             expiresOn: { type: GraphQLInt }
         }
     });
@@ -51,25 +45,15 @@ export default (app, config, schema) => {
         });
     });
 
-    const IdentityType = new GraphQLUnionType({
-        name: "IdentityType",
-        types: config.authentication.identities.map(({ identity: Identity }) => {
-            return schema.types[Identity.classId];
-        }),
-        resolveType(identity) {
-            return schema.types[identity.classId];
-        }
-    });
-
     schema.query["getIdentity"] = {
-        type: IdentityType,
+        type: schema.getType("IdentityType"),
         resolve(root, args, context) {
             return context.identity;
         }
     };
 
     schema.mutation["updateIdentity"] = {
-        type: IdentityType,
+        type: schema.getType("IdentityType"),
         args: {
             data: { type: new GraphQLNonNull(GraphQLJSON) }
         },

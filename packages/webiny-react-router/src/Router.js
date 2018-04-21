@@ -59,7 +59,7 @@ class Router {
     goToRoute(name: string, params: {}) {
         const route = name === "current" ? this.route : _.find(this.routes, { name });
         invariant(route, `Route "${name}" does not exist!`);
-        const path = generatePath(route.path, params);
+        const path = generatePath((this.config.basename || "") + route.path, params);
 
         this.history.push(path);
     }
