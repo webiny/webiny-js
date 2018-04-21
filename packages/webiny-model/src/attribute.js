@@ -300,7 +300,7 @@ class Attribute {
 
     setStorageValue(value: mixed): Attribute {
         // We don't want to mark value as dirty.
-        this.value.setCurrent(value, { skipDifferenceCheck: true });
+        this.value.setCurrent(value, { skipDifferenceCheck: true, forceSetAsClean: true });
         return this;
     }
 
