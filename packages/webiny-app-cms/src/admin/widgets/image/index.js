@@ -1,13 +1,13 @@
 import React from "react";
-import { operationGenerator } from "webiny-data-ui";
 import compose from "webiny-compose";
 import _ from "lodash";
+import { app } from "webiny-app";
 
-import Widget from "./widget";
-import Settings from "./settings";
+import Widget from "./Widget";
+import Settings from "./Settings";
 
 function deleteImage(id) {
-    const deleteImage = operationGenerator.generateDelete("Image");
+    const deleteImage = app.graphgl.generateDelete("Image");
     return deleteImage({ variables: { id } });
 }
 
@@ -27,7 +27,7 @@ function handleImage(props, value, onChange) {
         // Update if new image is selected
         ({ value, oldValue }, next, finish) => {
             if (value && oldValue) {
-                const update = operationGenerator.generateUpdate("Image", fields);
+                const update = app.graphgl.generateUpdate("Image", fields);
                 return update({ variables: { id: oldValue.id, data: value } }).then(({ data }) =>
                     finish({ value: data })
                 );
@@ -36,7 +36,7 @@ function handleImage(props, value, onChange) {
         },
         // Insert new image
         ({ value }, next, finish) => {
-            const create = operationGenerator.generateCreate("Image", fields);
+            const create = app.graphgl.generateCreate("Image", fields);
             create({ variables: { data: value } }).then(({ data }) => finish({ value: data }));
         }
     ];
@@ -54,10 +54,13 @@ export default {
         if (widget.data.image) {
             return deleteImage(widget.data.image.id);
         }
-        return Promise.resolve();
     },
-    renderWidget() {
-        return <Widget handleImage={handleImage} />;
+    renderWidget({ EditorWidget }) {
+        return (
+            <EditorWidget>
+                <Widget handleImage={handleImage} />
+            </EditorWidget>
+        );
     },
     renderSettings() {
         return <Settings />;

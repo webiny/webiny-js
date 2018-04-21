@@ -5,11 +5,7 @@ import CMS from "./services/CMS";
 import PageList from "./views/pages/PageList";
 import PageEditor from "./views/pages/PageEditor";
 import CategoryList from "./views/categories/CategoryList";
-import paragraphWidget from "./widgets/paragraph/index";
-import imageWidget from "./widgets/image/index";
-
-import paragraphPreviewWidget from "./../widgets/paragraph/index";
-import imagePreviewWidget from "./../widgets/image/index";
+import registerWidgets from "./registerWidgets";
 
 const t = i18n.namespace("Cms.Admin.Menu");
 
@@ -17,37 +13,7 @@ export default () => {
     return ({ app }, next) => {
         app.services.register("cms", () => new CMS());
 
-        app.modules.register({
-           name: "EditorWidget",
-           factory: () => import("./components/EditorWidget")
-        });
-
-        app.modules.register({
-            name: "EditorWidgetSettings",
-            factory: () => import("./components/EditorWidgetSettings")
-        });
-
-        const cmsService: CMS = app.services.get("cms");
-
-        cmsService.addWidgetGroup({
-            name: "text",
-            title: "Text",
-            icon: ["fa", "font"]
-        });
-
-        cmsService.addWidgetGroup({
-            name: "media",
-            title: "Media",
-            icon: ["far", "image"]
-        });
-
-        // Editor widgets
-        cmsService.addEditorWidget("text", paragraphWidget);
-        cmsService.addEditorWidget("media", imageWidget);
-
-        // Preview widgets
-        cmsService.addWidget(paragraphPreviewWidget);
-        cmsService.addWidget(imagePreviewWidget);
+        registerWidgets();
 
         app.services.get("menu").add(
             <Menu order="1" label={t`Content`} icon={["fas", "file-alt"]}>
@@ -74,8 +40,8 @@ export default () => {
         });
 
         app.router.addRoute({
-            name: "Cms.Page.Create",
-            path: "/cms/pages/editor",
+            name: "Cms.Page.Editor",
+            path: "/cms/pages/revision/:id",
             exact: true,
             render: () => {
                 return app.modules.load({ Layout: "Admin.Layout" }).then(({ Layout }) => {

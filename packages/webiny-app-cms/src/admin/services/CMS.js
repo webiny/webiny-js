@@ -1,8 +1,9 @@
 // @flow
 import _ from "lodash";
+import { app } from "webiny-app";
 
 export type WidgetGroup = {
-    type: string,
+    name: string,
     title: string,
     icon: string | Array<string>
 };
@@ -11,6 +12,8 @@ export type EditorWidget = {
     type: string,
     title: string,
     icon: Array<string>,
+    data: ?Object,
+    settings: ?Object,
     renderWidget: Function,
     renderSettings?: Function
 };
@@ -65,8 +68,35 @@ class CMS {
         return group ? this.editorWidgets[group] || [] : this.editorWidgets;
     }
 
-    getEditorWidget(type: string) {
-        return _.find(_.flatten(Object.values(this.editorWidgets)), { type });
+    getEditorWidget(type: string, extraFilters: Object = {}) {
+        return _.find(_.flatten(Object.values(this.editorWidgets)), { type, ...extraFilters });
+    }
+
+    createGlobalWidget(data: Object) {
+        const createWidget = app.graphql.generateCreate("CmsWidget", "id");
+        return createWidget({ variables: { data } }).then(({ data: { id } }) => {
+            // Register new global widget
+            const widgetDefinition = this.getEditorWidget(data.type);
+            this.addEditorWidget("global", {
+                ..._.cloneDeep(widgetDefinition),
+                ...data,
+                origin: id
+            });
+
+            return id;
+        });
+    }
+
+    updateGlobalWidget(id: string, data: Object) {
+        const updateWidget = app.graphql.generateUpdate("CmsWidget", "id");
+        return updateWidget({ variables: { id, data } }).then(() => {
+            // Register new global widget
+            const index = _.findIndex(this.editorWidgets.global, { origin: id });
+            this.editorWidgets.global[index] = {
+                ...this.editorWidgets.global[index],
+                ...data
+            };
+        });
     }
 }
 

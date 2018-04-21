@@ -1,9 +1,18 @@
-.editorWidgetHolder {
+.editorWidget {
   border-left: 2px solid #C0C0C0;
   position: relative;
   margin-left: -17px;
   margin-bottom: 10px;
   padding: 20px 10px 20px 20px;
+
+  &.globalWidget {
+    // border-left: 2px solid #FA5723;
+    background-color: #FFEED3;
+
+    &:before, &:after {
+      // border-left: 2px solid #FA5723;
+    }
+  }
 
   &:before {
     content: " ";
