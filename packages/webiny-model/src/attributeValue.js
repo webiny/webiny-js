@@ -24,6 +24,10 @@ class AttributeValue {
         if (options.skipDifferenceCheck) {
             if (options.forceSetAsDirty) {
                 this.dirty = true;
+            } else {
+                if (options.forceSetAsClean) {
+                    this.dirty = false;
+                }
             }
         } else {
             if (!this.dirty && this.isDifferentFrom(value)) {

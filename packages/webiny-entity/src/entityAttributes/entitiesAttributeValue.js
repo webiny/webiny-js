@@ -230,15 +230,42 @@ class EntitiesAttributeValue extends AttributeValue {
         this.links.initial = this.getCurrentLinks().map(entity => entity);
     }
 
+    /**
+     * Sets current links, based on initial and currently set entities.
+     *
+     * How links-management works?
+     * When entities are set, on "save" event, attribute will be first loaded - meaning all initial (from storage)
+     * linked entities and its links will be loaded ("this.initial" / "this.links.initial"). After that, this method
+     * will iterate over all newly set entities, and check if for each a link is already existing. If so, it will
+     * use it, otherwise a new instance is created, linking parent and set entity together.
+     *
+     * Additional note: previously, there was an idea that link entities could also contain additional information.
+     * This still could works for lists in which entities are all unique, meaning all entities show only once in
+     * the list. In cases where a single entity can appear more than once, this might not be the best solution, since
+     * linking problems can appear.
+     *
+     * Eg. if user has a list of entities: A - A - B - C, and if links have a specific information, reordering
+     * first two A entities wouldn't make a difference, and nothing would be updated.
+     *
+     * But generally, this is a bad approach to have, in cases where links need to have additional data, a new entity
+     * would have to be made, linking the A product and containing all needed information.
+     *
+     * Basic example of this is a cart, with added products. Added product might appear many times, in different
+     * colors and sizes, so here it would be best to just create CartItem entity, that links the product and contains
+     * needed information.
+     *
+     * Link entities can be extended with additional attributes where it's sure that no duplicates can occur.
+     * @returns {Promise<void>}
+     */
     async manageCurrentLinks(): Promise<void> {
         const links = [],
             current = this.getCurrent(),
-            currentLinks = this.getCurrentLinks();
+            currentLinks = this.getInitialLinks();
 
         for (let i = 0; i < current.length; i++) {
             const currentEntity = current[i];
 
-            // Following chunk actually represents: "_.find(currentLinks, link => link.group === current);".
+            // Following chunk actually represents: "_.find(currentLinks, link => link.<entity> === current);".
             // "for" loop used because of async operations.
             let link = null;
             for (let j = 0; j < currentLinks.length; j++) {

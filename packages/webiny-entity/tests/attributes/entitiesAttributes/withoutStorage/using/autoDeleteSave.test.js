@@ -200,4 +200,60 @@ describe("attribute entities (using an additional aggregation class) - saving te
         expect(user.getAttribute("groups").value.links.current[1].id).to.equal("usersGroups6th");
         expect(user.getAttribute("groups").value.links.current[2].id).to.equal("usersGroups7th");
     });
+
+    it("must not recreate links", async () => {
+        let entityFindById = sandbox
+            .stub(User.getDriver(), "findOne")
+            .callsFake(() => new QueryResult({ id: "A" }));
+
+        const user = await User.findById(123);
+        entityFindById.restore();
+
+        // Let's try to populate with the same date as in DB.
+        user.populate({
+            groups: [
+                { id: "X", name: "Group X" },
+                { id: "Y", name: "Group Y" },
+                { id: "Z", name: "Group Z" },
+                { id: "newOne", name: "Group NewOne" }
+            ]
+        });
+
+        expect(user.getAttribute("groups").value.dirty).to.equal(true);
+
+        let entitySaveSpy = sandbox.spy(User.getDriver(), "save");
+        let entityDeleteSpy = sandbox.spy(User.getDriver(), "delete");
+
+        sandbox
+            .stub(Group.getDriver(), "findOne")
+            .onCall(0)
+            .callsFake(() => {
+                return new QueryResult({ id: "X", name: "Group X" });
+            })
+            .onCall(1)
+            .callsFake(() => {
+                return new QueryResult({ id: "Y", name: "Group Y" });
+            })
+            .onCall(2)
+            .callsFake(() => {
+                return new QueryResult({ id: "Z", name: "Group Z" });
+            })
+            .onCall(3)
+            .callsFake(() => {
+                return new QueryResult({ id: "newOne", name: "Group NewOne" });
+            });
+
+        sandbox.stub(UsersGroups.getDriver(), "find").callsFake(() => {
+            return new QueryResult([
+                { id: "usersGroups1st", user: "A", group: "X" },
+                { id: "usersGroups2nd", user: "A", group: "Y" },
+                { id: "usersGroups3rd", user: "A", group: "Z" }
+            ]);
+        });
+
+        await user.save();
+
+        expect(entitySaveSpy.callCount).to.equal(2);
+        expect(entityDeleteSpy.callCount).to.equal(0);
+    });
 });
