@@ -1,18 +1,18 @@
 // @flow
-import { Sync, ConsoleLog } from "webiny-sql-table-sync";
-import { PageTable, CategoryTable, RevisionTable } from "webiny-api-cms/lib/mysql";
-import FileTable from "webiny-api/lib/tables/file.mysql";
-import ImageTable from "webiny-api/lib/tables/image.mysql";
-
 import { MySQLTable } from "webiny-api";
+import { Sync, ConsoleLog } from "webiny-sql-table-sync";
+import { PageTable, CategoryTable, WidgetTable } from "webiny-api-cms/lib/mysql";
+import FileTable from "webiny-api/src/mysql/file.mysql";
+import ImageTable from "webiny-api/src/mysql/image.mysql";
 
 // Configure MySQLTable driver
 import { connection } from "./../../configs/database";
 
 MySQLTable.getDriver().setConnection(connection);
 
-(async () => {
-    const tables = [PageTable, CategoryTable, RevisionTable, FileTable, ImageTable];
+export default async () => {
+    //const tables = [PageTable, CategoryTable, FileTable, ImageTable];
+    const tables = [WidgetTable];
 
     const sync = new Sync({
         tables,
@@ -23,4 +23,4 @@ MySQLTable.getDriver().setConnection(connection);
 
     const { default: importer } = await import("./import");
     return importer();
-})();
+};

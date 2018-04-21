@@ -1,6 +1,5 @@
 import React from "react";
 import { app, createComponent, i18n } from "webiny-app";
-import { GraphQLFormData, GraphQLOptionsData } from "webiny-data-ui";
 import CustomDialog from "./CustomDialog";
 
 const t = i18n.namespace("NewClient.Frontend.Views.Profile");
@@ -86,6 +85,8 @@ class Profile extends React.Component {
         const {
             AdminLayout,
             Form,
+            FormData,
+            OptionsData,
             View,
             Grid,
             Avatar,
@@ -175,11 +176,11 @@ class Profile extends React.Component {
 
         return (
             <AdminLayout>
-                <GraphQLFormData
+                <FormData
                     entity="SecurityUser"
                     withRouter
                     fields={"id firstName lastName email enabled"}
-                    onSubmitSuccess="About"
+                    onSubmitSuccess="Dashboard"
                 >
                     {({ model, onSubmit, invalidFields }) => (
                         <Form model={model} onSubmit={onSubmit} invalidFields={invalidFields}>
@@ -365,7 +366,7 @@ class Profile extends React.Component {
                                                 <Grid.Row>
                                                     <Grid.Col all={6}>
                                                         <Section title={t`Info`} />
-                                                        <GraphQLOptionsData
+                                                        <OptionsData
                                                             entity={"SecurityUser"}
                                                             fields={"id email"}
                                                             sort={{ email: 1 }}
@@ -389,8 +390,8 @@ class Profile extends React.Component {
                                                                     </CheckboxGroup>
                                                                 </Bind>
                                                             )}
-                                                        </GraphQLOptionsData>
-                                                        <GraphQLOptionsData
+                                                        </OptionsData>
+                                                        <OptionsData
                                                             entity={"SecurityUser"}
                                                             fields={"id email"}
                                                             sort={{ email: 1 }}
@@ -407,7 +408,7 @@ class Profile extends React.Component {
                                                                     />
                                                                 </Bind>
                                                             )}
-                                                        </GraphQLOptionsData>
+                                                        </OptionsData>
                                                         <Bind>
                                                             <File
                                                                 label={t`Verification document`}
@@ -422,7 +423,7 @@ class Profile extends React.Component {
                                                                 name={"icon"}
                                                             />
                                                         </Bind>
-                                                        <GraphQLOptionsData
+                                                        <OptionsData
                                                             entity="SecurityUser"
                                                             fields="id email"
                                                             sort={{ email: 1 }}
@@ -439,8 +440,8 @@ class Profile extends React.Component {
                                                                     />
                                                                 </Bind>
                                                             )}
-                                                        </GraphQLOptionsData>
-                                                        <GraphQLOptionsData
+                                                        </OptionsData>
+                                                        <OptionsData
                                                             entity="SecurityUser"
                                                             fields="id email createdOn"
                                                             sort={{ email: -1 }}
@@ -466,7 +467,7 @@ class Profile extends React.Component {
                                                                     />
                                                                 </Bind>
                                                             )}
-                                                        </GraphQLOptionsData>
+                                                        </OptionsData>
                                                     </Grid.Col>
                                                 </Grid.Row>
                                             </Tabs.Tab>
@@ -539,7 +540,7 @@ class Profile extends React.Component {
                                     <View.Footer>
                                         <Button
                                             type="default"
-                                            onClick={() => app.router.goToRoute("About")}
+                                            onClick={() => app.router.goToRoute("Dashboard")}
                                             label={t`Go back`}
                                         />
                                         <Button
@@ -553,7 +554,7 @@ class Profile extends React.Component {
                             )}
                         </Form>
                     )}
-                </GraphQLFormData>
+                </FormData>
             </AdminLayout>
         );
     }
@@ -563,6 +564,8 @@ export default createComponent(Profile, {
     modules: [
         { AdminLayout: "Admin.Layout" },
         "Form",
+        "FormData",
+        "OptionsData",
         "View",
         "Grid",
         "Section",

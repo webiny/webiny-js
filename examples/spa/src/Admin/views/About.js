@@ -1,7 +1,6 @@
 import React, { Fragment } from "react";
 import { createComponent, i18n } from "webiny-app";
 import { ModalComponent } from "webiny-app-ui";
-import { GraphQLListData, GraphQLOptionsData } from "webiny-data-ui";
 
 const t = i18n.namespace("NewClient.Frontend.Views.About");
 
@@ -13,7 +12,7 @@ class About extends React.Component {
     }
 
     renderFilters() {
-        const { Grid, List, Input, Select, Search } = this.props.modules;
+        const { Grid, List, OptionsData, Input, Select, Search } = this.props.modules;
 
         return (
             <List.FormFilters>
@@ -42,7 +41,7 @@ class About extends React.Component {
                             </Bind>
                         </Grid.Col>
                         <Grid.Col all={4}>
-                            <GraphQLOptionsData
+                            <OptionsData
                                 entity={"SecurityUser"}
                                 fields={"id email"}
                                 labelField={"email"}
@@ -70,7 +69,7 @@ class About extends React.Component {
                                         />
                                     </Bind>
                                 )}
-                            </GraphQLOptionsData>
+                            </OptionsData>
                         </Grid.Col>
                     </Grid.Row>
                 )}
@@ -81,6 +80,7 @@ class About extends React.Component {
     render() {
         const {
             List,
+            ListData,
             AdminLayout,
             View,
             Link,
@@ -107,7 +107,7 @@ class About extends React.Component {
                         </Link>
                     </View.Header>
                     <View.Body>
-                        <GraphQLListData
+                        <ListData
                             withRouter
                             entity={"SecurityUser"}
                             sort={{ email: -1 }}
@@ -203,7 +203,7 @@ class About extends React.Component {
                                     </List>
                                 </Fragment>
                             )}
-                        </GraphQLListData>
+                        </ListData>
                     </View.Body>
                 </View.List>
             </AdminLayout>
@@ -215,6 +215,8 @@ export default createComponent(About, {
     modules: [
         { AdminLayout: "Admin.Layout" },
         "List",
+        "ListData",
+        "OptionsData",
         "View",
         "Link",
         "Icon",

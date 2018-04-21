@@ -7,6 +7,7 @@ const { appEntry, SpaConfigPlugin } = spa;
 module.exports = ({ config }) => {
     // Build webpack config
     config.entry["frontend"] = appEntry(__dirname + "/src/Frontend/index.js");
+    config.entry["admin"] = appEntry(__dirname + "/src/Admin/index.js");
 
     config.plugins = [
         ...config.plugins,
@@ -15,6 +16,12 @@ module.exports = ({ config }) => {
             filename: "frontend.html",
             template: __dirname + "/src/Frontend/index.html",
             chunks: ["frontend"]
+        }),
+        new HtmlWebpackPlugin({
+            name: "admin",
+            filename: "admin.html",
+            template: __dirname + "/src/Admin/index.html",
+            chunks: ["admin"]
         }),
         new SpaConfigPlugin()
     ];

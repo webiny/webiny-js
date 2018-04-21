@@ -1,11 +1,13 @@
 import React from "react";
 import { createComponent } from "webiny-app";
-import { GraphQLFormData, GraphQLFormError, GraphQLOptionsData } from "webiny-data-ui";
 
 class View extends React.Component {
     render() {
         const {
             Form,
+            FormData,
+            FormError,
+            OptionsData,
             Input,
             Button,
             Checkbox,
@@ -29,7 +31,7 @@ class View extends React.Component {
         );
 
         return (
-            <GraphQLFormData
+            <FormData
                 entity="SecurityUser"
                 withRouter
                 fields={"id firstName lastName email enabled"}
@@ -41,7 +43,7 @@ class View extends React.Component {
                                 <View.Header title={"New form implementation"} />
                                 {error && (
                                     <View.Error>
-                                        <GraphQLFormError error={error} />
+                                        <FormError error={error} />
                                     </View.Error>
                                 )}
                                 <View.Body>
@@ -70,7 +72,7 @@ class View extends React.Component {
                                                     validators="email"
                                                 />
                                             </Bind>
-                                            <GraphQLOptionsData
+                                            <OptionsData
                                                 entity={"SecurityUsers"}
                                                 fields={"id email"}
                                                 labelField={"email"}
@@ -87,7 +89,7 @@ class View extends React.Component {
                                                         />
                                                     </Bind>
                                                 )}
-                                            </GraphQLOptionsData>
+                                            </OptionsData>
                                             <ChangeConfirm message="Are you sure you want to toggle this switch?">
                                                 {({ showConfirmation }) => (
                                                     <Bind beforeChange={showConfirmation}>
@@ -133,7 +135,7 @@ class View extends React.Component {
                         )}
                     </Form>
                 )}
-            </GraphQLFormData>
+            </FormData>
         );
     }
 }
@@ -142,6 +144,9 @@ export default createComponent(View, {
     modules: [
         "Grid",
         "Form",
+        "FormData",
+        "FormError",
+        "OptionsData",
         "Input",
         "View",
         "Checkbox",

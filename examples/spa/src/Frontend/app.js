@@ -1,32 +1,9 @@
 import React from "react";
 import { app, resolveMiddleware, renderMiddleware, Router } from "webiny-app";
 import { hot } from "react-hot-loader";
-import { app as adminApp } from "webiny-app-admin";
-import { app as securityApp, authenticationMiddleware } from "webiny-app-security";
-import { app as securityAdminApp } from "webiny-app-security/lib/admin";
-import project from "./project";
-import userIdentity from "./userIdentity";
-
-import { app as cmsAdminApp } from "webiny-app-cms/lib/admin";
+import { app as cmsApp, routerMiddleware as cmsMiddleware } from "webiny-app-cms";
 
 if (!app.initialized) {
-    app.use(adminApp());
-    app.use(
-        securityApp({
-            authentication: {
-                cookie: "webiny-token",
-                // TODO: define strategies like on server side
-                identities: [userIdentity],
-                onLogout() {
-                    app.router.goToRoute("Login");
-                }
-            }
-        })
-    );
-    app.use(securityAdminApp({ manager: true }));
-    app.use(cmsAdminApp());
-    app.use(project());
-
     app.configure(() => {
         if (process.env.NODE_ENV === "development") {
             app.graphql.setConfig({
@@ -45,19 +22,23 @@ if (!app.initialized) {
         }
     });
 
+    app.use(cmsApp());
+
     app.router.configure({
-        middleware: [
-            authenticationMiddleware({
-                onNotAuthenticated({ route }, next) {
-                    if (route.name !== "Login") {
-                        app.router.goToRoute("Login");
-                    }
-                    next();
-                }
-            }),
-            resolveMiddleware(),
-            renderMiddleware()
-        ]
+        middleware: [cmsMiddleware(), resolveMiddleware(), renderMiddleware()]
+    });
+
+    app.router.addRoute({
+        name: "NotMatched",
+        path: "*",
+        render() {
+            return (
+                <div>
+                    <h1>{`404 Not Found`}</h1>
+                    <a href={"/"}>{`Get me out of here`}</a>
+                </div>
+            );
+        }
     });
 }
 
@@ -66,3 +47,21 @@ const App = () => {
 };
 
 export default hot(module)(App);
+
+/*{
+    widget: [
+        (params, next) => {
+            if (params.widget.type === "image") {
+                params.output = (
+                    <div style={{ border: "1px solid black", padding: 10 }}>
+                        Widget wrapper<br />
+                        <br />
+                        {params.defaultWidgetRender(params)}
+                    </div>
+                );
+            }
+
+            next();
+        }
+    ]
+}*/

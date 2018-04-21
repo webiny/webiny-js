@@ -7,14 +7,14 @@ import { Storage } from "webiny-file-storage";
 import addDays from "date-fns/add_days";
 import { connection } from "./database";
 import myApp from "./../myApp";
-//import { app as cmsApp } from "webiny-api-cms";
+import { app as cmsApp } from "webiny-api-cms";
 
 export default () => {
     // Configure default storage
     const localDriver = new LocalDriver({
-        directory: __dirname + "/storage",
+        directory: __dirname + "/../../storage",
         createDatePrefix: false,
-        publicUrl: "https://cdn.domain.com"
+        publicUrl: "http://localhost:9000/storage/"
     });
 
     app.configure({
@@ -63,7 +63,7 @@ export default () => {
 
     app.use(myApp());
 
-    /*app.use(cmsApp({}));*/
+    app.use(cmsApp({}));
 
     return app;
 };

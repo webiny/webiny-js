@@ -45,7 +45,7 @@ export default () => {
                 return (
                     <div>
                         <h1>{t`Homepage`}</h1>
-                        <a href={"/about"}>{t`About`}</a>
+                        <a href={"/admin/about"}>{t`About`}</a>
                     </div>
                 );
             }
