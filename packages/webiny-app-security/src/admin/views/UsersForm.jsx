@@ -4,12 +4,24 @@ import { app, i18n, createComponent } from "webiny-app";
 const t = i18n.namespace("Security.UsersForm");
 
 class UsersForm extends React.Component {
+    constructor() {
+        super();
+
+        this.state = {
+            searchQuery: {
+                role: {},
+                roleGroup: {}
+            }
+        };
+    }
+
     render() {
         const {
             AdminLayout,
             Form,
             FormData,
             FormError,
+            OptionsData,
             Section,
             View,
             Grid,
@@ -17,7 +29,8 @@ class UsersForm extends React.Component {
             Button,
             Switch,
             Password,
-            Loader
+            Loader,
+            AutoCompleteList
         } = this.props.modules;
 
         return (
@@ -25,7 +38,7 @@ class UsersForm extends React.Component {
                 <FormData
                     entity="SecurityUser"
                     withRouter
-                    fields="id firstName lastName enabled email roles { id } roleGroups { id createdOn }"
+                    fields="id firstName lastName enabled email roles { id name } roleGroups { id name }"
                     onSubmitSuccess="Users.List"
                     onCancel="Users.List"
                     defaultModel={{ roleGroups: [], roles: [] }}
@@ -83,6 +96,73 @@ class UsersForm extends React.Component {
                                                                     validate="required,email"
                                                                 />
                                                             </Bind>
+                                                        </Grid.Col>
+                                                    </Grid.Row>
+                                                    <Grid.Row>
+                                                        <Grid.Col all={12}>
+                                                            <OptionsData
+                                                                entity="SecurityRole"
+                                                                fields="id name"
+                                                                labelField="name"
+                                                                perPage={10}
+                                                                search={{
+                                                                    fields: ["name"],
+                                                                    query: this.state.searchQuery
+                                                                        .role
+                                                                }}
+                                                            >
+                                                                {({ options }) => (
+                                                                    <Bind>
+                                                                        <AutoCompleteList
+                                                                            options={options}
+                                                                            label={t`Roles`}
+                                                                            name="roles"
+                                                                            onSearch={query => {
+                                                                                this.setState(
+                                                                                    state => {
+                                                                                        state.searchQuery.role = query;
+                                                                                        return state;
+                                                                                    }
+                                                                                );
+                                                                            }}
+                                                                        />
+                                                                    </Bind>
+                                                                )}
+                                                            </OptionsData>
+                                                        </Grid.Col>
+                                                    </Grid.Row>
+
+                                                    <Grid.Row>
+                                                        <Grid.Col all={12}>
+                                                            <OptionsData
+                                                                entity="SecurityRoleGroup"
+                                                                fields="id name"
+                                                                labelField="name"
+                                                                perPage={10}
+                                                                search={{
+                                                                    fields: ["name"],
+                                                                    query: this.state.searchQuery
+                                                                        .roleGroup
+                                                                }}
+                                                            >
+                                                                {({ options }) => (
+                                                                    <Bind>
+                                                                        <AutoCompleteList
+                                                                            options={options}
+                                                                            label={t`Role Groups`}
+                                                                            name="roleGroups"
+                                                                            onSearch={query => {
+                                                                                this.setState(
+                                                                                    state => {
+                                                                                        state.searchQuery.roleGroup = query;
+                                                                                        return state;
+                                                                                    }
+                                                                                );
+                                                                            }}
+                                                                        />
+                                                                    </Bind>
+                                                                )}
+                                                            </OptionsData>
                                                         </Grid.Col>
                                                     </Grid.Row>
                                                 </Grid.Col>
@@ -159,6 +239,8 @@ export default createComponent(UsersForm, {
         "Button",
         "Section",
         "Loader",
+        "OptionsData",
+        "AutoCompleteList",
         {
             AdminLayout: "Admin.Layout"
         }
