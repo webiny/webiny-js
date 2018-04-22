@@ -14,7 +14,7 @@ class Tags extends React.Component {
             ...props.initialState
         };
 
-        ["focusTagInput", "removeTag", "addTag", "validateTag"].map(
+        ["focusTagInput", "removeTag", "handleKeyboard", "validateTag", "addTag"].map(
             m => (this[m] = this[m].bind(this))
         );
     }
@@ -35,52 +35,64 @@ class Tags extends React.Component {
         this.props.onChange(value);
     }
 
-    tagExists(tag) {
-        return _.find(this.props.value, data => data === tag);
-    }
-
-    async addTag(e) {
-        if (e.ctrlKey || e.metaKey) {
+    async addTag(value) {
+        if (this.tagExists(value)) {
             return;
         }
+
         let tags = this.props.value;
-        const input = this.tagInput;
-        const emptyField = !input.value;
-        const canRemove = (emptyField && e.keyCode === 8) || e.keyCode === 46;
-        const skipAdd = e.key !== "Tab" && e.key !== "Enter";
-
-        if (canRemove) {
-            this.removeTag(_.findLastIndex(tags));
-        }
-
-        if (skipAdd) {
-            return;
-        }
-
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (emptyField) {
-            return this.validateTag();
-        }
-
-        if (this.tagExists(input.value)) {
-            return;
-        }
-
         if (!_.isArray(tags)) {
             tags = [];
         }
 
         try {
-            await this.validateTag(input.value);
-            tags.push(input.value);
-            input.value = "";
+            console.log("ide add", value);
+            await this.validateTag(value);
+            tags.push(value);
             this.props.onChange(tags);
-            this.setState({ tag: "" });
         } catch (e) {
-            this.props.onInvalidTag({ value: input.value, event: e });
+            this.props.onInvalidTag({ value: this.tagInput.value, event: e });
         }
+    }
+
+    tagExists(tag) {
+        return _.find(this.props.value, data => data === tag);
+    }
+
+    async handleKeyboard(e) {
+        if (e.ctrlKey || e.metaKey) {
+            return;
+        }
+
+        let tags = this.props.value;
+
+        // If user pressed backspace or delete, and the value of input is empty, it means we must delete lastly added tag.
+        // Number 8 represents backspace press, and 46 delete press.
+        if (e.keyCode === 8 || e.keyCode === 46) {
+            if (!this.tagInput.value) {
+                this.removeTag(_.findLastIndex(tags));
+            }
+            return;
+        }
+
+        // This means user types a letter. Only Tab and Enter presses are handled as add action.
+        if (e.key !== "Tab" && e.key !== "Enter") {
+            return;
+        }
+
+        // This means user pressed Tab or Enter, so let's add current value to the list.
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!this.tagInput.value) {
+            return this.validateTag();
+        }
+
+        await this.addTag();
+
+        // Reset current value in the input;
+        this.tagInput.value = "";
+        this.setState({ tag: "" });
     }
 
     validateTag(value = null) {
@@ -89,26 +101,15 @@ class Tags extends React.Component {
         }
     }
 
-    renderInput() {
-        const input = {
-            type: "text",
-            className: styles.input,
-            ref: tagInput => (this.tagInput = tagInput),
-            onKeyDown: this.addTag,
-            placeholder: this.props.placeholder,
-            onBlur: this.props.validate,
-            readOnly: _.get(this.props, "readOnly", false)
-        };
-
-        return <input {...input} />;
-    }
-
     render() {
         if (this.props.render) {
             return this.props.render.call(this);
         }
 
-        const { modules: { FormGroup }, styles } = this.props;
+        const {
+            modules: { FormGroup },
+            styles
+        } = this.props;
 
         return (
             <FormGroup valid={this.state.isValid} className={this.props.className}>
@@ -119,7 +120,7 @@ class Tags extends React.Component {
                             this.props.value.map((value, index) =>
                                 this.props.renderTag.call(this, { value, index })
                             )}
-                        {this.renderInput()}
+                        {this.props.renderInput.call(this, { styles, component: this })}
                     </div>
                 </div>
                 {this.props.renderDescription.call(this)}
@@ -134,8 +135,24 @@ Tags.defaultProps = {
     validateTags: null,
     placeholder: t`Type and hit ENTER`,
     onInvalidTag: _.noop,
+    renderInput({ styles }) {
+        const input = {
+            type: "text",
+            className: styles.input,
+            ref: tagInput => (this.tagInput = tagInput),
+            onKeyDown: this.handleKeyboard,
+            placeholder: this.props.placeholder,
+            onBlur: this.props.validate,
+            readOnly: _.get(this.props, "readOnly", false)
+        };
+
+        return <input {...input} />;
+    },
     renderTag({ value, index }) {
-        const { modules: { Icon }, styles } = this.props;
+        const {
+            modules: { Icon },
+            styles
+        } = this.props;
         return (
             <div key={value} className={styles.block}>
                 <p>{value}</p>
