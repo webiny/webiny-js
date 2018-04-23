@@ -1,5 +1,4 @@
 import { User, Role, RoleGroup, Permission } from "webiny-api-security";
-import { Page, Revision, Category } from "webiny-api-cms";
 import { managePermissions, manageUsers } from "./scopes";
 
 export default [
@@ -18,17 +17,6 @@ export default [
                     slug: "manage-permissions",
                     description: "Manage system permissions.",
                     scope: managePermissions
-                },
-                {
-                    name: "Write blog post",
-                    slug: "write-blog-post",
-                    description: "Allow user to create and edit blog posts",
-                    scope: {
-                        listCmsPages: {},
-                        createCmsPage: {},
-                        getCmsPage: {},
-                        updateCmsPage: {}
-                    }
                 }
             ]
         };
@@ -38,46 +26,14 @@ export default [
             entity: Role,
             data: [
                 {
+                    name: "Anonymous",
+                    slug: "anonymous",
+                    description: "Anonymous"
+                },
+                {
                     name: "Administrator",
                     slug: "administrator",
                     description: "Administrator account"
-                },
-                {
-                    name: "User Manager",
-                    slug: "webiny-user-manager",
-                    description: "Manage users",
-                    permissions: [await Permission.findOne({ query: { slug: "manage-users" } })]
-                },
-                {
-                    name: "Blogger",
-                    slug: "blogger",
-                    description: "Write blog posts",
-                    permissions: [await Permission.findOne({ query: { slug: "write-blog-post" } })]
-                }
-            ]
-        };
-    },
-    async () => {
-        return {
-            entity: RoleGroup,
-            data: [
-                {
-                    name: "Administrators",
-                    slug: "administrators",
-                    description: "Administrator group",
-                    roles: [
-                        await Role.findOne({ query: { slug: "administrator" } }),
-                        await Role.findOne({ query: { slug: "webiny-user-manager" } })
-                    ]
-                },
-                {
-                    name: "Bloggers",
-                    slug: "bloggers",
-                    description: "Bloggers group",
-                    roles: [
-                        await Role.findOne({ query: { slug: "administrator" } }),
-                        await Role.findOne({ query: { slug: "blogger" } })
-                    ]
                 }
             ]
         };
@@ -720,18 +676,6 @@ export default [
                     password: "16581128 7282",
                     firstName: "Stuart",
                     lastName: "Ryan"
-                }
-            ]
-        };
-    },
-    async () => {
-        return {
-            entity: Category,
-            data: [
-                {
-                    title: "Static",
-                    slug: "static",
-                    url: "/"
                 }
             ]
         };
