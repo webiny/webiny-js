@@ -46,7 +46,6 @@ class Tags extends React.Component {
         }
 
         try {
-            console.log("ide add", value);
             await this.validateTag(value);
             tags.push(value);
             this.props.onChange(tags);
