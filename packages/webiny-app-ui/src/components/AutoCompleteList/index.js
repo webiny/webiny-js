@@ -12,7 +12,7 @@ class AutoCompleteList extends React.Component {
 
         return (
             <Tags
-                {...this.props}
+                {...component.props}
                 renderTag={function({ value, index }) {
                     const {
                         modules: { Icon },
@@ -28,7 +28,7 @@ class AutoCompleteList extends React.Component {
                 renderInput={function() {
                     return (
                         <Search
-                            {...this.props}
+                            {...component.props}
                             onRef={input => (this.tagInput = input)}
                             label={null}
                             render={function() {
@@ -51,7 +51,6 @@ class AutoCompleteList extends React.Component {
                                 return <div>{option.label}</div>;
                             }}
                             onChange={async value => {
-                                console.log("changeo search", value);
                                 if (value) {
                                     await this.addTag(value);
                                     component.search.reset();
