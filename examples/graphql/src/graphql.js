@@ -2,9 +2,9 @@ import express from "express";
 import path from "path";
 import bodyParser from "body-parser";
 import cors from "cors";
-import { authentication } from "webiny-api-security";
+import { authentication, authorization } from "webiny-api-security";
 import setupProject from "./configs/middleware";
-import { app as webiny, graphql } from "webiny-api";
+import { app as webiny } from "webiny-api";
 
 export default () => {
     setupProject();
@@ -17,7 +17,11 @@ export default () => {
 
     app.use(
         "/graphql",
-        webiny.middleware([authentication({ token: "Authorization" }), graphql({ graphiql: true })])
+        webiny.middleware(graphqlMiddleware => [
+            authentication({ token: "Authorization" }),
+            authorization(),
+            graphqlMiddleware()
+        ])
     );
 
     return app;
