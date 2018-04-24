@@ -33,6 +33,10 @@ const app = () => {
                 factory: () => import("./components/Animate")
             },
             {
+                name: "AutoCompleteList",
+                factory: () => import("./components/AutoCompleteList")
+            },
+            {
                 name: "Avatar",
                 factory: () => import("./components/Avatar")
             },

@@ -10,6 +10,8 @@ class Search extends React.Component {
     constructor(props) {
         super(props);
 
+        this.input = null;
+
         this.state = {
             query: "", // Value being searched
             preview: "", // Rendered value of selected value
@@ -25,6 +27,7 @@ class Search extends React.Component {
             "selectCurrent",
             "onKeyUp",
             "onBlur",
+            "reset",
             "renderPreview",
             "applyFreeInput"
         ].map(m => (this[m] = this[m].bind(this)));
@@ -256,10 +259,12 @@ Search.defaultProps = {
     onEnter: _.noop,
     onChange: _.noop,
     onReset: _.noop,
+    onRef: _.noop,
     inputIcon: "search",
     loadingIcon: "search",
     placeholder: t`Type to search`,
     allowFreeInput: false,
+    render: null,
     renderOptionLabel({ option }) {
         return <div>{option.value}</div>;
     },
@@ -287,7 +292,45 @@ Search.defaultProps = {
         );
     },
     renderSearchInput() {
+        // Create search input
+        const { Link, Icon } = this.props.modules;
+        return (
+            <div className={styles.search}>
+                <Link className={styles.btn}>
+                    <Icon
+                        className={styles.icon}
+                        icon={this.props.loading ? this.props.loadingIcon : this.props.inputIcon}
+                    />
+                </Link>
+                {this.props.renderBasicInput.call(this)}
+                {this.props.renderOptionsDropDown.call(this)}
+            </div>
+        );
+    },
+    renderOptionsDropDown() {
+        const options = this.props.options.map((option, index) =>
+            this.props.renderOption.call(this, { option, index })
+        );
+
+        let dropDown = null;
+        if (this.props.options.length > 0) {
+            dropDown = (
+                <div className={styles.autosuggest}>
+                    <div className={styles.plainSearch}>
+                        <ul>{options}</ul>
+                    </div>
+                </div>
+            );
+        }
+
+        return dropDown;
+    },
+    renderBasicInput() {
         const inputProps = {
+            ref: ref => {
+                this.input = ref;
+                this.props.onRef(this.input);
+            },
             type: "text",
             readOnly: this.props.readOnly || false,
             placeholder: this.props.placeholder,
@@ -304,38 +347,7 @@ Search.defaultProps = {
             onChange: this.inputChanged,
             disabled: this.props.disabled
         };
-
-        // Render option
-        const options = this.props.options.map((option, index) =>
-            this.props.renderOption.call(this, { option, index })
-        );
-
-        let dropdownMenu = null;
-        const { styles } = this.props;
-        if (this.props.options.length > 0) {
-            dropdownMenu = (
-                <div className={styles.autosuggest}>
-                    <div className={styles.plainSearch}>
-                        <ul>{options}</ul>
-                    </div>
-                </div>
-            );
-        }
-
-        // Create search input
-        const { Link, Icon } = this.props.modules;
-        return (
-            <div className={styles.search}>
-                <Link className={styles.btn}>
-                    <Icon
-                        className={styles.icon}
-                        icon={this.props.loading ? this.props.loadingIcon : this.props.inputIcon}
-                    />
-                </Link>
-                <input {...inputProps} />
-                {dropdownMenu}
-            </div>
-        );
+        return <input {...inputProps} />;
     }
 };
 

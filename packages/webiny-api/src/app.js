@@ -1,11 +1,15 @@
 // @flow
 import debug from "debug";
 import cls from "cls-hooked";
+import { execute } from "graphql";
 import compose from "webiny-compose";
+import { app as webiny } from "webiny-api";
 import { ServiceManager } from "webiny-service-manager";
 import GraphQL from "./graphql/GraphQL";
 import EntityManager from "./entities/EntityManager";
 import { Entity, File, Image } from "./index";
+import getGraphQLParams from "./graphql/utils/getGraphQLParams";
+
 import type Schema from "./graphql/Schema";
 
 // Attributes registration functions
@@ -61,21 +65,52 @@ class Api {
         this.apps.push(app);
     }
 
-    middleware(middleware: Array<Function>): Function {
+    middleware(middleware: Function): Function {
+        // Setup registered Webiny apps.
         compose(this.apps)({ app: this });
+
+        const graphqlMiddleware = () => {
+            return async (params, next) => {
+                params.output = await execute(
+                    webiny.graphql.getSchema(),
+                    params.graphql.query,
+                    null,
+                    params.req,
+                    params.graphql.variables,
+                    params.graphql.operationName
+                );
+
+                next();
+            };
+        };
+
+        middleware = middleware(graphqlMiddleware);
+
+        middleware.unshift(async (params, next) => {
+            params.graphql = await getGraphQLParams(params.req);
+            next();
+        });
+
+        middleware.push((params, next, finish) => {
+            if (!params.res.finished) {
+                params.res.json(params.output);
+            }
+            finish();
+        });
 
         const log = debug("webiny-api");
         this.namespace = cls.createNamespace(Date.now().toString());
 
+        // Build request middleware.
         const webinyMiddleware = compose(middleware);
 
-        // Route request
+        // Route request.
         return async (req: express$Request, res: express$Response) => {
             log("Received new request");
+
             this.namespace.run(async () => {
                 return (async () => {
                     this.namespace.set("req", req);
-
                     webinyMiddleware({ req, res });
                 })();
             });

@@ -3,18 +3,25 @@ import { app, i18n, createComponent } from "webiny-app";
 const t = i18n.namespace("Security.RolesForm");
 
 class RolesForm extends React.Component {
+    constructor() {
+        super();
+        this.state = { searchQuery: {} };
+    }
+
     render() {
         const {
             AdminLayout,
             Form,
             FormData,
             FormError,
+            OptionsData,
             Section,
             View,
             Grid,
             Input,
             Button,
-            Loader
+            Loader,
+            AutoCompleteList
         } = this.props.modules;
 
         return (
@@ -22,7 +29,7 @@ class RolesForm extends React.Component {
                 <FormData
                     entity="SecurityRole"
                     withRouter
-                    fields="id name slug description permissions { id }"
+                    fields="id name slug description permissions { id name }"
                     defaultModel={{ permissions: [] }}
                     onSubmitSuccess="Roles.List"
                     onCancel="Roles.List"
@@ -86,6 +93,35 @@ class RolesForm extends React.Component {
                                                         />
                                                     </Bind>
                                                 </Grid.Col>
+                                            </Grid.Row>{" "}
+                                            <Grid.Row>
+                                                <Grid.Col all={12}>
+                                                    <OptionsData
+                                                        entity="SecurityPermission"
+                                                        fields="id name"
+                                                        labelField="name"
+                                                        perPage={10}
+                                                        search={{
+                                                            fields: ["name"],
+                                                            query: this.state.searchQuery
+                                                        }}
+                                                    >
+                                                        {({ options }) => (
+                                                            <Bind>
+                                                                <AutoCompleteList
+                                                                    options={options}
+                                                                    label={t`Permissions`}
+                                                                    name="permissions"
+                                                                    onSearch={query => {
+                                                                        this.setState({
+                                                                            searchQuery: query
+                                                                        });
+                                                                    }}
+                                                                />
+                                                            </Bind>
+                                                        )}
+                                                    </OptionsData>
+                                                </Grid.Col>
                                             </Grid.Row>
                                         </View.Body>
                                         <View.Footer>
@@ -116,6 +152,7 @@ export default createComponent(RolesForm, {
     modules: [
         "Form",
         "FormData",
+        "OptionsData",
         "FormError",
         "View",
         "Input",
@@ -123,6 +160,7 @@ export default createComponent(RolesForm, {
         "Grid",
         "Section",
         "Loader",
+        "AutoCompleteList",
         {
             AdminLayout: "Admin.Layout"
         }

@@ -1,0 +1,8 @@
+.input {
+  &:global(.Search_search) {
+    padding: 0;
+    border: none;
+    background: transparent;
+    display: inline-block;
+  }
+}
