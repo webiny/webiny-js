@@ -7,13 +7,11 @@ const document = new DocumentUtils();
 
 export { app, document };
 
-export {
-    RouterComponent as Router,
-    resolveMiddleware,
-    renderMiddleware
-} from "webiny-react-router";
+export { resolveMiddleware, renderMiddleware } from "webiny-react-router";
+
 export { default as createComponent } from "./utils/createComponent";
 export { default as isElementOfType } from "./utils/isElementOfType";
 export { default as elementHasFlag } from "./utils/elementHasFlag";
 export { default as LazyLoad } from "./components/LazyLoad";
+export { default as Router } from "./components/Router";
 export { default as i18n } from "./utils/i18n";

@@ -1,11 +1,12 @@
 // @flow
 import _ from "lodash";
-import ApolloClient, { type ApolloClientOptions } from "apollo-client";
+import ApolloClient, { type ApolloClientOptions, ApolloError } from "apollo-client";
 import { ApolloLink } from "apollo-link";
 import { HttpLink } from "apollo-link-http";
 import { setContext } from "apollo-link-context";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import operationGenerator from "./operationGenerator";
+import GraphQLError from "./Error";
 
 function createApolloClient() {
     const { uri, ...config } = this.config;
@@ -61,6 +62,10 @@ class Client {
 
     addRequestInterceptor(cb: Function) {
         this.interceptors.push(cb);
+    }
+
+    toError(error: ApolloError) {
+        return GraphQLError.from(error);
     }
 
     /**

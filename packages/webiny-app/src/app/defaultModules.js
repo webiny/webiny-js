@@ -1,16 +1,20 @@
+import FormData from "./../components/FormData";
+import ListData from "./../components/ListData";
+import OptionsData from "./../components/OptionsData";
+
 export default app => {
     app.modules.register([
         {
             name: "FormData",
-            factory: () => import("./../components/FormData")
+            factory: () => FormData
         },
         {
             name: "ListData",
-            factory: () => import("./../components/ListData")
+            factory: () => ListData
         },
         {
             name: "OptionsData",
-            factory: () => import("./../components/OptionsData")
+            factory: () => OptionsData
         }
     ]);
 };
