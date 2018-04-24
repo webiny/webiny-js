@@ -1,7 +1,7 @@
 import React from 'react';
 import classSet from "classnames";
 import { createComponent } from 'webiny-app';
-import styles from './styles.css';
+import styles from './styles.css?prefix=Panel';
 
 class Panel extends React.Component {
     render() {

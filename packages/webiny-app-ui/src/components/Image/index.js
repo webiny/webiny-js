@@ -4,7 +4,7 @@ import classSet from "classnames";
 import { createComponent, i18n } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
 import ImagePreview from "./Preview";
-import styles from "./styles.css";
+import styles from "./styles.css?prefix=Image";
 
 const t = i18n.namespace("Webiny.Ui.Image");
 class Image extends React.Component {

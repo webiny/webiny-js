@@ -3,7 +3,7 @@ import _ from "lodash";
 import classSet from "classnames";
 import { createComponent } from "webiny-app";
 import FormComponent from "./../FormComponent";
-import styles from "./styles.css";
+import styles from "./styles.css?prefix=Switch";
 
 class Switch extends React.Component {
     constructor(props) {

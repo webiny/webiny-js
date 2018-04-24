@@ -2,15 +2,12 @@ import React from "react";
 import _ from "lodash";
 import { i18n, createComponent } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
-import styles from "./styles.css";
+import styles from "./styles.css?prefix=Time";
 
 class Time extends React.Component {
     constructor(props) {
         super(props);
         this.initialized = false;
-        this.state = {
-            ...props.initialState
-        };
 
         this.init = this.init.bind(this);
     }

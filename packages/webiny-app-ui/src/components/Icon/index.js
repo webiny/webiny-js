@@ -2,7 +2,7 @@ import React from "react";
 import classSet from "classnames";
 import { createComponent } from "webiny-app";
 import FontAwesomeIcon from "@fortawesome/react-fontawesome";
-import styles from "./styles.css";
+import styles from "./styles.css?prefix=Icon";
 
 class Icon extends React.Component {
     render() {

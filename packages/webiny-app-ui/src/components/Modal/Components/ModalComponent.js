@@ -4,7 +4,7 @@ import _ from "lodash";
 import $ from "jquery";
 import classSet from "classnames";
 import { app, createComponent } from "webiny-app";
-import styles from "../styles.css";
+import styles from "../styles.css?prefix=ModalComponent";
 
 const mountedDialogs = [];
 

@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 import classSet from "classnames";
-import { createComponent, isElementOfType, LazyLoad } from 'webiny-app';
-import _ from 'lodash';
-import Step from './Step';
-import styles from './styles.scss';
+import { createComponent, isElementOfType, LazyLoad } from "webiny-app";
+import _ from "lodash";
+import Step from "./Step";
+import styles from "./styles.scss?prefix=Wizard";
 
 /**
  * Wizard component, makes it easier to create wizards, without worrying about common features like steps, navigation, content etc.
@@ -18,7 +18,7 @@ class Container extends React.Component {
 
         this.form = props.form;
 
-        ['setStep', 'nextStep', 'previousStep'].map(m => this[m] = this[m].bind(this));
+        ["setStep", "nextStep", "previousStep"].map(m => (this[m] = this[m].bind(this)));
     }
 
     /**
@@ -38,7 +38,10 @@ class Container extends React.Component {
     countSteps() {
         let count = 0;
         const components = this.props.children(this.getCallbackParams());
-        React.Children.forEach(components.props.children, component => isElementOfType(component, Step) && count++);
+        React.Children.forEach(
+            components.props.children,
+            component => isElementOfType(component, Step) && count++
+        );
 
         return count;
     }
@@ -104,15 +107,13 @@ class Container extends React.Component {
      * @param index
      */
     parseStep(step, index) {
-        const output = _.assign(
-            _.pick(step.props, _.keys(Step.defaultProps)),
-            {
-                index,
-                current: index === this.getCurrentStepIndex(),
-                completed: index < this.getCurrentStepIndex(),
-                actions: [],
-                content: null
-            });
+        const output = _.assign(_.pick(step.props, _.keys(Step.defaultProps)), {
+            index,
+            current: index === this.getCurrentStepIndex(),
+            completed: index < this.getCurrentStepIndex(),
+            actions: [],
+            content: null
+        });
 
         React.Children.forEach(step.props.children, component => {
             if (isElementOfType(component, Step.Content)) {
@@ -123,10 +124,15 @@ class Container extends React.Component {
             if (isElementOfType(component, Step.Actions)) {
                 React.Children.forEach(component.props.children, (action, actionIndex) => {
                     if (React.isValidElement(action)) {
-                        output.actions.push(React.cloneElement(action, _.assign({}, action.props, {
-                            key: actionIndex,
-                            wizard: this
-                        })));
+                        output.actions.push(
+                            React.cloneElement(
+                                action,
+                                _.assign({}, action.props, {
+                                    key: actionIndex,
+                                    wizard: this
+                                })
+                            )
+                        );
                     }
                 });
             }
@@ -159,15 +165,18 @@ class Container extends React.Component {
         this.setState({ loading: true });
 
         const params = this.getCallbackParams({ previous, next });
-        previous && await previous.onLeave(params);
+        previous && (await previous.onLeave(params));
 
         await this.props.onTransition(params);
 
-        this.setState(state => {
-            state.loading = false;
-            state.steps.current = index;
-            return state;
-        }, () => next.onEnter(params));
+        this.setState(
+            state => {
+                state.loading = false;
+                state.steps.current = index;
+                return state;
+            },
+            () => next.onEnter(params)
+        );
     }
 
     /**
@@ -212,13 +221,14 @@ class Container extends React.Component {
         params.steps.current = params.steps.list[this.getCurrentStepIndex()];
         params.styles = styles;
 
-
-        return this.props.renderLayout(_.assign(params, {
-            navigation: this.props.renderNavigation(params),
-            content: this.props.renderContent(params),
-            actions: this.props.renderActions(params),
-            loader: this.props.renderLoader(params)
-        }));
+        return this.props.renderLayout(
+            _.assign(params, {
+                navigation: this.props.renderNavigation(params),
+                content: this.props.renderContent(params),
+                actions: this.props.renderActions(params),
+                loader: this.props.renderLoader(params)
+            })
+        );
     }
 }
 
@@ -230,15 +240,24 @@ Container.defaultProps = {
     onStart: _.noop,
     renderNavigation(params) {
         return (
-            <LazyLoad modules={['Icon']}>
+            <LazyLoad modules={["Icon"]}>
                 {({ Icon }) => (
                     <ul className={params.styles.navigation}>
                         {params.steps.list.map((step, index) => (
-                            <li key={index}
-                                className={classSet((step.completed ? params.styles.completed : null), (step.current ? params.styles.current : null))}>
+                            <li
+                                key={index}
+                                className={classSet(
+                                    step.completed ? params.styles.completed : null,
+                                    step.current ? params.styles.current : null
+                                )}
+                            >
                                 <div>
                                     {step.completed ? (
-                                        <Icon type="success" icon="icon-check" className="animated rotateIn"/>
+                                        <Icon
+                                            type="success"
+                                            icon="icon-check"
+                                            className="animated rotateIn"
+                                        />
                                     ) : (
                                         <span>{step.index + 1}</span>
                                     )}
@@ -252,22 +271,14 @@ Container.defaultProps = {
         );
     },
     renderContent(params) {
-        return (
-            <div className={params.styles.content}>
-                {params.steps.current.content}
-            </div>
-        );
+        return <div className={params.styles.content}>{params.steps.current.content}</div>;
     },
     renderActions(params) {
-        return (
-            <div className={params.styles.actions}>
-                {params.steps.current.actions}
-            </div>
-        );
+        return <div className={params.styles.actions}>{params.steps.current.actions}</div>;
     },
     renderLoader({ wizard }) {
         const { Loader } = wizard.props;
-        return wizard.state.loading && <Loader/>;
+        return wizard.state.loading && <Loader />;
     },
     renderLayout({ loader, navigation, content, actions, styles }) {
         return (

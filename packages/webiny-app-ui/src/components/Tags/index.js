@@ -3,7 +3,7 @@ import _ from "lodash";
 import { createComponent, i18n } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
 import { validation } from "webiny-validation";
-import styles from "./styles.css";
+import styles from "./styles.css?prefix=Tags";
 
 const t = i18n.namespace("Webiny.Ui.Tags");
 class Tags extends React.Component {

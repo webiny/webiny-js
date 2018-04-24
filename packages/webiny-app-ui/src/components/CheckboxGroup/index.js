@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { createComponent } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
-import styles from "./styles.css";
+import styles from "./styles.css?prefix=CheckboxGroup";
 
 class CheckboxGroup extends React.Component {
     constructor(props) {

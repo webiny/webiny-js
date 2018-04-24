@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { createComponent } from "webiny-app";
 import classSet from "classnames";
-import styles from "./styles.css";
+import styles from "./styles.css?prefix=Button";
 
 class Button extends React.Component {
     constructor(props) {

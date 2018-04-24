@@ -6,7 +6,7 @@ import Dialog from "./Dialog";
 import Content from "./Content";
 import Body from "./Body";
 import Footer from "./Footer";
-import styles from "../styles.css";
+import styles from "../styles.css?prefix=Success";
 
 const t = i18n.namespace("Webiny.Ui.Modal.Success");
 

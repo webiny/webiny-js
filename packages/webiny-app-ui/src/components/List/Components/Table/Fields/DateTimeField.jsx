@@ -1,6 +1,6 @@
-import React from 'react';
-import _ from 'lodash';
-import { createComponent, i18n } from 'webiny-app';
+import React from "react";
+import _ from "lodash";
+import { createComponent, i18n } from "webiny-app";
 
 class DateTimeField extends React.Component {
     render() {
@@ -16,7 +16,7 @@ class DateTimeField extends React.Component {
             <List.Table.Field {...props}>
                 {() => {
                     try {
-                        return i18n.dateTime(datetime, format);
+                        return <span>{i18n.dateTime(datetime, format)}</span>;
                     } catch (e) {
                         return this.props.default;
                     }
@@ -28,8 +28,8 @@ class DateTimeField extends React.Component {
 
 DateTimeField.defaultProps = {
     name: null,
-    default: '-',
+    default: "-",
     format: null
 };
 
-export default createComponent(DateTimeField, { modules: ['List'], tableField: true });
+export default createComponent(DateTimeField, { modules: ["List"], tableField: true });

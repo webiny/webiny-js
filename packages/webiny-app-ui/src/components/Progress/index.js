@@ -1,6 +1,6 @@
-import React from 'react';
-import { createComponent } from 'webiny-app';
-import styles from './styles.css';
+import React from "react";
+import { createComponent } from "webiny-app";
+import styles from "./styles.css?prefix=Progress";
 
 class Progress extends React.Component {
     render() {
@@ -19,7 +19,8 @@ class Progress extends React.Component {
                         aria-valuenow={value}
                         aria-valuemin="0"
                         aria-valuemax="100"
-                        style={{ width: value + '%' }}/>
+                        style={{ width: value + "%" }}
+                    />
                 </div>
             </div>
         );

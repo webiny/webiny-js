@@ -4,7 +4,7 @@ import classSet from "classnames";
 import { createComponent } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
 import Radio from "./Radio";
-import styles from "./styles.css";
+import styles from "./styles.css?prefix=RadioGroup";
 
 class RadioGroup extends React.Component {
     constructor(props) {

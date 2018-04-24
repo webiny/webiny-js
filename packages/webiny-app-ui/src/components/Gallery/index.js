@@ -6,7 +6,7 @@ import { createComponent, i18n } from "webiny-app";
 import { linkState } from "webiny-form";
 import { FormComponent } from "webiny-app-ui";
 import Image from "./Image";
-import styles from "./styles.css";
+import styles from "./styles.css?prefix=Gallery";
 
 const placeholder = document.createElement("div");
 placeholder.className = styles.placeholder;

@@ -2,7 +2,7 @@ import React from "react";
 import classSet from "classnames";
 import { createComponent } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
-import styles from "./styles.css";
+import styles from "./styles.css?prefix=Textarea";
 
 class Textarea extends React.Component {
     render() {

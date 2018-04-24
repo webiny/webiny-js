@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { createComponent } from "webiny-app";
 import FormComponent from "./../FormComponent";
-import styles from "./styles.css";
+import styles from "./styles.css?prefix=Input";
 
 class Input extends React.Component {
     constructor(props) {

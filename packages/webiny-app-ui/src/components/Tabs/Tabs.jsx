@@ -1,10 +1,10 @@
 import React from 'react';
 import _ from 'lodash';
 import classSet from "classnames";
-import { app, createComponent, i18n } from 'webiny-app';
+import { app, createComponent } from 'webiny-app';
 import TabHeader from './TabHeader';
 import TabContent from './TabContent';
-import styles from './styles.css';
+import styles from './styles.css?prefix=Tabs';
 
 class Tabs extends React.Component {
     constructor() {

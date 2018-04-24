@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
 import { app, createComponent } from "webiny-app";
-import styles from "./styles.css";
+import styles from "./styles.css?prefix=Link";
 
 class Link extends React.Component {
     constructor(props) {

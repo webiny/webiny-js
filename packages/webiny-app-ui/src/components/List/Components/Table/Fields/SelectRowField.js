@@ -1,6 +1,6 @@
 import React from "react";
 import { createComponent, LazyLoad } from "webiny-app";
-import styles from "../../../styles.css";
+import styles from "../../../styles.css?prefix=SelectRowField";
 
 class SelectRowField extends React.Component {
     render() {

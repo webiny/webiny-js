@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { i18n, createComponent } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
-import styles from "./styles.css";
+import styles from "./styles.css?prefix=DateRange";
 
 class Date extends React.Component {
     constructor(props) {
@@ -10,10 +10,6 @@ class Date extends React.Component {
         this.initialized = false;
         this.element = null;
         this.id = _.uniqueId("dateRange");
-
-        this.state = {
-            ...props.initialState
-        };
 
         this.init = this.init.bind(this);
     }
@@ -109,6 +105,5 @@ Date.defaultProps = {
 };
 
 export default createComponent([Date, FormComponent], {
-    modules: ["Icon", "InputLayout", { Flatpickr: "Vendor.FlatPickr" }],
-    formComponent: true
+    modules: ["Icon", "InputLayout", { Flatpickr: "Vendor.FlatPickr" }]
 });

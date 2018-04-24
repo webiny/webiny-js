@@ -1,5 +1,5 @@
-import React from 'react';
-import styles from './../styles.css';
+import React from "react";
+import styles from "./../styles.css?prefix=FormGroup";
 
 class ValidationIcon extends React.Component {
     render() {
@@ -12,7 +12,7 @@ class ValidationIcon extends React.Component {
             css = styles.validationIconError;
         }
 
-        return <span className={css}/>;
+        return <span className={css} />;
     }
 }
 

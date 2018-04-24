@@ -3,7 +3,7 @@ import _ from "lodash";
 import classSet from "classnames";
 import { createComponent, LazyLoad } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
-import styles from "./styles.css";
+import styles from "./styles.css?prefix=Checkbox";
 
 class Checkbox extends React.Component {
     constructor(props) {

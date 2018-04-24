@@ -32,7 +32,7 @@ class FormError extends React.Component {
         _.each(invalidAttributes, (value, key) => {
             data.push(
                 <li key={key}>
-                    <strong>{key}</strong> {value.data.message}
+                    <strong>{key}</strong> {value}
                 </li>
             );
         });

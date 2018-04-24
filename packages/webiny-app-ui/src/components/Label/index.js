@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 import classSet from "classnames";
-import { createComponent } from 'webiny-app';
-import styles from './styles.css';
+import { createComponent } from "webiny-app";
+import styles from "./styles.css?prefix=Label";
 
 class Label extends React.Component {
     render() {
@@ -20,15 +20,11 @@ class Label extends React.Component {
             error: styles.danger
         };
 
-        const classes = classSet(
-            styles.label,
-            typeClasses[props.type],
-            props.className
-        );
+        const classes = classSet(styles.label, typeClasses[props.type], props.className);
 
         const style = {};
         if (inline) {
-            style['float'] = 'none';
+            style["float"] = "none";
         }
 
         return (
@@ -41,7 +37,7 @@ class Label extends React.Component {
 
 Label.defaultProps = {
     inline: false,
-    type: 'default',
+    type: "default",
     className: null
 };
 

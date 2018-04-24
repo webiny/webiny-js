@@ -1,7 +1,6 @@
 import fontawesome from "@fortawesome/fontawesome";
 import solid from "@fortawesome/fontawesome-free-solid";
-import regular from "@fortawesome/fontawesome-free-regular";
-fontawesome.library.add(solid, regular);
+fontawesome.library.add(solid);
 
 if (window) {
     window.jQuery = window.$ = require("jquery");
@@ -9,7 +8,7 @@ if (window) {
 
 require("bootstrap-sass");
 
-import "./assets/styles.scss";
+import "./assets/styles.scss?extract";
 import growler from "./services/growler";
 import ModalService from "./services/modal";
 

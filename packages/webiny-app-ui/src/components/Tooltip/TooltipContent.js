@@ -1,8 +1,8 @@
-import React from 'react';
-import _ from 'lodash';
-import $ from 'jquery';
+import React from "react";
+import _ from "lodash";
+import $ from "jquery";
 import classSet from "classnames";
-import styles from './styles.css';
+import styles from "./styles.css?prefix=TooltipContent";
 
 class TooltipContent extends React.Component {
     constructor() {
@@ -10,7 +10,7 @@ class TooltipContent extends React.Component {
         this.positioningInterval = null;
         this.ref = null;
         this.state = {
-            style: { visibility: 'hidden' }
+            style: { visibility: "hidden" }
         };
         this.onClick = this.onClick.bind(this);
         this.setupPlacement = this.setupPlacement.bind(this);
@@ -44,10 +44,13 @@ class TooltipContent extends React.Component {
             return;
         }
 
-        const target = _.assign({
-            width: this.props.targetFirstChildElement.offsetWidth,
-            height: this.props.targetFirstChildElement.offsetHeight,
-        }, $(this.props.targetFirstChildElement).position());
+        const target = _.assign(
+            {
+                width: this.props.targetFirstChildElement.offsetWidth,
+                height: this.props.targetFirstChildElement.offsetHeight
+            },
+            $(this.props.targetFirstChildElement).position()
+        );
 
         const content = {
             width: this.ref.offsetWidth,
@@ -56,36 +59,37 @@ class TooltipContent extends React.Component {
 
         const style = {};
         switch (this.props.placement) {
-            case 'bottomRight':
+            case "bottomRight":
                 style.top = target.top + target.height;
                 style.left = target.left + target.width;
                 break;
-            case 'bottom':
+            case "bottom":
                 style.top = target.top + target.height;
-                style.left = target.left + (-(content.width - target.width) / 2);
+                style.left = target.left + -(content.width - target.width) / 2;
                 break;
-            case 'bottomLeft':
+            case "bottomLeft":
                 style.top = target.top + target.height;
                 style.left = target.left - content.width;
                 break;
-            case 'left':
-                style.top = target.top + (-(content.height - target.height) / 2);
+            case "left":
+                style.top = target.top + -(content.height - target.height) / 2;
                 style.left = target.left - content.width;
                 break;
-            case 'topLeft':
+            case "topLeft":
                 style.top = target.top - content.height;
                 style.left = target.left - content.width;
                 break;
-            case 'top':
+            case "top":
                 style.top = target.top - content.height;
-                style.left = target.left + (-(content.width - target.width) / 2);
+                style.left = target.left + -(content.width - target.width) / 2;
                 break;
-            case 'topRight':
+            case "topRight":
                 style.top = target.top - content.height;
                 style.left = target.left + target.width;
                 break;
-            default: // 'right'
-                style.top = target.top + (-(content.height - target.height) / 2);
+            default:
+                // 'right'
+                style.top = target.top + -(content.height - target.height) / 2;
                 style.left = target.left + target.width;
         }
 
@@ -96,14 +100,14 @@ class TooltipContent extends React.Component {
      * If tooltip was triggered by 'click' event, then we want to watch for all outside clicks, to automatically close the tooltip.
      */
     registerEventListeners() {
-        if (this.props.trigger === 'click') {
-            document.addEventListener('click', this.onClick)
+        if (this.props.trigger === "click") {
+            document.addEventListener("click", this.onClick);
         }
     }
 
     unregisterEventListeners() {
-        if (this.props.trigger === 'click') {
-            document.removeEventListener('click', this.onClick)
+        if (this.props.trigger === "click") {
+            document.removeEventListener("click", this.onClick);
         }
     }
 
@@ -117,13 +121,15 @@ class TooltipContent extends React.Component {
         return (
             <div
                 style={this.state.style}
-                className={classSet(styles.content, styles['content' + _.upperFirst(this.props.placement)])}
-                ref={ref => this.ref = ref}
+                className={classSet(
+                    styles.content,
+                    styles["content" + _.upperFirst(this.props.placement)]
+                )}
+                ref={ref => (this.ref = ref)}
                 onMouseEnter={this.props.onMouseEnter}
-                onMouseLeave={this.props.onMouseLeave}>
-                <div className={styles.innerContent}>
-                    {this.props.content}
-                </div>
+                onMouseLeave={this.props.onMouseLeave}
+            >
+                <div className={styles.innerContent}>{this.props.content}</div>
             </div>
         );
     }
@@ -132,8 +138,8 @@ class TooltipContent extends React.Component {
 TooltipContent.defaultProps = {
     targetFirstChildElement: null,
     content: null,
-    placement: 'right',
-    trigger: 'hover',
+    placement: "right",
+    trigger: "hover",
     onOutsideClick: _.noop,
     onMouseEnter: _.noop,
     onMouseLeave: _.noop

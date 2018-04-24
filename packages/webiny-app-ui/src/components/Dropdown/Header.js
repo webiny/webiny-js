@@ -1,6 +1,6 @@
 import React from "react";
 import { createComponent } from "webiny-app";
-import styles from "./styles.css";
+import styles from "./styles.css?prefix=Dropdown";
 
 class Header extends React.Component {
     render() {

@@ -13,7 +13,7 @@ class Header extends React.Component {
             <div className={styles.viewHeader}>
                 <div className={styles.titleWrapper}>
                     <h2 className={styles.titleContent}>
-                        {this.props.title}
+                       {this.props.title}
                     </h2>
 
                     <div className={styles.titleDescription}>{this.props.description}</div>

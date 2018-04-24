@@ -1,5 +1,5 @@
-import React from 'react';
-import styles from './../styles.css';
+import React from "react";
+import styles from "./../styles.css?prefix=FormGroup";
 
 class Required extends React.Component {
     render() {

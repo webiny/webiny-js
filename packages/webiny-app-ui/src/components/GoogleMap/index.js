@@ -2,17 +2,13 @@ import React from "react";
 import _ from "lodash";
 import { createComponent, document } from "webiny-app";
 import { FormComponent } from "webiny-app";
-import styles from "./styles.css";
+import styles from "./styles.css?prefix=GoogleMap";
 
 // TODO: https://www.npmjs.com/package/react-google-maps
 
 class GoogleMap extends React.Component {
     constructor(props) {
         super(props);
-
-        this.state = {
-            ...props.initialState
-        };
 
         this.dom = null;
         this.map = null;
