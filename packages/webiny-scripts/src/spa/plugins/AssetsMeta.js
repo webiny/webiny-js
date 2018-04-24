@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 /**
  * AssetsMeta class generates a `meta.json` file containing chunks manifest and other entry points.
  * Chunks manifest is then included in the HTML file.
@@ -20,17 +22,25 @@ class AssetsMeta {
 
             const prefix = process.env.NODE_ENV === "development" ? "" : "/";
 
-            compilation.chunks.forEach(chunk => {
-                chunk.files.forEach(file => {
-                    // Don't add hot updates to meta
-                    if (file.indexOf("hot-update") >= 0) {
-                        return;
-                    }
+            _.each(compilation.entrypoints, ep => {
+                meta.chunks[ep.name] = meta.chunks[ep.name] || {};
+                ep.chunks.forEach(ec => {
+                    ec.chunks.forEach(chunk => {
+                        chunk.files.forEach(file => {
+                            // Don't add hot updates to meta
+                            if (file.indexOf("hot-update") >= 0) {
+                                return;
+                            }
 
-                    // Only store chunks map
-                    if (file.startsWith("chunks/")) {
-                        meta.chunks[chunk.id] = urlGenerator.generate(file, prefix);
-                    }
+                            // Only store chunks map
+                            if (file.startsWith("chunks/")) {
+                                meta.chunks[ep.name][chunk.id] = urlGenerator.generate(
+                                    file,
+                                    prefix
+                                );
+                            }
+                        });
+                    });
                 });
             });
 

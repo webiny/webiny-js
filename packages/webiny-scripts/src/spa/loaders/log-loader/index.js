@@ -1,4 +1,4 @@
-export default source => {
+export default function log(source) {
     if (this.cacheable) {
         this.cacheable();
     }
@@ -6,4 +6,4 @@ export default source => {
     console.log(this.resourcePath);
 
     return source;
-};
+}

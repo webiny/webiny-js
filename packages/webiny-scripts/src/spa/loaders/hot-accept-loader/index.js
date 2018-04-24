@@ -7,6 +7,7 @@ const files = [];
 export default function hotAcceptLoader(source) {
     let m;
     const res = path.parse(this.resource);
+    const children = [];
 
     do {
         m = regex.exec(source);
@@ -15,12 +16,22 @@ export default function hotAcceptLoader(source) {
             ip = _.trim(ip, "'");
             ip = _.trim(ip, '"');
 
-            files.push(path.join(res.dir, ip));
+            const child = path.join(res.dir, ip);
+            files.push(child);
+            children.push(ip);
         }
     } while (m);
 
+    if (children.length) {
+        const modules = children.map(c => `'` + c + `'`).join(", ");
+        source += "\nmodule.hot.accept([" + modules + "], () => {})";
+    }
+
     if (files.includes(path.join(res.dir, res.name))) {
-        source += "\nmodule.hot.accept(() => {})";
+        return `
+            ${source}
+            module.hot.accept(() => {});
+        `;
     }
 
     return source;

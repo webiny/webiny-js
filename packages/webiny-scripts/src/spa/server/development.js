@@ -10,6 +10,8 @@ export default ({ routes, port, domain, devMiddleware }) => {
     return ({ config, projectRoot }) => {
         const statsConfig = {
             all: false,
+            assets: true,
+            assetsSort: "size",
             errors: true,
             errorDetails: true,
             entrypoints: true,

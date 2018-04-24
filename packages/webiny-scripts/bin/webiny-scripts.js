@@ -28,7 +28,7 @@ yargs.command(
         const projectRoot = process.cwd();
         const appRoot = path.join(projectRoot, argv.appRoot);
         const { developApp } = require("./../");
-        developApp(projectRoot, appRoot);
+        developApp(projectRoot, appRoot, argv.clean || false);
     }
 );
 
