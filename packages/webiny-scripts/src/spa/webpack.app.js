@@ -57,6 +57,7 @@ export default ({ projectRoot, appRoot, urlGenerator }) => {
     const dllPath = path.resolve(
         path.join(projectRoot, "dist", process.env.NODE_ENV, "vendor.manifest.json")
     );
+
     if (fs.existsSync(dllPath)) {
         plugins.push(
             new webpack.DllReferencePlugin({

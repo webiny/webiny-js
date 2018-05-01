@@ -72,10 +72,14 @@ export async function developApp(projectRoot, appRoot, clean = false) {
 
     // Run build
     const webpack = await import("webpack");
-    webpack(vendorConfig).run(async function(err, stats) {
-        if (err) console.error(err);
+    return new Promise(resolve => {
+        webpack(vendorConfig).run(async function(err, stats) {
+            if (err) console.error(err);
 
-        console.log(stats.toString({ colors: true }));
+            console.log(stats.toString({ colors: true }));
+            resolve();
+        });
+    }).then(() => {
         return buildApp();
     });
 }

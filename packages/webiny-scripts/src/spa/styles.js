@@ -14,7 +14,6 @@ export default () => {
                 })
             },
             {
-                resourceQuery: query => !query.includes("extract"),
                 issuer: /\.jsx?$/,
                 use: [
                     "style-loader",
