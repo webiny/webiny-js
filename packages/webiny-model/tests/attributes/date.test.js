@@ -49,12 +49,15 @@ describe("attribute boolean test", function() {
             this.attr("createdOn").char();
         });
 
+        const april1st2018 = new Date(1522540800 * 1000);
+        const april1st2018String = april1st2018.toString();
+
         someModel.getAttribute("createdOn").onSet(() => {
-            return new Date(2018, 4, 1);
+            return april1st2018;
         });
 
         someModel.createdOn = new Date();
-        assert.equal(String(someModel.createdOn), "Tue May 01 2018 00:00:00 GMT+0200 (CEST)");
+        assert.equal(String(someModel.createdOn), april1st2018String);
 
         someModel.getAttribute("createdOn").onGet(() => {
             return "random";
