@@ -4,5 +4,6 @@ const app = new Api();
 export { app };
 
 export { default as graphql } from "./graphql/middleware";
+export { default as InvalidAttributesError } from "./graphql/utils/crud/InvalidAttributesError";
 export { Entity, File, Image } from "./entities";
 export { default as MySQLTable } from "./mysql/mysql";

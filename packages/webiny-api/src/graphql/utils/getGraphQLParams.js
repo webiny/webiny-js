@@ -1,10 +1,11 @@
+// Copyright (c) 2015-present, Facebook, Inc. All rights reserved.
+
 import { parseBody } from "express-graphql/dist/parseBody";
+import type { $Request } from "express";
 import type { GraphQLParams } from "express-graphql";
+import { parse } from "graphql";
 import httpError from "http-errors";
 import url from "url";
-
-import type { $Request } from "express";
-import { parse } from "graphql";
 
 /**
  * Helper function to get the GraphQL params from the request.
@@ -15,7 +16,7 @@ function parseGraphQLParams(
 ): GraphQLParams {
     // GraphQL Query string.
     let query = urlData.query || bodyData.query;
-    if (typeof query !== "string") {
+    if (typeof query !== "string" || query.length === 0) {
         query = null;
     }
 
@@ -23,7 +24,9 @@ function parseGraphQLParams(
     let variables = urlData.variables || bodyData.variables;
     if (variables && typeof variables === "string") {
         try {
-            variables = JSON.parse(variables);
+            do {
+                variables = JSON.parse(variables);
+            } while (typeof variables === "string");
         } catch (error) {
             throw httpError(400, "Variables are invalid JSON.");
         }
@@ -40,9 +43,9 @@ function parseGraphQLParams(
     const raw = urlData.raw !== undefined || bodyData.raw !== undefined;
 
     // Parse source to AST, reporting any syntax error.
-    query = parse(query);
+    const documentAST = query ? parse(query) : null;
 
-    return { query, variables, operationName, raw };
+    return { query, documentAST, variables, operationName, raw };
 }
 
 export default function getGraphQLParams(request: $Request): Promise<GraphQLParams> {

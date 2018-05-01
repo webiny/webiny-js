@@ -1,6 +1,9 @@
 // @flow
-import expressGraphQL from "express-graphql";
+import { execute } from "graphql";
 import { app } from "webiny-api";
+import compose from "webiny-compose";
+import httpError from "http-errors";
+import getGraphQLParams from "./utils/getGraphQLParams";
 
 const formatError = err => {
     console.error(err);
@@ -11,24 +14,63 @@ const formatError = err => {
     };
 };
 
-export default (config: Object = {}) => {
-    if (config.formatError) {
-        const customFormat = config.formatError;
-        config.formatError = err => {
-            return customFormat(err, formatError);
+/**
+ * Construct an array of middleware functions to prepare graphql request, process request and optionally send
+ * the response if it isn't sent by any other middleware.
+ *
+ * @param {Function} middleware factory that returns an array of middleware functions.
+ * @returns {Function} Final middleware function.
+ */
+export default (middleware: Function) => {
+    /**
+     * Main middleware for executing the requested graphql operation.
+     * @returns {Function}
+     */
+    const graphqlMiddleware = () => {
+        return async (params, next) => {
+            if (!params.graphql.query) {
+                throw httpError(400, "Must provide query string.");
+            }
+
+            params.output = await execute(
+                app.graphql.getSchema(),
+                params.graphql.documentAST,
+                null,
+                params.req,
+                params.graphql.variables,
+                params.graphql.operationName
+            );
+
+            next();
         };
-    } else {
-        config.formatError = formatError;
-    }
+    };
 
-    let graphql;
+    /**
+     * Array of middleware constructed from the main graphql middleware and any other project middleware defined by the developer.
+     */
+    middleware = middleware({ graphqlMiddleware }).filter(m => typeof m === "function");
 
-    return (params: Object) => {
-        if (!graphql) {
-            config.schema = app.graphql.getSchema();
-            graphql = expressGraphQL(config);
+    /**
+     * Additional middleware to parse graphql request which must always be first in the chain.
+     */
+    middleware.unshift(async (params, next) => {
+        params.graphql = await getGraphQLParams(params.req);
+        next();
+    });
+
+    /**
+     * Additional middleware to optionally send the response which must always be the last one in the chain.
+     */
+    middleware.push((params, next, finish) => {
+        if (params.output.errors) {
+            params.output.errors = params.output.errors.map(formatError);
         }
 
-        graphql(params.req, params.res);
-    };
+        if (!params.res.finished) {
+            params.res.json(params.output);
+        }
+        finish();
+    });
+
+    return compose(middleware);
 };
