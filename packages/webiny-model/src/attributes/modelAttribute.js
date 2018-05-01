@@ -63,7 +63,17 @@ class ModelAttribute extends Attribute {
     async getStorageValue(): Promise<mixed> {
         const value = await this.getValue();
         if (value instanceof Model) {
-            return await value.toStorage();
+            const json = {};
+            for (let name in value.getAttributes()) {
+                const attribute = value.getAttribute(name);
+                // $FlowIgnore - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
+                if (attribute.getToStorage()) {
+                    // $FlowIgnore - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
+                    json[name] = await attribute.getStorageValue();
+                }
+            }
+
+            return json;
         }
         return value;
     }

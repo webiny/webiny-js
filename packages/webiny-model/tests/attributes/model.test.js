@@ -336,6 +336,7 @@ describe("attribute model test", function() {
                     visible: false,
                     file: "webiny.jpg",
                     size: {
+                        height: null,
                         width: 12.5
                     }
                 }

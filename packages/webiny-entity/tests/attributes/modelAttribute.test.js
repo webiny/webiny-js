@@ -79,7 +79,8 @@ describe("custom attribute test", function() {
         assert.deepEqual(storage, {
             verification: {
                 document: "abc",
-                status: "pending"
+                status: "pending",
+                updatedOn: null
             }
         });
     });

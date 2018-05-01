@@ -286,11 +286,13 @@ describe("attribute models test", function() {
             this.attr("attribute1").models(Model1);
             this.attr("attribute2").models(Model2);
         });
+
         storageModel.attribute1 = [
             { name: "Enlai", type: "dog" },
             { name: "Rocky", type: "dog" },
             { name: "Lina", type: "parrot" }
         ];
+
         storageModel.attribute2 = [
             { firstName: "John", lastName: "Doe" },
             { firstName: "Jane", lastName: "Doe" }
@@ -301,24 +303,29 @@ describe("attribute models test", function() {
         assert.deepEqual(data, {
             attribute1: [
                 {
+                    number: null,
                     name: "Enlai",
                     type: "dog"
                 },
                 {
+                    number: null,
                     name: "Rocky",
                     type: "dog"
                 },
                 {
+                    number: null,
                     name: "Lina",
                     type: "parrot"
                 }
             ],
             attribute2: [
                 {
+                    enabled: null,
                     firstName: "John",
                     lastName: "Doe"
                 },
                 {
+                    enabled: null,
                     firstName: "Jane",
                     lastName: "Doe"
                 }
