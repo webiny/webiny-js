@@ -5,7 +5,7 @@ export default () => {
         const { route, match, resolve } = params;
 
         if (route.render) {
-            params.output = route.render({ route, match, resolve });
+            params.output = await route.render({ route, match, resolve });
         }
 
         if (route.component) {
