@@ -28,9 +28,6 @@ class EntityAttribute extends Attribute {
     ) {
         super(name, attributesContainer);
 
-        // This attribute is async because we need to load entities both on set and get calls.
-        this.async = true;
-
         this.options = options;
 
         this.classes = {
