@@ -76,7 +76,17 @@ class ModelsAttribute extends Attribute {
         if (value instanceof Array) {
             const data = [];
             for (let i = 0; i < value.length; i++) {
-                data.push(await value[i].toStorage());
+                const model = value[i];
+                const json = {};
+                for (let name in model.getAttributes()) {
+                    const attribute = model.getAttribute(name);
+                    // $FlowIgnore - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
+                    if (attribute.getToStorage()) {
+                        // $FlowIgnore - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
+                        json[name] = await attribute.getStorageValue();
+                    }
+                }
+                data.push(json);
             }
             return data;
         }

@@ -4,7 +4,8 @@ import { assert } from "chai";
 import i18n from "./..";
 
 describe("time test", () => {
-    const april1st2018 = new Date(1522540800 * 1000);
+    // With below given format (no timezone), Date assumes passed value is in current timezone.
+    const april1st2018 = new Date("April 1, 2018 02:00:00");
 
     it("should output time with no formatting set", () => {
         assert.equal(i18n.time(april1st2018), "02:00");

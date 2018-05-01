@@ -9,7 +9,9 @@ i18n.registerProcessor(defaultProcessor);
 const t = i18n.namespace("Random.Namespace");
 
 let text = null;
-const april1st2018 = new Date(1522540800 * 1000);
+
+// With below given format (no timezone), Date assumes passed value is in current timezone.
+const april1st2018 = new Date("April 1, 2018 02:00:00");
 
 describe("modifiers test", () => {
     it("count modifier", () => {
