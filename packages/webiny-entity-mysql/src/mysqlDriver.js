@@ -79,6 +79,10 @@ class MySQLDriver extends Driver {
     async save(entity: Entity, options: EntitySaveParams & {}): Promise<QueryResult> {
         if (entity.isExisting()) {
             const data = await entity.toStorage();
+            if (_.isEmpty(data)) {
+                return new QueryResult(true);
+            }
+
             const sql = new Update(
                 {
                     operators: this.operators,
