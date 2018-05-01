@@ -4,9 +4,7 @@ import Menu from "./services/menu";
 
 export default () => {
     return (params, next) => {
-        Promise.all([
-            new Promise(res => uiApp()(params, res)),
-        ]).then(() => {
+        Promise.all([new Promise(res => uiApp()(params, res))]).then(() => {
             app.services.register("menu", () => new Menu());
 
             app.modules.register([
@@ -29,7 +27,7 @@ export default () => {
                 {
                     name: "Admin.Logo",
                     factory: () => import("./components/Logo"),
-                    tags: ['header-component']
+                    tags: ["header-component"]
                 },
                 {
                     name: "Admin.Navigation",

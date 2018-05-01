@@ -87,6 +87,7 @@ class Desktop extends React.Component {
     }
 
     onClick(menu) {
+        // TODO: @pavel dodaj state za otvoreni submenu na page refreshu
         if (menu.props.level === 0) {
             this.setState({ open: menu.props.id });
         }
