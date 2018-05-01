@@ -15,6 +15,10 @@
         ["babel-plugin-transform-runtime", {
             "polyfill": false,
             "regenerator": true
+        }],
+        ["babel-plugin-transform-rename-import", {
+            "original": "^(.*?.s?css)$",
+            "replacement": "$1?"
         }]
     ]
 }

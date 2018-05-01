@@ -1,4 +1,5 @@
 import React from "react";
+import _ from "lodash";
 import { app, createComponent, i18n } from "webiny-app";
 import gql from "graphql-tag";
 import TwoFactorAuthActivation from "./TwoFactorAuthActivation";
@@ -71,7 +72,7 @@ class UserAccount extends React.Component {
                 this.auth.refresh();
             })
             .catch(error => {
-                this.setState({ error: Error.from(error), loading: false });
+                this.setState({ error: app.graphql.toError(error), loading: false });
             });
     }
 
@@ -97,7 +98,11 @@ class UserAccount extends React.Component {
 
         return (
             <AdminLayout>
-                <Form model={this.state.model} onSubmit={model => this.onSubmit(model)}>
+                <Form
+                    model={this.state.model}
+                    onSubmit={model => this.onSubmit(model)}
+                    invalidFields={_.get(this.state.error, "data.invalidAttributes")}
+                >
                     {({ model, form, Bind }) => (
                         <View.Form>
                             <View.Header title={t`Account Settings`} />
