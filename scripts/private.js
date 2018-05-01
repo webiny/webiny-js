@@ -21,12 +21,11 @@ const wsr = require("webiny-semantic-release");
 const registry = process.env.NPM_REGISTRY;
 
 const toPublish = [
-    //"webiny-api-cms",
+    "webiny-api-cms",
     "webiny-api-security",
     "webiny-api",
     "webiny-app-admin",
-    //"webiny-app-cms",
-    //"webiny-app-security-admin",
+    "webiny-app-cms",
     "webiny-app-security",
     "webiny-app-ui",
     "webiny-app",
@@ -39,6 +38,7 @@ const toPublish = [
     "webiny-file-storage-local",
     "webiny-file-storage-s3",
     "webiny-file-storage",
+    "webiny-form",
     "webiny-i18n-react",
     "webiny-i18n",
     "webiny-jimp",

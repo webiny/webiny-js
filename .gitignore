@@ -9,3 +9,4 @@ yarn.lock
 packages/*/lib
 dist/
 examples/api/dist/
+examples/*/storage/

@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import { authentication, authorization } from "webiny-api-security";
 import setupProject from "./configs/middleware";
-import { app as webiny } from "webiny-api";
+import { app as webiny, Entity } from "webiny-api";
 
 export default () => {
     setupProject();
@@ -17,10 +17,15 @@ export default () => {
 
     app.use(
         "/graphql",
-        webiny.middleware(graphqlMiddleware => [
+        webiny.middleware(({ graphqlMiddleware }) => [
             authentication({ token: "Authorization" }),
-            authorization(),
-            graphqlMiddleware()
+            //authorization(),
+            graphqlMiddleware(),
+            (params, next) => {
+                // Temporary hack
+                Entity.pool.flush();
+                next();
+            }
         ])
     );
 

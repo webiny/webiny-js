@@ -118,7 +118,6 @@ class About extends React.Component {
                                 <Fragment>
                                     {loading && <Loader />}
                                     <List {...listProps}>
-                                        {this.renderFilters()}
                                         <List.Table>
                                             <List.Table.Row>
                                                 <List.Table.Field
