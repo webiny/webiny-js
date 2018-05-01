@@ -9,6 +9,7 @@ class Attribute {
     attributesContainer: AttributesContainer;
     value: AttributeValue;
     once: boolean;
+    readOnly: boolean;
     toStorage: boolean;
     toJSON: boolean;
     async: boolean;
@@ -39,6 +40,12 @@ class Attribute {
          * @var bool
          */
         this.once = false;
+
+        /**
+         * If true - setValue will not have any effect.
+         * @var bool
+         */
+        this.readOnly = false;
 
         /**
          * Marks whether or not this attribute can be stored in a storage.
@@ -240,6 +247,10 @@ class Attribute {
      * @returns {boolean}
      */
     canSetValue(): boolean {
+        if (this.getReadOnly()) {
+            return false;
+        }
+
         return !(this.getOnce() && this.isSet());
     }
 
@@ -307,7 +318,7 @@ class Attribute {
     /**
      * Sets default attribute value.
      */
-    setDefaultValue(defaultValue: ?mixed): this {
+    setDefaultValue(defaultValue: ?mixed): Attribute {
         this.setValue(defaultValue);
         return this;
     }
@@ -325,6 +336,15 @@ class Attribute {
      */
     getOnce(): boolean {
         return this.once;
+    }
+
+    setReadOnly(flag: boolean = true): Attribute {
+        this.readOnly = flag;
+        return this;
+    }
+
+    getReadOnly(): boolean {
+        return this.readOnly;
     }
 
     expected(expecting: string, got: string): ModelError {
