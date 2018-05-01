@@ -18,10 +18,12 @@ class Page extends Entity {
 
         this.attr("content").models(WidgetModel);
 
-        this.attr("activeRevision").dynamic(async () => {
-            const rev = await Revision.findOne({ query: { page: this.id, active: true } });
-            return rev ? rev.toJSON("id") : {};
-        });
+        this.attr("activeRevision")
+            .entity(Revision)
+            .setDynamic(async () => {
+                const rev = await Revision.findOne({ query: { page: this.id, active: true } });
+                return rev ? rev.toJSON("id") : {};
+            });
 
         this.attr("revisions").entities(Revision);
 

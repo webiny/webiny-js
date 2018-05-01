@@ -275,7 +275,7 @@ class Attribute {
      */
     getValue(): mixed | Promise<mixed> {
         if (typeof this.dynamic === "function") {
-            return this.dynamic();
+            return this.dynamic(...arguments);
         }
         return this.onGetCallback(this.value.getCurrent(), ...arguments);
     }

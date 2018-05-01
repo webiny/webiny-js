@@ -9,7 +9,6 @@ export { default as CharAttribute } from "./attributes/charAttribute";
 export { default as BooleanAttribute } from "./attributes/booleanAttribute";
 export { default as IntegerAttribute } from "./attributes/integerAttribute";
 export { default as FloatAttribute } from "./attributes/floatAttribute";
-export { default as DynamicAttribute } from "./attributes/dynamicAttribute";
 export { default as DateAttribute } from "./attributes/dateAttribute";
 export { default as ModelAttribute } from "./attributes/modelAttribute";
 export { default as ModelsAttribute } from "./attributes/modelsAttribute";

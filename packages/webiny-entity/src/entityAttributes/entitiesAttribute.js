@@ -232,7 +232,7 @@ class EntitiesAttribute extends Attribute {
      */
     async getValue(): Promise<mixed> {
         if (typeof this.dynamic === "function") {
-            return this.dynamic();
+            return this.dynamic(...arguments);
         }
 
         if (this.value.isClean()) {

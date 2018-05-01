@@ -61,7 +61,9 @@ describe("toStorage test", function() {
                 this.attr("lastName").char();
                 this.attr("age").integer();
                 this.attr("enabled").boolean();
-                this.attr("totalSomething").dynamic(() => 555);
+                this.attr("totalSomething")
+                    .integer()
+                    .setDynamic(() => 555);
             }
         }
 
