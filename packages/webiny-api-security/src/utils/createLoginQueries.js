@@ -1,6 +1,8 @@
 import invariant from "invariant";
 import { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLNonNull } from "graphql";
 import GraphQLJSON from "graphql-type-json";
+import { ModelError } from "webiny-model";
+import { InvalidAttributesError } from "webiny-api";
 
 const createLoginDataForIdentity = (Identity, schema) => {
     return new GraphQLObjectType({
@@ -58,7 +60,14 @@ export default (app, config, schema) => {
             data: { type: new GraphQLNonNull(GraphQLJSON) }
         },
         async resolve(root, args, context) {
-            await context.identity.populate(args.data).save();
+            try {
+                await context.identity.populate(args.data).save();
+            } catch (e) {
+                if (e instanceof ModelError && e.code === ModelError.INVALID_ATTRIBUTES) {
+                    throw InvalidAttributesError.from(e);
+                }
+                throw e;
+            }
             return context.identity;
         }
     };
