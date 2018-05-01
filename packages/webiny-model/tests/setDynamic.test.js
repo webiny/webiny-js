@@ -7,7 +7,12 @@ describe("setOnce test", function() {
             this.attr("email")
                 .char()
                 .setValidators("required,email")
-                .setReadOnly();
+                .onGet(() => {
+                    return 456;
+                })
+                .setDynamic(() => {
+                    return 123;
+                });
             this.attr("something")
                 .char()
                 .setValidators("required");
@@ -16,6 +21,6 @@ describe("setOnce test", function() {
         await model.populate({ email: "john@gmail.com", something: "cool" });
 
         assert.equal(model.something, "cool");
-        assert.equal(model.email, null);
+        assert.equal(model.email, 123);
     });
 });

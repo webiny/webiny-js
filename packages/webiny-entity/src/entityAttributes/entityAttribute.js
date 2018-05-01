@@ -218,6 +218,10 @@ class EntityAttribute extends Attribute {
      * @returns {Promise<void>}
      */
     async getValue(): Promise<mixed> {
+        if (typeof this.dynamic === "function") {
+            return this.dynamic();
+        }
+
         if (this.value.isClean()) {
             await this.value.load();
         }

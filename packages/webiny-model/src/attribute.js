@@ -9,7 +9,7 @@ class Attribute {
     attributesContainer: AttributesContainer;
     value: AttributeValue;
     once: boolean;
-    readOnly: boolean;
+    dynamic: boolean;
     toStorage: boolean;
     toJSON: boolean;
     async: boolean;
@@ -45,7 +45,7 @@ class Attribute {
          * If true - setValue will not have any effect.
          * @var bool
          */
-        this.readOnly = false;
+        this.dynamic = false;
 
         /**
          * Marks whether or not this attribute can be stored in a storage.
@@ -247,7 +247,7 @@ class Attribute {
      * @returns {boolean}
      */
     canSetValue(): boolean {
-        if (this.getReadOnly()) {
+        if (this.getDynamic()) {
             return false;
         }
 
@@ -274,6 +274,9 @@ class Attribute {
      * @returns {*}
      */
     getValue(): mixed | Promise<mixed> {
+        if (typeof this.dynamic === "function") {
+            return this.dynamic();
+        }
         return this.onGetCallback(this.value.getCurrent(), ...arguments);
     }
 
@@ -338,13 +341,13 @@ class Attribute {
         return this.once;
     }
 
-    setReadOnly(flag: boolean = true): Attribute {
-        this.readOnly = flag;
+    setDynamic(flag: boolean = true): Attribute {
+        this.dynamic = flag;
         return this;
     }
 
-    getReadOnly(): boolean {
-        return this.readOnly;
+    getDynamic(): boolean {
+        return this.dynamic;
     }
 
     expected(expecting: string, got: string): ModelError {
