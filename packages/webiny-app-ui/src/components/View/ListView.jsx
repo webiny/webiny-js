@@ -3,7 +3,7 @@ import { createComponent, isElementOfType } from 'webiny-app';
 import Header from './Header';
 import Body from './Body';
 import Footer from './Footer';
-import styles from './styles.css';
+import styles from './styles.css?prefix=Webiny_Ui_View';
 
 class ListView extends React.Component {
 

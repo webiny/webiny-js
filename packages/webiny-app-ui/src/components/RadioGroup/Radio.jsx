@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import classSet from "classnames";
 import { createComponent } from 'webiny-app';
-import styles from './styles.css';
+import styles from './styles.css?prefix=Webiny_Ui_RadioGroup_Radio';
 
 class Radio extends React.Component {
 

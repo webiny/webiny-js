@@ -1,4 +1,3 @@
-
 import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
@@ -11,7 +10,7 @@ import RowDetails from "./RowDetails";
 import Header from "./Header";
 import Empty from "./Empty";
 import SelectRowField from "./Fields/SelectRowField";
-import styles from "../../styles.css";
+import styles from "../../styles.css?prefix=Webiny_Ui_Table";
 
 class Table extends React.Component {
     constructor(props) {

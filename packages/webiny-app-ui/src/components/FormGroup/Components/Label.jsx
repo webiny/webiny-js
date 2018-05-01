@@ -1,6 +1,6 @@
 import React from "react";
 import { createComponent, LazyLoad } from "webiny-app";
-import styles from "./../styles.css?prefix=FormGroup";
+import styles from "./../styles.css?prefix=Webiny_Ui_FormGroup";
 
 class Label extends React.Component {
     render() {

@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { i18n, createComponent } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
-import styles from "./styles.css?prefix=Time";
+import styles from "./styles.css?prefix=Webiny_Ui_Time";
 
 class Time extends React.Component {
     constructor(props) {

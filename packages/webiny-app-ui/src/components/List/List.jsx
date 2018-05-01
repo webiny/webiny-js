@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import { createComponent, elementHasFlag } from "webiny-app";
-import styles from "./styles.css";
+import styles from "./styles.css?prefix=Webiny_Ui_List";
 
 class List extends React.Component {
     constructor(props) {

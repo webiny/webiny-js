@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { createComponent, i18n } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
-import styles from "./styles.css?prefix=File";
+import styles from "./styles.css?prefix=Webiny_Ui_File";
 
 const t = i18n.namespace("Webiny.Ui.File");
 

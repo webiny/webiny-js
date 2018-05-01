@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { i18n, createComponent } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
-import styles from "./styles.css?prefix=Avatar";
+import styles from "./styles.css?prefix=Webiny_Ui_Avatar";
 
 const t = i18n.namespace("Webiny.Ui.Avatar");
 class Avatar extends React.Component {

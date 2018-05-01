@@ -4,13 +4,7 @@ import _ from "lodash";
 import $ from "jquery";
 import classSet from "classnames";
 import { app, createComponent } from "webiny-app";
-import styles from "../styles.css?prefix=ModalComponent";
-
-const mountedDialogs = [];
-
-function getShownDialog(id = null) {
-    return _.find(mountedDialogs, item => item.state.isShown === true && item.id !== id);
-}
+import styles from "../styles.scss?prefix=Webiny_Ui_Modal";
 
 class ModalComponent extends React.Component {
     constructor(props) {
@@ -40,49 +34,8 @@ class ModalComponent extends React.Component {
         });
     }
 
-    componentWillUpdate(nextProps, nextState) {
-        const currentDialog = getShownDialog();
-        const { dynamics } = this.props;
-
-        // Hide currently visible dialog but do not unmount it
-        if (currentDialog && currentDialog.id !== this.id && nextState.isShown) {
-            const container = $(currentDialog.modalContainer);
-            const dialog = container.find('[data-role="dialog"]');
-            const backdrop = container.find('[data-role="backdrop"]');
-
-            dynamics.animate(
-                dialog[0],
-                {
-                    opacity: 0,
-                    translateY: -100
-                },
-                {
-                    type: dynamics.easeOut,
-                    duration: this.modalHideDuration,
-                    complete: () => {
-                        // Need to hide .modal to let mouse events through
-                        dialog.closest('[data-role="modal"]').hide();
-                        // Remove transform so next time we animate, we start from scratch, with no transformations applied
-                        dialog.css("transform", "");
-                    }
-                }
-            );
-
-            dynamics.animate(
-                backdrop[0],
-                {
-                    opacity: 0
-                },
-                {
-                    type: dynamics.easeOut,
-                    duration: this.backdropHideDuration
-                }
-            );
-        }
-    }
-
     componentWillMount() {
-        app.services.get("modal").register(this.props.name, this);
+        app.services.get("modal").register(this.props.name || this.id, this);
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -104,14 +57,10 @@ class ModalComponent extends React.Component {
                 show: this.show,
                 hide: this.hide
             });
-
-        mountedDialogs.push(this);
     }
 
     componentWillUnmount() {
         this.unbindHandlers();
-        app.services.get("modal").unregister(this.props.name);
-        mountedDialogs.splice(_.findIndex(mountedDialogs, { id: this.id }), 1);
         ReactDOM.unmountComponentAtNode(this.modalContainer);
     }
 
@@ -163,83 +112,21 @@ class ModalComponent extends React.Component {
         });
     }
 
-    show() {
+    show(data = {}) {
         // This shows the modal container element in case it was previously hidden by another dialog
         this.props.onShow();
 
-        if (this.state.isShown) {
-            // Animate previously hidden dialog
-            return new Promise(resolve => {
-                const { dynamics } = this.props.modules;
-                this.setState({ animating: true });
-                const prevContainer = $(this.modalContainer);
-                const prevDialog = prevContainer.find('[data-role="dialog"]');
-                const prevBackdrop = prevContainer.find('[data-role="backdrop"]');
-                prevDialog.closest('[data-role="modal"]').show();
-                dynamics.animate(
-                    prevDialog[0],
-                    {
-                        opacity: 1,
-                        translateY: 50
-                    },
-                    {
-                        type: dynamics.spring,
-                        duration: this.modalShowDuration,
-                        complete: () => {
-                            prevDialog.closest('[data-role="modal"]').focus();
-                            this.setState({ animating: false });
-                            resolve();
-                        }
-                    }
-                );
-
-                dynamics.animate(
-                    prevBackdrop[0],
-                    {
-                        opacity: 0.8
-                    },
-                    {
-                        type: dynamics.easeIn,
-                        duration: this.backdropShowDuration
-                    }
-                );
-            });
-        }
-
         return new Promise(resolve => {
-            // If showing previously visually hidden modal - resolve promise
-            if (this.state.isShown) {
-                return resolve();
-            }
-
-            this.setState(
-                {
-                    isShown: true
-                },
-                () => {
-                    // Now we are supposed to show dialog with animation
-                    this.setState({ animating: true });
-                    const show = () => {
-                        this.setState(
-                            {
-                                isDialogShown: true
-                            },
-                            () => {
-                                this.props.onShown();
-                                resolve();
-                            }
-                        );
-                    };
-
-                    // If there was a previous dialog (eg: hidden with ClickConfirm), let the animation finish and show new dialog with delay
-                    if (getShownDialog(this.id)) {
-                        setTimeout(show, 250);
-                    } else {
-                        // No previous dialog was opened - we can safely show our new dialog
-                        setTimeout(show);
-                    }
-                }
-            );
+            this.setState({ data, isShown: true }, () => {
+                // Now we are supposed to show dialog with animation
+                this.setState({ animating: true });
+                setTimeout(() => {
+                    this.setState({ isDialogShown: true }, () => {
+                        this.props.onShown();
+                        resolve();
+                    });
+                });
+            });
         });
     }
 
@@ -304,6 +191,7 @@ class ModalComponent extends React.Component {
                             data-role="dialog"
                         >
                             {React.cloneElement(content, {
+                                data: this.state.data,
                                 hide: this.hide,
                                 animating: this.state.animating
                             })}

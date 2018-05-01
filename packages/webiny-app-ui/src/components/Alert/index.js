@@ -3,7 +3,7 @@ import _ from "lodash";
 import { createComponent } from "webiny-app";
 import classSet from "classnames";
 import AlertContainer from "./Container";
-import styles from "./styles.css?prefix=Alert";
+import styles from "./styles.css?prefix=Webiny_Ui_Alert";
 
 class Alert extends React.Component {
     render() {

@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./../styles.css?prefix=FormGroup";
+import styles from "./../styles.css?prefix=Webiny_Ui_FormGroup";
 
 class DescriptionMessage extends React.Component {
     render() {

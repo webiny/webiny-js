@@ -1,6 +1,6 @@
 import React from "react";
 import { createComponent } from "webiny-app";
-import styles from "./styles.css?prefix=Progress";
+import styles from "./styles.css?prefix=Webiny_Ui_Progress";
 
 class Progress extends React.Component {
     render() {

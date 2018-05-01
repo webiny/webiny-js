@@ -4,7 +4,7 @@ import classSet from "classnames";
 import { app, createComponent } from 'webiny-app';
 import TabHeader from './TabHeader';
 import TabContent from './TabContent';
-import styles from './styles.css?prefix=Tabs';
+import styles from './styles.css?prefix=Webiny_Ui_Tabs';
 
 class Tabs extends React.Component {
     constructor() {

@@ -5,7 +5,7 @@ import { createComponent, isElementOfType, elementHasFlag } from "webiny-app";
 import SelectRowField from "./Fields/SelectRowField";
 import Actions from "./Actions";
 import FieldInfo from "./FieldInfo";
-import styles from "../../styles.css";
+import styles from "../../styles.css?prefix=Webiny_Ui_Table_Row";
 
 class Row extends React.Component {
     constructor(props) {

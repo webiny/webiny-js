@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { createComponent, document } from "webiny-app";
 import { FormComponent } from "webiny-app";
-import styles from "./styles.css?prefix=GoogleMap";
+import styles from "./styles.css?prefix=Webiny_Ui_GoogleMap";
 
 // TODO: https://www.npmjs.com/package/react-google-maps
 

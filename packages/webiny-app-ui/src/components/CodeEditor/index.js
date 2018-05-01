@@ -3,7 +3,7 @@ import _ from "lodash";
 import classSet from "classnames";
 import { createComponent } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
-import styles from "./styles.css?prefix=CodeEditor";
+import styles from "./styles.css?prefix=Webiny_Ui_CodeEditor";
 
 class CodeEditor extends React.Component {
     constructor(props) {

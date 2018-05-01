@@ -1,9 +1,9 @@
 import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
-import { createComponent, i18n } from "webiny-app";
+import { createComponent } from "webiny-app";
 import RouteAction from "./Actions/RouteAction";
-import styles from "../../styles.css";
+import styles from "../../styles.css?prefix=Webiny_Ui_List_Field";
 
 class Field extends React.Component {
     constructor(props) {

@@ -7,8 +7,8 @@ class ModalService {
         this.modals = {};
     }
 
-    show(name: string): Promise<void> {
-        return this.modals[name].show();
+    show(name: string, data: Object): Promise<void> {
+        return this.modals[name].show(data);
     }
 
     hide(name: string): Promise<void> {

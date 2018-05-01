@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import { createComponent } from "webiny-app";
-import styles from "./styles.css?prefix=Section";
+import styles from "./styles.css?prefix=Webiny_Ui_Section";
 
 class Section extends React.Component {
     render() {

@@ -1,7 +1,7 @@
 import React from "react";
 import { createComponent } from "webiny-app";
 import classSet from "classnames";
-import styles from "../../styles.css";
+import styles from "../../styles.css?prefix=Webiny_Ui_Table_Header";
 
 class Header extends React.Component {
     constructor(props) {

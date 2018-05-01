@@ -1,6 +1,6 @@
 import React from 'react';
 import { createComponent } from 'webiny-app';
-import styles from './styles.css'
+import styles from './styles.css?prefix=Webiny_Ui_View'
 import classSet from "classnames";
 
 class Footer extends React.Component {

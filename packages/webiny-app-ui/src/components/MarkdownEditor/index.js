@@ -3,7 +3,7 @@ import _ from "lodash";
 import { createComponent } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
 import SimpleMDE from "simplemde";
-import styles from "./styles.scss?prefix=MarkdownEditor";
+import styles from "./styles.scss?prefix=Webiny_Ui_MarkdownEditor";
 
 class MarkdownEditor extends React.Component {
     constructor(props) {

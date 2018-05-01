@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import $ from "jquery";
 import classSet from "classnames";
-import styles from "./styles.css?prefix=TooltipContent";
+import styles from "./styles.css?prefix=Webiny_Ui_TooltipContent";
 
 class TooltipContent extends React.Component {
     constructor() {

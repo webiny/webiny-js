@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import { createComponent, i18n } from 'webiny-app';
-import styles from '../../styles.css';
+import styles from '../../styles.css?prefix=Webiny_Ui_List_Empty';
 
 const t = i18n.namespace("Webiny.Ui.List.Table.Empty");
 

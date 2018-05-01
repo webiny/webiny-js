@@ -3,7 +3,7 @@ import _ from "lodash";
 import { createComponent, i18n } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
 import { validation } from "webiny-validation";
-import styles from "./styles.css?prefix=Tags";
+import styles from "./styles.css?prefix=Webiny_Ui_Tags";
 
 const t = i18n.namespace("Webiny.Ui.Tags");
 class Tags extends React.Component {
@@ -105,10 +105,7 @@ class Tags extends React.Component {
             return this.props.render.call(this);
         }
 
-        const {
-            modules: { FormGroup },
-            styles
-        } = this.props;
+        const { modules: { FormGroup }, styles } = this.props;
 
         return (
             <FormGroup valid={this.state.isValid} className={this.props.className}>
@@ -148,10 +145,7 @@ Tags.defaultProps = {
         return <input {...input} />;
     },
     renderTag({ value, index }) {
-        const {
-            modules: { Icon },
-            styles
-        } = this.props;
+        const { modules: { Icon }, styles } = this.props;
         return (
             <div key={value} className={styles.block}>
                 <p>{value}</p>

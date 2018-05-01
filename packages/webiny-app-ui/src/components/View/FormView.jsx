@@ -4,7 +4,7 @@ import Header from "./Header";
 import Error from "./Error";
 import Body from "./Body";
 import Footer from "./Footer";
-import styles from "./styles.css";
+import styles from "./styles.css?prefix=Webiny_Ui_View";
 
 class FormView extends React.Component {
     constructor(props) {

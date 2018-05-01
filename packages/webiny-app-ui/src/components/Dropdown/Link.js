@@ -11,7 +11,7 @@ class Link extends React.Component {
         const { modules: { Link, Icon }, ...props } = this.props;
         const icon = props.icon ? <Icon icon={props.icon} /> : null;
         let link = (
-            <Link onClick={this.props.onClick} route={this.props.route}>
+            <Link onClick={this.props.onClick} route={this.props.route} params={this.props.params}>
                 {icon} {props.title}
             </Link>
         );
@@ -25,7 +25,8 @@ class Link extends React.Component {
 }
 
 Link.defaultProps = {
-    route: null
+    route: null,
+    params: null
 };
 
 export default createComponent(Link, { modules: ["Link", "Icon"] });

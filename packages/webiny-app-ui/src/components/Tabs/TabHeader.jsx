@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import classSet from "classnames";
 import { i18n, createComponent } from 'webiny-app';
-import styles from './styles.css?prefix=Tabs';
+import styles from './styles.css?prefix=Webiny_Ui_Tabs';
 
 const t = i18n.namespace("Webiny.Ui.Tabs");
 class TabHeader extends React.Component {

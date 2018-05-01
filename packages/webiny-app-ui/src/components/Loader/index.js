@@ -1,7 +1,7 @@
 import React from "react";
 import classSet from "classnames";
 import { createComponent } from "webiny-app";
-import styles from "./styles.css?prefix=Loader";
+import styles from "./styles.css?prefix=Webiny_Ui_Loader";
 
 class Loader extends React.Component {
     constructor() {

@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { createComponent } from "webiny-app";
 import filesize from "filesize";
-import styles from "./styles.css";
+import styles from "./styles.css?prefix=Webiny_Ui_Gallery_Image";
 
 class Image extends React.Component {
     constructor(props) {

@@ -1,7 +1,7 @@
 import React from "react";
 import classSet from "classnames";
 import { createComponent } from "webiny-app";
-import styles from "../styles.css?prefix=Modal";
+import styles from "../styles.scss?prefix=Webiny_Ui_Modal";
 
 class Body extends React.Component {
     render() {

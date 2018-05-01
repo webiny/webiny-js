@@ -3,7 +3,7 @@ import _ from "lodash";
 import classSet from "classnames";
 import { i18n, createComponent } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
-import styles from "./styles.css?prefix=Search";
+import styles from "./styles.css?prefix=Webiny_Ui_Search";
 
 const t = i18n.namespace("Webiny.Ui.Search");
 class Search extends React.Component {

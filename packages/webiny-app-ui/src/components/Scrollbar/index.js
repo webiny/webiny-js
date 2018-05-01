@@ -6,11 +6,11 @@ import { createComponent } from "webiny-app";
  */
 class Scrollbar extends React.Component {
     render() {
-        const Scrollbars = this.props.modules.ReactCustomScrollbars;
-        return <Scrollbars {...this.props} />;
+        const { modules: { ReactCustomScrollbars }, ...props } = this.props;
+        return <ReactCustomScrollbars {...props} />;
     }
 }
 
 export default createComponent(Scrollbar, {
-    modules: ["Icon", { ReactCustomScrollbars: "Vendor.ReactCustomScrollbars" }]
+    modules: [{ ReactCustomScrollbars: "Vendor.ReactCustomScrollbars" }]
 });

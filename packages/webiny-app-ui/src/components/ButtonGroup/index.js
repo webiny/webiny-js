@@ -1,7 +1,7 @@
 import React from "react";
 import { createComponent } from "webiny-app";
 import classSet from "classnames";
-import styles from "./styles.scss?prefix=ButtonGroup";
+import styles from "./styles.scss?prefix=Webiny_Ui_ButtonGroup";
 
 class ButtonGroup extends React.Component {
     render() {

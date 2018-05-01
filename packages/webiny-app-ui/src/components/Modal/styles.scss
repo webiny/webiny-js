@@ -25,19 +25,16 @@
 	left: 0;
 }
 
-.backdrop.in {
-	opacity: 0.8;
-}
-
 .dialog {
 	width: 600px;
 	margin: 30px auto;
-}
 
-.dialog.fullWidth {
-	width: 90%;
-	max-height: 90%;
-	max-width: none;
+	&.show {
+		.content {
+			transform: translateY(0);
+			opacity: 1;
+		}
+	}
 }
 
 .content {
@@ -51,11 +48,6 @@
 	transition: all 0.3s;
 	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
 	border-top: 2px solid #FA5723;
-}
-
-.dialog.show .content {
-	transform: translateY(0);
-	opacity: 1;
 }
 
 .header {
@@ -80,6 +72,10 @@
 	margin-top: 0;
 	position: relative;
 	padding: 15px;
+
+	&.noPadding {
+		padding: 0;
+ 	}
 }
 
 /* Wide dialog */

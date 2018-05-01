@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
 import { createComponent } from "webiny-app";
-import styles from "../styles.css?prefix=Modal";
+import styles from "../styles.scss?prefix=Webiny_Ui_Modal";
 
 class Header extends React.Component {
     render() {
