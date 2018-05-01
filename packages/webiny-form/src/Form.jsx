@@ -56,14 +56,6 @@ class Form extends React.Component {
         }
     }
 
-    componentDidMount() {
-        this.mounted = true;
-    }
-
-    componentWillUnmount() {
-        this.mounted = false;
-    }
-
     componentDidUpdate() {
         Object.keys(this.inputs).map(name => {
             if (!this.lastRender.includes(name)) {
