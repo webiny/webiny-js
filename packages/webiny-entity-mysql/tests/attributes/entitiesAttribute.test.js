@@ -307,7 +307,7 @@ describe("entities attribute test", function() {
 
         await entity.save();
 
-        assert.equal(entitySave.callCount, 4);
+        assert.equal(entitySave.callCount, 3);
 
         entity
             .getDriver()
