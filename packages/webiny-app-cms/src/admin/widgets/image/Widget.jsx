@@ -27,8 +27,9 @@ class ImageWidget extends React.Component {
                         <Bind
                             beforeChange={(value, onChange) => {
                                 if (isGlobal) {
-                                    return showConfirmation(value, value =>
-                                        handleImage(this.props, value, onChange)
+                                    return showConfirmation(value, value => {
+                                            handleImage(this.props, value, onChange)
+                                        }
                                     );
                                 }
                                 handleImage(this.props, value, onChange);

@@ -33,19 +33,17 @@ class PageContent extends React.Component {
         onChange(value);
     }
 
-    showWidgetSettings() {}
-
-    beforeRemoveWidget(data) {
-        const widget = this.cms.getEditorWidget(data.type);
-        if (typeof widget.removeWidget === "function" && !data.origin) {
-            return widget.removeWidget(data);
+    beforeRemoveWidget({ widget }) {
+        const editorWidget = this.cms.getEditorWidget(widget.type);
+        if (typeof editorWidget.removeWidget === "function" && !widget.origin) {
+            return editorWidget.removeWidget(widget);
         }
         return Promise.resolve();
     }
 
-    removeWidget(data) {
+    removeWidget({ id }) {
         const widgets = _.cloneDeep(this.props.value);
-        widgets.splice(_.findIndex(widgets, { id: data.id }), 1);
+        widgets.splice(_.findIndex(widgets, { id }), 1);
         this.props.onChange(widgets);
     }
 
@@ -82,33 +80,70 @@ class PageContent extends React.Component {
         this.props.onChange(widgets);
     }
 
+    deleteGlobalWidget(id) {
+        return this.cms.deleteGlobalWidget(id);
+    }
+
+    onWidgetChange(widget, update) {
+        const { value } = this.props;
+        const { data, settings, __dirty } = update;
+
+        const newWidget = {
+            ...widget,
+            __dirty
+        };
+
+        if (data !== undefined) {
+            newWidget["data"] = data;
+        }
+
+        if (settings !== undefined) {
+            newWidget["settings"] = settings;
+        }
+
+        value[_.findIndex(value, { id: widget.id })] = newWidget;
+
+        this.props.onChange(value);
+    }
+
     renderWidget(data, index) {
+        const { modules: { Alert } } = this.props;
+        const widget = _.cloneDeep(data);
+
         const functions = {
             moveUp: () => this.swapWidgets(index, index - 1),
-            toggleScope: () => this.viewSwitcher.showView("toggleScope")(data),
-            showSettings: this.showWidgetSettings,
-            beforeRemove: () => this.beforeRemoveWidget(data),
-            onRemoved: () => this.removeWidget(data),
+            toggleScope: () => this.viewSwitcher.showView("toggleScope")(widget),
+            beforeRemove: () => this.beforeRemoveWidget({ widget }),
+            onRemoved: () => this.removeWidget({ widget }),
             moveDown: () => this.swapWidgets(index, index + 1)
         };
 
-        const widget = { ...data };
+        if (widget.origin) {
+            const wd = this.cms.getEditorWidget(widget.type, { origin: widget.origin });
+            if (!wd) {
+                return (
+                    <Alert key={widget.id} type={"danger"}>
+                        Missing widget for type <strong>{widget.type}</strong>
+                    </Alert>
+                );
+            }
+            if (!widget.data) {
+                widget.data = _.cloneDeep(wd.data);
+            }
 
-        if (data.origin) {
-            const wd = this.cms.getEditorWidget(widget.type, { origin: data.origin });
-            _.assign(widget, _.pick(wd, ["data", "settings"]));
+            if (!widget.settings) {
+                widget.settings = _.cloneDeep(wd.settings);
+            }
         }
 
-        const valueProps = {
-            onChange: data => {
-                const { value } = this.props;
-                value[index].data = data;
-
-                this.props.onChange(value);
-            }
-        };
-
-        return <Widget key={widget.id} widget={widget} functions={functions} {...valueProps} />;
+        return (
+            <Widget
+                key={widget.id}
+                widget={widget}
+                functions={functions}
+                onChange={data => this.onWidgetChange(widget, data)}
+            />
+        );
     }
 
     render() {
@@ -128,6 +163,9 @@ class PageContent extends React.Component {
                         name={"pluginsModal"}
                         wide={true}
                         onSelect={this.addWidget}
+                        onDelete={widget =>
+                            this.viewSwitcher.showView("deleteGlobalWidget")(widget)
+                        }
                         onReady={dialog => (this.pluginsModal = dialog)}
                     />
                 </Grid.Col>
@@ -154,10 +192,7 @@ class PageContent extends React.Component {
                                     <Grid.Row>
                                         <Grid.Col all={6}>
                                             <div className={styles.editorContent}>
-                                                {this.props.value &&
-                                                    this.props.value.map(
-                                                        this.renderWidget.bind(this)
-                                                    )}
+                                                {value && value.map(this.renderWidget.bind(this))}
                                             </div>
                                         </Grid.Col>
                                         <Grid.Col all={6}>
@@ -167,9 +202,9 @@ class PageContent extends React.Component {
                                             >
                                                 <Tabs>
                                                     <Tabs.Tab label={"Preview"}>
-                                                        {this.props.value && (
+                                                        {value && (
                                                             <PageContentPreview
-                                                                content={this.props.value}
+                                                                content={_.cloneDeep(value)}
                                                             />
                                                         )}
                                                     </Tabs.Tab>
@@ -196,6 +231,7 @@ class PageContent extends React.Component {
                         if (data.origin) {
                             return (
                                 <Modal.Confirmation
+                                    name={"makeLocal"}
                                     confirm={"Ok, make it local!"}
                                     cancel={"Not now"}
                                     message={
@@ -213,8 +249,28 @@ class PageContent extends React.Component {
 
                         return (
                             <MakeGlobalDialog
+                                name={"makeGlobal"}
                                 widget={data}
                                 onSuccess={widget => this.makeWidgetGlobal(data, widget)}
+                            />
+                        );
+                    }}
+                </ViewSwitcher.View>
+                <ViewSwitcher.View name={"deleteGlobalWidget"} modal>
+                    {({ data }) => {
+                        return (
+                            <Modal.Confirmation
+                                name={"deleteGlobalWidget"}
+                                confirm={"I know what I'm doing!"}
+                                cancel={"I changed my mind"}
+                                message={
+                                    <span>
+                                        You are about to delete a global widget!<br />
+                                        <br />Note that this will affect all the pages that are
+                                        currently using this widget!
+                                    </span>
+                                }
+                                onConfirm={() => this.deleteGlobalWidget(data.origin)}
                             />
                         );
                     }}
@@ -225,6 +281,6 @@ class PageContent extends React.Component {
 }
 
 export default createComponent(PageContent, {
-    modules: ["Button", "Grid", "Tabs", "ViewSwitcher", "Modal"],
+    modules: ["Alert", "Button", "Grid", "Tabs", "ViewSwitcher", "Modal"],
     services: ["cms"]
 });

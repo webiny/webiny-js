@@ -2,7 +2,7 @@ import React from "react";
 import { i18n } from "webiny-app";
 import { Menu } from "webiny-app-admin";
 import CMS from "./services/CMS";
-import PageList from "./views/pages/PageList";
+import PageManagerContainer from "./views/pages/PageManagerContainer";
 import PageEditor from "./views/pages/PageEditor";
 import CategoryList from "./views/categories/CategoryList";
 import registerWidgets from "./registerWidgets";
@@ -29,10 +29,10 @@ export default () => {
             path: "/cms/pages",
             exact: true,
             render: () => {
-                return app.modules.load({ Layout: "Admin.Layout" }).then(({ Layout }) => {
+                return app.modules.load([{ Layout: "Admin.Layout" }]).then(({ Layout }) => {
                     return (
                         <Layout>
-                            <PageList />
+                            <PageManagerContainer />
                         </Layout>
                     );
                 });

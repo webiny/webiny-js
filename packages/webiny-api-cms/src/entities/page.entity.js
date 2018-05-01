@@ -23,6 +23,8 @@ class Page extends Entity {
             return rev ? rev.toJSON("id") : {};
         });
 
+        this.attr("revisions").entities(Revision);
+
         this.attr("category")
             .entity(Category)
             .setValidators("required");

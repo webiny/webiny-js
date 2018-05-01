@@ -1,22 +1,32 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { app, createComponent } from "webiny-app";
 import { ModalComponent } from "webiny-app-ui";
 import styles from "./WidgetsModal.scss";
 
 class WidgetsModal extends React.Component {
-    renderWidget({ icon, title, origin, type, data, settings }) {
-        const { modules: { Icon }, onSelect } = this.props;
+    renderWidget(widget) {
+        const { icon, title, origin, type, data, settings } = widget;
+        const { modules: { Icon }, onSelect, onDelete } = this.props;
         return (
-            <li
-                key={origin || type}
-                onClick={() =>
-                    this.props.hide().then(() => onSelect({ origin, type, data, settings }))
-                }
-            >
-                <a href="#">
-                    <span className={styles.icon}>
-                        <Icon icon={icon} />
-                    </span>
+            <li key={origin || type}>
+                {origin && (
+                    <a
+                        href="#"
+                        className={styles.delete}
+                        onClick={() =>
+                            this.props.hide().then(() => onDelete(widget))
+                        }
+                    >
+                        <Icon icon={"times-circle"} className={styles.icon} />
+                    </a>
+                )}
+                <a
+                    href="#"
+                    onClick={() =>
+                        this.props.hide().then(() => onSelect({ origin, type, data, settings }))
+                    }
+                >
+                    <Icon icon={icon} className={styles.icon} />
                     <span className={styles.txt}>{title}</span>
                 </a>
             </li>
@@ -24,13 +34,13 @@ class WidgetsModal extends React.Component {
     }
 
     render() {
-        const { modules: { Modal, Button, Tabs}, services: { cms } } = this.props;
+        const { modules: { Modal, Button, Tabs }, services: { cms } } = this.props;
 
         return (
             <Modal.Dialog>
                 <Modal.Content>
                     <Modal.Header title="ADD WIDGET" onClose={this.props.hide} />
-                    <Modal.Body>
+                    <Modal.Body noPadding>
                         <Tabs position={"left"}>
                             {cms.getWidgetGroups().map(({ name, title, icon }) => {
                                 return (
@@ -57,6 +67,6 @@ class WidgetsModal extends React.Component {
 }
 
 export default createComponent([WidgetsModal, ModalComponent], {
-    modules: ["Modal", "Button", "Tabs", "Icon"],
+    modules: ["Modal", "Button", "ButtonGroup", "Tabs", "Icon", "Tooltip"],
     services: ["cms"]
 });

@@ -1,5 +1,5 @@
-import paragraphPreviewWidget from "./widgets/paragraph/index";
-import imagePreviewWidget from "./widgets/image/index";
+import ParagraphPreviewWidget from "./widgets/paragraph";
+import ImagePreviewWidget from "./widgets/image";
 import CMS from "./services/CMS";
 
 export default () => {
@@ -9,8 +9,14 @@ export default () => {
         const cmsService = app.services.get("cms");
 
         // Render widgets
-        cmsService.addWidget(paragraphPreviewWidget);
-        cmsService.addWidget(imagePreviewWidget);
+        cmsService.addWidget({
+            type: "paragraph",
+            widget: new ParagraphPreviewWidget()
+        });
+        cmsService.addWidget({
+            type: "image",
+            widget: new ImagePreviewWidget()
+        });
 
         app.router.addRoute({
             name: "CmsPreview",

@@ -3,11 +3,8 @@ import { createComponent } from "webiny-app";
 
 class EditorWidgetSettings extends React.Component {
     render() {
-        return (
-            <webiny-cms-editor-settings-widget>
-                {this.props.children}
-            </webiny-cms-editor-settings-widget>
-        );
+        const { children, Bind, ...props } = this.props;
+        return React.cloneElement(children, { Bind, ...props });
     }
 }
 

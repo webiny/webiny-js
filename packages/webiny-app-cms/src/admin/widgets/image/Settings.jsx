@@ -1,22 +1,37 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { createComponent } from "webiny-app";
 
-class ParagraphWidgetSettings extends React.Component {
+class ImageWidgetSettings extends React.Component {
     render() {
-        const { EditorWidgetSettings, Select } = this.props.modules;
+        const { settings, Bind, modules: { Select, Input } } = this.props;
         return (
-            <EditorWidgetSettings dataSource={true}>
-                <Select name={"align"}>
-                    <option value={"left"}>Left</option>
-                    <option value={"right"}>Right</option>
-                    <option value={"center"}>Center</option>
-                    <option value={"justified"}>Justified</option>
-                </Select>
-            </EditorWidgetSettings>
+            <Fragment>
+                <Bind>
+                    <Select
+                        label={"Image size"}
+                        placeholder={"Select image size"}
+                        name={"size"}
+                        options={[
+                            { value: "stretch", label: "Full width" },
+                            { value: "fixed", label: "Fixed width" }
+                        ]}
+                    />
+                </Bind>
+                {settings.size === "fixed" && (
+                    <Bind>
+                        <Input
+                            name="width"
+                            validators="required"
+                            placeholder={"Enter image width"}
+                            label={"Image width"}
+                        />
+                    </Bind>
+                )}
+            </Fragment>
         );
     }
 }
 
-export default createComponent(ParagraphWidgetSettings, {
-    modules: ["Select", "EditorWidgetSettings"]
+export default createComponent(ImageWidgetSettings, {
+    modules: ["Select", "Input"]
 });

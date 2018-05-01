@@ -9,6 +9,14 @@ class WidgetModel extends Model {
         this.attr("data").object();
         this.attr("settings").object();
     }
+
+    copy() {
+        const model = new WidgetModel();
+        Object.keys(this.getAttributes()).forEach(name => {
+            model[name] = this.getAttribute(name).getValue();
+        });
+        return model;
+    }
 }
 
 WidgetModel.classId = "CmsWidgetModel";

@@ -1,16 +1,38 @@
 import React from "react";
 import classSet from "classnames";
+import _ from "lodash";
 import { createComponent } from "webiny-app";
 import styles from "./PageFilter.scss";
 
 class PageFilter extends React.Component {
-    constructor() {
+    constructor(props) {
         super();
 
         this.state = {
-            search: "",
+            search: props.query || "",
             focused: false
         };
+
+        this.onKeyDown = this.onKeyDown.bind(this);
+    }
+
+    componentWillReceiveProps(props) {
+        this.setState({ search: props.query || "" });
+    }
+
+    onKeyDown(event) {
+        if (event.metaKey || event.ctrlKey) {
+            return;
+        }
+
+        switch (event.key) {
+            case "Enter":
+                event.preventDefault();
+                this.props.setSearchQuery(event.target.value);
+                break;
+            default:
+                break;
+        }
     }
 
     render() {
@@ -24,7 +46,7 @@ class PageFilter extends React.Component {
                         this.search.focus();
                     }}
                     className={classSet(styles["filter-bar__search"], {
-                        [styles["has-search"]]: this.state.search !== "" || this.state.focused
+                        [styles["has-search"]]: !_.isEmpty(this.props.query) || this.state.focused
                     })}
                 >
                     <label htmlFor={"search"}>
@@ -38,7 +60,8 @@ class PageFilter extends React.Component {
                             type="text"
                             placeholder="SEARCH"
                             value={this.state.search}
-                            onChange={e => this.setState({ search: e.target.value })}
+                            onKeyDown={this.onKeyDown}
+                            onChange={e => this.setState({ search: e.target.value }, () => {})}
                         />
                     </div>
                 </div>

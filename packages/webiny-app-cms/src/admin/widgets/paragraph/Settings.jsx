@@ -1,22 +1,28 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { createComponent } from "webiny-app";
 
 class ParagraphWidgetSettings extends React.Component {
     render() {
-        const { EditorWidgetSettings, Select } = this.props.modules;
+        const { modules: { Select }, Bind } = this.props;
         return (
-            <EditorWidgetSettings>
-                <Select name={"align"}>
-                    <option value={"left"}>Left</option>
-                    <option value={"right"}>Right</option>
-                    <option value={"center"}>Center</option>
-                    <option value={"justified"}>Justified</option>
-                </Select>
-            </EditorWidgetSettings>
+            <Fragment>
+                <Bind>
+                    <Select
+                        label={"Text alignment"}
+                        placeholder={"Select alignment"}
+                        name={"align"}
+                        options={[
+                            { value: "left", label: "Left" },
+                            { value: "right", label: "Right" },
+                            { value: "justify", label: "Justify" }
+                        ]}
+                    />
+                </Bind>
+            </Fragment>
         );
     }
 }
 
 export default createComponent(ParagraphWidgetSettings, {
-    modules: ["Select", "EditorWidgetSettings"]
+    modules: ["Select"]
 });

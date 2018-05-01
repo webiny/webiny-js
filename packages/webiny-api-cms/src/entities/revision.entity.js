@@ -39,7 +39,7 @@ class Revision extends Entity {
             .onSet(value => {
                 // Copy only if it is an existing revision
                 if (value && value !== this.active && this.isExisting()) {
-                    this.on("afterSave", async () => {
+                    this.on("beforeSave", async () => {
                         // Deactivate previously active revision
                         const activeRev = await Revision.findOne({
                             query: { active: true, page: (await this.page).id }
@@ -55,10 +55,11 @@ class Revision extends Entity {
             if (this.active) {
                 // Copy relevant data to parent Page
                 const page = await this.page;
-                page.populate({
-                    title: this.title,
-                    slug: this.slug,
-                    content: this.content
+                page.title = this.title;
+                page.slug = this.slug;
+
+                page.content = this.content.map(block => {
+                    return block.copy();
                 });
                 await page.save();
             }

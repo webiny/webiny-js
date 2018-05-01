@@ -13,7 +13,7 @@ const defaultWidgetRender = ({ widget }) => {
     const widgetDefinition = cms.getWidget(widget.type);
     invariant(widgetDefinition, `Missing widget definition for type "${widget.type}"`);
 
-    return React.cloneElement(widgetDefinition.render(widget), { value: widget });
+    return React.cloneElement(widgetDefinition.widget.render(widget), { widget });
 };
 
 /**

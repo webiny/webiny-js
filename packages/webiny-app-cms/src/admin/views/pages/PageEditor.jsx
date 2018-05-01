@@ -49,7 +49,7 @@ class PageEditor extends React.Component {
                                                 {props.children}
                                             </div>
                                             <div style={{ marginTop: 5 }}>
-                                                <strong>{model.name}</strong> ({model.active
+                                                Revision: <strong>{model.name}</strong> ({model.active
                                                     ? `active`
                                                     : `inactive`})
                                             </div>

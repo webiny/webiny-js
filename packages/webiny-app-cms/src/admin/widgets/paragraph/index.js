@@ -1,19 +1,25 @@
 import React from "react";
-import Widget from "./Widget";
-import Settings from "./Settings";
+import EditorWidget from "../../../utils/EditorWidget";
 
-export default {
-    type: "paragraph",
-    title: "Paragraph",
-    icon: ["fas", "align-left"],
+import ParagraphWidgetCmp from "./widget";
+import ParagraphWidgetSettingsCmp from "./settings";
+
+class ParagraphWidget extends EditorWidget {
     renderWidget({ EditorWidget }) {
         return (
             <EditorWidget>
-                <Widget />
+                <ParagraphWidgetCmp />
             </EditorWidget>
         );
-    },
-    renderSettings() {
-        return <Settings />;
     }
-};
+
+    renderSettings({ EditorWidgetSettings }) {
+        return (
+            <EditorWidgetSettings>
+                <ParagraphWidgetSettingsCmp />
+            </EditorWidgetSettings>
+        );
+    }
+}
+
+export default ParagraphWidget;

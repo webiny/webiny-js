@@ -11,6 +11,7 @@ class WidgetFunctions extends React.Component {
             onRemoved,
             beforeRemove,
             toggleScope,
+            showSettings,
             widget
         } = this.props;
 
@@ -48,7 +49,7 @@ class WidgetFunctions extends React.Component {
                         <li>
                             <Tooltip
                                 target={
-                                    <a href="javascript:void(0)">
+                                    <a href="javascript:void(0)" onClick={showSettings}>
                                         <Icon icon={["fas", "cog"]} />
                                     </a>
                                 }
