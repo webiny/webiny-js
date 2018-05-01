@@ -1,5 +1,6 @@
 import FormData from "./../components/FormData";
 import ListData from "./../components/ListData";
+import ListContext from "./../components/ListContext";
 import OptionsData from "./../components/OptionsData";
 
 export default app => {
@@ -11,6 +12,10 @@ export default app => {
         {
             name: "ListData",
             factory: () => ListData
+        },
+        {
+            name: "ListContext",
+            factory: () => ListContext
         },
         {
             name: "OptionsData",

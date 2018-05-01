@@ -24,8 +24,8 @@ class ListContext extends React.Component {
     constructor(props) {
         super();
         this.state = {
-            sort: {},
-            filter: {},
+            sort: props.sort || {},
+            filter: props.filter || {},
             page: props.page || 1,
             perPage: props.perPage || 10,
             search: {
@@ -38,8 +38,8 @@ class ListContext extends React.Component {
 
     getRouterContext(props) {
         const listProps = {
-            sort: {},
-            filter: {},
+            sort: this.state.sort,
+            filter: this.state.filter,
             setSort(sort) {
                 goToRoute({ _sort: sortToString(sort), _page: 1 });
             },
@@ -101,6 +101,7 @@ class ListContext extends React.Component {
 
     getStandaloneContext() {
         const $this = this;
+
         return {
             sort: this.state.sort,
             filter: this.state.filter,
@@ -112,7 +113,16 @@ class ListContext extends React.Component {
             },
             setFilter(data) {
                 const { search, ...filter } = data;
-                $this.setState({ page: 1, filter, search });
+                $this.setState(state => {
+                    return {
+                        page: 1,
+                        filter,
+                        search: {
+                            ...state.search,
+                            query: _.get(search, "query", _.get(state.search, "query"))
+                        }
+                    };
+                });
             },
             setPage(page) {
                 $this.setState({ page });
@@ -134,7 +144,7 @@ class ListContext extends React.Component {
             ...props,
             ...(withRouter ? this.getRouterContext(props) : this.getStandaloneContext(props))
         };
-
+        
         return React.cloneElement(children, listProps);
     }
 }

@@ -72,7 +72,7 @@ class ListData extends React.Component {
             page: props.page || 1
         };
 
-        if (!_.isEmpty(props.search.query)) {
+        if (props.search && !_.isEmpty(props.search.query)) {
             variables.search = props.search;
         }
         
