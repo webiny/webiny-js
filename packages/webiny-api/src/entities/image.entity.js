@@ -28,22 +28,30 @@ class Image extends File {
         this.attr("height")
             .integer()
             .setSkipOnPopulate();
-        this.attr("src").dynamic(preset => {
-            return /^(https?:)?\/\//.test(this.key) ? this.key : this.getURL(preset);
-        });
-        this.attr("aspectRatio").dynamic(() => {
-            if (this.height) {
-                return parseFloat((this.width / this.height).toFixed(3));
-            }
+        this.attr("src")
+            .char()
+            .setDynamic(preset => {
+                return /^(https?:)?\/\//.test(this.key) ? this.key : this.getURL(preset);
+            });
+        this.attr("aspectRatio")
+            .float()
+            .setDynamic(() => {
+                if (this.height) {
+                    return parseFloat((this.width / this.height).toFixed(3));
+                }
 
-            return 0;
-        });
-        this.attr("isPortrait").dynamic(() => {
-            return this.aspectRatio <= 1;
-        });
-        this.attr("isLandscape").dynamic(() => {
-            return this.aspectRatio > 1;
-        });
+                return 0;
+            });
+        this.attr("isPortrait")
+            .boolean()
+            .setDynamic(() => {
+                return this.aspectRatio <= 1;
+            });
+        this.attr("isLandscape")
+            .boolean()
+            .setDynamic(() => {
+                return this.aspectRatio > 1;
+            });
     }
 
     static async find(params: EntityFindParams & Object = {}) {

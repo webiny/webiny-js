@@ -7,10 +7,14 @@ class User extends Entity {
         this.attr("lastName").char();
         this.attr("age").integer();
         this.attr("enabled").boolean();
-        this.attr("totalSomething").dynamic(() => 555);
-        this.attr("dynamicWithArgs").dynamic((a, b, c) => {
-            return a + b + c;
-        });
+        this.attr("totalSomething")
+            .integer()
+            .setDynamic(() => 555);
+        this.attr("dynamicWithArgs")
+            .float()
+            .setDynamic((a, b, c) => {
+                return a + b + c;
+            });
     }
 }
 

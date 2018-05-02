@@ -37,7 +37,10 @@ class Api {
         });
     }
 
-    getRequest(): express$Request {
+    getRequest(): ?express$Request {
+        if (!this.namespace) {
+            return null;
+        }
         return this.namespace.get("req");
     }
 
@@ -84,6 +87,10 @@ class Api {
                         // Execute `onUncaughtError` callback if configured
                         if (typeof options.onUncaughtError === "function") {
                             return options.onUncaughtError({ error, req, res });
+                        }
+
+                        if (error instanceof Error) {
+                            log(`%s`, error.stack);
                         }
 
                         // If no custom error handler is provided - send error response

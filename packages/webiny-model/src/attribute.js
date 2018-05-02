@@ -9,6 +9,7 @@ class Attribute {
     attributesContainer: AttributesContainer;
     value: AttributeValue;
     once: boolean;
+    dynamic: boolean;
     toStorage: boolean;
     toJSON: boolean;
     async: boolean;
@@ -39,6 +40,12 @@ class Attribute {
          * @var bool
          */
         this.once = false;
+
+        /**
+         * If true - setValue will not have any effect.
+         * @var bool
+         */
+        this.dynamic = false;
 
         /**
          * Marks whether or not this attribute can be stored in a storage.
@@ -240,6 +247,10 @@ class Attribute {
      * @returns {boolean}
      */
     canSetValue(): boolean {
+        if (this.getDynamic()) {
+            return false;
+        }
+
         return !(this.getOnce() && this.isSet());
     }
 
@@ -263,6 +274,9 @@ class Attribute {
      * @returns {*}
      */
     getValue(): mixed | Promise<mixed> {
+        if (typeof this.dynamic === "function") {
+            return this.dynamic(...arguments);
+        }
         return this.onGetCallback(this.value.getCurrent(), ...arguments);
     }
 
@@ -307,7 +321,7 @@ class Attribute {
     /**
      * Sets default attribute value.
      */
-    setDefaultValue(defaultValue: ?mixed): this {
+    setDefaultValue(defaultValue: ?mixed): Attribute {
         this.setValue(defaultValue);
         return this;
     }
@@ -325,6 +339,15 @@ class Attribute {
      */
     getOnce(): boolean {
         return this.once;
+    }
+
+    setDynamic(flag: boolean = true): Attribute {
+        this.dynamic = flag;
+        return this;
+    }
+
+    getDynamic(): boolean {
+        return this.dynamic;
     }
 
     expected(expecting: string, got: string): ModelError {

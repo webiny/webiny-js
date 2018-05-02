@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import User from "./entities/user";
-import { CharAttribute, BooleanAttribute, IntegerAttribute, DynamicAttribute } from "webiny-model";
+import { CharAttribute, BooleanAttribute, IntegerAttribute, FloatAttribute } from "webiny-model";
 
 describe("getAttributes test", function() {
     it("should return all attributes", async () => {
@@ -21,7 +21,7 @@ describe("getAttributes test", function() {
         assert.instanceOf(allAttributes["lastName"], CharAttribute);
         assert.instanceOf(allAttributes["enabled"], BooleanAttribute);
         assert.instanceOf(allAttributes["age"], IntegerAttribute);
-        assert.instanceOf(allAttributes["totalSomething"], DynamicAttribute);
-        assert.instanceOf(allAttributes["dynamicWithArgs"], DynamicAttribute);
+        assert.instanceOf(allAttributes["totalSomething"], IntegerAttribute);
+        assert.instanceOf(allAttributes["dynamicWithArgs"], FloatAttribute);
     });
 });

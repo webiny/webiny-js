@@ -8,7 +8,6 @@ import {
     IntegerAttribute,
     FloatAttribute,
     DateAttribute,
-    DynamicAttribute,
     ModelAttribute,
     ModelsAttribute,
     ObjectAttribute
@@ -57,12 +56,6 @@ class DefaultAttributesContainer extends AttributesContainer {
     float(): FloatAttribute {
         const model = this.getParentModel();
         model.setAttribute(this.name, new FloatAttribute(this.name, this));
-        return model.getAttribute(this.name);
-    }
-
-    dynamic(callback: Function): DynamicAttribute {
-        const model = this.getParentModel();
-        model.setAttribute(this.name, new DynamicAttribute(this.name, this, callback));
         return model.getAttribute(this.name);
     }
 

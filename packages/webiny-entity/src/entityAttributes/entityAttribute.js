@@ -28,9 +28,6 @@ class EntityAttribute extends Attribute {
     ) {
         super(name, attributesContainer);
 
-        // This attribute is async because we need to load entities both on set and get calls.
-        this.async = true;
-
         this.options = options;
 
         this.classes = {
@@ -221,6 +218,10 @@ class EntityAttribute extends Attribute {
      * @returns {Promise<void>}
      */
     async getValue(): Promise<mixed> {
+        if (typeof this.dynamic === "function") {
+            return this.dynamic(...arguments);
+        }
+
         if (this.value.isClean()) {
             await this.value.load();
         }

@@ -31,9 +31,11 @@ class File extends Entity {
         this.attr("key")
             .char()
             .setSkipOnPopulate();
-        this.attr("src").dynamic(() => {
-            return /^(https?:)?\/\//.test(this.key) ? this.key : this.getURL();
-        });
+        this.attr("src")
+            .char()
+            .setDynamic(() => {
+                return /^(https?:)?\/\//.test(this.key) ? this.key : this.getURL();
+            });
         this.attr("tags")
             .array()
             .setDefaultValue([]);
