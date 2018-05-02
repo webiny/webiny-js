@@ -103,6 +103,7 @@ class CategoryList extends React.Component {
                         <ViewSwitcher.View name={"form"} modal>
                             {({ data }) => (
                                 <CategoryModal
+                                    name="createCategory"
                                     data={data}
                                     onSuccess={() => this.list.loadRecords()}
                                 />

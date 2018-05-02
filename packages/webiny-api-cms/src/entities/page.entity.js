@@ -24,8 +24,7 @@ class Page extends Entity {
         this.attr("activeRevision")
             .entity(Revision)
             .setDynamic(async () => {
-                const rev = await Revision.findOne({ query: { page: this.id, active: true } });
-                return rev ? rev.toJSON("id") : {};
+                return await Revision.findOne({ query: { page: this.id, active: true } });
             });
 
         this.attr("revisions").entities(Revision);
