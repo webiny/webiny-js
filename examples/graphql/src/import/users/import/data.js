@@ -28,7 +28,11 @@ export default [
                 {
                     name: "Administrator",
                     slug: "administrator",
-                    description: "Administrator account"
+                    description: "Administrator account",
+                    permissions: [
+                        await Permission.findOne({ query: { slug: "manage-users" } }),
+                        await Permission.findOne({ query: { slug: "manage-permissions" } })
+                    ]
                 }
             ]
         };
