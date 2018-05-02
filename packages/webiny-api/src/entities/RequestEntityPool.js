@@ -6,9 +6,7 @@ class RequestEntityPool extends EntityPool {
     getPool() {
         const request = app.getRequest();
         if (!request) {
-            throw Error(
-                "Cannot continue - current request object wasn't received from app object."
-            );
+            return this.pool;
         }
 
         if (!request.entityPool) {

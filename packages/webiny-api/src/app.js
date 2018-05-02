@@ -37,7 +37,10 @@ class Api {
         });
     }
 
-    getRequest(): express$Request {
+    getRequest(): ?express$Request {
+        if (!this.namespace) {
+            return null;
+        }
         return this.namespace.get("req");
     }
 
