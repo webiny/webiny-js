@@ -49,7 +49,10 @@ class PageDetails extends React.Component {
     render() {
         const {
             page,
-            deleteConfirmation,
+            moveToTrash,
+            moveToDrafts,
+            togglePinned,
+            togglePublished,
             modules: { Tabs, Select, Icon, Link, Dropdown }
         } = this.props;
 
@@ -74,15 +77,19 @@ class PageDetails extends React.Component {
                     <Link route={"Cms.Page.Editor"} params={{ id: this.state.revision.id }}>
                         <Icon icon={"edit"} />
                     </Link>
-                    <Link onClick={deleteConfirmation}>
-                        <Icon icon={"trash-alt"} />
+                    <Link onClick={page.status !== "trash" ? moveToTrash : moveToDrafts}>
+                        <Icon icon={page.status !== "trash" ? "trash-alt" : "undo"} />
                     </Link>
-                    <Link>
-                        <Icon icon={"eye"} />
-                    </Link>
-                    <Link>
-                        <Icon icon={"thumbtack"} />
-                    </Link>
+                    {page.status !== "trash" && (
+                        <Link onClick={togglePublished}>
+                            <Icon icon={page.status === "published" ? "eye-slash" : "eye"} />
+                        </Link>
+                    )}
+                    {page.status !== "trash" && (
+                        <Link onClick={togglePinned} className={page.pinned ? styles.pinned : null}>
+                            <Icon icon={"thumbtack"} />
+                        </Link>
+                    )}
                 </div>
                 <Tabs size="large">
                     <Tabs.Tab label="Preview page">

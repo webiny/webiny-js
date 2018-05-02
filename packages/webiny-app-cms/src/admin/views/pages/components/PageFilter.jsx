@@ -2,7 +2,7 @@ import React from "react";
 import classSet from "classnames";
 import _ from "lodash";
 import { createComponent } from "webiny-app";
-import styles from "./PageFilter.scss";
+import styles from "./PageFilter.scss?prefix=Webiny_CMS_PageFilter";
 
 class PageFilter extends React.Component {
     constructor(props) {
@@ -36,7 +36,11 @@ class PageFilter extends React.Component {
     }
 
     render() {
-        const { Icon } = this.props.modules;
+        const { modules: { Link, Icon }, setFilter } = this.props;
+
+        const filter = _.get(this.props.filter, "filter", "all");
+
+        const activeItem = "filter-bar__item--active";
 
         return (
             <div className={styles["filter-bar"]}>
@@ -66,25 +70,50 @@ class PageFilter extends React.Component {
                     </div>
                 </div>
                 <div className={styles["filter-bar__items"]}>
-                    <a className={styles["filter-bar__item"]} href="#">
-                        All <span>(14)</span>
-                    </a>
-                    <a className={styles["filter-bar__item"]} href="#">
-                        Published <span>(8)</span>
-                    </a>
-                    <a className={styles["filter-bar__item"]} href="#">
-                        Drafts <span>(2)</span>
-                    </a>
-                    <a className={styles["filter-bar__item"]} href="#">
-                        Pinned <span>(2)</span>
-                    </a>
-                    <a className={styles["filter-bar__item"]} href="#">
-                        Trash <span>(2)</span>
-                    </a>
+                    <Link
+                        className={classSet(styles["filter-bar__item"], {
+                            [styles[activeItem]]: filter === "all"
+                        })}
+                        onClick={() => setFilter({ filter: "all" })}
+                    >
+                        All <span />
+                    </Link>
+                    <Link
+                        className={classSet(styles["filter-bar__item"], {
+                            [styles[activeItem]]: filter === "published"
+                        })}
+                        onClick={() => setFilter({ filter: "published" })}
+                    >
+                        Published <span />
+                    </Link>
+                    <Link
+                        className={classSet(styles["filter-bar__item"], {
+                            [styles[activeItem]]: filter === "draft"
+                        })}
+                        onClick={() => setFilter({ filter: "draft" })}
+                    >
+                        Drafts <span />
+                    </Link>
+                    <Link
+                        className={classSet(styles["filter-bar__item"], {
+                            [styles[activeItem]]: filter === "pinned"
+                        })}
+                        onClick={() => setFilter({ filter: "pinned" })}
+                    >
+                        Pinned <span />
+                    </Link>
+                    <Link
+                        className={classSet(styles["filter-bar__item"], {
+                            [styles[activeItem]]: filter === "trash"
+                        })}
+                        onClick={() => setFilter({ filter: "trash" })}
+                    >
+                        Trash <span />
+                    </Link>
                 </div>
             </div>
         );
     }
 }
 
-export default createComponent(PageFilter, { modules: ["Icon"] });
+export default createComponent(PageFilter, { modules: ["Icon", "Link"] });

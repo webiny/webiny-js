@@ -1,5 +1,6 @@
 import React from "react";
 import classSet from "classnames";
+import _ from "lodash";
 import { createComponent } from "webiny-app";
 import styles from "./Widget.scss";
 import EditorWidget from "./EditorWidget";
@@ -46,7 +47,12 @@ class Widget extends React.Component {
                         name={widget.id + "-settings"}
                         widget={widget}
                         isGlobal={isGlobal}
-                        onChange={model => onChange({ settings: model, __dirty: true })}
+                        onChange={model =>
+                            onChange({
+                                settings: model,
+                                __dirty: isDirty || !_.isEqual(model, widget.settings)
+                            })
+                        }
                         onReady={ref => (this.settingsDialog = ref)}
                     />
                     <WidgetFunctions widget={widget} {...functions} />
@@ -54,7 +60,11 @@ class Widget extends React.Component {
                         editorWidget.widget.renderWidget({ EditorWidget, widget }),
                         {
                             widget,
-                            onChange: model => onChange({ data: model, __dirty: true }),
+                            onChange: model =>
+                                onChange({
+                                    data: model,
+                                    __dirty: isDirty || !_.isEqual(model, widget.data)
+                                }),
                             isGlobal
                         }
                     )}
