@@ -1,11 +1,11 @@
 // @flow
 import { app } from "webiny-api";
 import { Entity as BaseEntity } from "webiny-entity";
+import RequestEntityPool from "./RequestEntityPool";
 
 class Entity extends BaseEntity {
     constructor() {
         super();
-
         app.entities.applyExtensions(this);
     }
 }
@@ -17,4 +17,5 @@ Entity.crud = {
     }
 };
 
+Entity.pool = new RequestEntityPool();
 export default Entity;
