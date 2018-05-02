@@ -27,6 +27,39 @@ class Identity extends Entity implements IAuthorizable {
             .entities(RoleGroup, "identity", () => this.identityId)
             .setUsing(Identity2RoleGroup)
             .onGet(onSetFactory(RoleGroup));
+
+        this.attr("scope")
+            .object()
+            .setDynamic(async () => {
+                const roles = await this.roles;
+                const roleGroups = await this.roleGroups;
+                for (let i = 0; i < roleGroups.length; i++) {
+                    let roleGroup = roleGroups[i];
+                    const roleGroupRoles = await roleGroup.roles;
+                    roleGroupRoles.forEach(roleGroupRole => {
+                        if (roles.indexOf(roleGroupRole) === -1) {
+                            roles.push(roleGroupRole);
+                        }
+                    });
+                }
+
+                const scope = {};
+                for (let i = 0; i < roles.length; i++) {
+                    let role = roles[i];
+                    const permissions = await role.permissions;
+                    permissions.forEach(permission => {
+                        for (let operationName in permission.scope) {
+                            if (!scope[operationName]) {
+                                scope[operationName] = [];
+                            }
+
+                            scope[operationName].push(permission.scope[operationName]);
+                        }
+                    });
+                }
+
+                return scope;
+            });
     }
 
     /**
