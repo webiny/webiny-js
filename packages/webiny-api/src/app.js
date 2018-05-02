@@ -86,6 +86,10 @@ class Api {
                             return options.onUncaughtError({ error, req, res });
                         }
 
+                        if (error instanceof Error) {
+                            log(`%s`, error.stack);
+                        }
+
                         // If no custom error handler is provided - send error response
                         res.statusCode = error.status || 500;
                         res.json({ errors: [error] });
