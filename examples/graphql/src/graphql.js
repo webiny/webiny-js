@@ -22,7 +22,9 @@ export default () => {
             //authorization(),
             graphqlMiddleware(),
             (params, next) => {
-                // Temporary hack
+                // This will flush all entities stored in a special per-request entity pool.
+                // In most cases, this should be the last step of the middleware chain.
+                // @see "packages/webiny-api/src/entities/entity.js".
                 Entity.pool.flush();
                 next();
             }
