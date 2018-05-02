@@ -26,14 +26,22 @@ export default [
             entity: Role,
             data: [
                 {
-                    name: "Anonymous",
-                    slug: "anonymous",
-                    description: "Anonymous"
-                },
-                {
                     name: "Administrator",
                     slug: "administrator",
                     description: "Administrator account"
+                }
+            ]
+        };
+    },
+    async () => {
+        return {
+            entity: RoleGroup,
+            data: [
+                {
+                    name: "Administrators",
+                    slug: "administrators",
+                    description: "Administrator group",
+                    roles: [await Role.findOne({ query: { slug: "administrator" } })]
                 }
             ]
         };
@@ -61,21 +69,21 @@ export default [
                     password: "12345678",
                     firstName: "Oren",
                     lastName: "Russell",
-                    roleGroups: [await RoleGroup.findOne({ query: { slug: "bloggers" } })]
+                    roleGroups: [await RoleGroup.findOne({ query: { slug: "administrators" } })]
                 },
                 {
                     email: "user4@webiny.com",
                     password: "pass4",
                     firstName: "Isaac",
                     lastName: "Fuller",
-                    roleGroups: [await RoleGroup.findOne({ query: { slug: "bloggers" } })]
+                    roleGroups: [await RoleGroup.findOne({ query: { slug: "administrators" } })]
                 },
                 {
                     email: "user5@webiny.com",
                     password: "pass5",
                     firstName: "Clarke",
                     lastName: "Fischer",
-                    roles: [await Role.findOne({ query: { slug: "blogger" } })]
+                    roles: [await Role.findOne({ query: { slug: "administrator" } })]
                 },
                 {
                     email: "Suspendisse.sed@sollicitudin.ca",
