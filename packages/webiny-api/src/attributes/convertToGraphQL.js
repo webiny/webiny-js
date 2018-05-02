@@ -135,10 +135,6 @@ export default (params: AttributeToTypeParams) => {
         );
     }
 
-    if (attr instanceof attrs.DynamicAttribute) {
-        type = GraphQLJSON;
-    }
-
     if (attr instanceof attrs.DateAttribute) {
         type = GraphQLString;
         resolve = (entity: Entity) => {
