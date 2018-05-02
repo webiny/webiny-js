@@ -1,7 +1,9 @@
 import React from "react";
 import _ from "lodash";
-import { app, createComponent } from "webiny-app";
+import { app, i18n, createComponent } from "webiny-app";
 import ListContext from "./ListContext";
+
+const t = i18n.namespace("Webiny.ListData");
 
 class ListData extends React.Component {
     constructor(props) {

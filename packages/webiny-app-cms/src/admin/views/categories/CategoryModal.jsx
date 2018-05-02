@@ -22,7 +22,7 @@ class CategoryModal extends React.Component {
             Grid,
             Loader
         } = this.props.modules;
-
+        
         return (
             <Modal.Dialog>
                 <FormData
