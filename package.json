@@ -51,7 +51,7 @@
     "prettier": "^1.10.2",
     "rimraf": "^2.6.2",
     "source-map-support": "^0.5.0",
-    "webiny-semantic-release": "^1.1.0"
+    "webiny-semantic-release": "^1.1.2"
   },
   "scripts": {
     "build": "lerna run --parallel build",
@@ -87,5 +87,9 @@
       "eslint --fix",
       "git add"
     ]
+  },
+  "dependencies": {
+    "env-ci": "2.0.1",
+    "react": "16.3.2"
   }
 }

@@ -4,6 +4,7 @@ npm-debug.log
 node_modules
 .DS_Store
 coverage
+yarn-error.log
 yarn.lock
 .nyc_output
 packages/*/lib
