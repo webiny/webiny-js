@@ -19,7 +19,7 @@ export default () => {
         "/graphql",
         webiny.middleware(({ graphqlMiddleware }) => [
             authentication({ token: "Authorization" }),
-            //authorization(),
+            authorization(),
             graphqlMiddleware(),
             (params, next) => {
                 // This will flush all entities stored in a special per-request entity pool.
