@@ -27,8 +27,11 @@ class Scopes extends React.Component {
         }).then(async response => {
             const data = await response.json();
             const schema = data.data.__schema;
-            const filteredQueriesAndMutations = _.merge(
-                _.find(schema.types, { name: "Query" }).fields,
+            let filteredQueriesAndMutations = [];
+            filteredQueriesAndMutations = filteredQueriesAndMutations.concat(
+                _.find(schema.types, { name: "Query" }).fields
+            );
+            filteredQueriesAndMutations = filteredQueriesAndMutations.concat(
                 _.find(schema.types, { name: "Mutation" }).fields
             );
 
