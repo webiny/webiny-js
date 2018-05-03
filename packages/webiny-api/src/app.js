@@ -65,7 +65,7 @@ class Api {
         this.apps.push(app);
     }
 
-    middleware(middleware: Function, options: Object = {}): Function {
+    middleware(middleware: Function<Array<Function>>, options: Object = {}): Function {
         // Setup registered Webiny apps.
         compose(this.apps)({ app: this });
 
