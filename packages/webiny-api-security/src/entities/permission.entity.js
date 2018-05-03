@@ -11,6 +11,12 @@ class Permission extends Entity {
         this.attr("roles")
             .entities(Role)
             .setUsing(Role2Permission);
+
+        this.on("beforeDelete", () => {
+            if (this.slug === "anonymous") {
+                throw Error('"anonymous" permission cannot be deleted.');
+            }
+        });
     }
 }
 
