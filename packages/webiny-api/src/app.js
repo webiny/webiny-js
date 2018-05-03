@@ -93,9 +93,9 @@ class Api {
                             log(`%s`, error.stack);
                         }
 
-                        // If no custom error handler is provided - send error response
+                        // If no custom error handler is provided - send error response.
                         res.statusCode = error.status || 500;
-                        res.json({ errors: [error] });
+                        res.json({ errors: [{ name: error.name, message: error.message }] });
                     });
                 })();
             });
