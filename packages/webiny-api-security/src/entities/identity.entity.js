@@ -1,6 +1,7 @@
 // @flow
 import { Entity } from "webiny-api";
 import Role from "./role.entity";
+import Permission from "./permission.entity";
 import RoleGroup from "./roleGroup.entity";
 import Identity2Role from "./identity2Role.entity";
 import Identity2RoleGroup from "./identity2RoleGroup.entity";
@@ -56,6 +57,17 @@ class Identity extends Entity implements IAuthorizable {
                             scope[operationName].push(permission.scope[operationName]);
                         }
                     });
+                }
+
+                const anonymousPermission = await Permission.findOne({
+                    query: { slug: "anonymous" }
+                });
+                for (let operationName in anonymousPermission.scope) {
+                    if (!scope[operationName]) {
+                        scope[operationName] = [];
+                    }
+
+                    scope[operationName].push(anonymousPermission.scope[operationName]);
                 }
 
                 return scope;
