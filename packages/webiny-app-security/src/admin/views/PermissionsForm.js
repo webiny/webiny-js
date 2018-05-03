@@ -64,13 +64,17 @@ class PermissionsForm extends React.Component {
                                                         <Input
                                                             label={t`Name`}
                                                             name="name"
-                                                            validate="required"
+                                                            validators="required"
                                                         />
                                                     </Bind>
                                                 </Grid.Col>
                                                 <Grid.Col all={6}>
                                                     <Bind>
-                                                        <Input label={t`Slug`} name="slug" />
+                                                        <Input
+                                                            label={t`Slug`}
+                                                            name="slug"
+                                                            validators="required"
+                                                        />
                                                     </Bind>
                                                 </Grid.Col>
                                             </Grid.Row>
@@ -80,7 +84,7 @@ class PermissionsForm extends React.Component {
                                                         <Input
                                                             label={t`Description`}
                                                             name="description"
-                                                            validate="required"
+                                                            validators="required"
                                                         />
                                                     </Bind>
                                                 </Grid.Col>

@@ -69,7 +69,7 @@ class RolesForm extends React.Component {
                                                         <Input
                                                             label={t`Name`}
                                                             name="name"
-                                                            validate="required"
+                                                            validators="required"
                                                         />
                                                     </Bind>
                                                 </Grid.Col>
@@ -78,7 +78,7 @@ class RolesForm extends React.Component {
                                                         <Input
                                                             label={t`Slug`}
                                                             name="slug"
-                                                            validate="required"
+                                                            validators="required"
                                                         />
                                                     </Bind>
                                                 </Grid.Col>
@@ -89,7 +89,7 @@ class RolesForm extends React.Component {
                                                         <Input
                                                             label={t`Description`}
                                                             name="description"
-                                                            validate="required"
+                                                            validators="required"
                                                         />
                                                     </Bind>
                                                 </Grid.Col>

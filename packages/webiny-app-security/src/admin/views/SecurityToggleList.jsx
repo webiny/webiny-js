@@ -8,7 +8,6 @@ class PermissionsSettings extends React.Component {
     render() {
         const { List, Switch, Link } = this.props.modules;
 
-        console.log("rerender");
         return (
             <List.Table data={this.props.options} key={this.props.value}>
                 <List.Table.Row>

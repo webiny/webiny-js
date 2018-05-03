@@ -38,7 +38,7 @@ class ImportModal extends Webiny.Ui.ModalComponent {
                                 <CodeEditor
                                     mode="text/javascript"
                                     name="data"
-                                    validate="required,json"
+                                    validators="required,json"
                                 />
                             </Modal.Body>
                             <Modal.Footer>
