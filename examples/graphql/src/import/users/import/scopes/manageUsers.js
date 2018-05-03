@@ -2,7 +2,7 @@ export default {
     getSecurityUser: {
         id: true,
         email: true,
-        roles: true,
+        roles: { id: true, name: true, slug: true },
         enabled: true,
         savedOn: true,
         gravatar: true,
@@ -11,13 +11,13 @@ export default {
         createdOn: true,
         firstName: true,
         updatedOn: true,
-        roleGroups: true
+        roleGroups: { id: true, name: true, slug: true }
     },
     listSecurityUsers: {
         list: {
             id: true,
             email: true,
-            roles: true,
+            roles: { id: true, name: true, slug: true },
             enabled: true,
             savedOn: true,
             gravatar: true,
@@ -26,14 +26,14 @@ export default {
             createdOn: true,
             firstName: true,
             updatedOn: true,
-            roleGroups: true
+            roleGroups: { name: true, slug: true }
         },
         meta: { count: true, totalCount: true, totalPages: true }
     },
     createSecurityUser: {
         id: true,
         email: true,
-        roles: true,
+        roles: { id: true, name: true, slug: true },
         enabled: true,
         savedOn: true,
         gravatar: true,
@@ -42,13 +42,13 @@ export default {
         createdOn: true,
         firstName: true,
         updatedOn: true,
-        roleGroups: true
+        roleGroups: { id: true, name: true, slug: true }
     },
     deleteSecurityUser: true,
     updateSecurityUser: {
         id: true,
         email: true,
-        roles: {},
+        roles: { id: true, name: true, slug: true },
         enabled: true,
         savedOn: true,
         gravatar: true,
@@ -57,6 +57,6 @@ export default {
         createdOn: true,
         firstName: true,
         updatedOn: true,
-        roleGroups: true
+        roleGroups: { id: true, name: true, slug: true }
     }
 };

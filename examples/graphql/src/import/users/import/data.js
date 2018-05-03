@@ -1,11 +1,17 @@
 import { User, Role, RoleGroup, Permission } from "webiny-api-security";
-import { managePermissions, manageUsers } from "./scopes";
+import { managePermissions, manageUsers, anonymous } from "./scopes";
 
 export default [
     () => {
         return {
             entity: Permission,
             data: [
+                {
+                    name: "Anonymous",
+                    slug: "anonymous",
+                    description: "Anonymous",
+                    scope: anonymous
+                },
                 {
                     name: "Manage users",
                     slug: "manage-users",
