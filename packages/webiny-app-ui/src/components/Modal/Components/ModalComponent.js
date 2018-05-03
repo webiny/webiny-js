@@ -112,7 +112,7 @@ class ModalComponent extends React.Component {
         });
     }
 
-    show(data = {}) {
+    show(data = this.props.data || {}) {
         // This shows the modal container element in case it was previously hidden by another dialog
         this.props.onShow();
 
@@ -143,7 +143,10 @@ class ModalComponent extends React.Component {
             return null;
         }
 
-        const { modules: { Animate }, styles } = this.props;
+        const {
+            modules: { Animate },
+            styles
+        } = this.props;
         const className = classSet(styles.modal, {
             [styles.wide]: this.props.wide,
             [styles.fullScreen]: this.props.fullScreen

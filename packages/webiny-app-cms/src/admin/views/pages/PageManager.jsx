@@ -34,7 +34,8 @@ class PageManager extends React.Component {
             filter,
             search,
             loadMore,
-            deletePage,
+            moveToTrash,
+            updatePage,
             removePageFromList
         } = this.props;
 
@@ -59,6 +60,7 @@ class PageManager extends React.Component {
                                     <Grid.Row>
                                         <Grid.Col all={12} className={styles.noPadding}>
                                             <PageFilter
+                                                filter={filter}
                                                 query={search.query}
                                                 setSearchQuery={setSearchQuery}
                                                 setFilter={setFilter}
@@ -84,8 +86,8 @@ class PageManager extends React.Component {
                                                 >
                                                     <PageList
                                                         pages={list}
-                                                        onPageClick={page =>
-                                                            this.setState({ page: page.id })
+                                                        onPageClick={({ id }) =>
+                                                            this.setState({ page: id })
                                                         }
                                                     />
                                                 </InfiniteScroll>
@@ -94,10 +96,37 @@ class PageManager extends React.Component {
                                         <Grid.Col all={8} className={styles.noPadding}>
                                             <PageDetailsProvider value={{ page }}>
                                                 <PageDetails
-                                                    deleteConfirmation={() =>
-                                                        this.viewSwitcher.showView(
-                                                            "deleteConfirmation"
-                                                        )(page)
+                                                    togglePublished={() =>
+                                                        updatePage(page.id, {
+                                                            status:
+                                                                page.status === "draft"
+                                                                    ? "published"
+                                                                    : "draft"
+                                                        }).then(() => {
+                                                            removePageFromList(page.id);
+                                                            this.setState({ page: null });
+                                                        })
+                                                    }
+                                                    togglePinned={() =>
+                                                        updatePage(page.id, {
+                                                            pinned: !page.pinned
+                                                        }).then(() => {
+                                                            removePageFromList(page.id);
+                                                            this.setState({ page: null });
+                                                        })
+                                                    }
+                                                    moveToDrafts={() =>
+                                                        updatePage(page.id, {
+                                                            status: "draft"
+                                                        }).then(() => {
+                                                            removePageFromList(page.id);
+                                                            this.setState({ page: null });
+                                                        })
+                                                    }
+                                                    moveToTrash={() =>
+                                                        this.viewSwitcher.showView("moveToTrash")(
+                                                            page
+                                                        )
                                                     }
                                                     page={page}
                                                 />
@@ -107,23 +136,45 @@ class PageManager extends React.Component {
                                 </Fragment>
                             )}
                         </ViewSwitcher.View>
-                        <ViewSwitcher.View name={"deleteConfirmation"} modal>
+                        {/*<ViewSwitcher.View name={"unpublishPage"} modal>
                             {({ data }) => (
                                 <Modal.Confirmation
-                                    name={"deleteConfirmation"}
-                                    confirm={"Yes, delete it!"}
-                                    cancel={"Not now"}
+                                    name={"unpublishConfirmation"}
+                                    confirm={"Yes, unpublish this page!"}
+                                    cancel={"I changed my mind"}
                                     message={
                                         <span>
-                                            Are you sure you want to delete the page <br />
-                                            <strong>{data.title}</strong>
-                                            <br /> and all of its revisions?
+                                            Are you sure you want to unpublish the page <br />
+                                            <strong>{data.title}</strong>?
                                         </span>
                                     }
-                                    onConfirm={() => deletePage(data.id)}
-                                    onComplete={() => removePageFromList(data.id)}
+                                    onConfirm={() => toggleStatus(data.id)}
+                                    onComplete={() => reloadPage(data.id)}
                                 />
                             )}
+                        </ViewSwitcher.View>*/}
+                        <ViewSwitcher.View name={"moveToTrash"} modal>
+                            {({ data }) => {
+                                return (
+                                    <Modal.Confirmation
+                                        name={"moveToTrashConfirmation"}
+                                        confirm={"Yes, move this page to trash!"}
+                                        cancel={"Not now"}
+                                        message={
+                                            <span>
+                                                Are you sure you want to move the page<br />
+                                                <strong>{data.title}</strong>
+                                                <br /> and all of its revisions to trash?
+                                            </span>
+                                        }
+                                        onConfirm={() => moveToTrash(data.id)}
+                                        onComplete={() => {
+                                            removePageFromList(data.id);
+                                            this.setState({ page: null });
+                                        }}
+                                    />
+                                );
+                            }}
                         </ViewSwitcher.View>
                     </ViewSwitcher>
                 </View.Body>

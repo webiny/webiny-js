@@ -6,7 +6,7 @@ import { PageManagerProvider } from "./context/PageManagerContext";
 
 const createdBy = "createdBy { ... on SecurityUser { firstName lastName } }";
 const fields = `
-    id title slug status createdOn
+    id title slug status createdOn pinned
     category { title }
     revisions { id name slug title active content { id type origin data settings } savedOn createdOn ${createdBy}}
     ${createdBy}
@@ -18,8 +18,9 @@ class PageManagerContainer extends React.Component {
         this.state = {};
         this.currentList = [];
         this.lastLoadedPage = 0;
+        this.updatePage = this.updatePage.bind(this);
         this.reloadPage = this.reloadPage.bind(this);
-        this.deletePage = this.deletePage.bind(this);
+        this.moveToTrash = this.moveToTrash.bind(this);
         this.removePageFromList = this.removePageFromList.bind(this);
     }
 
@@ -41,8 +42,18 @@ class PageManagerContainer extends React.Component {
         });
     }
 
-    deletePage(id) {
-        return app.graphql.generateDelete("CmsPage")({ variables: { id } });
+    moveToTrash(id) {
+        return this.updatePage(id, { status: "trash" });
+    }
+
+    updatePage(id, data) {
+        return app.graphql
+            .generateUpdate("CmsPage", fields)({ variables: { id, data } })
+            .then(({ data }) => {
+                const index = _.findIndex(this.currentList, { id });
+                this.currentList.splice(index, 1, data);
+                this.setState({ ts: Date.now() });
+            });
     }
 
     removePageFromList(id) {
@@ -63,7 +74,7 @@ class PageManagerContainer extends React.Component {
             <ListData
                 entity={"CmsPage"}
                 search={{ fields: ["title", "slug"] }}
-                sort={{savedOn: -1}}
+                sort={{ savedOn: -1 }}
                 perPage={7}
                 fields={fields}
             >
@@ -84,8 +95,9 @@ class PageManagerContainer extends React.Component {
                         hasMore: meta.totalPages > page,
                         loadMore: () => props.setPage(page + 1),
                         updateRevision: this.updateRevision,
+                        updatePage: this.updatePage,
                         reloadPage: this.reloadPage,
-                        deletePage: this.deletePage
+                        moveToTrash: this.moveToTrash
                     };
 
                     return (
@@ -100,7 +112,8 @@ class PageManagerContainer extends React.Component {
                                     "search",
                                     "hasMore",
                                     "loadMore",
-                                    "deletePage"
+                                    "moveToTrash",
+                                    "updatePage"
                                 ])}
                                 setSearchQuery={query => {
                                     this.lastLoadedPage = 0;

@@ -1,10 +1,13 @@
 // @flow
+import _ from "lodash";
 import { Entity } from "webiny-api";
 import Category from "./category.entity";
 import WidgetModel from "./widget.model";
 import Revision from "./revision.entity";
 
 class Page extends Entity {
+    static filter: Object;
+
     constructor() {
         super();
 
@@ -21,8 +24,7 @@ class Page extends Entity {
         this.attr("activeRevision")
             .entity(Revision)
             .setDynamic(async () => {
-                const rev = await Revision.findOne({ query: { page: this.id, active: true } });
-                return rev ? rev.toJSON("id") : {};
+                return await Revision.findOne({ query: { page: this.id, active: true } });
             });
 
         this.attr("revisions").entities(Revision);
@@ -36,6 +38,10 @@ class Page extends Entity {
             .setValidators("in:draft:published:trash")
             .setDefaultValue("draft");
 
+        this.attr("pinned")
+            .boolean()
+            .setDefaultValue(false);
+
         this.on("afterCreate", async () => {
             const revision = new Revision();
             revision.populate({
@@ -48,7 +54,26 @@ class Page extends Entity {
             await revision.save();
         }).setOnce();
     }
+
+    static async find(params: ?Object) {
+        const query = Page.filters[_.get(params, "query.filter", "all")];
+
+        // $FlowIgnore
+        delete params["query"]["filter"];
+
+        _.merge(params, { query });
+
+        return await super.find(params);
+    }
 }
+
+Page.filters = {
+    all: { status: { $ne: "trash" } },
+    published: { status: "published" },
+    draft: { status: "draft" },
+    pinned: { pinned: true },
+    trash: { status: "trash" }
+};
 
 Page.classId = "CmsPage";
 Page.tableName = "Cms_Pages";

@@ -44,7 +44,7 @@ class CreatePageDialog extends React.Component {
             <Modal.Dialog>
                 <FormData
                     entity={"CmsPage"}
-                    fields={"activeRevision"}
+                    fields={"activeRevision { id }"}
                     onSubmitSuccess={({ model }) =>
                         app.router.goToRoute("Cms.Page.Editor", { id: model.activeRevision.id })
                     }
