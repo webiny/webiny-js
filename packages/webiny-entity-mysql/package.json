@@ -20,7 +20,8 @@
     "mdbid": "^1.0.0",
     "mysql": "^2.15.0",
     "sqlstring": "^2.3.0",
-    "webiny-entity": "0.0.0-semantically-released"
+    "webiny-entity": "0.0.0-semantically-released",
+    "webiny-mysql-connection": "0.0.0-semantically-released"
   },
   "devDependencies": {
     "sinon": "^4.2.0"
