@@ -21,6 +21,7 @@ class Entity {
         }
     };
     static listeners: {};
+    static interceptors: { get: Array<Function>, set: Array<Function> };
 
     model: EntityModel;
     listeners: {};
@@ -34,6 +35,10 @@ class Entity {
     constructor(): Entity {
         const proxy = new Proxy((this: Object), {
             set: (instance, key, value) => {
+                this.constructor.interceptors.set.forEach(callback =>
+                    callback(instance, key, value)
+                );
+
                 const attr: ?Attribute = instance.getModel().getAttribute(key);
                 if (attr) {
                     attr.setValue(value);
@@ -44,6 +49,8 @@ class Entity {
                 return true;
             },
             get: (instance, key) => {
+                this.constructor.interceptors.get.forEach(callback => callback(instance, key));
+
                 if (["classId", "driver"].includes(key)) {
                     return instance.constructor[key];
                 }
@@ -501,6 +508,45 @@ class Entity {
     }
 
     /**
+     * Adds interceptor that will be executed in entity proxy's get/set callbacks.
+     * Useful eg. if get/setValue methods need to be intercepted for some reason.
+     * A function that is returned can be used to remove the newly added interceptor.
+     * @param type
+     * @param callback
+     * @returns {Function}
+     */
+    static addInterceptor(type, callback: Function<void>): Function<void> {
+        if (!this.interceptors[type]) {
+            this.interceptors[type] = [];
+        }
+
+        this.interceptors[type].push(callback);
+
+        return () => {
+            const index = this.interceptors[type].indexOf(callback);
+            this.interceptors[type].splice(index, 1);
+        };
+    }
+
+    /**
+     * Adds 'get' interceptor. Useful eg. if 'getValue' method needs to be intercepted for some reason.
+     * @param callback
+     * @returns {Function<void>}
+     */
+    static onGet(callback: Function<void>): Function<void> {
+        return this.addInterceptor("get", callback);
+    }
+
+    /**
+     * Adds 'set' interceptor. Useful eg. if 'setValue' method needs to be intercepted for some reason.
+     * @param callback
+     * @returns {Function<void>}
+     */
+    static onSet(callback: Function<void>): Function<void> {
+        return this.addInterceptor("set", callback);
+    }
+
+    /**
      * Emits an event, which will trigger both static and instance listeners.
      * @param name
      * @param data
@@ -562,6 +608,7 @@ class Entity {
 Entity.classId = null;
 Entity.driver = new Driver();
 Entity.pool = new EntityPool();
+Entity.interceptors = { get: [], set: [] };
 Entity.crud = {
     logs: false,
     delete: {
