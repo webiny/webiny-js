@@ -25,7 +25,7 @@ class QueryMutationFieldsList extends React.Component {
                         this.setState({ filter });
                     }}
                 />
-                <Scrollbar style={{ height: 500 }} autoHide>
+                <Scrollbar style={{ height: 600 }} autoHide>
                     <ul>
                         {this.props.queriesAndMutations.map(field => {
                             if (!_.isEmpty(this.state.filter)) {

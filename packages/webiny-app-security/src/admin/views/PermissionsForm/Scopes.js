@@ -55,7 +55,7 @@ class Scopes extends React.Component {
         return (
             <div className={css.scopes}>
                 <Grid.Row>
-                    <Grid.Col md={3} className={css.sidebar}>
+                    <Grid.Col md={4} className={css.sidebar}>
                         <h3>{t`Queries & Mutations`}</h3>
                         <h4>{t`Choose query or mutation you wish to manage.`}</h4>
                         <QueryMutationFieldsList
@@ -93,7 +93,7 @@ class Scopes extends React.Component {
                             }}
                         />
                     </Grid.Col>
-                    <Grid.Col md={9} className={css.scope}>
+                    <Grid.Col md={8} className={css.scope}>
                         <h3>{t`Scope`}</h3>
                         <h4
                         >{t`Choose fields that will be exposed. Use SHIFT + click to select many fields at once.`}</h4>
