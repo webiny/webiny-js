@@ -1,5 +1,16 @@
 import { User, Role, RoleGroup, Permission } from "webiny-api-security";
-import { managePermissions, manageUsers, anonymous } from "./scopes";
+import {
+    anonymous,
+    managePermissions,
+    manageUsers,
+    manageRoles,
+    manageRoleGroups,
+    manageCmsCategories,
+    manageCmsPages,
+    manageCmsMenus,
+    manageCmsRedirects,
+    manageCmsWidgets
+} from "./scopes";
 
 export default [
     () => {
@@ -23,6 +34,48 @@ export default [
                     slug: "manage-permissions",
                     description: "Manage system permissions.",
                     scope: managePermissions
+                },
+                {
+                    name: "Manage roles",
+                    slug: "manage-roles",
+                    description: "Manage system roles.",
+                    scope: manageRoles
+                },
+                {
+                    name: "Manage role groups",
+                    slug: "manage-role-groups",
+                    description: "Manage system role groups.",
+                    scope: manageRoleGroups
+                },
+                {
+                    name: "Manage CMS Categories",
+                    slug: "manage-cms-categories",
+                    description: "Manage CMS categories.",
+                    scope: manageCmsCategories
+                },
+                {
+                    name: "Manage CMS Pages",
+                    slug: "manage-cms-pages",
+                    description: "Manage CMS pages.",
+                    scope: manageCmsPages
+                },
+                {
+                    name: "Manage CMS Menus",
+                    slug: "manage-cms-menus",
+                    description: "Manage CMS menus.",
+                    scope: manageCmsMenus
+                },
+                {
+                    name: "Manage CMS Redirects",
+                    slug: "manage-cms-redirects",
+                    description: "Manage CMS redirects.",
+                    scope: manageCmsRedirects
+                },
+                {
+                    name: "Manage CMS Widgets",
+                    slug: "manage-cms-widgets",
+                    description: "Manage CMS widgets.",
+                    scope: manageCmsWidgets
                 }
             ]
         };
@@ -32,12 +85,26 @@ export default [
             entity: Role,
             data: [
                 {
-                    name: "Administrator",
-                    slug: "administrator",
-                    description: "Administrator account",
+                    name: "Security",
+                    slug: "security",
+                    description: "Security Role",
                     permissions: [
                         await Permission.findOne({ query: { slug: "manage-users" } }),
-                        await Permission.findOne({ query: { slug: "manage-permissions" } })
+                        await Permission.findOne({ query: { slug: "manage-permissions" } }),
+                        await Permission.findOne({ query: { slug: "manage-roles" } }),
+                        await Permission.findOne({ query: { slug: "manage-role-groups" } })
+                    ]
+                },
+                {
+                    name: "CMS",
+                    slug: "cms",
+                    description: "CMS Role",
+                    permissions: [
+                        await Permission.findOne({ query: { slug: "manage-cms-pages" } }),
+                        await Permission.findOne({ query: { slug: "manage-cms-menus" } }),
+                        await Permission.findOne({ query: { slug: "manage-cms-categories" } }),
+                        await Permission.findOne({ query: { slug: "manage-cms-redirects" } }),
+                        await Permission.findOne({ query: { slug: "manage-cms-widgets" } })
                     ]
                 }
             ]
@@ -51,7 +118,7 @@ export default [
                     name: "Administrators",
                     slug: "administrators",
                     description: "Administrator group",
-                    roles: [await Role.findOne({ query: { slug: "administrator" } })]
+                    roles: [await Role.findOne({ query: { slug: "security" } })]
                 }
             ]
         };
@@ -65,7 +132,8 @@ export default [
                     password: "12345678",
                     firstName: "Fitzgerald",
                     lastName: "Fields",
-                    roleGroups: [await RoleGroup.findOne({ query: { slug: "administrators" } })]
+                    roleGroups: [await RoleGroup.findOne({ query: { slug: "administrators" } })],
+                    roles: [await Role.findOne({ query: { slug: "cms" } })]
                 },
                 {
                     email: "user2@webiny.com",
@@ -93,7 +161,7 @@ export default [
                     password: "pass5",
                     firstName: "Clarke",
                     lastName: "Fischer",
-                    roles: [await Role.findOne({ query: { slug: "administrator" } })]
+                    roles: [await Role.findOne({ query: { slug: "security" } })]
                 },
                 {
                     email: "Suspendisse.sed@sollicitudin.ca",
