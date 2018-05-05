@@ -1,5 +1,6 @@
 export default {
     getIdentity: true,
+    updateIdentity: true,
     loginSecurityUser: {
         token: true,
         identity: {

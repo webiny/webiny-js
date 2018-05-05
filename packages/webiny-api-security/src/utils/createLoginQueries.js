@@ -60,6 +60,10 @@ export default (app, config, schema) => {
             data: { type: new GraphQLNonNull(GraphQLJSON) }
         },
         async resolve(root, args, context) {
+            if (!context.identity) {
+                throw Error("Identity not found.");
+            }
+
             try {
                 await context.identity.populate(args.data).save();
             } catch (e) {
