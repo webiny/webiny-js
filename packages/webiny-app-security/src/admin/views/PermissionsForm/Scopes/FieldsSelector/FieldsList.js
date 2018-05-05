@@ -1,8 +1,9 @@
 import React from "react";
 import classNames from "classnames";
 import css from "./FieldsList.scss";
-import { createComponent } from "webiny-app";
+import { createComponent, i18n } from "webiny-app";
 import _ from "lodash";
+const t = i18n.namespace("Security.PermissionsForm.Scopes.FieldsSelector.FieldsList");
 
 class FieldsList extends React.Component {
     constructor() {
@@ -24,6 +25,9 @@ class FieldsList extends React.Component {
         const returnType = this.getType(fieldReturnType);
 
         if (!returnType || !returnType.fields) {
+            if (!initialPath.includes(".")) {
+                return <div className={css.noFieldsMessage}>{t`No fields to show.`}</div>;
+            }
             return null;
         }
 
