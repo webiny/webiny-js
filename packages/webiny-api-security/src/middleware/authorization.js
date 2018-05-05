@@ -27,6 +27,12 @@ export default () => {
             }
         }
 
+        if (
+            _.get(params.graphql, "documentAST.definitions.0.name.value") === "IntrospectionQuery"
+        ) {
+            return next();
+        }
+
         for (let i = 0; i < params.graphql.documentAST.definitions.length; i++) {
             let operationDefinition = params.graphql.documentAST.definitions[i];
 
@@ -34,6 +40,7 @@ export default () => {
                 let selection = operationDefinition.selectionSet.selections[j];
                 if (selection.kind === "Field") {
                     const fieldName = selection.name.value;
+
                     const fieldScopes = identityScope[fieldName] || [];
 
                     let hasAccess = false;
@@ -48,10 +55,8 @@ export default () => {
                         throw Error(`Not authorized to access "${fieldName}" operation.`);
                     }
 
-                    if (fieldName === "listSecurityPermissions") {
-                        if (selection.selectionSet) {
-                            applyScope(selection.selectionSet, fieldScopes);
-                        }
+                    if (selection.selectionSet) {
+                        checkScope(selection.selectionSet, fieldScopes);
                     }
                 }
             }
@@ -61,24 +66,30 @@ export default () => {
     };
 };
 
-const applyScope = (selectionSet, scopesList, parentFields = "") => {
+const checkScope = (selectionSet, scopesList, parentFields = "") => {
     selectionSet.selections.forEach(selection => {
         if (selection.kind === "Field") {
             const fieldName = selection.name.value;
 
-            // let hasAccess = false;
+            let hasAccess = fieldName === "__typename";
+            if (hasAccess) {
+                return true;
+            }
+
+            const fullPath = parentFields ? `${parentFields}.${fieldName}` : fieldName;
             scopesList.forEach(scope => {
-                const fullPath = parentFields ? `${parentFields}.${fieldName}` : fieldName;
                 if (_.get(scope, fullPath)) {
-                    // hasAccess = true;
+                    hasAccess = true;
                     if (selection.selectionSet) {
-                        applyScope(selection.selectionSet, scopesList, fullPath);
+                        checkScope(selection.selectionSet, scopesList, fullPath);
                     }
                     return false;
                 }
-
-                // TODO: remove keys.
             });
+
+            if (!hasAccess) {
+                throw Error(`Not authorized to access "${fullPath}" field.`);
+            }
         }
     });
 };
