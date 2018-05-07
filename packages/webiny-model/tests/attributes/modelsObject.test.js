@@ -55,7 +55,7 @@ describe("attribute models test", function() {
         throw Error(`Error should've been thrown.`);
     });
 
-    it("should fail - attributes should accept object with models as values", async () => {
+    /*  it("should fail - attributes should accept object with models as values", async () => {
         model.attribute1 = new Model1();
         assert.instanceOf(model.attribute1, Model1);
 
@@ -71,7 +71,7 @@ describe("attribute models test", function() {
         }
 
         throw Error("Error should've been thrown.");
-    });
+    });*/
 
     it("should pass - empty objects set", async () => {
         model.attribute1 = {};
@@ -79,7 +79,7 @@ describe("attribute models test", function() {
         await model.validate();
     });
 
-    it("should fail - object with empty plain objects as values set - nested validation must be triggered", async () => {
+    /*it("should fail - object with empty plain objects as values set - nested validation must be triggered", async () => {
         model.attribute1 = { first: {}, second: {} };
         model.attribute2 = { first: {}, second: {}, third: {} };
         try {
@@ -114,7 +114,7 @@ describe("attribute models test", function() {
             return;
         }
         throw Error("Error should've been thrown.");
-    });
+    });*/
 
     it("should pass - valid data sent", async () => {
         model.attribute1 = {
