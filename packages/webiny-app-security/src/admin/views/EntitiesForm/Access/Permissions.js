@@ -35,7 +35,7 @@ class Permissions extends React.Component {
 
     toggleBaseOperation(operation) {
         const current = this.props.classesRoles.current;
-        const modelPath = current.modelPath + "." + operation;
+        const modelPath = current.modelPath + ".operations." + operation;
 
         console.log(modelPath);
         this.props.form.setState(state => {
@@ -61,28 +61,28 @@ class Permissions extends React.Component {
                     <div className="row">
                         <div className="col-md-12">
                             <ToggleAccessButton
-                                value={_.get(this.props.model, `${modelPath}.create`)}
+                                value={_.get(this.props.model, `${modelPath}.operations.create`)}
                                 label={t`C`}
                                 onClick={() => {
                                     this.toggleBaseOperation("create");
                                 }}
                             />
                             <ToggleAccessButton
-                                value={_.get(this.props.model, `${modelPath}.read`)}
+                                value={_.get(this.props.model, `${modelPath}.operations.read`)}
                                 label={t`R`}
                                 onClick={() => {
                                     this.toggleBaseOperation("read");
                                 }}
                             />
                             <ToggleAccessButton
-                                value={_.get(this.props.model, `${modelPath}.update`)}
+                                value={_.get(this.props.model, `${modelPath}.operations.update`)}
                                 label={t`U`}
                                 onClick={() => {
                                     this.toggleBaseOperation("update");
                                 }}
                             />
                             <ToggleAccessButton
-                                value={_.get(this.props.model, `${modelPath}.delete`)}
+                                value={_.get(this.props.model, `${modelPath}.operations.delete`)}
                                 label={t`D`}
                                 onClick={() => {
                                     this.toggleBaseOperation("delete");

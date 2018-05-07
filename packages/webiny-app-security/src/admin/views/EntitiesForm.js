@@ -22,10 +22,40 @@ class EntitiesForm extends React.Component {
                 <FormData
                     entity="EntityAccess"
                     withRouter
-                    fields="group { methods attributes } owner { methods attributes } other { methods attributes } roles"
+                    fields={`group {
+                              operations {
+                                read
+                                create
+                                update
+                                delete
+                              }
+                              methods
+                              attributes
+                            }
+                            other {
+                              operations {
+                                create
+                                delete
+                                update
+                                read
+                              }
+                              methods
+                              attributes
+                            }
+                            owner {
+                              operations {
+                                create
+                                delete
+                                update
+                                read
+                              }
+                              methods
+                              attributes
+                            }
+                            roles`}
                     onSubmitSuccess="Entities.List"
                     onCancel="Entities.List"
-                    defaultModel={{ scope: {} }}
+                    defaultModel={{ id: app.router.getParams("id") }}
                     onSuccessMessage={({ model }) => {
                         return (
                             <span>
