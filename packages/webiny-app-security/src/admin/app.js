@@ -15,9 +15,8 @@ const includeManager = app => {
     app.services.get("menu").add(
         <Menu label={t`Security`} icon="user-secret">
             <Menu label={t`User Management`} role={securityManageUsers}>
-                <Menu label={t`Permissions`} route="Permissions.List" order={1} />
+                <Menu label={t`Entities`} route="Entities.List" order={1} />
                 <Menu label={t`Roles`} route="Roles.List" order={2} />
-                <Menu label={t`Role Groups`} route="RoleGroups.List" order={3} />
                 <Menu label={t`Users`} route="Users.List" order={4} />
             </Menu>
         </Menu>
@@ -72,50 +71,26 @@ const includeManager = app => {
     });
 
     app.router.addRoute({
-        name: "RoleGroups.Create",
-        path: "/role-groups/new",
-        component: () => import("./views/RoleGroupsForm").then(m => m.default),
-        title: "Security - Create Role Group",
+        name: "Entities.Create",
+        path: "/entities/new",
+        component: () => import("./views/EntitiesForm").then(m => m.default),
+        title: "Security - Create Entity",
         role: securityManageUsers
     });
 
     app.router.addRoute({
-        name: "RoleGroups.Edit",
-        path: "/role-groups/:id",
-        component: () => import("./views/RoleGroupsForm").then(m => m.default),
-        title: "Security - Edit Role Group",
+        name: "Entities.Edit",
+        path: "/entities/:id",
+        component: () => import("./views/EntitiesForm").then(m => m.default),
+        title: "Security - Edit Entity",
         role: securityManageUsers
     });
 
     app.router.addRoute({
-        name: "RoleGroups.List",
-        path: "/role-groups",
-        component: () => import("./views/RoleGroupsList").then(m => m.default),
-        title: "Security - Role Groups",
-        role: securityManageUsers
-    });
-
-    app.router.addRoute({
-        name: "Permissions.Create",
-        path: "/permissions/new",
-        component: () => import("./views/PermissionsForm").then(m => m.default),
-        title: "Security - Create Permission",
-        role: securityManageUsers
-    });
-
-    app.router.addRoute({
-        name: "Permissions.Edit",
-        path: "/permissions/:id",
-        component: () => import("./views/PermissionsForm").then(m => m.default),
-        title: "Security - Edit Permission",
-        role: securityManageUsers
-    });
-
-    app.router.addRoute({
-        name: "Permissions.List",
-        path: "/permissions",
-        component: () => import("./views/PermissionsList").then(m => m.default),
-        title: "Security - Permissions",
+        name: "Entities.List",
+        path: "/entities",
+        component: () => import("./views/EntitiesList").then(m => m.default),
+        title: "Security - Entities",
         role: securityManageUsers
     });
 };

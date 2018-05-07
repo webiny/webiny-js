@@ -1,46 +1,48 @@
 import React from "react";
+import Scopes from "./EntitiesForm/Scopes";
+
 import { app, i18n, createComponent } from "webiny-app";
+const t = i18n.namespace("Security.EntitiesForm");
 
-const t = i18n.namespace("Security.RoleGroupsForm");
-
-class RoleGroupsForm extends React.Component {
-    constructor() {
-        super();
-        this.state = { searchQuery: {} };
-    }
-
+class EntitiesForm extends React.Component {
     render() {
         const {
             AdminLayout,
             Form,
             FormData,
             FormError,
-            OptionsData,
             Section,
             View,
             Grid,
             Input,
             Button,
-            Loader,
-            AutoCompleteList
+            Loader
         } = this.props.modules;
 
+
+
+
         return (
+
             <AdminLayout>
                 <FormData
-                    entity="SecurityRoleGroup"
+                    entity="SecurityEntity"
                     withRouter
-                    fields="id name slug description roles { id name }"
-                    defaultModel={{ roles: [] }}
-                    onSubmitSuccess="RoleGroups.List"
-                    onCancel="RoleGroups.List"
-                    onSuccessMessage={({ model }) => (
-                        <span>
-                            {t`Role group {group} was saved successfully!`({ group: model.name })}
-                        </span>
-                    )}
+                    fields="id name slug description scope createdOn"
+                    onSubmitSuccess="Entities.List"
+                    onCancel="Entities.List"
+                    defaultModel={{ scope: {} }}
+                    onSuccessMessage={({ model }) => {
+                        return (
+                            <span>
+                                {t`Entity {entity} was saved successfully!`({
+                                    entity: <strong>{model.name}</strong>
+                                })}
+                            </span>
+                        );
+                    }}
                 >
-                    {({ model, onSubmit, error, invalidFields, loading }) => (
+                    {({ model, onSubmit, error, loading, invalidFields }) => (
                         <Form model={model} onSubmit={onSubmit} invalidFields={invalidFields}>
                             {({ model, form, Bind }) => {
                                 return (
@@ -48,8 +50,8 @@ class RoleGroupsForm extends React.Component {
                                         <View.Header
                                             title={
                                                 model.id
-                                                    ? t`Security - Edit Role Group`
-                                                    : t`Security - Create Role Group`
+                                                    ? t`Security - Edit entity`
+                                                    : t`Security - Create entity`
                                             }
                                         />
                                         {error && (
@@ -91,33 +93,10 @@ class RoleGroupsForm extends React.Component {
                                                     </Bind>
                                                 </Grid.Col>
                                             </Grid.Row>
+                                            <br />
                                             <Grid.Row>
                                                 <Grid.Col all={12}>
-                                                    <OptionsData
-                                                        entity="SecurityRole"
-                                                        fields="id name"
-                                                        labelField="name"
-                                                        perPage={10}
-                                                        search={{
-                                                            fields: ["name"],
-                                                            query: this.state.searchQuery
-                                                        }}
-                                                    >
-                                                        {({ options }) => (
-                                                            <Bind>
-                                                                <AutoCompleteList
-                                                                    options={options}
-                                                                    label={t`Roles`}
-                                                                    name="roles"
-                                                                    onSearch={query => {
-                                                                        this.setState({
-                                                                            searchQuery: query
-                                                                        });
-                                                                    }}
-                                                                />
-                                                            </Bind>
-                                                        )}
-                                                    </OptionsData>
+                                                    <Scopes model={model} form={form} />
                                                 </Grid.Col>
                                             </Grid.Row>
                                         </View.Body>
@@ -125,14 +104,14 @@ class RoleGroupsForm extends React.Component {
                                             <Button
                                                 type="default"
                                                 onClick={() =>
-                                                    app.router.goToRoute("RoleGroups.List")
+                                                    app.router.goToRoute("Entities.List")
                                                 }
                                                 label={t`Go back`}
                                             />
                                             <Button
                                                 type="primary"
                                                 onClick={form.submit}
-                                                label={t`Save role group`}
+                                                label={t`Save entity`}
                                                 align="right"
                                             />
                                         </View.Footer>
@@ -147,20 +126,17 @@ class RoleGroupsForm extends React.Component {
     }
 }
 
-export default createComponent(RoleGroupsForm, {
+export default createComponent(EntitiesForm, {
     modules: [
+        { AdminLayout: "Admin.Layout" },
         "Form",
         "FormData",
-        "OptionsData",
-        "View",
-        "Input",
-        "AutoCompleteList",
-        "Button",
-        "Grid",
+        "FormError",
         "Section",
-        "Loader",
-        {
-            AdminLayout: "Admin.Layout"
-        }
+        "View",
+        "Grid",
+        "Input",
+        "Button",
+        "Loader"
     ]
 });

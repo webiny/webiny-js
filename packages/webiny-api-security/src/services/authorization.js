@@ -1,51 +1,32 @@
 // @flow
-import type { IAuthorization, IAuthorizable } from "../../types";
-import type { ApiMethod } from "webiny-api";
-import AuthorizationError from "./authorizationError";
+import type { IAuthorization } from "../../types";
+import { app } from "webiny-api";
 
 class Authorization implements IAuthorization {
-    /**
-     * Checks whether user can execute an API method.
-     * @param {ApiMethod} apiMethod
-     * @param {IAuthorizable} authorizable
-     * @returns {Promise<boolean>}
-     */
-    async canExecute(apiMethod: ApiMethod, authorizable: IAuthorizable): Promise<boolean> {
-        if (apiMethod.isPublic()) {
-            return true;
-        }
+    getEntityClasses() {
+        return app.entities.getEntityClasses();
+    }
 
-        const endpointClassId = apiMethod.getEndpoint().constructor.classId;
-        const method = apiMethod.getName();
+    generateEntitiesAttributesList() {
+        const classes = this.getEntityClasses();
+        const output = [];
 
-        const authorizationError = new AuthorizationError(
-            `Not authorized to execute ${method} on ${endpointClassId}`,
-            AuthorizationError.NOT_AUTHORIZED
-        );
+        classes.forEach(Entity => {
+            const entity = new Entity();
+            output.push({
+                name: entity.getClassName(),
+                id: entity.classId,
+                attributes: Object.keys(entity.getAttributes()).map(key => {
+                    const attribute = entity.getAttribute(key);
+                    return {
+                        name: attribute.getName(),
+                        class: typeof attribute
+                    };
+                })
+            });
+        });
 
-        if (!authorizable) {
-            throw authorizationError;
-        }
-
-        const roles = await authorizable.getRoles();
-        for (let i = 0; i < roles.length; i++) {
-            const permissions = await roles[i].permissions;
-            for (let j = 0; j < permissions.length; j++) {
-                const { rules } = permissions[j];
-                for (let k = 0; k < rules.length; k++) {
-                    const rule = rules[k];
-                    if (rule.classId === endpointClassId) {
-                        for (let l = 0; l < rule.methods.length; l++) {
-                            if (rule.methods[l].method === method) {
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        throw authorizationError;
+        return output;
     }
 }
 

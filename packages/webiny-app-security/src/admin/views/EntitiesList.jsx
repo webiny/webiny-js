@@ -1,11 +1,11 @@
 import React, { Fragment } from "react";
 
-// import ExportPermissionModal from "./Modal/ExportModal";
-// import ImportPermissionModal from "./Modal/ImportModal";
+// import ExportEntityModal from "./Modal/ExportModal";
+// import ImportEntityModal from "./Modal/ImportModal";
 import { i18n, createComponent } from "webiny-app";
-const t = i18n.namespace("Security.PermissionsList");
+const t = i18n.namespace("Security.EntitiesList");
 
-class PermissionsList extends React.Component {
+class EntitiesList extends React.Component {
     render() {
         const {
             Link,
@@ -28,22 +28,22 @@ class PermissionsList extends React.Component {
         return (
             <AdminLayout>
                 <ViewSwitcher>
-                    <ViewSwitcher.View name="permissionsList" defaultView>
+                    <ViewSwitcher.View name="entitiesList" defaultView>
                         {({ showView }) => (
                             <View.List>
                                 <View.Header
-                                    title={t`Security - Permissions`}
+                                    title={t`Security - Entities`}
                                     description={
                                         <span>
-                                            {t`Permissions define what a user is allowed to do with API endpoints.
-                                                    Define permissions and then group them into {rolesLink}.`(
+                                            {t`Entities define what a user is allowed to do with API endpoints.
+                                                    Define entities and then group them into {rolesLink}.`(
                                                 { rolesLink }
                                             )}
                                         </span>
                                     }
                                 >
                                     <ButtonGroup>
-                                        <Link type="primary" route="Permissions.Create">
+                                        <Link type="primary" route="Entities.Create">
                                             <Icon icon="plus-circle" />
                                             {t`Create`}
                                         </Link>
@@ -58,7 +58,7 @@ class PermissionsList extends React.Component {
                                 <View.Body>
                                     <ListData
                                         withRouter
-                                        entity="SecurityPermission"
+                                        entity="SecurityEntity"
                                         fields="id name slug description createdOn"
                                         search={{ fields: ["name", "slug"] }}
                                     >
@@ -90,7 +90,7 @@ class PermissionsList extends React.Component {
                                                                 {({ data }) => (
                                                                     <span>
                                                                         <Link
-                                                                            route="Permissions.Edit"
+                                                                            route="Entities.Edit"
                                                                             params={{ id: data.id }}
                                                                         >
                                                                             <strong>
@@ -108,7 +108,7 @@ class PermissionsList extends React.Component {
                                                                 sort="slug"
                                                             />
                                                             <Table.Actions>
-                                                                <Table.EditAction route="Permissions.Edit" />
+                                                                <Table.EditAction route="Entities.Edit" />
                                                                 <Table.Action
                                                                     label={t`Export`}
                                                                     icon="download"
@@ -132,20 +132,20 @@ class PermissionsList extends React.Component {
 
                     {/*         <ViewSwitcher.View name="exportModal" modal>
                         {({ data: { data } }) => (
-                            <ExportPermissionModal
+                            <ExportEntityModal
                                 data={data}
-                                api="/security/permissions"
-                                fields="name,slug,description,permissions"
-                                label={t`Permission`}
+                                api="/security/entities"
+                                fields="name,slug,description,entities"
+                                label={t`Entity`}
                             />
                         )}
                     </ViewSwitcher.View>
 
                     <ViewSwitcher.View name="importModal" modal>
                         {() => (
-                            <ImportPermissionModal
-                                api="/security/permissions"
-                                label={t`Permission`}
+                            <ImportEntityModal
+                                api="/security/entities"
+                                label={t`Entity`}
                                 onImported={() => this.list.loadData()}
                             />
                         )}
@@ -156,7 +156,7 @@ class PermissionsList extends React.Component {
     }
 }
 
-export default createComponent(PermissionsList, {
+export default createComponent(EntitiesList, {
     modules: [
         { AdminLayout: "Admin.Layout" },
         "ViewSwitcher",
