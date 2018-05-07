@@ -1,5 +1,4 @@
 /* eslint-disable */
-const Visualizer = require("webpack-visualizer-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { spa } = require("webiny-scripts");
 
@@ -25,8 +24,7 @@ module.exports = {
                 template: __dirname + "/src/Admin/index.html",
                 chunks: ["admin"]
             }),
-            new SpaConfigPlugin(),
-            new Visualizer({ filename: "app-stats.html" })
+            new SpaConfigPlugin()
         ];
 
         return config;

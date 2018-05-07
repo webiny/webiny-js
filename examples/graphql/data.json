@@ -1,0 +1,5 @@
+{
+  "resource": "/",
+  "path": "/graphql",
+  "httpMethod": "POST"
+}

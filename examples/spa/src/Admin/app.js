@@ -5,6 +5,7 @@ import { app as securityApp, authenticationMiddleware } from "webiny-app-securit
 import { app as securityAdminApp } from "webiny-app-security/lib/admin";
 import { app as cmsAdminApp } from "webiny-app-cms/lib/admin";
 import userIdentity from "./userIdentity";
+import apiConfig from "./../apiConfig";
 import { hot } from "react-hot-loader";
 
 const t = i18n.namespace(`AdminApp`);
@@ -87,19 +88,7 @@ if (!app.initialized) {
     });
 
     app.configure(() => {
-        app.graphql.setConfig({
-            uri: "http://localhost:9000/graphql",
-            defaultOptions: {
-                watchQuery: {
-                    fetchPolicy: "network-only",
-                    errorPolicy: "all"
-                },
-                query: {
-                    fetchPolicy: "network-only",
-                    errorPolicy: "all"
-                }
-            }
-        });
+        return apiConfig(app);
     });
 
     app.router.configure({

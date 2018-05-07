@@ -2,22 +2,11 @@ import React from "react";
 import { app, resolveMiddleware, renderMiddleware, Router } from "webiny-app";
 import { hot } from "react-hot-loader";
 import { app as cmsApp, routerMiddleware as cmsMiddleware } from "webiny-app-cms";
+import apiConfig from "./../apiConfig";
 
 if (!app.initialized) {
     app.configure(() => {
-        app.graphql.setConfig({
-            uri: "http://localhost:9000/graphql",
-            defaultOptions: {
-                watchQuery: {
-                    fetchPolicy: "network-only",
-                    errorPolicy: "all"
-                },
-                query: {
-                    fetchPolicy: "network-only",
-                    errorPolicy: "all"
-                }
-            }
-        });
+        return apiConfig(app);
     });
 
     app.use(cmsApp());

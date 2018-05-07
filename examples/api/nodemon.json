@@ -1,8 +1,0 @@
-{
-  "ignoreRoot": [
-    ".git",
-    ".idea",
-    "setup",
-    "node_modules"
-  ]
-}

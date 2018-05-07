@@ -10,7 +10,7 @@ export default () => {
      * @param {Api} params.app
      * @param next
      */
-    return async (params, next: Function) => {
+    return async (params: Object, next: Function) => {
         const identity = params.req.identity;
 
         let identityScope = {};
