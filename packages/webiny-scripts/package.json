@@ -1,5 +1,6 @@
 {
   "name": "webiny-scripts",
+  "version": "0.0.0-semantically-released",
   "bin": "bin/webiny-scripts.js",
   "main": "lib/index.js",
   "description": "A collection of utility scripts to use with client apps",
@@ -7,7 +8,10 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "version": "0.0.0-semantically-released",
+  "files": [
+    "bin/",
+    "lib/"
+  ],
   "license": "MIT",
   "dependencies": {
     "babel-core": "^6.26.0",

@@ -7,6 +7,10 @@
     "Sven Al Hamad <sven@webiny.com>",
     "Adrian Smijulj <adrian@webiny.com>"
   ],
+  "files": [
+    "lib/",
+    "types.js"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"

@@ -6,6 +6,9 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
+  "files": [
+    "lib/"
+  ],
   "author": "Pavel Denisjuk",
   "license": "MIT",
   "dependencies": {

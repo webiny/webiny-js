@@ -11,6 +11,10 @@
     "Sven Al Hamad <sven@webiny.com>",
     "Adrian Smijulj <adrian@webiny.com>"
   ],
+  "files": [
+    "lib/",
+    "flow-typed/"
+  ],
   "license": "MIT",
   "dependencies": {
     "debug": "^3.1.0",

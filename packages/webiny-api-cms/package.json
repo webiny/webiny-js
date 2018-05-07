@@ -11,6 +11,9 @@
   "dependencies": {
     "webiny-api": "0.0.0-semantically-released"
   },
+  "files": [
+    "lib/"
+  ],
   "devDependencies": {
     "babel-cli": "^6.26.0"
   },
