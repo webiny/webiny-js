@@ -21,6 +21,7 @@
     "babel-runtime": "^6.26.0",
     "bcryptjs": "^2.4.3",
     "date-fns": "^1.29.0",
+    "invariant": "^2.2.4",
     "jsonwebtoken": "^8.1.0",
     "lodash": "^4.17.4",
     "md5": "^2.2.1",

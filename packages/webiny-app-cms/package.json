@@ -12,6 +12,7 @@
   "author": "Pavel Denisjuk",
   "license": "MIT",
   "dependencies": {
+    "invariant": "^2.2.4",
     "react-infinite-scroller": "^1.1.4",
     "shortid": "^2.2.8",
     "slugify": "^1.2.9",
