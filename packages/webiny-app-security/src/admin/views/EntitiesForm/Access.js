@@ -1,75 +1,86 @@
 import React from "react";
-import css from "./Scopes.scss";
+import css from "./Access.scss";
 import _ from "lodash";
-import QueryMutationFieldsList from "./Scopes/QueryMutationFieldsList";
-import FieldsSelector from "./Scopes/FieldsSelector";
+import ClassesLists from "./Access/ClassesLists";
+import Permissions from "./Access/Permissions";
 import { createComponent, i18n } from "webiny-app";
-import fetch from "isomorphic-fetch";
-import query from "./Scopes/introspectionQuery";
+import { app } from "webiny-app";
+import gql from "graphql-tag";
 
 const t = i18n.namespace("Security.PermissionsForm.Scopes");
 
-class Scopes extends React.Component {
-    constructor(props) {
-        super(props);
+class Access extends React.Component {
+    constructor() {
+        super();
         this.state = {
-            schema: null,
-            queriesAndMutations: {
-                list: null,
-                selected: null
+            classesRoles: {
+                roles: [],
+                classes: [
+                    { id: "owner", name: t`Owner`, description: t`Permissions of owners.` },
+                    {
+                        id: "group",
+                        name: t`Group`,
+                        description: t`Users that are in the same group.`
+                    },
+                    { id: "other", name: t`Other`, description: t`Other users.` }
+                ],
+                current: null
             }
         };
+    }
 
-        fetch("http://localhost:9000/graphql", {
-            method: "post",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query })
-        }).then(async response => {
-            const data = await response.json();
-            const schema = data.data.__schema;
-            let filteredQueriesAndMutations = [];
-            filteredQueriesAndMutations = filteredQueriesAndMutations.concat(
-                _.find(schema.types, { name: "Query" }).fields
-            );
-            filteredQueriesAndMutations = filteredQueriesAndMutations.concat(
-                _.find(schema.types, { name: "Mutation" }).fields
-            );
-
-            this.setState({
-                schema,
-                queriesAndMutations: {
-                    list: filteredQueriesAndMutations,
-                    selected: filteredQueriesAndMutations[0]
+    componentWillMount() {
+        const query = gql`
+            {
+                listSecurityRoles {
+                    list {
+                        id
+                        name
+                        description
+                    }
                 }
+            }
+        `;
+
+        app.graphql.query({ query }).then(({ data }) => {
+            this.setState(state => {
+                state.classesRoles.roles = data.listSecurityRoles.list;
+                return state;
             });
         });
     }
 
     render() {
-        if (!this.state.schema) {
-            return null;
-        }
-
         const { Grid } = this.props.modules;
 
         return (
-            <div className={css.scopes}>
+            <div className={css.access}>
                 <Grid.Row>
                     <Grid.Col md={3} className={css.sidebar}>
-                        <h3>{t`Queries & Mutations`}</h3>
-                        <h4>{t`Choose query or mutation you wish to manage.`}</h4>
-                        <QueryMutationFieldsList
+                        <h3>{t`Class`}</h3>
+                        <h4>{t`Choose class for which you wish to modify permissions.`}</h4>
+                        <ClassesLists
                             model={this.props.model}
-                            schema={this.state.schema}
-                            queriesAndMutations={this.state.queriesAndMutations.list}
-                            selected={this.state.queriesAndMutations.selected}
-                            onSelect={selectedQueryMutationField => {
+                            classesRoles={this.state.classesRoles}
+                            onSelect={(classRole, type) => {
                                 this.setState(state => {
-                                    state.queriesAndMutations.selected = selectedQueryMutationField;
+                                    const current = {
+                                        type,
+                                        ...classRole
+                                    };
+
+                                    if (current.type === "role") {
+                                        current.modelPath = `roles.${current.id}`;
+                                    } else {
+                                        current.modelPath = `${current.id}`;
+                                    }
+
+                                    state.classesRoles.current = current;
                                     return state;
                                 });
                             }}
                             onToggle={selectedQueryMutationField => {
+                                // TODO: ovdje ostaje ?
                                 this.props.form.setState(state => {
                                     if (
                                         _.get(
@@ -94,14 +105,13 @@ class Scopes extends React.Component {
                         />
                     </Grid.Col>
                     <Grid.Col md={9} className={css.scope}>
-                        <h3>{t`Scope`}</h3>
-                        <h4
-                        >{t`Choose fields that will be exposed. Use SHIFT + click to select many fields at once.`}</h4>
+                        <h3>{t`Permissions`}</h3>
+                        <h4>{t`Modify permissions.`}</h4>
 
-                        <FieldsSelector
+                        <Permissions
                             model={this.props.model}
-                            schema={this.state.schema}
-                            selectedQueryMutationField={this.state.queriesAndMutations.selected}
+                            form={this.props.form}
+                            classesRoles={this.state.classesRoles}
                             onToggle={path => {
                                 this.props.form.setState(state => {
                                     if (_.get(state.model, "scope." + path)) {
@@ -138,9 +148,9 @@ class Scopes extends React.Component {
     }
 }
 
-Scopes.defaultProps = {
+Access.defaultProps = {
     model: null,
     form: null
 };
 
-export default createComponent(Scopes, { modules: ["Grid"] });
+export default createComponent(Access, { modules: ["Grid"] });

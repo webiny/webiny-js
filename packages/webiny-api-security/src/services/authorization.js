@@ -7,7 +7,7 @@ class Authorization implements IAuthorization {
         return app.entities.getEntityClasses();
     }
 
-    generateEntitiesAttributesList() {
+    generateEntitiesList() {
         const classes = this.getEntityClasses();
         const output = [];
 

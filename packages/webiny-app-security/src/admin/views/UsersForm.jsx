@@ -38,10 +38,10 @@ class UsersForm extends React.Component {
                 <FormData
                     entity="SecurityUser"
                     withRouter
-                    fields="id firstName lastName enabled email roles { id name } roleGroups { id name }"
+                    fields="id firstName lastName enabled email roles { id name }"
                     onSubmitSuccess="Users.List"
                     onCancel="Users.List"
-                    defaultModel={{ roleGroups: [], roles: [] }}
+                    defaultModel={{ roles: [] }}
                     onSuccessMessage={data => (
                         <span>
                             {t`User {user} was saved successfully!`({
@@ -121,40 +121,6 @@ class UsersForm extends React.Component {
                                                                                 this.setState(
                                                                                     state => {
                                                                                         state.searchQuery.role = query;
-                                                                                        return state;
-                                                                                    }
-                                                                                );
-                                                                            }}
-                                                                        />
-                                                                    </Bind>
-                                                                )}
-                                                            </OptionsData>
-                                                        </Grid.Col>
-                                                    </Grid.Row>
-
-                                                    <Grid.Row>
-                                                        <Grid.Col all={12}>
-                                                            <OptionsData
-                                                                entity="SecurityRoleGroup"
-                                                                fields="id name"
-                                                                labelField="name"
-                                                                perPage={10}
-                                                                search={{
-                                                                    fields: ["name"],
-                                                                    query: this.state.searchQuery
-                                                                        .roleGroup
-                                                                }}
-                                                            >
-                                                                {({ options }) => (
-                                                                    <Bind>
-                                                                        <AutoCompleteList
-                                                                            options={options}
-                                                                            label={t`Role Groups`}
-                                                                            name="roleGroups"
-                                                                            onSearch={query => {
-                                                                                this.setState(
-                                                                                    state => {
-                                                                                        state.searchQuery.roleGroup = query;
                                                                                         return state;
                                                                                     }
                                                                                 );

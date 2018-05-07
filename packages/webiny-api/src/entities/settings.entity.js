@@ -14,7 +14,4 @@ class Settings extends Entity {
 Settings.classId = "Settings";
 Settings.tableName = "Settings";
 
-Settings.crud.logs = false;
-Settings.crud.delete.soft = false;
-
 export default Settings;

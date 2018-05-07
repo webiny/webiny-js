@@ -1,28 +1,61 @@
-import { User, Role, RoleGroup, Permission } from "webiny-api-security";
-import { managePermissions, manageUsers, anonymous } from "./scopes";
+import { User, Role } from "webiny-api-security";
+import { Settings } from "webiny-api";
 
 export default [
     () => {
         return {
-            entity: Permission,
+            entity: Settings,
             data: [
                 {
-                    name: "Anonymous",
-                    slug: "anonymous",
-                    description: "Anonymous",
-                    scope: anonymous
+                    key: "webiny-api-security",
+                    data: {
+                        entities: [
+                            {
+                                group: {
+                                    methods: { read: true },
+                                    attributes: {
+                                        email: { read: true, write: false },
+                                        firstName: { read: true, write: true }
+                                    }
+                                },
+                                other: {
+                                    methods: { read: true },
+                                    attributes: {
+                                        email: { read: true, write: false },
+                                        firstName: { read: true, write: true }
+                                    }
+                                },
+                                owner: {
+                                    methods: {
+                                        read: true,
+                                        create: false,
+                                        delete: false,
+                                        update: true,
+                                        sendEmail: true,
+                                        disableAccount: true
+                                    },
+                                    attributes: {
+                                        email: { read: true, write: false },
+                                        firstName: { read: true, write: true }
+                                    }
+                                },
+                                roles: {
+                                    dsa2135fdfdasddsadsasd: {
+                                        methods: { read: true },
+                                        attributes: {
+                                            email: { read: true, write: false },
+                                            firstName: { read: true, write: true }
+                                        }
+                                    }
+                                },
+                                classId: "SecurityUser"
+                            }
+                        ]
+                    }
                 },
                 {
-                    name: "Manage users",
-                    slug: "manage-users",
-                    description: "Manage system users",
-                    scope: manageUsers
-                },
-                {
-                    name: "Manage permissions",
-                    slug: "manage-permissions",
-                    description: "Manage system permissions.",
-                    scope: managePermissions
+                    key: "webiny-api-cms",
+                    data: {}
                 }
             ]
         };
@@ -34,24 +67,7 @@ export default [
                 {
                     name: "Administrator",
                     slug: "administrator",
-                    description: "Administrator account",
-                    permissions: [
-                        await Permission.findOne({ query: { slug: "manage-users" } }),
-                        await Permission.findOne({ query: { slug: "manage-permissions" } })
-                    ]
-                }
-            ]
-        };
-    },
-    async () => {
-        return {
-            entity: RoleGroup,
-            data: [
-                {
-                    name: "Administrators",
-                    slug: "administrators",
-                    description: "Administrator group",
-                    roles: [await Role.findOne({ query: { slug: "administrator" } })]
+                    description: "Administrator account"
                 }
             ]
         };
@@ -64,29 +80,25 @@ export default [
                     email: "user1@webiny.com",
                     password: "12345678",
                     firstName: "Fitzgerald",
-                    lastName: "Fields",
-                    roleGroups: [await RoleGroup.findOne({ query: { slug: "administrators" } })]
+                    lastName: "Fields"
                 },
                 {
                     email: "user2@webiny.com",
                     password: "12345678",
                     firstName: "Umberto",
-                    lastName: "Rodriguez",
-                    roleGroups: [await RoleGroup.findOne({ query: { slug: "administrators" } })]
+                    lastName: "Rodriguez"
                 },
                 {
                     email: "user3@webiny.com",
                     password: "12345678",
                     firstName: "Oren",
-                    lastName: "Russell",
-                    roleGroups: [await RoleGroup.findOne({ query: { slug: "administrators" } })]
+                    lastName: "Russell"
                 },
                 {
                     email: "user4@webiny.com",
                     password: "pass4",
                     firstName: "Isaac",
-                    lastName: "Fuller",
-                    roleGroups: [await RoleGroup.findOne({ query: { slug: "administrators" } })]
+                    lastName: "Fuller"
                 },
                 {
                     email: "user5@webiny.com",

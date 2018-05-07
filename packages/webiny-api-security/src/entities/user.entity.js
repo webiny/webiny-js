@@ -4,7 +4,6 @@ import Identity from "./identity.entity";
 class User extends Identity {
     constructor() {
         super();
-
         this.attr("email")
             .char()
             .setValidators("required,email")

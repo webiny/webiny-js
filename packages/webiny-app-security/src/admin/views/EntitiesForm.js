@@ -1,5 +1,5 @@
 import React from "react";
-import Scopes from "./EntitiesForm/Scopes";
+import Access from "./EntitiesForm/Access";
 
 import { app, i18n, createComponent } from "webiny-app";
 const t = i18n.namespace("Security.EntitiesForm");
@@ -11,24 +11,18 @@ class EntitiesForm extends React.Component {
             Form,
             FormData,
             FormError,
-            Section,
             View,
             Grid,
-            Input,
             Button,
             Loader
         } = this.props.modules;
 
-
-
-
         return (
-
             <AdminLayout>
                 <FormData
-                    entity="SecurityEntity"
+                    entity="EntityAccess"
                     withRouter
-                    fields="id name slug description scope createdOn"
+                    fields="group { methods attributes } owner { methods attributes } other { methods attributes } roles"
                     onSubmitSuccess="Entities.List"
                     onCancel="Entities.List"
                     defaultModel={{ scope: {} }}
@@ -44,16 +38,10 @@ class EntitiesForm extends React.Component {
                 >
                     {({ model, onSubmit, error, loading, invalidFields }) => (
                         <Form model={model} onSubmit={onSubmit} invalidFields={invalidFields}>
-                            {({ model, form, Bind }) => {
+                            {({ model, form }) => {
                                 return (
                                     <View.Form>
-                                        <View.Header
-                                            title={
-                                                model.id
-                                                    ? t`Security - Edit entity`
-                                                    : t`Security - Create entity`
-                                            }
-                                        />
+                                        <View.Header title={t`Security - Edit entity`} />
                                         {error && (
                                             <View.Error>
                                                 <FormError error={error} />
@@ -61,42 +49,9 @@ class EntitiesForm extends React.Component {
                                         )}
                                         <View.Body>
                                             {loading && <Loader />}
-                                            <Section title={t`General`} />
-                                            <Grid.Row>
-                                                <Grid.Col all={6}>
-                                                    <Bind>
-                                                        <Input
-                                                            label={t`Name`}
-                                                            name="name"
-                                                            validators="required"
-                                                        />
-                                                    </Bind>
-                                                </Grid.Col>
-                                                <Grid.Col all={6}>
-                                                    <Bind>
-                                                        <Input
-                                                            label={t`Slug`}
-                                                            name="slug"
-                                                            validators="required"
-                                                        />
-                                                    </Bind>
-                                                </Grid.Col>
-                                            </Grid.Row>
                                             <Grid.Row>
                                                 <Grid.Col all={12}>
-                                                    <Bind>
-                                                        <Input
-                                                            label={t`Description`}
-                                                            name="description"
-                                                            validators="required"
-                                                        />
-                                                    </Bind>
-                                                </Grid.Col>
-                                            </Grid.Row>
-                                            <br />
-                                            <Grid.Row>
-                                                <Grid.Col all={12}>
-                                                    <Scopes model={model} form={form} />
+                                                    <Access model={model} form={form} />
                                                 </Grid.Col>
                                             </Grid.Row>
                                         </View.Body>
@@ -132,10 +87,8 @@ export default createComponent(EntitiesForm, {
         "Form",
         "FormData",
         "FormError",
-        "Section",
         "View",
         "Grid",
-        "Input",
         "Button",
         "Loader"
     ]

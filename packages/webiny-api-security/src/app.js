@@ -1,11 +1,12 @@
 // @flow
-import { GraphQLUnionType, GraphQLObjectType, GraphQLString } from "graphql";
-import { User, Role, Permission, RoleGroup } from "./index";
+import { GraphQLUnionType } from "graphql";
+import { User, Role } from "./index";
 import AuthenticationService from "./services/authentication";
 import AuthorizationService from "./services/authorization";
 import convertToGraphQL from "./attributes/convertToGraphQL";
 import registerAttributes from "./attributes/registerAttributes";
 import createLoginQueries from "./utils/createLoginQueries";
+import createListEntitiesQueries from "./utils/createListEntitiesQueries";
 import attachAuthorization from "./utils/attachAuthorization";
 import { Entity } from "webiny-api";
 
@@ -38,26 +39,10 @@ export default (config: Object = {}) => {
             schema.addAttributeConverter(convertToGraphQL);
             schema.addEntity(User);
             schema.addEntity(Role);
-            schema.addEntity(RoleGroup);
-            schema.addEntity(Permission);
 
             // Create login queries
             createLoginQueries(app, config, schema);
-
-            schema.query["listEntitiesAttributes"] = {
-                description: "Returns a list of all registered entities and its attributes.",
-                type: new GraphQLObjectType({
-                    name: "entitiesAttributesList",
-                    fields: {
-                        list: { type: GraphQLString }
-                    }
-                }),
-                resolve() {
-                    return {
-                        list: app.services.get("authorization").generateEntitiesAttributesList()
-                    };
-                }
-            };
+            createListEntitiesQueries(app, config, schema);
         });
 
         attachAuthorization(app);
@@ -78,8 +63,6 @@ export default (config: Object = {}) => {
 
         app.entities.addEntityClass(User);
         app.entities.addEntityClass(Role);
-        app.entities.addEntityClass(RoleGroup);
-        app.entities.addEntityClass(Permission);
 
         app.entities.extend("*", (entity: Entity) => {
             // "savedBy" attribute - updated on both create and update events.

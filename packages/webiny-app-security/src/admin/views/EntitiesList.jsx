@@ -44,13 +44,13 @@ class EntitiesList extends React.Component {
                                 >
                                     <ButtonGroup>
                                         <Link type="primary" route="Entities.Create">
-                                            <Icon icon="plus-circle" />
-                                            {t`Create`}
+                                            <Icon icon="upload" />
+                                            {t`Export`}
                                         </Link>
                                         <Button
                                             type="secondary"
                                             onClick={showView("importModal")}
-                                            icon="upload"
+                                            icon="download"
                                             label={t`Import`}
                                         />
                                     </ButtonGroup>
@@ -58,8 +58,8 @@ class EntitiesList extends React.Component {
                                 <View.Body>
                                     <ListData
                                         withRouter
-                                        entity="SecurityEntity"
-                                        fields="id name slug description createdOn"
+                                        entity="Entity"
+                                        fields="id name"
                                         search={{ fields: ["name", "slug"] }}
                                     >
                                         {({ loading, ...listProps }) => (
@@ -98,25 +98,13 @@ class EntitiesList extends React.Component {
                                                                             </strong>
                                                                         </Link>
                                                                         <br />
-                                                                        {data.description}
+                                                                        {data.id}
                                                                     </span>
                                                                 )}
                                                             </Table.Field>
-                                                            <Table.Field
-                                                                name="slug"
-                                                                label={t`Slug`}
-                                                                sort="slug"
-                                                            />
                                                             <Table.Actions>
                                                                 <Table.EditAction route="Entities.Edit" />
-                                                                <Table.Action
-                                                                    label={t`Export`}
-                                                                    icon="download"
-                                                                    onClick={showView(
-                                                                        "exportModal"
-                                                                    )}
-                                                                />
-                                                                <Table.DeleteAction />
+
                                                             </Table.Actions>
                                                         </Table.Row>
                                                     </Table>

@@ -21,7 +21,6 @@ class RolesForm extends React.Component {
             Input,
             Button,
             Loader,
-            AutoCompleteList
         } = this.props.modules;
 
         return (
@@ -29,7 +28,7 @@ class RolesForm extends React.Component {
                 <FormData
                     entity="SecurityRole"
                     withRouter
-                    fields="id name slug description permissions { id name }"
+                    fields="id name slug description"
                     defaultModel={{ permissions: [] }}
                     onSubmitSuccess="Roles.List"
                     onCancel="Roles.List"
@@ -94,35 +93,6 @@ class RolesForm extends React.Component {
                                                     </Bind>
                                                 </Grid.Col>
                                             </Grid.Row>{" "}
-                                            <Grid.Row>
-                                                <Grid.Col all={12}>
-                                                    <OptionsData
-                                                        entity="SecurityPermission"
-                                                        fields="id name"
-                                                        labelField="name"
-                                                        perPage={10}
-                                                        search={{
-                                                            fields: ["name"],
-                                                            query: this.state.searchQuery
-                                                        }}
-                                                    >
-                                                        {({ options }) => (
-                                                            <Bind>
-                                                                <AutoCompleteList
-                                                                    options={options}
-                                                                    label={t`Permissions`}
-                                                                    name="permissions"
-                                                                    onSearch={query => {
-                                                                        this.setState({
-                                                                            searchQuery: query
-                                                                        });
-                                                                    }}
-                                                                />
-                                                            </Bind>
-                                                        )}
-                                                    </OptionsData>
-                                                </Grid.Col>
-                                            </Grid.Row>
                                         </View.Body>
                                         <View.Footer>
                                             <Button
@@ -160,7 +130,6 @@ export default createComponent(RolesForm, {
         "Grid",
         "Section",
         "Loader",
-        "AutoCompleteList",
         {
             AdminLayout: "Admin.Layout"
         }

@@ -12,13 +12,6 @@ gravatar
 roles {
     slug
 }
-roleGroups {
-    id
-    name
-    roles {
-        slug
-    }
-}
 `;
 
 export default {
