@@ -5,8 +5,15 @@ import { MySQLDriver } from "webiny-sql-table-mysql";
 class MySQLTable extends Table {
     constructor() {
         super();
-        this.column("id").char(24);
 
+        this.column("id").char(24);
+        this.index().primary("id");
+
+        this.setBaseColumns();
+        this.setBaseIndexes();
+    }
+
+    setBaseColumns() {
         this.column("createdOn").dateTime();
         this.column("createdBy").char(24);
         this.column("createdByClassId").varChar(100);
@@ -22,8 +29,10 @@ class MySQLTable extends Table {
         this.column("deleted")
             .tinyInt(1)
             .setDefault(0);
+    }
 
-        this.index().primary("id");
+    setBaseIndexes() {
+        return null;
     }
 }
 
