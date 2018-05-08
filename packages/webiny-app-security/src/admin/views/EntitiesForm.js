@@ -20,39 +20,9 @@ class EntitiesForm extends React.Component {
         return (
             <AdminLayout>
                 <FormData
-                    entity="EntityAccess"
+                    entity="EntityPermission"
                     withRouter
-                    fields={`group {
-                              operations {
-                                read
-                                create
-                                update
-                                delete
-                              }
-                              methods
-                              attributes
-                            }
-                            other {
-                              operations {
-                                create
-                                delete
-                                update
-                                read
-                              }
-                              methods
-                              attributes
-                            }
-                            owner {
-                              operations {
-                                create
-                                delete
-                                update
-                                read
-                              }
-                              methods
-                              attributes
-                            }
-                            roles`}
+                    fields={`owner group other roles`}
                     onSubmitSuccess="Entities.List"
                     onCancel="Entities.List"
                     defaultModel={{ id: app.router.getParams("id") }}

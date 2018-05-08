@@ -7,6 +7,15 @@ class Settings extends Entity {
         this.attr("key")
             .char()
             .setValidators("required");
+
+        this.setDataAttribute();
+    }
+
+    static load() {
+        return Settings.findOne({ query: { key: this.key } });
+    }
+
+    setDataAttribute() {
         this.attr("data").object();
     }
 }

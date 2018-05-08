@@ -1,6 +1,8 @@
 import React from "react";
 import css from "./Permissions.scss";
-import { createComponent, i18n } from "webiny-app";
+import { createComponent, i18n, app } from "webiny-app";
+import gql from "graphql-tag";
+
 import _ from "lodash";
 // import FieldsList from "./Permissions/FieldsList";
 import ToggleAccessButton from "./Permissions/ToggleAccessButton";
@@ -33,11 +35,11 @@ class Permissions extends React.Component {
             : document.attachEvent("keyup", this.setShiftUp);
     }
 
-    toggleBaseOperation(operation) {
+    toggleOperation(name) {
         const current = this.props.classesRoles.current;
-        const modelPath = current.modelPath + ".operations." + operation;
+        const modelPath = current.modelPath + ".operations." + name;
 
-        console.log(modelPath);
+        console.log(current);
         this.props.form.setState(state => {
             if (_.get(state.model, modelPath)) {
                 _.unset(state.model, modelPath);
@@ -45,6 +47,26 @@ class Permissions extends React.Component {
                 _.set(state.model, modelPath, true);
             }
             return state;
+        });
+
+        const mutation = gql`
+            mutation {
+                toggleEntityPermission(
+                    id: "${app.router.getParams("id")}"
+                    class: "${current.id}"
+                    permission: { type: "operations", name: "${name}" }
+                ) {
+                    id
+                    owner
+                    group
+                    other
+                    roles
+                }
+            }
+        `;
+
+        app.graphql.mutate({ mutation }).then(({ data }) => {
+            this.props.form.setState({ model: data.toggleEntityPermission });
         });
     }
 
@@ -64,28 +86,28 @@ class Permissions extends React.Component {
                                 value={_.get(this.props.model, `${modelPath}.operations.create`)}
                                 label={t`C`}
                                 onClick={() => {
-                                    this.toggleBaseOperation("create");
+                                    this.toggleOperation("create");
                                 }}
                             />
                             <ToggleAccessButton
                                 value={_.get(this.props.model, `${modelPath}.operations.read`)}
                                 label={t`R`}
                                 onClick={() => {
-                                    this.toggleBaseOperation("read");
+                                    this.toggleOperation("read");
                                 }}
                             />
                             <ToggleAccessButton
                                 value={_.get(this.props.model, `${modelPath}.operations.update`)}
                                 label={t`U`}
                                 onClick={() => {
-                                    this.toggleBaseOperation("update");
+                                    this.toggleOperation("update");
                                 }}
                             />
                             <ToggleAccessButton
                                 value={_.get(this.props.model, `${modelPath}.operations.delete`)}
                                 label={t`D`}
                                 onClick={() => {
-                                    this.toggleBaseOperation("delete");
+                                    this.toggleOperation("delete");
                                 }}
                             />
                         </div>
