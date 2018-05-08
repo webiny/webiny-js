@@ -1,6 +1,7 @@
 import { assert } from "chai";
 import ModelError from "./../../src/modelError";
 import { Model } from "../../../webiny-model/src";
+import complexModelsKeyValue from "./models/complexModelsKeyValue";
 
 describe("attribute models test", function() {
     class Model1 extends Model {
@@ -547,5 +548,61 @@ describe("attribute models test", function() {
         });
 
         assert.equal(newModel.someModels, "random");
+    });
+
+    it("should correctly populate complex set of models, only with keys for which attributes exist", async () => {
+        const settings = new complexModelsKeyValue.SettingsModel();
+        settings.populate({ data: complexModelsKeyValue.mock });
+
+        const settingsJSON = await settings.toStorage();
+
+        assert.deepEqual(settingsJSON.data, {
+            entities: {
+                SecurityUser: {
+                    group: {
+                        operations: {
+                            create: null,
+                            read: true,
+                            update: null,
+                            delete: null
+                        },
+                        methods: null,
+                        fields: null
+                    },
+                    owner: {
+                        operations: {
+                            create: null,
+                            read: true,
+                            update: true,
+                            delete: null
+                        },
+                        methods: null,
+                        fields: null
+                    },
+                    other: {
+                        operations: {
+                            create: true,
+                            read: null,
+                            update: null,
+                            delete: null
+                        },
+                        methods: null,
+                        fields: null
+                    },
+                    roles: {
+                        "5af06f2946e6da754304ea7a": {
+                            operations: {
+                                create: null,
+                                read: true,
+                                update: null,
+                                delete: null
+                            },
+                            methods: null,
+                            fields: null
+                        }
+                    }
+                }
+            }
+        });
     });
 });
