@@ -49,7 +49,7 @@ class ModelsAttribute extends Attribute {
 
         if (this.keyValue) {
             // Even if the value is invalid (eg. a string), we allow it here, but calling validate() will fail.
-            if (!(finalValues instanceof Object)) {
+            if (!_.isPlainObject(finalValues)) {
                 this.value.setCurrent(finalValues);
                 return;
             }

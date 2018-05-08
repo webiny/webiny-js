@@ -55,7 +55,7 @@ describe("attribute models test", function() {
         throw Error(`Error should've been thrown.`);
     });
 
-    /*  it("should fail - attributes should accept object with models as values", async () => {
+    it("should fail - attributes should accept object with models as values", async () => {
         model.attribute1 = new Model1();
         assert.instanceOf(model.attribute1, Model1);
 
@@ -71,7 +71,7 @@ describe("attribute models test", function() {
         }
 
         throw Error("Error should've been thrown.");
-    });*/
+    });
 
     it("should pass - empty objects set", async () => {
         model.attribute1 = {};
@@ -79,42 +79,150 @@ describe("attribute models test", function() {
         await model.validate();
     });
 
-    /*it("should fail - object with empty plain objects as values set - nested validation must be triggered", async () => {
+    it("should fail - object with empty plain objects as values set - nested validation must be triggered", async () => {
         model.attribute1 = { first: {}, second: {} };
         model.attribute2 = { first: {}, second: {}, third: {} };
         try {
             await model.validate();
         } catch (e) {
-            const attr1 = e.data.invalidAttributes.attribute1;
-            assert.lengthOf(attr1.data, 2);
-            assert.equal(attr1.data[0].data.index, 0);
-            assert.equal(
-                attr1.data[0].data.invalidAttributes.name.code,
-                ModelError.INVALID_ATTRIBUTE
-            );
-            assert.equal(attr1.data[0].data.invalidAttributes.name.data.validator, "required");
-            assert.notExists(attr1.data[0].data.invalidAttributes.type);
-
-            const attr2 = e.data.invalidAttributes.attribute2;
-            assert.lengthOf(attr2.data, 3);
-            assert.equal(attr2.data[0].data.index, 0);
-            assert.equal(attr2.data[1].data.index, 1);
-            assert.equal(attr2.data[2].data.index, 2);
-
-            assert.equal(
-                attr2.data[0].data.invalidAttributes.firstName.code,
-                ModelError.INVALID_ATTRIBUTE
-            );
-            assert.equal(
-                attr2.data[0].data.invalidAttributes.lastName.code,
-                ModelError.INVALID_ATTRIBUTE
-            );
-            assert.notExists(attr2.data[0].data.invalidAttributes.enabled);
+            assert.deepEqual(e.data, {
+                invalidAttributes: {
+                    attribute1: {
+                        code: "INVALID_ATTRIBUTE",
+                        data: [
+                            {
+                                code: "INVALID_ATTRIBUTES",
+                                data: {
+                                    index: "first",
+                                    invalidAttributes: {
+                                        name: {
+                                            code: "INVALID_ATTRIBUTE",
+                                            data: {
+                                                message: "Value is required.",
+                                                value: null,
+                                                validator: "required"
+                                            },
+                                            message: "Invalid attribute."
+                                        }
+                                    }
+                                },
+                                message: "Validation failed."
+                            },
+                            {
+                                code: "INVALID_ATTRIBUTES",
+                                data: {
+                                    index: "second",
+                                    invalidAttributes: {
+                                        name: {
+                                            code: "INVALID_ATTRIBUTE",
+                                            data: {
+                                                message: "Value is required.",
+                                                value: null,
+                                                validator: "required"
+                                            },
+                                            message: "Invalid attribute."
+                                        }
+                                    }
+                                },
+                                message: "Validation failed."
+                            }
+                        ],
+                        message: "Validation failed."
+                    },
+                    attribute2: {
+                        code: "INVALID_ATTRIBUTE",
+                        data: [
+                            {
+                                code: "INVALID_ATTRIBUTES",
+                                data: {
+                                    index: "first",
+                                    invalidAttributes: {
+                                        firstName: {
+                                            code: "INVALID_ATTRIBUTE",
+                                            data: {
+                                                message: "Value is required.",
+                                                value: null,
+                                                validator: "required"
+                                            },
+                                            message: "Invalid attribute."
+                                        },
+                                        lastName: {
+                                            code: "INVALID_ATTRIBUTE",
+                                            data: {
+                                                message: "Value is required.",
+                                                value: null,
+                                                validator: "required"
+                                            },
+                                            message: "Invalid attribute."
+                                        }
+                                    }
+                                },
+                                message: "Validation failed."
+                            },
+                            {
+                                code: "INVALID_ATTRIBUTES",
+                                data: {
+                                    index: "second",
+                                    invalidAttributes: {
+                                        firstName: {
+                                            code: "INVALID_ATTRIBUTE",
+                                            data: {
+                                                message: "Value is required.",
+                                                value: null,
+                                                validator: "required"
+                                            },
+                                            message: "Invalid attribute."
+                                        },
+                                        lastName: {
+                                            code: "INVALID_ATTRIBUTE",
+                                            data: {
+                                                message: "Value is required.",
+                                                value: null,
+                                                validator: "required"
+                                            },
+                                            message: "Invalid attribute."
+                                        }
+                                    }
+                                },
+                                message: "Validation failed."
+                            },
+                            {
+                                code: "INVALID_ATTRIBUTES",
+                                data: {
+                                    index: "third",
+                                    invalidAttributes: {
+                                        firstName: {
+                                            code: "INVALID_ATTRIBUTE",
+                                            data: {
+                                                message: "Value is required.",
+                                                value: null,
+                                                validator: "required"
+                                            },
+                                            message: "Invalid attribute."
+                                        },
+                                        lastName: {
+                                            code: "INVALID_ATTRIBUTE",
+                                            data: {
+                                                message: "Value is required.",
+                                                value: null,
+                                                validator: "required"
+                                            },
+                                            message: "Invalid attribute."
+                                        }
+                                    }
+                                },
+                                message: "Validation failed."
+                            }
+                        ],
+                        message: "Validation failed."
+                    }
+                }
+            });
 
             return;
         }
         throw Error("Error should've been thrown.");
-    });*/
+    });
 
     it("should pass - valid data sent", async () => {
         model.attribute1 = {
@@ -130,41 +238,65 @@ describe("attribute models test", function() {
     });
 
     it("should fail - all good except last item of attribute1", async () => {
-        model.attribute1 = [
-            { name: "Enlai", type: "dog" },
-            { name: "Rocky", type: "dog" },
-            { name: "Lina", type: "bird" }
-        ];
-        model.attribute2 = [
-            { firstName: "John", lastName: "Doe" },
-            { firstName: "Jane", lastName: "Doe" }
-        ];
+        model.attribute1 = {
+            first: { name: "Enlai", type: "dog" },
+            second: { name: "Rocky", type: "dog" },
+            third: { name: "Lina", type: "bird" }
+        };
+        model.attribute2 = {
+            first: { firstName: "John", lastName: "Doe" },
+            second: { firstName: "Jane", lastName: "Doe" }
+        };
 
         try {
             await model.validate();
         } catch (e) {
-            const attr1 = e.data.invalidAttributes.attribute1;
-            assert.lengthOf(attr1.data, 1);
-            assert.equal(attr1.data[0].data.index, 2);
-            assert.equal(
-                attr1.data[0].data.invalidAttributes.type.code,
-                ModelError.INVALID_ATTRIBUTE
-            );
-            assert.equal(attr1.data[0].data.invalidAttributes.type.data.validator, "in");
+            assert.deepEqual(e.data, {
+                invalidAttributes: {
+                    attribute1: {
+                        code: "INVALID_ATTRIBUTE",
+                        data: [
+                            {
+                                code: "INVALID_ATTRIBUTES",
+                                data: {
+                                    index: "third",
+                                    invalidAttributes: {
+                                        type: {
+                                            code: "INVALID_ATTRIBUTE",
+                                            data: {
+                                                message:
+                                                    "Value must be one of the following: cat, dog, mouse, parrot.",
+                                                value: "bird",
+                                                validator: "in"
+                                            },
+                                            message: "Invalid attribute."
+                                        }
+                                    }
+                                },
+                                message: "Validation failed."
+                            }
+                        ],
+                        message: "Validation failed."
+                    }
+                }
+            });
         }
     });
 
     it("should fail on validation since an item is not an object of any type", async () => {
         const newModel = new Model(function() {
-            this.attr("attribute1").models(Model1);
+            this.attr("attribute1").models(Model1, true);
         });
 
-        newModel.attribute1 = [{ name: "Enlai", type: "dog" }, { name: "Rocky", type: "dog" }, 123];
+        newModel.attribute1 = {
+            first: { name: "Enlai", type: "dog" },
+            second: { name: "Rocky", type: "dog" },
+            last: 123
+        };
 
         try {
             await newModel.validate();
         } catch (e) {
-            assert.equal(e.code, "INVALID_ATTRIBUTES");
             assert.deepEqual(e.data, {
                 invalidAttributes: {
                     attribute1: {
@@ -173,10 +305,10 @@ describe("attribute models test", function() {
                             {
                                 code: "INVALID_ATTRIBUTE",
                                 data: {
-                                    index: 2
+                                    index: "last"
                                 },
                                 message:
-                                    "Validation failed, item at index 2 not an instance of Model class."
+                                    "Validation failed, item at index last not an instance of Model class."
                             }
                         ],
                         message: "Validation failed."
@@ -192,7 +324,7 @@ describe("attribute models test", function() {
     it("validation must be executed on both attribute and model level", async () => {
         const newModel = new Model(function() {
             this.attr("attribute1")
-                .models(Model1)
+                .models(Model1, true)
                 .setValidators("required,minLength:2");
         });
 
@@ -220,157 +352,138 @@ describe("attribute models test", function() {
 
         error = null;
         try {
-            newModel.attribute1 = [{ name: "Enlai", type: "dog" }];
+            newModel.attribute1 = { first: { name: "Enlai", type: "dog" } };
             await newModel.validate();
         } catch (e) {
             error = e;
         }
 
-        assert.instanceOf(error, ModelError);
-        assert.equal(error.data.invalidAttributes.attribute1.code, "INVALID_ATTRIBUTE");
+        assert.equal(
+            error.data.invalidAttributes.attribute1.data.message,
+            "Value requires at least 2 items."
+        );
         assert.equal(error.data.invalidAttributes.attribute1.data.validator, "minLength");
-        assert.lengthOf(error.data.invalidAttributes.attribute1.data.value, 1);
-        assert.instanceOf(error.data.invalidAttributes.attribute1.data.value[0], Model);
+        assert.equal(error.data.invalidAttributes.attribute1.message, "Invalid attribute.");
 
-        newModel.attribute1 = [{ name: "Enlai", type: "dog" }, { name: "Enlai", type: "dog" }];
+        newModel.attribute1 = {
+            first: { name: "Enlai", type: "dog" },
+            second: { name: "Enlai", type: "dog" }
+        };
         await newModel.validate();
     });
 
     it("should not set value if setOnce is enabled", async () => {
         const newModel = new Model(function() {
-            this.attr("attribute1").models(Model1);
+            this.attr("attribute1").models(Model1, true);
         });
 
-        newModel.attribute1 = [
-            { name: "Enlai", type: "dog" },
-            { name: "Rocky", type: "dog" },
-            { name: "Lina", type: "bird" }
-        ];
+        newModel.attribute1 = {
+            first: { name: "Enlai", type: "dog" },
+            second: { name: "Rocky", type: "dog" },
+            third: { name: "Lina", type: "bird" }
+        };
 
         newModel.getAttribute("attribute1").setOnce();
 
         await newModel.set("attribute1", null);
 
-        assert.equal(await newModel.get("attribute1.0.name"), "Enlai");
-        assert.equal(await newModel.get("attribute1.1.name"), "Rocky");
-        assert.equal(await newModel.get("attribute1.2.name"), "Lina");
+        assert.equal(await newModel.get("attribute1.first.name"), "Enlai");
+        assert.equal(await newModel.get("attribute1.second.name"), "Rocky");
+        assert.equal(await newModel.get("attribute1.third.name"), "Lina");
     });
 
-    it("getJSONValue must return an empty array if nothing was set", async () => {
+    it("getJSONValue must return an empty object if nothing was set", async () => {
         const newModel = new Model(function() {
-            this.attr("attribute1").models(Model1);
+            this.attr("attribute1").models(Model1, true);
         });
 
-        assert.deepEqual(await newModel.getAttribute("attribute1").getJSONValue(), []);
+        assert.deepEqual(await newModel.getAttribute("attribute1").getJSONValue(), {});
     });
 
-    it("getStorageValue method must return empty array if nothing is set", async () => {
+    it("getStorageValue method must return empty object if nothing is set", async () => {
         const newModel = new Model(function() {
-            this.attr("attribute1").models(Model1);
+            this.attr("attribute1").models(Model1, true);
         });
 
-        assert.deepEqual(await newModel.getAttribute("attribute1").getStorageValue(), []);
+        assert.deepEqual(await newModel.getAttribute("attribute1").getStorageValue(), {});
     });
 
-    it("getStorageValue method must return initially set value if it's not an array", async () => {
+    it("getStorageValue method must return initially set value if it's not an object", async () => {
         const newModel = new Model(function() {
-            this.attr("attribute1").models(Model1);
+            this.attr("attribute1").models(Model1, true);
         });
 
         newModel.attribute1 = null;
-        assert.deepEqual(await newModel.getAttribute("attribute1").getStorageValue(), []);
+        assert.deepEqual(await newModel.getAttribute("attribute1").getStorageValue(), {});
     });
 
     it("getStorageValue must iterate through all models and all of its attributes and return its storage values", async () => {
         const storageModel = new Model(function() {
-            this.attr("attribute1").models(Model1);
-            this.attr("attribute2").models(Model2);
+            this.attr("attribute1").models(Model1, true);
+            this.attr("attribute2").models(Model2, true);
         });
 
-        storageModel.attribute1 = [
-            { name: "Enlai", type: "dog" },
-            { name: "Rocky", type: "dog" },
-            { name: "Lina", type: "parrot" }
-        ];
+        storageModel.attribute1 = {
+            pet1: { name: "Enlai", type: "dog" },
+            pet2: { name: "Rocky", type: "dog" },
+            pet3: { name: "Lina", type: "parrot" }
+        };
 
-        storageModel.attribute2 = [
-            { firstName: "John", lastName: "Doe" },
-            { firstName: "Jane", lastName: "Doe" }
-        ];
+        storageModel.attribute2 = {
+            user1: { firstName: "John", lastName: "Doe" },
+            user2: { firstName: "Jane", lastName: "Doe" }
+        };
 
         const data = await storageModel.toStorage();
 
         assert.deepEqual(data, {
-            attribute1: [
-                {
+            attribute1: {
+                pet1: {
                     number: null,
                     name: "Enlai",
                     type: "dog"
                 },
-                {
+                pet2: {
                     number: null,
                     name: "Rocky",
                     type: "dog"
                 },
-                {
+                pet3: {
                     number: null,
                     name: "Lina",
                     type: "parrot"
                 }
-            ],
-            attribute2: [
-                {
+            },
+            attribute2: {
+                user1: {
                     enabled: null,
                     firstName: "John",
                     lastName: "Doe"
                 },
-                {
+                user2: {
                     enabled: null,
                     firstName: "Jane",
                     lastName: "Doe"
                 }
-            ]
-        });
-    });
-
-    it("setStorageValue must omit value if it is not an array", async () => {
-        const newModel = new Model(function() {
-            this.attr("attribute1").models(Model1);
-        });
-
-        newModel.getAttribute("attribute1").setStorageValue([{ name: "one" }, { name: "two" }]);
-        assert.deepEqual(await newModel.toJSON("attribute1[name]"), {
-            attribute1: [
-                {
-                    name: "one"
-                },
-                {
-                    name: "two"
-                }
-            ]
-        });
-
-        newModel.getAttribute("attribute1").setStorageValue({});
-        newModel.getAttribute("attribute1").setStorageValue(null);
-        newModel.getAttribute("attribute1").setStorageValue(123);
-        assert.deepEqual(await newModel.toJSON("attribute1[name]"), {
-            attribute1: [{ name: "one" }, { name: "two" }]
+            }
         });
     });
 
     it("when toJSON is called, it must return values correctly", async () => {
         const newModel = new Model(function() {
-            this.attr("attribute1").models(Model1);
+            this.attr("attribute1").models(Model1, true);
         });
 
-        newModel.attribute1 = [];
+        newModel.attribute1 = {};
         assert.deepEqual(await newModel.toJSON("attribute1.name"), {
-            attribute1: []
+            attribute1: {}
         });
 
-        newModel.getAttribute("attribute1").setStorageValue([{ name: "one" }, { name: "two" }]);
-        assert.deepEqual(await newModel.toJSON("attribute1[name]"), {
-            attribute1: [{ name: "one" }, { name: "two" }]
+        newModel
+            .getAttribute("attribute1")
+            .setStorageValue({ first: { name: "one" }, second: { name: "two" } });
+        assert.deepEqual(await newModel.toJSON("attribute1[first.name,second.name]"), {
+            attribute1: { first: { name: "one" }, second: { name: "two" } }
         });
 
         newModel.attribute1 = null;
@@ -381,11 +494,11 @@ describe("attribute models test", function() {
 
     it("getJSONValue must return values correctly", async () => {
         const newModel = new Model(function() {
-            this.attr("attribute1").models(Model1);
+            this.attr("attribute1").models(Model1, true);
         });
 
-        newModel.attribute1 = [];
-        assert.deepEqual(await newModel.getAttribute("attribute1").getJSONValue(), []);
+        newModel.attribute1 = {};
+        assert.deepEqual(await newModel.getAttribute("attribute1").getJSONValue(), {});
 
         newModel.attribute1 = 123;
         assert.deepEqual(await newModel.getAttribute("attribute1").getJSONValue(), 123);
@@ -393,41 +506,41 @@ describe("attribute models test", function() {
 
     it("getJSONValue must return empty objects as items", async () => {
         const newModel = new Model(function() {
-            this.attr("attribute1").models(Model1);
+            this.attr("attribute1").models(Model1, true);
         });
 
-        newModel.attribute1 = [{ name: 123, age: 123 }, { name: 234, age: 456 }];
-        assert.deepEqual(await newModel.getAttribute("attribute1").getJSONValue(), [{}, {}]);
+        newModel.attribute1 = { first: { name: 123, age: 123 }, second: { name: 234, age: 456 } };
+        assert.deepEqual(await newModel.getAttribute("attribute1").getJSONValue(), {});
     });
 
     it("onSet/onGet must be triggered correctly", async () => {
         const newModel = new Model(function() {
-            this.attr("someModels").models(Model1);
+            this.attr("someModels").models(Model1, true);
         });
 
         newModel.getAttribute("someModels").onSet(value => {
-            const final = [];
-            value.forEach((value, index) => {
-                final.push({ name: "index-" + index });
-            });
+            const final = {};
+            for (let name in value) {
+                final["key_" + name] = value[name];
+            }
             return final;
         });
 
         newModel.populate({
-            someModels: [
-                {
+            someModels: {
+                first: {
                     name: "Webiny LTD",
                     city: "London"
                 },
-                {
+                second: {
                     name: "Webiny LTD 2",
                     city: "London 2"
                 }
-            ]
+            }
         });
 
-        assert.equal(newModel.someModels[0].name, "index-0");
-        assert.equal(newModel.someModels[1].name, "index-1");
+        assert.equal(newModel.someModels.key_first.name, "Webiny LTD");
+        assert.equal(newModel.someModels.key_second.name, "Webiny LTD 2");
 
         newModel.getAttribute("someModels").onGet(() => {
             return "random";
