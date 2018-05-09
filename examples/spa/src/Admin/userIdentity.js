@@ -9,7 +9,7 @@ email
 firstName
 lastName
 gravatar
-roles {
+groups {
     slug
 }
 `;

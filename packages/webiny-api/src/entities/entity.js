@@ -7,6 +7,9 @@ class Entity extends BaseEntity {
     constructor() {
         super();
         app.entities.applyExtensions(this);
+        this.attr("meta")
+            .object()
+            .setValue({});
     }
 }
 

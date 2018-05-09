@@ -1,8 +1,6 @@
 // @flow
 import { Entity } from "webiny-api";
-import Role from "./role.entity";
-import Identity2Role from "./identity2Role.entity";
-import onSetFactory from "./helpers/onSetFactory";
+import Group from "./group.entity";
 
 import type { IAuthorizable } from "../../types";
 
@@ -10,28 +8,26 @@ import type { IAuthorizable } from "../../types";
  * Identity class is the base class for all identity classes.
  * It is used to create your API user classes.
  *
- * @property {EntityCollection<Role>} roles
- * @property {EntityCollection<RoleGroup>} roleGroups
+ * @property {EntityCollection<Group>} groups
  */
 class Identity extends Entity implements IAuthorizable {
     constructor() {
         super();
-        this.attr("roles")
-            .entities(Role, "identity", () => this.identityId)
-            .setUsing(Identity2Role)
-            .onGet(onSetFactory(Role));
+        this.attr("groups")
+            .entities(Group)
+            .setToStorage();
     }
 
     /**
-     * Checks whether the user has the specified role.
-     * @param {string} role
+     * Checks whether the user has the specified group.
+     * @param {string} group
      * @returns {boolean}
      */
     // eslint-disable-next-line
-    async hasRole(role: string): Promise<boolean> {
-        const roles = await this.getRoles();
-        for (let i = 0; i < roles.length; i++) {
-            if (roles[i].slug === role) {
+    async hasGroup(group: string): Promise<boolean> {
+        const groups = await this.groups;
+        for (let i = 0; i < groups.length; i++) {
+            if (groups[i].slug === group) {
                 return true;
             }
         }

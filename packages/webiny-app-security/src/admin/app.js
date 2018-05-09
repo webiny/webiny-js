@@ -14,9 +14,9 @@ const includeManager = app => {
 
     app.services.get("menu").add(
         <Menu label={t`Security`} icon="user-secret">
-            <Menu label={t`User Management`} role={securityManageUsers}>
+            <Menu label={t`User Management`} group={securityManageUsers}>
                 <Menu label={t`Entities`} route="Entities.List" order={1} />
-                <Menu label={t`Roles`} route="Roles.List" order={2} />
+                <Menu label={t`Groups`} route="Groups.List" order={2} />
                 <Menu label={t`Users`} route="Users.List" order={4} />
             </Menu>
         </Menu>
@@ -27,7 +27,7 @@ const includeManager = app => {
         path: "/Users/new",
         component: () => import("./views/UsersForm").then(m => m.default),
         title: "Security - Create User",
-        role: securityManageUsers
+        group: securityManageUsers
     });
 
     app.router.addRoute({
@@ -35,7 +35,7 @@ const includeManager = app => {
         path: "/users/:id",
         component: () => import("./views/UsersForm").then(m => m.default),
         title: "Security - Edit User",
-        role: securityManageUsers
+        group: securityManageUsers
     });
 
     app.router.addRoute({
@@ -43,31 +43,31 @@ const includeManager = app => {
         path: "/users",
         component: () => import("./views/UsersList").then(m => m.default),
         title: "Security - Users",
-        role: securityManageUsers
+        group: securityManageUsers
     });
 
     app.router.addRoute({
-        name: "Roles.Create",
-        path: "/roles/new",
-        component: () => import("./views/RolesForm").then(m => m.default),
-        title: "Security - Create Role",
-        role: securityManageUsers
+        name: "Groups.Create",
+        path: "/groups/new",
+        component: () => import("./views/GroupsForm").then(m => m.default),
+        title: "Security - Create Group",
+        group: securityManageUsers
     });
 
     app.router.addRoute({
-        name: "Roles.Edit",
-        path: "/roles/:id",
-        component: () => import("./views/RolesForm").then(m => m.default),
-        title: "Security - Edit Role",
-        role: securityManageUsers
+        name: "Groups.Edit",
+        path: "/groups/:id",
+        component: () => import("./views/GroupsForm").then(m => m.default),
+        title: "Security - Edit Group",
+        group: securityManageUsers
     });
 
     app.router.addRoute({
-        name: "Roles.List",
-        path: "/roles",
-        component: () => import("./views/RolesList").then(m => m.default),
-        title: "Security - Roles",
-        role: securityManageUsers
+        name: "Groups.List",
+        path: "/groups",
+        component: () => import("./views/GroupsList").then(m => m.default),
+        title: "Security - Groups",
+        group: securityManageUsers
     });
 
     app.router.addRoute({
@@ -75,7 +75,7 @@ const includeManager = app => {
         path: "/entities/new",
         component: () => import("./views/EntitiesForm").then(m => m.default),
         title: "Security - Create Entity",
-        role: securityManageUsers
+        group: securityManageUsers
     });
 
     app.router.addRoute({
@@ -83,7 +83,7 @@ const includeManager = app => {
         path: "/entities/:id",
         component: () => import("./views/EntitiesForm").then(m => m.default),
         title: "Security - Edit Entity",
-        role: securityManageUsers
+        group: securityManageUsers
     });
 
     app.router.addRoute({
@@ -91,7 +91,7 @@ const includeManager = app => {
         path: "/entities",
         component: () => import("./views/EntitiesList").then(m => m.default),
         title: "Security - Entities",
-        role: securityManageUsers
+        group: securityManageUsers
     });
 };
 

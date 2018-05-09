@@ -19,7 +19,7 @@ class ClassesLists extends React.Component {
     renderListItem(field, type) {
         const { Checkbox } = this.props.modules;
 
-        let modelPath = type === "role" ? `roles.${field.id}` : `${field.id}`;
+        let modelPath = type === "group" ? `groups.${field.id}` : `${field.id}`;
 
         return (
             <li
@@ -61,13 +61,13 @@ class ClassesLists extends React.Component {
         return (
             <div className={css.wrapper}>
                 <ul>
-                    {this.props.classesRoles.classes.map(item => {
+                    {this.props.classesGroups.classes.map(item => {
                         return this.renderListItem(item, "class");
                     })}
                 </ul>
 
-                <h3>{t`Roles`}</h3>
-                <h4>{t`Choose roles`}</h4>
+                <h3>{t`Groups`}</h3>
+                <h4>{t`Choose groups`}</h4>
 
                 <Input
                     placeholder={t`Type to filter...`}
@@ -77,8 +77,8 @@ class ClassesLists extends React.Component {
                     }}
                 />
                 <Scrollbar style={{ height: 300 }} autoHide>
-                    <ul>
-                        {this.props.classesRoles.roles.map(item => {
+                    {/*<ul>
+                        {this.props.classesGroups.groups.map(item => {
                             if (!_.isEmpty(this.state.filter)) {
                                 if (
                                     item.name
@@ -88,9 +88,9 @@ class ClassesLists extends React.Component {
                                     return null;
                                 }
                             }
-                            return this.renderListItem(item, "role");
+                            return this.renderListItem(item, "group");
                         })}
-                    </ul>
+                    </ul>*/}
                 </Scrollbar>
             </div>
         );
@@ -99,7 +99,7 @@ class ClassesLists extends React.Component {
 
 ClassesLists.defaultProps = {
     model: null,
-    classesRoles: null,
+    classesGroups: null,
     onSelect: _.noop,
     onToggle: _.noop,
     selected: null

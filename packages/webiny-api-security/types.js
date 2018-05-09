@@ -1,5 +1,4 @@
 // @flow
-import type { ApiMethod } from "webiny-api";
 import type { EntityCollection } from "webiny-entity";
 import type { Identity, Role } from "./src";
 
@@ -66,20 +65,6 @@ export interface IAuthentication {
      * @returns {Array<Class<Identity>>} All set Identity classes.
      */
     getIdentityClasses(): Array<Class<Identity>> | null;
-}
-
-/**
- * Interface for Authorization service.
- * Its only purpose is to determine whether user can execute an API method.
- */
-export interface IAuthorization {
-    /**
-     * Checks whether user can execute an API method.
-     * @param {ApiMethod} apiMethod
-     * @param {IAuthorizable} authorizable
-     * @returns {boolean}
-     */
-    canExecute(apiMethod: ApiMethod, authorizable: IAuthorizable): Promise<boolean>;
 }
 
 /**

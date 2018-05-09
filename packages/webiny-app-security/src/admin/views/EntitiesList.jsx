@@ -23,7 +23,7 @@ class EntitiesList extends React.Component {
         } = this.props.modules;
         const Table = List.Table;
 
-        const rolesLink = <Link route="Roles.List">{t`Roles`}</Link>;
+        const groupsLink = <Link route="Groups.List">{t`Groups`}</Link>;
 
         return (
             <AdminLayout>
@@ -36,8 +36,8 @@ class EntitiesList extends React.Component {
                                     description={
                                         <span>
                                             {t`Entities define what a user is allowed to do with API endpoints.
-                                                    Define entities and then group them into {rolesLink}.`(
-                                                { rolesLink }
+                                                    Define entities and then group them into {groupsLink}.`(
+                                                { groupsLink }
                                             )}
                                         </span>
                                     }

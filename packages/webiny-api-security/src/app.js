@@ -1,13 +1,11 @@
 // @flow
 import { GraphQLUnionType } from "graphql";
-import { User, Role } from "./index";
+import { User, Group, SecuritySettings } from "./index";
 import AuthenticationService from "./services/authentication";
-import AuthorizationService from "./services/authorization";
 import convertToGraphQL from "./attributes/convertToGraphQL";
 import registerAttributes from "./attributes/registerAttributes";
 import createLoginQueries from "./utils/createLoginQueries";
 import createListEntitiesQueries from "./utils/createListEntitiesQueries";
-import attachAuthorization from "./utils/attachAuthorization";
 import { Entity } from "webiny-api";
 
 export default (config: Object = {}) => {
@@ -16,8 +14,9 @@ export default (config: Object = {}) => {
             "authentication",
             () => new AuthenticationService(config.authentication)
         );
-        app.services.register("authorization", () => new AuthorizationService());
         registerAttributes(app.services.get("authentication"));
+
+        const security = app.services.get("authentication");
 
         app.graphql.schema(schema => {
             schema.addType({
@@ -38,31 +37,57 @@ export default (config: Object = {}) => {
 
             schema.addAttributeConverter(convertToGraphQL);
             schema.addEntity(User);
-            schema.addEntity(Role);
+            schema.addEntity(Group);
 
             // Create login queries
             createLoginQueries(app, config, schema);
             createListEntitiesQueries(app, config, schema);
         });
 
-        attachAuthorization(app);
-
-        Entity.onGet((entity, key) => {
-            const attr: ?Attribute = entity.getModel().getAttribute(key);
-            if (attr) {
-                // TODO: check security
-            }
-        });
-
-        Entity.onSet((entity, key) => {
-            const attr: ?Attribute = entity.getModel().getAttribute(key);
-            if (attr) {
-                // TODO: check security
-            }
-        });
-
         app.entities.addEntityClass(User);
-        app.entities.addEntityClass(Role);
+        app.entities.addEntityClass(Group);
+        app.entities.addEntityClass(SecuritySettings);
+
+        Entity.onGet((entity, attributeName) => {
+            const attr: ?Attribute = entity.getModel().getAttribute(attributeName);
+            if (attr) {
+                if (!app.services.get("authentication").canGetValue(entity, attributeName)) {
+                    throw Error(
+                        `Cannot set value of attribute ${attributeName} on entity ${entity.classId}`
+                    );
+                }
+            }
+        });
+
+        Entity.onSet((entity, attributeName) => {
+            const attr: ?Attribute = entity.getModel().getAttribute(attributeName);
+            if (attr) {
+                if (!security.canSetValue(entity, attributeName)) {
+                    throw Error(
+                        `Cannot set value of attribute ${attributeName} on entity ${entity.classId}`
+                    );
+                }
+            }
+        });
+
+        ["create", "update", "delete"].forEach(operation => {
+            Entity.on(operation, ({ entity }) => {
+                console.log(operation);
+                const { identity } = app.getRequest();
+
+                if (!security.canExecuteOperation(identity, entity, operation)) {
+                    throw Error(
+                        `Cannot execute "${operation}" operation on entity "${entity.classId}"`
+                    );
+                }
+
+                if (operation === "create") {
+                    if (identity) {
+                        security.assignOwner(entity, identity);
+                    }
+                }
+            });
+        });
 
         app.entities.extend("*", (entity: Entity) => {
             // "savedBy" attribute - updated on both create and update events.

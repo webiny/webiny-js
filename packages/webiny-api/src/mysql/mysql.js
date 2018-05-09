@@ -29,6 +29,8 @@ class MySQLTable extends Table {
         this.column("deleted")
             .tinyInt(1)
             .setDefault(0);
+
+        this.column("meta").json();
     }
 
     setBaseIndexes() {

@@ -51,9 +51,9 @@ export default (app, config, schema) => {
             }
         }),
         resolve() {
-            const list = app.services.get("authorization").generateEntitiesList();
+            const list = app.services.get("authentication").generateEntitiesList();
             return {
-                list: app.services.get("authorization").generateEntitiesList(),
+                list,
                 meta: {
                     totalCount: list.length,
                     totalPages: 1,
@@ -90,8 +90,7 @@ export default (app, config, schema) => {
                 id: { type: GraphQLID },
                 owner: { type: GraphQLJSON },
                 group: { type: GraphQLJSON },
-                other: { type: GraphQLJSON },
-                roles: { type: GraphQLJSON }
+                other: { type: GraphQLJSON }
             }
         })
     });

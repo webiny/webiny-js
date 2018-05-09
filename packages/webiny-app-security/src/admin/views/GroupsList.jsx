@@ -4,9 +4,9 @@ import React, { Fragment } from "react";
 // import ImportModal from "./Modal/ImportModal";
 
 import { i18n, createComponent } from "webiny-app";
-const t = i18n.namespace("Security.RolesList");
+const t = i18n.namespace("Security.GroupsList");
 
-class RolesList extends React.Component {
+class GroupsList extends React.Component {
     render() {
         const {
             View,
@@ -35,11 +35,11 @@ class RolesList extends React.Component {
                         {({ showView }) => (
                             <View.List>
                                 <View.Header
-                                    title={t`Security - Roles`}
+                                    title={t`Security - Groups`}
                                     description={
                                         <span>
-                                            {t`Roles are a simple way to control what permissions certain users have.
-                                                    Create a role with a set of {permissions} and then assign roles to
+                                            {t`Groups are a simple way to control what permissions certain users have.
+                                                    Create a group with a set of {permissions} and then assign groups to
                                                     {users}.`({
                                                 permissions,
                                                 users
@@ -48,7 +48,7 @@ class RolesList extends React.Component {
                                     }
                                 >
                                     <ButtonGroup>
-                                        <Link type="primary" route="Roles.Create">
+                                        <Link type="primary" route="Groups.Create">
                                             <Icon icon="plus-circle" />
                                             {t`Create`}
                                         </Link>
@@ -63,7 +63,7 @@ class RolesList extends React.Component {
                                 <View.Body>
                                     <ListData
                                         withRouter
-                                        entity="SecurityRole"
+                                        entity="SecurityGroup"
                                         fields="id name slug description createdOn"
                                         search={{ fields: ["name", "slug", "description"] }}
                                     >
@@ -95,7 +95,7 @@ class RolesList extends React.Component {
                                                                 {({ data }) => (
                                                                     <span>
                                                                         <Link
-                                                                            route="Roles.Edit"
+                                                                            route="Groups.Edit"
                                                                             params={{ id: data.id }}
                                                                         >
                                                                             <strong>
@@ -118,7 +118,7 @@ class RolesList extends React.Component {
                                                                 sort="createdOn"
                                                             />
                                                             <Table.Actions>
-                                                                <Table.EditAction route="Roles.Edit" />
+                                                                <Table.EditAction route="Groups.Edit" />
                                                                 <Table.Action
                                                                     label={t`Export`}
                                                                     icon="download"
@@ -145,9 +145,9 @@ class RolesList extends React.Component {
                                 name="exportModal"
                                 data={data}
                                 map="permissions"
-                                api="/entities/webiny/user-roles"
+                                api="/entities/webiny/user-groups"
                                 fields="name,slug,description,permissions.slug"
-                                label={t`Role`}
+                                label={t`Group`}
                             />
                         )}
                     </ViewSwitcher.View>
@@ -156,8 +156,8 @@ class RolesList extends React.Component {
                         {() => (
                             <ImportModal
                                 name="importModal"
-                                api="/entities/webiny/user-roles"
-                                label={t`Role`}
+                                api="/entities/webiny/user-groups"
+                                label={t`Group`}
                                 onImported={() => this.list.loadData()}
                             />
                         )}
@@ -168,7 +168,7 @@ class RolesList extends React.Component {
     }
 }
 
-export default createComponent(RolesList, {
+export default createComponent(GroupsList, {
     modules: [
         { AdminLayout: "Admin.Layout" },
         "ViewSwitcher",

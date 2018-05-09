@@ -27,7 +27,18 @@ export default (options: { token: Function | string }) => {
             return next();
         }
 
-        req.identity = await app.services.get("authentication").verifyToken(token);
+        const authentication = app.services.get("authentication");
+
+        // Initializes authentication (loads authorization settings).
+        await authentication.init();
+
+        // Assigns identity retrieved from received token.
+        req.identity = await authentication.verifyToken(token);
+
+        // Since we need to access groups synchronously at later stages, we must load all assigned groups.
+        if (req.identity) {
+            await req.identity.getAttribute("groups").value.load();
+        }
         next();
     };
 };

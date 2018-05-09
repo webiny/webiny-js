@@ -1,4 +1,4 @@
-import { User, Role } from "webiny-api-security";
+import { User, Group } from "webiny-api-security";
 import { Settings } from "webiny-api";
 
 export default [
@@ -9,48 +9,7 @@ export default [
                 {
                     key: "webiny-api-security",
                     data: {
-                        entities: [
-                            {
-                                group: {
-                                    methods: { read: true },
-                                    attributes: {
-                                        email: { read: true, write: false },
-                                        firstName: { read: true, write: true }
-                                    }
-                                },
-                                other: {
-                                    methods: { read: true },
-                                    attributes: {
-                                        email: { read: true, write: false },
-                                        firstName: { read: true, write: true }
-                                    }
-                                },
-                                owner: {
-                                    methods: {
-                                        read: true,
-                                        create: false,
-                                        delete: false,
-                                        update: true,
-                                        sendEmail: true,
-                                        disableAccount: true
-                                    },
-                                    attributes: {
-                                        email: { read: true, write: false },
-                                        firstName: { read: true, write: true }
-                                    }
-                                },
-                                roles: {
-                                    dsa2135fdfdasddsadsasd: {
-                                        methods: { read: true },
-                                        attributes: {
-                                            email: { read: true, write: false },
-                                            firstName: { read: true, write: true }
-                                        }
-                                    }
-                                },
-                                classId: "SecurityUser"
-                            }
-                        ]
+                        entities: {}
                     }
                 },
                 {
@@ -62,7 +21,7 @@ export default [
     },
     async () => {
         return {
-            entity: Role,
+            entity: Group,
             data: [
                 {
                     name: "Administrator",
@@ -105,7 +64,7 @@ export default [
                     password: "pass5",
                     firstName: "Clarke",
                     lastName: "Fischer",
-                    roles: [await Role.findOne({ query: { slug: "administrator" } })]
+                    groups: [await Group.findOne({ query: { slug: "administrator" } })]
                 },
                 {
                     email: "Suspendisse.sed@sollicitudin.ca",

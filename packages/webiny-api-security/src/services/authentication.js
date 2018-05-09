@@ -1,7 +1,10 @@
 // @flow
 import { Identity } from "./../index";
 import AuthenticationError from "./authenticationError";
+import { app } from "webiny-api";
+import { SecuritySettings } from "./..";
 import type { IAuthentication, IToken } from "./../../types";
+import _ from "lodash";
 
 class Authentication implements IAuthentication {
     config: {
@@ -98,6 +101,89 @@ class Authentication implements IAuthentication {
         return this.config.identities.map(current => {
             return current.identity;
         });
+    }
+
+    async init() {
+        this.settings = await SecuritySettings.load();
+    }
+
+    canSetValue() {
+        return true;
+    }
+
+    canGetValue() {
+        return true;
+    }
+
+    canExecuteOperation(identity, entity, operation) {
+        if (_.get(entity, "meta.owner") === identity.id) {
+            if (
+                _.get(
+                    this.settings.data,
+                    `entities.${entity.classId}.owner.operations.${operation}`
+                )
+            ) {
+                return true;
+            }
+        }
+
+        // Enables us to fetch the value synchronously (already pre-loaded in security middleware).
+        const groups = identity.getAttribute("groups").value.getCurrent() || [];
+        for (let i = 0; i < groups.length; i++) {
+            let group = groups[i];
+            if (group.id === _.get(entity, "meta.group")) {
+                if (
+                    _.get(
+                        this.settings.data,
+                        `entities.${entity.classId}.group.operations.${operation}`
+                    )
+                ) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    assignGroup(entity, group) {
+        if (!(entity.meta instanceof Object)) {
+            entity.meta = {};
+        }
+
+        entity.meta.group = group.id;
+        return this;
+    }
+
+    assignOwner(entity, identity) {
+        if (!(entity.meta instanceof Object)) {
+            entity.meta = {};
+        }
+
+        entity.meta.owner = identity.id;
+        return this;
+    }
+
+    generateEntitiesList() {
+        const classes = app.entities.getEntityClasses();
+        const output = [];
+
+        classes.forEach(Entity => {
+            const entity = new Entity();
+            output.push({
+                name: entity.getClassName(),
+                id: entity.classId,
+                attributes: Object.keys(entity.getAttributes()).map(key => {
+                    const attribute = entity.getAttribute(key);
+                    return {
+                        name: attribute.getName(),
+                        class: typeof attribute
+                    };
+                })
+            });
+        });
+
+        return output;
     }
 }
 

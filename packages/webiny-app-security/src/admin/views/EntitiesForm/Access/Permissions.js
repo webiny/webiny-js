@@ -36,7 +36,7 @@ class Permissions extends React.Component {
     }
 
     toggleOperation(name) {
-        const current = this.props.classesRoles.current;
+        const current = this.props.classesGroups.current;
         const modelPath = current.modelPath + ".operations." + name;
 
         console.log(current);
@@ -60,7 +60,6 @@ class Permissions extends React.Component {
                     owner
                     group
                     other
-                    roles
                 }
             }
         `;
@@ -71,11 +70,11 @@ class Permissions extends React.Component {
     }
 
     render() {
-        if (!this.props.classesRoles.current) {
+        if (!this.props.classesGroups.current) {
             return null;
         }
 
-        const { modelPath } = this.props.classesRoles.current;
+        const { modelPath } = this.props.classesGroups.current;
 
         return (
             <div className={css.permissions}>
@@ -128,7 +127,7 @@ class Permissions extends React.Component {
 }
 
 Permissions.defaultProps = {
-    classesRoles: null,
+    classesGroups: null,
     model: null,
     form: null,
     onToggleBaseOperation: _.noop,

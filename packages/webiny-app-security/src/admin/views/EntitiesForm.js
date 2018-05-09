@@ -22,7 +22,7 @@ class EntitiesForm extends React.Component {
                 <FormData
                     entity="EntityPermission"
                     withRouter
-                    fields={`owner group other roles`}
+                    fields={`owner group other`}
                     onSubmitSuccess="Entities.List"
                     onCancel="Entities.List"
                     defaultModel={{ id: app.router.getParams("id") }}
@@ -62,12 +62,6 @@ class EntitiesForm extends React.Component {
                                                     app.router.goToRoute("Entities.List")
                                                 }
                                                 label={t`Go back`}
-                                            />
-                                            <Button
-                                                type="primary"
-                                                onClick={form.submit}
-                                                label={t`Save entity`}
-                                                align="right"
                                             />
                                         </View.Footer>
                                     </View.Form>

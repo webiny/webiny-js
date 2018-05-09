@@ -1,6 +1,6 @@
 import { MySQLTable } from "webiny-api";
 
-class Role extends MySQLTable {
+class Group extends MySQLTable {
     constructor() {
         super();
         this.column("name")
@@ -15,6 +15,6 @@ class Role extends MySQLTable {
     }
 }
 
-Role.setName("Security_Roles");
+Group.setName("Security_Groups");
 
-export default Role;
+export default Group;

@@ -1,6 +1,6 @@
 // @flow
 import { Sync, ConsoleLog } from "webiny-sql-table-sync";
-import { UserTable, RoleTable } from "webiny-api-security/lib/mysql";
+import { UserTable, GroupTable } from "webiny-api-security/lib/mysql";
 
 import { SettingsTable, FileTable, ImageTable } from "webiny-api/lib/mysql";
 
@@ -12,7 +12,7 @@ import { connection } from "./../../configs/database";
 MySQLTable.getDriver().setConnection(connection);
 
 (async () => {
-    const tables = [UserTable, RoleTable, SettingsTable, FileTable, ImageTable];
+    const tables = [UserTable, GroupTable, SettingsTable, FileTable, ImageTable];
 
     const sync = new Sync({
         tables,

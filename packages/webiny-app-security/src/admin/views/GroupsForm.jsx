@@ -1,8 +1,8 @@
 import React from "react";
 import { app, i18n, createComponent } from "webiny-app";
-const t = i18n.namespace("Security.RolesForm");
+const t = i18n.namespace("Security.GroupsForm");
 
-class RolesForm extends React.Component {
+class GroupsForm extends React.Component {
     constructor() {
         super();
         this.state = { searchQuery: {} };
@@ -26,17 +26,17 @@ class RolesForm extends React.Component {
         return (
             <AdminLayout>
                 <FormData
-                    entity="SecurityRole"
+                    entity="SecurityGroup"
                     withRouter
                     fields="id name slug description"
                     defaultModel={{ permissions: [] }}
-                    onSubmitSuccess="Roles.List"
-                    onCancel="Roles.List"
+                    onSubmitSuccess="Groups.List"
+                    onCancel="Groups.List"
                     onSuccessMessage={({ model }) => {
                         return (
                             <span>
-                                {t`Role {role} was saved successfully!`({
-                                    role: <strong>{model.name}</strong>
+                                {t`Group {group} was saved successfully!`({
+                                    group: <strong>{model.name}</strong>
                                 })}
                             </span>
                         );
@@ -50,8 +50,8 @@ class RolesForm extends React.Component {
                                         <View.Header
                                             title={
                                                 model.id
-                                                    ? t`Security - Edit Role`
-                                                    : t`Security - Create Role`
+                                                    ? t`Security - Edit Group`
+                                                    : t`Security - Create Group`
                                             }
                                         />
                                         {error && (
@@ -97,13 +97,13 @@ class RolesForm extends React.Component {
                                         <View.Footer>
                                             <Button
                                                 type="default"
-                                                onClick={() => app.router.goToRoute("Roles.List")}
+                                                onClick={() => app.router.goToRoute("Groups.List")}
                                                 label={t`Go back`}
                                             />
                                             <Button
                                                 type="primary"
                                                 onClick={form.submit}
-                                                label={t`Save role`}
+                                                label={t`Save group`}
                                                 align="right"
                                             />
                                         </View.Footer>
@@ -118,7 +118,7 @@ class RolesForm extends React.Component {
     }
 }
 
-export default createComponent(RolesForm, {
+export default createComponent(GroupsForm, {
     modules: [
         "Form",
         "FormData",

@@ -9,8 +9,8 @@ class UsersForm extends React.Component {
 
         this.state = {
             searchQuery: {
-                role: {},
-                roleGroup: {}
+                group: {},
+                groupGroup: {}
             }
         };
     }
@@ -38,10 +38,10 @@ class UsersForm extends React.Component {
                 <FormData
                     entity="SecurityUser"
                     withRouter
-                    fields="id firstName lastName enabled email roles { id name }"
+                    fields="id firstName lastName enabled email groups { id name }"
                     onSubmitSuccess="Users.List"
                     onCancel="Users.List"
-                    defaultModel={{ roles: [] }}
+                    defaultModel={{ groups: [] }}
                     onSuccessMessage={data => (
                         <span>
                             {t`User {user} was saved successfully!`({
@@ -101,26 +101,26 @@ class UsersForm extends React.Component {
                                                     <Grid.Row>
                                                         <Grid.Col all={12}>
                                                             <OptionsData
-                                                                entity="SecurityRole"
+                                                                entity="SecurityGroup"
                                                                 fields="id name"
                                                                 labelField="name"
                                                                 perPage={10}
                                                                 search={{
                                                                     fields: ["name"],
                                                                     query: this.state.searchQuery
-                                                                        .role
+                                                                        .group
                                                                 }}
                                                             >
                                                                 {({ options }) => (
                                                                     <Bind>
                                                                         <AutoCompleteList
                                                                             options={options}
-                                                                            label={t`Roles`}
-                                                                            name="roles"
+                                                                            label={t`Groups`}
+                                                                            name="groups"
                                                                             onSearch={query => {
                                                                                 this.setState(
                                                                                     state => {
-                                                                                        state.searchQuery.role = query;
+                                                                                        state.searchQuery.group = query;
                                                                                         return state;
                                                                                     }
                                                                                 );

@@ -13,8 +13,8 @@ class Access extends React.Component {
     constructor() {
         super();
         this.state = {
-            classesRoles: {
-                roles: [],
+            classesGroups: {
+                groups: [],
                 classes: [
                     { id: "owner", name: t`Owner`, description: t`Permissions of owners.` },
                     {
@@ -32,7 +32,7 @@ class Access extends React.Component {
     componentWillMount() {
         const query = gql`
             {
-                listSecurityRoles {
+                listSecurityGroups {
                     list {
                         id
                         name
@@ -44,7 +44,7 @@ class Access extends React.Component {
 
         app.graphql.query({ query }).then(({ data }) => {
             this.setState(state => {
-                state.classesRoles.roles = data.listSecurityRoles.list;
+                state.classesGroups.groups = data.listSecurityGroups.list;
                 return state;
             });
         });
@@ -61,21 +61,21 @@ class Access extends React.Component {
                         <h4>{t`Choose class for which you wish to modify permissions.`}</h4>
                         <ClassesLists
                             model={this.props.model}
-                            classesRoles={this.state.classesRoles}
-                            onSelect={(classRole, type) => {
+                            classesGroups={this.state.classesGroups}
+                            onSelect={(classGroup, type) => {
                                 this.setState(state => {
                                     const current = {
                                         type,
-                                        ...classRole
+                                        ...classGroup
                                     };
 
-                                    if (current.type === "role") {
-                                        current.modelPath = `roles.${current.id}`;
+                                    if (current.type === "group") {
+                                        current.modelPath = `groups.${current.id}`;
                                     } else {
                                         current.modelPath = `${current.id}`;
                                     }
 
-                                    state.classesRoles.current = current;
+                                    state.classesGroups.current = current;
                                     return state;
                                 });
                             }}
@@ -111,7 +111,7 @@ class Access extends React.Component {
                         <Permissions
                             model={this.props.model}
                             form={this.props.form}
-                            classesRoles={this.state.classesRoles}
+                            classesGroups={this.state.classesGroups}
                             onToggle={path => {
                                 this.props.form.setState(state => {
                                     if (_.get(state.model, "scope." + path)) {
