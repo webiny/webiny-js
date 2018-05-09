@@ -283,6 +283,11 @@ class Entity {
         try {
             const events = params.events || {};
             events.save !== false && (await this.emit("save"));
+            if (existing) {
+                events.create !== false && (await this.emit("update"));
+            } else {
+                events.update !== false && (await this.emit("create"));
+            }
 
             params.validation !== false && (await this.validate());
 
