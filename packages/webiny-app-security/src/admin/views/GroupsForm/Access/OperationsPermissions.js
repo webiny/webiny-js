@@ -4,7 +4,7 @@ import { createComponent, i18n, app } from "webiny-app";
 import gql from "graphql-tag";
 
 import _ from "lodash";
-import TogglePermissionButton from "./../../components/TogglePermissionButton";
+import TogglePermissionButton from "./OperationsPermissions/TogglePermissionButton";
 
 const t = i18n.namespace("Security.EntitiesForm.Access.Permissions.TogglePermissionButton");
 

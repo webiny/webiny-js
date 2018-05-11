@@ -6,7 +6,7 @@ import { SecuritySettings } from "./..";
 import type { IAuthentication, IToken } from "./../../types";
 import _ from "lodash";
 
-class Authentication implements IAuthentication {
+class Security implements IAuthentication {
     config: {
         token: IToken,
         strategies: {
@@ -109,7 +109,16 @@ class Authentication implements IAuthentication {
 
         const entity = attribute.getParentModel().getParentEntity();
 
-        if (identity) {
+        if (
+            _.get(
+                this.settings,
+                `entities.${entity.classId}.other.attributes.${attribute.name}.write`
+            )
+        ) {
+            return true;
+        }
+
+        if (!identity) {
             if (this.identityIsOwner(identity, entity)) {
                 if (
                     _.get(
@@ -133,10 +142,23 @@ class Authentication implements IAuthentication {
             }
         }
 
-        return _.get(
-            this.settings,
-            `entities.${entity.classId}.other.attributes.${attribute.name}.write`
-        );
+        // Check if one of the groups user belongs to allows action.
+        for (let i = 0; i < identity.getAttribute("groups").value.current.length; i++) {
+            let permissions = this.sudoSync(() => {
+                return identity.getAttribute("groups").value.current[i].permissions;
+            });
+
+            if (
+                _.get(
+                    permissions,
+                    `entities.${entity.classId}.attributes.${attribute.name}.write`
+                )
+            ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     canGetValue(identity, attribute) {
@@ -146,34 +168,58 @@ class Authentication implements IAuthentication {
 
         const entity = attribute.getParentModel().getParentEntity();
 
-        if (identity) {
-            if (this.identityIsOwner(identity, entity)) {
-                if (
-                    _.get(
-                        this.settings,
-                        `entities.${entity.classId}.owner.attributes.${attribute.name}.read`
-                    )
-                ) {
-                    return true;
-                }
-            }
+        if (
+            _.get(
+                this.settings,
+                `entities.${entity.classId}.other.attributes.${attribute.name}.read`
+            )
+        ) {
+            return true;
+        }
 
-            if (this.identityIsInGroup(identity, entity)) {
-                if (
-                    _.get(
-                        this.settings,
-                        `entities.${entity.classId}.group.attributes.${attribute.name}.read`
-                    )
-                ) {
-                    return true;
-                }
+        if (!identity) {
+            return false;
+        }
+
+        if (this.identityIsOwner(identity, entity)) {
+            if (
+                _.get(
+                    this.settings,
+                    `entities.${entity.classId}.owner.attributes.${attribute.name}.read`
+                )
+            ) {
+                return true;
             }
         }
 
-        return _.get(
-            this.settings,
-            `entities.${entity.classId}.other.attributes.${attribute.name}.read`
-        );
+        if (this.identityIsInGroup(identity, entity)) {
+            if (
+                _.get(
+                    this.settings,
+                    `entities.${entity.classId}.group.attributes.${attribute.name}.read`
+                )
+            ) {
+                return true;
+            }
+        }
+
+        // Check if one of the groups user belongs to allows action.
+        for (let i = 0; i < identity.getAttribute("groups").value.current.length; i++) {
+            let permissions = this.sudoSync(() => {
+                return identity.getAttribute("groups").value.current[i].permissions;
+            });
+
+            if (
+                _.get(
+                    permissions,
+                    `entities.${entity.classId}.attributes.${attribute.name}.read`
+                )
+            ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     canExecuteOperation(identity, entity, operation) {
@@ -181,25 +227,35 @@ class Authentication implements IAuthentication {
             return true;
         }
 
-        if (identity) {
-            if (this.identityIsOwner(identity, entity)) {
-                if (
-                    _.get(this.settings, `entities.${entity.classId}.owner.operations.${operation}`)
-                ) {
-                    return true;
-                }
-            }
+        if (_.get(this.settings, `entities.${entity.classId}.other.operations.${operation}`)) {
+            return true;
+        }
 
-            if (this.identityIsInGroup(identity, entity)) {
-                if (
-                    _.get(this.settings, `entities.${entity.classId}.group.operations.${operation}`)
-                ) {
-                    return true;
-                }
+        if (!identity) {
+            return false;
+        }
+
+        if (this.identityIsOwner(identity, entity)) {
+            if (_.get(this.settings, `entities.${entity.classId}.owner.operations.${operation}`)) {
+                return true;
             }
         }
 
-        return _.get(this.settings, `entities.${entity.classId}.other.operations.${operation}`);
+        if (this.identityIsInGroup(identity, entity)) {
+            if (_.get(this.settings, `entities.${entity.classId}.group.operations.${operation}`)) {
+                return true;
+            }
+        }
+
+        // Check if one of the groups user belongs to allows action.
+        for (let i = 0; i < identity.getAttribute("groups").value.current.length; i++) {
+            let group = identity.getAttribute("groups").value.current[i];
+            if (_.get(group, `permissions.entities.${entity.classId}.operations.${operation}`)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     assignGroup(entity, group) {
@@ -247,13 +303,15 @@ class Authentication implements IAuthentication {
         }
 
         const identityId = decoded.data.identityId;
-        const instance = await identity.findById(identityId);
+        const instance = await this.sudo(() => identity.findById(identityId));
         if (!instance) {
             throw new AuthenticationError(
                 `Identity ID ${identityId} not found!`,
                 AuthenticationError.IDENTITY_INSTANCE_NOT_FOUND
             );
         }
+
+        await this.sudo(() => instance.getAttribute("groups").value.load());
 
         return instance;
     }
@@ -277,10 +335,15 @@ class Authentication implements IAuthentication {
             );
         }
 
-        return this.sudo(() => {
-            return strategyObject.authenticate(data, identity);
+        return this.sudo(async () => {
+            const authenticated = await strategyObject.authenticate(data, identity);
+
+            // Make sure groups are loaded, so they can synchronously be checked.
+            await authenticated.getAttribute("groups").value.load();
+
+            return authenticated;
         });
     }
 }
 
-export default Authentication;
+export default Security;

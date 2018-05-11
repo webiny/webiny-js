@@ -1,10 +1,10 @@
 import React from "react";
-import styles from "./ToggleAccessButton.scss";
+import styles from "./TogglePermissionButton.scss";
 import { createComponent } from "webiny-app";
 import _ from "lodash";
 import classNames from "classnames";
 
-class ToggleAccessButton extends React.Component {
+class TogglePermissionButton extends React.Component {
     constructor() {
         super();
         this.ref = null;
@@ -17,15 +17,15 @@ class ToggleAccessButton extends React.Component {
             value
         } = this.props;
         return (
-            <div className={styles.toggleAccessButtonWrapper} ref={ref => (this.ref = ref)}>
+            <div className={styles.togglePermissionButtonWrapper} ref={ref => (this.ref = ref)}>
                 <Button
                     type="primary"
                     onClick={() => {
                         this.ref.querySelector("button").blur();
                         onClick();
                     }}
-                    className={classNames(styles.toggleAccessButton, {
-                        [styles.toggleAccessButtonExposed]: value
+                    className={classNames(styles.togglePermissionButton, {
+                        [styles.togglePermissionButtonExposed]: value
                     })}
                 >
                     {this.props.label}
@@ -35,13 +35,13 @@ class ToggleAccessButton extends React.Component {
     }
 }
 
-ToggleAccessButton.defaultProps = {
+TogglePermissionButton.defaultProps = {
     label: null,
     method: null,
     value: false,
     onClick: _.noop
 };
 
-export default createComponent(ToggleAccessButton, {
+export default createComponent(TogglePermissionButton, {
     modules: ["Button"]
 });

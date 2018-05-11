@@ -114,14 +114,14 @@ export default (app, config, schema) => {
         args: {
             id: { type: new GraphQLNonNull(GraphQLString) },
             class: { type: new GraphQLNonNull(GraphQLString) },
-            permission: { type: new GraphQLNonNull(GraphQLJSON) }
+            operation: { type: new GraphQLNonNull(GraphQLString) }
         },
         async resolve(root, args) {
-            const { id, permission } = args;
+            const { id, operation } = args;
             const settings = await SecuritySettings.load();
 
             const settingsData = _.cloneDeep(settings.data);
-            let path = `entities.${id}.${args.class}.operations.${permission.name}`;
+            let path = `entities.${id}.${args.class}.operations.${operation}`;
 
             if (_.get(settingsData, path)) {
                 _.unset(settingsData, path);
@@ -148,15 +148,15 @@ export default (app, config, schema) => {
             id: { type: new GraphQLNonNull(GraphQLString) },
             class: { type: new GraphQLNonNull(GraphQLString) },
             attribute: { type: new GraphQLNonNull(GraphQLString) },
-            type: { type: GraphQLString }
+            operation: { type: new GraphQLNonNull(GraphQLString) }
         },
         async resolve(root, args) {
-            const { id, attribute, type } = args;
+            const { id, attribute, operation } = args;
             const settings = await SecuritySettings.load();
 
             const settingsData = _.cloneDeep(settings.data);
-            if (type) {
-                let path = `entities.${id}.${args.class}.attributes.${attribute}.${type}`;
+            if (operation) {
+                let path = `entities.${id}.${args.class}.attributes.${attribute}.${operation}`;
                 if (_.get(settingsData, path)) {
                     _.unset(settingsData, path);
                 } else {

@@ -1,8 +1,8 @@
-.toggleAccessButtonWrapper {
+.togglePermissionButtonWrapper {
 	display: inline-block;
 }
 
-.toggleAccessButtonWrapper button.toggleAccessButton {
+.togglePermissionButtonWrapper button.togglePermissionButton {
 	border-radius: 2px;
 	width: 50px;
 	height: 50px;
@@ -14,17 +14,17 @@
 	display: inline-block;
 }
 
-.toggleAccessButtonWrapper button.toggleAccessButton:hover:not(:disabled) {
+.togglePermissionButtonWrapper button.togglePermissionButton:hover:not(:disabled) {
 	box-shadow: 0 0 0 0 #FA5723;
 }
 
-.toggleAccessButtonWrapper button.toggleAccessButtonExposed {
+.togglePermissionButtonWrapper button.togglePermissionButtonExposed {
 	color: white;
 	background-color: #FA5723;
 	border: 1px solid #ED4005;
 }
 
-.toggleAccessButtonWrapper button.toggleAccessButtonPublic {
+.togglePermissionButtonWrapper button.togglePermissionButtonPublic {
 	background-color: #26AFA6;
 	color: white;
 	border: none;

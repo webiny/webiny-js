@@ -1,7 +1,7 @@
 // @flow
 import { GraphQLUnionType } from "graphql";
 import { User, Group, SecuritySettings } from "./index";
-import AuthenticationService from "./services/authentication";
+import AuthenticationService from "./services/security";
 import convertToGraphQL from "./attributes/convertToGraphQL";
 import registerAttributes from "./attributes/registerAttributes";
 import createLoginQueries from "./utils/createLoginQueries";
@@ -48,35 +48,18 @@ export default (config: Object = {}) => {
         app.entities.addEntityClass(Group);
         app.entities.addEntityClass(SecuritySettings);
 
-        /*  Entity.onGet(({attribute, entity}) => {
-            if (attribute) {
-                const { identity } = app.getRequest();
-                if (!security.canGetValue(identity, attribute)) {
-                    throw Error(
-                        `Cannot get value of attribute "${attribute.name}" on entity "${
-                            entity.classId
-                        }"`
-                    );
-                }
-            }
-        });*/
-
-        /*
-        Entity.onSet(( entity , attributeName) => {
-            const attr: ?Attribute = entity.getAttribute(attributeName);
-            if (attr) {
-                const { identity } = app.getRequest();
-
-                if (!security.canSetValue(identity, entity, attributeName)) {
-                    throw Error(
-                        `Cannot set value of attribute "${attributeName}" on entity "${entity.classId}"`
-                    );
-                }
+        Entity.onGet(({ attribute, entity }) => {
+            const { identity } = app.getRequest();
+            if (!security.canGetValue(identity, attribute)) {
+                throw Error(
+                    `Cannot get value of attribute "${attribute.name}" on entity "${
+                        entity.classId
+                    }"`
+                );
             }
         });
-*/
 
-        ["create", "update", "delete"].forEach(operation => {
+        ["create", "update", "delete", "read"].forEach(operation => {
             Entity.on(operation, ({ entity }) => {
                 const { identity } = app.getRequest();
 

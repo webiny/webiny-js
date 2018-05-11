@@ -3,7 +3,7 @@ import sinon from "sinon";
 import { QueryResult } from "webiny-entity";
 
 import { Company, User, Issue } from "./entities/identityAttributeEntities";
-import Authentication from "../src/services/authentication";
+import Security from "../src/services/security";
 import registerAttributes from "./../src/attributes/registerAttributes";
 
 const sandbox = sinon.sandbox.create();
@@ -11,7 +11,7 @@ const sandbox = sinon.sandbox.create();
 describe("Identity attribute test", () => {
     before(() => {
         // Setup Authentication service
-        const authentication = new Authentication({
+        const authentication = new Security({
             identities: [{ identity: User }, { identity: Company }]
         });
 

@@ -12,6 +12,7 @@ class Group extends MySQLTable {
         this.column("slug")
             .varChar(50)
             .setNotNull();
+        this.column("permissions").json();
     }
 }
 

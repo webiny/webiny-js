@@ -12,6 +12,9 @@ class Group extends Entity {
         this.attr("description")
             .char()
             .setValidators("required");
+        this.attr("permissions")
+            .object()
+            .setValidators();
     }
 }
 

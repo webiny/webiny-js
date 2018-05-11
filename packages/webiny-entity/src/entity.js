@@ -391,7 +391,6 @@ class Entity {
         const newParams = _.merge(_.cloneDeep(params), { query: { id } });
         return await this.findOne(newParams);
     }
-
     /**
      * Finds one or more entities matched by given IDs.
      * @param ids
@@ -421,10 +420,12 @@ class Entity {
         if (_.isObject(result)) {
             const pooled = this.getEntityPool().get(this, result.id);
             if (pooled) {
+                await pooled.emit("read");
                 return pooled;
             }
 
             const entity = new this().setExisting().populateFromStorage(((result: any): Object));
+            await entity.emit("read");
             this.getEntityPool().add(entity);
             return entity;
         }
@@ -453,8 +454,10 @@ class Entity {
                 const pooled = this.getEntityPool().get(this, result[i].id);
                 if (pooled) {
                     entityCollection.push(pooled);
+                    await pooled.emit("read");
                 } else {
                     const entity = new this().setExisting().populateFromStorage(result[i]);
+                    await entity.emit("read");
                     this.getEntityPool().add(entity);
                     entityCollection.push(entity);
                 }

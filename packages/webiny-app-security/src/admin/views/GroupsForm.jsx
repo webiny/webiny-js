@@ -1,13 +1,9 @@
 import React from "react";
 import { app, i18n, createComponent } from "webiny-app";
+import GroupPermissions from "./GroupsForm/GroupPermissions";
 const t = i18n.namespace("Security.GroupsForm");
 
 class GroupsForm extends React.Component {
-    constructor() {
-        super();
-        this.state = { searchQuery: {} };
-    }
-
     render() {
         const {
             AdminLayout,
@@ -21,6 +17,7 @@ class GroupsForm extends React.Component {
             Input,
             Button,
             Loader,
+            Tabs
         } = this.props.modules;
 
         return (
@@ -28,8 +25,7 @@ class GroupsForm extends React.Component {
                 <FormData
                     entity="SecurityGroup"
                     withRouter
-                    fields="id name slug description"
-                    defaultModel={{ permissions: [] }}
+                    fields="id name slug description permissions"
                     onSubmitSuccess="Groups.List"
                     onCancel="Groups.List"
                     onSuccessMessage={({ model }) => {
@@ -61,38 +57,52 @@ class GroupsForm extends React.Component {
                                         )}
                                         <View.Body>
                                             {loading && <Loader />}
-                                            <Section title={t`General`} />
-                                            <Grid.Row>
-                                                <Grid.Col all={6}>
-                                                    <Bind>
-                                                        <Input
-                                                            label={t`Name`}
-                                                            name="name"
-                                                            validators="required"
-                                                        />
-                                                    </Bind>
-                                                </Grid.Col>
-                                                <Grid.Col all={6}>
-                                                    <Bind>
-                                                        <Input
-                                                            label={t`Slug`}
-                                                            name="slug"
-                                                            validators="required"
-                                                        />
-                                                    </Bind>
-                                                </Grid.Col>
-                                            </Grid.Row>
-                                            <Grid.Row>
-                                                <Grid.Col all={12}>
-                                                    <Bind>
-                                                        <Input
-                                                            label={t`Description`}
-                                                            name="description"
-                                                            validators="required"
-                                                        />
-                                                    </Bind>
-                                                </Grid.Col>
-                                            </Grid.Row>{" "}
+
+                                            <Tabs size="large">
+                                                <Tabs.Tab label={t`General`}>
+                                                    <Grid.Row>
+                                                        <Grid.Col all={6}>
+                                                            <Bind>
+                                                                <Input
+                                                                    label={t`Name`}
+                                                                    name="name"
+                                                                    validators="required"
+                                                                />
+                                                            </Bind>
+                                                        </Grid.Col>
+                                                        <Grid.Col all={6}>
+                                                            <Bind>
+                                                                <Input
+                                                                    label={t`Slug`}
+                                                                    name="slug"
+                                                                    validators="required"
+                                                                />
+                                                            </Bind>
+                                                        </Grid.Col>
+                                                    </Grid.Row>
+                                                    <Grid.Row>
+                                                        <Grid.Col all={12}>
+                                                            <Bind>
+                                                                <Input
+                                                                    label={t`Description`}
+                                                                    name="description"
+                                                                    validators="required"
+                                                                />
+                                                            </Bind>
+                                                        </Grid.Col>
+                                                    </Grid.Row>
+                                                </Tabs.Tab>
+                                                <Tabs.Tab label={t`Entity permissions`}>
+                                                    <Grid.Row>
+                                                        <Grid.Col all={12}>
+                                                            <GroupPermissions
+                                                                model={model}
+                                                                form={form}
+                                                            />
+                                                        </Grid.Col>
+                                                    </Grid.Row>
+                                                </Tabs.Tab>
+                                            </Tabs>
                                         </View.Body>
                                         <View.Footer>
                                             <Button
@@ -130,6 +140,7 @@ export default createComponent(GroupsForm, {
         "Grid",
         "Section",
         "Loader",
+        "Tabs",
         {
             AdminLayout: "Admin.Layout"
         }

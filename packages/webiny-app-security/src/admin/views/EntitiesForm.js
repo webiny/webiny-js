@@ -48,7 +48,9 @@ class EntitiesForm extends React.Component {
                     <View.Body>
                         <Grid.Row>
                             <Grid.Col all={12}>
-                                <Access model={this.state.model} form={this} />
+                                {this.state.model && (
+                                    <Access model={this.state.model} form={this} />
+                                )}
                             </Grid.Col>
                         </Grid.Row>
                     </View.Body>
