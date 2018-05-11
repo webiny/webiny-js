@@ -3,9 +3,8 @@ import {
     GraphQLString,
     GraphQLInt,
     GraphQLList,
-    GraphQLBoolean,
-    GraphQLNonNull,
-    GraphQLID
+    GraphQLID,
+    GraphQLNonNull
 } from "graphql";
 import GraphQLJSON from "graphql-type-json";
 import { SecuritySettings } from "webiny-api-security";
@@ -51,7 +50,7 @@ export default (app, config, schema) => {
             }
         }),
         resolve() {
-            const list = app.services.get("authentication").generateEntitiesList();
+            const list = app.entities.getEntityClasses().map(entityClass => entityClass.describe());
             return {
                 list,
                 meta: {
@@ -65,51 +64,53 @@ export default (app, config, schema) => {
 
     schema.addType({
         type: new GraphQLObjectType({
-            name: "entityAccessClassType",
+            name: "getEntityPermissionType",
             fields: {
-                operations: {
+                permissions: {
                     type: new GraphQLObjectType({
-                        name: "entityAccessClassOperationsType",
+                        name: "entityPermissions",
                         fields: {
-                            create: { type: GraphQLBoolean },
-                            delete: { type: GraphQLBoolean },
-                            update: { type: GraphQLBoolean },
-                            read: { type: GraphQLBoolean }
+                            id: { type: GraphQLID },
+                            owner: { type: GraphQLJSON },
+                            group: { type: GraphQLJSON },
+                            other: { type: GraphQLJSON }
                         }
                     })
                 },
-                methods: { type: GraphQLJSON },
-                attributes: { type: GraphQLJSON }
-            }
-        })
-    });
-    schema.addType({
-        type: new GraphQLObjectType({
-            name: "entityPermissions",
-            fields: {
-                id: { type: GraphQLID },
-                owner: { type: GraphQLJSON },
-                group: { type: GraphQLJSON },
-                other: { type: GraphQLJSON }
+                entity: {
+                    type: new GraphQLObjectType({
+                        name: "entityDescription",
+                        fields: {
+                            name: { type: GraphQLString },
+                            id: { type: GraphQLString },
+                            attributes: {
+                                type: new GraphQLList(GraphQLJSON)
+                            }
+                        }
+                    })
+                }
             }
         })
     });
 
     schema.query["getEntityPermission"] = {
         description: "Returns an entity.",
-        type: schema.getType("entityPermissions"),
+        type: schema.getType("getEntityPermissionType"),
         args: {
             id: { type: GraphQLID }
         },
         async resolve(root, args) {
             const settings = await SecuritySettings.load();
-            return await settings.get(`data.entities.${args.id}`);
+            return {
+                entity: app.entities.getEntityClass(args.id).describe(),
+                permissions: await settings.get(`data.entities.${args.id}`)
+            };
         }
     };
 
-    schema.mutation["toggleEntityPermission"] = {
-        description: "Toggles entity permissions",
-        type: schema.getType("entityPermissions"),
+    schema.mutation["toggleEntityOperationPermission"] = {
+        description: "Toggles entity operation permissions.",
+        type: schema.getType("getEntityPermissionType"),
         args: {
             id: { type: new GraphQLNonNull(GraphQLString) },
             class: { type: new GraphQLNonNull(GraphQLString) },
@@ -120,7 +121,7 @@ export default (app, config, schema) => {
             const settings = await SecuritySettings.load();
 
             const settingsData = _.cloneDeep(settings.data);
-            let path = `entities.${id}.${args.class}.${permission.type}.${permission.name}`;
+            let path = `entities.${id}.${args.class}.operations.${permission.name}`;
 
             if (_.get(settingsData, path)) {
                 _.unset(settingsData, path);
@@ -133,7 +134,45 @@ export default (app, config, schema) => {
 
             await settings.save();
 
-            return await settings.get(`data.entities.${args.id}`);
+            return {
+                entity: app.entities.getEntityClass(args.id).describe(),
+                permissions: await settings.get(`data.entities.${args.id}`)
+            };
+        }
+    };
+
+    schema.mutation["toggleEntityAttributePermission"] = {
+        description: "Toggles entity attribute permissions.",
+        type: schema.getType("getEntityPermissionType"),
+        args: {
+            id: { type: new GraphQLNonNull(GraphQLString) },
+            class: { type: new GraphQLNonNull(GraphQLString) },
+            attribute: { type: new GraphQLNonNull(GraphQLString) },
+            type: { type: GraphQLString }
+        },
+        async resolve(root, args) {
+            const { id, attribute, type } = args;
+            const settings = await SecuritySettings.load();
+
+            const settingsData = _.cloneDeep(settings.data);
+            if (type) {
+                let path = `entities.${id}.${args.class}.attributes.${attribute}.${type}`;
+                if (_.get(settingsData, path)) {
+                    _.unset(settingsData, path);
+                } else {
+                    _.set(settingsData, path, true);
+                }
+            }
+
+            // To ensure data "dirty" is triggered correctly.
+            settings.data = settingsData;
+
+            await settings.save();
+
+            return {
+                entity: app.entities.getEntityClass(args.id).describe(),
+                permissions: await settings.get(`data.entities.${args.id}`)
+            };
         }
     };
 };

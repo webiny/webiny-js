@@ -48,31 +48,36 @@ export default (config: Object = {}) => {
         app.entities.addEntityClass(Group);
         app.entities.addEntityClass(SecuritySettings);
 
-        Entity.onGet((entity, attributeName) => {
-            const attr: ?Attribute = entity.getModel().getAttribute(attributeName);
-            if (attr) {
-                if (!app.services.get("authentication").canGetValue(entity, attributeName)) {
+        /*  Entity.onGet(({attribute, entity}) => {
+            if (attribute) {
+                const { identity } = app.getRequest();
+                if (!security.canGetValue(identity, attribute)) {
                     throw Error(
-                        `Cannot set value of attribute ${attributeName} on entity ${entity.classId}`
+                        `Cannot get value of attribute "${attribute.name}" on entity "${
+                            entity.classId
+                        }"`
                     );
                 }
             }
-        });
+        });*/
 
-        Entity.onSet((entity, attributeName) => {
-            const attr: ?Attribute = entity.getModel().getAttribute(attributeName);
+        /*
+        Entity.onSet(( entity , attributeName) => {
+            const attr: ?Attribute = entity.getAttribute(attributeName);
             if (attr) {
-                if (!security.canSetValue(entity, attributeName)) {
+                const { identity } = app.getRequest();
+
+                if (!security.canSetValue(identity, entity, attributeName)) {
                     throw Error(
-                        `Cannot set value of attribute ${attributeName} on entity ${entity.classId}`
+                        `Cannot set value of attribute "${attributeName}" on entity "${entity.classId}"`
                     );
                 }
             }
         });
+*/
 
         ["create", "update", "delete"].forEach(operation => {
             Entity.on(operation, ({ entity }) => {
-                console.log(operation);
                 const { identity } = app.getRequest();
 
                 if (!security.canExecuteOperation(identity, entity, operation)) {

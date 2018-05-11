@@ -1,75 +1,65 @@
 import React from "react";
 import Access from "./EntitiesForm/Access";
+import gql from "graphql-tag";
 
 import { app, i18n, createComponent } from "webiny-app";
 const t = i18n.namespace("Security.EntitiesForm");
 
 class EntitiesForm extends React.Component {
+    constructor() {
+        super();
+        this.state = {
+            model: null,
+            entities: {
+                list: []
+            }
+        };
+
+        const query = gql`
+            {
+                getEntityPermission(id: "${app.router.getParams("id")}") {
+                    entity { id attributes } permissions { owner group other }
+                }
+                listEntities {
+                    list {
+                      id
+                      name
+                    }
+                }
+            }
+        `;
+
+        app.graphql.query({ query }).then(({ data }) => {
+            this.setState(state => {
+                state.model = data.getEntityPermission;
+                state.entities = data.listEntities;
+                return state;
+            });
+        });
+    }
+
     render() {
-        const {
-            AdminLayout,
-            Form,
-            FormData,
-            FormError,
-            View,
-            Grid,
-            Button,
-            Loader
-        } = this.props.modules;
+        const { AdminLayout, View, Grid, Button } = this.props.modules;
 
         return (
             <AdminLayout>
-                <FormData
-                    entity="EntityPermission"
-                    withRouter
-                    fields={`owner group other`}
-                    onSubmitSuccess="Entities.List"
-                    onCancel="Entities.List"
-                    defaultModel={{ id: app.router.getParams("id") }}
-                    onSuccessMessage={({ model }) => {
-                        return (
-                            <span>
-                                {t`Entity {entity} was saved successfully!`({
-                                    entity: <strong>{model.name}</strong>
-                                })}
-                            </span>
-                        );
-                    }}
-                >
-                    {({ model, onSubmit, error, loading, invalidFields }) => (
-                        <Form model={model} onSubmit={onSubmit} invalidFields={invalidFields}>
-                            {({ model, form }) => {
-                                return (
-                                    <View.Form>
-                                        <View.Header title={t`Security - Edit entity`} />
-                                        {error && (
-                                            <View.Error>
-                                                <FormError error={error} />
-                                            </View.Error>
-                                        )}
-                                        <View.Body>
-                                            {loading && <Loader />}
-                                            <Grid.Row>
-                                                <Grid.Col all={12}>
-                                                    <Access model={model} form={form} />
-                                                </Grid.Col>
-                                            </Grid.Row>
-                                        </View.Body>
-                                        <View.Footer>
-                                            <Button
-                                                type="default"
-                                                onClick={() =>
-                                                    app.router.goToRoute("Entities.List")
-                                                }
-                                                label={t`Go back`}
-                                            />
-                                        </View.Footer>
-                                    </View.Form>
-                                );
-                            }}
-                        </Form>
-                    )}
-                </FormData>
+                <View.Form>
+                    <View.Header title={t`Security - Edit entity`} />
+                    <View.Body>
+                        <Grid.Row>
+                            <Grid.Col all={12}>
+                                <Access model={this.state.model} form={this} />
+                            </Grid.Col>
+                        </Grid.Row>
+                    </View.Body>
+                    <View.Footer>
+                        <Button
+                            type="default"
+                            onClick={() => app.router.goToRoute("Entities.List")}
+                            label={t`Go back`}
+                        />
+                    </View.Footer>
+                </View.Form>
             </AdminLayout>
         );
     }

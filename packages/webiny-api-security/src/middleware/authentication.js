@@ -21,24 +21,24 @@ export default (options: { token: Function | string }) => {
      */
     return async (params: Object, next: Function) => {
         const { req } = params;
+
+        const security = app.services.get("authentication");
+
+        // Initializes authentication (loads authorization settings).
+        await security.init();
+
         const token =
             typeof options.token === "function" ? options.token(req) : req.get(options.token);
         if (!token) {
             return next();
         }
 
-        const authentication = app.services.get("authentication");
-
-        // Initializes authentication (loads authorization settings).
-        await authentication.init();
-
         // Assigns identity retrieved from received token.
-        req.identity = await authentication.verifyToken(token);
+        req.identity = await security.verifyToken(token);
 
         // Since we need to access groups synchronously at later stages, we must load all assigned groups.
-        if (req.identity) {
-            await req.identity.getAttribute("groups").value.load();
-        }
+        req.identity && (await req.identity.getAttribute("groups").value.load());
+
         next();
     };
 };

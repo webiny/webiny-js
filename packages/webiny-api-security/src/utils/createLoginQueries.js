@@ -17,17 +17,20 @@ const createLoginDataForIdentity = (Identity, schema) => {
 
 // Create a login query for each identity and strategy
 export default (app, config, schema) => {
-    const authentication = app.services.get("authentication");
+    const security = app.services.get("authentication");
     // For each Identity...
     config.authentication.identities.map(({ identity: Identity, authenticate }) => {
         // For each strategy...
         authenticate.map(async ({ strategy, expiresOn, field }) => {
-            const { args } = authentication.config.strategies[strategy];
+            const { args } = security.config.strategies[strategy];
             schema.query[field] = {
                 type: createLoginDataForIdentity(Identity, schema),
                 args: args(),
                 async resolve(root, args) {
-                    const identity = await authentication.authenticate(args, Identity, strategy);
+                    const identity = await security.authenticate(args, Identity, strategy);
+
+                    // Set identified identity as current.
+                    security.setIdentity(identity);
 
                     const error = `"expiresOn" function must be configured for "${strategy}" strategy!`;
                     invariant(typeof expiresOn === "function", error);
@@ -39,7 +42,7 @@ export default (app, config, schema) => {
 
                     return {
                         identity,
-                        token: await authentication.createToken(identity, expiration),
+                        token: await security.createToken(identity, expiration),
                         expiresOn: expiration
                     };
                 }

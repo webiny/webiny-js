@@ -14,9 +14,210 @@ class Authentication implements IAuthentication {
         },
         identities: Array<Object>
     };
-
+    superUser: boolean;
     constructor(config: Object) {
         this.config = config;
+        this.settings = null;
+        this.superUser = false;
+    }
+
+    async init() {
+        this.settings = await this.sudo(() => {
+            return SecuritySettings.load().then(settings => settings.data);
+        });
+    }
+
+    /**
+     * Returns Identity class for given `classId`.
+     * @param {string} classId
+     * @returns {Class<Identity>} Identity class corresponding to given `classId`.
+     */
+    getIdentityClass(classId: string): Class<Identity> | null {
+        for (let i = 0; i < this.config.identities.length; i++) {
+            if (this.config.identities[i].identity.classId === classId) {
+                return this.config.identities[i].identity;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns set `Identity` classes.
+     * @returns {Array<Class<Identity>>} Set `Identity` classes.
+     */
+    getIdentityClasses(): Array<Class<Identity>> | null {
+        return this.config.identities.map(current => {
+            return current.identity;
+        });
+    }
+
+    getIdentity() {
+        return app.getRequest().identity;
+    }
+
+    setIdentity(identity) {
+        app.getRequest().identity = identity;
+        return this;
+    }
+
+    async sudo(option) {
+        if (typeof option === "function") {
+            this.superUser = true;
+            const results = await option();
+            this.superUser = false;
+            return results;
+        }
+
+        this.superUser = option !== false;
+    }
+
+    sudoSync(option) {
+        if (typeof option === "function") {
+            this.superUser = true;
+            const results = option();
+            this.superUser = false;
+            return results;
+        }
+
+        this.superUser = option !== false;
+    }
+
+    identityIsOwner(identity, entity) {
+        return this.sudoSync(() => {
+            return identity.id === _.get(entity, "meta.owner");
+        });
+    }
+
+    identityIsInGroup(identity, entity) {
+        return this.sudoSync(() => {
+            const groups = identity.getAttribute("groups").value.getCurrent() || [];
+            for (let i = 0; i < groups.length; i++) {
+                let group = groups[i];
+                if (group.id === _.get(entity, "meta.group")) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+    }
+
+    canSetValue(identity, attribute) {
+        if (this.superUser) {
+            return true;
+        }
+
+        const entity = attribute.getParentModel().getParentEntity();
+
+        if (identity) {
+            if (this.identityIsOwner(identity, entity)) {
+                if (
+                    _.get(
+                        this.settings,
+                        `entities.${entity.classId}.owner.attributes.${attribute.name}.write`
+                    )
+                ) {
+                    return true;
+                }
+            }
+
+            if (this.identityIsInGroup(identity, entity)) {
+                if (
+                    _.get(
+                        this.settings,
+                        `entities.${entity.classId}.group.attributes.${attribute.name}.write`
+                    )
+                ) {
+                    return true;
+                }
+            }
+        }
+
+        return _.get(
+            this.settings,
+            `entities.${entity.classId}.other.attributes.${attribute.name}.write`
+        );
+    }
+
+    canGetValue(identity, attribute) {
+        if (this.superUser) {
+            return true;
+        }
+
+        const entity = attribute.getParentModel().getParentEntity();
+
+        if (identity) {
+            if (this.identityIsOwner(identity, entity)) {
+                if (
+                    _.get(
+                        this.settings,
+                        `entities.${entity.classId}.owner.attributes.${attribute.name}.read`
+                    )
+                ) {
+                    return true;
+                }
+            }
+
+            if (this.identityIsInGroup(identity, entity)) {
+                if (
+                    _.get(
+                        this.settings,
+                        `entities.${entity.classId}.group.attributes.${attribute.name}.read`
+                    )
+                ) {
+                    return true;
+                }
+            }
+        }
+
+        return _.get(
+            this.settings,
+            `entities.${entity.classId}.other.attributes.${attribute.name}.read`
+        );
+    }
+
+    canExecuteOperation(identity, entity, operation) {
+        if (this.superUser) {
+            return true;
+        }
+
+        if (identity) {
+            if (this.identityIsOwner(identity, entity)) {
+                if (
+                    _.get(this.settings, `entities.${entity.classId}.owner.operations.${operation}`)
+                ) {
+                    return true;
+                }
+            }
+
+            if (this.identityIsInGroup(identity, entity)) {
+                if (
+                    _.get(this.settings, `entities.${entity.classId}.group.operations.${operation}`)
+                ) {
+                    return true;
+                }
+            }
+        }
+
+        return _.get(this.settings, `entities.${entity.classId}.other.operations.${operation}`);
+    }
+
+    assignGroup(entity, group) {
+        if (!(entity.meta instanceof Object)) {
+            entity.meta = {};
+        }
+
+        entity.meta.group = group.id;
+        return this;
+    }
+
+    assignOwner(entity, identity) {
+        if (!(entity.meta instanceof Object)) {
+            entity.meta = {};
+        }
+
+        entity.meta.owner = identity.id;
+        return this;
     }
 
     /**
@@ -76,114 +277,9 @@ class Authentication implements IAuthentication {
             );
         }
 
-        return strategyObject.authenticate(data, identity);
-    }
-
-    /**
-     * Returns Identity class for given `classId`.
-     * @param {string} classId
-     * @returns {Class<Identity>} Identity class corresponding to given `classId`.
-     */
-    getIdentityClass(classId: string): Class<Identity> | null {
-        for (let i = 0; i < this.config.identities.length; i++) {
-            if (this.config.identities[i].identity.classId === classId) {
-                return this.config.identities[i].identity;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Returns set `Identity` classes.
-     * @returns {Array<Class<Identity>>} Set `Identity` classes.
-     */
-    getIdentityClasses(): Array<Class<Identity>> | null {
-        return this.config.identities.map(current => {
-            return current.identity;
+        return this.sudo(() => {
+            return strategyObject.authenticate(data, identity);
         });
-    }
-
-    async init() {
-        this.settings = await SecuritySettings.load();
-    }
-
-    canSetValue() {
-        return true;
-    }
-
-    canGetValue() {
-        return true;
-    }
-
-    canExecuteOperation(identity, entity, operation) {
-        if (_.get(entity, "meta.owner") === identity.id) {
-            if (
-                _.get(
-                    this.settings.data,
-                    `entities.${entity.classId}.owner.operations.${operation}`
-                )
-            ) {
-                return true;
-            }
-        }
-
-        // Enables us to fetch the value synchronously (already pre-loaded in security middleware).
-        const groups = identity.getAttribute("groups").value.getCurrent() || [];
-        for (let i = 0; i < groups.length; i++) {
-            let group = groups[i];
-            if (group.id === _.get(entity, "meta.group")) {
-                if (
-                    _.get(
-                        this.settings.data,
-                        `entities.${entity.classId}.group.operations.${operation}`
-                    )
-                ) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    assignGroup(entity, group) {
-        if (!(entity.meta instanceof Object)) {
-            entity.meta = {};
-        }
-
-        entity.meta.group = group.id;
-        return this;
-    }
-
-    assignOwner(entity, identity) {
-        if (!(entity.meta instanceof Object)) {
-            entity.meta = {};
-        }
-
-        entity.meta.owner = identity.id;
-        return this;
-    }
-
-    generateEntitiesList() {
-        const classes = app.entities.getEntityClasses();
-        const output = [];
-
-        classes.forEach(Entity => {
-            const entity = new Entity();
-            output.push({
-                name: entity.getClassName(),
-                id: entity.classId,
-                attributes: Object.keys(entity.getAttributes()).map(key => {
-                    const attribute = entity.getAttribute(key);
-                    return {
-                        name: attribute.getName(),
-                        class: typeof attribute
-                    };
-                })
-            });
-        });
-
-        return output;
     }
 }
 

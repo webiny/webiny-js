@@ -17,14 +17,19 @@ class ClassesLists extends React.Component {
     }
 
     renderListItem(field, type) {
+        console.log(field);
+        const { classesGroups } = this.props;
+
+        const selected = classesGroups.current.id === field.id;
+
         const { Checkbox } = this.props.modules;
 
-        let modelPath = type === "group" ? `groups.${field.id}` : `${field.id}`;
+        let modelPath = "permissions." + (type === "group" ? `groups.${field.id}` : `${field.id}`);
 
         return (
             <li
                 className={classNames({
-                    [css.selected]: this.props.selected && this.props.selected.name === field.name
+                    [css.selected]: selected
                 })}
                 key={field.name}
             >
@@ -101,8 +106,7 @@ ClassesLists.defaultProps = {
     model: null,
     classesGroups: null,
     onSelect: _.noop,
-    onToggle: _.noop,
-    selected: null
+    onToggle: _.noop
 };
 
 export default createComponent(ClassesLists, {

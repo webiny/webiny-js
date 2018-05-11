@@ -1,71 +1,31 @@
 import React from "react";
-import css from "./Permissions.scss";
+import css from "./OperationsPermissions.scss";
 import { createComponent, i18n, app } from "webiny-app";
 import gql from "graphql-tag";
 
 import _ from "lodash";
-// import FieldsList from "./Permissions/FieldsList";
-import ToggleAccessButton from "./Permissions/ToggleAccessButton";
+import ToggleAccessButton from "./OperationsPermissions/ToggleAccessButton";
 
 const t = i18n.namespace("Security.EntitiesForm.Access.Permissions.ToggleAccessButton");
 
-class Permissions extends React.Component {
-    constructor() {
-        super();
-        this.state = { holdingShift: false };
-
-        this.setShiftDown = event => {
-            if (event.keyCode === 16 || event.charCode === 16) {
-                this.setState({ holdingShift: true });
-            }
-        };
-
-        this.setShiftUp = event => {
-            if (event.keyCode === 16 || event.charCode === 16) {
-                this.setState({ holdingShift: false });
-            }
-        };
-
-        // TODO: unmount listeners
-        window.addEventListener
-            ? document.addEventListener("keydown", this.setShiftDown)
-            : document.attachEvent("keydown", this.setShiftDown);
-        window.addEventListener
-            ? document.addEventListener("keyup", this.setShiftUp)
-            : document.attachEvent("keyup", this.setShiftUp);
-    }
-
+class OperationsPermissions extends React.Component {
     toggleOperation(name) {
         const current = this.props.classesGroups.current;
-        const modelPath = current.modelPath + ".operations." + name;
-
-        console.log(current);
-        this.props.form.setState(state => {
-            if (_.get(state.model, modelPath)) {
-                _.unset(state.model, modelPath);
-            } else {
-                _.set(state.model, modelPath, true);
-            }
-            return state;
-        });
 
         const mutation = gql`
             mutation {
-                toggleEntityPermission(
+                toggleEntityOperationPermission(
                     id: "${app.router.getParams("id")}"
                     class: "${current.id}"
                     permission: { type: "operations", name: "${name}" }
                 ) {
-                    id
-                    owner
-                    group
-                    other
+                   entity { id attributes } permissions { owner group other }
                 }
             }
         `;
 
         app.graphql.mutate({ mutation }).then(({ data }) => {
-            this.props.form.setState({ model: data.toggleEntityPermission });
+            this.props.form.setState({ model: data.toggleEntityOperationPermission });
         });
     }
 
@@ -75,9 +35,8 @@ class Permissions extends React.Component {
         }
 
         const { modelPath } = this.props.classesGroups.current;
-
         return (
-            <div className={css.permissions}>
+            <div className={css.operationsPermissions}>
                 <div className={css.crud}>
                     <div className="row">
                         <div className="col-md-12">
@@ -112,26 +71,15 @@ class Permissions extends React.Component {
                         </div>
                     </div>
                 </div>
-                {/*<FieldsList
-                    model={this.props.model}
-                    field={this.props.selectedQueryMutationField}
-                    initialPath={this.props.selectedQueryMutationField.name}
-                    schema={this.props.schema}
-                    holdingShift={this.state.holdingShift}
-                    onToggle={this.props.onToggle}
-                    onMultiToggle={this.props.onMultiToggle}
-                />*/}
             </div>
         );
     }
 }
 
-Permissions.defaultProps = {
+OperationsPermissions.defaultProps = {
     classesGroups: null,
     model: null,
-    form: null,
-    onToggleBaseOperation: _.noop,
-    onMultiToggle: _.noop
+    form: null
 };
 
-export default createComponent(Permissions, { modules: [] });
+export default createComponent(OperationsPermissions, { modules: [] });

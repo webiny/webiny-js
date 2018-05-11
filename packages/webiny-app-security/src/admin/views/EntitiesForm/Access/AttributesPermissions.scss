@@ -1,4 +1,4 @@
-ul.fieldsList {
+.attributesPermissions {
   vertical-align: top;
   display: inline-block;
   border-left: 2px dashed #e0e0e0;
@@ -12,14 +12,14 @@ ul.fieldsList {
     list-style: none;
     cursor: pointer;
     margin-bottom: 5px;
-    .field {
+    .attribute {
       background-color: #d8d8d8;
       border: 1px solid #b7b7b7;
       display: inline-block;
-      padding: 0 4px;
-      border-radius: 3px;
-      min-width: 120px;
+      padding: 0 0 0 4px;
+      min-width: 200px;
       font-size: 14px;
+      border-radius: 3px;
 
       -webkit-user-select: none;
       -khtml-user-select: none;
@@ -31,6 +31,25 @@ ul.fieldsList {
         background-color: #26AFA6;
         color: white;
         border: 1px solid #26AFA6;
+      }
+
+      .attributeName {
+        display: inline-block;
+      }
+      .readWriteButton {
+        float: right;
+        display: inline-block;
+        border-left: 1px solid #b7b7b7;
+        width: 26px;
+        text-align: center;
+        &.active {
+          background-color: #26AFA6;
+          color: white;
+          border-left: 1px solid #26AFA6;
+        }
+        &.linkedEntities {
+          font-size: 11px;
+        }
       }
     }
   }

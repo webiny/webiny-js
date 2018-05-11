@@ -35,13 +35,12 @@ class Entity {
     constructor(): Entity {
         const proxy = new Proxy((this: Object), {
             set: (instance, key, value) => {
-                this.constructor.interceptors.set.forEach(callback =>
-                    callback(instance, key, value)
-                );
-
-                const attr: ?Attribute = instance.getModel().getAttribute(key);
-                if (attr) {
-                    attr.setValue(value);
+                const attribute: ?Attribute = instance.getModel().getAttribute(key);
+                if (attribute) {
+                    this.constructor.interceptors.set.forEach(callback => {
+                        callback({ attribute, value, entity: proxy });
+                    });
+                    attribute.setValue(value);
                     return true;
                 }
 
@@ -49,15 +48,16 @@ class Entity {
                 return true;
             },
             get: (instance, key) => {
-                this.constructor.interceptors.get.forEach(callback => callback(instance, key));
-
                 if (["classId", "driver"].includes(key)) {
                     return instance.constructor[key];
                 }
 
-                const attr: ?Attribute = instance.getModel().getAttribute(key);
-                if (attr) {
-                    return attr.getValue();
+                const attribute: ?Attribute = instance.getModel().getAttribute(key);
+                if (attribute) {
+                    this.constructor.interceptors.get.forEach(callback => {
+                        callback({ attribute, entity: proxy });
+                    });
+                    return attribute.getValue();
                 }
 
                 return instance[key];
@@ -592,6 +592,25 @@ class Entity {
 
     isClean(): boolean {
         return !this.isDirty();
+    }
+
+    /**
+     * Returns information about the entity.
+     * @returns {{name: string, id: *, attributes: {name: *, class: string|string|string|string|string|string|string}[]}}
+     */
+    static describe() {
+        const instance = new this();
+        return {
+            name: instance.getClassName(),
+            id: instance.classId,
+            attributes: Object.keys(instance.getAttributes()).map(key => {
+                const attribute = instance.getAttribute(key);
+                return {
+                    name: attribute.getName(),
+                    class: typeof attribute
+                };
+            })
+        };
     }
 
     /**
