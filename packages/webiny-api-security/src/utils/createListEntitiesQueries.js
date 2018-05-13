@@ -11,6 +11,9 @@ import { SecuritySettings } from "webiny-api-security";
 import _ from "lodash";
 
 const omittedAttributes = [
+    "createdOn",
+    "updatedOn",
+    "savedOn",
     "createdBy",
     "createdByClassId",
     "updatedBy",

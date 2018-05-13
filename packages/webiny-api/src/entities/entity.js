@@ -20,7 +20,7 @@ class Entity extends BaseEntity {
 
 Entity.crud = {
     // This is false because it's being handled by the platform (because of the security).
-    logs: true,
+    logs: false,
     delete: {
         soft: true
     }

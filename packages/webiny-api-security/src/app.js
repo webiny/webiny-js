@@ -89,6 +89,10 @@ export default (config: Object = {}) => {
         });
 
         app.entities.extend("*", (entity: Entity) => {
+            entity.attr("savedOn").date();
+            entity.attr("createdOn").date();
+            entity.attr("updatedOn").date();
+
             // "savedBy" attribute - updated on both create and update events.
             entity.attr("savedByClassId").char();
             entity.attr("savedBy").identity({ classIdAttribute: "savedByClassId" });
@@ -103,18 +107,23 @@ export default (config: Object = {}) => {
 
             // We don't need a standalone "deletedBy" attribute, since its value would be the same as in "savedBy"
             // and "updatedBy" attributes. Check these attributes to find out who deleted an entity.
-            entity.on("save", () => {
+            entity.on("save", async () => {
                 if (!app.getRequest()) {
                     return;
                 }
 
-                const { identity } = app.getRequest();
-                entity.savedBy = identity;
-                if (entity.isExisting()) {
-                    entity.updatedBy = identity;
-                } else {
-                    entity.createdBy = identity;
-                }
+                await security.sudo(() => {
+                    const { identity } = app.getRequest();
+                    entity.savedBy = identity;
+                    entity.savedOn = new Date();
+                    if (entity.isExisting()) {
+                        entity.updatedBy = identity;
+                        entity.updatedOn = new Date();
+                    } else {
+                        entity.createdBy = identity;
+                        entity.createdOn = new Date();
+                    }
+                });
             });
         });
 
