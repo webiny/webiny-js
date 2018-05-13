@@ -70,14 +70,15 @@ describe("populateFromStorage test", function() {
             .stub(user.getDriver().getConnection(), "query")
             .onCall(0)
             .callsFake(() => {
-                return [
-                    [
-                        { id: 2, name: "Test-2" },
-                        { id: 3, name: "Test-3" },
-                        { id: 4, name: "Test-4" }
-                    ],
-                    [{ count: 3 }]
-                ];
+                return [{ id: 2, name: "Test-2" }];
+            })
+            .onCall(1)
+            .callsFake(() => {
+                return [{ id: 3, name: "Test-3" }];
+            })
+            .onCall(2)
+            .callsFake(() => {
+                return [{ id: 4, name: "Test-4" }];
             });
 
         assert.lengthOf(await user.simpleEntities, 3);

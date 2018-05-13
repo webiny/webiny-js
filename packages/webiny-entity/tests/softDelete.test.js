@@ -65,11 +65,17 @@ describe("soft delete test", function() {
         });
         query.restore();
 
-        query = sandbox.spy(EntityWithoutSoftDeletes.getDriver(), "find");
+        query = sandbox.spy(EntityWithoutSoftDeletes.getDriver(), "findOne");
         await EntityWithoutSoftDeletes.findByIds([123, 234]);
         expect(query.getCall(0).args[1]).to.deep.equal({
             query: {
-                id: [123, 234]
+                id: 123
+            }
+        });
+
+        expect(query.getCall(1).args[1]).to.deep.equal({
+            query: {
+                id: 234
             }
         });
         query.restore();
@@ -104,14 +110,22 @@ describe("soft delete test", function() {
         });
         query.restore();
 
-        query = sandbox.spy(EntityWithSoftDeletes.getDriver(), "find");
+        query = sandbox.spy(EntityWithSoftDeletes.getDriver(), "findOne");
         await EntityWithSoftDeletes.findByIds([123, 234]);
         expect(query.getCall(0).args[1]).to.deep.equal({
             query: {
                 deleted: false,
-                id: [123, 234]
+                id: 123
             }
         });
+
+        expect(query.getCall(1).args[1]).to.deep.equal({
+            query: {
+                deleted: false,
+                id: 234
+            }
+        });
+
         query.restore();
     });
 
@@ -144,12 +158,18 @@ describe("soft delete test", function() {
         });
         query.restore();
 
-        query = sandbox.spy(EntityWithSoftDeletes.getDriver(), "find");
+        query = sandbox.spy(EntityWithSoftDeletes.getDriver(), "findOne");
         await EntityWithSoftDeletes.findByIds([123, 234], { query: { deleted: true } });
         expect(query.getCall(0).args[1]).to.deep.equal({
             query: {
                 deleted: true,
-                id: [123, 234]
+                id: 123
+            }
+        });
+        expect(query.getCall(1).args[1]).to.deep.equal({
+            query: {
+                deleted: true,
+                id: 234
             }
         });
         query.restore();

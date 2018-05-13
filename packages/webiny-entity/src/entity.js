@@ -398,10 +398,15 @@ class Entity {
      * @param params
      */
     static async findByIds(ids: Array<mixed>, params: ?Object): Promise<EntityCollection> {
-        if (!params) {
-            params = {};
+        const output = [];
+        for (let i = 0; i < ids.length; i++) {
+            const entity = await this.findById(ids[i], params);
+            if (entity) {
+                output.push(entity);
+            }
         }
-        return await this.find(_.merge(_.cloneDeep(params), { query: { id: ids } }));
+
+        return output;
     }
 
     /**
