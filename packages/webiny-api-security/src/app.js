@@ -59,6 +59,17 @@ export default (config: Object = {}) => {
             }
         });
 
+        Entity.onSet(({ attribute, entity }) => {
+            const { identity } = app.getRequest();
+            if (!security.canSetValue(identity, attribute)) {
+                throw Error(
+                    `Cannot set value of attribute "${attribute.name}" on entity "${
+                        entity.classId
+                    }"`
+                );
+            }
+        });
+
         ["create", "update", "delete", "read"].forEach(operation => {
             Entity.on(operation, ({ entity }) => {
                 const { identity } = app.getRequest();

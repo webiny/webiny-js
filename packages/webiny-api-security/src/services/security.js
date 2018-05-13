@@ -62,24 +62,33 @@ class Security implements IAuthentication {
 
     async sudo(option) {
         if (typeof option === "function") {
-            this.superUser = true;
+            this.setSuperUser(true);
             const results = await option();
-            this.superUser = false;
+            this.setSuperUser(false);
             return results;
         }
 
-        this.superUser = option !== false;
+        this.setSuperUser(option !== false);
     }
 
     sudoSync(option) {
         if (typeof option === "function") {
-            this.superUser = true;
+            this.setSuperUser(true);
             const results = option();
-            this.superUser = false;
+            this.setSuperUser(false);
             return results;
         }
 
-        this.superUser = option !== false;
+        this.setSuperUser(option !== false);
+    }
+
+    setSuperUser(flag: boolean): Security {
+        _.set(app.getRequest(), "security.superUser", flag);
+        return this;
+    }
+
+    getSuperUser() {
+        return _.get(app.getRequest(), "security.superUser");
     }
 
     identityIsOwner(identity, entity) {
@@ -103,7 +112,7 @@ class Security implements IAuthentication {
     }
 
     canSetValue(identity, attribute) {
-        if (this.superUser) {
+        if (this.getSuperUser()) {
             return true;
         }
 
@@ -149,10 +158,7 @@ class Security implements IAuthentication {
             });
 
             if (
-                _.get(
-                    permissions,
-                    `entities.${entity.classId}.attributes.${attribute.name}.write`
-                )
+                _.get(permissions, `entities.${entity.classId}.attributes.${attribute.name}.write`)
             ) {
                 return true;
             }
@@ -162,7 +168,7 @@ class Security implements IAuthentication {
     }
 
     canGetValue(identity, attribute) {
-        if (this.superUser) {
+        if (this.getSuperUser()) {
             return true;
         }
 
@@ -210,10 +216,7 @@ class Security implements IAuthentication {
             });
 
             if (
-                _.get(
-                    permissions,
-                    `entities.${entity.classId}.attributes.${attribute.name}.read`
-                )
+                _.get(permissions, `entities.${entity.classId}.attributes.${attribute.name}.read`)
             ) {
                 return true;
             }
@@ -223,7 +226,7 @@ class Security implements IAuthentication {
     }
 
     canExecuteOperation(identity, entity, operation) {
-        if (this.superUser) {
+        if (this.getSuperUser()) {
             return true;
         }
 

@@ -391,6 +391,7 @@ class Entity {
         const newParams = _.merge(_.cloneDeep(params), { query: { id } });
         return await this.findOne(newParams);
     }
+
     /**
      * Finds one or more entities matched by given IDs.
      * @param ids
