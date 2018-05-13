@@ -607,18 +607,27 @@ class Entity {
      * Returns information about the entity.
      * @returns {{name: string, id: *, attributes: {name: *, class: string|string|string|string|string|string|string}[]}}
      */
-    static describe() {
+    static describe(options = {}) {
         const instance = new this();
+
+        const omit = _.get(options, "attributes.omit", []);
+
         return {
             name: instance.getClassName(),
             id: instance.classId,
-            attributes: Object.keys(instance.getAttributes()).map(key => {
-                const attribute = instance.getAttribute(key);
-                return {
-                    name: attribute.getName(),
-                    class: typeof attribute
-                };
-            })
+            attributes: Object.keys(instance.getAttributes())
+                .map(key => {
+                    const attribute = instance.getAttribute(key);
+                    if (omit.includes(key)) {
+                        return null;
+                    }
+
+                    return {
+                        name: attribute.getName(),
+                        class: typeof attribute
+                    };
+                })
+                .filter(value => value)
         };
     }
 

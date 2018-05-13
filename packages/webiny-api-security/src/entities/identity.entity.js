@@ -1,6 +1,5 @@
 // @flow
 import { Entity } from "webiny-api";
-import Group from "./group.entity";
 
 import type { IAuthorizable } from "../../types";
 
@@ -11,13 +10,6 @@ import type { IAuthorizable } from "../../types";
  * @property {EntityCollection<Group>} groups
  */
 class Identity extends Entity implements IAuthorizable {
-    constructor() {
-        super();
-        this.attr("groups")
-            .entities(Group)
-            .setToStorage();
-    }
-
     /**
      * Checks whether the user has the specified group.
      * @param {string} group

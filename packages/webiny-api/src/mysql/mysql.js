@@ -30,7 +30,8 @@ class MySQLTable extends Table {
             .tinyInt(1)
             .setDefault(0);
 
-        this.column("meta").json();
+        this.column("groups").json();
+        this.column("owner").char(24);
     }
 
     setBaseIndexes() {

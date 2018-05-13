@@ -10,6 +10,17 @@ import GraphQLJSON from "graphql-type-json";
 import { SecuritySettings } from "webiny-api-security";
 import _ from "lodash";
 
+const omittedAttributes = [
+    "createdBy",
+    "createdByClassId",
+    "updatedBy",
+    "updatedByClassId",
+    "savedBy",
+    "savedByClassId",
+    "groups",
+    "owner"
+];
+
 export default (app, config, schema) => {
     schema.addType({
         type: new GraphQLObjectType({
@@ -50,7 +61,11 @@ export default (app, config, schema) => {
             }
         }),
         resolve() {
-            const list = app.entities.getEntityClasses().map(entityClass => entityClass.describe());
+            const list = app.entities.getEntityClasses().map(entityClass =>
+                entityClass.describe({
+                    attributes: { omit: omittedAttributes }
+                })
+            );
             return {
                 list,
                 meta: {
@@ -102,7 +117,9 @@ export default (app, config, schema) => {
         async resolve(root, args) {
             const settings = await SecuritySettings.load();
             return {
-                entity: app.entities.getEntityClass(args.id).describe(),
+                entity: app.entities
+                    .getEntityClass(args.id)
+                    .describe({ attributes: { omit: omittedAttributes } }),
                 permissions: await settings.get(`data.entities.${args.id}`)
             };
         }
@@ -135,7 +152,9 @@ export default (app, config, schema) => {
             await settings.save();
 
             return {
-                entity: app.entities.getEntityClass(args.id).describe(),
+                entity: app.entities
+                    .getEntityClass(args.id)
+                    .describe({ attributes: { omit: omittedAttributes } }),
                 permissions: await settings.get(`data.entities.${args.id}`)
             };
         }
@@ -170,7 +189,9 @@ export default (app, config, schema) => {
             await settings.save();
 
             return {
-                entity: app.entities.getEntityClass(args.id).describe(),
+                entity: app.entities
+                    .getEntityClass(args.id)
+                    .describe({ attributes: { omit: omittedAttributes } }),
                 permissions: await settings.get(`data.entities.${args.id}`)
             };
         }

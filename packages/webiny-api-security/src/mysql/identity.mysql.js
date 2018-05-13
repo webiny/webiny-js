@@ -6,7 +6,6 @@ class IdentityTable extends MySQLTable {
         super();
         this.column("lastActive").date();
         this.column("lastLogin").date();
-        this.column("groups").json();
     }
 }
 
