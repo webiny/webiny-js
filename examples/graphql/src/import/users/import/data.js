@@ -1,5 +1,5 @@
-import { User, Group } from "webiny-api-security";
-import { Settings } from "webiny-api";
+import { User } from "webiny-api-security";
+import { Settings, Group } from "webiny-api";
 
 export default [
     () => {
@@ -11,10 +11,6 @@ export default [
                     data: {
                         entities: {}
                     }
-                },
-                {
-                    key: "webiny-api-cms",
-                    data: {}
                 }
             ]
         };

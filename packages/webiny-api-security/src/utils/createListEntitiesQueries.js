@@ -4,32 +4,20 @@ import {
     GraphQLInt,
     GraphQLList,
     GraphQLID,
-    GraphQLNonNull
+    GraphQLNonNull,
+    GraphQLBoolean
 } from "graphql";
 import GraphQLJSON from "graphql-type-json";
 import { SecuritySettings } from "webiny-api-security";
 import _ from "lodash";
-
-const omittedAttributes = [
-    "createdOn",
-    "updatedOn",
-    "savedOn",
-    "createdBy",
-    "createdByClassId",
-    "updatedBy",
-    "updatedByClassId",
-    "savedBy",
-    "savedByClassId",
-    "groups",
-    "owner"
-];
 
 export default (app, config, schema) => {
     schema.addType({
         type: new GraphQLObjectType({
             name: "EntityAttributesAttribute",
             fields: {
-                name: { type: GraphQLString }
+                name: { type: GraphQLString },
+                protected: { type: GraphQLBoolean }
             }
         })
     });
@@ -39,8 +27,9 @@ export default (app, config, schema) => {
             name: "EntityAttributes",
             fields: {
                 name: { type: GraphQLString },
-                id: { type: GraphQLString },
-                attributes: { type: new GraphQLList(schema.getType("EntityAttributesAttribute")) }
+                classId: { type: GraphQLString },
+                attributes: { type: new GraphQLList(schema.getType("EntityAttributesAttribute")) },
+                permissions: { type: GraphQLJSON }
             }
         })
     });
@@ -63,12 +52,15 @@ export default (app, config, schema) => {
                 }
             }
         }),
-        resolve() {
-            const list = app.entities.getEntityClasses().map(entityClass =>
-                entityClass.describe({
-                    attributes: { omit: omittedAttributes }
-                })
-            );
+        async resolve() {
+            const settings = await SecuritySettings.load();
+            const list = app.entities.getEntityClasses().map(entityClass => {
+                const entity = entityClass.describe();
+                const path = "data.entities." + entity.classId;
+                entity.permissions = _.get(settings, path);
+                return entity;
+            });
+
             return {
                 list,
                 meta: {
@@ -100,7 +92,7 @@ export default (app, config, schema) => {
                         name: "entityDescription",
                         fields: {
                             name: { type: GraphQLString },
-                            id: { type: GraphQLString },
+                            classId: { type: GraphQLString },
                             attributes: {
                                 type: new GraphQLList(GraphQLJSON)
                             }
@@ -120,9 +112,7 @@ export default (app, config, schema) => {
         async resolve(root, args) {
             const settings = await SecuritySettings.load();
             return {
-                entity: app.entities
-                    .getEntityClass(args.id)
-                    .describe({ attributes: { omit: omittedAttributes } }),
+                entity: app.entities.getEntityClass(args.id).describe(),
                 permissions: await settings.get(`data.entities.${args.id}`)
             };
         }
@@ -132,16 +122,16 @@ export default (app, config, schema) => {
         description: "Toggles entity operation permissions.",
         type: schema.getType("getEntityPermissionType"),
         args: {
-            id: { type: new GraphQLNonNull(GraphQLString) },
+            classId: { type: new GraphQLNonNull(GraphQLString) },
             class: { type: new GraphQLNonNull(GraphQLString) },
             operation: { type: new GraphQLNonNull(GraphQLString) }
         },
         async resolve(root, args) {
-            const { id, operation } = args;
+            const { classId, operation } = args;
             const settings = await SecuritySettings.load();
 
             const settingsData = _.cloneDeep(settings.data);
-            let path = `entities.${id}.${args.class}.operations.${operation}`;
+            let path = `entities.${classId}.${args.class}.operations.${operation}`;
 
             if (_.get(settingsData, path)) {
                 _.unset(settingsData, path);
@@ -155,47 +145,8 @@ export default (app, config, schema) => {
             await settings.save();
 
             return {
-                entity: app.entities
-                    .getEntityClass(args.id)
-                    .describe({ attributes: { omit: omittedAttributes } }),
-                permissions: await settings.get(`data.entities.${args.id}`)
-            };
-        }
-    };
-
-    schema.mutation["toggleEntityAttributePermission"] = {
-        description: "Toggles entity attribute permissions.",
-        type: schema.getType("getEntityPermissionType"),
-        args: {
-            id: { type: new GraphQLNonNull(GraphQLString) },
-            class: { type: new GraphQLNonNull(GraphQLString) },
-            attribute: { type: new GraphQLNonNull(GraphQLString) },
-            operation: { type: new GraphQLNonNull(GraphQLString) }
-        },
-        async resolve(root, args) {
-            const { id, attribute, operation } = args;
-            const settings = await SecuritySettings.load();
-
-            const settingsData = _.cloneDeep(settings.data);
-            if (operation) {
-                let path = `entities.${id}.${args.class}.attributes.${attribute}.${operation}`;
-                if (_.get(settingsData, path)) {
-                    _.unset(settingsData, path);
-                } else {
-                    _.set(settingsData, path, true);
-                }
-            }
-
-            // To ensure data "dirty" is triggered correctly.
-            settings.data = settingsData;
-
-            await settings.save();
-
-            return {
-                entity: app.entities
-                    .getEntityClass(args.id)
-                    .describe({ attributes: { omit: omittedAttributes } }),
-                permissions: await settings.get(`data.entities.${args.id}`)
+                entity: app.entities.getEntityClass(args.classId).describe(),
+                permissions: await settings.get(`data.entities.${args.classId}`)
             };
         }
     };

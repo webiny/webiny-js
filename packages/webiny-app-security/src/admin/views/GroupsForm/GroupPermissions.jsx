@@ -25,9 +25,6 @@ class GroupPermissions extends React.Component {
             {
                 listEntities {
                     list {
-                        attributes {
-                            name
-                        }
                         id
                         name
                     }
@@ -43,8 +40,6 @@ class GroupPermissions extends React.Component {
             });
         });
     }
-
-    renderEntitiesList() {}
 
     renderPermissions() {
         const { Grid } = this.props.modules;
@@ -79,56 +74,6 @@ class GroupPermissions extends React.Component {
                             />
                         );
                     })}
-
-                    <br />
-                    <br />
-                    <br />
-
-                    <h3>{t`Attributes`}</h3>
-                    <h4>{t`Modify access to attributes.`}</h4>
-
-                    <table className={"Webiny_Ui_Table_table text-center"}>
-                        <thead>
-                            <tr>
-                                <th className={"text-left"}>{t`Attribute`}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {entity.attributes.map(attribute => {
-                                return (
-                                    <tr key={attribute.name}>
-                                        <td className={"text-left"}>{attribute.name}</td>
-                                        <td>
-                                            {["read", "write"].map(operation => {
-                                                const path = `permissions.entities.${
-                                                    entity.id
-                                                }.attributes.${attribute.name}.${operation}`;
-
-                                                return (
-                                                    <TogglePermissionButton
-                                                        key={operation}
-                                                        value={_.get(this.props.model, path)}
-                                                        label={operation.charAt(0).toUpperCase()}
-                                                        onClick={() => {
-                                                            this.props.form.setState(state => {
-                                                                if (_.get(this.props.model, path)) {
-                                                                    _.unset(state.model, path);
-                                                                } else {
-                                                                    _.set(state.model, path, true);
-                                                                }
-
-                                                                return state;
-                                                            });
-                                                        }}
-                                                    />
-                                                );
-                                            })}
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
                 </Grid.Col>
             </Grid.Row>
         );

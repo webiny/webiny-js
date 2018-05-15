@@ -16,9 +16,11 @@ class User extends Identity {
         this.attr("gravatar")
             .char()
             .setDynamic(() => import("md5").then(md5 => md5(this.email)));
+
         this.attr("enabled")
             .boolean()
-            .setDefaultValue(true);
+            .setValue(true);
+
         // TODO: 2FactorAuth
         // TODO: Password recovery
     }

@@ -1,11 +1,31 @@
 import React, { Fragment } from "react";
-
+import TogglePermissionButton from "./components/TogglePermissionButton";
+import _ from "lodash";
+import gql from "graphql-tag";
 // import ExportEntityModal from "./Modal/ExportModal";
 // import ImportEntityModal from "./Modal/ImportModal";
-import { i18n, createComponent } from "webiny-app";
+import { app, i18n, createComponent } from "webiny-app";
 const t = i18n.namespace("Security.EntitiesList");
 
 class EntitiesList extends React.Component {
+    toggleOperation(classId, operation, permissionsClass) {
+        const mutation = gql`
+            mutation {
+                toggleEntityOperationPermission(
+                    classId: "${classId}"
+                    class: "${permissionsClass}"
+                    operation: "${operation}"
+                ) {
+                   entity { classId } permissions { owner group other }
+                }
+            }
+        `;
+
+        app.graphql.mutate({ mutation }).then(({ data }) => {
+            console.log("setam novo");
+        });
+    }
+
     render() {
         const {
             Link,
@@ -23,8 +43,6 @@ class EntitiesList extends React.Component {
         } = this.props.modules;
         const Table = List.Table;
 
-        const groupsLink = <Link route="Groups.List">{t`Groups`}</Link>;
-
         return (
             <AdminLayout>
                 <ViewSwitcher>
@@ -34,12 +52,7 @@ class EntitiesList extends React.Component {
                                 <View.Header
                                     title={t`Security - Entities`}
                                     description={
-                                        <span>
-                                            {t`Entities define what a user is allowed to do with API endpoints.
-                                                    Define entities and then group them into {groupsLink}.`(
-                                                { groupsLink }
-                                            )}
-                                        </span>
+                                        <span>{t`Manage entities and its permissions`}</span>
                                     }
                                 >
                                     <ButtonGroup>
@@ -59,7 +72,7 @@ class EntitiesList extends React.Component {
                                     <ListData
                                         withRouter
                                         entity="Entity"
-                                        fields="id name"
+                                        fields="classId name permissions"
                                         search={{ fields: ["name", "slug"] }}
                                     >
                                         {({ loading, ...listProps }) => (
@@ -85,27 +98,67 @@ class EntitiesList extends React.Component {
                                                             <Table.Field
                                                                 name="name"
                                                                 label={t`Name`}
-                                                                sort="name"
                                                             >
                                                                 {({ data }) => (
                                                                     <span>
-                                                                        <Link
-                                                                            route="Entities.Edit"
-                                                                            params={{ id: data.id }}
-                                                                        >
-                                                                            <strong>
-                                                                                {data.name}
-                                                                            </strong>
-                                                                        </Link>
+                                                                        <strong>{data.name}</strong>
                                                                         <br />
-                                                                        {data.id}
+                                                                        {data.classId}
                                                                     </span>
                                                                 )}
                                                             </Table.Field>
-                                                            <Table.Actions>
-                                                                <Table.EditAction route="Entities.Edit" />
 
-                                                            </Table.Actions>
+                                                            {[
+                                                                { key: "owner", label: t`Owner` },
+                                                                { key: "group", label: t`Group` },
+                                                                { key: "other", label: t`Other` }
+                                                            ].map(permissionClass => {
+                                                                return (
+                                                                    <Table.Field
+                                                                        key={permissionClass.key}
+                                                                        name={permissionClass.key}
+                                                                        align={"center"}
+                                                                        label={
+                                                                            permissionClass.label
+                                                                        }
+                                                                    >
+                                                                        {({ data }) =>
+                                                                            [
+                                                                                "create",
+                                                                                "read",
+                                                                                "update",
+                                                                                "delete"
+                                                                            ].map(operation => {
+                                                                                return (
+                                                                                    <TogglePermissionButton
+                                                                                        key={`${
+                                                                                            permissionClass.key
+                                                                                        }_${operation}`}
+                                                                                        label={operation
+                                                                                            .charAt(
+                                                                                                0
+                                                                                            )
+                                                                                            .toUpperCase()}
+                                                                                        value={_.get(
+                                                                                            data,
+                                                                                            `permissions.${
+                                                                                                permissionClass.key
+                                                                                            }.operations.${operation}`
+                                                                                        )}
+                                                                                        onClick={() => {
+                                                                                            this.toggleOperation(
+                                                                                                data.classId,
+                                                                                                operation,
+                                                                                                permissionClass.key
+                                                                                            );
+                                                                                        }}
+                                                                                    />
+                                                                                );
+                                                                            })
+                                                                        }
+                                                                    </Table.Field>
+                                                                );
+                                                            })}
                                                         </Table.Row>
                                                     </Table>
                                                     <List.Pagination />

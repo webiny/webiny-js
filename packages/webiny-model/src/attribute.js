@@ -13,11 +13,13 @@ class Attribute {
     toStorage: boolean;
     toJSON: boolean;
     async: boolean;
-    skipOnPopulate: boolean;
+    protected: boolean;
     defaultValue: mixed;
     validators: ?(string | Function);
     onSetCallback: Function;
     onGetCallback: Function;
+    static spies: { getValue: Array<Function>, setValue: Array<Function> };
+
     constructor(name: string, attributesContainer: AttributesContainer) {
         /**
          * Attribute name.
@@ -56,7 +58,7 @@ class Attribute {
          * If true - populate will skip this attribute
          * @var bool
          */
-        this.skipOnPopulate = false;
+        this.protected = false;
 
         /**
          * Default value.
@@ -208,16 +210,16 @@ class Attribute {
     /**
      * Sets skip on populate - if true, value won't be set into attribute when populate method on parent model instance is called.
      */
-    setSkipOnPopulate(flag: boolean = true): Attribute {
-        this.skipOnPopulate = flag;
+    setProtected(flag: boolean = true): Attribute {
+        this.protected = flag;
         return this;
     }
 
     /**
      * Returns true if this attribute will be skipped on populate.
      */
-    getSkipOnPopulate(): boolean {
-        return this.skipOnPopulate;
+    getProtected(): boolean {
+        return this.protected;
     }
 
     /**
@@ -256,6 +258,10 @@ class Attribute {
      * @returns {void|Promise<void>}
      */
     setValue(value: mixed): void {
+        this.constructor.spies.setValue.forEach(callback => {
+            callback({ attribute: this, value });
+        });
+
         if (!this.canSetValue()) {
             return;
         }
@@ -268,6 +274,10 @@ class Attribute {
      * @returns {*}
      */
     getValue(): mixed | Promise<mixed> {
+        this.constructor.spies.getValue.forEach(callback => {
+            callback({ attribute: this });
+        });
+
         if (typeof this.dynamic === "function") {
             return this.dynamic(...arguments);
         }
@@ -339,6 +349,27 @@ class Attribute {
         return this.dynamic;
     }
 
+    /**
+     * Adds spies that will be executed in attribute.
+     * Useful eg. if get/setValue methods need to be intercepted for some reason.
+     * A function that is returned can be used to remove the newly added interceptor.
+     * @param type
+     * @param callback
+     * @returns {Function}
+     */
+    static spy(type, callback: Function<void>): Function<void> {
+        if (!this.spies[type]) {
+            this.spies[type] = [];
+        }
+
+        this.spies[type].push(callback);
+
+        return () => {
+            const index = this.spies[type].indexOf(callback);
+            this.spies[type].splice(index, 1);
+        };
+    }
+
     expected(expecting: string, got: string): ModelError {
         throw new ModelError(
             `Validation failed, received ${got}, expecting ${expecting}.`,
@@ -346,5 +377,7 @@ class Attribute {
         );
     }
 }
+
+Attribute.spies = { getValue: [], setValue: [] };
 
 export default Attribute;

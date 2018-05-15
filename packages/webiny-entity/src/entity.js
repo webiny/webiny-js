@@ -21,7 +21,6 @@ class Entity {
         }
     };
     static listeners: {};
-    static interceptors: { get: Array<Function>, set: Array<Function> };
 
     model: EntityModel;
     listeners: {};
@@ -37,9 +36,6 @@ class Entity {
             set: (instance, key, value) => {
                 const attribute: ?Attribute = instance.getModel().getAttribute(key);
                 if (attribute) {
-                    this.constructor.interceptors.set.forEach(callback => {
-                        callback({ attribute, value, entity: proxy });
-                    });
                     attribute.setValue(value);
                     return true;
                 }
@@ -54,9 +50,6 @@ class Entity {
 
                 const attribute: ?Attribute = instance.getModel().getAttribute(key);
                 if (attribute) {
-                    this.constructor.interceptors.get.forEach(callback => {
-                        callback({ attribute, entity: proxy });
-                    });
                     return attribute.getValue();
                 }
 
@@ -76,15 +69,23 @@ class Entity {
         this.processing = null;
 
         if (_.get(this, "constructor.crud.logs")) {
-            this.attr("savedOn").date();
-            this.attr("createdOn").date();
-            this.attr("updatedOn").date();
+            this.attr("savedOn")
+                .date()
+                .setProtected();
+            this.attr("createdOn")
+                .date()
+                .setProtected();
+            this.attr("updatedOn")
+                .date()
+                .setProtected();
         }
 
-        if (_.get(this, "constructor.crud.delete.soft")) {
+        const deletes = _.get(this, "constructor.crud.delete", {});
+        if (deletes.soft) {
             this.attr("deleted")
                 .boolean()
-                .setDefaultValue(false);
+                .setProtected()
+                .setValue(false);
 
             this.on("beforeDelete", () => (proxy.deleted = true));
         }
@@ -522,45 +523,6 @@ class Entity {
     }
 
     /**
-     * Adds interceptor that will be executed in entity proxy's get/set callbacks.
-     * Useful eg. if get/setValue methods need to be intercepted for some reason.
-     * A function that is returned can be used to remove the newly added interceptor.
-     * @param type
-     * @param callback
-     * @returns {Function}
-     */
-    static addInterceptor(type, callback: Function<void>): Function<void> {
-        if (!this.interceptors[type]) {
-            this.interceptors[type] = [];
-        }
-
-        this.interceptors[type].push(callback);
-
-        return () => {
-            const index = this.interceptors[type].indexOf(callback);
-            this.interceptors[type].splice(index, 1);
-        };
-    }
-
-    /**
-     * Adds 'get' interceptor. Useful eg. if 'getValue' method needs to be intercepted for some reason.
-     * @param callback
-     * @returns {Function<void>}
-     */
-    static onGet(callback: Function<void>): Function<void> {
-        return this.addInterceptor("get", callback);
-    }
-
-    /**
-     * Adds 'set' interceptor. Useful eg. if 'setValue' method needs to be intercepted for some reason.
-     * @param callback
-     * @returns {Function<void>}
-     */
-    static onSet(callback: Function<void>): Function<void> {
-        return this.addInterceptor("set", callback);
-    }
-
-    /**
      * Emits an event, which will trigger both static and instance listeners.
      * @param name
      * @param data
@@ -614,7 +576,7 @@ class Entity {
 
         return {
             name: instance.getClassName(),
-            id: instance.classId,
+            classId: instance.classId,
             attributes: Object.keys(instance.getAttributes())
                 .map(key => {
                     const attribute = instance.getAttribute(key);
@@ -624,7 +586,8 @@ class Entity {
 
                     return {
                         name: attribute.getName(),
-                        class: typeof attribute
+                        protected: attribute.getProtected(),
+                        class: attribute.constructor.name
                     };
                 })
                 .filter(value => value)
@@ -650,7 +613,6 @@ class Entity {
 Entity.classId = null;
 Entity.driver = new Driver();
 Entity.pool = new EntityPool();
-Entity.interceptors = { get: [], set: [] };
 Entity.crud = {
     logs: false,
     delete: {

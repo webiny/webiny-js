@@ -23,6 +23,13 @@
       thead {
         border-top: none;
       }
+      tr {
+        td {
+          small {
+            color: red;
+          }
+        }
+      }
     }
   }
 }

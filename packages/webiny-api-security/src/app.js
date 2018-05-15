@@ -1,6 +1,6 @@
 // @flow
 import { GraphQLUnionType } from "graphql";
-import { User, Group, SecuritySettings } from "./index";
+import { User, SecuritySettings } from "./index";
 import AuthenticationService from "./services/security";
 import convertToGraphQL from "./attributes/convertToGraphQL";
 import registerAttributes from "./attributes/registerAttributes";
@@ -9,14 +9,65 @@ import createListEntitiesQueries from "./utils/createListEntitiesQueries";
 import { Entity } from "webiny-api";
 
 export default (config: Object = {}) => {
-    return ({ app }: Object, next: Function) => {
+    return async ({ app }: Object, next: Function) => {
         app.services.register(
             "authentication",
             () => new AuthenticationService(config.authentication)
         );
         registerAttributes(app.services.get("authentication"));
 
-        const security = app.services.get("authentication");
+        app.services.get("authentication").init();
+
+        app.entities.addEntityClass(User);
+        app.entities.addEntityClass(SecuritySettings);
+
+        app.entities.extend("*", (entity: Entity) => {
+            // "savedBy" attribute - updated on both create and update events.
+            entity
+                .attr("savedByClassId")
+                .char()
+                .setProtected();
+            entity
+                .attr("savedBy")
+                .identity({ classIdAttribute: "savedByClassId" })
+                .setProtected();
+
+            // "createdBy" attribute - updated only on entity creation.
+            entity
+                .attr("createdByClassId")
+                .char()
+                .setProtected();
+            entity
+                .attr("createdBy")
+                .identity({ classIdAttribute: "createdByClassId" })
+                .setProtected();
+
+            // "updatedBy" attribute - updated only on entity updates.
+            entity
+                .attr("updatedByClassId")
+                .char()
+                .setProtected();
+            entity
+                .attr("updatedBy")
+                .identity({ classIdAttribute: "updatedByClassId" })
+                .setProtected();
+
+            // We don't need a standalone "deletedBy" attribute, since its value would be the same as in "savedBy"
+            // and "updatedBy" attributes. Check these attributes to find out who deleted an entity.
+            entity.on("save", async () => {
+                if (!app.getRequest()) {
+                    return;
+                }
+
+                const { identity } = app.getRequest();
+                entity.savedBy = identity;
+                if (entity.isExisting()) {
+                    entity.updatedBy = identity;
+                } else {
+                    entity.createdBy = identity;
+                }
+            });
+        });
 
         app.graphql.schema(schema => {
             schema.addType({
@@ -37,94 +88,10 @@ export default (config: Object = {}) => {
 
             schema.addAttributeConverter(convertToGraphQL);
             schema.addEntity(User);
-            schema.addEntity(Group);
 
             // Create login queries
             createLoginQueries(app, config, schema);
             createListEntitiesQueries(app, config, schema);
-        });
-
-        app.entities.addEntityClass(User);
-        app.entities.addEntityClass(Group);
-        app.entities.addEntityClass(SecuritySettings);
-
-        Entity.onGet(({ attribute, entity }) => {
-            const { identity } = app.getRequest();
-            if (!security.canGetValue(identity, attribute)) {
-                throw Error(
-                    `Cannot get value of attribute "${attribute.name}" on entity "${
-                        entity.classId
-                    }"`
-                );
-            }
-        });
-
-        Entity.onSet(({ attribute, entity }) => {
-            const { identity } = app.getRequest();
-            if (!security.canSetValue(identity, attribute)) {
-                throw Error(
-                    `Cannot set value of attribute "${attribute.name}" on entity "${
-                        entity.classId
-                    }"`
-                );
-            }
-        });
-
-        ["create", "update", "delete", "read"].forEach(operation => {
-            Entity.on(operation, ({ entity }) => {
-                const { identity } = app.getRequest();
-
-                if (!security.canExecuteOperation(identity, entity, operation)) {
-                    throw Error(
-                        `Cannot execute "${operation}" operation on entity "${entity.classId}"`
-                    );
-                }
-
-                if (operation === "create") {
-                    if (identity) {
-                        security.assignOwner(entity, identity);
-                    }
-                }
-            });
-        });
-
-        app.entities.extend("*", (entity: Entity) => {
-            entity.attr("savedOn").date();
-            entity.attr("createdOn").date();
-            entity.attr("updatedOn").date();
-
-            // "savedBy" attribute - updated on both create and update events.
-            entity.attr("savedByClassId").char();
-            entity.attr("savedBy").identity({ classIdAttribute: "savedByClassId" });
-
-            // "createdBy" attribute - updated only on entity creation.
-            entity.attr("createdByClassId").char();
-            entity.attr("createdBy").identity({ classIdAttribute: "createdByClassId" });
-
-            // "updatedBy" attribute - updated only on entity updates.
-            entity.attr("updatedByClassId").char();
-            entity.attr("updatedBy").identity({ classIdAttribute: "updatedByClassId" });
-
-            // We don't need a standalone "deletedBy" attribute, since its value would be the same as in "savedBy"
-            // and "updatedBy" attributes. Check these attributes to find out who deleted an entity.
-            entity.on("save", async () => {
-                if (!app.getRequest()) {
-                    return;
-                }
-
-                await security.sudo(() => {
-                    const { identity } = app.getRequest();
-                    entity.savedBy = identity;
-                    entity.savedOn = new Date();
-                    if (entity.isExisting()) {
-                        entity.updatedBy = identity;
-                        entity.updatedOn = new Date();
-                    } else {
-                        entity.createdBy = identity;
-                        entity.createdOn = new Date();
-                    }
-                });
-            });
         });
 
         next();

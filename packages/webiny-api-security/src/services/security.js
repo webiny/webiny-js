@@ -6,6 +6,8 @@ import { SecuritySettings } from "./..";
 import type { IAuthentication, IToken } from "./../../types";
 import _ from "lodash";
 
+import { Entity } from "webiny-api";
+
 class Security implements IAuthentication {
     config: {
         token: IToken,
@@ -22,8 +24,24 @@ class Security implements IAuthentication {
     }
 
     async init() {
-        this.settings = await this.sudo(() => {
-            return SecuritySettings.load().then(settings => settings.data);
+        this.settings = (await SecuritySettings.load()).data;
+
+        ["create", "update", "delete", "read"].forEach(operation => {
+            Entity.on(operation, ({ entity }) => {
+                const { identity } = app.getRequest();
+
+                if (!this.canExecuteOperation(identity, entity, operation)) {
+                    throw Error(
+                        `Cannot execute "${operation}" operation on entity "${entity.classId}"`
+                    );
+                }
+
+                if (operation === "create") {
+                    if (identity) {
+                        entity.owner = identity;
+                    }
+                }
+            });
         });
     }
 
@@ -60,165 +78,21 @@ class Security implements IAuthentication {
         return this;
     }
 
-    async sudo(option) {
-        if (typeof option === "function") {
-            this.setSuperUser(true);
-            const results = await option();
-            this.setSuperUser(false);
-            return results;
-        }
-
-        this.setSuperUser(option !== false);
-    }
-
-    sudoSync(option) {
-        if (typeof option === "function") {
-            this.setSuperUser(true);
-            const results = option();
-            this.setSuperUser(false);
-            return results;
-        }
-
-        this.setSuperUser(option !== false);
-    }
-
-    setSuperUser(flag: boolean): Security {
-        _.set(app.getRequest(), "security.superUser", flag);
-        return this;
-    }
-
-    getSuperUser() {
-        return _.get(app.getRequest(), "security.superUser");
-    }
-
     identityIsOwner(identity, entity) {
-        return this.sudoSync(() => {
-            return identity.id === _.get(entity, "meta.owner");
-        });
+        const entityOwner = entity.getAttribute("owner").value.getCurrent();
+        return identity.id === _.get(entityOwner, "id", entityOwner);
     }
 
     identityIsInGroup(identity, entity) {
-        return this.sudoSync(() => {
-            const groups = identity.getAttribute("groups").value.getCurrent() || [];
-            for (let i = 0; i < groups.length; i++) {
-                let group = groups[i];
-                if (group.id === _.get(entity, "meta.group")) {
+        const identityGroups = identity.getAttribute("groups").value.getCurrent() || [];
+        const entityGroups = entity.getAttribute("groups").value.getCurrent() || [];
+        for (let i = 0; i < identityGroups.length; i++) {
+            let identityGroup = identityGroups[i];
+            for (let j = 0; j < entityGroups.length; j++) {
+                let entityGroup = entityGroups[j];
+                if (identityGroup.id === _.get(entityGroup, "id", entityGroup)) {
                     return true;
                 }
-            }
-
-            return false;
-        });
-    }
-
-    canSetValue(identity, attribute) {
-        if (this.getSuperUser()) {
-            return true;
-        }
-
-        const entity = attribute.getParentModel().getParentEntity();
-
-        if (
-            _.get(
-                this.settings,
-                `entities.${entity.classId}.other.attributes.${attribute.name}.write`
-            )
-        ) {
-            return true;
-        }
-
-        if (!identity) {
-            if (this.identityIsOwner(identity, entity)) {
-                if (
-                    _.get(
-                        this.settings,
-                        `entities.${entity.classId}.owner.attributes.${attribute.name}.write`
-                    )
-                ) {
-                    return true;
-                }
-            }
-
-            if (this.identityIsInGroup(identity, entity)) {
-                if (
-                    _.get(
-                        this.settings,
-                        `entities.${entity.classId}.group.attributes.${attribute.name}.write`
-                    )
-                ) {
-                    return true;
-                }
-            }
-        }
-
-        // Check if one of the groups user belongs to allows action.
-        for (let i = 0; i < identity.getAttribute("groups").value.current.length; i++) {
-            let permissions = this.sudoSync(() => {
-                return identity.getAttribute("groups").value.current[i].permissions;
-            });
-
-            if (
-                _.get(permissions, `entities.${entity.classId}.attributes.${attribute.name}.write`)
-            ) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    canGetValue(identity, attribute) {
-        if (this.getSuperUser()) {
-            return true;
-        }
-
-        const entity = attribute.getParentModel().getParentEntity();
-
-        if (
-            _.get(
-                this.settings,
-                `entities.${entity.classId}.other.attributes.${attribute.name}.read`
-            )
-        ) {
-            return true;
-        }
-
-        if (!identity) {
-            return false;
-        }
-
-        if (this.identityIsOwner(identity, entity)) {
-            if (
-                _.get(
-                    this.settings,
-                    `entities.${entity.classId}.owner.attributes.${attribute.name}.read`
-                )
-            ) {
-                return true;
-            }
-        }
-
-        if (this.identityIsInGroup(identity, entity)) {
-            if (
-                _.get(
-                    this.settings,
-                    `entities.${entity.classId}.group.attributes.${attribute.name}.read`
-                )
-            ) {
-                return true;
-            }
-        }
-
-        // Check if one of the groups user belongs to allows action.
-        for (let i = 0; i < identity.getAttribute("groups").value.current.length; i++) {
-            let permissions = this.sudoSync(() => {
-                return identity.getAttribute("groups").value.current[i].permissions;
-            });
-
-            if (
-                _.get(permissions, `entities.${entity.classId}.attributes.${attribute.name}.read`)
-            ) {
-                return true;
             }
         }
 
@@ -226,10 +100,6 @@ class Security implements IAuthentication {
     }
 
     canExecuteOperation(identity, entity, operation) {
-        if (this.getSuperUser()) {
-            return true;
-        }
-
         if (_.get(this.settings, `entities.${entity.classId}.other.operations.${operation}`)) {
             return true;
         }
@@ -261,24 +131,6 @@ class Security implements IAuthentication {
         return false;
     }
 
-    assignGroup(entity, group) {
-        if (!(entity.meta instanceof Object)) {
-            entity.meta = {};
-        }
-
-        entity.meta.group = group.id;
-        return this;
-    }
-
-    assignOwner(entity, identity) {
-        if (!(entity.meta instanceof Object)) {
-            entity.meta = {};
-        }
-
-        entity.meta.owner = identity.id;
-        return this;
-    }
-
     /**
      * Create an authentication token for the given user
      * @param identity
@@ -306,7 +158,7 @@ class Security implements IAuthentication {
         }
 
         const identityId = decoded.data.identityId;
-        const instance = await this.sudo(() => identity.findById(identityId));
+        const instance = await identity.findById(identityId);
         if (!instance) {
             throw new AuthenticationError(
                 `Identity ID ${identityId} not found!`,
@@ -314,7 +166,7 @@ class Security implements IAuthentication {
             );
         }
 
-        await this.sudo(() => instance.getAttribute("groups").value.load());
+        await instance.getAttribute("groups").value.load();
 
         return instance;
     }
@@ -326,7 +178,11 @@ class Security implements IAuthentication {
      * @param strategy
      * @returns {Identity} A valid system Identity.
      */
-    authenticate(data: Object, identity: Class<Identity>, strategy: string): Promise<Identity> {
+    async authenticate(
+        data: Object,
+        identity: Class<Identity>,
+        strategy: string
+    ): Promise<Identity> {
         const strategyObject = this.config.strategies[strategy];
         if (!strategyObject) {
             return Promise.reject(
@@ -338,14 +194,12 @@ class Security implements IAuthentication {
             );
         }
 
-        return this.sudo(async () => {
-            const authenticated = await strategyObject.authenticate(data, identity);
+        const authenticated = await strategyObject.authenticate(data, identity);
 
-            // Make sure groups are loaded, so they can synchronously be checked.
-            await authenticated.getAttribute("groups").value.load();
+        // Make sure groups are loaded, so they can synchronously be checked.
+        await authenticated.getAttribute("groups").value.load();
 
-            return authenticated;
-        });
+        return authenticated;
     }
 }
 

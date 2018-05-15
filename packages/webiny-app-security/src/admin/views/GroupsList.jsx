@@ -25,9 +25,6 @@ class GroupsList extends React.Component {
 
         const Table = List.Table;
 
-        const users = <Link route="Users.List">{t`Users`}</Link>;
-        const permissions = <Link route="Permissions.List">{t`Permissions`}</Link>;
-
         return (
             <AdminLayout>
                 <ViewSwitcher>
@@ -38,12 +35,7 @@ class GroupsList extends React.Component {
                                     title={t`Security - Groups`}
                                     description={
                                         <span>
-                                            {t`Groups are a simple way to control what permissions certain users have.
-                                                    Create a group with a set of {permissions} and then assign groups to
-                                                    {users}.`({
-                                                permissions,
-                                                users
-                                            })}
+                                            {t`Groups are a simple way to control what permissions certain users have.`}
                                         </span>
                                     }
                                 >
