@@ -35,7 +35,7 @@ class FieldsList extends React.Component {
             <ul className={css.fieldsList}>
                 {returnType.fields.map((field, index) => {
                     let fieldPath = `${initialPath}.${field.name}`;
-                    const active = _.has(this.props.model.scope, fieldPath);
+                    const active = _.has(this.props.model, `permissions.api.${fieldPath}`);
                     return (
                         <li key={fieldPath}>
                             <div

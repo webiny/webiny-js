@@ -71,22 +71,6 @@ const includeManager = app => {
     });
 
     app.router.addRoute({
-        name: "Entities.Create",
-        path: "/entities/new",
-        component: () => import("./views/EntitiesForm").then(m => m.default),
-        title: "Security - Create Entity",
-        group: securityManageUsers
-    });
-
-    app.router.addRoute({
-        name: "Entities.Edit",
-        path: "/entities/:id",
-        component: () => import("./views/EntitiesForm").then(m => m.default),
-        title: "Security - Edit Entity",
-        group: securityManageUsers
-    });
-
-    app.router.addRoute({
         name: "Entities.List",
         path: "/entities",
         component: () => import("./views/EntitiesList").then(m => m.default),

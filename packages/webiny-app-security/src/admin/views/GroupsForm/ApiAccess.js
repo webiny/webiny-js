@@ -1,15 +1,15 @@
 import React from "react";
-import css from "./Scopes.scss";
+import css from "./ApiAccess.scss";
 import _ from "lodash";
-import QueryMutationFieldsList from "./Scopes/QueryMutationFieldsList";
-import FieldsSelector from "./Scopes/FieldsSelector";
+import QueryMutationFieldsList from "./ApiAccess/QueryMutationFieldsList";
+import FieldsSelector from "./ApiAccess/FieldsSelector";
 import { createComponent, i18n } from "webiny-app";
 import fetch from "isomorphic-fetch";
-import query from "./Scopes/introspectionQuery";
+import query from "./ApiAccess/introspectionQuery";
 
 const t = i18n.namespace("Security.PermissionsForm.Scopes");
 
-class Scopes extends React.Component {
+class ApiAccess extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -74,17 +74,17 @@ class Scopes extends React.Component {
                                     if (
                                         _.get(
                                             state.model,
-                                            "scope." + selectedQueryMutationField.name
+                                            "permissions.api." + selectedQueryMutationField.name
                                         )
                                     ) {
                                         _.unset(
                                             state.model,
-                                            "scope." + selectedQueryMutationField.name
+                                            "permissions.api." + selectedQueryMutationField.name
                                         );
                                     } else {
                                         _.set(
                                             state.model,
-                                            "scope." + selectedQueryMutationField.name,
+                                            "permissions.api." + selectedQueryMutationField.name,
                                             true
                                         );
                                     }
@@ -104,10 +104,10 @@ class Scopes extends React.Component {
                             selectedQueryMutationField={this.state.queriesAndMutations.selected}
                             onToggle={path => {
                                 this.props.form.setState(state => {
-                                    if (_.get(state.model, "scope." + path)) {
-                                        _.unset(state.model, "scope." + path);
+                                    if (_.get(state.model, `permissions.api.${path}`)) {
+                                        _.unset(state.model, `permissions.api.${path}`);
                                     } else {
-                                        _.set(state.model, "scope." + path, true);
+                                        _.set(state.model, `permissions.api.${path}`, true);
                                     }
                                     return state;
                                 });
@@ -117,14 +117,14 @@ class Scopes extends React.Component {
                                     let enable = null;
                                     paths.forEach(path => {
                                         if (enable === null) {
-                                            enable = _.get(state.model, "scope." + path);
+                                            enable = _.get(state.model, `permissions.api.${path}`);
                                             return true;
                                         }
 
                                         if (enable) {
-                                            _.set(state.model, "scope." + path, true);
+                                            _.set(state.model, `permissions.api.${path}`, true);
                                         } else {
-                                            _.unset(state.model, "scope." + path);
+                                            _.unset(state.model, `permissions.api.${path}`);
                                         }
                                     });
                                     return state;
@@ -138,9 +138,9 @@ class Scopes extends React.Component {
     }
 }
 
-Scopes.defaultProps = {
+ApiAccess.defaultProps = {
     model: null,
     form: null
 };
 
-export default createComponent(Scopes, { modules: ["Grid"] });
+export default createComponent(ApiAccess, { modules: ["Grid"] });

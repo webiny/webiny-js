@@ -43,7 +43,8 @@ class Group extends Entity {
             .setValidators("required");
         this.attr("permissions")
             .object()
-            .setValidators();
+            .setValidators()
+            .setValue({ entities: {}, api: {} });
     }
 }
 

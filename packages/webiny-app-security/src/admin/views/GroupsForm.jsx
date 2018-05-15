@@ -1,6 +1,8 @@
 import React from "react";
 import { app, i18n, createComponent } from "webiny-app";
-import GroupPermissions from "./GroupsForm/GroupPermissions";
+import EntitiesList from "./components/EntitiesList"
+import ApiAccess from "./GroupsForm/ApiAccess";
+
 const t = i18n.namespace("Security.GroupsForm");
 
 class GroupsForm extends React.Component {
@@ -10,8 +12,6 @@ class GroupsForm extends React.Component {
             Form,
             FormData,
             FormError,
-            OptionsData,
-            Section,
             View,
             Grid,
             Input,
@@ -95,10 +95,14 @@ class GroupsForm extends React.Component {
                                                 <Tabs.Tab label={t`Entity permissions`}>
                                                     <Grid.Row>
                                                         <Grid.Col all={12}>
-                                                            <GroupPermissions
-                                                                model={model}
-                                                                form={form}
-                                                            />
+                                                            <EntitiesList model={model} form={form}/>
+                                                        </Grid.Col>
+                                                    </Grid.Row>
+                                                </Tabs.Tab>
+                                                <Tabs.Tab label={t`API access`}>
+                                                    <Grid.Row>
+                                                        <Grid.Col all={12}>
+                                                            <ApiAccess model={model} form={form}/>
                                                         </Grid.Col>
                                                     </Grid.Row>
                                                 </Tabs.Tab>

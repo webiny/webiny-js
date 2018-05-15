@@ -6,7 +6,7 @@ import { SecuritySettings } from "./..";
 import type { IAuthentication, IToken } from "./../../types";
 import _ from "lodash";
 
-import { Entity } from "webiny-api";
+// import { Entity } from "webiny-api";
 
 class Security implements IAuthentication {
     config: {
@@ -25,8 +25,7 @@ class Security implements IAuthentication {
 
     async init() {
         this.settings = (await SecuritySettings.load()).data;
-
-        ["create", "update", "delete", "read"].forEach(operation => {
+        /*["create", "update", "delete", "read"].forEach(operation => {
             Entity.on(operation, ({ entity }) => {
                 const { identity } = app.getRequest();
 
@@ -42,7 +41,7 @@ class Security implements IAuthentication {
                     }
                 }
             });
-        });
+        });*/
     }
 
     /**

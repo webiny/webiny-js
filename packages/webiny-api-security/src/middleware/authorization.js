@@ -1,5 +1,5 @@
 // @flow
-import Permission from "./../entities/permission.entity";
+import Permission from "webiny-api";
 import _ from "lodash";
 
 export default () => {

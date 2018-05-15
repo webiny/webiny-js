@@ -1,10 +1,9 @@
-import React, { Fragment } from "react";
-import TogglePermissionButton from "./components/TogglePermissionButton";
-import _ from "lodash";
+import React from "react";
 import gql from "graphql-tag";
 // import ExportEntityModal from "./Modal/ExportModal";
 // import ImportEntityModal from "./Modal/ImportModal";
 import { app, i18n, createComponent } from "webiny-app";
+import { default as EntitiesDataList } from "./components/EntitiesList";
 const t = i18n.namespace("Security.EntitiesList");
 
 class EntitiesList extends React.Component {
@@ -31,17 +30,11 @@ class EntitiesList extends React.Component {
             Link,
             ViewSwitcher,
             View,
-            List,
-            ListData,
             Button,
             ButtonGroup,
             AdminLayout,
-            Grid,
-            Icon,
-            Input,
-            Loader
+            Icon
         } = this.props.modules;
-        const Table = List.Table;
 
         return (
             <AdminLayout>
@@ -69,103 +62,7 @@ class EntitiesList extends React.Component {
                                     </ButtonGroup>
                                 </View.Header>
                                 <View.Body>
-                                    <ListData
-                                        withRouter
-                                        entity="Entity"
-                                        fields="classId name permissions"
-                                        search={{ fields: ["name", "slug"] }}
-                                    >
-                                        {({ loading, ...listProps }) => (
-                                            <Fragment>
-                                                {loading && <Loader />}
-
-                                                <List {...listProps}>
-                                                    <List.FormFilters>
-                                                        {({ apply }) => (
-                                                            <Grid.Row>
-                                                                <Grid.Col all={12}>
-                                                                    <Input
-                                                                        name="search.query"
-                                                                        placeholder={t`Search by name or slug`}
-                                                                        onEnter={apply()}
-                                                                    />
-                                                                </Grid.Col>
-                                                            </Grid.Row>
-                                                        )}
-                                                    </List.FormFilters>
-                                                    <Table>
-                                                        <Table.Row>
-                                                            <Table.Field
-                                                                name="name"
-                                                                label={t`Name`}
-                                                            >
-                                                                {({ data }) => (
-                                                                    <span>
-                                                                        <strong>{data.name}</strong>
-                                                                        <br />
-                                                                        {data.classId}
-                                                                    </span>
-                                                                )}
-                                                            </Table.Field>
-
-                                                            {[
-                                                                { key: "owner", label: t`Owner` },
-                                                                { key: "group", label: t`Group` },
-                                                                { key: "other", label: t`Other` }
-                                                            ].map(permissionClass => {
-                                                                return (
-                                                                    <Table.Field
-                                                                        key={permissionClass.key}
-                                                                        name={permissionClass.key}
-                                                                        align={"center"}
-                                                                        label={
-                                                                            permissionClass.label
-                                                                        }
-                                                                    >
-                                                                        {({ data }) =>
-                                                                            [
-                                                                                "create",
-                                                                                "read",
-                                                                                "update",
-                                                                                "delete"
-                                                                            ].map(operation => {
-                                                                                return (
-                                                                                    <TogglePermissionButton
-                                                                                        key={`${
-                                                                                            permissionClass.key
-                                                                                        }_${operation}`}
-                                                                                        label={operation
-                                                                                            .charAt(
-                                                                                                0
-                                                                                            )
-                                                                                            .toUpperCase()}
-                                                                                        value={_.get(
-                                                                                            data,
-                                                                                            `permissions.${
-                                                                                                permissionClass.key
-                                                                                            }.operations.${operation}`
-                                                                                        )}
-                                                                                        onClick={() => {
-                                                                                            this.toggleOperation(
-                                                                                                data.classId,
-                                                                                                operation,
-                                                                                                permissionClass.key
-                                                                                            );
-                                                                                        }}
-                                                                                    />
-                                                                                );
-                                                                            })
-                                                                        }
-                                                                    </Table.Field>
-                                                                );
-                                                            })}
-                                                        </Table.Row>
-                                                    </Table>
-                                                    <List.Pagination />
-                                                </List>
-                                            </Fragment>
-                                        )}
-                                    </ListData>
+                                    <EntitiesDataList />
                                 </View.Body>
                             </View.List>
                         )}
@@ -203,13 +100,10 @@ export default createComponent(EntitiesList, {
         "ViewSwitcher",
         "Link",
         "View",
-        "List",
-        "ListData",
         "Icon",
         "Grid",
         "Input",
         "Button",
-        "Loader",
         "ButtonGroup"
     ]
 });
