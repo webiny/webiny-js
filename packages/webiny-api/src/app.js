@@ -5,7 +5,7 @@ import compose from "webiny-compose";
 import { ServiceManager } from "webiny-service-manager";
 import GraphQL from "./graphql/GraphQL";
 import EntityManager from "./entities/EntityManager";
-import { Entity, File, Image } from "./index";
+import { Entity, File, Image, Group } from "./index";
 import type Schema from "./graphql/Schema";
 import createMiddleware from "./graphql/middleware";
 
@@ -34,7 +34,12 @@ class Api {
             schema.addAttributeConverter(convertToGraphQL);
             schema.addEntity(File);
             schema.addEntity(Image);
+            schema.addEntity(Group);
         });
+
+        this.entities.addEntityClass(File);
+        this.entities.addEntityClass(Image);
+        this.entities.addEntityClass(Group);
     }
 
     getRequest(): ?express$Request {

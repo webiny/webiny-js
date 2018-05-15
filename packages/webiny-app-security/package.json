@@ -10,7 +10,6 @@
   "license": "MIT",
   "dependencies": {
     "js-cookie": "^2.2.0",
-    "isomorphic-fetch": "^2.2.1",
     "webiny-app": "0.0.0-semantically-released",
     "webiny-app-ui": "0.0.0-semantically-released"
   },

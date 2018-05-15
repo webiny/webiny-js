@@ -3,7 +3,7 @@ import { MySQLDriver } from "webiny-entity-mysql";
 import LocalDriver from "webiny-file-storage-local";
 import { Storage } from "webiny-file-storage";
 import { User } from "webiny-api-security";
-import Authentication from "webiny-api-security/src/services/authentication";
+import Security from "webiny-api-security/src/services/security";
 import registerSecurityAttributes from "webiny-api-security/lib/attributes/registerAttributes";
 import { File, Image } from "webiny-api";
 import registerBufferAttribute from "webiny-api/lib/attributes/registerBufferAttribute";
@@ -16,7 +16,7 @@ import { connection } from "./../../configs/database";
 export default async () => {
     Entity.driver = new MySQLDriver({ connection });
 
-    const authentication = new Authentication({
+    const authentication = new Security({
         identities: [{ identity: User }]
     });
 

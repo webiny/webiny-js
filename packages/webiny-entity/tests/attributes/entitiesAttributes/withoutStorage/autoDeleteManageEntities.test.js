@@ -110,10 +110,11 @@ describe("entity attribute current / initial values syncing", function() {
             .onCall(1)
             .callsFake(() => new QueryResult());
 
+        mainEntity.attribute2 = [...attribute2]; // Force dirty check, since it's not the same array.
         await mainEntity.save();
 
         assert.equal(entityDelete.callCount, 4);
-        assert.equal(entitySave.callCount, 0);
+        assert.equal(entitySave.callCount, 1);
 
         entityDelete.restore();
         entitySave.restore();

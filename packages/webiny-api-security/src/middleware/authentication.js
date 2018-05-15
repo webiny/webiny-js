@@ -21,13 +21,16 @@ export default (options: { token: Function | string }) => {
      */
     return async (params: Object, next: Function) => {
         const { req } = params;
+
         const token =
             typeof options.token === "function" ? options.token(req) : req.get(options.token);
         if (!token) {
             return next();
         }
 
+        // Assigns identity retrieved from received token.
         req.identity = await app.services.get("authentication").verifyToken(token);
+
         next();
     };
 };

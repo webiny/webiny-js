@@ -14,6 +14,11 @@ export default () => {
             schema.addEntity(Widget);
 
             addPageQueries(schema);
+
+            app.entities.addEntityClass(Page);
+            app.entities.addEntityClass(Category);
+            app.entities.addEntityClass(Revision);
+            app.entities.addEntityClass(Widget);
         });
 
         next();

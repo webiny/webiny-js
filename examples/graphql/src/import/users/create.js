@@ -1,16 +1,10 @@
 // @flow
 import { Sync, ConsoleLog } from "webiny-sql-table-sync";
-import {
-    UserTable,
-    PermissionTable,
-    RoleTable,
-    RoleGroupTable,
-    Identity2RoleTable,
-    Identity2RoleGroupTable,
-    Role2RoleGroupTable,
-    Role2PermissionTable
-} from "webiny-api-security/lib/mysql";
-import { MySQLTable } from "webiny-api";
+import { UserTable, GroupTable } from "webiny-api-security/lib/mysql";
+
+import { SettingsTable, FileTable, ImageTable } from "webiny-api/lib/mysql";
+
+import { MySQLTable } from "webiny-api/lib";
 
 // Configure MySQLTable driver
 import { connection } from "./../../configs/database";
@@ -18,16 +12,7 @@ import { connection } from "./../../configs/database";
 MySQLTable.getDriver().setConnection(connection);
 
 (async () => {
-    const tables = [
-        UserTable,
-        Identity2RoleTable,
-        RoleTable,
-        PermissionTable,
-        Role2PermissionTable,
-        RoleGroupTable,
-        Identity2RoleGroupTable,
-        Role2RoleGroupTable
-    ];
+    const tables = [UserTable, GroupTable, SettingsTable, FileTable, ImageTable];
 
     const sync = new Sync({
         tables,

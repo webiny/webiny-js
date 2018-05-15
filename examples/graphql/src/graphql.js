@@ -2,7 +2,7 @@ import express from "express";
 import path from "path";
 import bodyParser from "body-parser";
 import cors from "cors";
-import { authentication, authorization } from "webiny-api-security";
+import { authentication } from "webiny-api-security";
 import setupProject from "./configs/middleware";
 import { app as webiny, Entity } from "webiny-api";
 
@@ -19,7 +19,6 @@ export default () => {
         "/graphql",
         webiny.middleware(({ graphqlMiddleware }) => [
             authentication({ token: "Authorization" }),
-            authorization(),
             graphqlMiddleware(),
             (params, next) => {
                 // This will flush all entities stored in a special per-request entity pool.

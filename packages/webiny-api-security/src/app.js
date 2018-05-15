@@ -1,22 +1,73 @@
 // @flow
 import { GraphQLUnionType } from "graphql";
-import { User, Role, Permission, RoleGroup } from "./index";
-import AuthenticationService from "./services/authentication";
-import AuthorizationService from "./services/authorization";
+import { User, SecuritySettings } from "./index";
+import AuthenticationService from "./services/security";
 import convertToGraphQL from "./attributes/convertToGraphQL";
 import registerAttributes from "./attributes/registerAttributes";
 import createLoginQueries from "./utils/createLoginQueries";
-import attachAuthorization from "./utils/attachAuthorization";
-import type { Entity } from "webiny-api";
+import createListEntitiesQueries from "./utils/createListEntitiesQueries";
+import { Entity } from "webiny-api";
 
 export default (config: Object = {}) => {
-    return ({ app }: Object, next: Function) => {
+    return async ({ app }: Object, next: Function) => {
         app.services.register(
             "authentication",
             () => new AuthenticationService(config.authentication)
         );
-        app.services.register("authorization", () => new AuthorizationService());
         registerAttributes(app.services.get("authentication"));
+
+        app.services.get("authentication").init();
+
+        app.entities.addEntityClass(User);
+        app.entities.addEntityClass(SecuritySettings);
+
+        app.entities.extend("*", (entity: Entity) => {
+            // "savedBy" attribute - updated on both create and update events.
+            entity
+                .attr("savedByClassId")
+                .char()
+                .setProtected();
+            entity
+                .attr("savedBy")
+                .identity({ classIdAttribute: "savedByClassId" })
+                .setProtected();
+
+            // "createdBy" attribute - updated only on entity creation.
+            entity
+                .attr("createdByClassId")
+                .char()
+                .setProtected();
+            entity
+                .attr("createdBy")
+                .identity({ classIdAttribute: "createdByClassId" })
+                .setProtected();
+
+            // "updatedBy" attribute - updated only on entity updates.
+            entity
+                .attr("updatedByClassId")
+                .char()
+                .setProtected();
+            entity
+                .attr("updatedBy")
+                .identity({ classIdAttribute: "updatedByClassId" })
+                .setProtected();
+
+            // We don't need a standalone "deletedBy" attribute, since its value would be the same as in "savedBy"
+            // and "updatedBy" attributes. Check these attributes to find out who deleted an entity.
+            entity.on("save", async () => {
+                if (!app.getRequest()) {
+                    return;
+                }
+
+                const { identity } = app.getRequest();
+                entity.savedBy = identity;
+                if (entity.isExisting()) {
+                    entity.updatedBy = identity;
+                } else {
+                    entity.createdBy = identity;
+                }
+            });
+        });
 
         app.graphql.schema(schema => {
             schema.addType({
@@ -37,44 +88,10 @@ export default (config: Object = {}) => {
 
             schema.addAttributeConverter(convertToGraphQL);
             schema.addEntity(User);
-            schema.addEntity(Role);
-            schema.addEntity(RoleGroup);
-            schema.addEntity(Permission);
 
             // Create login queries
             createLoginQueries(app, config, schema);
-        });
-
-        attachAuthorization(app);
-
-        app.entities.extend("*", (entity: Entity) => {
-            // "savedBy" attribute - updated on both create and update events.
-            entity.attr("savedByClassId").char();
-            entity.attr("savedBy").identity({ classIdAttribute: "savedByClassId" });
-
-            // "createdBy" attribute - updated only on entity creation.
-            entity.attr("createdByClassId").char();
-            entity.attr("createdBy").identity({ classIdAttribute: "createdByClassId" });
-
-            // "updatedBy" attribute - updated only on entity updates.
-            entity.attr("updatedByClassId").char();
-            entity.attr("updatedBy").identity({ classIdAttribute: "updatedByClassId" });
-
-            // We don't need a standalone "deletedBy" attribute, since its value would be the same as in "savedBy"
-            // and "updatedBy" attributes. Check these attributes to find out who deleted an entity.
-            entity.on("save", () => {
-                if (!app.getRequest()) {
-                    return;
-                }
-
-                const { identity } = app.getRequest();
-                entity.savedBy = identity;
-                if (entity.isExisting()) {
-                    entity.updatedBy = identity;
-                } else {
-                    entity.createdBy = identity;
-                }
-            });
+            createListEntitiesQueries(app, config, schema);
         });
 
         next();

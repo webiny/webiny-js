@@ -27,7 +27,7 @@ class UsersList extends React.Component {
         const { View, List, ListData, Link, Icon, Input, AdminLayout, Loader } = this.props.modules;
         const Table = List.Table;
 
-        const roles = <Link route="Roles.List">{t`Roles`}</Link>;
+        const groups = <Link route="Groups.List">{t`Groups`}</Link>;
         const permissions = <Link route="Permissions.List">{t`Permissions`}</Link>;
 
         return (
@@ -37,8 +37,8 @@ class UsersList extends React.Component {
                         title={t`Security - Users`}
                         description={
                             <span>
-                                {t`Once your system {permissions} and {roles} are defined,
-                                    you can create your system users here.`({ roles, permissions })}
+                                {t`Once your system {permissions} and {groups} are defined,
+                                    you can create your system users here.`({ groups, permissions })}
                             </span>
                         }
                     >

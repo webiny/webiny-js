@@ -34,9 +34,9 @@ class Entity {
     constructor(): Entity {
         const proxy = new Proxy((this: Object), {
             set: (instance, key, value) => {
-                const attr: ?Attribute = instance.getModel().getAttribute(key);
-                if (attr) {
-                    attr.setValue(value);
+                const attribute: ?Attribute = instance.getModel().getAttribute(key);
+                if (attribute) {
+                    attribute.setValue(value);
                     return true;
                 }
 
@@ -48,9 +48,9 @@ class Entity {
                     return instance.constructor[key];
                 }
 
-                const attr: ?Attribute = instance.getModel().getAttribute(key);
-                if (attr) {
-                    return attr.getValue();
+                const attribute: ?Attribute = instance.getModel().getAttribute(key);
+                if (attribute) {
+                    return attribute.getValue();
                 }
 
                 return instance[key];
@@ -69,15 +69,23 @@ class Entity {
         this.processing = null;
 
         if (_.get(this, "constructor.crud.logs")) {
-            this.attr("savedOn").date();
-            this.attr("createdOn").date();
-            this.attr("updatedOn").date();
+            this.attr("savedOn")
+                .date()
+                .setProtected();
+            this.attr("createdOn")
+                .date()
+                .setProtected();
+            this.attr("updatedOn")
+                .date()
+                .setProtected();
         }
 
-        if (_.get(this, "constructor.crud.delete.soft")) {
+        const deletes = _.get(this, "constructor.crud.delete", {});
+        if (deletes.soft) {
             this.attr("deleted")
                 .boolean()
-                .setDefaultValue(false);
+                .setProtected()
+                .setValue(false);
 
             this.on("beforeDelete", () => (proxy.deleted = true));
         }
@@ -276,6 +284,11 @@ class Entity {
         try {
             const events = params.events || {};
             events.save !== false && (await this.emit("save"));
+            if (existing) {
+                events.create !== false && (await this.emit("update"));
+            } else {
+                events.update !== false && (await this.emit("create"));
+            }
 
             params.validation !== false && (await this.validate());
 
@@ -386,10 +399,15 @@ class Entity {
      * @param params
      */
     static async findByIds(ids: Array<mixed>, params: ?Object): Promise<EntityCollection> {
-        if (!params) {
-            params = {};
+        const output = [];
+        for (let i = 0; i < ids.length; i++) {
+            const entity = await this.findById(ids[i], params);
+            if (entity) {
+                output.push(entity);
+            }
         }
-        return await this.find(_.merge(_.cloneDeep(params), { query: { id: ids } }));
+
+        return output;
     }
 
     /**
@@ -409,10 +427,12 @@ class Entity {
         if (_.isObject(result)) {
             const pooled = this.getEntityPool().get(this, result.id);
             if (pooled) {
+                await pooled.emit("read");
                 return pooled;
             }
 
             const entity = new this().setExisting().populateFromStorage(((result: any): Object));
+            await entity.emit("read");
             this.getEntityPool().add(entity);
             return entity;
         }
@@ -441,8 +461,10 @@ class Entity {
                 const pooled = this.getEntityPool().get(this, result[i].id);
                 if (pooled) {
                     entityCollection.push(pooled);
+                    await pooled.emit("read");
                 } else {
                     const entity = new this().setExisting().populateFromStorage(result[i]);
+                    await entity.emit("read");
                     this.getEntityPool().add(entity);
                     entityCollection.push(entity);
                 }
@@ -541,6 +563,35 @@ class Entity {
 
     isClean(): boolean {
         return !this.isDirty();
+    }
+
+    /**
+     * Returns information about the entity.
+     * @returns {{name: string, id: *, attributes: {name: *, class: string|string|string|string|string|string|string}[]}}
+     */
+    static describe(options = {}) {
+        const instance = new this();
+
+        const omit = _.get(options, "attributes.omit", []);
+
+        return {
+            name: instance.getClassName(),
+            classId: instance.classId,
+            attributes: Object.keys(instance.getAttributes())
+                .map(key => {
+                    const attribute = instance.getAttribute(key);
+                    if (omit.includes(key)) {
+                        return null;
+                    }
+
+                    return {
+                        name: attribute.getName(),
+                        protected: attribute.getProtected(),
+                        class: attribute.constructor.name
+                    };
+                })
+                .filter(value => value)
+        };
     }
 
     /**

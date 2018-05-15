@@ -53,12 +53,16 @@ describe("getValue test (with Storage)", function() {
 
         entityFindOneStub.restore();
 
-        const entityFindStub = sandbox.stub(MainEntity.getDriver(), "find").callsFake(() => {
-            return new QueryResult([
-                { id: "entity1", name: "Entity 1" },
-                { id: "entity2", name: "Entity 2" }
-            ]);
-        });
+        const entityFindStub = sandbox
+            .stub(MainEntity.getDriver(), "findOne")
+            .onCall(0)
+            .callsFake(() => {
+                return new QueryResult({ id: "entity1", name: "Entity 1" });
+            })
+            .onCall(0)
+            .callsFake(() => {
+                return new QueryResult({ id: "entity2", name: "Entity 2" });
+            });
 
         assert.deepEqual(mainEntity.getAttribute("attribute1").value.state, {
             loading: false,

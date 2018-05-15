@@ -1,7 +1,7 @@
 import { Entity } from "webiny-api";
 import { MemoryDriver } from "webiny-entity-memory";
 import addDays from "date-fns/add_days";
-import Authentication from "../src/services/authentication";
+import Security from "../src/services/security";
 import MyUser from "./entities/myUser";
 import chai from "./utils/chai";
 import credentialsStrategy from "../src/strategies/credentialsStrategy";
@@ -12,7 +12,7 @@ import registerAttributes from "./../src/attributes/registerAttributes";
 const { expect } = chai;
 
 describe("Authentication test", () => {
-    let auth: Authentication = null;
+    let auth: Security = null;
     let token: string = null;
 
     const authConfig = {
@@ -43,7 +43,7 @@ describe("Authentication test", () => {
 
     before(() => {
         // Create Authentication service
-        auth = new Authentication(authConfig);
+        auth = new Security(authConfig);
         // Register attributes
         registerAttributes(auth);
         // Configure Memory entity driver
