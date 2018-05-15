@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import TogglePermissionButton from "./TogglePermissionButton";
+import TogglePermissionButton from "./../components/TogglePermissionButton";
 import _ from "lodash";
 // import ExportEntityModal from "./Modal/ExportModal";
 // import ImportEntityModal from "./Modal/ImportModal";
@@ -31,9 +31,9 @@ class EntitiesList extends React.Component {
                         <Table.Field name="name" label={t`Name`}>
                             {({ data }) => (
                                 <span>
-                                    <strong>{data.name}</strong>
+                                    <strong>{data.classId}</strong>
                                     <br />
-                                    {data.classId}
+                                    {data.name}
                                 </span>
                             )}
                         </Table.Field>

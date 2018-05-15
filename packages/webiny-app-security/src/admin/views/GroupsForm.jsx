@@ -1,6 +1,6 @@
 import React from "react";
 import { app, i18n, createComponent } from "webiny-app";
-import EntitiesList from "./components/EntitiesList"
+import EntitiesList from "./GroupsForm/EntitiesList"
 import ApiAccess from "./GroupsForm/ApiAccess";
 
 const t = i18n.namespace("Security.GroupsForm");
