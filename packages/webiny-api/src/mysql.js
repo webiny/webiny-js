@@ -9,11 +9,6 @@ class MySQLTable extends Table {
         this.column("id").char(24);
         this.index().primary("id");
 
-        this.setBaseColumns();
-        this.setBaseIndexes();
-    }
-
-    setBaseColumns() {
         this.column("createdOn").dateTime();
         this.column("createdBy").char(24);
         this.column("createdByClassId").varChar(100);
@@ -33,10 +28,6 @@ class MySQLTable extends Table {
         this.column("owner").char(24);
         this.column("ownerClassId").varChar(100);
         this.column("groups").json();
-    }
-
-    setBaseIndexes() {
-        return null;
     }
 }
 

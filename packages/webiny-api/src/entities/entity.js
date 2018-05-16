@@ -45,6 +45,12 @@ class Group extends Entity {
             .object()
             .setValidators()
             .setValue({ entities: {}, api: {} });
+
+        this.on("delete", () => {
+            if (this.slug === "default") {
+                throw Error("Cannot delete default group.");
+            }
+        });
     }
 }
 

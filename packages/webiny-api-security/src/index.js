@@ -5,4 +5,5 @@ export { default as SecuritySettings } from "./entities/securitySettings.entity"
 export { default as JwtToken } from "./tokens/jwtToken";
 export { default as credentialsStrategy } from "./strategies/credentialsStrategy";
 export { default as authentication } from "./middleware/authentication";
+export { default as authorization } from "./middleware/authorization";
 export { default as app } from "./app";

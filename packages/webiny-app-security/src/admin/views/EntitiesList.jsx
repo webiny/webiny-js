@@ -99,7 +99,9 @@ class EntitiesList extends React.Component {
                                                             >
                                                                 {({ data }) => (
                                                                     <span>
-                                                                        <strong>{data.classId}</strong>
+                                                                        <strong>
+                                                                            {data.classId}
+                                                                        </strong>
                                                                         <br />
                                                                         {data.name}
                                                                     </span>
@@ -129,6 +131,10 @@ class EntitiesList extends React.Component {
                                                                             ].map(operation => {
                                                                                 return (
                                                                                     <TogglePermissionButton
+                                                                                        disabled={permissionClass.key !== 'other' && _.get(
+                                                                                            data,
+                                                                                            `permissions.other.operations.${operation}`
+                                                                                        )}
                                                                                         key={`${
                                                                                             permissionClass.key
                                                                                         }_${operation}`}
@@ -161,7 +167,6 @@ class EntitiesList extends React.Component {
                                                             })}
                                                         </Table.Row>
                                                     </Table>
-                                                    <List.Pagination />
                                                 </List>
                                             </Fragment>
                                         )}

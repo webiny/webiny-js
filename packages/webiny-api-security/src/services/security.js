@@ -6,7 +6,7 @@ import { SecuritySettings } from "./..";
 import type { IAuthentication, IToken } from "./../../types";
 import _ from "lodash";
 
-// import { Entity } from "webiny-api";
+import { Entity } from "webiny-api";
 
 class Security implements IAuthentication {
     config: {
@@ -25,11 +25,17 @@ class Security implements IAuthentication {
 
     async init() {
         this.settings = (await SecuritySettings.load()).data;
-        /*["create", "update", "delete", "read"].forEach(operation => {
-            Entity.on(operation, ({ entity }) => {
+
+        ["create", "update", "delete", "read"].forEach(operation => {
+            Entity.on(operation, async ({ entity }) => {
                 const { identity } = app.getRequest();
 
-                if (!this.canExecuteOperation(identity, entity, operation)) {
+                const canExecuteOperation = await this.canExecuteOperation(
+                    identity,
+                    entity,
+                    operation
+                );
+                if (!canExecuteOperation) {
                     throw Error(
                         `Cannot execute "${operation}" operation on entity "${entity.classId}"`
                     );
@@ -41,7 +47,7 @@ class Security implements IAuthentication {
                     }
                 }
             });
-        });*/
+        });
     }
 
     /**
@@ -98,7 +104,7 @@ class Security implements IAuthentication {
         return false;
     }
 
-    canExecuteOperation(identity, entity, operation) {
+    async canExecuteOperation(identity, entity, operation) {
         if (_.get(this.settings, `entities.${entity.classId}.other.operations.${operation}`)) {
             return true;
         }
@@ -120,8 +126,9 @@ class Security implements IAuthentication {
         }
 
         // Check if one of the groups user belongs to allows action.
-        for (let i = 0; i < identity.getAttribute("groups").value.current.length; i++) {
-            let group = identity.getAttribute("groups").value.current[i];
+        const groups = await identity.groups;
+        for (let i = 0; i < groups.length; i++) {
+            let group = groups[i];
             if (_.get(group, `permissions.entities.${entity.classId}.operations.${operation}`)) {
                 return true;
             }
@@ -165,8 +172,6 @@ class Security implements IAuthentication {
             );
         }
 
-        await instance.getAttribute("groups").value.load();
-
         return instance;
     }
 
@@ -193,12 +198,7 @@ class Security implements IAuthentication {
             );
         }
 
-        const authenticated = await strategyObject.authenticate(data, identity);
-
-        // Make sure groups are loaded, so they can synchronously be checked.
-        await authenticated.getAttribute("groups").value.load();
-
-        return authenticated;
+        return await strategyObject.authenticate(data, identity);
     }
 }
 

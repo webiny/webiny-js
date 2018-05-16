@@ -1,5 +1,5 @@
 // @flow
-import { MySQLTable } from "./..";
+import { MySQLTable } from "./../..";
 
 class SettingsTable extends MySQLTable {
     constructor() {

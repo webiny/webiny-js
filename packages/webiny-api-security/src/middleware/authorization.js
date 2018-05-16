@@ -1,5 +1,5 @@
 // @flow
-import Permission from "webiny-api";
+import { Group } from "webiny-api";
 import _ from "lodash";
 
 export default () => {
@@ -13,18 +13,20 @@ export default () => {
     return async (params, next: Function) => {
         const identity = params.req.identity;
 
-        let identityScope = {};
+        let permissions = {};
         if (identity) {
             // Scope received from identity already possesses 'anonymous' permission's scope.
-            identityScope = await identity.scope;
-        } else {
-            const anonymousPermission = await Permission.findOne({ query: { slug: "anonymous" } });
-            for (let operationName in anonymousPermission.scope) {
-                if (!identityScope[operationName]) {
-                    identityScope[operationName] = [];
-                }
-                identityScope[operationName].push(anonymousPermission.scope[operationName]);
+            permissions = await identity.apiPermissions;
+        }
+
+        const anonymousGroup = await Group.findOne({ query: { slug: "default" } });
+        const anonymousPermissions = await anonymousGroup.get("permissions.api", {});
+
+        for (let operationName in anonymousPermissions) {
+            if (!permissions[operationName]) {
+                permissions[operationName] = [];
             }
+            permissions[operationName].push(anonymousPermissions[operationName]);
         }
 
         if (
@@ -41,7 +43,7 @@ export default () => {
                 if (selection.kind === "Field") {
                     const fieldName = selection.name.value;
 
-                    const fieldScopes = identityScope[fieldName] || [];
+                    const fieldScopes = permissions[fieldName] || [];
 
                     let hasAccess = false;
                     fieldScopes.forEach(fieldScope => {

@@ -73,7 +73,6 @@ class EntitiesList extends React.Component {
                         </Table.Field>
                     </Table.Row>
                 </Table>
-                <List.Pagination />
             </List>
         );
     }

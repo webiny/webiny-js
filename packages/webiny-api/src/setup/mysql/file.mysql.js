@@ -1,4 +1,4 @@
-import { MySQLTable } from "./..";
+import { MySQLTable } from "./../..";
 
 class FileTable extends MySQLTable {
     constructor() {

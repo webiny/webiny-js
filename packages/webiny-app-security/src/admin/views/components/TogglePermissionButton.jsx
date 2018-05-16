@@ -19,6 +19,7 @@ class TogglePermissionButton extends React.Component {
         return (
             <div className={styles.togglePermissionButtonWrapper} ref={ref => (this.ref = ref)}>
                 <Button
+                    disabled={this.props.disabled}
                     type="primary"
                     onClick={() => {
                         this.ref.querySelector("button").blur();

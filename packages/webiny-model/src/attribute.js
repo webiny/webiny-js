@@ -18,7 +18,6 @@ class Attribute {
     validators: ?(string | Function);
     onSetCallback: Function;
     onGetCallback: Function;
-    static spies: { getValue: Array<Function>, setValue: Array<Function> };
 
     constructor(name: string, attributesContainer: AttributesContainer) {
         /**
@@ -258,10 +257,6 @@ class Attribute {
      * @returns {void|Promise<void>}
      */
     setValue(value: mixed): void {
-        this.constructor.spies.setValue.forEach(callback => {
-            callback({ attribute: this, value });
-        });
-
         if (!this.canSetValue()) {
             return;
         }
@@ -274,10 +269,6 @@ class Attribute {
      * @returns {*}
      */
     getValue(): mixed | Promise<mixed> {
-        this.constructor.spies.getValue.forEach(callback => {
-            callback({ attribute: this });
-        });
-
         if (typeof this.dynamic === "function") {
             return this.dynamic(...arguments);
         }
@@ -349,27 +340,6 @@ class Attribute {
         return this.dynamic;
     }
 
-    /**
-     * Adds spies that will be executed in attribute.
-     * Useful eg. if get/setValue methods need to be intercepted for some reason.
-     * A function that is returned can be used to remove the newly added interceptor.
-     * @param type
-     * @param callback
-     * @returns {Function}
-     */
-    static spy(type, callback: Function<void>): Function<void> {
-        if (!this.spies[type]) {
-            this.spies[type] = [];
-        }
-
-        this.spies[type].push(callback);
-
-        return () => {
-            const index = this.spies[type].indexOf(callback);
-            this.spies[type].splice(index, 1);
-        };
-    }
-
     expected(expecting: string, got: string): ModelError {
         throw new ModelError(
             `Validation failed, received ${got}, expecting ${expecting}.`,
@@ -377,7 +347,5 @@ class Attribute {
         );
     }
 }
-
-Attribute.spies = { getValue: [], setValue: [] };
 
 export default Attribute;

@@ -9,7 +9,9 @@ class User extends Identity {
             .setValidators("required,email")
             .onSet(value => value.toLowerCase().trim());
 
-        this.attr("password").password();
+        this.attr("password")
+            .password()
+            .setValidators("required");
         this.attr("firstName").char();
         this.attr("lastName").char();
         // this.attr("avatar").image();
