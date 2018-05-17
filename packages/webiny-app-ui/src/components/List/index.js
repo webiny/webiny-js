@@ -1,3 +1,5 @@
+// TODO: review all components and look for dynamic bindings inside `render()` method
+
 import _ from "lodash";
 import List from "./List";
 import Table from "./Components/Table/Table";
