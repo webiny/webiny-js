@@ -1,4 +1,5 @@
-.idea/
+.idea
+.serverless
 .env
 npm-debug.log
 node_modules

@@ -1,0 +1,22 @@
+{
+  "name": "webiny-project",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "babel src -d dist",
+    "develop": "cross-env NODE_ENV=development node --inspect=9005 ./node_modules/.bin/sls offline start --require=babel-register"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "serverless-http": "^1.5.5"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "cross-env": "^5.1.5",
+    "serverless": "^1.27.2",
+    "serverless-finch": "^2.1.2",
+    "serverless-offline": "^3.20.3",
+    "serverless-plugin-cloudfront-lambda-edge": "^2.0.0"
+  }
+}

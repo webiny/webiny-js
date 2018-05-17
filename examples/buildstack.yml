@@ -1,0 +1,264 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Pipeline using CodePipeline and CodeBuild for continuous delivery of your project.
+Parameters:
+  ProjectName:
+    Type: String
+    Description: Project name
+    Default: bilbo
+  Stage:
+    Type: String
+    Description: Pipeline stage
+    Default: dev
+  GitHubUser:
+    Type: String
+    Description: GitHub User
+    Default: Pavel910
+  GitHubRepo:
+    Type: String
+    Description: GitHub Repo to pull from. Only the Name. not the URL
+    Default: aws-ci-cd
+  GitHubBranch:
+    Type: String
+    Description: GitHub Branch
+    Default: master
+  GitHubToken:
+    NoEcho: true
+    Type: String
+    Description: Secret. It might look something like 9b189a1654643522561f7b3ebd44a1531a4287af
+      OAuthToken with access to Repo. Go to https://github.com/settings/tokens
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Project Configuration
+        Parameters:
+        - ProjectName
+        - Stage
+      - Label:
+          default: GitHub Configuration
+        Parameters:
+        - GitHubToken
+        - GitHubUser
+        - GitHubRepo
+        - GitHubBranch
+    ParameterLabels:
+      ProjectName:
+        default: Project name
+      Stage:
+        default: Pipeline stage
+      GitHubToken:
+        default: GitHub OAuth2 Token
+      GitHubUser:
+        default: GitHub User/Org Name
+      GitHubRepo:
+        default: GitHub Repository Name
+      GitHubBranch:
+        default: GitHub Branch Name
+Resources:
+  CodeBuildRole:
+    Description: Creating service role in IAM for AWS CodeBuild
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AWS::StackName}-codebuild-role"
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+              - codebuild.amazonaws.com
+              - lambda.amazonaws.com
+              - edgelambda.amazonaws.com
+              - cloudformation.amazonaws.com
+          Action: sts:AssumeRole
+      Path: /
+  CodeBuildRolePolicy:
+    Type: AWS::IAM::Policy
+    DependsOn: CodeBuildRole
+    Description: Setting IAM policy for the service role for AWS CodeBuild
+    Properties:
+      PolicyName: CodeBuildRolePolicy
+      PolicyDocument:
+        Statement:
+        - Effect: Allow
+          Resource: ["*"]
+          Action:
+            - "logs:CreateLogGroup"
+            - "logs:CreateLogStream"
+            - "logs:PutLogEvents"
+            - "logs:DescribeLogGroups"
+            - "logs:DeleteLogGroup"
+            - "logs:DeleteLogStream"
+        - Effect: Allow
+          Resource: ["*"]
+          Action: ["s3:*"]
+        - Effect: Allow
+          Resource: ["*"]
+          Action:
+            - "kms:GenerateDataKey*"
+            - "kms:Encrypt"
+            - "kms:Decrypt"
+        - Effect: Allow
+          Resource: ["*"]
+          Action: ["sns:*"]
+        - Effect: Allow
+          Action:
+            - "cloudformation:DescribeStacks"
+            - "cloudformation:DescribeStackResource"
+            - "cloudformation:DescribeStackResources"
+            - "cloudformation:DescribeStackEvents"
+            - "cloudformation:ValidateTemplate"
+            - "cloudformation:CreateStack"
+            - "cloudformation:UpdateStack"
+          Resource: ["*"]
+        - Effect: Allow
+          Action:
+            - "apigateway:*"
+          Resource: ["*"]
+        - Effect: Allow
+          Action:
+            - "cloudfront:GetDistribution"
+            - "cloudfront:CreateDistribution"
+            - "cloudfront:UpdateDistribution"
+            - "cloudfront:DeleteDistribution"
+            - "cloudfront:TagResource"
+          Resource: ["*"]
+        - Effect: Allow
+          Action:
+            - "lambda:*"
+          Resource: ["*"]
+        - Effect: Allow
+          Action:
+            - "iam:PassRole"
+            - "iam:GetRole"
+            - "iam:CreateServiceLinkedRole"
+          Resource: ["*"]
+      Roles: [!Ref CodeBuildRole]
+  CodePipelineRole:
+    Description: Creating service role in IAM for AWS CodePipeline
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AWS::StackName}-codepipeline-role"
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: [codepipeline.amazonaws.com]
+          Action: sts:AssumeRole
+      Path: /
+  CodePipelineRolePolicy:
+    Type: AWS::IAM::Policy
+    DependsOn: CodePipelineRole
+    Description: Setting IAM policy for the service role for AWS CodePipeline
+    Properties:
+      PolicyName: CodePipelineRolePolicy
+      PolicyDocument:
+        Statement:
+        - Action: ["s3:GetObject", "s3:GetObjectVersion", "s3:GetBucketVersioning"]
+          Resource: "*"
+          Effect: Allow
+        - Action: ["s3:PutObject"]
+          Resource: ["arn:aws:s3:::codepipeline*"]
+          Effect: Allow
+        - Action: ["codebuild:StartBuild", "codebuild:BatchGetBuilds"]
+          Resource: "*"
+          Effect: Allow
+        - Action: ["cloudwatch:*", "s3:*", "sns:*", "cloudformation:*", "rds:*", "sqs:*", "iam:PassRole"]
+          Resource: "*"
+          Effect: Allow
+        - Action: ["lambda:InvokeFunction", "lambda:ListFunctions"]
+          Resource: "*"
+          Effect: Allow
+      Roles: [!Ref CodePipelineRole]
+  PipelineBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+  ClientBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+  ClientBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Sid: PublicReadForGetBucketObjects
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref ClientBucket
+                - /*
+      Bucket: !Ref ClientBucket
+  CodeBuildDeploy:
+    Type: AWS::CodeBuild::Project
+    DependsOn: CodeBuildRole
+    Properties:
+      Name: !Sub "${AWS::StackName}-${Stage}-deploy"
+      Description: Build and run tests
+      ServiceRole: !Ref CodeBuildRole
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/nodejs:8.11.0
+        EnvironmentVariables:
+          - Name: REGION
+            Value: !Sub "${AWS::Region}"
+          - Name: S3_BUCKET_ID
+            Value: !Ref ClientBucket
+          - Name: PROJECT_NAME
+            Value: !Ref ProjectName
+          - Name: STAGE
+            Value: !Ref Stage
+          - Name: DEPLOY_ROLE
+            Value: !GetAtt CodeBuildRole.Arn
+      Source:
+        Type: CODEPIPELINE
+      TimeoutInMinutes: 20
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: !Sub "${AWS::StackName}-${Stage}"
+      RoleArn: !GetAtt CodePipelineRole.Arn
+      Stages:
+      - Name: Source
+        Actions:
+        - InputArtifacts: []
+          Name: Source
+          ActionTypeId:
+            Category: Source
+            Owner: ThirdParty
+            Version: '1'
+            Provider: GitHub
+          OutputArtifacts:
+          - Name: !Sub "${AWS::StackName}-${Stage}-source-artifact"
+          Configuration:
+            Owner: !Ref GitHubUser
+            Repo: !Ref GitHubRepo
+            Branch: !Ref GitHubBranch
+            OAuthToken: !Ref GitHubToken
+          RunOrder: 1
+      - Name: Build
+        Actions:
+        - Name: Deploy
+          ActionTypeId:
+            Category: Build
+            Owner: AWS
+            Version: '1'
+            Provider: CodeBuild
+          InputArtifacts:
+          - Name: !Sub "${AWS::StackName}-${Stage}-source-artifact"
+          OutputArtifacts: []
+          Configuration:
+            ProjectName: !Ref CodeBuildDeploy
+          RunOrder: 1
+      ArtifactStore:
+        Type: S3
+        Location: !Ref PipelineBucket
+Outputs:
+  PipelineUrl:
+    Value: !Sub "https://console.aws.amazon.com/codepipeline/home?region=${AWS::Region}#/view/${Pipeline}"
+    Description: CodePipeline URL
