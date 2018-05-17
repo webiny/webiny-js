@@ -6,6 +6,6 @@ if (process.env.NODE_ENV === "development") {
 }
 
 const serverless = require("serverless-http");
-const app = require("./../index").default;
+const app = require("./../app/index").default;
 
 module.exports.handler = serverless(app());
