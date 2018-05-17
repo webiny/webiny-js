@@ -1,12 +1,11 @@
 // @flow
 import { Identity } from "./../index";
 import AuthenticationError from "./authenticationError";
-import { app } from "webiny-api";
+import { Entity, app } from "./..";
 import { SecuritySettings } from "./..";
 import type { IAuthentication, IToken } from "./../../types";
 import _ from "lodash";
 
-import { Entity } from "webiny-api";
 
 class Security implements IAuthentication {
     config: {

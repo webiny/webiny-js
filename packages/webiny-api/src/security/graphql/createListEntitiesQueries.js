@@ -8,7 +8,7 @@ import {
     GraphQLBoolean
 } from "graphql";
 import GraphQLJSON from "graphql-type-json";
-import { SecuritySettings } from "webiny-api-security";
+import { SecuritySettings } from "webiny-api";
 import _ from "lodash";
 
 export default (app, config, schema) => {

@@ -1,5 +1,5 @@
-import { app, File, Image } from "webiny-api";
-import { User, app as securityApp, JwtToken, credentialsStrategy } from "webiny-api-security";
+import { app, File, Image, User, JwtToken, credentialsStrategy } from "webiny-api";
+
 import { MySQLDriver } from "webiny-entity-mysql";
 import imageProcessor from "webiny-jimp";
 import LocalDriver from "webiny-file-storage-local";
@@ -24,7 +24,15 @@ export default async () => {
             // Instantiate driver with DB connection
             driver: new MySQLDriver({ connection }),
             // Configure entity attributes
-            attributes: ({ bufferAttribute, fileAttributes, imageAttributes }) => {
+            attributes: ({
+                passwordAttribute,
+                identityAttribute,
+                bufferAttribute,
+                fileAttributes,
+                imageAttributes
+            }) => {
+                identityAttribute();
+                passwordAttribute();
                 bufferAttribute();
                 fileAttributes({
                     entity: File,
@@ -37,16 +45,9 @@ export default async () => {
                     storage: new Storage(localDriver)
                 });
             }
-        }
-    });
-
-    // This will install all necessary tables / data - only if server was started with "--install" flag.
-    if (argv.install) {
-        await app.install();
-    }
-
-    app.use(
-        securityApp({
+        },
+        security: {
+            token: "Authorization",
             authentication: {
                 token: new JwtToken({ secret: "MyS3cr3tK3Y" }),
                 strategies: {
@@ -65,11 +66,18 @@ export default async () => {
                     }
                 ]
             }
-        })
-    );
+        }
+    });
+
+    // This will install all necessary tables / data - only if server was started with "--install" flag.
+    if (argv.install) {
+        await app.install();
+    }
 
     app.use(myApp());
     app.use(cmsApp({}));
+
+    await app.init();
 
     return app;
 };
