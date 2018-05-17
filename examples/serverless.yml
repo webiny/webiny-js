@@ -5,24 +5,24 @@ plugins:
   - serverless-plugin-cloudfront-lambda-edge
 
 custom:
-  stage: ${opt:stage}
-  region: ${opt:region}
+  stage: ${opt:stage, self:provider.stage}
+  region: ${opt:region, "us-east-1"}
   client:
-    bucketId: ${opt:bucket}
+    bucketId: ${opt:bucket, ""}
   api:
     source: ${opt:source, "dist"}
 
 provider:
-    name: aws
-    runtime: nodejs8.10
-    stage: ${self:custom.stage}
-    region: ${self:custom.region}
-    role: ${opt:role}
+  name: aws
+  runtime: nodejs8.10
+  stage: dev
+  region: ${self:custom.region}
+  role: ${opt:role, ""}
 
 functions:
   router:
     name: '${self:service}-${self:custom.stage}-router'
-    handler: ${self:custom.api.source}/router/handler.router
+    handler: api/${self:custom.api.source}/edge/index.handler
     memorySize: 128
     timeout: 5
     lambdaAtEdge:
@@ -30,7 +30,7 @@ functions:
       eventType: origin-request
   api:
     name: '${self:service}-${self:custom.stage}-api'
-    handler: ${self:custom.api.source}/api/handler.api
+    handler: api/${self:custom.api.source}/lambda/index.handler
     events: [ { http: 'ANY /' }, { http: 'ANY {proxy+}' } ]
 
 resources:
