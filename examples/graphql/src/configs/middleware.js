@@ -8,8 +8,9 @@ import addDays from "date-fns/add_days";
 import { connection } from "./database";
 import myApp from "./../myApp";
 import { app as cmsApp } from "webiny-api-cms";
+import { argv } from "yargs";
 
-export default () => {
+export default async () => {
     // Configure default storage
     const localDriver = new LocalDriver({
         directory: __dirname + "/../../storage",
@@ -18,6 +19,7 @@ export default () => {
     });
 
     app.configure({
+        database: { connection },
         entity: {
             // Instantiate driver with DB connection
             driver: new MySQLDriver({ connection }),
@@ -37,6 +39,11 @@ export default () => {
             }
         }
     });
+
+    // This will install all necessary tables / data - only if server was started with "--install" flag.
+    if (argv.install) {
+        await app.install();
+    }
 
     app.use(
         securityApp({
@@ -62,7 +69,6 @@ export default () => {
     );
 
     app.use(myApp());
-
     app.use(cmsApp({}));
 
     return app;

@@ -6,8 +6,8 @@ import { authentication, authorization } from "webiny-api-security";
 import setupProject from "./configs/middleware";
 import { Entity } from "webiny-api";
 
-export default () => {
-    const webiny = setupProject();
+export default async () => {
+    const webiny = await setupProject();
 
     const app = express();
 

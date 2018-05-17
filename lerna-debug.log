@@ -73,36 +73,17 @@
 67 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-validation' }
 68 error execute callback with error
 69 error Error: Command failed: yarn run build
-69 error SyntaxError: src/utils/createListEntitiesQueries.js: Unexpected token, expected , (108:27)
-69 error   106 |             return {
-69 error   107 |                 entity: app.
-69 error > 108 |                 permissions: await settings.get(`data.entities.${args.id}`)
-69 error       |                            ^
-69 error   109 |             }
-69 error   110 |         }
-69 error   111 |     };
+69 error SyntaxError: src/app.js: await is a reserved word (47:39)
+69 error   45 |
+69 error   46 |         if (argv.install) {
+69 error > 47 |             const {default: install} = await import('./install');
+69 error      |                                        ^
+69 error   48 |             await install();
+69 error   49 |         }
+69 error   50 |     }
 69 error error Command failed with exit code 1.
 69 error
 69 error $ babel src -d lib --source-maps --copy-files
-69 error src/app.js -> lib/app.js
-69 error src/attributes/convertToGraphQL.js -> lib/attributes/convertToGraphQL.js
-69 error src/attributes/identityAttribute.js -> lib/attributes/identityAttribute.js
-69 error src/attributes/passwordAttribute.js -> lib/attributes/passwordAttribute.js
-69 error src/attributes/registerAttributes.js -> lib/attributes/registerAttributes.js
-69 error src/entities/group.entity.js -> lib/entities/group.entity.js
-69 error src/entities/identity.entity.js -> lib/entities/identity.entity.js
-69 error src/entities/securitySettings.entity.js -> lib/entities/securitySettings.entity.js
-69 error src/entities/user.entity.js -> lib/entities/user.entity.js
-69 error src/index.js -> lib/index.js
-69 error src/middleware/authentication.js -> lib/middleware/authentication.js
-69 error src/mysql/group.mysql.js -> lib/mysql/group.mysql.js
-69 error src/mysql/identity.mysql.js -> lib/mysql/identity.mysql.js
-69 error src/mysql/index.js -> lib/mysql/index.js
-69 error src/mysql/user.mysql.js -> lib/mysql/user.mysql.js
-69 error src/services/authentication.js -> lib/services/authentication.js
-69 error src/services/authenticationError.js -> lib/services/authenticationError.js
-69 error src/strategies/credentialsStrategy.js -> lib/strategies/credentialsStrategy.js
-69 error src/tokens/jwtToken.js -> lib/tokens/jwtToken.js
 69 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
 69 error
 69 error     at Promise.all.then.arr (/Users/adrian/dev/webiny-js/node_modules/execa/index.js:236:11)

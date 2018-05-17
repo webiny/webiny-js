@@ -15,6 +15,8 @@ import registerBufferAttribute from "./attributes/registerBufferAttribute";
 import registerFileAttributes from "./attributes/registerFileAttributes";
 import registerImageAttributes from "./attributes/registerImageAttributes";
 
+import { argv } from "yargs";
+
 class Api {
     config: Object;
     graphql: GraphQL;
@@ -63,6 +65,13 @@ class Api {
                     fileAttributes: registerFileAttributes,
                     imageAttributes: registerImageAttributes
                 });
+        }
+    }
+
+    async install() {
+        if (argv.install) {
+            const { default: install } = await import("./install");
+            await install();
         }
     }
 
