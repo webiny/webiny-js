@@ -23,8 +23,8 @@ export default () => {
         });
 
         if (argv.install) {
-            // const { default: install } = await import("./install");
-            // await install();
+            const { default: install } = await import("./install");
+            await install();
         }
 
         next();

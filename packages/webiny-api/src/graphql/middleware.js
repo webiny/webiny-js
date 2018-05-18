@@ -4,7 +4,7 @@ import { app } from "webiny-api";
 import compose from "webiny-compose";
 import httpError from "http-errors";
 import getGraphQLParams from "./utils/getGraphQLParams";
-import { authorization, authentication } from "./middleware";
+import { authorization, authentication } from "./middleware/index.js";
 
 const formatError = err => {
     console.error(err);
@@ -50,7 +50,7 @@ export default (middleware: Function) => {
      * Main middleware for executing the requested graphql operation.
      * @returns {Function}
      */
-    const securityMiddleware = async () => {
+    const securityMiddleware = () => {
         return async (params, next) => {
             await authentication(params);
             await authorization(params);

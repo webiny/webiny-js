@@ -25,6 +25,11 @@ class SecurityService implements IAuthentication {
         this.settings = (await SecuritySettings.load()).data;
         ["create", "update", "delete", "read"].forEach(operation => {
             Entity.on(operation, async ({ entity }) => {
+                // TODO: patch/hack - upgrade install process in near future.
+                if (!app.getRequest()) {
+                    return;
+                }
+
                 const { identity } = app.getRequest();
 
                 const canExecuteOperation = await this.canExecuteOperation(

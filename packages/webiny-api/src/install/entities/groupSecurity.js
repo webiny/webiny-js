@@ -8,7 +8,6 @@ export default async () => {
         slug: "security",
         permissions: {
             api: {
-                getFile: {},
                 listEntities: {
                     list: {
                         name: true,
@@ -109,12 +108,10 @@ export default async () => {
                 }
             },
             entities: {
-                File: { operations: {} },
                 SecurityUser: {
                     attributes: {
                         id: { read: true, write: true },
                         email: { read: true, write: true },
-                        deleted: {},
                         enabled: { read: true, write: true },
                         savedOn: { read: true },
                         gravatar: { read: true, write: true },
@@ -131,7 +128,6 @@ export default async () => {
                         id: { read: true, write: true },
                         name: { read: true, write: true },
                         slug: { read: true, write: true },
-                        groups: {},
                         deleted: { read: true, write: true },
                         savedBy: { read: true, write: true },
                         savedOn: { read: true, write: true },
@@ -151,8 +147,7 @@ export default async () => {
                     attributes: {
                         id: { read: true },
                         key: { read: true, write: true },
-                        data: { read: true, write: true },
-                        updatedBy: {}
+                        data: { read: true, write: true }
                     },
                     operations: { read: true, update: true }
                 }
