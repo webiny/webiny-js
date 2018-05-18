@@ -17,11 +17,13 @@ const createLoginDataForIdentity = (Identity, schema) => {
 
 // Create a login query for each identity and strategy
 export default (app, config, schema) => {
-    const security = app.services.get("authentication");
+    const security = app.services.get("security");
     // For each Identity...
-    config.authentication.identities.map(({ identity: Identity, authenticate }) => {
+    config.security.identities.map(({ identity: Identity, authenticate }) => {
         // For each strategy...
-        authenticate.map(async ({ strategy, expiresOn, field }) => {
+        for (let i = 0; i < authenticate.length; i++) {
+            const { strategy, expiresOn, field } = authenticate[i];
+
             const { args } = security.config.strategies[strategy];
             schema.query[field] = {
                 type: createLoginDataForIdentity(Identity, schema),
@@ -47,7 +49,7 @@ export default (app, config, schema) => {
                     };
                 }
             };
-        });
+        }
     });
 
     schema.query["getIdentity"] = {

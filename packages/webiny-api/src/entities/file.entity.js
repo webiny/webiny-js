@@ -30,7 +30,7 @@ class File extends Entity {
             .setToStorage(false);
         this.attr("key")
             .char()
-            .setProtected();
+            .setSkipOnPopulate();
         this.attr("src")
             .char()
             .setDynamic(() => {

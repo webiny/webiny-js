@@ -1,36 +1,18 @@
 // @flow
 import { app } from "webiny-api";
 
-/**
- * Authentication middleware factory.
- * @param options
- * @returns {Function} Request middleware function.
- */
-export default (options: { token: Function | string }) => {
-    /**
-     * Authentication middleware.
-     * Attempts to authenticate the client using the token from request (if any).
-     * If successful, `identity` instance is set on the `req` object itself.
-     * If not successful, we just call the next middleware.
-     *
-     * @param req
-     * @param res
-     * @param services
-     * @param next
-     * @return {Promise<void>}
-     */
-    return async (params: Object, next: Function) => {
-        const { req } = params;
+export default async (params: Object) => {
+    const { req } = params;
 
-        const token =
-            typeof options.token === "function" ? options.token(req) : req.get(options.token);
-        if (!token) {
-            return next();
-        }
+    const token =
+        typeof app.config.security.token === "function"
+            ? app.config.security.token(req)
+            : req.get(app.config.security.token);
 
-        // Assigns identity retrieved from received token.
-        req.identity = await app.services.get("authentication").verifyToken(token);
+    if (!token) {
+        return;
+    }
 
-        next();
-    };
+    // Assigns identity retrieved from received token.
+    req.identity = await app.services.get("authentication").verifyToken(token);
 };

@@ -71,20 +71,20 @@ class Entity {
         if (_.get(this, "constructor.crud.logs")) {
             this.attr("savedOn")
                 .date()
-                .setProtected();
+                .setSkipOnPopulate();
             this.attr("createdOn")
                 .date()
-                .setProtected();
+                .setSkipOnPopulate();
             this.attr("updatedOn")
                 .date()
-                .setProtected();
+                .setSkipOnPopulate();
         }
 
         const deletes = _.get(this, "constructor.crud.delete", {});
         if (deletes.soft) {
             this.attr("deleted")
                 .boolean()
-                .setProtected()
+                .setSkipOnPopulate()
                 .setValue(false);
 
             this.on("beforeDelete", () => (proxy.deleted = true));
@@ -586,7 +586,7 @@ class Entity {
 
                     return {
                         name: attribute.getName(),
-                        protected: attribute.getProtected(),
+                        protected: attribute.getSkipOnPopulate(),
                         class: attribute.constructor.name
                     };
                 })

@@ -13,7 +13,7 @@ class Attribute {
     toStorage: boolean;
     toJSON: boolean;
     async: boolean;
-    protected: boolean;
+    skipOnPopulate: boolean;
     defaultValue: mixed;
     validators: ?(string | Function);
     onSetCallback: Function;
@@ -57,7 +57,7 @@ class Attribute {
          * If true - populate will skip this attribute
          * @var bool
          */
-        this.protected = false;
+        this.skipOnPopulate = false;
 
         /**
          * Default value.
@@ -209,16 +209,16 @@ class Attribute {
     /**
      * Sets skip on populate - if true, value won't be set into attribute when populate method on parent model instance is called.
      */
-    setProtected(flag: boolean = true): Attribute {
-        this.protected = flag;
+    setSkipOnPopulate(flag: boolean = true): Attribute {
+        this.skipOnPopulate = flag;
         return this;
     }
 
     /**
      * Returns true if this attribute will be skipped on populate.
      */
-    getProtected(): boolean {
-        return this.protected;
+    getSkipOnPopulate(): boolean {
+        return this.skipOnPopulate;
     }
 
     /**

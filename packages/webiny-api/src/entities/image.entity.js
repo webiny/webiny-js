@@ -24,10 +24,10 @@ class Image extends File {
             .setDefaultValue("original");
         this.attr("width")
             .integer()
-            .setProtected();
+            .setSkipOnPopulate();
         this.attr("height")
             .integer()
-            .setProtected();
+            .setSkipOnPopulate();
         this.attr("src")
             .char()
             .setDynamic(preset => {

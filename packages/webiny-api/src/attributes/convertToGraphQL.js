@@ -14,6 +14,8 @@ import { ModelAttribute, ModelsAttribute } from "webiny-model";
 import type { Entity } from "webiny-entity";
 import type { AttributeToTypeParams } from "webiny-api/types";
 import BufferAttribute from "./bufferAttribute";
+import PasswordAttribute from "./passwordAttribute";
+import IdentityAttribute from "./identityAttribute";
 
 /**
  * This function converts built-in Entity attributes into GraphQL compatible types
@@ -141,6 +143,14 @@ export default (params: AttributeToTypeParams) => {
             const value = entity.getAttribute(attr.getName()).getValue();
             return value instanceof Date ? value.toISOString() : null;
         };
+    }
+
+    if (attr instanceof PasswordAttribute) {
+        type = GraphQLString;
+    }
+
+    if (attr instanceof IdentityAttribute) {
+        type = schema.getType("IdentityType");
     }
 
     return type ? { type, resolve } : null;

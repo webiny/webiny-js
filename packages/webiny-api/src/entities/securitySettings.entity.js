@@ -1,5 +1,5 @@
 // @flow
-import { Settings } from "webiny-api";
+import Settings from "./../entities/settings.entity";
 
 class SecuritySettings extends Settings {}
 

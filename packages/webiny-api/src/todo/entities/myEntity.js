@@ -1,4 +1,4 @@
-import { Identity } from "webiny-api-security";
+import { Identity } from "webiny-api";
 
 class MyEntity extends Identity {
     constructor() {

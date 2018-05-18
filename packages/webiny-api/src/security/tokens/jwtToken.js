@@ -1,8 +1,8 @@
 // @flow
 import jwt from "jsonwebtoken";
-import type { Identity } from "./../index";
-import type { IToken } from "../../types";
-import AuthenticationError from "../services/authenticationError";
+import type { Identity } from "./../../index";
+import type { IToken } from "../../../types";
+import AuthenticationError from "../../services/authenticationError";
 
 type JwtTokenConfig = {
     secret: string,

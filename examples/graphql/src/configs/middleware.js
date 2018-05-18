@@ -47,37 +47,29 @@ export default async () => {
             }
         },
         security: {
-            token: "Authorization",
-            authentication: {
-                token: new JwtToken({ secret: "MyS3cr3tK3Y" }),
-                strategies: {
-                    credentials: credentialsStrategy()
-                },
-                identities: [
-                    {
-                        identity: User,
-                        authenticate: [
-                            {
-                                strategy: "credentials",
-                                expiresOn: args => addDays(new Date(), args.remember ? 30 : 1),
-                                field: "loginSecurityUser"
-                            }
-                        ]
-                    }
-                ]
-            }
+            token: new JwtToken({ secret: "MyS3cr3tK3Y" }),
+            strategies: {
+                credentials: credentialsStrategy()
+            },
+            identities: [
+                {
+                    identity: User,
+                    authenticate: [
+                        {
+                            strategy: "credentials",
+                            expiresOn: args => addDays(new Date(), args.remember ? 30 : 1),
+                            field: "loginSecurityUser"
+                        }
+                    ]
+                }
+            ]
         }
     });
 
-    // This will install all necessary tables / data - only if server was started with "--install" flag.
-    if (argv.install) {
-        await app.install();
-    }
+    await app.init();
 
     app.use(myApp());
     app.use(cmsApp({}));
-
-    await app.init();
 
     return app;
 };

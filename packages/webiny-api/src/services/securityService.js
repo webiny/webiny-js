@@ -6,8 +6,7 @@ import { SecuritySettings } from "./..";
 import type { IAuthentication, IToken } from "./../../types";
 import _ from "lodash";
 
-
-class Security implements IAuthentication {
+class SecurityService implements IAuthentication {
     config: {
         token: IToken,
         strategies: {
@@ -24,7 +23,6 @@ class Security implements IAuthentication {
 
     async init() {
         this.settings = (await SecuritySettings.load()).data;
-
         ["create", "update", "delete", "read"].forEach(operation => {
             Entity.on(operation, async ({ entity }) => {
                 const { identity } = app.getRequest();
@@ -201,4 +199,4 @@ class Security implements IAuthentication {
     }
 }
 
-export default Security;
+export default SecurityService;

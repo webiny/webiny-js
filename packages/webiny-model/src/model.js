@@ -120,7 +120,7 @@ class Model {
         }
 
         _.each(this.attributes, (attribute: Attribute, name: string) => {
-            if (attribute.getProtected()) {
+            if (attribute.getSkipOnPopulate()) {
                 return;
             }
 

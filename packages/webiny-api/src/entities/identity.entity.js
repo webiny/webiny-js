@@ -1,5 +1,5 @@
 // @flow
-import { Entity } from "webiny-api";
+import Entity from "./entity";
 
 import type { IAuthorizable } from "../../types";
 

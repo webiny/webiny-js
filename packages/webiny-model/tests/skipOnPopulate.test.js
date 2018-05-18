@@ -6,7 +6,7 @@ describe("protected test", function() {
         const model = new Model(function() {
             this.attr("attr1")
                 .char()
-                .setProtected();
+                .setSkipOnPopulate();
             this.attr("attr2")
                 .char()
                 .setValidators("required");
