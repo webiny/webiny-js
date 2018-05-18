@@ -1,7 +1,6 @@
 .container {
 	position: relative;
 	clear: both;
-	border: 1px solid #CDCDCD;
 	padding: 5px;
 	padding-right: 85px;
 	background-color: #FBFBFB;
@@ -14,6 +13,7 @@
 	padding: 8px 35px 8px 15px;
 	background-color: #00CCAE;
 	border-radius: 20px;
+	z-index: 100;
 }
 .container .block p {
 	margin: 0;
