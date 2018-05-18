@@ -12,6 +12,9 @@
     "Sven Al Hamad <sven@webiny.com>",
     "Adrian Smijulj <adrian@webiny.com>"
   ],
+  "files": [
+    "lib/"
+  ],
   "license": "MIT",
   "dependencies": {
     "aws-sdk": "^2.188.0",

@@ -17,7 +17,6 @@ class ClassesLists extends React.Component {
     }
 
     renderListItem(field, type) {
-        console.log(field);
         const { classesGroups } = this.props;
 
         const selected = classesGroups.current.id === field.id;

@@ -1,5 +1,5 @@
 import React from "react";
-import { createComponent, i18n } from "webiny-app";
+import { i18n } from "webiny-app";
 
 const t = i18n.namespace("Webiny.Admin.Layout.UserMenu.Logout");
 const Logout = props => {
@@ -13,4 +13,4 @@ const Logout = props => {
     );
 };
 
-export default createComponent(Logout);
+export default Logout;

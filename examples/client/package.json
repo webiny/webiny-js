@@ -1,0 +1,15 @@
+{
+  "name": "webiny-project-client",
+  "scripts": {
+    "develop": "./../../node_modules/.bin/webiny-scripts develop-app src",
+    "production:build": "./../../node_modules/.bin/webiny-scripts build-app src --require=babel-register",
+    "production:serve": "./../../node_modules/.bin/webiny-scripts serve src --require=babel-register",
+    "deploy": "scotty --source=dist/production --nocdn --update=true --region=eu-west-1"
+  },
+  "devDependencies": {
+    "webpack-visualizer-plugin": "^0.1.11"
+  },
+  "dependencies": {
+    "jquery": "^3.3.1"
+  }
+}

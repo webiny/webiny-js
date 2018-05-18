@@ -1,0 +1,42 @@
+.widgetFunctions {
+  position: absolute;
+  top: 45%;
+  left: -14px;
+  -webkit-border-radius: 100px;
+  border-radius: 100px;
+  z-index: 500;
+  padding: 3px;
+  background: #C0C0C0;
+
+  :global(span.icon){
+    color: #fff;
+  }
+
+  .functions {
+    background: #F9531B;
+    position: absolute;
+    top: -240%;
+    left: -3px;
+    z-index: 501;
+    padding: 5px 4px;
+    -webkit-border-radius: 100px;
+    border-radius: 100px;
+    display: none;
+
+    ul {
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      text-align: center;
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  &:hover > .functions {
+      display: block;
+  }
+}

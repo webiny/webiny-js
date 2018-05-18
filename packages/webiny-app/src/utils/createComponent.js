@@ -55,7 +55,6 @@ export default (components, options = {}) => {
 
         render() {
             const props = _.omit(this.props, ["styles"]);
-            props.ref = c => (this.component = c);
 
             props.styles = { ...defaultStyles };
 

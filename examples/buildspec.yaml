@@ -1,0 +1,12 @@
+version: 0.1
+
+phases:
+  install:
+    commands:
+      - npm install
+  post_build:
+    commands:
+      - cd api && yarn build && cd ..
+      - cd client && yarn production:build && cd ..
+      - ./node_modules/.bin/sls deploy -v --role $DEPLOY_ROLE --stage $STAGE --bucket $S3_BUCKET_ID --region $REGION
+      - aws s3 sync ./dist/client "s3://$S3_BUCKET_ID" --delete

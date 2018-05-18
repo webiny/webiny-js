@@ -69,7 +69,7 @@ const config = {
         wsr.npmVerify({ registry }),
         wsr.analyzeCommits({
             isRelevant: (pkg, commit) => {
-                if (commit.message.match(/affects:(.*)/)) {
+                if (commit.message.match(/affects: ((?:.+[\n\r]?)+)/gm)) {
                     return RegExp.$1
                         .split(",")
                         .map(n => n.trim())

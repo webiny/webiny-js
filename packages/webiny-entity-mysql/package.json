@@ -11,6 +11,11 @@
     "Sven Al Hamad <sven@webiny.com>",
     "Adrian Smijulj <adrian@webiny.com>"
   ],
+  "files": [
+    "lib/",
+    "flow-typed/",
+    "types.js"
+  ],
   "license": "MIT",
   "dependencies": {
     "babel-runtime": "^6.26.0",

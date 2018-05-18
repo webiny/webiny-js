@@ -12,6 +12,9 @@
     "Adrian Smijulj <adrian@webiny.com>",
     "Sven Al Hamad <sven@webiny.com>"
   ],
+  "files": [
+    "lib/"
+  ],
   "license": "MIT",
   "dependencies": {
     "babel-runtime": "^6.26.0",

@@ -38,7 +38,6 @@ class QueryMutationFieldsList extends React.Component {
                                 }
                             }
 
-                            console.log(this.props.model.permissions);
                             return (
                                 <li
                                     className={classNames({
@@ -50,7 +49,10 @@ class QueryMutationFieldsList extends React.Component {
                                 >
                                     <div className={classNames(css.listItemWrapper, css.checkbox)}>
                                         <Checkbox
-                                            value={_.get(this.props.model.permissions, `api.${field.name}`)}
+                                            value={_.get(
+                                                this.props.model.permissions,
+                                                `api.${field.name}`
+                                            )}
                                             onChange={() => {
                                                 this.props.onToggle(field);
                                             }}

@@ -1,1 +1,0 @@
-Deploy to S3: https://github.com/stojanovic/scottyjs

@@ -41,7 +41,6 @@ class Access extends React.Component {
         `;
 
         app.graphql.mutate({ mutation }).then(({ data }) => {
-            console.log("setam novo");
             this.props.form.setState({ model: data.toggleEntityOperationPermission });
         });
     }

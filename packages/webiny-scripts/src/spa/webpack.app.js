@@ -104,7 +104,9 @@ export default ({ projectRoot, appRoot, urlGenerator }) => {
                     test: fileExtensionRegex,
                     loader: "file-loader",
                     options: {
-                        name: ifDevelopment("[path][name].[ext]", "[path][name]-[hash].[ext]")
+                        outputPath: "assets/",
+                        publicPath: "/assets/",
+                        name: ifDevelopment("[name].[ext]", "[name]-[hash].[ext]")
                     }
                 }
             ]
