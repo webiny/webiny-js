@@ -4,6 +4,7 @@ import { app } from "webiny-api";
 import compose from "webiny-compose";
 import httpError from "http-errors";
 import getGraphQLParams from "./utils/getGraphQLParams";
+import { authorization, authentication } from "./middleware/index.js";
 
 const formatError = err => {
     console.error(err);
@@ -46,9 +47,23 @@ export default (middleware: Function) => {
     };
 
     /**
+     * Main middleware for executing the requested graphql operation.
+     * @returns {Function}
+     */
+    const securityMiddleware = () => {
+        return async (params, next) => {
+            await authentication(params);
+            await authorization(params);
+            next();
+        };
+    };
+
+    /**
      * Array of middleware constructed from the main graphql middleware and any other project middleware defined by the developer.
      */
-    middleware = middleware({ graphqlMiddleware }).filter(m => typeof m === "function");
+    middleware = middleware({ graphqlMiddleware, securityMiddleware }).filter(
+        m => typeof m === "function"
+    );
 
     /**
      * Additional middleware to parse graphql request which must always be first in the chain.

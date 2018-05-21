@@ -2,11 +2,10 @@ import express from "express";
 import path from "path";
 import bodyParser from "body-parser";
 import cors from "cors";
-import { authentication } from "webiny-api-security";
 import setupProject from "./middleware";
 
-export default () => {
-    const webiny = setupProject();
+export default async () => {
+    const webiny = await setupProject();
 
     const app = express();
 
@@ -20,8 +19,8 @@ export default () => {
     app.use(
         "/graphql",
         bodyParser.json({ limit: "50mb" }),
-        webiny.middleware(({ graphqlMiddleware }) => [
-            authentication({ token: "Authorization" }),
+        webiny.middleware(({ securityMiddleware, graphqlMiddleware }) => [
+            securityMiddleware(),
             graphqlMiddleware()
         ])
     );

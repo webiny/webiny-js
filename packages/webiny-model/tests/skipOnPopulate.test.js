@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import Model from "./../src/model";
 
-describe("skipOnPopulate test", function() {
+describe("protected test", function() {
     it("should set attr1 value, but not attr2 value", async () => {
         const model = new Model(function() {
             this.attr("attr1")

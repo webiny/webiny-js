@@ -65,9 +65,9 @@ class DefaultAttributesContainer extends AttributesContainer {
         return parent.getAttribute(this.name);
     }
 
-    models(model: Model): ModelsAttribute {
+    models(model: Model, keyValue: boolean): ModelsAttribute {
         const parent = this.getParentModel();
-        parent.setAttribute(this.name, new ModelsAttribute(this.name, this, model));
+        parent.setAttribute(this.name, new ModelsAttribute(this.name, this, model, keyValue));
         return parent.getAttribute(this.name);
     }
 

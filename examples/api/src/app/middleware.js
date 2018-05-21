@@ -1,5 +1,5 @@
-import { app, File, Image } from "webiny-api";
-import { User, app as securityApp, JwtToken, credentialsStrategy } from "webiny-api-security";
+import { app, File, Image, User, JwtToken, credentialsStrategy } from "webiny-api";
+
 import { MySQLDriver } from "webiny-entity-mysql";
 import imageProcessor from "webiny-jimp";
 import LocalDriver from "webiny-file-storage-local";
@@ -9,7 +9,7 @@ import { connection } from "./database";
 import myApp from "./myApp";
 import { app as cmsApp } from "webiny-api-cms";
 
-export default () => {
+export default async () => {
     // Configure default storage
     const localDriver = new LocalDriver({
         directory: __dirname + "/../../storage",
@@ -18,11 +18,20 @@ export default () => {
     });
 
     app.configure({
+        database: { connection },
         entity: {
             // Instantiate driver with DB connection
             driver: new MySQLDriver({ connection }),
             // Configure entity attributes
-            attributes: ({ bufferAttribute, fileAttributes, imageAttributes }) => {
+            attributes: ({
+                passwordAttribute,
+                identityAttribute,
+                bufferAttribute,
+                fileAttributes,
+                imageAttributes
+            }) => {
+                identityAttribute();
+                passwordAttribute();
                 bufferAttribute();
                 fileAttributes({
                     entity: File,
@@ -35,34 +44,30 @@ export default () => {
                     storage: new Storage(localDriver)
                 });
             }
+        },
+        security: {
+            token: new JwtToken({ secret: "MyS3cr3tK3Y" }),
+            strategies: {
+                credentials: credentialsStrategy()
+            },
+            identities: [
+                {
+                    identity: User,
+                    authenticate: [
+                        {
+                            strategy: "credentials",
+                            expiresOn: args => addDays(new Date(), args.remember ? 30 : 1),
+                            field: "loginSecurityUser"
+                        }
+                    ]
+                }
+            ]
         }
     });
 
-    app.use(
-        securityApp({
-            authentication: {
-                token: new JwtToken({ secret: "MyS3cr3tK3Y" }),
-                strategies: {
-                    credentials: credentialsStrategy()
-                },
-                identities: [
-                    {
-                        identity: User,
-                        authenticate: [
-                            {
-                                strategy: "credentials",
-                                expiresOn: args => addDays(new Date(), args.remember ? 30 : 1),
-                                field: "loginSecurityUser"
-                            }
-                        ]
-                    }
-                ]
-            }
-        })
-    );
+    await app.init();
 
     app.use(myApp());
-
     app.use(cmsApp({}));
 
     return app;

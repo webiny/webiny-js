@@ -17,25 +17,30 @@ describe("save and delete entities attribute test", () => {
         const user = await User.findById(123);
         entityFindById.restore();
 
-        const findStub = sandbox.stub(UsersGroups.getDriver(), "find").callsFake(() => {
-            return new QueryResult([
-                { id: "1st", user: "A", group: "X" },
-                { id: "2nd", user: "A", group: "Y" },
-                { id: "3rd", user: "A", group: "Z" }
-            ]);
-        });
-
-        const findOneStub = sandbox
-            .stub(Group.getDriver(), "findOne")
+        const findStub = sandbox
+            .stub(UsersGroups.getDriver(), "findOne")
             .onCall(0)
+            .callsFake(() => {
+                return new QueryResult({ id: "1st", user: "A", group: "X" });
+            })
+
+            .onCall(1)
+            .callsFake(() => {
+                return new QueryResult({ id: "2nd", user: "A", group: "Y" });
+            })
+            .onCall(2)
+            .callsFake(() => {
+                return new QueryResult({ id: "3rd", user: "A", group: "Z" });
+            })
+            .onCall(3)
             .callsFake(() => {
                 return new QueryResult({ id: "X", name: "Group X" });
             })
-            .onCall(1)
+            .onCall(4)
             .callsFake(() => {
                 return new QueryResult({ id: "Y", name: "Group Y" });
             })
-            .onCall(2)
+            .onCall(5)
             .callsFake(() => {
                 return new QueryResult({ id: "Z", name: "Group Z" });
             });
@@ -45,33 +50,45 @@ describe("save and delete entities attribute test", () => {
         assert.equal(findStub.getCall(0).args[0], UsersGroups);
         assert.deepEqual(findStub.getCall(0).args[1], {
             query: {
-                id: ["1st", "2nd", "3rd"]
+                id: "1st"
             }
         });
 
-        assert.equal(findOneStub.getCall(0).args[0], Group);
-        assert.deepEqual(findOneStub.getCall(0).args[1], {
+        assert.equal(findStub.getCall(1).args[0], UsersGroups);
+        assert.deepEqual(findStub.getCall(1).args[1], {
+            query: {
+                id: "2nd"
+            }
+        });
+
+        assert.equal(findStub.getCall(2).args[0], UsersGroups);
+        assert.deepEqual(findStub.getCall(2).args[1], {
+            query: {
+                id: "3rd"
+            }
+        });
+
+        assert.equal(findStub.getCall(3).args[0], Group);
+        assert.deepEqual(findStub.getCall(3).args[1], {
             query: {
                 id: "X"
             }
         });
-
-        assert.equal(findOneStub.getCall(1).args[0], Group);
-        assert.deepEqual(findOneStub.getCall(1).args[1], {
+        assert.equal(findStub.getCall(4).args[0], Group);
+        assert.deepEqual(findStub.getCall(4).args[1], {
             query: {
                 id: "Y"
             }
         });
 
-        assert.equal(findOneStub.getCall(2).args[0], Group);
-        assert.deepEqual(findOneStub.getCall(2).args[1], {
+        assert.equal(findStub.getCall(5).args[0], Group);
+        assert.deepEqual(findStub.getCall(5).args[1], {
             query: {
                 id: "Z"
             }
         });
 
         findStub.restore();
-        findOneStub.restore();
     });
 
     it("should wait until entities are loaded if loading is in progress", async () => {

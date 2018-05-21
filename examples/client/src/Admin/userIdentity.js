@@ -9,15 +9,8 @@ email
 firstName
 lastName
 gravatar
-roles {
+groups {
     slug
-}
-roleGroups {
-    id
-    name
-    roles {
-        slug
-    }
 }
 `;
 

@@ -18,7 +18,7 @@ class Attribute {
     validators: ?(string | Function);
     onSetCallback: Function;
     onGetCallback: Function;
-    onGetJSONValueCallback: Function;
+
     constructor(name: string, attributesContainer: AttributesContainer) {
         /**
          * Attribute name.
@@ -80,11 +80,6 @@ class Attribute {
          * Custom onGet callback.
          */
         this.onGetCallback = value => value;
-
-        /**
-         * Custom onGetJSONValue callback.
-         */
-        this.onGetJSONValueCallback = value => value;
     }
 
     /**
@@ -290,13 +285,8 @@ class Attribute {
         return this;
     }
 
-    onGetJSONValue(callback: Function) {
-        this.onGetJSONValueCallback = callback;
-        return this;
-    }
-
     async getJSONValue(): Promise<mixed> {
-        return this.onGetJSONValueCallback(await this.getValue(...arguments), ...arguments);
+        return await this.getValue(...arguments);
     }
 
     setToStorage(flag: boolean = true): this {

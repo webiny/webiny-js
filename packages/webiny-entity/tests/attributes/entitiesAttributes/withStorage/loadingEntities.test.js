@@ -16,13 +16,27 @@ describe("attribute entities test", function() {
         const mainEntityWithStorage = await MainEntityWithStorage.findById(123);
         entityFindById.restore();
 
-        const findSpy = sandbox.spy(MainEntityWithStorage.getDriver(), "find");
+        const findSpy = sandbox.spy(MainEntityWithStorage.getDriver(), "findOne");
         await mainEntityWithStorage.attribute1;
 
         assert.equal(findSpy.getCall(0).args[0], Entity1);
+        assert.equal(findSpy.getCall(1).args[0], Entity1);
+        assert.equal(findSpy.getCall(2).args[0], Entity1);
         assert.deepEqual(findSpy.getCall(0).args[1], {
             query: {
-                id: ["X", "Y", "Z"]
+                id: "X"
+            }
+        });
+
+        assert.deepEqual(findSpy.getCall(1).args[1], {
+            query: {
+                id: "Y"
+            }
+        });
+
+        assert.deepEqual(findSpy.getCall(2).args[1], {
+            query: {
+                id: "Z"
             }
         });
 

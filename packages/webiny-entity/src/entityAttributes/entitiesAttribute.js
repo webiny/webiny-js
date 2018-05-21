@@ -74,7 +74,7 @@ class EntitiesAttribute extends Attribute {
             // this.value.isLoading() && (await this.value.load());
 
             // ...it was already made in the 'save' handler above. Now we only check if not loaded.
-            if (!this.value.isLoaded()) {
+            if (!this.value.isLoaded() || this.value.isClean()) {
                 return;
             }
 

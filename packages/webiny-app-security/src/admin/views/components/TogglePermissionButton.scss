@@ -1,0 +1,32 @@
+.togglePermissionButtonWrapper {
+	display: inline-block;
+}
+
+.togglePermissionButtonWrapper button.togglePermissionButton {
+	border-radius: 2px;
+	width: 50px;
+	height: 50px;
+	margin: 0 5px 5px 0;
+	background-color: #d8d8d8;
+	color: #333;
+	border: 1px solid #b7b7b7;
+	padding: 10px;
+	display: inline-block;
+}
+
+.togglePermissionButtonWrapper button.togglePermissionButton:hover:not(:disabled) {
+	box-shadow: 0 0 0 0 #FA5723;
+}
+
+.togglePermissionButtonWrapper button.togglePermissionButtonExposed {
+	color: white;
+	background-color: #FA5723;
+	border: 1px solid #ED4005;
+}
+
+.togglePermissionButtonWrapper button.togglePermissionButtonPublic {
+	background-color: #26AFA6;
+	color: white;
+	border: none;
+	pointer-events: none;
+}

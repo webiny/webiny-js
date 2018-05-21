@@ -1,11 +1,11 @@
 import { assert } from "chai";
 import { Entity, QueryResult } from "../../../../src/index";
 import sinon from "sinon";
-import EntityCollection from "../../../../src/entityCollection";
 const sandbox = sinon.sandbox.create();
 
 describe("storage values test", function() {
     afterEach(() => sandbox.restore());
+    beforeEach(() => Entity.getEntityPool().flush());
 
     class Entity1 extends Entity {
         constructor() {
@@ -128,17 +128,18 @@ describe("storage values test", function() {
         assert.equal(mainEntity.getAttribute("attribute2").value.getCurrent()[0], "C");
 
         sandbox
-            .stub(entity.getDriver(), "find")
+            .stub(entity.getDriver(), "findOne")
             .onCall(0)
             .callsFake(() => {
-                return new QueryResult([
-                    { id: "A", name: "Bucky", type: "dog" },
-                    { id: "B", name: "Enlai", type: "dog" }
-                ]);
+                return new QueryResult({ id: "A", name: "Bucky", type: "dog" });
             })
             .onCall(1)
             .callsFake(() => {
-                return new QueryResult([{ id: "C", firstName: "Foo", lastName: "Bar" }]);
+                return new QueryResult({ id: "B", name: "Enlai", type: "dog" });
+            })
+            .onCall(2)
+            .callsFake(() => {
+                return new QueryResult({ id: "C", firstName: "Foo", lastName: "Bar" });
             });
 
         mainEntity.setExisting(true);
@@ -146,7 +147,7 @@ describe("storage values test", function() {
         const attribute1 = await mainEntity.attribute1;
         const attribute2 = await mainEntity.attribute2;
 
-        entity.getDriver().find.restore();
+        entity.getDriver().findOne.restore();
 
         assert.lengthOf(attribute1, 2);
         assert.equal(attribute1[0].id, "A");

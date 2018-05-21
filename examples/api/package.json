@@ -19,7 +19,6 @@
     "pluralize": "^7.0.0",
     "webiny-api": "^1.3.0",
     "webiny-api-cms": "^1.0.0",
-    "webiny-api-security": "^1.0.0",
     "webiny-compose": "^1.0.0",
     "webiny-data-extractor": "^1.0.0",
     "webiny-entity": "^1.0.0",
