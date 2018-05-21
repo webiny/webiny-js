@@ -15,10 +15,10 @@ export default () => {
         app.use(morgan("tiny"));
     }
 
+    app.use(cors());
     app.use("/storage", express.static(path.join(__dirname, "/../../storage")));
     app.use(
         "/graphql",
-        cors(),
         bodyParser.json({ limit: "50mb" }),
         webiny.middleware(({ graphqlMiddleware }) => [
             authentication({ token: "Authorization" }),
