@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "babel src -d dist"
+    "build": "babel src -d dist",
+    "clean":  "rimraf node_modules/webiny-* node_modules/express-graphql node_modules/graphql-* node_modules/mysql node_modules/react node_modules/react-dom",
+    "postinstall": "yarn clean"
   },
   "author": "",
   "license": "MIT",
@@ -46,6 +48,7 @@
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-flow": "^6.23.0",
-    "morgan": "^1.9.0"
+    "morgan": "^1.9.0",
+    "rimraf": "^2.6.2"
   }
 }
