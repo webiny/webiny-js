@@ -101,6 +101,13 @@ class Group extends Entity {
 Group.classId = "SecurityGroup";
 Group.tableName = "Security_Groups";
 
+Group.on("delete", async ({ entity }) => {
+    const inUse = await Entities2Groups.count({ query: { group: entity.id } });
+    if (inUse) {
+        throw Error("Cannot delete group, already in use.");
+    }
+});
+
 class Entities2Groups extends Entity {
     constructor() {
         super();

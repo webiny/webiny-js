@@ -102,6 +102,14 @@ export default async () => {
                     description: true,
                     permissions: true
                 },
+                createSecurityGroup: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                    description: true,
+                    permissions: true
+                },
+                deleteSecurityGroup: true,
                 toggleEntityOperationPermission: {
                     entity: { name: true, classId: true, attributes: true },
                     permissions: { id: true, group: true, other: true, owner: true }
