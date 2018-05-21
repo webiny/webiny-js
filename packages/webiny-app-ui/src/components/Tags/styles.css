@@ -4,7 +4,9 @@
 	padding: 5px;
 	padding-right: 85px;
 	background-color: #FBFBFB;
+	border: 1px solid #cdcdcd
 }
+
 .container .block {
 	position: relative;
 	display: inline-block;

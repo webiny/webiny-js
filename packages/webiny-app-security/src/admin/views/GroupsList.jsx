@@ -42,14 +42,15 @@ class GroupsList extends React.Component {
                                     <ButtonGroup>
                                         <Link type="primary" route="Groups.Create">
                                             <Icon icon="plus-circle" />
-                                            {t`Create`}
+                                            {t`Create group`}
                                         </Link>
-                                        <Button
+
+                                       {/* <Button
                                             type="secondary"
                                             onClick={showView("importModal")}
                                             icon="upload"
                                             label={t`Import`}
-                                        />
+                                        />*/}
                                     </ButtonGroup>
                                 </View.Header>
                                 <View.Body>

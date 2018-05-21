@@ -87,7 +87,7 @@ class Tags extends React.Component {
             return this.validateTag();
         }
 
-        await this.addTag();
+        await this.addTag(this.tagInput.value);
 
         // Reset current value in the input;
         this.tagInput.value = "";
@@ -105,7 +105,10 @@ class Tags extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { modules: { FormGroup }, styles } = this.props;
+        const {
+            modules: { FormGroup },
+            styles
+        } = this.props;
 
         return (
             <FormGroup valid={this.state.isValid} className={this.props.className}>
@@ -145,7 +148,10 @@ Tags.defaultProps = {
         return <input {...input} />;
     },
     renderTag({ value, index }) {
-        const { modules: { Icon }, styles } = this.props;
+        const {
+            modules: { Icon },
+            styles
+        } = this.props;
         return (
             <div key={value} className={styles.block}>
                 <p>{value}</p>

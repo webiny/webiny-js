@@ -30,7 +30,8 @@ class UsersForm extends React.Component {
             Switch,
             Password,
             Loader,
-            AutoCompleteList
+            AutoCompleteList,
+            Tags
         } = this.props.modules;
 
         return (
@@ -129,6 +130,13 @@ class UsersForm extends React.Component {
                                                                     </Bind>
                                                                 )}
                                                             </OptionsData>
+
+                                                            <Bind>
+                                                                <Tags
+                                                                    label={t`baja`}
+                                                                    name="grssoups"
+                                                                />
+                                                            </Bind>
                                                         </Grid.Col>
                                                     </Grid.Row>
                                                 </Grid.Col>
@@ -207,6 +215,7 @@ export default createComponent(UsersForm, {
         "Loader",
         "OptionsData",
         "AutoCompleteList",
+        "Tags",
         {
             AdminLayout: "Admin.Layout"
         }
