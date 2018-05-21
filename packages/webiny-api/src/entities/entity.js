@@ -1,6 +1,7 @@
 // @flow
 import { app } from "webiny-api";
 import { Entity as BaseEntity } from "webiny-entity";
+
 import RequestEntityPool from "./RequestEntityPool";
 class Entity extends BaseEntity {
     constructor() {
@@ -14,9 +15,10 @@ class Entity extends BaseEntity {
         this.attr("owner")
             .identity({ classIdAttribute: "ownerClassId" })
             .setSkipOnPopulate();
+
         this.attr("groups")
-            .entities(Group)
-            .setToStorage();
+            .entities(Group, "entity")
+            .setUsing(Entities2Groups, "group");
 
         this.attr("savedByClassId")
             .char()
@@ -99,5 +101,17 @@ class Group extends Entity {
 Group.classId = "SecurityGroup";
 Group.tableName = "Security_Groups";
 
-export { Group };
+class Entities2Groups extends Entity {
+    constructor() {
+        super();
+        this.attr("entity").entity([], { classIdAttribute: "entityClassId" });
+        this.attr("entityClassId").char();
+        this.attr("group").entity(Group);
+    }
+}
+
+Entities2Groups.classId = "Entities2SecurityGroups";
+Entities2Groups.tableName = "Entities2SecurityGroups";
+
+export { Group, Entities2Groups, Entity };
 export default Entity;

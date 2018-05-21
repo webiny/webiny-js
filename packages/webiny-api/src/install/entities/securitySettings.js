@@ -12,7 +12,9 @@ export default async () => {
                 },
                 SecurityGroup: {
                     other: { operations: { read: true } }
-                }
+                },
+
+                Entities2SecurityGroups: { other: { operations: { read: true } } }
             }
         }
     });

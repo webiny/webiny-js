@@ -5,7 +5,7 @@ import compose from "webiny-compose";
 import { ServiceManager } from "webiny-service-manager";
 import GraphQL from "./graphql/GraphQL";
 import EntityManager from "./entities/EntityManager";
-import { Entity, File, Image, Group, SecuritySettings, User } from "./index";
+import { Entity, File, Image, Group, Entities2Groups, SecuritySettings, User } from "./index";
 import type Schema from "./graphql/Schema";
 import createMiddleware from "./graphql/middleware.js";
 import { SecurityService } from "./services";
@@ -41,6 +41,7 @@ class Api {
         this.entities.addEntityClass(File);
         this.entities.addEntityClass(Image);
         this.entities.addEntityClass(Group);
+        this.entities.addEntityClass(Entities2Groups);
         this.entities.addEntityClass(User);
         this.entities.addEntityClass(SecuritySettings);
     }
@@ -88,6 +89,7 @@ class Api {
             schema.addEntity(File);
             schema.addEntity(Image);
             schema.addEntity(Group);
+            schema.addEntity(Entities2Groups);
             schema.addEntity(User);
             schema.addEntity(SecuritySettings);
 
