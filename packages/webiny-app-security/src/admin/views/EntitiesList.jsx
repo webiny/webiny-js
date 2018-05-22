@@ -53,7 +53,7 @@ class EntitiesList extends React.Component {
                                         <span>{t`Manage entities and its permissions`}</span>
                                     }
                                 >
-                                    <ButtonGroup>
+                                   {/* <ButtonGroup>
                                         <Link type="primary" route="Entities.Create">
                                             <Icon icon="upload" />
                                             {t`Export`}
@@ -64,7 +64,7 @@ class EntitiesList extends React.Component {
                                             icon="download"
                                             label={t`Import`}
                                         />
-                                    </ButtonGroup>
+                                    </ButtonGroup>*/}
                                 </View.Header>
                                 <View.Body>
                                     <ListData

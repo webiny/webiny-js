@@ -1,8 +1,7 @@
 .input {
-  &:global(.Search_search) {
-    padding: 0;
-    border: none;
-    background: transparent;
-    display: inline-block;
+  border: none !important;
+  display: inline-block;
+  input {
+    height: 34px !important;
   }
 }

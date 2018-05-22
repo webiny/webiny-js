@@ -1,7 +1,8 @@
 import React from "react";
 import { createComponent } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
-import styles from "./styles.scss?prefix=Webiny_Ui_SearchList";
+import css from "./styles.scss?prefix=Webiny_Ui_AutoCompleteList";
+
 import classNames from "classnames";
 import _ from "lodash";
 
@@ -36,10 +37,7 @@ class AutoCompleteList extends React.Component {
                                 component.search = this;
                                 return (
                                     <div
-                                        className={classNames(
-                                            this.props.styles.search,
-                                            styles.input
-                                        )}
+                                        className={classNames(this.props.styles.search, css.input)}
                                     >
                                         {this.props.renderBasicInput.call(this)}
                                         {this.props.renderOptionsDropDown.call(this)}
