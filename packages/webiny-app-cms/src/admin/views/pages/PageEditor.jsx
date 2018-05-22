@@ -10,7 +10,6 @@ class PageEditor extends React.Component {
         model.content = content.map(widget => {
             if (widget.origin) {
                 delete widget["data"];
-                delete widget["settings"];
             }
 
             return widget;
@@ -27,7 +26,7 @@ class PageEditor extends React.Component {
                 withRouter
                 entity={"CmsRevision"}
                 defaultModel={{ content: [] }}
-                fields={"id name active title slug content { id origin type data settings }"}
+                fields={"id name active title slug content { id type data }"}
             >
                 {({ model, submit, error, loading }) => (
                     <Form model={model} onSubmit={model => this.filterContent(model, submit)}>

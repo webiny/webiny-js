@@ -1,7 +1,7 @@
 import React from "react";
 import { createComponent } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
-import styles from "./styles.scss";
+import styles from "./styles.scss?prefix=Webiny_Ui_SearchList";
 import classNames from "classnames";
 import _ from "lodash";
 

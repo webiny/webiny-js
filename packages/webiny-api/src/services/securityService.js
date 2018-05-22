@@ -5,12 +5,13 @@ import { Entity, app } from "./..";
 import { SecuritySettings } from "./..";
 import type { IAuthentication, IToken } from "./../../types";
 import _ from "lodash";
+import type { $Request } from "express";
 
 class SecurityService implements IAuthentication {
     config: {
         token: IToken,
         strategies: {
-            [name: string]: (req: express$Request, identity: Class<Identity>) => Promise<Identity>
+            [name: string]: (req: $Request, identity: Class<Identity>) => Promise<Identity>
         },
         identities: Array<Object>
     };

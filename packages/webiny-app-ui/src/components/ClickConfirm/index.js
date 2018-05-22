@@ -32,7 +32,8 @@ class ClickConfirm extends React.Component {
             return;
         }
 
-        this.realOnClick = realOnClick;
+        this.realOnClick = realOnClick || _.noop;
+
         this.message = msg;
         this.setState({ time: _.now() }, () => {
             app.services.get("modal").show(this.dialogId);

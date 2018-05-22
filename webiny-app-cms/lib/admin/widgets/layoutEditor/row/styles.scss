@@ -1,0 +1,49 @@
+.link {
+  padding: 15px;
+  display: block;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  background: #fff;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.txt {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.layout {
+  height: 20px;
+  background: #BFBFBF;
+  margin-bottom: 10px;
+  display: inline-block;
+
+  &.grid12 {
+    width: 100%;
+  }
+
+  &.grid9 {
+    width: 70%;
+    margin-right: 5px;
+  }
+
+  &.grid6 {
+    width: 45%;
+    margin-right: 5px;
+  }
+
+  &.grid3 {
+    width: 20%;
+    margin-right: 5px;
+  }
+}
+
+.editorItem {
+  padding: 25px 25px 25px 25px;
+  text-align: center;
+  border: 1px dashed #CCC;
+  background: #fff;
+  min-height: 300px;
+}
+

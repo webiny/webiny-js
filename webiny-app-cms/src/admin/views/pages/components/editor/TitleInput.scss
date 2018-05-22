@@ -1,0 +1,61 @@
+.mainInput {
+  margin: 15px 0 0 0;
+  position: relative;
+
+  .dynamicLabel {
+    color: #393939;
+    font-size: 17px;
+    font-weight: 600;
+    position: absolute;
+    left: 5px;
+    top: 10px;
+    transition: 0.2s ease all;
+    clear: left;
+    pointer-events: none;
+  }
+
+  .bar {
+    position: relative;
+    display: block;
+    width: 800px;
+
+    &:before, &:after {
+      content: '';
+      height: 2px;
+      width: 0;
+      bottom: 0;
+      position: absolute;
+      background: #fa5a28;
+      transition: 0.2s ease all;
+    }
+
+    &:before {
+      left: 50%;
+    }
+
+    &:after {
+      right: 50%;
+    }
+  }
+
+  .inputMaterial {
+    font-size: 18px;
+    padding: 10px 10px 10px 5px;
+    display: block;
+    width: 800px;
+    border: none;
+    border-bottom: 1px solid #fa5a28;
+
+    &.focused {
+      ~ label {
+        top: -20px;
+        font-size: 14px;
+        color: #fa5a28;
+      }
+
+      ~ .bar:before, ~ .bar:after {
+        width: 50%;
+      }
+    }
+  }
+}

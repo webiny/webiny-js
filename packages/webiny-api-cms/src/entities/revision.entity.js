@@ -27,7 +27,6 @@ class Revision extends Entity {
                 return widgets.map(widget => {
                     if (widget.origin) {
                         delete widget["data"];
-                        delete widget["settings"];
                     }
                     return widget;
                 });

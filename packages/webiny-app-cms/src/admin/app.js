@@ -4,9 +4,8 @@ import { Menu } from "webiny-app-admin";
 import CMS from "./services/CMS";
 import PageManagerContainer from "./views/pages/PageManagerContainer";
 import PageEditor from "./views/pages/PageEditor";
+import SlateView from "./views/slate";
 import CategoryList from "./views/categories/CategoryList";
-import LayoutList from "./views/layouts/LayoutList";
-import LayoutEditor from "./views/layouts/LayoutEditor";
 import registerWidgets from "./registerWidgets";
 
 const t = i18n.namespace("Cms.Admin.Menu");
@@ -20,7 +19,6 @@ export default () => {
         app.services.get("menu").add(
             <Menu order="1" label={t`Content`} icon={["fas", "file-alt"]}>
                 <Menu order={0} label={t`Pages`} route="Cms.Page.List" />
-                <Menu order={0} label={t`Layouts`} route="Cms.Layout.List" />
                 <Menu order={1} label={t`Categories`} route="Cms.Category.List" />
                 <Menu order={2} label={t`Menus`} route="Cms.Menu.List" />
                 <Menu order={3} label={t`Redirects`} route="Cms.Redirect.List" />
@@ -43,6 +41,21 @@ export default () => {
         });
 
         app.router.addRoute({
+            name: "Cms.Page.Slate",
+            path: "/cms/slate",
+            exact: true,
+            render: () => {
+                return app.modules.load([{ Layout: "Admin.Layout" }]).then(({ Layout }) => {
+                    return (
+                        <Layout>
+                            <SlateView />
+                        </Layout>
+                    );
+                });
+            }
+        });
+
+        app.router.addRoute({
             name: "Cms.Page.Editor",
             path: "/cms/pages/revision/:id",
             exact: true,
@@ -51,36 +64,6 @@ export default () => {
                     return (
                         <Layout>
                             <PageEditor />
-                        </Layout>
-                    );
-                });
-            }
-        });
-
-        app.router.addRoute({
-            name: "Cms.Layout.Edit",
-            path: "/cms/layouts/:id",
-            exact: true,
-            render: () => {
-                return app.modules.load({ Layout: "Admin.Layout" }).then(({ Layout }) => {
-                    return (
-                        <Layout>
-                            <LayoutEditor />
-                        </Layout>
-                    );
-                });
-            }
-        });
-
-        app.router.addRoute({
-            name: "Cms.Layout.List",
-            path: "/cms/layouts",
-            exact: true,
-            render: () => {
-                return app.modules.load({ Layout: "Admin.Layout" }).then(({ Layout }) => {
-                    return (
-                        <Layout>
-                            <LayoutList />
                         </Layout>
                     );
                 });

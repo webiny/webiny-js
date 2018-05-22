@@ -22,10 +22,12 @@ class CMS {
      * @private
      */
     widgets: Array<Widget>;
+
     /**
      * @private
      */
     widgetGroups: Array<WidgetGroup>;
+
     /**
      * @private
      */

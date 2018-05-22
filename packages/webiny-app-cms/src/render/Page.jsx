@@ -5,7 +5,12 @@ class Page extends React.Component {
         const { page } = this.props;
 
         return (
-            <div style={{width: 400}}>
+            <div
+                style={{
+                    margin: "0 auto",
+                    width: 700
+                }}
+            >
                 <h2>{page.title}</h2>
                 {this.props.children}
             </div>

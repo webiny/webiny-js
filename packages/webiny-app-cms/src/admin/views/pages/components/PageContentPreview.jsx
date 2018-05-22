@@ -7,7 +7,10 @@ import blankBalloon from "./assets/blank-state-balloon.jpg";
 class PageContentPreview extends React.Component {
     renderPreviewWidget(data) {
         const widget = { ...data };
-        const { services: { cms }, modules: { Alert } } = this.props;
+        const {
+            services: { cms },
+            modules: { Alert }
+        } = this.props;
         const widgetData = cms.getWidget(widget.type);
         invariant(widgetData, `Missing widget definition for type "${widget.type}"`);
 
@@ -29,7 +32,7 @@ class PageContentPreview extends React.Component {
             }
         }
 
-        const preview = widgetData.widget.render(widget);
+        const preview = widgetData.widget.render({ widget });
 
         return (
             <div key={widget.id}>{preview ? React.cloneElement(preview, { widget }) : null}</div>

@@ -1,0 +1,54 @@
+.layoutSelector {
+  text-align: center;
+  position: relative;
+
+  .widgets {
+    padding: 35px;
+    background: #F1F1F1;
+    margin: 20px 0;
+  }
+
+  h2 {
+    font-size: 25px;
+    color: #17A594;
+    margin-bottom: 0;
+    display: block;
+    text-align: center;
+  }
+
+  h3 {
+    font-size: 14px;
+    color: #6C6C6C;
+    margin-bottom: 50px;
+    margin-top: 0;
+    display: block;
+  }
+
+  .close {
+    top: 0;
+    right: 0;
+    position: absolute;
+    background: #41BFAF;
+    color: #fff;
+    display: block;
+    text-transform: uppercase;
+    font-size: 14px;
+    padding: 5px 10px;
+  }
+}
+
+.layoutRowList {
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  flex-direction: row;
+  flex-wrap: wrap;
+  -webkit-box-pack: center;
+  justify-content: center;
+}
+
+.layoutRowSelector {
+  display: inline-block;
+  text-align: center;
+  width: 180px;
+}

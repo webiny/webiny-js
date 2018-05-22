@@ -13,8 +13,11 @@
   "license": "MIT",
   "dependencies": {
     "invariant": "^2.2.4",
+    "react-beautiful-dnd": "^7.1.3",
     "react-infinite-scroller": "^1.1.4",
     "shortid": "^2.2.8",
+    "slate": "^0.33.6",
+    "slate-react": "^0.12.6",
     "slugify": "^1.2.9",
     "webiny-app-ui": "0.0.0-semantically-released"
   },

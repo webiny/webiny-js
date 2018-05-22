@@ -47,7 +47,10 @@ class IconPicker extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { modules: { Select }, ...props } = _.omit(this.props, ["render"]);
+        const {
+            modules: { Select },
+            ...props
+        } = _.omit(this.props, ["render"]);
         props.renderOption = this.renderOption;
         props.renderSelected = this.renderSelected;
 
@@ -57,6 +60,7 @@ class IconPicker extends React.Component {
 
 IconPicker.defaultProps = {
     minimumInputLength: 2,
+    placeholder: t`Select an icon`,
     tooltip: t`Visit https://fontawesome.com/ for a full list`,
     renderOption: null,
     renderSelected: null,
