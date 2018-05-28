@@ -5,7 +5,7 @@ A memory storage driver for entity layer.
 `yarn add webiny-entity-memory`
 
 ## Usage
-The following code shows how to configure and assign Memory driver
+The following code shows how to configure and assign Memory driver.
 
 ```
 import { MemoryDriver } from "webiny-entity-memory";
