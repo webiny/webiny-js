@@ -19,6 +19,7 @@ export default {
         ifDevelopment("react-hot-loader/babel"),
         ["babel-plugin-lodash"],
         ["babel-plugin-transform-object-rest-spread", { useBuiltIns: true }],
+        ["babel-plugin-transform-decorators-legacy"],
         ["babel-plugin-syntax-dynamic-import"],
         [
             "babel-plugin-transform-runtime",

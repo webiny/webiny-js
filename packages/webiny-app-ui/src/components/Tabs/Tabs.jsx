@@ -84,7 +84,7 @@ class Tabs extends React.Component {
             }
 
             this.tabsHeader.push(
-                <TabHeader {...headerProps} onClick={tabClicked}/>
+                <TabHeader {...headerProps} stretch={this.props.stretch} onClick={tabClicked}/>
             );
 
             const contentProps = {
@@ -114,6 +114,7 @@ class Tabs extends React.Component {
 Tabs.defaultProps = {
     position: 'top', // top, left
     size: 'default',
+    stretch: false,
     selected: 0,
     renderTabs() {
         const { styles, position } = this.props;

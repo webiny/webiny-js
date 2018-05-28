@@ -14,6 +14,7 @@ class TabHeader extends React.Component {
         const css = {};
         css[this.props.activeTabClassName] = this.props.active;
         css[this.props.disabledTabClassName] = this.props.disabled;
+        css[this.props.styles.stretch] = this.props.stretch;
 
         return (
             <li className={classSet(css)} onClick={this.props.onClick}>{this.props.renderLabel.call(this)}</li>
@@ -25,6 +26,7 @@ TabHeader.defaultProps = {
     label: t`Tab`,
     onClick: _.noop,
     icon: null,
+    stretch: false,
     disabled: false, // "private" prop passed by Tabs component
     activeTabClassName: styles.active, // "private" prop for render purposes only
     disabledTabClassName: styles.disabled, // "private" prop for render purposes only

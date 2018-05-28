@@ -43,6 +43,11 @@
 	list-style-type: none;
 }
 
+.navigation > li.stretch {
+	flex-grow: 1;
+	flex-basis: 0;
+}
+
 .navigation > li.disabled{
 	opacity: 0.5;
 	cursor: not-allowed;

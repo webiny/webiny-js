@@ -240,6 +240,7 @@ class Gallery extends React.Component {
         }
         e.preventDefault();
         this.dragged.style.display = "none";
+        ``;
         const over = $(e.target).closest('[data-role="image"]')[0];
         if (!over || $(over).hasClass("placeholder")) {
             return;
@@ -306,7 +307,10 @@ class Gallery extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { modules: { FileReader, Alert, Input, FormGroup }, styles } = this.props;
+        const {
+            modules: { FileReader, Alert, Input, FormGroup },
+            styles
+        } = this.props;
 
         let message = null;
         if (this.state.images.length === 0) {

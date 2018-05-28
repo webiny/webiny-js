@@ -1,0 +1,37 @@
+.container {
+    background-color: #fff;
+
+    .item {
+        .title {
+            background-color: #f6f6f6;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            text-align: left;
+            font-size: 16px;
+            font-weight: 600;
+            border-bottom: 1px solid #eaeaea;
+            :global(.icon) {
+                margin-right: 5px;
+            }
+        }
+
+        .body {
+            height: 0;
+            opacity: 0;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        &.active {
+            .body {
+                overflow: visible;
+                height: 100%;
+                opacity: 1;
+                padding: 20px;
+                transition: opacity 350ms ease-in;
+            }
+        }
+    }
+}

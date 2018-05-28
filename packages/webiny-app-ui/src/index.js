@@ -25,6 +25,10 @@ const app = () => {
 
         app.modules.register([
             {
+                name: "Accordion",
+                factory: () => import("./components/Accordion")
+            },
+            {
                 name: "Alert",
                 factory: () => import("./components/Alert")
             },
