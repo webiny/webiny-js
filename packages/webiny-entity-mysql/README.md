@@ -4,7 +4,7 @@ A MySQL driver for entity layer.
 ## Installation
 `yarn add webiny-entity-mysql`
 
-## Setup
+## Setup
 The driver works with the mysql package - currently the most popular JavaScript package for interacting with MySQL databases. Depending on your needs, use it to create a connection or pool, and just pass it to the entity driver.
 
 If you are not familiar with the mysql package, please visit the official GitHub page to learn more about it.
