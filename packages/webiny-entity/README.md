@@ -95,9 +95,20 @@ User.classId = "User";
 export default User;
 ```
 
-Shown examples are demonstrating basic usage of the Entity component. If you would like to learn more, feel free to continue with the next section, in which we will talk more about all of the available attributes and its options.
+Shown examples are demonstrating basic usage of the Entity component. If you would like to learn more, feel free to continue with the next sections.
 
-# Entity pool
+## Drivers
+As mentioned, entity component can work with different databases by using various drivers. The following is a list of all officially supported drivers:
+
+### MySQL
+For storing data into a MySQL database. Often used with MySQL Tables package, to help sync structures of tables in the database.
+
+### Memory
+For storing data in memory which means data is lost once the process has ended. Can be useful for caching, testing or other purposes in which the data does not need to be stored persistently.
+
+You can learn how to install and use these drivers in the following sections.
+
+## Entity pool
 Entity pool is simply a local entity cache, which holds entities in memory until the process ends.
 
 Once an entity has been created or loaded from database, it will immediately be added to it. Then in later stages, when trying to load entities using findById, findByIds or find method, entities will be returned from entity pool if possible, thus preventing additional database queries.
