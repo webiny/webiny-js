@@ -1,6 +1,6 @@
 // @flow
 import { Identity } from "./../index";
-import AuthenticationError from "./authenticationError";
+import AuthenticationError from "./AuthenticationError";
 import { Entity, app } from "./..";
 import { SecuritySettings } from "./..";
 import type { IAuthentication, IToken } from "./../../types";
@@ -15,6 +15,7 @@ class SecurityService implements IAuthentication {
         identities: Array<Object>
     };
     superUser: boolean;
+    settings: ?SecuritySettings;
     constructor(config: Object) {
         this.config = config;
         this.settings = null;

@@ -7,7 +7,7 @@ const t = i18n.namespace("Admin.App");
 const includeManager = app => {
     app.modules.register({
         name: "Security.SecurityToggleList",
-        factory: () => import("./views/securityToggleList")
+        factory: () => import("./views/SecurityToggleList")
     });
 
     const securityManageUsers = "webiny-security-manager";

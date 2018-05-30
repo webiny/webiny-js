@@ -130,13 +130,6 @@ class UsersForm extends React.Component {
                                                                     </Bind>
                                                                 )}
                                                             </OptionsData>
-
-                                                            <Bind>
-                                                                <Tags
-                                                                    label={t`baja`}
-                                                                    name="grssoups"
-                                                                />
-                                                            </Bind>
                                                         </Grid.Col>
                                                     </Grid.Row>
                                                 </Grid.Col>
