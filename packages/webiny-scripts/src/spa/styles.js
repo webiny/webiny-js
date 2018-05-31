@@ -24,7 +24,7 @@ export default () => {
                             importLoaders: 2,
                             getLocalIdent(context, localIdentName, localName) {
                                 const query = loaderUtils.parseQuery(context.resourceQuery || "?");
-                                return query.prefix ? query.prefix + "_" + localName : localName;
+                                return query.prefix ? query.prefix + "-" + localName : localName;
                             }
                         }
                     },

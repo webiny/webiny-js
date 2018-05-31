@@ -18,6 +18,7 @@ export default {
     plugins: removeEmpty([
         ifDevelopment("react-hot-loader/babel"),
         ["babel-plugin-lodash"],
+        ["babel-plugin-transform-class-properties"],
         ["babel-plugin-transform-object-rest-spread", { useBuiltIns: true }],
         ["babel-plugin-transform-decorators-legacy"],
         ["babel-plugin-syntax-dynamic-import"],
