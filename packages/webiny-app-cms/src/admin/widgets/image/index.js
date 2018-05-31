@@ -2,7 +2,7 @@ import React from "react";
 import compose from "webiny-compose";
 import _ from "lodash";
 import { app } from "webiny-app";
-import { EditorWidget } from "webiny-app-cms";
+import EditorWidget from "../../../utils/EditorWidget";
 
 import ImageWidgetSettingsCmp from "./Settings";
 import image from "./text-image.png";
@@ -14,6 +14,10 @@ class ImageWidget extends EditorWidget {
         }
     }
 
+    renderSelector() {
+        return <img src={image} alt={"Image with text"} width={"100%"} />;
+    }
+
     renderWidget() {
         return <img src={image} alt={"Image with text"} width={"100%"} />;
     }
@@ -21,7 +25,14 @@ class ImageWidget extends EditorWidget {
     renderSettings({ WidgetSettingsContainer }) {
         return (
             <WidgetSettingsContainer>
-                <ImageWidgetSettingsCmp handleImage={this.handleImage} />
+                {({ settingsTab }) => (
+                    <React.Fragment>
+                        {settingsTab(<ImageWidgetSettingsCmp handleImage={this.handleImage} />)}
+                        {/*{cssTab()}
+                        {customTab(<Tabs.Tab label={"Data"} />)}
+                        {customTab(<Tabs.Tab label={"Images"} />)}*/}
+                    </React.Fragment>
+                )}
             </WidgetSettingsContainer>
         );
     }

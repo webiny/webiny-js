@@ -1,0 +1,8 @@
+.editorWidget {
+    margin-bottom: 10px;
+    &:hover {
+        transition: box-shadow 250ms ease-in-out;
+        cursor: pointer;
+        box-shadow: 0 5px 10px -2px rgba(0, 0, 0, 0.43);
+    }
+}

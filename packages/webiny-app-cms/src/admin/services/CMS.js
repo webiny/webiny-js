@@ -1,7 +1,7 @@
 // @flow
 import _ from "lodash";
 import { app } from "webiny-app";
-import type { Widget, EditorWidget } from "webiny-app-cms";
+import type { Widget, EditorWidget } from "../../frontend";
 
 export type WidgetGroup = {
     name: string,

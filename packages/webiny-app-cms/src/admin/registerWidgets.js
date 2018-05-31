@@ -2,13 +2,11 @@
 import { app } from "webiny-app";
 import type CMS from "./services/CMS";
 
-import ParagraphWidget from "./widgets/pageEditor/paragraph";
-import ImageWidget from "./widgets/pageEditor/image";
-import WysiwygWidget from "./widgets/pageEditor/wysiwyg";
+import ParagraphWidget from "./widgets/paragraph";
+import ImageWidget from "./widgets/image";
 
-import ParagraphPreviewWidget from "./../widgets/paragraph/index";
-import ImagePreviewWidget from "./../widgets/image/index";
-import WysiwygPreviewWidget from "./widgets/pageEditor/wysiwyg/editor";
+import ParagraphPreviewWidget from "./../frontend/widgets/paragraph/index";
+import ImagePreviewWidget from "./../frontend/widgets/image/index";
 
 export default () => {
     const cmsService: CMS = app.services.get("cms");
@@ -53,11 +51,40 @@ export default () => {
 
     cmsService.addEditorWidget({
         group: "text",
-        type: "wysiwyg",
-        title: "Wysiwyg",
+        type: "paragraph2",
+        title: "Paragraph",
         icon: ["fas", "align-left"],
-        widget: new WysiwygWidget(),
-        data: {}
+        widget: new ParagraphWidget(),
+        data: {
+            text:
+                "Nullam molestie, tortor id rhoncus scelerisque, ex justo tincidunt nisl, non dignissim justo urna ac ex. Etiam a ultrices justo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut aliquet at nulla id laoreet. Fusce tellus diam, suscipit vel interdum ac, consequat vel ex.",
+            title: "Paragraph title",
+            iconSize: "3x",
+            icon: {
+                icon: "star",
+                id: "fas-star",
+                prefix: "fas"
+            }
+        }
+    });
+
+    cmsService.addEditorWidget({
+        group: "text",
+        type: "paragraph3",
+        title: "Paragraph",
+        icon: ["fas", "align-left"],
+        widget: new ParagraphWidget(),
+        data: {
+            text:
+                "Nullam molestie, tortor id rhoncus scelerisque, ex justo tincidunt nisl, non dignissim justo urna ac ex. Etiam a ultrices justo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut aliquet at nulla id laoreet. Fusce tellus diam, suscipit vel interdum ac, consequat vel ex.",
+            title: "Paragraph title",
+            iconSize: "3x",
+            icon: {
+                icon: "star",
+                id: "fas-star",
+                prefix: "fas"
+            }
+        }
     });
 
     cmsService.addEditorWidget({
@@ -85,11 +112,6 @@ export default () => {
     cmsService.addWidget({
         type: "image",
         widget: new ImagePreviewWidget()
-    });
-
-    cmsService.addWidget({
-        type: "wysiwyg",
-        widget: new WysiwygPreviewWidget()
     });
 
     // Global widgets

@@ -7,7 +7,8 @@ class Widget extends React.Component {
     render() {
         const {
             widget,
-            services: { cms }
+            services: { cms },
+            onClick
         } = this.props;
 
         let editorWidget = cms.getEditorWidget(widget.type);
@@ -16,8 +17,8 @@ class Widget extends React.Component {
         }
 
         return (
-            <div className={classSet(styles.editorWidget)}>
-                {editorWidget.widget.renderWidget()}
+            <div className={classSet(styles.editorWidget)} onClick={onClick}>
+                {editorWidget.widget.renderSelector()}
             </div>
         );
     }

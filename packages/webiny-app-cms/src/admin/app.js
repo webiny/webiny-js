@@ -4,7 +4,6 @@ import { Menu } from "webiny-app-admin";
 import CMS from "./services/CMS";
 import PageManagerContainer from "./views/pages/PageManagerContainer";
 import PageEditor from "./views/pages/PageEditor";
-import SlateView from "./views/slate";
 import CategoryList from "./views/categories/CategoryList";
 import registerWidgets from "./registerWidgets";
 
@@ -41,33 +40,10 @@ export default () => {
         });
 
         app.router.addRoute({
-            name: "Cms.Page.Slate",
-            path: "/cms/slate",
-            exact: true,
-            render: () => {
-                return app.modules.load([{ Layout: "Admin.Layout" }]).then(({ Layout }) => {
-                    return (
-                        <Layout>
-                            <SlateView />
-                        </Layout>
-                    );
-                });
-            }
-        });
-
-        app.router.addRoute({
             name: "Cms.Page.Editor",
             path: "/cms/pages/revision/:id",
             exact: true,
-            render: () => {
-                return app.modules.load({ Layout: "Admin.Layout" }).then(({ Layout }) => {
-                    return (
-                        <Layout>
-                            <PageEditor />
-                        </Layout>
-                    );
-                });
-            }
+            component: () => PageEditor
         });
 
         app.router.addRoute({

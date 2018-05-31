@@ -1,0 +1,49 @@
+.container {
+    width: 100%;
+    text-align: center;
+    min-height: 37px;
+    position: relative;
+    padding: 5px 20px;
+
+    .line {
+        display: none;
+    }
+
+    &:hover {
+        .line {
+            display: block;
+            height: 2px;
+            background-color: #41bfb0;
+            margin: 12px 0;
+        }
+
+        .addContent {
+            display: block;
+        }
+    }
+
+    .addContent {
+        border-radius: 15px;
+        color: #ffffff;
+        display: none;
+        cursor: pointer;
+        position: relative;
+        height: 25px;
+        padding: 3px 13px;
+        background-color: #41bfb0;
+        margin: -25px auto;
+        width: 170px;
+    }
+
+    .widgetSelector {
+        position: relative;
+        display: block;
+        min-height: 500px;
+        border: 1px solid #f6f6f6;
+
+        :global(.wui-tabs-panes) {
+            height: 500px;
+            overflow: scroll;
+        }
+    }
+}

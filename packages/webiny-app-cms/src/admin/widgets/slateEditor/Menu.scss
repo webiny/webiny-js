@@ -1,10 +1,6 @@
 .menu {
-  > * {
+  > span {
     display: inline-block;
-  }
-
-  > * + * {
-    margin-left: 15px;
   }
 }
 
@@ -27,8 +23,4 @@
   .button[data-active='true'] {
     color: #fff;
   }
-}
-
-.editor > * > * + * {
-  margin: 25px;
 }
