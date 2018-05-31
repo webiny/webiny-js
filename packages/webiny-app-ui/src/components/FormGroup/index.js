@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
 import { createComponent } from "webiny-app";
-import styles from "./styles.css?prefix=Webiny_Ui_FormGroup";
+import styles from "./styles.css?prefix=wui-formGroup";
 import Required from "./Components/Required";
 import Label from "./Components/Label";
 import InfoMessage from "./Components/InfoMessage";

@@ -1,6 +1,6 @@
 import React from 'react';
 import { createComponent } from 'webiny-app';
-import styles from './../styles.css?prefix=Webiny_Ui_View';
+import styles from './../styles.css?prefix=wui-view';
 
 class HeaderRight extends React.Component {
     render() {

@@ -1,7 +1,7 @@
 import React from "react";
 import { createComponent } from "webiny-app";
 import classSet from "classnames";
-import styles from "./../styles.css?prefix=Webiny_Ui_FormGroup";
+import styles from "./../styles.css?prefix=wui-formGroup";
 
 class ValidationMessage extends React.Component {
     render() {

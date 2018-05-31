@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import { createComponent } from 'webiny-app';
 import classSet from "classnames";
-import styles from '../../../styles.css?prefix=Webiny_Ui_Table_RowDetailsField';
+import styles from '../../../styles.css?prefix=wui-table-rowDetailsField';
 
 class RowDetailsField extends React.Component {
     render() {

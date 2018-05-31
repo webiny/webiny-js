@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { i18n, createComponent } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
-import styles from "./styles.css?prefix=Webiny_Ui_Date";
+import styles from "./styles.css?prefix=wui--date";
 
 class Date extends React.Component {
     constructor(props) {

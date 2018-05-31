@@ -10,7 +10,7 @@ import RowDetails from "./RowDetails";
 import Header from "./Header";
 import Empty from "./Empty";
 import SelectRowField from "./Fields/SelectRowField";
-import styles from "../../styles.css?prefix=Webiny_Ui_Table";
+import styles from "../../styles.css?prefix=wui-table";
 
 class Table extends React.Component {
     constructor(props) {

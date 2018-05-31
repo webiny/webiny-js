@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { createComponent } from "webiny-app";
 import FormComponent from "./../FormComponent";
-import styles from "./styles.css?prefix=Webiny_Ui_Input";
+import styles from "./styles.css?prefix=wui-input";
 
 class Input extends React.Component {
     constructor(props) {
@@ -37,7 +37,10 @@ class Input extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { modules: { DelayedOnChange, Icon, FormGroup }, styles } = this.props;
+        const {
+            modules: { DelayedOnChange, Icon, FormGroup },
+            styles
+        } = this.props;
 
         const props = {
             "data-on-enter": this.props.onEnter !== _.noop,

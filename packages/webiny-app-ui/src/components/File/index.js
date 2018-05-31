@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { createComponent, i18n } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
-import styles from "./styles.css?prefix=Webiny_Ui_File";
+import styles from "./styles.css?prefix=wui--file";
 
 const t = i18n.namespace("Webiny.Ui.File");
 
@@ -71,7 +71,10 @@ class SimpleFile extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { modules: { FileReader, FormGroup }, styles } = this.props;
+        const {
+            modules: { FileReader, FormGroup },
+            styles
+        } = this.props;
 
         const fileReaderProps = {
             accept: this.props.accept,
@@ -140,7 +143,9 @@ SimpleFile.defaultProps = {
     readAs: "data", // or binary
     onGetFiles: null,
     renderError() {
-        const { modules: { Alert } } = this.props;
+        const {
+            modules: { Alert }
+        } = this.props;
         return (
             <Alert title={t`A file could not be selected`} type="error" close>
                 <ul>
@@ -152,7 +157,9 @@ SimpleFile.defaultProps = {
         );
     },
     renderErrors() {
-        const { modules: { Alert } } = this.props;
+        const {
+            modules: { Alert }
+        } = this.props;
         const data = [];
         _.each(this.state.errors, (err, key) => {
             data.push(

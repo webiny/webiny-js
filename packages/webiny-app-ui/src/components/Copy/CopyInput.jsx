@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { app, i18n, createComponent } from "webiny-app";
 import { FormComponent } from "webiny-app-ui";
-import styles from "./styles.css?prefix=Webiny_Ui_CopyInput";
+import styles from "./styles.css?prefix=wui--copy-input";
 
 const t = i18n.namespace("Webiny.Ui.Copy.CopyInput");
 class CopyInput extends React.Component {

@@ -4,7 +4,7 @@ import _ from "lodash";
 import $ from "jquery";
 import classSet from "classnames";
 import { app, createComponent } from "webiny-app";
-import styles from "../styles.scss?prefix=Webiny_Ui_Modal";
+import styles from "../styles.scss?prefix=wui-modal";
 
 class ModalComponent extends React.Component {
     constructor(props) {
