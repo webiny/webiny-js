@@ -16,6 +16,8 @@ class SecurityService implements IAuthentication {
         identities: Array<Object>
     };
     superUser: boolean;
+    settings: ?Object;
+
     constructor(config: Object) {
         this.config = config;
         this.settings = null;
@@ -26,8 +28,7 @@ class SecurityService implements IAuthentication {
         this.settings = (await SecuritySettings.load()).data;
         ["create", "update", "delete", "read"].forEach(operation => {
             Entity.on(operation, async ({ entity }) => {
-                // TODO: patch/hack - upgrade install process in near future.
-                if (!app.getRequest()) {
+                if (process.env.INSTALL === "true") {
                     return;
                 }
 
@@ -81,17 +82,17 @@ class SecurityService implements IAuthentication {
         return app.getRequest().identity;
     }
 
-    setIdentity(identity) {
+    setIdentity(identity: Identity) {
         app.getRequest().identity = identity;
         return this;
     }
 
-    identityIsOwner(identity, entity) {
+    identityIsOwner(identity: Identity, entity: Entity) {
         const entityOwner = entity.getAttribute("owner").value.getCurrent();
         return identity.id === _.get(entityOwner, "id", entityOwner);
     }
 
-    identityIsInGroup(identity, entity) {
+    identityIsInGroup(identity: Identity, entity: Entity) {
         const identityGroups = identity.getAttribute("groups").value.getCurrent() || [];
         const entityGroups = entity.getAttribute("groups").value.getCurrent() || [];
         for (let i = 0; i < identityGroups.length; i++) {
@@ -107,7 +108,7 @@ class SecurityService implements IAuthentication {
         return false;
     }
 
-    async canExecuteOperation(identity, entity, operation) {
+    async canExecuteOperation(identity: Identity, entity: Entity, operation: string) {
         if (_.get(this.settings, `entities.${entity.classId}.other.operations.${operation}`)) {
             return true;
         }

@@ -34,7 +34,7 @@ class EntityManager {
         return this.entityClasses;
     }
 
-    getEntityClass(classId): Array<Class<Entity>> {
+    getEntityClass(classId: string): Class<Entity> | null {
         for (let i = 0; i < this.getEntityClasses().length; i++) {
             let entityClass = this.getEntityClasses()[i];
             if (entityClass.classId === classId) {
@@ -44,7 +44,7 @@ class EntityManager {
         return null;
     }
 
-    describe(entityClass) {
+    describe(entityClass: Class<Entity>) {
         return entityClass.describe();
     }
 }

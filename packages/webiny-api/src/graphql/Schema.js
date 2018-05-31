@@ -1,5 +1,5 @@
 // @flow
-import { GraphQLSchema, GraphQLObjectType, GraphQLDirective } from "graphql";
+import { GraphQLSchema, GraphQLObjectType, GraphQLUnionType, GraphQLDirective } from "graphql";
 import type { Entity } from "webiny-api";
 import addEntityToSchema from "./utils/addEntityToSchema";
 import addCrudOperations from "./utils/addCrudOperations";
@@ -30,7 +30,7 @@ class Schema {
         addDefaultTypes(this);
     }
 
-    addType(data: { meta: Object, type: GraphQLObjectType }) {
+    addType(data: { meta: Object, type: GraphQLObjectType | GraphQLUnionType }) {
         this.types[data.type.name] = data;
     }
 

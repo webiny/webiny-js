@@ -5,23 +5,14 @@ import compose from "webiny-compose";
 import { ServiceManager } from "webiny-service-manager";
 import GraphQL from "./graphql/GraphQL";
 import EntityManager from "./entities/EntityManager";
-import { Entity, File, Image, Group, Entities2Groups, SecuritySettings, User } from "./index";
-import type Schema from "./graphql/Schema";
+import type { $Request, $Response } from "express";
 import createMiddleware from "./graphql/middleware.js";
-import { SecurityService } from "./services";
-import { GraphQLUnionType } from "graphql";
-import createLoginQueries from "./security/graphql/createLoginQueries";
-import createListEntitiesQueries from "./security/graphql/createListEntitiesQueries";
-
-// Attributes registration functions
-import convertToGraphQL from "./attributes/convertToGraphQL";
-import registerBufferAttribute from "./attributes/registerBufferAttribute";
-import registerPasswordAttribute from "./attributes/registerPasswordAttribute";
-import registerIdentityAttribute from "./attributes/registerIdentityAttribute";
-import registerFileAttributes from "./attributes/registerFileAttributes";
-import registerImageAttributes from "./attributes/registerImageAttributes";
+import coreApp from "./core";
 
 import { argv } from "yargs";
+process.env.INSTALL = JSON.stringify(argv.install || false);
+
+declare type AppType = { init: Function, install?: Function };
 
 class Api {
     config: Object;
@@ -29,24 +20,17 @@ class Api {
     services: ServiceManager;
     entities: EntityManager;
     namespace: cls$Namespace;
-    apps: Array<Function>;
+    apps: Array<AppType>;
 
     constructor() {
         this.config = {};
         this.graphql = new GraphQL();
         this.services = new ServiceManager();
         this.entities = new EntityManager();
-        this.apps = [];
-
-        this.entities.addEntityClass(File);
-        this.entities.addEntityClass(Image);
-        this.entities.addEntityClass(Group);
-        this.entities.addEntityClass(Entities2Groups);
-        this.entities.addEntityClass(User);
-        this.entities.addEntityClass(SecuritySettings);
+        this.apps = [coreApp()];
     }
 
-    getRequest(): ?express$Request {
+    getRequest(): ?$Request {
         if (!this.namespace) {
             return null;
         }
@@ -55,75 +39,31 @@ class Api {
 
     configure(config: Object) {
         this.config = config;
-
-        // Configure Entity layer
-        if (config.entity) {
-            // Register Entity driver
-            Entity.driver = config.entity.driver;
-            // Register attributes
-            config.entity.attributes &&
-                config.entity.attributes({
-                    bufferAttribute: registerBufferAttribute,
-                    passwordAttribute: registerPasswordAttribute,
-                    identityAttribute: registerIdentityAttribute,
-                    fileAttributes: registerFileAttributes,
-                    imageAttributes: registerImageAttributes
-                });
-        }
     }
 
-    async init() {
-        this.services.register("security", () => {
-            return new SecurityService(this.config.security);
-        });
-
-        if (argv.install) {
-            const { default: install } = await import("./install");
-            await install();
-        }
-
-        await this.services.get("security").init();
-
-        this.graphql.schema((schema: Schema) => {
-            schema.addAttributeConverter(convertToGraphQL);
-            schema.addEntity(File);
-            schema.addEntity(Image);
-            schema.addEntity(Group);
-            schema.addEntity(Entities2Groups);
-            schema.addEntity(User);
-            schema.addEntity(SecuritySettings);
-
-            schema.addType({
-                meta: {
-                    type: "union"
-                },
-                type: new GraphQLUnionType({
-                    name: "IdentityType",
-                    types: () =>
-                        this.config.security.identities.map(({ identity: Identity }) => {
-                            return schema.getType(Identity.classId);
-                        }),
-                    resolveType(identity) {
-                        return schema.getType(identity.classId);
-                    }
-                })
-            });
-
-            schema.addAttributeConverter(convertToGraphQL);
-
-            // Create login queries
-            createLoginQueries(this, this.config, schema);
-            createListEntitiesQueries(this, this.config, schema);
-        });
-    }
-
-    use(app: Function) {
+    use(app: AppType) {
         this.apps.push(app);
     }
 
-    middleware(middleware: Function<Array<Function>>, options: Object = {}): Function {
-        // Setup registered Webiny apps.
-        compose(this.apps)({ app: this });
+    async middleware(
+        middleware: Function => Array<Function>,
+        options: Object = {}
+    ): Promise<Function> {
+        // Initialize registered Webiny apps.
+        await compose(this.apps.map(app => app.init))({ app: this });
+
+        // Optionally run install for each registered app
+        if (process.env.INSTALL === "true") {
+            const installers = [];
+            this.apps.map(app => {
+                if (typeof app.install === "function") {
+                    installers.push(app.install);
+                }
+            });
+
+            await compose(installers)({ app: this });
+            process.env.INSTALL = "false";
+        }
 
         const log = debug("webiny-api");
 
@@ -133,7 +73,7 @@ class Api {
         const webinyMiddleware = createMiddleware(middleware);
 
         // Route request.
-        return async (req: express$Request, res: express$Response) => {
+        return async (req: $Request, res: $Response) => {
             log("Received new request");
 
             this.namespace.run(async () => {
