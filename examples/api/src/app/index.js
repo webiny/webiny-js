@@ -19,7 +19,7 @@ export default async () => {
     app.use(
         "/graphql",
         bodyParser.json({ limit: "50mb" }),
-        webiny.middleware(({ securityMiddleware, graphqlMiddleware }) => [
+        await webiny.middleware(({ securityMiddleware, graphqlMiddleware }) => [
             securityMiddleware(),
             graphqlMiddleware()
         ])

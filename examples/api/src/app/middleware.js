@@ -65,8 +65,6 @@ export default async () => {
         }
     });
 
-    await app.init();
-
     app.use(myApp());
     app.use(cmsApp({}));
 
