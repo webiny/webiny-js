@@ -33,7 +33,9 @@ export default async () => {
                     },
                     activeRevision: { id: true }
                 },
-                createImage: { id: true, src: true, width: true, height: true },
+                createImage: true,
+                updateImage: true,
+                deleteImage: true,
                 getCmsWidget: true,
                 listCmsPages: {
                     list: {

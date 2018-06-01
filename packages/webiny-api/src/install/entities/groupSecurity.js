@@ -116,6 +116,9 @@ export default async () => {
                 }
             },
             entities: {
+                Entities2SecurityGroups: {
+                    operations: { read: true, create: true, delete: true, update: true }
+                },
                 SecurityUser: {
                     attributes: {
                         id: { read: true, write: true },
