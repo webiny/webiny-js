@@ -1,8 +1,24 @@
 .editorWidget {
+  position: relative;
+  padding: 20px 0;
+
+  .actions {
+    position: relative;
+    height: 20px;
     margin-bottom: 10px;
-    &:hover {
-        transition: box-shadow 250ms ease-in-out;
-        cursor: pointer;
-        box-shadow: 0 5px 10px -2px rgba(0, 0, 0, 0.43);
+    opacity: 0;
+
+    .action {
+      cursor: pointer;
+      margin-right: 10px;
+      &:hover {
+        color: #FA5723;
+      }
     }
+  }
+
+  &:hover > .actions {
+    opacity: 1;
+    color: #c6c6c6;
+  }
 }

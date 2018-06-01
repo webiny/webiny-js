@@ -9,8 +9,7 @@
     border: 1px solid #DCDCDC;
     background-color: #ffffff;
     width: 870px;
-    min-height: 600px;
-    transition: all 125ms ease-in;
+    min-height: 87vh;
     margin: 50px auto;
     padding: 10px 0;
   }
@@ -20,7 +19,7 @@
     right: 0;
     width: 400px;
     top: 53px;
-    z-index: 20000;
+    z-index: 100;
     opacity: 0;
     transform: translateX(400px);
     border: 1px solid #DCDCDC;

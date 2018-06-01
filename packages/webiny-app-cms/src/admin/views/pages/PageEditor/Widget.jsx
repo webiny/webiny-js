@@ -1,27 +1,61 @@
 import React from "react";
 import classSet from "classnames";
 import { createComponent } from "webiny-app";
-import styles from "./Widget.scss";
+import WidgetContainer from "./../../../components/WidgetContainer";
+import styles from "./Widget.scss?prefix=wby-cms-editor-widget";
 
 class Widget extends React.Component {
     render() {
         const {
+            moveUp,
+            moveDown,
+            editWidget,
+            deleteWidget,
             widget,
-            services: { cms },
-            onClick
+            onChange,
+            modules: { Icon, Form },
+            services: { cms }
         } = this.props;
 
         let editorWidget = cms.getEditorWidget(widget.type);
         if (!editorWidget) {
             return null;
         }
-
+        
         return (
-            <div className={classSet(styles.editorWidget)} onClick={onClick}>
-                {editorWidget.widget.renderSelector()}
+            <div className={classSet(styles.editorWidget)}>
+                <div className={styles.actions}>
+                    <span onClick={() => moveUp(widget)} className={styles.action}>
+                        <Icon icon={"caret-up"} /> Move up{" "}
+                    </span>
+                    <span onClick={() => moveDown(widget)} className={styles.action}>
+                        <Icon icon={"caret-down"} /> Move down{" "}
+                    </span>
+                    <span onClick={() => editWidget(widget)} className={styles.action}>
+                        <Icon icon={"cog"} /> Settings{" "}
+                    </span>
+                    <span onClick={() => deleteWidget(widget)} className={styles.action}>
+                        <Icon icon={"trash-alt"} /> Delete{" "}
+                    </span>
+                </div>
+                <Form model={widget.data || {}} onChange={onChange}>
+                    {({ model, Bind }) =>
+                        React.cloneElement(
+                            editorWidget.widget.renderWidget({
+                                WidgetContainer,
+                                widget
+                            }),
+                            {
+                                Bind,
+                                widget,
+                                onChange
+                            }
+                        )
+                    }
+                </Form>
             </div>
         );
     }
 }
 
-export default createComponent(Widget, { services: ["cms"] });
+export default createComponent(Widget, {modules: ["Form", "Icon"], services: ["cms"] });

@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import _ from "lodash";
-import Widget from "../../utils/Widget";
+import Widget from "../../../utils/Widget";
 import placeholderImage from "./placeholder.jpg";
 
 class ImageWidget extends Widget {

@@ -4,7 +4,8 @@ import _ from "lodash";
 import { app } from "webiny-app";
 import EditorWidget from "../../../utils/EditorWidget";
 
-import ImageWidgetSettingsCmp from "./Settings";
+import Settings from "./Settings";
+import Widget from "./Widget";
 import image from "./text-image.png";
 
 class ImageWidget extends EditorWidget {
@@ -18,21 +19,22 @@ class ImageWidget extends EditorWidget {
         return <img src={image} alt={"Image with text"} width={"100%"} />;
     }
 
-    renderWidget() {
-        return <img src={image} alt={"Image with text"} width={"100%"} />;
+    renderWidget({ WidgetContainer }) {
+        return (
+            <WidgetContainer>
+                {props => <Widget {...props} handleImage={this.handleImage.bind(this)} />}
+            </WidgetContainer>
+        );
     }
 
     renderSettings({ WidgetSettingsContainer }) {
         return (
             <WidgetSettingsContainer>
-                {({ settingsTab }) => (
-                    <React.Fragment>
-                        {settingsTab(<ImageWidgetSettingsCmp handleImage={this.handleImage} />)}
-                        {/*{cssTab()}
-                        {customTab(<Tabs.Tab label={"Data"} />)}
-                        {customTab(<Tabs.Tab label={"Images"} />)}*/}
-                    </React.Fragment>
-                )}
+                {({ settingsGroup, widgetProps }) => [
+                    settingsGroup(
+                        <Settings {...widgetProps} handleImage={this.handleImage.bind(this)} />
+                    )
+                ]}
             </WidgetSettingsContainer>
         );
     }

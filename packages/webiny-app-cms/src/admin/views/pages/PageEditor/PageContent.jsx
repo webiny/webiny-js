@@ -1,13 +1,17 @@
 import React, { Fragment } from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-app";
+import { Component } from "webiny-app";
 import shortid from "shortid";
-import PreviewWidget from "./PreviewWidget";
+import Widget from "./Widget";
 import WidgetSettings from "./WidgetSettings";
 import AddWidget from "./AddWidget";
 import styles from "./PageContent.scss?prefix=wby-cms-editor";
 
-class PageContent extends React.Component {
+@Component({
+    modules: ["Grid", "Animate", "Icon"],
+    services: ["cms"]
+})
+export default class PageContent extends React.Component {
     state = {
         activeWidget: null,
         dragging: false,
@@ -29,7 +33,7 @@ class PageContent extends React.Component {
 
     beforeRemoveWidget = ({ widget }) => {
         const editorWidget = this.cms.getEditorWidget(widget.type);
-        if (typeof editorWidget.removeWidget === "function" && !widget.origin) {
+        if (typeof editorWidget.removeWidget === "function") {
             return editorWidget.removeWidget(widget);
         }
         return Promise.resolve();
@@ -67,132 +71,76 @@ class PageContent extends React.Component {
         this.props.onChange(result);
     };
 
-    /**
-     * Moves an item from one list to another list.
-     */
-    move = (source, destination, droppableSource, droppableDestination) => {
-        const sourceClone = Array.from(source);
-        const destClone = Array.from(destination);
-
-        const sourceWidget = this.cms.getEditorWidget(sourceClone[droppableSource.index].type);
-
-        const widget = { data: sourceWidget.data, type: sourceWidget.type, id: shortid.generate() };
-
-        destClone.splice(droppableDestination.index, 0, widget);
-
-        return destClone;
-    };
-
-    widgetClicked = widget => {
+    showSettings = widget => {
         this.setState({ activeWidget: widget.id });
     };
 
     render() {
         const {
             value,
-            page,
-            modules: { Tabs, ViewSwitcher, Grid, Icon, Animate, Button, Link }
+            modules: { Grid, Animate, Icon }
         } = this.props;
 
-        const getListStyle = isDraggingOver => ({
-            background: isDraggingOver ? "lightblue" : null
-        });
-
         return (
-            <ViewSwitcher onReady={actions => (this.viewSwitcher = actions)}>
-                <ViewSwitcher.View name={"content"} defaultView>
-                    {() => (
-                        <React.Fragment>
-                            <Grid.Row>
-                                <div className={styles.editorContainer}>
-                                    <div className={styles.editorContent}>
-                                        {value.map((widget, index) => (
-                                            <Fragment key={widget.id}>
-                                                {index === 0 && (
-                                                    <AddWidget
-                                                        onAdd={widget =>
-                                                            this.addWidget(widget, index)
-                                                        }
-                                                    />
-                                                )}
-                                                <div
-                                                    style={{
-                                                        padding: "0 20px",
-                                                        backgroundColor: "white"
-                                                    }}
-                                                >
-                                                    <PreviewWidget
-                                                        modules={{ Icon }}
-                                                        moveUp={() =>
-                                                            this.reorder(index, index - 1)
-                                                        }
-                                                        moveDown={() =>
-                                                            this.reorder(index, index + 1)
-                                                        }
-                                                        onChange={data => {
-                                                            this.onWidgetChange(widget.id, data);
-                                                        }}
-                                                        editWidget={this.widgetClicked}
-                                                        deleteWidget={this.removeWidget}
-                                                        widget={widget}
-                                                    />
-                                                </div>
-                                                <AddWidget
-                                                    onAdd={widget =>
-                                                        this.addWidget(widget, index + 1)
-                                                    }
-                                                />
-                                            </Fragment>
-                                        ))}
-                                        <Animate
-                                            trigger={!!this.state.activeWidget}
-                                            hide={{ translateX: 400, opacity: 0, duration: 225 }}
-                                            show={{ translateX: 0, opacity: 1, duration: 225 }}
-                                        >
-                                            <div className={styles.editorSidebar}>
-                                                <span
-                                                    onClick={() =>
-                                                        this.setState({ activeWidget: null })
-                                                    }
-                                                    style={{
-                                                        position: "absolute",
-                                                        right: 15,
-                                                        top: 18
-                                                    }}
-                                                >
-                                                    <Icon icon={"times"} size={"lg"} />
-                                                </span>
-                                                {this.state.activeWidget && (
-                                                    <WidgetSettings
-                                                        key={this.state.activeWidget}
-                                                        onClose={() =>
-                                                            this.setState({ activeWidget: null })
-                                                        }
-                                                        onChange={data =>
-                                                            this.onWidgetChange(
-                                                                this.state.activeWidget,
-                                                                data
-                                                            )
-                                                        }
-                                                        widget={_.find(this.props.value, {
-                                                            id: this.state.activeWidget
-                                                        })}
-                                                    />
-                                                )}
-                                            </div>
-                                        </Animate>
-                                    </div>
+            <Grid.Row>
+                <div className={styles.editorContainer}>
+                    <div className={styles.editorContent}>
+                        <AddWidget onAdd={widget => this.addWidget(widget, 0)} />
+                        {value.map((widget, index) => (
+                            <Fragment key={widget.id}>
+                                <div
+                                    style={{
+                                        padding: "0 20px",
+                                        backgroundColor: "white"
+                                    }}
+                                >
+                                    <Widget
+                                        moveUp={() => this.reorder(index, index - 1)}
+                                        moveDown={() => this.reorder(index, index + 1)}
+                                        onChange={data => {
+                                            this.onWidgetChange(widget.id, data);
+                                        }}
+                                        editWidget={this.showSettings}
+                                        deleteWidget={this.removeWidget}
+                                        widget={widget}
+                                    />
                                 </div>
-                            </Grid.Row>
-                        </React.Fragment>
-                    )}
-                </ViewSwitcher.View>
-            </ViewSwitcher>
+                                <AddWidget onAdd={widget => this.addWidget(widget, index + 1)} />
+                            </Fragment>
+                        ))}
+                        <Animate
+                            trigger={!!this.state.activeWidget}
+                            hide={{ translateX: 400, opacity: 0, duration: 225 }}
+                            show={{ translateX: 0, opacity: 1, duration: 225 }}
+                        >
+                            <div className={styles.editorSidebar}>
+                                <span
+                                    onClick={() => this.setState({ activeWidget: null })}
+                                    style={{
+                                        position: "absolute",
+                                        right: 15,
+                                        top: 18
+                                    }}
+                                >
+                                    <Icon icon={"times"} size={"lg"} />
+                                </span>
+                                {this.state.activeWidget && (
+                                    <WidgetSettings
+                                        key={this.state.activeWidget}
+                                        onClose={() => this.setState({ activeWidget: null })}
+                                        onChange={data =>
+                                            this.onWidgetChange(this.state.activeWidget, data)
+                                        }
+                                        widget={_.find(this.props.value, {
+                                            id: this.state.activeWidget
+                                        })}
+                                    />
+                                )}
+                            </div>
+                        </Animate>
+                    </div>
+                </div>
+            </Grid.Row>
         );
     }
 }
-
-export default createComponent(PageContent, {
-    modules: ["Grid", "Tabs", "ViewSwitcher", "Icon", "Animate", "Button", "Link"],
-    services: ["cms"]
-});

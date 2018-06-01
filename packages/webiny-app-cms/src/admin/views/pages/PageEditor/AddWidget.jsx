@@ -1,6 +1,5 @@
 import React, { Fragment } from "react";
 import { createComponent } from "webiny-app";
-import Widget from "./Widget";
 import styles from "./AddWidget.scss?prefix=wby-cms-editor-addWidget";
 
 class AddWidget extends React.Component {
@@ -43,15 +42,19 @@ class AddWidget extends React.Component {
                                         label={group.title}
                                     >
                                         {cms.getEditorWidgets(group.name).map(widget => (
-                                            <Widget
+                                            <div
                                                 key={widget.type}
-                                                widget={widget}
+                                                style={{ cursor: "pointer" }}
                                                 onClick={() => {
                                                     this.setState({ selectWidget: false }, () =>
                                                         onAdd(widget)
                                                     );
                                                 }}
-                                            />
+                                            >
+                                                {cms
+                                                    .getEditorWidget(widget.type)
+                                                    .widget.renderSelector()}
+                                            </div>
                                         ))}
                                     </Tabs.Tab>
                                 ))}

@@ -43,7 +43,6 @@ class SlateEditor extends React.Component {
         this.update = setTimeout(() => {
             const newValue = data.value.toJSON();
             if (!_.isEqual(this.state.value.toJSON(), this.props.value)) {
-                console.log("UPDATE PARENT VALUE");
                 this.props.onChange(newValue);
             }
         });

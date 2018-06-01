@@ -1,8 +1,8 @@
 import React from "react";
-import { createComponent } from "webiny-app";
+import { Component } from "webiny-app";
 import SlateEditor from "./../slateEditor/Slate";
 
-const Component = ({ onChange, data, modules: { Icon } }) => {
+const Widget = ({ widget: { data }, Bind, modules: { Icon } }) => {
     return (
         <div>
             {data.icon && (
@@ -10,12 +10,11 @@ const Component = ({ onChange, data, modules: { Icon } }) => {
                     <Icon icon={data.icon.icon} size={data.iconSize} />
                 </div>
             )}
-            <SlateEditor
-                value={data.text}
-                onChange={value => onChange({ ...data, text: value })}
-            />
+            <Bind>
+                <SlateEditor name="text" />
+            </Bind>
         </div>
     );
 };
 
-export default createComponent(Component, {modules: ["Icon"]});
+export default Component({ modules: ["Icon"] })(Widget);

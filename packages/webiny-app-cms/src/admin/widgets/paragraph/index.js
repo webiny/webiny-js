@@ -9,8 +9,8 @@ class ParagraphWidget extends EditorWidget {
         return <img src={widgetImage} width={"100%"} />;
     }
 
-    renderWidget({ widget, onChange }) {
-        return <Widget data={widget.data} onChange={onChange} />;
+    renderWidget({ WidgetContainer }) {
+        return <WidgetContainer>{props => <Widget {...props} />}</WidgetContainer>;
     }
 
     renderSettings({ WidgetSettingsContainer }) {
