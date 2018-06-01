@@ -28,7 +28,7 @@ class FormError extends React.Component {
         }
 
         const data = [];
-        const { invalidAttributes = {} } = error.data;
+        const { invalidAttributes = {} } = error.data || {};
         _.each(invalidAttributes, (value, key) => {
             data.push(
                 <li key={key}>

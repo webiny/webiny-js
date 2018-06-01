@@ -1,6 +1,6 @@
 import React from "react";
 import { app, i18n, createComponent } from "webiny-app";
-import EntitiesList from "./GroupsForm/EntitiesList"
+import EntitiesList from "./GroupsForm/EntitiesList";
 import ApiAccess from "./GroupsForm/ApiAccess";
 
 const t = i18n.namespace("Security.GroupsForm");
@@ -58,51 +58,53 @@ class GroupsForm extends React.Component {
                                         <View.Body>
                                             {loading && <Loader />}
 
+                                            <Grid.Row>
+                                                <Grid.Col all={6}>
+                                                    <Bind>
+                                                        <Input
+                                                            label={t`Name`}
+                                                            name="name"
+                                                            validators="required"
+                                                        />
+                                                    </Bind>
+                                                </Grid.Col>
+                                                <Grid.Col all={6}>
+                                                    <Bind>
+                                                        <Input
+                                                            label={t`Slug`}
+                                                            name="slug"
+                                                            validators="required"
+                                                        />
+                                                    </Bind>
+                                                </Grid.Col>
+                                            </Grid.Row>
+                                            <Grid.Row>
+                                                <Grid.Col all={12}>
+                                                    <Bind>
+                                                        <Input
+                                                            label={t`Description`}
+                                                            name="description"
+                                                            validators="required"
+                                                        />
+                                                    </Bind>
+                                                </Grid.Col>
+                                            </Grid.Row>
+
                                             <Tabs size="large">
-                                                <Tabs.Tab label={t`General`}>
-                                                    <Grid.Row>
-                                                        <Grid.Col all={6}>
-                                                            <Bind>
-                                                                <Input
-                                                                    label={t`Name`}
-                                                                    name="name"
-                                                                    validators="required"
-                                                                />
-                                                            </Bind>
-                                                        </Grid.Col>
-                                                        <Grid.Col all={6}>
-                                                            <Bind>
-                                                                <Input
-                                                                    label={t`Slug`}
-                                                                    name="slug"
-                                                                    validators="required"
-                                                                />
-                                                            </Bind>
-                                                        </Grid.Col>
-                                                    </Grid.Row>
-                                                    <Grid.Row>
-                                                        <Grid.Col all={12}>
-                                                            <Bind>
-                                                                <Input
-                                                                    label={t`Description`}
-                                                                    name="description"
-                                                                    validators="required"
-                                                                />
-                                                            </Bind>
-                                                        </Grid.Col>
-                                                    </Grid.Row>
-                                                </Tabs.Tab>
                                                 <Tabs.Tab label={t`Entity permissions`}>
                                                     <Grid.Row>
                                                         <Grid.Col all={12}>
-                                                            <EntitiesList model={model} form={form}/>
+                                                            <EntitiesList
+                                                                model={model}
+                                                                form={form}
+                                                            />
                                                         </Grid.Col>
                                                     </Grid.Row>
                                                 </Tabs.Tab>
                                                 <Tabs.Tab label={t`API access`}>
                                                     <Grid.Row>
                                                         <Grid.Col all={12}>
-                                                            <ApiAccess model={model} form={form}/>
+                                                            <ApiAccess model={model} form={form} />
                                                         </Grid.Col>
                                                     </Grid.Row>
                                                 </Tabs.Tab>
