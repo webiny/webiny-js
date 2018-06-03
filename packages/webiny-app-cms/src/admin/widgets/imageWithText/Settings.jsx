@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { Component } from "webiny-app";
 
-const ImageSettings = (props) => {
+const ImageWithTextSettings = (props) => {
     const { Bind, handleImage, modules: { Select, Image, Input } } = props;
     return (
         <Fragment>
@@ -53,4 +53,4 @@ const ImageSettings = (props) => {
 
 export default Component({
     modules: ["Select", "Image", "Input"]
-})(ImageSettings);
+})(ImageWithTextSettings);

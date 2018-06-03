@@ -2,13 +2,13 @@ import React from "react";
 import compose from "webiny-compose";
 import _ from "lodash";
 import { app } from "webiny-app";
-import EditorWidget from "../../../utils/EditorWidget";
+import { EditorWidget } from "webiny-app-cms";
 
-import Settings from "./Settings";
 import Widget from "./Widget";
-import image from "./text-image.png";
+import Settings from "./Settings";
+import image from "./image-with-text.png";
 
-class ImageWidget extends EditorWidget {
+class ImageWithText extends EditorWidget {
     removeWidget({ widget }) {
         if (widget.data.image) {
             return this.deleteImage(widget.data.image.id);
@@ -22,7 +22,9 @@ class ImageWidget extends EditorWidget {
     renderWidget({ WidgetContainer }) {
         return (
             <WidgetContainer>
-                {props => <Widget {...props} handleImage={this.handleImage.bind(this)} />}
+                {({ widgetProps }) => (
+                    <Widget {...widgetProps} handleImage={this.handleImage.bind(this)} />
+                )}
             </WidgetContainer>
         );
     }
@@ -91,4 +93,4 @@ class ImageWidget extends EditorWidget {
     }
 }
 
-export default ImageWidget;
+export default ImageWithText;

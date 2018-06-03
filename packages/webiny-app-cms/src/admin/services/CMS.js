@@ -13,7 +13,7 @@ export type WidgetData = {
     type: string,
     group: string,
     title: string,
-    icon: string | Array<string>,
+    icon?: string | Array<string>,
     widget: EditorWidget
 };
 

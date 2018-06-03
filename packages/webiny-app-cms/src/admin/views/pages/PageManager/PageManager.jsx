@@ -3,12 +3,12 @@ import _ from "lodash";
 import { createComponent, i18n } from "webiny-app";
 import InfiniteScroll from "react-infinite-scroller";
 
-import { PageDetailsProvider } from "./PageManager/PageDetailsContext";
-import PageFilter from "./PageManager/PageFilter";
-import PageListControls from "./PageManager/PageListControls";
-import PageList from "./PageManager/PageList";
-import PageDetails from "./PageManager/PageDetails";
-import CreatePageDialog from "./PageManager/CreatePageDialog";
+import { PageDetailsProvider } from "./PageDetailsContext";
+import PageFilter from "./PageFilter";
+import PageListControls from "./PageListControls";
+import PageList from "./PageList";
+import PageDetails from "./PageDetails";
+import CreatePageDialog from "./CreatePageDialog";
 
 import styles from "./PageManager.scss?prefix=wby-cms-pageManager";
 

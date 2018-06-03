@@ -1,8 +1,8 @@
 import React from "react";
 import _ from "lodash";
 import { app, createComponent } from "webiny-app";
-import PageManager from "./PageManager";
-import { PageManagerProvider } from "./context/PageManagerContext";
+import PageManager from "./PageManager/PageManager";
+import { PageManagerProvider } from "./PageManager/PageManagerContext";
 
 const createdBy = "createdBy { ... on SecurityUser { firstName lastName } }";
 const fields = `

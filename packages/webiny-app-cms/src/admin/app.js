@@ -5,7 +5,7 @@ import CMS from "./services/CMS";
 import PageManagerContainer from "./views/pages/PageManagerContainer";
 import PageEditor from "./views/pages/PageEditor";
 import CategoryList from "./views/categories/CategoryList";
-import registerWidgets from "./registerWidgets";
+import registerWidgets from "./widgets/register";
 
 const t = i18n.namespace("Cms.Admin.Menu");
 
@@ -14,6 +14,11 @@ export default () => {
         app.services.register("cms", () => new CMS());
 
         registerWidgets();
+
+        app.modules.register({
+            name: "SlateEditor",
+            factory: () => import("./../utils/SlateEditor/Slate")
+        });
 
         app.services.get("menu").add(
             <Menu order="1" label={t`Content`} icon={["fas", "file-alt"]}>

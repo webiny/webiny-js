@@ -15,7 +15,8 @@ class SlateEditor extends React.Component {
         const value = typeof props.value === "string" ? defaultValue(props.value) : props.value;
 
         this.state = {
-            value: Value.fromJSON(value)
+            value: Value.fromJSON(value),
+            readOnly: !props.onChange
         };
 
         this.onChange = this.onChange.bind(this);
@@ -90,9 +91,16 @@ class SlateEditor extends React.Component {
     render() {
         return (
             <React.Fragment>
-                <Menu menuRef={this.menuRef} value={this.state.value} onChange={this.onChange} />
+                {!this.state.readOnly && (
+                    <Menu
+                        menuRef={this.menuRef}
+                        value={this.state.value}
+                        onChange={this.onChange}
+                    />
+                )}
                 <div className={styles.editor}>
                     <Editor
+                        readOnly={this.state.readOnly}
                         autoCorrect={false}
                         spellCheck={false}
                         plugins={this.plugins}

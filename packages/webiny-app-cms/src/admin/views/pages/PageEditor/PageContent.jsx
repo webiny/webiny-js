@@ -20,6 +20,20 @@ export default class PageContent extends React.Component {
 
     cms = this.props.services.cms;
 
+    checkKey = (event) => {
+        if (event.keyCode === 27) {
+            this.setState({ activeWidget: null });
+        }
+    };
+
+    componentDidMount() {
+        document.addEventListener("keydown", this.checkKey, false);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.checkKey, false);
+    }
+
     addWidget = (widget, index) => {
         let { value, onChange } = this.props;
         if (!value) {
@@ -81,6 +95,10 @@ export default class PageContent extends React.Component {
             modules: { Grid, Animate, Icon }
         } = this.props;
 
+        const widget = _.find(this.props.value, {
+            id: this.state.activeWidget
+        });
+
         return (
             <Grid.Row>
                 <div className={styles.editorContainer}>
@@ -118,10 +136,13 @@ export default class PageContent extends React.Component {
                                     onClick={() => this.setState({ activeWidget: null })}
                                     style={{
                                         position: "absolute",
+                                        cursor: "pointer",
                                         right: 15,
                                         top: 18
                                     }}
                                 >
+                                    {widget && `(${widget.type})`}
+                                    {"  "}
                                     <Icon icon={"times"} size={"lg"} />
                                 </span>
                                 {this.state.activeWidget && (
@@ -131,9 +152,7 @@ export default class PageContent extends React.Component {
                                         onChange={data =>
                                             this.onWidgetChange(this.state.activeWidget, data)
                                         }
-                                        widget={_.find(this.props.value, {
-                                            id: this.state.activeWidget
-                                        })}
+                                        widget={widget}
                                     />
                                 )}
                             </div>

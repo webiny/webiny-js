@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import _ from "lodash";
 import { app, i18n } from "webiny-app";
 import CreateRevisionDialog from "./CreateRevisionDialog";
-import { PageDetailsConsumer } from "./../context/PageDetailsContext";
+import { PageDetailsConsumer } from "./../PageManager/PageDetailsContext";
 import styles from "./PageRevisions.scss?prefix=Webiny_CMS_PageRevisions";
 
 const t = i18n.namespace("Cms.Admin.Views.PageRevisions");

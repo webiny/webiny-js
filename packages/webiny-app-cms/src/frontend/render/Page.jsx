@@ -8,7 +8,7 @@ class Page extends React.Component {
             <div
                 style={{
                     margin: "0 auto",
-                    width: 700
+                    width: 950
                 }}
             >
                 <h2>{page.title}</h2>

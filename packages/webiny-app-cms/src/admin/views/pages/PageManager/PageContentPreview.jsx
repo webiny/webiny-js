@@ -1,5 +1,4 @@
 import React from "react";
-import _ from "lodash";
 import invariant from "invariant";
 import { createComponent } from "webiny-app";
 import blankBalloon from "./assets/blank-state-balloon.jpg";
@@ -8,29 +7,10 @@ class PageContentPreview extends React.Component {
     renderPreviewWidget(data) {
         const widget = { ...data };
         const {
-            services: { cms },
-            modules: { Alert }
+            services: { cms }
         } = this.props;
         const widgetData = cms.getWidget(widget.type);
         invariant(widgetData, `Missing widget definition for type "${widget.type}"`);
-
-        if (widget.origin) {
-            const wd = cms.getEditorWidget(widget.type, { origin: widget.origin });
-            if (!wd) {
-                return (
-                    <Alert type={"danger"} key={widget.id}>
-                        Missing widget for type <strong>{widget.type}</strong>
-                    </Alert>
-                );
-            }
-            if (!widget.data) {
-                widget.data = _.cloneDeep(wd.data);
-            }
-
-            if (!widget.settings) {
-                widget.settings = _.cloneDeep(wd.settings);
-            }
-        }
 
         const preview = widgetData.widget.render({ widget });
 

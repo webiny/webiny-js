@@ -1,16 +1,18 @@
 import React from "react";
-import EditorWidget from "./../../../utils/EditorWidget";
+import { EditorWidget } from "webiny-app-cms";
 import WidgetSettings from "./Settings";
 import Widget from "./Widget";
-import widgetImage from "./icon-paragraph.png";
+import widgetImage from "./text-with-icon.png";
 
-class ParagraphWidget extends EditorWidget {
+class TextWidget extends EditorWidget {
     renderSelector() {
         return <img src={widgetImage} width={"100%"} />;
     }
 
     renderWidget({ WidgetContainer }) {
-        return <WidgetContainer>{props => <Widget {...props} />}</WidgetContainer>;
+        return (
+            <WidgetContainer>{({ widgetProps }) => <Widget {...widgetProps} />}</WidgetContainer>
+        );
     }
 
     renderSettings({ WidgetSettingsContainer }) {
@@ -27,4 +29,4 @@ class ParagraphWidget extends EditorWidget {
     }
 }
 
-export default ParagraphWidget;
+export default TextWidget;

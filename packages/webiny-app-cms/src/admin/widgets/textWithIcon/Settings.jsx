@@ -1,7 +1,7 @@
 import React from "react";
 import { createComponent } from "webiny-app";
 
-class ParagraphWidgetSettings extends React.Component {
+class TextWidgetSettings extends React.Component {
     render() {
         const {
             modules: { Select, IconPicker, Grid },
@@ -40,6 +40,6 @@ class ParagraphWidgetSettings extends React.Component {
     }
 }
 
-export default createComponent(ParagraphWidgetSettings, {
+export default createComponent(TextWidgetSettings, {
     modules: ["Select", "IconPicker", "Grid"]
 });

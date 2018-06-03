@@ -1,12 +1,16 @@
 import React from "react";
-import SlateEditor from "./../slateEditor/Slate";
+import { Component } from "webiny-app";
 import placeholderImage from "./placeholder.jpg";
 
-export default class ImageWidget extends React.Component {
+@Component({
+    modules: ["SlateEditor"]
+})
+export default class ImageWithTextWidget extends React.Component {
     render() {
         const {
             widget: { data },
-            Bind
+            Bind,
+            modules: { SlateEditor }
         } = this.props;
 
         const image = (

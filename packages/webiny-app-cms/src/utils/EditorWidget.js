@@ -12,6 +12,10 @@ class EditorWidget {
         return Promise.resolve();
     }
 
+    renderSelector() {
+        throw new Error(`Implement "renderSelector" method in your editor widget class!`);
+    }
+
     renderWidget() {
         throw new Error(`Implement "renderWidget" method in your editor widget class!`);
     }

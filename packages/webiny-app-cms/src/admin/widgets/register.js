@@ -1,12 +1,14 @@
 // @flow
 import { app } from "webiny-app";
-import type CMS from "./services/CMS";
+import type CMS from "./../services/CMS";
 
-import ParagraphWidget from "./widgets/paragraph";
-import ImageWidget from "./widgets/image";
+import TextWidget from "./text";
+import TextWithIconWidget from "./textWithIcon";
+import ImageWithTextWidget from "./imageWithText";
 
-import ParagraphPreviewWidget from "./../frontend/widgets/paragraph/index";
-import ImagePreviewWidget from "./../frontend/widgets/image/index";
+import TextWidgetRender from "./../../frontend/widgets/text";
+import TextWithIconWidgetRender from "./../../frontend/widgets/textWithIcon";
+import ImageWithTextWidgetRender from "./../../frontend/widgets/imageWithText";
 
 export default () => {
     const cmsService: CMS = app.services.get("cms");
@@ -32,52 +34,23 @@ export default () => {
     // Editor widgets
     cmsService.addEditorWidget({
         group: "text",
-        type: "paragraph",
-        title: "Paragraph",
-        icon: ["fas", "align-left"],
-        widget: new ParagraphWidget(),
+        type: "text",
+        title: "Text",
+        widget: new TextWidget(),
         data: {
             text:
-                "Nullam molestie, tortor id rhoncus scelerisque, ex justo tincidunt nisl, non dignissim justo urna ac ex. Etiam a ultrices justo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut aliquet at nulla id laoreet. Fusce tellus diam, suscipit vel interdum ac, consequat vel ex.",
-            title: "Paragraph title",
-            iconSize: "3x",
-            icon: {
-                icon: "star",
-                id: "fas-star",
-                prefix: "fas"
-            }
+                "Nullam molestie, tortor id rhoncus scelerisque, ex justo tincidunt nisl, non dignissim justo urna ac ex. Etiam a ultrices justo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut aliquet at nulla id laoreet. Fusce tellus diam, suscipit vel interdum ac, consequat vel ex."
         }
     });
 
     cmsService.addEditorWidget({
         group: "text",
-        type: "paragraph2",
-        title: "Paragraph",
-        icon: ["fas", "align-left"],
-        widget: new ParagraphWidget(),
+        type: "text-with-icon",
+        title: "Text with icon",
+        widget: new TextWithIconWidget(),
         data: {
             text:
                 "Nullam molestie, tortor id rhoncus scelerisque, ex justo tincidunt nisl, non dignissim justo urna ac ex. Etiam a ultrices justo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut aliquet at nulla id laoreet. Fusce tellus diam, suscipit vel interdum ac, consequat vel ex.",
-            title: "Paragraph title",
-            iconSize: "3x",
-            icon: {
-                icon: "star",
-                id: "fas-star",
-                prefix: "fas"
-            }
-        }
-    });
-
-    cmsService.addEditorWidget({
-        group: "text",
-        type: "paragraph3",
-        title: "Paragraph",
-        icon: ["fas", "align-left"],
-        widget: new ParagraphWidget(),
-        data: {
-            text:
-                "Nullam molestie, tortor id rhoncus scelerisque, ex justo tincidunt nisl, non dignissim justo urna ac ex. Etiam a ultrices justo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut aliquet at nulla id laoreet. Fusce tellus diam, suscipit vel interdum ac, consequat vel ex.",
-            title: "Paragraph title",
             iconSize: "3x",
             icon: {
                 icon: "star",
@@ -89,29 +62,33 @@ export default () => {
 
     cmsService.addEditorWidget({
         group: "media",
-        type: "image",
-        title: "Image",
-        icon: ["fas", "image"],
-        widget: new ImageWidget(),
+        type: "image-with-text",
+        title: "Image with text",
+        widget: new ImageWithTextWidget(),
         data: {
-            title: "Image title",
-            heading: "h2",
             text:
                 "Nullam molestie, tortor id rhoncus scelerisque, ex justo tincidunt nisl, non dignissim justo urna ac ex. Etiam a ultrices justo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames.",
             image: null,
-            imagePosition: "left"
+            imagePosition: "left",
+            imageSize: 50,
+            padding: 15
         }
     });
 
     // Preview widgets
     cmsService.addWidget({
-        type: "paragraph",
-        widget: new ParagraphPreviewWidget()
+        type: "text",
+        widget: new TextWidgetRender()
     });
 
     cmsService.addWidget({
-        type: "image",
-        widget: new ImagePreviewWidget()
+        type: "text-with-icon",
+        widget: new TextWithIconWidgetRender()
+    });
+
+    cmsService.addWidget({
+        type: "image-with-text",
+        widget: new ImageWithTextWidgetRender()
     });
 
     // Global widgets
