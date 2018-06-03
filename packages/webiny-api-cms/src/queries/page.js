@@ -3,13 +3,13 @@ import GraphQLJSON from "graphql-type-json";
 import { Page, Revision, Widget } from "./../";
 
 async function formatData(instance: Page | Revision) {
-    const page = await instance.toJSON("id,slug,title,content[id,type,origin,data,settings]");
+    const page = await instance.toJSON("id,slug,title,content[id,type,data]");
 
     for (let i = 0; i < page.content.length; i++) {
         if (page.content[i].origin) {
-            const { data, settings } = await Widget.findById(page.content[i].origin);
+            const { data } = await Widget.findById(page.content[i].origin);
             delete page.content[i].origin;
-            Object.assign(page.content[i], { data, settings });
+            Object.assign(page.content[i], { data });
         }
     }
     return page;

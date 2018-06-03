@@ -5,6 +5,8 @@ export default async () => {
     const group = await Group.findOne({ query: { slug: "security" } });
 
     entity.populate({
+        firstName: "John",
+        lastName: "Doe",
         password: "12345678",
         email: "admin@webiny.com",
         groups: [group]

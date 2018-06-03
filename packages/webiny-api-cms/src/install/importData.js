@@ -1,4 +1,5 @@
 import { Group, User, SecuritySettings } from "webiny-api";
+import { Category } from "webiny-api-cms";
 import _ from "lodash";
 
 export default async () => {
@@ -33,8 +34,8 @@ export default async () => {
                     },
                     activeRevision: { id: true }
                 },
-                createImage: true,
-                updateImage: true,
+                createImage: { id: true, src: true, width: true, height: true },
+                updateImage: { id: true, src: true, width: true, height: true },
                 deleteImage: true,
                 getCmsWidget: true,
                 listCmsPages: {
@@ -169,12 +170,29 @@ export default async () => {
 
     const defaultGroup = await Group.findOne({ query: { slug: "default" } });
     const clonedPermissions = _.cloneDeep(defaultGroup.permissions);
-    _.set(clonedPermissions, "api.loadPageRevisions", {
+
+    _.set(clonedPermissions, "api.loadPageRevision", {
         id: true,
         slug: true,
         title: true,
         content: true
     });
+
+    _.set(clonedPermissions, "api.loadPageByUrl", {
+        id: true,
+        slug: true,
+        title: true,
+        content: true
+    });
+
     defaultGroup.permissions = clonedPermissions;
     await defaultGroup.save();
+
+    const blogCategory = new Category();
+    blogCategory.populate({
+        title: "Blog",
+        slug: "blog",
+        url: "/blog/"
+    });
+    await blogCategory.save();
 };
