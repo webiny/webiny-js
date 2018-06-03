@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "build": "babel src -d dist",
-    "develop": "cross-env NODE_ENV=development DEBUG=webiny* node --inspect=9005 api/src/express --require=babel-register --port 9000"
+    "develop": "cross-env NODE_ENV=development DEBUG=webiny* node --inspect=9005 api/src/express --require=babel-register --port 9000",
+    "clean":  "rimraf node_modules/graphql*",
+    "postinstall": "yarn clean"
   },
   "author": "",
   "license": "MIT",
@@ -16,6 +18,7 @@
     "cross-env": "^5.1.5",
     "serverless": "^1.27.2",
     "serverless-offline": "^3.20.3",
-    "serverless-plugin-cloudfront-lambda-edge": "^2.0.0"
+    "serverless-plugin-cloudfront-lambda-edge": "^2.0.0",
+    "rimraf": "^2.6.2"
   }
 }
