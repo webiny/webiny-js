@@ -6,7 +6,7 @@ import invariant from "invariant";
 import { app } from "webiny-app";
 import gql from "graphql-tag";
 import type { AuthenticationServiceConfig } from "../../types";
-import AuthenticationError from "./AuthenticationError";
+import SecurityError from "./SecurityError";
 
 const debug = debugFactory("webiny-app-security");
 
@@ -14,12 +14,14 @@ function getToken() {
     return cookies.get(this.config.cookie);
 }
 
-class Authentication {
+class Security {
     identity: null | Object;
     callbacks: { [event: string]: Array<Function> };
     config: AuthenticationServiceConfig;
 
-    constructor(config: Object) {
+    configure(config: Object) {
+
+        console.log(config);
         const defaultConfig = {
             header: "Authorization",
             cookie: "webiny-token",
@@ -79,7 +81,7 @@ class Authentication {
 
             if (errors) {
                 const { message, code, data } = errors[0];
-                return Promise.reject(new AuthenticationError(message, code, data));
+                return Promise.reject(new SecurityError(message, code, data));
             }
 
             // If token is not found in the response - resolve using the loaded data
@@ -115,7 +117,7 @@ class Authentication {
         const token = getToken.call(this);
         if (!token) {
             return Promise.reject(
-                new AuthenticationError("Identity token is not set!", "TOKEN_NOT_SET")
+                new SecurityError("Identity token is not set!", "TOKEN_NOT_SET")
             );
         }
 
@@ -125,7 +127,7 @@ class Authentication {
 
         if (errors) {
             const { message, code, data } = errors[0];
-            return Promise.reject(new AuthenticationError(message, code, data));
+            return Promise.reject(new SecurityError(message, code, data));
         }
 
         this.identity = data.me;
@@ -165,4 +167,4 @@ class Authentication {
     }
 }
 
-export default Authentication;
+export default Security;

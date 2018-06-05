@@ -9,6 +9,7 @@ export { app, document };
 
 export { resolveMiddleware, renderMiddleware } from "webiny-react-router";
 
+export { default as authenticationMiddleware } from "./middleware/authentication";
 export { default as createComponent } from "./utils/createComponent";
 export { default as Component } from "./utils/Component";
 export { default as isElementOfType } from "./utils/isElementOfType";

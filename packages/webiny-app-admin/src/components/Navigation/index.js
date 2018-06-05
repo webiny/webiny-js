@@ -12,7 +12,7 @@ class Navigation extends React.Component {
             display: window.outerWidth > 768 ? "desktop" : "mobile"
         };
 
-        this.auth = app.services.get("authentication");
+        this.auth = app.security;
         this.checkDisplayInterval = null;
     }
 

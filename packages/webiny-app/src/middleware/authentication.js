@@ -23,7 +23,7 @@ export default (options: { onNotAuthenticated: Function }) => {
      */
     return async (params: Object, next: Function, finish: Function) => {
         try {
-            params.route.identity = await app.services.get("authentication").authenticate();
+            params.route.identity = await app.security.authenticate();
         } catch (e) {
             if (e.name === "AuthenticationError") {
                 log(`${e.name}: ${e.message}`);

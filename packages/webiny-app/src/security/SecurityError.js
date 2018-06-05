@@ -1,5 +1,5 @@
 // @flow
-class AuthenticationError extends Error {
+class SecurityError extends Error {
     code: string;
     data: Object;
 
@@ -16,4 +16,4 @@ class AuthenticationError extends Error {
     }
 }
 
-export default AuthenticationError;
+export default SecurityError;

@@ -10,7 +10,7 @@ class UserMenu extends React.Component {
             user: {}
         };
 
-        this.auth = app.services.get("authentication");
+        this.auth = app.security;
     }
 
     componentDidMount() {

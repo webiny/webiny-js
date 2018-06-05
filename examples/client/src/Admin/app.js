@@ -1,8 +1,13 @@
 import React from "react";
-import { app, i18n, resolveMiddleware, renderMiddleware, Router } from "webiny-app";
+import {
+    app,
+    i18n,
+    resolveMiddleware,
+    renderMiddleware,
+    authenticationMiddleware,
+    Router
+} from "webiny-app";
 import { app as adminApp, Menu } from "webiny-app-admin";
-import { app as securityApp, authenticationMiddleware } from "webiny-app-security";
-import { app as securityAdminApp } from "webiny-app-security/lib/admin";
 import { app as cmsAdminApp } from "webiny-app-cms/lib/admin";
 import userIdentity from "./userIdentity";
 import apiConfig from "./../apiConfig";
@@ -12,19 +17,6 @@ const t = i18n.namespace(`AdminApp`);
 
 if (!app.initialized) {
     app.use(adminApp());
-    app.use(
-        securityApp({
-            authentication: {
-                cookie: "webiny-token",
-                // TODO: define strategies like on server side
-                identities: [userIdentity],
-                onLogout() {
-                    app.router.goToRoute("Login");
-                }
-            }
-        })
-    );
-    app.use(securityAdminApp({ manager: true }));
     app.use(cmsAdminApp());
 
     app.use((params, next) => {
@@ -105,6 +97,15 @@ if (!app.initialized) {
             resolveMiddleware(),
             renderMiddleware()
         ]
+    });
+
+    app.security.configure({
+        cookie: "webiny-token",
+        // TODO: define strategies like on server side
+        identities: [userIdentity],
+        onLogout() {
+            app.router.goToRoute("Login");
+        }
     });
 }
 

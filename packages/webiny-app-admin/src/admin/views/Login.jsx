@@ -115,12 +115,13 @@ class Login extends React.Component {
 Login.defaultProps = {
     overlay: false,
     async onSubmit(model) {
-        const auth = app.services.get("authentication");
+
+        const security = app.security;
         try {
             const { identity, strategy } = this.props;
 
             this.setState({ loading: true });
-            const result = await auth.login(identity, strategy, model);
+            const result = await security.login(identity, strategy, model);
             this.setState({ loading: false });
             if (result.token) {
                 return this.props.onSuccess(result);

@@ -3,6 +3,7 @@ import compose from "webiny-compose";
 import debugFactory from "debug";
 import { ServiceManager } from "webiny-service-manager";
 import { Router } from "webiny-react-router";
+import { Security } from "./../security";
 
 import registerDefaultModules from "./defaultModules";
 import ModuleLoader from "./ModuleLoader";
@@ -20,6 +21,7 @@ class App {
     modules: ModuleLoader;
     services: ServiceManager;
     router: Router;
+    security: Security;
     initialized: boolean;
     graphql: GraphQLClient;
 
@@ -28,6 +30,7 @@ class App {
         this.modules = new ModuleLoader();
         this.services = new ServiceManager();
         this.router = new Router();
+        this.security = new Security();
         this.graphql = new GraphQLClient();
         this.initialized = false;
         this.configLoader = () => Promise.resolve({});

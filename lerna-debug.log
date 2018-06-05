@@ -1,90 +1,24 @@
-0 silly input [ 'build' ]
+0 silly input [ 'build:watch' ]
 1 silly flags { _: [ 'run' ],
 1 silly flags   'reject-cycles': false,
 1 silly flags   rejectCycles: false,
-1 silly flags   parallel: true,
-1 silly flags   script: 'build',
+1 silly flags   stream: true,
+1 silly flags   scope: 'webiny-app,webiny-app-admin',
+1 silly flags   script: 'build:watch',
 1 silly flags   args: [] }
 2 verbose rootPath /Users/adrian/dev/webiny-js
-3 info version 2.11.0
-4 silly existsSync /Users/adrian/dev/webiny-js/VERSION
-5 info versioning independent
-6 silly initialize attempt
-7 silly initialize success
-8 silly execute attempt
-9 info run in 29 package(s): npm run build
-10 silly runScriptInPackageStreaming [ 'build', [], 'webiny-api-cms' ]
-11 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-api-cms' }
-12 silly runScriptInPackageStreaming [ 'build', [], 'webiny-api-security' ]
-13 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-api-security' }
-14 silly runScriptInPackageStreaming [ 'build', [], 'webiny-api' ]
-15 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-api' }
-16 silly runScriptInPackageStreaming [ 'build', [], 'webiny-app-admin' ]
-17 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-app-admin' }
-18 silly runScriptInPackageStreaming [ 'build', [], 'webiny-app-cms' ]
-19 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-app-cms' }
-20 silly runScriptInPackageStreaming [ 'build', [], 'webiny-app-security' ]
-21 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-app-security' }
-22 silly runScriptInPackageStreaming [ 'build', [], 'webiny-app-ui' ]
-23 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-app-ui' }
-24 silly runScriptInPackageStreaming [ 'build', [], 'webiny-app' ]
-25 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-app' }
-26 silly runScriptInPackageStreaming [ 'build', [], 'webiny-compose' ]
-27 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-compose' }
-28 silly runScriptInPackageStreaming [ 'build', [], 'webiny-data-extractor' ]
-29 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-data-extractor' }
-30 silly runScriptInPackageStreaming [ 'build', [], 'webiny-entity-memory' ]
-31 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-entity-memory' }
-32 silly runScriptInPackageStreaming [ 'build', [], 'webiny-entity-mysql' ]
-33 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-entity-mysql' }
-34 silly runScriptInPackageStreaming [ 'build', [], 'webiny-entity' ]
-35 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-entity' }
-36 silly runScriptInPackageStreaming [ 'build', [], 'webiny-file-storage-local' ]
-37 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-file-storage-local' }
-38 silly runScriptInPackageStreaming [ 'build', [], 'webiny-file-storage-s3' ]
-39 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-file-storage-s3' }
-40 silly runScriptInPackageStreaming [ 'build', [], 'webiny-file-storage' ]
-41 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-file-storage' }
-42 silly runScriptInPackageStreaming [ 'build', [], 'webiny-form' ]
-43 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-form' }
-44 silly runScriptInPackageStreaming [ 'build', [], 'webiny-i18n-react' ]
-45 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-i18n-react' }
-46 silly runScriptInPackageStreaming [ 'build', [], 'webiny-i18n' ]
-47 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-i18n' }
-48 silly runScriptInPackageStreaming [ 'build', [], 'webiny-jimp' ]
-49 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-jimp' }
-50 silly runScriptInPackageStreaming [ 'build', [], 'webiny-model' ]
-51 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-model' }
-52 silly runScriptInPackageStreaming [ 'build', [], 'webiny-mysql-connection' ]
-53 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-mysql-connection' }
-54 silly runScriptInPackageStreaming [ 'build', [], 'webiny-react-router' ]
-55 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-react-router' }
-56 silly runScriptInPackageStreaming [ 'build', [], 'webiny-scripts' ]
-57 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-scripts' }
-58 silly runScriptInPackageStreaming [ 'build', [], 'webiny-service-manager' ]
-59 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-service-manager' }
-60 silly runScriptInPackageStreaming [ 'build', [], 'webiny-sql-table-mysql' ]
-61 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-sql-table-mysql' }
-62 silly runScriptInPackageStreaming [ 'build', [], 'webiny-sql-table-sync' ]
-63 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-sql-table-sync' }
-64 silly runScriptInPackageStreaming [ 'build', [], 'webiny-sql-table' ]
-65 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-sql-table' }
-66 silly runScriptInPackageStreaming [ 'build', [], 'webiny-validation' ]
-67 silly getExecOpts { cwd: '/Users/adrian/dev/webiny-js/packages/webiny-validation' }
-68 error execute callback with error
-69 error Error: Command failed: yarn run build
-69 error SyntaxError: src/app.js: await is a reserved word (47:39)
-69 error   45 |
-69 error   46 |         if (argv.install) {
-69 error > 47 |             const {default: install} = await import('./install');
-69 error      |                                        ^
-69 error   48 |             await install();
-69 error   49 |         }
-69 error   50 |     }
-69 error error Command failed with exit code 1.
-69 error
-69 error $ babel src -d lib --source-maps --copy-files
-69 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
-69 error
-69 error     at Promise.all.then.arr (/Users/adrian/dev/webiny-js/node_modules/execa/index.js:236:11)
-69 error     at <anonymous>
+3 info version 2.5.1
+4 info versioning independent
+5 silly existsSync /Users/adrian/dev/webiny-js/VERSION
+6 info scope webiny-app,webiny-app-admin
+7 error EPACKAGES Errored while collecting packages and package graph
+8 error Error: No packages found that match scope 'webiny-app,webiny-app-admin'
+8 error     at Function.filterPackages (/Users/adrian/.config/yarn/global/node_modules/lerna/lib/PackageUtilities.js:217:17)
+8 error     at RunCommand.runPreparations (/Users/adrian/.config/yarn/global/node_modules/lerna/lib/Command.js:326:60)
+8 error     at /Users/adrian/.config/yarn/global/node_modules/lerna/lib/Command.js:225:18
+8 error     at new Promise (<anonymous>)
+8 error     at RunCommand.run (/Users/adrian/.config/yarn/global/node_modules/lerna/lib/Command.js:212:14)
+8 error     at Object.handler (/Users/adrian/.config/yarn/global/node_modules/lerna/lib/commands/RunCommand.js:45:88)
+8 error     at Object.self.runCommand (/Users/adrian/.config/yarn/global/node_modules/lerna/node_modules/yargs/lib/command.js:233:22)
+8 error     at Object.Yargs.self._parseArgs (/Users/adrian/.config/yarn/global/node_modules/lerna/node_modules/yargs/yargs.js:990:30)
+8 error     at Object.Yargs.self.parse (/Users/adrian/.config/yarn/global/node_modules/lerna/node_modules/yargs/yargs.js:532:23)

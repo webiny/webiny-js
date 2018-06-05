@@ -1,2 +1,0 @@
-# webiny-app-security
-
