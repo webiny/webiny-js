@@ -1,11 +1,11 @@
-import { Group } from "webiny-api";
+import { Policy } from "webiny-api";
 
 export default async () => {
-    const entity = new Group();
+    const entity = new Policy();
     entity.populate({
-        name: "Security",
-        description: "Manage low-level security and users.",
-        slug: "security",
+        name: "SecurityFullAccess",
+        description: "Full access to low-level security settings and identities management.",
+        slug: "security-full-access",
         permissions: {
             api: {
                 listEntities: {
@@ -20,7 +20,7 @@ export default async () => {
                 getSecurityUser: {
                     id: true,
                     email: true,
-                    groups: { id: true, name: true, slug: true },
+                    policies: { id: true, name: true, slug: true },
                     enabled: true,
                     savedOn: true,
                     gravatar: true,
@@ -29,7 +29,7 @@ export default async () => {
                     firstName: true,
                     updatedOn: true
                 },
-                getSecurityGroup: {
+                getSecurityPolicy: {
                     id: true,
                     name: true,
                     slug: true,
@@ -57,7 +57,7 @@ export default async () => {
                 createSecurityUser: {
                     id: true,
                     email: true,
-                    groups: { id: true, name: true, slug: true },
+                    policies: { id: true, name: true, slug: true },
                     enabled: true,
                     savedOn: true,
                     gravatar: true,
@@ -67,7 +67,7 @@ export default async () => {
                     updatedOn: true
                 },
                 deleteSecurityUser: true,
-                listSecurityGroups: {
+                listSecurityPolicies: {
                     list: {
                         id: true,
                         name: true,
@@ -83,7 +83,7 @@ export default async () => {
                 updateSecurityUser: {
                     id: true,
                     email: true,
-                    groups: { id: true, name: true, slug: true },
+                    policies: { id: true, name: true, slug: true },
                     enabled: true,
                     savedOn: true,
                     gravatar: true,
@@ -92,7 +92,7 @@ export default async () => {
                     firstName: true,
                     updatedOn: true
                 },
-                updateSecurityGroup: {
+                updateSecurityPolicy: {
                     id: true,
                     name: true,
                     slug: true,
@@ -102,21 +102,21 @@ export default async () => {
                     description: true,
                     permissions: true
                 },
-                createSecurityGroup: {
+                createSecurityPolicy: {
                     id: true,
                     name: true,
                     slug: true,
                     description: true,
                     permissions: true
                 },
-                deleteSecurityGroup: true,
+                deleteSecurityPolicy: true,
                 toggleEntityOperationPermission: {
                     entity: { name: true, classId: true, attributes: true },
-                    permissions: { id: true, group: true, other: true, owner: true }
+                    permissions: { id: true, policy: true, other: true, owner: true }
                 }
             },
             entities: {
-                Entities2SecurityGroups: {
+                Entities2SecurityPolicies: {
                     operations: { read: true, create: true, delete: true, update: true }
                 },
                 SecurityUser: {
@@ -134,7 +134,7 @@ export default async () => {
                     },
                     operations: { read: true, create: true, delete: true, update: true }
                 },
-                SecurityGroup: {
+                SecurityPolicy: {
                     attributes: {
                         id: { read: true, write: true },
                         name: { read: true, write: true },
