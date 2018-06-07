@@ -20,8 +20,6 @@ class Security {
     config: AuthenticationServiceConfig;
 
     configure(config: Object) {
-
-        console.log(config);
         const defaultConfig = {
             header: "Authorization",
             cookie: "webiny-token",
@@ -74,7 +72,10 @@ class Security {
             );
 
             // Attempt to login
-            const { data: { me }, errors } = await app.graphql.query({
+            const {
+                data: { me },
+                errors
+            } = await app.graphql.query({
                 query: strategyConfig.query,
                 variables: payload
             });
@@ -116,9 +117,7 @@ class Security {
 
         const token = getToken.call(this);
         if (!token) {
-            return Promise.reject(
-                new SecurityError("Identity token is not set!", "TOKEN_NOT_SET")
-            );
+            return Promise.reject(new SecurityError("Identity token is not set!", "TOKEN_NOT_SET"));
         }
 
         const { errors, data } = await app.graphql.query({

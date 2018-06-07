@@ -18,7 +18,7 @@ class Entity extends BaseEntity {
 
         this.attr("groups")
             .entities(Group, "entity")
-            .setUsing(Entities2Groups, "group");
+            .setUsing(Groups2Entities, "group");
 
         this.attr("savedByClassId")
             .char()
@@ -64,7 +64,8 @@ Entity.on("save", async ({ entity }) => {
         return;
     }
 
-    const { identity } = app.getRequest();
+    const identity = app.services.get("security").getIdentity();
+
     entity.savedBy = identity;
     if (entity.isExisting()) {
         entity.updatedBy = identity;
@@ -73,6 +74,90 @@ Entity.on("save", async ({ entity }) => {
     }
 });
 
+export { Entity };
+export default Entity;
+
+/**
+ * ************************************************ Policy entities ************************************************
+ */
+
+class Policy extends Entity {
+    constructor() {
+        super();
+        this.attr("name")
+            .char()
+            .setValidators("required");
+        this.attr("slug")
+            .char()
+            .setValidators("required");
+        this.attr("description")
+            .char()
+            .setValidators("required");
+
+        this.attr("permissions")
+            .object()
+            .setValidators()
+            .setValue({ entities: {}, api: {} });
+    }
+
+    static async getDefaultPolicies() {
+        const group = await Group.getDefaultGroup();
+        return group.policies;
+    }
+
+    static async getDefaultPoliciesPermissions() {
+        const defaultPermissions = { entities: {}, api: {} };
+
+        const defaultPolicies = await Policy.getDefaultPolicies();
+        for (let i = 0; i < defaultPolicies.length; i++) {
+            const { entities, api } = defaultPolicies[i].permissions;
+
+            for (let name in entities) {
+                if (!defaultPermissions.entities[name]) {
+                    defaultPermissions.entities[name] = [];
+                }
+                defaultPermissions.entities[name].push(entities[name]);
+            }
+
+            for (let name in api) {
+                if (!defaultPermissions.api[name]) {
+                    defaultPermissions.api[name] = [];
+                }
+                defaultPermissions.api[name].push(api[name]);
+            }
+        }
+
+        return defaultPermissions;
+    }
+}
+
+Policy.classId = "SecurityPolicy";
+Policy.tableName = "Security_Policies";
+
+Policy.on("delete", async ({ entity }) => {
+    const inUse = await Policies2Entities.count({ query: { policy: entity.id } });
+    if (inUse) {
+        throw Error("Cannot delete policy, already in use.");
+    }
+});
+
+class Policies2Entities extends Entity {
+    constructor() {
+        super();
+        this.attr("entity").entity([], { classIdAttribute: "entityClassId" });
+        this.attr("entityClassId").char();
+        this.attr("policy").entity(Policy);
+    }
+}
+
+Policies2Entities.classId = "SecurityPolicies2Entities";
+Policies2Entities.tableName = "Security_Policies2Entities";
+
+export { Policies2Entities, Policy };
+
+/**
+ * ************************************************ Groups entities ************************************************
+ */
 class Group extends Entity {
     constructor() {
         super();
@@ -85,10 +170,10 @@ class Group extends Entity {
         this.attr("description")
             .char()
             .setValidators("required");
-        this.attr("permissions")
-            .object()
-            .setValidators()
-            .setValue({ entities: {}, api: {} });
+
+        this.attr("policies")
+            .entities(Policy, "entity")
+            .setUsing(Policies2Entities, "policy");
 
         this.on("delete", () => {
             if (this.slug === "default") {
@@ -96,19 +181,23 @@ class Group extends Entity {
             }
         });
     }
+
+    static async getDefaultGroup() {
+        return Group.findOne({ query: { slug: "default" } });
+    }
 }
 
 Group.classId = "SecurityGroup";
 Group.tableName = "Security_Groups";
 
 Group.on("delete", async ({ entity }) => {
-    const inUse = await Entities2Groups.count({ query: { group: entity.id } });
+    const inUse = await Groups2Entities.count({ query: { group: entity.id } });
     if (inUse) {
         throw Error("Cannot delete group, already in use.");
     }
 });
 
-class Entities2Groups extends Entity {
+class Groups2Entities extends Entity {
     constructor() {
         super();
         this.attr("entity").entity([], { classIdAttribute: "entityClassId" });
@@ -117,8 +206,7 @@ class Entities2Groups extends Entity {
     }
 }
 
-Entities2Groups.classId = "Entities2SecurityGroups";
-Entities2Groups.tableName = "Entities2SecurityGroups";
+Groups2Entities.classId = "SecurityGroups2Entities";
+Groups2Entities.tableName = "Security_Groups2Entities";
 
-export { Group, Entities2Groups, Entity };
-export default Entity;
+export { Group, Groups2Entities };

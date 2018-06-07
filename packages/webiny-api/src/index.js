@@ -10,11 +10,12 @@ export {
     File,
     Image,
     Settings,
-    SecuritySettings,
     Group,
+    Groups2Entities,
+    Policy,
+    Policies2Entities,
     User,
-    Identity,
-    Entities2Groups
+    Identity
 } from "./entities";
 export { default as MySQLTable } from "./mysql";
 

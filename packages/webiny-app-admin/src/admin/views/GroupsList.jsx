@@ -1,8 +1,5 @@
 import React, { Fragment } from "react";
 
-// import ExportModal from "./Modal/ExportModal";
-// import ImportModal from "./Modal/ImportModal";
-
 import { i18n, createComponent } from "webiny-app";
 const t = i18n.namespace("Security.GroupsList");
 

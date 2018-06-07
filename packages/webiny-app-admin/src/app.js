@@ -113,10 +113,13 @@ export default () => {
 
             app.services.get("menu").add(
                 <Menu label={t`Security`} icon="user-secret">
-                    <Menu label={t`User Management`} group={securityManageUsers}>
-                        <Menu label={t`Entities`} route="Entities.List" order={1} />
-                        <Menu label={t`Groups`} route="Groups.List" order={2} />
+                    <Menu label={t`Identities`} group={securityManageUsers}>
                         <Menu label={t`Users`} route="Users.List" order={4} />
+                        <Menu label={t`API Tokens`} route="Users.List" order={4} />
+                    </Menu>
+                    <Menu label={t`User Management`} group={securityManageUsers}>
+                        <Menu label={t`Groups`} route="Groups.List" order={2} />
+                        <Menu label={t`Policies`} route="Policies.List" order={2} />
                     </Menu>
                 </Menu>
             );
@@ -170,10 +173,18 @@ export default () => {
             });
 
             app.router.addRoute({
-                name: "Entities.List",
-                path: "/entities",
-                component: () => import("./admin/views/EntitiesList").then(m => m.default),
-                title: "Security - Entities",
+                name: "Policies.Edit",
+                path: "/policies/:id",
+                component: () => import("./admin/views/PoliciesForm").then(m => m.default),
+                title: "Security - Edit Policy",
+                group: securityManageUsers
+            });
+
+            app.router.addRoute({
+                name: "Policies.List",
+                path: "/policies",
+                component: () => import("./admin/views/PoliciesList").then(m => m.default),
+                title: "Security - Policies",
                 group: securityManageUsers
             });
 

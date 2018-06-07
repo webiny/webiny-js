@@ -1,4 +1,4 @@
-import { Policy } from "webiny-api";
+import { Policy } from "./../../";
 
 export default async () => {
     const entity = new Policy();
@@ -117,50 +117,13 @@ export default async () => {
             },
             entities: {
                 Entities2SecurityPolicies: {
-                    operations: { read: true, create: true, delete: true, update: true }
+                    other: { operations: { read: true, create: true, delete: true, update: true } }
                 },
                 SecurityUser: {
-                    attributes: {
-                        id: { read: true, write: true },
-                        email: { read: true, write: true },
-                        enabled: { read: true, write: true },
-                        savedOn: { read: true },
-                        gravatar: { read: true, write: true },
-                        lastName: { read: true, write: true },
-                        password: { read: true, write: true },
-                        createdOn: { read: true },
-                        firstName: { read: true, write: true },
-                        updatedOn: { read: true }
-                    },
-                    operations: { read: true, create: true, delete: true, update: true }
+                    other: { operations: { read: true, create: true, delete: true, update: true } }
                 },
                 SecurityPolicy: {
-                    attributes: {
-                        id: { read: true, write: true },
-                        name: { read: true, write: true },
-                        slug: { read: true, write: true },
-                        deleted: { read: true, write: true },
-                        savedBy: { read: true, write: true },
-                        savedOn: { read: true, write: true },
-                        createdBy: { read: true, write: true },
-                        createdOn: { read: true, write: true },
-                        updatedBy: { read: true, write: true },
-                        updatedOn: { read: true, write: true },
-                        description: { read: true, write: true },
-                        permissions: { read: true, write: true },
-                        savedByClassId: { read: true, write: true },
-                        createdByClassId: { read: true, write: true },
-                        updatedByClassId: { read: true, write: true }
-                    },
-                    operations: { read: true, create: true, delete: true, update: true }
-                },
-                SecuritySettings: {
-                    attributes: {
-                        id: { read: true },
-                        key: { read: true, write: true },
-                        data: { read: true, write: true }
-                    },
-                    operations: { read: true, update: true }
+                    other: { operations: { read: true, create: true, delete: true, update: true } }
                 }
             }
         }

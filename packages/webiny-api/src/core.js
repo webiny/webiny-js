@@ -5,7 +5,16 @@ import { GraphQLUnionType } from "graphql";
 import createLoginQueries from "./security/graphql/createLoginQueries";
 import createListEntitiesQueries from "./security/graphql/createListEntitiesQueries";
 import convertToGraphQL from "./attributes/convertToGraphQL";
-import { Entity, File, Image, Group, Entities2Groups, SecuritySettings, User } from "./index";
+import {
+    Entity,
+    File,
+    Image,
+    Group,
+    Groups2Entities,
+    Policy,
+    Policies2Entities,
+    User
+} from "./index";
 
 // Attributes registration functions
 import registerBufferAttribute from "./attributes/registerBufferAttribute";
@@ -45,9 +54,10 @@ export default () => {
                 schema.addEntity(File);
                 schema.addEntity(Image);
                 schema.addEntity(Group);
-                schema.addEntity(Entities2Groups);
+                schema.addEntity(Groups2Entities);
+                schema.addEntity(Policy);
+                schema.addEntity(Policies2Entities);
                 schema.addEntity(User);
-                schema.addEntity(SecuritySettings);
 
                 schema.addType({
                     meta: {
@@ -75,9 +85,10 @@ export default () => {
             app.entities.addEntityClass(File);
             app.entities.addEntityClass(Image);
             app.entities.addEntityClass(Group);
-            app.entities.addEntityClass(Entities2Groups);
+            app.entities.addEntityClass(Groups2Entities);
+            app.entities.addEntityClass(Policy);
+            app.entities.addEntityClass(Policies2Entities);
             app.entities.addEntityClass(User);
-            app.entities.addEntityClass(SecuritySettings);
 
             next();
         },

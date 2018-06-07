@@ -39,7 +39,7 @@ class UsersForm extends React.Component {
                 <FormData
                     entity="SecurityUser"
                     withRouter
-                    fields="id firstName lastName enabled email groups { id name }"
+                    fields="id firstName lastName enabled email groups { id name } policies { id name }"
                     onSubmitSuccess="Users.List"
                     onCancel="Users.List"
                     defaultModel={{ groups: [] }}
@@ -122,6 +122,39 @@ class UsersForm extends React.Component {
                                                                                 this.setState(
                                                                                     state => {
                                                                                         state.searchQuery.group = query;
+                                                                                        return state;
+                                                                                    }
+                                                                                );
+                                                                            }}
+                                                                        />
+                                                                    </Bind>
+                                                                )}
+                                                            </OptionsData>
+                                                        </Grid.Col>
+                                                    </Grid.Row>
+                                                    <Grid.Row>
+                                                        <Grid.Col all={12}>
+                                                            <OptionsData
+                                                                entity="SecurityPolicy"
+                                                                fields="id name"
+                                                                labelField="name"
+                                                                perPage={10}
+                                                                search={{
+                                                                    fields: ["name"],
+                                                                    query: this.state.searchQuery
+                                                                        .policy
+                                                                }}
+                                                            >
+                                                                {({ options }) => (
+                                                                    <Bind>
+                                                                        <AutoCompleteList
+                                                                            options={options}
+                                                                            label={t`Policies`}
+                                                                            name="policies"
+                                                                            onSearch={query => {
+                                                                                this.setState(
+                                                                                    state => {
+                                                                                        state.searchQuery.policy = query;
                                                                                         return state;
                                                                                     }
                                                                                 );

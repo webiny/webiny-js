@@ -54,8 +54,8 @@ export default (app, config, schema) => {
 
     schema.query["getIdentity"] = {
         type: schema.getType("IdentityType"),
-        resolve(root, args, context) {
-            return context.identity;
+        resolve() {
+            return app.services.get("security").getIdentity();
         }
     };
 
@@ -64,20 +64,22 @@ export default (app, config, schema) => {
         args: {
             data: { type: new GraphQLNonNull(GraphQLJSON) }
         },
-        async resolve(root, args, context) {
-            if (!context.identity) {
+        async resolve(root, args) {
+            const identity = app.services.get("security").getIdentity();
+
+            if (!identity) {
                 throw Error("Identity not found.");
             }
 
             try {
-                await context.identity.populate(args.data).save();
+                await identity.populate(args.data).save();
             } catch (e) {
                 if (e instanceof ModelError && e.code === ModelError.INVALID_ATTRIBUTES) {
                     throw InvalidAttributesError.from(e);
                 }
                 throw e;
             }
-            return context.identity;
+            return identity;
         }
     };
 };

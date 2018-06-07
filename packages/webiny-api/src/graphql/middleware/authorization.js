@@ -1,5 +1,5 @@
 // @flow
-import { Group } from "webiny-api";
+import { app } from "./../../";
 import _ from "lodash";
 
 const checkScope = (selectionSet, scopesList, parentFields = "") => {
@@ -36,26 +36,20 @@ const checkScope = (selectionSet, scopesList, parentFields = "") => {
  *
  * @param {Api} params.app
  */
-export default async params => {
-    const identity = params.req.identity;
-
-    let permissions = {};
-    if (identity) {
-        // Scope received from identity already possesses 'anonymous' permission's scope.
-        permissions = await identity.apiPermissions;
-    }
-
-    const anonymousGroup = await Group.findOne({ query: { slug: "default" } });
-    const anonymousPermissions = await anonymousGroup.get("permissions.api", {});
-
-    for (let operationName in anonymousPermissions) {
-        if (!permissions[operationName]) {
-            permissions[operationName] = [];
-        }
-        permissions[operationName].push(anonymousPermissions[operationName]);
-    }
-
+export default async (params: Object) => {
+    // Let's allow IntrospectionQuery to be accessed.
     if (_.get(params.graphql, "documentAST.definitions.0.name.value") === "IntrospectionQuery") {
+        return;
+    }
+
+    const security = app.services.get("security");
+    const permissions = security.getIdentity(true);
+
+    console.log(JSON.stringify(permissions, null, 2));
+
+    // If all enabled (eg. super-admin), return immediately, no need to do further checks.
+    const superAdminPermissions = _.get(permissions, "api.*", []);
+    if (superAdminPermissions.includes(true)) {
         return;
     }
 
@@ -67,7 +61,7 @@ export default async params => {
             if (selection.kind === "Field") {
                 const fieldName = selection.name.value;
 
-                const fieldScopes = permissions[fieldName] || [];
+                const fieldScopes = _.get(permissions, `api.${fieldName}`) || [];
 
                 let hasAccess = false;
                 fieldScopes.forEach(fieldScope => {

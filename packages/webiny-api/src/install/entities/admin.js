@@ -1,15 +1,15 @@
-import { User, Group } from "webiny-api";
+import { User, Policy } from "./../..";
 
 export default async () => {
     const entity = new User();
-    const group = await Group.findOne({ query: { slug: "security" } });
+    const superAdminPolicy = await Policy.findOne({ query: { slug: "super-admin" } });
 
     entity.populate({
         firstName: "John",
         lastName: "Doe",
         password: "12345678",
         email: "admin@webiny.com",
-        groups: [group]
+        policies: [superAdminPolicy]
     });
 
     await entity.save();
