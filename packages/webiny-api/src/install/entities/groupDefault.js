@@ -4,7 +4,8 @@ export default async () => {
     const entity = new Group();
     entity.populate({
         name: "Default",
-        description: "A system group, assigned to Webiny API.",
+        description:
+            "Default group - automatically assigned both authenticated and anonymous identities.",
         slug: "default"
     });
 

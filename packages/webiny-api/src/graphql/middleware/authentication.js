@@ -14,7 +14,7 @@ export default async (params: Object) => {
 
     // Let's merge default permissions.
     const security = await app.services.get("security");
-    req.security.permissions = security.getDefaultPermissions();
+    req.security.permissions = _.cloneDeep(security.getDefaultPermissions());
 
     const token =
         typeof app.config.security.header === "function"

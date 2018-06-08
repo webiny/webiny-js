@@ -173,6 +173,14 @@ export default () => {
             });
 
             app.router.addRoute({
+                name: "Policies.Create",
+                path: "/policies/new",
+                component: () => import("./admin/views/PoliciesForm").then(m => m.default),
+                title: "Security - Create Policy",
+                group: securityManageUsers
+            });
+
+            app.router.addRoute({
                 name: "Policies.Edit",
                 path: "/policies/:id",
                 component: () => import("./admin/views/PoliciesForm").then(m => m.default),

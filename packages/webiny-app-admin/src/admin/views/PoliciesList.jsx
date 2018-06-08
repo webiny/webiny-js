@@ -110,13 +110,6 @@ class PoliciesList extends React.Component {
                                                             />
                                                             <Table.Actions>
                                                                 <Table.EditAction route="Policies.Edit" />
-                                                                <Table.Action
-                                                                    label={t`Export`}
-                                                                    icon="download"
-                                                                    onClick={showView(
-                                                                        "exportModal"
-                                                                    )}
-                                                                />
                                                                 <Table.DeleteAction />
                                                             </Table.Actions>
                                                         </Table.Row>

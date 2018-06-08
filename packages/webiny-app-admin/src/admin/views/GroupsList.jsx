@@ -41,13 +41,6 @@ class GroupsList extends React.Component {
                                             <Icon icon="plus-circle" />
                                             {t`Create group`}
                                         </Link>
-
-                                       {/* <Button
-                                            type="secondary"
-                                            onClick={showView("importModal")}
-                                            icon="upload"
-                                            label={t`Import`}
-                                        />*/}
                                     </ButtonGroup>
                                 </View.Header>
                                 <View.Body>
@@ -109,13 +102,6 @@ class GroupsList extends React.Component {
                                                             />
                                                             <Table.Actions>
                                                                 <Table.EditAction route="Groups.Edit" />
-                                                                <Table.Action
-                                                                    label={t`Export`}
-                                                                    icon="download"
-                                                                    onClick={showView(
-                                                                        "exportModal"
-                                                                    )}
-                                                                />
                                                                 <Table.DeleteAction />
                                                             </Table.Actions>
                                                         </Table.Row>
@@ -129,29 +115,6 @@ class GroupsList extends React.Component {
                             </View.List>
                         )}
                     </ViewSwitcher.View>
-                    {/*  <ViewSwitcher.View name="exportModal" modal>
-                        {({ data: { data } }) => (
-                            <ExportModal
-                                name="exportModal"
-                                data={data}
-                                map="permissions"
-                                api="/entities/webiny/user-groups"
-                                fields="name,slug,description,permissions.slug"
-                                label={t`Group`}
-                            />
-                        )}
-                    </ViewSwitcher.View>
-
-                    <ViewSwitcher.View view="importModal" modal>
-                        {() => (
-                            <ImportModal
-                                name="importModal"
-                                api="/entities/webiny/user-groups"
-                                label={t`Group`}
-                                onImported={() => this.list.loadData()}
-                            />
-                        )}
-                    </ViewSwitcher.View>*/}
                 </ViewSwitcher>
             </AdminLayout>
         );

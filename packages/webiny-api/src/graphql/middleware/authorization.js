@@ -45,8 +45,6 @@ export default async (params: Object) => {
     const security = app.services.get("security");
     const permissions = security.getIdentity(true);
 
-    console.log(JSON.stringify(permissions, null, 2));
-
     // If all enabled (eg. super-admin), return immediately, no need to do further checks.
     const superAdminPermissions = _.get(permissions, "api.*", []);
     if (superAdminPermissions.includes(true)) {

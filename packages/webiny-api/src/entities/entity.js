@@ -1,5 +1,5 @@
 // @flow
-import { app } from "webiny-api";
+import { app } from "./..";
 import { Entity as BaseEntity } from "webiny-entity";
 
 import RequestEntityPool from "./RequestEntityPool";
