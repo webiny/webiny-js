@@ -29,7 +29,9 @@ export default (app, config, schema) => {
                 type: createLoginDataForIdentity(Identity, schema),
                 args: args(),
                 async resolve(root, args) {
-                    const identity = await security.authenticate(args, Identity, strategy);
+                    const identity = await security.sudo(() => {
+                        return security.authenticate(args, Identity, strategy);
+                    });
 
                     // Set identified identity as current.
                     security.setIdentity(identity);

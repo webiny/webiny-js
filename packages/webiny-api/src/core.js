@@ -6,6 +6,7 @@ import createLoginQueries from "./security/graphql/createLoginQueries";
 import createListEntitiesQueries from "./security/graphql/createListEntitiesQueries";
 import convertToGraphQL from "./attributes/convertToGraphQL";
 import {
+    ApiToken,
     Entity,
     File,
     Image,
@@ -51,6 +52,7 @@ export default () => {
 
             app.graphql.schema((schema: Schema) => {
                 schema.addAttributeConverter(convertToGraphQL);
+                schema.addEntity(ApiToken);
                 schema.addEntity(File);
                 schema.addEntity(Image);
                 schema.addEntity(Group);
@@ -82,6 +84,7 @@ export default () => {
                 createListEntitiesQueries(app, app.config, schema);
             });
 
+            app.entities.addEntityClass(ApiToken);
             app.entities.addEntityClass(File);
             app.entities.addEntityClass(Image);
             app.entities.addEntityClass(Group);

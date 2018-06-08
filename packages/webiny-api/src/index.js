@@ -15,6 +15,7 @@ export {
     Policy,
     Policies2Entities,
     User,
+    ApiToken,
     Identity
 } from "./entities";
 export { default as MySQLTable } from "./mysql";

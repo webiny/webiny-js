@@ -25,13 +25,14 @@ export default async (params: Object) => {
         return;
     }
 
-    // Assigns identity retrieved from received token.
-    const identity = await security.verifyToken(token);
+    await security.sudo(async () => {
+        // Assigns identity retrieved from received token.
+        const identity = await security.verifyToken(token);
 
-    // If we have identity, let's merge its permissions and default ones.
-    if (identity) {
-        req.security.identity = identity;
-        await security.sudo(async () => {
+        // If we have identity, let's merge its permissions and default ones.
+        if (identity) {
+            req.security.identity = identity;
+
             let identityPolicies = [];
 
             // Policies assigned via groups.
@@ -64,6 +65,6 @@ export default async (params: Object) => {
                     );
                 }
             });
-        });
-    }
+        }
+    });
 };

@@ -17,6 +17,15 @@ describe("maxLength test", () => {
         ]);
     });
 
+    it("should pass - string is required and also has to be less than 20 characters long", () => {
+        return Promise.all([
+            validation
+                .validate("12345678901234567890", "required,maxLength:20")
+                .should.become(true),
+            validation.validate("abcde", "required,maxLength:20").should.become(true)
+        ]);
+    });
+
     it("should fail - array has more than 5 elements", () => {
         return validation.validate([1, 2, 3, 4, 5, 6], "maxLength:5").should.be.rejected;
     });

@@ -31,24 +31,12 @@ class PoliciesList extends React.Component {
                             <View.List>
                                 <View.Header
                                     title={t`Security - Policies`}
-                                    description={
-                                        <span>
-                                            {t`Policies are a simple way to control what permissions certain users have.`}
-                                        </span>
-                                    }
                                 >
                                     <ButtonGroup>
                                         <Link type="primary" route="Policies.Create">
                                             <Icon icon="plus-circle" />
                                             {t`Create policy`}
                                         </Link>
-
-                                       {/* <Button
-                                            type="secondary"
-                                            onClick={showView("importModal")}
-                                            icon="upload"
-                                            label={t`Import`}
-                                        />*/}
                                     </ButtonGroup>
                                 </View.Header>
                                 <View.Body>

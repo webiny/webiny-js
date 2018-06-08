@@ -3,9 +3,9 @@ import React, { Fragment } from "react";
 import _ from "lodash";
 import { i18n, createComponent } from "webiny-app";
 
-const t = i18n.namespace("Security.UsersList");
+const t = i18n.namespace("Security.ApiTokensList");
 
-class UsersList extends React.Component {
+class ApiTokensList extends React.Component {
     constructor(props) {
         super(props);
         this.renderFullNameField = this.renderFullNameField.bind(this);
@@ -27,55 +27,31 @@ class UsersList extends React.Component {
         const { View, List, ListData, Link, Icon, Input, AdminLayout, Loader } = this.props.modules;
         const Table = List.Table;
 
-        const groups = <Link route="Groups.List">{t`Groups`}</Link>;
-        const permissions = <Link route="Permissions.List">{t`Permissions`}</Link>;
-
         return (
             <AdminLayout>
                 <View.List>
-                    <View.Header
-                        title={t`Security - Users`}
-                    >
-                        <Link type="primary" route="Users.Create" align="right">
+                    <View.Header title={t`Security - API Tokens`}>
+                        <Link type="primary" route="ApiTokens.Create" align="right">
                             <Icon icon="plus-circle" />
-                            {t`Create user`}
+                            {t`Create API Token`}
                         </Link>
                     </View.Header>
                     <View.Body>
                         <ListData
                             withRouter
-                            entity="SecurityUser"
-                            fields="id enabled firstName lastName email createdOn gravatar"
-                            search={{ fields: ["firstName", "lastName", "email"] }}
+                            entity="SecurityApiToken"
+                            fields="id enabled name createdOn"
                         >
                             {({ loading, ...listProps }) => (
                                 <Fragment>
                                     {loading && <Loader />}
                                     <List {...listProps}>
-                                        <List.FormFilters>
-                                            {({ apply }) => (
-                                                <Input
-                                                    name="search.query"
-                                                    placeholder={t`Search by name or email`}
-                                                    onEnter={apply()}
-                                                />
-                                            )}
-                                        </List.FormFilters>
                                         <Table>
                                             <Table.Row>
-                                                <Table.GravatarField name="gravatar" />
                                                 <Table.Field
-                                                    name="firstName"
-                                                    label={t`First Name`}
-                                                    sort="firstName"
-                                                    route="Users.Edit"
-                                                >
-                                                    {this.renderFullNameField}
-                                                </Table.Field>
-                                                <Table.Field
-                                                    name="email"
-                                                    sort="email"
-                                                    label={t`Email`}
+                                                    name="name"
+                                                    label={t`Name`}
+                                                    sort="name"
                                                 />
                                                 <Table.ToggleField
                                                     name="enabled"
@@ -86,7 +62,7 @@ class UsersList extends React.Component {
                                                         if (value) {
                                                             return null;
                                                         }
-                                                        return t`This will disable user's account and prevent him from logging in!`;
+                                                        return t`This will disable API token's access.`;
                                                     }}
                                                 />
                                                 <Table.DateField
@@ -95,7 +71,7 @@ class UsersList extends React.Component {
                                                     sort="createdOn"
                                                 />
                                                 <Table.Actions>
-                                                    <Table.EditAction route="Users.Edit" />
+                                                    <Table.EditAction route="ApiTokens.Edit" />
                                                     <Table.DeleteAction />
                                                 </Table.Actions>
                                             </Table.Row>
@@ -113,7 +89,7 @@ class UsersList extends React.Component {
     }
 }
 
-export default createComponent(UsersList, {
+export default createComponent(ApiTokensList, {
     modules: [
         { AdminLayout: "Admin.Layout" },
         "View",

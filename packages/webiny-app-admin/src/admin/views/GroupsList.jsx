@@ -30,11 +30,6 @@ class GroupsList extends React.Component {
                             <View.List>
                                 <View.Header
                                     title={t`Security - Groups`}
-                                    description={
-                                        <span>
-                                            {t`Groups are a simple way to control what permissions certain users have.`}
-                                        </span>
-                                    }
                                 >
                                     <ButtonGroup>
                                         <Link type="primary" route="Groups.Create">

@@ -21,7 +21,8 @@ export default async () => {
                     },
                     expiresOn: true
                 }
-            }
+            },
+            entities: { SecurityUser: { other: { operations: { read: true } } } }
         }
     });
 

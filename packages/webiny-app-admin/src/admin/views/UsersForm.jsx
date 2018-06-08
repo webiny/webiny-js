@@ -1,5 +1,5 @@
 import React from "react";
-import { app, i18n, createComponent } from "webiny-app";
+import {app, i18n, createComponent} from "webiny-app";
 
 const t = i18n.namespace("Security.UsersForm");
 
@@ -8,10 +8,7 @@ class UsersForm extends React.Component {
         super();
 
         this.state = {
-            searchQuery: {
-                group: {},
-                groupGroup: {}
-            }
+            searchQuery: {}
         };
     }
 
@@ -42,7 +39,7 @@ class UsersForm extends React.Component {
                     fields="id firstName lastName enabled email groups { id name } policies { id name }"
                     onSubmitSuccess="Users.List"
                     onCancel="Users.List"
-                    defaultModel={{ groups: [] }}
+                    defaultModel={{groups: [], policies: [], enabled: true}}
                     onSuccessMessage={data => (
                         <span>
                             {t`User {user} was saved successfully!`({
@@ -51,9 +48,9 @@ class UsersForm extends React.Component {
                         </span>
                     )}
                 >
-                    {({ model, onSubmit, loading, invalidFields, error }) => (
+                    {({model, onSubmit, loading, invalidFields, error}) => (
                         <Form model={model} onSubmit={onSubmit} invalidFields={invalidFields}>
-                            {({ model, form, Bind }) => {
+                            {({model, form, Bind}) => {
                                 return (
                                     <View.Form>
                                         <View.Header
@@ -65,14 +62,14 @@ class UsersForm extends React.Component {
                                         />
                                         {error && (
                                             <View.Error>
-                                                <FormError error={error} />
+                                                <FormError error={error}/>
                                             </View.Error>
                                         )}
                                         <View.Body>
-                                            {loading && <Loader />}
+                                            {loading && <Loader/>}
                                             <Grid.Row>
                                                 <Grid.Col all={6}>
-                                                    <Section title={t`Info`} />
+                                                    <Section title={t`Info`}/>
                                                     <Grid.Row>
                                                         <Grid.Col all={12}>
                                                             <Bind>
@@ -112,7 +109,7 @@ class UsersForm extends React.Component {
                                                                         .group
                                                                 }}
                                                             >
-                                                                {({ options }) => (
+                                                                {({options}) => (
                                                                     <Bind>
                                                                         <AutoCompleteList
                                                                             options={options}
@@ -145,7 +142,7 @@ class UsersForm extends React.Component {
                                                                         .policy
                                                                 }}
                                                             >
-                                                                {({ options }) => (
+                                                                {({options}) => (
                                                                     <Bind>
                                                                         <AutoCompleteList
                                                                             options={options}
@@ -167,7 +164,7 @@ class UsersForm extends React.Component {
                                                     </Grid.Row>
                                                 </Grid.Col>
                                                 <Grid.Col all={6}>
-                                                    <Section title={t`Password`} />
+                                                    <Section title={t`Password`}/>
                                                     <Grid.Row>
                                                         <Grid.Col all={12}>
                                                             <Bind>
@@ -197,7 +194,7 @@ class UsersForm extends React.Component {
                                             <Grid.Row>
                                                 <Grid.Col all={12}>
                                                     <Bind>
-                                                        <Switch label={t`Enabled`} name="enabled" />
+                                                        <Switch label={t`Enabled`} name="enabled"/>
                                                     </Bind>
                                                 </Grid.Col>
                                             </Grid.Row>
