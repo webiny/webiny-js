@@ -20,9 +20,18 @@ export default (app, config, schema) => {
     const security = app.services.get("security");
     // For each Identity...
     config.security.identities.map(({ identity: Identity, authenticate }) => {
+        // If identity does not need an authentication mechanism (eg. API key), continue with next identity.
+        if (!authenticate) {
+            return true;
+        }
+
         // For each strategy...
         for (let i = 0; i < authenticate.length; i++) {
             const { strategy, expiresOn, field } = authenticate[i];
+
+            if (!field) {
+                continue;
+            }
 
             const { args } = security.config.strategies[strategy];
             schema.query[field] = {

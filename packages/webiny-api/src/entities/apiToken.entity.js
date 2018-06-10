@@ -1,6 +1,6 @@
 // @flow
 import Identity from "./identity.entity";
-import md5 from "md5";
+import { app } from "./..";
 
 class ApiToken extends Identity {
     constructor() {
@@ -9,18 +9,16 @@ class ApiToken extends Identity {
         this.attr("description").char();
         this.attr("token")
             .char()
-            .setValidators("required,maxLength:100")
-            .setOnce();
+            .setValidators();
 
-        this.attr("enabled")
-            .boolean()
-            .setValue(true);
+        this.on("beforeUpdate", async () => {
+            if (!this.token) {
+                // 2147483647 = maximum value of unix timestamp (year 2038).
+                this.token = await app.services.get("security").createToken(this, 2147483647);
+            }
+        });
     }
 }
-
-ApiToken.on("beforeCreate", ({ entity }) => {
-    entity.token = md5(new Date());
-});
 
 ApiToken.classId = "SecurityApiToken";
 ApiToken.tableName = "Security_ApiTokens";

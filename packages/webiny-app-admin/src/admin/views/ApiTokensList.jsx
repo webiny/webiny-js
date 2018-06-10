@@ -40,7 +40,7 @@ class ApiTokensList extends React.Component {
                         <ListData
                             withRouter
                             entity="SecurityApiToken"
-                            fields="id enabled name createdOn"
+                            fields="id name createdOn"
                         >
                             {({ loading, ...listProps }) => (
                                 <Fragment>
@@ -52,18 +52,6 @@ class ApiTokensList extends React.Component {
                                                     name="name"
                                                     label={t`Name`}
                                                     sort="name"
-                                                />
-                                                <Table.ToggleField
-                                                    name="enabled"
-                                                    label={t`Status`}
-                                                    sort="enabled"
-                                                    align="center"
-                                                    message={({ value }) => {
-                                                        if (value) {
-                                                            return null;
-                                                        }
-                                                        return t`This will disable API token's access.`;
-                                                    }}
                                                 />
                                                 <Table.DateField
                                                     name="createdOn"

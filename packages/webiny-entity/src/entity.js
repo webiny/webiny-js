@@ -285,9 +285,9 @@ class Entity {
             const events = params.events || {};
             events.save !== false && (await this.emit("save", { params }));
             if (existing) {
-                events.create !== false && (await this.emit("update", { params }));
+                events.update !== false && (await this.emit("update", { params }));
             } else {
-                events.update !== false && (await this.emit("create", { params }));
+                events.create !== false && (await this.emit("create", { params }));
             }
 
             params.validation !== false && (await this.validate());

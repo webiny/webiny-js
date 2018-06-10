@@ -1,4 +1,13 @@
-import { app, File, Image, User, JwtToken, credentialsStrategy } from "webiny-api";
+import {
+    app,
+    File,
+    Image,
+    User,
+    ApiToken,
+    JwtToken,
+    credentialsStrategy,
+    apiTokenStrategy
+} from "webiny-api";
 
 import { MySQLDriver } from "webiny-entity-mysql";
 import imageProcessor from "webiny-jimp";
@@ -60,6 +69,9 @@ export default async () => {
                             field: "loginSecurityUser"
                         }
                     ]
+                },
+                {
+                    identity: ApiToken
                 }
             ]
         }

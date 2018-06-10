@@ -1,5 +1,6 @@
 import React, { Fragment } from "react";
-
+import ExportModal from "./PoliciesList/ExportModal";
+import ImportModal from "./PoliciesList/ImportModal";
 import { i18n, createComponent } from "webiny-app";
 const t = i18n.namespace("Security.PoliciesList");
 
@@ -20,7 +21,6 @@ class PoliciesList extends React.Component {
             Loader
         } = this.props.modules;
 
-
         const Table = List.Table;
 
         return (
@@ -29,18 +29,24 @@ class PoliciesList extends React.Component {
                     <ViewSwitcher.View name="listView" defaultView>
                         {({ showView }) => (
                             <View.List>
-                                <View.Header
-                                    title={t`Security - Policies`}
-                                >
+                                <View.Header title={t`Security - Policies`}>
                                     <ButtonGroup>
                                         <Link type="primary" route="Policies.Create">
                                             <Icon icon="plus-circle" />
                                             {t`Create policy`}
                                         </Link>
+
+                                        <Button
+                                            type="secondary"
+                                            onClick={showView("importModal")}
+                                            icon="download"
+                                            label={t`Import`}
+                                        />
                                     </ButtonGroup>
                                 </View.Header>
                                 <View.Body>
                                     <ListData
+                                        onReady={actions => (this.list = actions)}
                                         withRouter
                                         entity="SecurityPolicy"
                                         fields="id name slug description createdOn"
@@ -98,6 +104,13 @@ class PoliciesList extends React.Component {
                                                             />
                                                             <Table.Actions>
                                                                 <Table.EditAction route="Policies.Edit" />
+                                                                <Table.Action
+                                                                    label={t`Export`}
+                                                                    icon="download"
+                                                                    onClick={showView(
+                                                                        "exportModal"
+                                                                    )}
+                                                                />
                                                                 <Table.DeleteAction />
                                                             </Table.Actions>
                                                         </Table.Row>
@@ -109,6 +122,18 @@ class PoliciesList extends React.Component {
                                     </ListData>
                                 </View.Body>
                             </View.List>
+                        )}
+                    </ViewSwitcher.View>
+                    <ViewSwitcher.View name="exportModal" modal>
+                        {({ data: { data } }) => <ExportModal name="exportModal" data={data} />}
+                    </ViewSwitcher.View>
+
+                    <ViewSwitcher.View name="importModal" modal>
+                        {() => (
+                            <ImportModal
+                                name="importModal"
+                                onSuccess={() => this.list.loadRecords()}
+                            />
                         )}
                     </ViewSwitcher.View>
                 </ViewSwitcher>

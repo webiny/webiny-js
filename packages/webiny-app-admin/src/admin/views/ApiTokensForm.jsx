@@ -1,6 +1,5 @@
 import React from "react";
 import { app, i18n, createComponent } from "webiny-app";
-import randomString from "randomstring";
 
 const t = i18n.namespace("Security.ApiTokensForm");
 
@@ -10,27 +9,6 @@ class ApiTokensForm extends React.Component {
         this.state = {
             searchQuery: {}
         };
-    }
-
-    renderApiTokenDescription(form) {
-        const { Link } = this.props.modules;
-
-        return t`A token, sent via "Authorization" header. Click {hereLink} to generate a random token (cannot be changed later).`(
-            {
-                hereLink: (
-                    <Link
-                        onClick={() => {
-                            form.setState(state => {
-                                state.model.token = randomString.generate(100);
-                                return state;
-                            });
-                        }}
-                    >
-                        {t`here`}
-                    </Link>
-                )
-            }
-        );
     }
 
     render() {
@@ -45,7 +23,6 @@ class ApiTokensForm extends React.Component {
             Grid,
             Input,
             Button,
-            Switch,
             Textarea,
             Loader,
             AutoCompleteList
@@ -56,10 +33,10 @@ class ApiTokensForm extends React.Component {
                 <FormData
                     entity="SecurityApiToken"
                     withRouter
-                    fields="id name token description"
+                    fields="id name token description groups { id name } policies { id name }"
                     onSubmitSuccess="ApiTokens.List"
                     onCancel="ApiTokens.List"
-                    defaultModel={{ groups: [], policies: [], enabled: true }}
+                    defaultModel={{ groups: [], policies: [] }}
                     onSuccessMessage={data => (
                         <span>
                             {t`API Token {apiToken} was saved successfully!`({
@@ -111,21 +88,8 @@ class ApiTokensForm extends React.Component {
                                                             </Bind>
                                                         </Grid.Col>
                                                     </Grid.Row>
-                                                    <Grid.Row>
-                                                        <Grid.Col all={12}>
-                                                            <Bind>
-                                                                <Input
-                                                                    label={t`Token`}
-                                                                    name="token"
-                                                                    validators="required"
-                                                                    description={this.renderApiTokenDescription(
-                                                                        form
-                                                                    )}
-                                                                />
-                                                            </Bind>
-                                                        </Grid.Col>
-                                                    </Grid.Row>
                                                 </Grid.Col>
+
                                                 <Grid.Col all={6}>
                                                     <Section title={t`Roles and policies`} />
                                                     <Grid.Row>
@@ -165,49 +129,56 @@ class ApiTokensForm extends React.Component {
                                                                     </OptionsData>
                                                                 </Grid.Col>
                                                             </Grid.Row>
-                                                            <Grid.Row>
-                                                                <Grid.Col all={12}>
-                                                                    <OptionsData
-                                                                        entity="SecurityPolicy"
-                                                                        fields="id name"
-                                                                        labelField="name"
-                                                                        perPage={10}
-                                                                        search={{
-                                                                            fields: ["name"],
-                                                                            query: this.state
-                                                                                .searchQuery.policy
-                                                                        }}
-                                                                    >
-                                                                        {({ options }) => (
-                                                                            <Bind>
-                                                                                <AutoCompleteList
-                                                                                    options={
-                                                                                        options
+                                                        </Grid.Col>
+                                                    </Grid.Row>
+
+                                                    <Grid.Row>
+                                                        <Grid.Col all={12}>
+                                                            <OptionsData
+                                                                entity="SecurityPolicy"
+                                                                fields="id name"
+                                                                labelField="name"
+                                                                perPage={10}
+                                                                search={{
+                                                                    fields: ["name"],
+                                                                    query: this.state.searchQuery
+                                                                        .policy
+                                                                }}
+                                                            >
+                                                                {({ options }) => (
+                                                                    <Bind>
+                                                                        <AutoCompleteList
+                                                                            options={options}
+                                                                            label={t`Policies`}
+                                                                            name="policies"
+                                                                            onSearch={query => {
+                                                                                this.setState(
+                                                                                    state => {
+                                                                                        state.searchQuery.policy = query;
+                                                                                        return state;
                                                                                     }
-                                                                                    label={t`Policies`}
-                                                                                    name="policies"
-                                                                                    onSearch={query => {
-                                                                                        this.setState(
-                                                                                            state => {
-                                                                                                state.searchQuery.policy = query;
-                                                                                                return state;
-                                                                                            }
-                                                                                        );
-                                                                                    }}
-                                                                                />
-                                                                            </Bind>
-                                                                        )}
-                                                                    </OptionsData>
-                                                                </Grid.Col>
-                                                            </Grid.Row>
+                                                                                );
+                                                                            }}
+                                                                        />
+                                                                    </Bind>
+                                                                )}
+                                                            </OptionsData>
                                                         </Grid.Col>
                                                     </Grid.Row>
                                                 </Grid.Col>
                                             </Grid.Row>
+
                                             <Grid.Row>
                                                 <Grid.Col all={12}>
+                                                    <Section title={t`API Token`} />
                                                     <Bind>
-                                                        <Switch label={t`Enabled`} name="enabled" />
+                                                        <Textarea
+                                                            label={t`Token`}
+                                                            name="token"
+                                                            placeholder={t`Save API token first...`}
+                                                            disabled
+                                                            description={t`Sent via "Authorization" header. Generated automatically and cannot be changed.`}
+                                                        />
                                                     </Bind>
                                                 </Grid.Col>
                                             </Grid.Row>
@@ -247,7 +218,6 @@ export default createComponent(ApiTokensForm, {
         "Grid",
         "Input",
         "Textarea",
-        "Switch",
         "Button",
         "Section",
         "Loader",
