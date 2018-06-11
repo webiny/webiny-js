@@ -35,12 +35,6 @@ class UsersList extends React.Component {
                 <View.List>
                     <View.Header
                         title={t`Security - Users`}
-                        description={
-                            <span>
-                                {t`Once your system {permissions} and {groups} are defined,
-                                    you can create your system users here.`({ groups, permissions })}
-                            </span>
-                        }
                     >
                         <Link type="primary" route="Users.Create" align="right">
                             <Icon icon="plus-circle" />

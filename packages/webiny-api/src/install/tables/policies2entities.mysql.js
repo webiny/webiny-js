@@ -1,17 +1,17 @@
 import MySQLTable from "./mysqlTable";
 
-class Entities2Groups extends MySQLTable {
+class Entities2Policies extends MySQLTable {
     constructor() {
         super();
         this.column("entity").char(24);
         this.column("entityClassId").varChar(100);
-        this.column("group").char(24);
+        this.column("policy").char(24);
 
         this.index("entity");
-        this.index("group");
+        this.index("policy");
     }
 }
 
-Entities2Groups.setName("Entities2SecurityGroups");
+Entities2Policies.setName("Security_Policies2Entities");
 
-export default Entities2Groups;
+export default Entities2Policies;

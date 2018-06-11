@@ -120,7 +120,7 @@ describe("Security test", () => {
     });
 
     it("should return error response with WBY_INTERNAL_ERROR", () => {
-        const authService = app.services.get("authentication");
+        const authService = app.security;
         sandbox.stub(authService, "authenticate").callsFake(() => {
             return {
                 promise: () => {

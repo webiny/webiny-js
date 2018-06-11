@@ -98,7 +98,7 @@ class Validation {
             try {
                 validator = funcValidator
                     ? funcValidator(...args)
-                    : this.getValidator(name)(...args);
+                    : this.getValidator(name)(args.splice(0, 1)[0], args);
             } catch (e) {
                 throw new ValidationError(e.message, name, value);
             }
@@ -128,7 +128,7 @@ class Validation {
         _.each(args, (value, index) => {
             if (value.indexOf("@") === 0) {
                 const inputName = _.trimStart(value, "@");
-                args[index] = formInputs[inputName].component.props.value;
+                args[index] = formInputs[inputName].props.value;
             }
         });
     }

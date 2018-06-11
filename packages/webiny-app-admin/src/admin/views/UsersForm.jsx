@@ -1,5 +1,5 @@
 import React from "react";
-import { app, i18n, createComponent } from "webiny-app";
+import {app, i18n, createComponent} from "webiny-app";
 
 const t = i18n.namespace("Security.UsersForm");
 
@@ -8,10 +8,7 @@ class UsersForm extends React.Component {
         super();
 
         this.state = {
-            searchQuery: {
-                group: {},
-                groupGroup: {}
-            }
+            searchQuery: {}
         };
     }
 
@@ -39,10 +36,10 @@ class UsersForm extends React.Component {
                 <FormData
                     entity="SecurityUser"
                     withRouter
-                    fields="id firstName lastName enabled email groups { id name }"
+                    fields="id firstName lastName enabled email groups { id name } policies { id name }"
                     onSubmitSuccess="Users.List"
                     onCancel="Users.List"
-                    defaultModel={{ groups: [] }}
+                    defaultModel={{groups: [], policies: [], enabled: true}}
                     onSuccessMessage={data => (
                         <span>
                             {t`User {user} was saved successfully!`({
@@ -51,9 +48,9 @@ class UsersForm extends React.Component {
                         </span>
                     )}
                 >
-                    {({ model, onSubmit, loading, invalidFields, error }) => (
+                    {({model, onSubmit, loading, invalidFields, error}) => (
                         <Form model={model} onSubmit={onSubmit} invalidFields={invalidFields}>
-                            {({ model, form, Bind }) => {
+                            {({model, form, Bind}) => {
                                 return (
                                     <View.Form>
                                         <View.Header
@@ -65,14 +62,14 @@ class UsersForm extends React.Component {
                                         />
                                         {error && (
                                             <View.Error>
-                                                <FormError error={error} />
+                                                <FormError error={error}/>
                                             </View.Error>
                                         )}
                                         <View.Body>
-                                            {loading && <Loader />}
+                                            {loading && <Loader/>}
                                             <Grid.Row>
                                                 <Grid.Col all={6}>
-                                                    <Section title={t`Info`} />
+                                                    <Section title={t`Info`}/>
                                                     <Grid.Row>
                                                         <Grid.Col all={12}>
                                                             <Bind>
@@ -112,7 +109,7 @@ class UsersForm extends React.Component {
                                                                         .group
                                                                 }}
                                                             >
-                                                                {({ options }) => (
+                                                                {({options}) => (
                                                                     <Bind>
                                                                         <AutoCompleteList
                                                                             options={options}
@@ -132,15 +129,49 @@ class UsersForm extends React.Component {
                                                             </OptionsData>
                                                         </Grid.Col>
                                                     </Grid.Row>
+                                                    <Grid.Row>
+                                                        <Grid.Col all={12}>
+                                                            <OptionsData
+                                                                entity="SecurityPolicy"
+                                                                fields="id name"
+                                                                labelField="name"
+                                                                perPage={10}
+                                                                search={{
+                                                                    fields: ["name"],
+                                                                    query: this.state.searchQuery
+                                                                        .policy
+                                                                }}
+                                                            >
+                                                                {({options}) => (
+                                                                    <Bind>
+                                                                        <AutoCompleteList
+                                                                            options={options}
+                                                                            label={t`Policies`}
+                                                                            name="policies"
+                                                                            onSearch={query => {
+                                                                                this.setState(
+                                                                                    state => {
+                                                                                        state.searchQuery.policy = query;
+                                                                                        return state;
+                                                                                    }
+                                                                                );
+                                                                            }}
+                                                                        />
+                                                                    </Bind>
+                                                                )}
+                                                            </OptionsData>
+                                                        </Grid.Col>
+                                                    </Grid.Row>
                                                 </Grid.Col>
                                                 <Grid.Col all={6}>
-                                                    <Section title={t`Password`} />
+                                                    <Section title={t`Password`}/>
                                                     <Grid.Row>
                                                         <Grid.Col all={12}>
                                                             <Bind>
                                                                 <Password
                                                                     label={t`New password`}
                                                                     name="password"
+                                                                    validators="required,password"
                                                                     placeholder={t`Type a new password`}
                                                                 />
                                                             </Bind>
@@ -149,7 +180,7 @@ class UsersForm extends React.Component {
                                                                 <Password
                                                                     label={t`Confirm password`}
                                                                     name="confirmPassword"
-                                                                    validators="eq:@password"
+                                                                    validators="required,password,eq:@password"
                                                                     placeholder={t`Retype the new password`}
                                                                 >
                                                                     <validator name="eq">
@@ -164,7 +195,7 @@ class UsersForm extends React.Component {
                                             <Grid.Row>
                                                 <Grid.Col all={12}>
                                                     <Bind>
-                                                        <Switch label={t`Enabled`} name="enabled" />
+                                                        <Switch label={t`Enabled`} name="enabled"/>
                                                     </Bind>
                                                 </Grid.Col>
                                             </Grid.Row>

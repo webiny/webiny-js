@@ -1,8 +1,7 @@
 // @flow
 import { Identity } from "./../index";
 import AuthenticationError from "./AuthenticationError";
-import { Entity, app } from "./..";
-import { SecuritySettings } from "./..";
+import { Entity, Policy, app } from "./..";
 import type { IAuthentication, IToken } from "./../../types";
 import _ from "lodash";
 import type { $Request } from "express";
@@ -15,20 +14,25 @@ class SecurityService implements IAuthentication {
         },
         identities: Array<Object>
     };
-    superUser: boolean;
-    settings: ?SecuritySettings;
+    defaultPermissions: { api: {}, entities: {} };
 
     constructor(config: Object) {
         this.config = config;
-        this.settings = null;
-        this.superUser = false;
+        this.defaultPermissions = { api: {}, entities: {} };
     }
 
     async init() {
-        this.settings = (await SecuritySettings.load()).data;
+        if (process.env.INSTALL === "true") {
+            return;
+        }
+
+        this.defaultPermissions = await Policy.getDefaultPoliciesPermissions();
+
+        // Attach event listeners.
         ["create", "update", "delete", "read"].forEach(operation => {
             Entity.on(operation, async ({ entity }) => {
-                if (process.env.INSTALL === "true") {
+                // If super user enabled, return - no further checks needed.
+                if (this.getSuperUser()) {
                     return;
                 }
 
@@ -39,6 +43,7 @@ class SecurityService implements IAuthentication {
                     entity,
                     operation
                 );
+
                 if (!canExecuteOperation) {
                     throw Error(
                         `Cannot execute "${operation}" operation on entity "${entity.classId}"`
@@ -54,36 +59,18 @@ class SecurityService implements IAuthentication {
         });
     }
 
-    /**
-     * Returns Identity class for given `classId`.
-     * @param {string} classId
-     * @returns {Class<Identity>} Identity class corresponding to given `classId`.
-     */
-    getIdentityClass(classId: string): Class<Identity> | null {
-        for (let i = 0; i < this.config.identities.length; i++) {
-            if (this.config.identities[i].identity.classId === classId) {
-                return this.config.identities[i].identity;
-            }
-        }
-        return null;
+    getDefaultPermissions() {
+        return this.defaultPermissions;
     }
 
-    /**
-     * Returns set `Identity` classes.
-     * @returns {Array<Class<Identity>>} Set `Identity` classes.
-     */
-    getIdentityClasses(): Array<Class<Identity>> | null {
-        return this.config.identities.map(current => {
-            return current.identity;
-        });
-    }
-
-    getIdentity() {
-        return app.getRequest().identity;
+    getIdentity(permissions: boolean = false) {
+        return permissions
+            ? app.getRequest().security.permissions
+            : app.getRequest().security.identity;
     }
 
     setIdentity(identity: Identity) {
-        app.getRequest().identity = identity;
+        app.getRequest().security.identity = identity;
         return this;
     }
 
@@ -109,36 +96,83 @@ class SecurityService implements IAuthentication {
     }
 
     async canExecuteOperation(identity: Identity, entity: Entity, operation: string) {
-        if (_.get(this.settings, `entities.${entity.classId}.other.operations.${operation}`)) {
+        const permissions = this.getIdentity(true);
+
+        // If all enabled (eg. super-admin), return immediately, no need to do further checks.
+        const superAdminPermissions = _.get(permissions, "entities.*", []);
+        if (superAdminPermissions.includes(true)) {
             return true;
         }
 
-        if (!identity) {
+        const entityPermissions = _.get(permissions, `entities.${entity.classId}`);
+        if (!entityPermissions) {
             return false;
         }
 
-        if (this.identityIsOwner(identity, entity)) {
-            if (_.get(this.settings, `entities.${entity.classId}.owner.operations.${operation}`)) {
+        // Check if operation is enabled for "other".
+        for (let i = 0; i < entityPermissions.length; i++) {
+            if (_.get(entityPermissions[i], "other.operations." + operation)) {
                 return true;
+            }
+        }
+
+        if (this.identityIsOwner(identity, entity)) {
+            for (let i = 0; i < entityPermissions.length; i++) {
+                if (_.get(entityPermissions[i], "owner.operations." + operation)) {
+                    return true;
+                }
             }
         }
 
         if (this.identityIsInGroup(identity, entity)) {
-            if (_.get(this.settings, `entities.${entity.classId}.group.operations.${operation}`)) {
-                return true;
-            }
-        }
-
-        // Check if one of the groups user belongs to allows action.
-        const groups = await identity.groups;
-        for (let i = 0; i < groups.length; i++) {
-            let group = groups[i];
-            if (_.get(group, `permissions.entities.${entity.classId}.operations.${operation}`)) {
-                return true;
+            for (let i = 0; i < entityPermissions.length; i++) {
+                if (_.get(entityPermissions[i], "group.operations." + operation)) {
+                    return true;
+                }
             }
         }
 
         return false;
+    }
+
+    async sudo(option: () => {}) {
+        this.setSuperUser(true);
+        const results = await option();
+        this.setSuperUser(false);
+        return results;
+    }
+
+    setSuperUser(flag: boolean): SecurityService {
+        _.set(app.getRequest(), "security.superUser", flag);
+        return this;
+    }
+
+    getSuperUser() {
+        return _.get(app.getRequest(), "security.superUser");
+    }
+
+    /**
+     * Returns Identity class for given `classId`.
+     * @param {string} classId
+     * @returns {Class<Identity>} Identity class corresponding to given `classId`.
+     */
+    getIdentityClass(classId: string): Class<Identity> | null {
+        for (let i = 0; i < this.config.identities.length; i++) {
+            if (this.config.identities[i].identity.classId === classId) {
+                return this.config.identities[i].identity;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns set `Identity` classes.
+     * @returns {Array<Class<Identity>>} Set `Identity` classes.
+     */
+    getIdentityClasses(): Array<Class<Identity>> | null {
+        return this.config.identities.map(current => {
+            return current.identity;
+        });
     }
 
     /**

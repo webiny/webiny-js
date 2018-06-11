@@ -20,16 +20,27 @@ export default (app, config, schema) => {
     const security = app.services.get("security");
     // For each Identity...
     config.security.identities.map(({ identity: Identity, authenticate }) => {
+        // If identity does not need an authentication mechanism (eg. API key), continue with next identity.
+        if (!authenticate) {
+            return true;
+        }
+
         // For each strategy...
         for (let i = 0; i < authenticate.length; i++) {
             const { strategy, expiresOn, field } = authenticate[i];
+
+            if (!field) {
+                continue;
+            }
 
             const { args } = security.config.strategies[strategy];
             schema.query[field] = {
                 type: createLoginDataForIdentity(Identity, schema),
                 args: args(),
                 async resolve(root, args) {
-                    const identity = await security.authenticate(args, Identity, strategy);
+                    const identity = await security.sudo(() => {
+                        return security.authenticate(args, Identity, strategy);
+                    });
 
                     // Set identified identity as current.
                     security.setIdentity(identity);
@@ -54,8 +65,8 @@ export default (app, config, schema) => {
 
     schema.query["getIdentity"] = {
         type: schema.getType("IdentityType"),
-        resolve(root, args, context) {
-            return context.identity;
+        resolve() {
+            return app.services.get("security").getIdentity();
         }
     };
 
@@ -64,20 +75,22 @@ export default (app, config, schema) => {
         args: {
             data: { type: new GraphQLNonNull(GraphQLJSON) }
         },
-        async resolve(root, args, context) {
-            if (!context.identity) {
+        async resolve(root, args) {
+            const identity = app.services.get("security").getIdentity();
+
+            if (!identity) {
                 throw Error("Identity not found.");
             }
 
             try {
-                await context.identity.populate(args.data).save();
+                await identity.populate(args.data).save();
             } catch (e) {
                 if (e instanceof ModelError && e.code === ModelError.INVALID_ATTRIBUTES) {
                     throw InvalidAttributesError.from(e);
                 }
                 throw e;
             }
-            return context.identity;
+            return identity;
         }
     };
 };

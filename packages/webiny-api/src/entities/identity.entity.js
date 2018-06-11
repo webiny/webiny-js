@@ -1,6 +1,6 @@
 // @flow
 import Entity from "./entity";
-
+import { Policy, Policies2Entities } from "./entity";
 import type { IAuthorizable } from "../../types";
 
 /**
@@ -10,24 +10,9 @@ import type { IAuthorizable } from "../../types";
 class Identity extends Entity implements IAuthorizable {
     constructor() {
         super();
-        this.attr("apiPermissions")
-            .object()
-            .setDynamic(async () => {
-                const groups = await this.groups;
-
-                const permissions = {};
-                for (let i = 0; i < groups.length; i++) {
-                    const groupApiPermissions = await groups[i].get("permissions.api", {});
-                    for (let operationName in groupApiPermissions) {
-                        if (!permissions[operationName]) {
-                            permissions[operationName] = [];
-                        }
-                        permissions[operationName].push(groupApiPermissions[operationName]);
-                    }
-                }
-
-                return permissions;
-            });
+        this.attr("policies")
+            .entities(Policy, "entity")
+            .setUsing(Policies2Entities, "policy");
     }
 }
 

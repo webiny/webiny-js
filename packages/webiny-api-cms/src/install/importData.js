@@ -1,4 +1,4 @@
-import { Group, User, SecuritySettings } from "webiny-api";
+import { Group } from "webiny-api";
 import { Category } from "webiny-api-cms";
 import _ from "lodash";
 
@@ -172,19 +172,6 @@ export default async () => {
     });
 
     await cmsGroup.save();
-
-    // TODO: improve this - better install mechanism needed.
-    const user = await User.findOne({ query: { email: "admin@webiny.com" } });
-    const groups = [...(await user.groups)];
-    groups.push(cmsGroup);
-    user.groups = groups;
-    await user.save();
-
-    const securitySettings = await SecuritySettings.load();
-    const clonedData = _.cloneDeep(securitySettings.data);
-    _.set(clonedData, "entities.CmsRevision.other.operations.read", true);
-    securitySettings.data = clonedData;
-    await securitySettings.save();
 
     const defaultGroup = await Group.findOne({ query: { slug: "default" } });
     const clonedPermissions = _.cloneDeep(defaultGroup.permissions);

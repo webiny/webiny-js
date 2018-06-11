@@ -1,19 +1,11 @@
 import React from "react";
 import { app, i18n, createComponent } from "webiny-app";
+import EntitiesList from "./PoliciesForm/EntitiesList";
+import ApiAccess from "./PoliciesForm/ApiAccess";
 
-const t = i18n.namespace("Security.GroupsForm");
+const t = i18n.namespace("Security.PoliciesForm");
 
-class GroupsForm extends React.Component {
-    constructor() {
-        super();
-
-        this.state = {
-            searchQuery: {
-                policy: {}
-            }
-        };
-    }
-
+class PoliciesForm extends React.Component {
     render() {
         const {
             AdminLayout,
@@ -25,24 +17,22 @@ class GroupsForm extends React.Component {
             Input,
             Button,
             Loader,
-            Tabs,
-            OptionsData,
-            AutoCompleteList
+            Tabs
         } = this.props.modules;
 
         return (
             <AdminLayout>
                 <FormData
-                    entity="SecurityGroup"
+                    entity="SecurityPolicy"
                     withRouter
-                    fields="id name slug description policies { id name }"
-                    onSubmitSuccess="Groups.List"
-                    onCancel="Groups.List"
+                    fields="id name slug description permissions"
+                    onSubmitSuccess="Policies.List"
+                    onCancel="Policies.List"
                     onSuccessMessage={({ model }) => {
                         return (
                             <span>
-                                {t`Group {group} was saved successfully!`({
-                                    group: <strong>{model.name}</strong>
+                                {t`Policy {policy} was saved successfully!`({
+                                    policy: <strong>{model.name}</strong>
                                 })}
                             </span>
                         );
@@ -56,8 +46,8 @@ class GroupsForm extends React.Component {
                                         <View.Header
                                             title={
                                                 model.id
-                                                    ? t`Security - Edit Group`
-                                                    : t`Security - Create Group`
+                                                    ? t`Security - Edit Policy`
+                                                    : t`Security - Create Policy`
                                             }
                                         />
                                         {error && (
@@ -99,47 +89,37 @@ class GroupsForm extends React.Component {
                                                     </Bind>
                                                 </Grid.Col>
                                             </Grid.Row>
-                                            <Grid.Row>
-                                                <Grid.Col all={12}>
-                                                    <OptionsData
-                                                        entity="SecurityPolicy"
-                                                        fields="id name"
-                                                        labelField="name"
-                                                        perPage={10}
-                                                        search={{
-                                                            fields: ["name"],
-                                                            query: this.state.searchQuery.policy
-                                                        }}
-                                                    >
-                                                        {({ options }) => (
-                                                            <Bind>
-                                                                <AutoCompleteList
-                                                                    options={options}
-                                                                    label={t`Policies`}
-                                                                    name="policies"
-                                                                    onSearch={query => {
-                                                                        this.setState(state => {
-                                                                            state.searchQuery.policy = query;
-                                                                            return state;
-                                                                        });
-                                                                    }}
-                                                                />
-                                                            </Bind>
-                                                        )}
-                                                    </OptionsData>
-                                                </Grid.Col>
-                                            </Grid.Row>
+
+                                            <Tabs size="large">
+                                                <Tabs.Tab label={t`Entity permissions`}>
+                                                    <Grid.Row>
+                                                        <Grid.Col all={12}>
+                                                            <EntitiesList
+                                                                model={model}
+                                                                form={form}
+                                                            />
+                                                        </Grid.Col>
+                                                    </Grid.Row>
+                                                </Tabs.Tab>
+                                                <Tabs.Tab label={t`API access`}>
+                                                    <Grid.Row>
+                                                        <Grid.Col all={12}>
+                                                            <ApiAccess model={model} form={form} />
+                                                        </Grid.Col>
+                                                    </Grid.Row>
+                                                </Tabs.Tab>
+                                            </Tabs>
                                         </View.Body>
                                         <View.Footer>
                                             <Button
                                                 type="default"
-                                                onClick={() => app.router.goToRoute("Groups.List")}
+                                                onClick={() => app.router.goToRoute("Policies.List")}
                                                 label={t`Go back`}
                                             />
                                             <Button
                                                 type="primary"
                                                 onClick={form.submit}
-                                                label={t`Save group`}
+                                                label={t`Save policy`}
                                                 align="right"
                                             />
                                         </View.Footer>
@@ -154,7 +134,7 @@ class GroupsForm extends React.Component {
     }
 }
 
-export default createComponent(GroupsForm, {
+export default createComponent(PoliciesForm, {
     modules: [
         "Form",
         "FormData",
@@ -167,7 +147,6 @@ export default createComponent(GroupsForm, {
         "Section",
         "Loader",
         "Tabs",
-        "AutoCompleteList",
         {
             AdminLayout: "Admin.Layout"
         }

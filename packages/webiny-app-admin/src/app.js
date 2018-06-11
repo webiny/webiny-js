@@ -109,24 +109,27 @@ export default () => {
                 factory: () => import("./admin/views/SecurityToggleList")
             });
 
-            const securityManageUsers = "webiny-security-manager";
+            const securityManager = "webiny-security-manager";
 
             app.services.get("menu").add(
                 <Menu label={t`Security`} icon="user-secret">
-                    <Menu label={t`User Management`} group={securityManageUsers}>
-                        <Menu label={t`Entities`} route="Entities.List" order={1} />
-                        <Menu label={t`Groups`} route="Groups.List" order={2} />
-                        <Menu label={t`Users`} route="Users.List" order={4} />
+                    <Menu label={t`Identities`} group={securityManager}>
+                        <Menu label={t`Users`} route="Users.List" />
+                        <Menu label={t`API Tokens`} route="ApiTokens.List" />
+                    </Menu>
+                    <Menu label={t`User Management`} group={securityManager}>
+                        <Menu label={t`Groups`} route="Groups.List" />
+                        <Menu label={t`Policies`} route="Policies.List" />
                     </Menu>
                 </Menu>
             );
 
             app.router.addRoute({
                 name: "Users.Create",
-                path: "/Users/new",
+                path: "/users/new",
                 component: () => import("./admin/views/UsersForm").then(m => m.default),
                 title: "Security - Create User",
-                group: securityManageUsers
+                group: securityManager
             });
 
             app.router.addRoute({
@@ -134,7 +137,7 @@ export default () => {
                 path: "/users/:id",
                 component: () => import("./admin/views/UsersForm").then(m => m.default),
                 title: "Security - Edit User",
-                group: securityManageUsers
+                group: securityManager
             });
 
             app.router.addRoute({
@@ -142,7 +145,31 @@ export default () => {
                 path: "/users",
                 component: () => import("./admin/views/UsersList").then(m => m.default),
                 title: "Security - Users",
-                group: securityManageUsers
+                group: securityManager
+            });
+
+            app.router.addRoute({
+                name: "ApiTokens.Create",
+                path: "/api-tokens/new",
+                component: () => import("./admin/views/ApiTokensForm").then(m => m.default),
+                title: "Security - Create Token",
+                group: securityManager
+            });
+
+            app.router.addRoute({
+                name: "ApiTokens.Edit",
+                path: "/api-tokens/:id",
+                component: () => import("./admin/views/ApiTokensForm").then(m => m.default),
+                title: "Security - Edit Token",
+                group: securityManager
+            });
+
+            app.router.addRoute({
+                name: "ApiTokens.List",
+                path: "/api-tokens",
+                component: () => import("./admin/views/ApiTokensList").then(m => m.default),
+                title: "Security - Tokens",
+                group: securityManager
             });
 
             app.router.addRoute({
@@ -150,7 +177,7 @@ export default () => {
                 path: "/groups/new",
                 component: () => import("./admin/views/GroupsForm").then(m => m.default),
                 title: "Security - Create Group",
-                group: securityManageUsers
+                group: securityManager
             });
 
             app.router.addRoute({
@@ -158,7 +185,7 @@ export default () => {
                 path: "/groups/:id",
                 component: () => import("./admin/views/GroupsForm").then(m => m.default),
                 title: "Security - Edit Group",
-                group: securityManageUsers
+                group: securityManager
             });
 
             app.router.addRoute({
@@ -166,15 +193,31 @@ export default () => {
                 path: "/groups",
                 component: () => import("./admin/views/GroupsList").then(m => m.default),
                 title: "Security - Groups",
-                group: securityManageUsers
+                group: securityManager
             });
 
             app.router.addRoute({
-                name: "Entities.List",
-                path: "/entities",
-                component: () => import("./admin/views/EntitiesList").then(m => m.default),
-                title: "Security - Entities",
-                group: securityManageUsers
+                name: "Policies.Create",
+                path: "/policies/new",
+                component: () => import("./admin/views/PoliciesForm").then(m => m.default),
+                title: "Security - Create Policy",
+                group: securityManager
+            });
+
+            app.router.addRoute({
+                name: "Policies.Edit",
+                path: "/policies/:id",
+                component: () => import("./admin/views/PoliciesForm").then(m => m.default),
+                title: "Security - Edit Policy",
+                group: securityManager
+            });
+
+            app.router.addRoute({
+                name: "Policies.List",
+                path: "/policies",
+                component: () => import("./admin/views/PoliciesList").then(m => m.default),
+                title: "Security - Policies",
+                group: securityManager
             });
 
             next();

@@ -283,25 +283,25 @@ class Entity {
 
         try {
             const events = params.events || {};
-            events.save !== false && (await this.emit("save"));
+            events.save !== false && (await this.emit("save", { params }));
             if (existing) {
-                events.create !== false && (await this.emit("update"));
+                events.update !== false && (await this.emit("update", { params }));
             } else {
-                events.update !== false && (await this.emit("create"));
+                events.create !== false && (await this.emit("create", { params }));
             }
 
             params.validation !== false && (await this.validate());
 
-            events.beforeSave !== false && (await this.emit("beforeSave"));
+            events.beforeSave !== false && (await this.emit("beforeSave", { params }));
 
             if (existing) {
-                events.beforeUpdate !== false && (await this.emit("beforeUpdate"));
+                events.beforeUpdate !== false && (await this.emit("beforeUpdate", { params }));
                 if (logs && this.isDirty()) {
                     this.savedOn = new Date();
                     this.updatedOn = new Date();
                 }
             } else {
-                events.beforeCreate !== false && (await this.emit("beforeCreate"));
+                events.beforeCreate !== false && (await this.emit("beforeCreate", { params }));
                 if (logs && this.isDirty()) {
                     this.savedOn = new Date();
                     this.createdOn = new Date();
@@ -312,11 +312,11 @@ class Entity {
                 await this.getDriver().save(this, params);
             }
 
-            events.afterSave !== false && (await this.emit("afterSave"));
+            events.afterSave !== false && (await this.emit("afterSave", { params }));
             if (existing) {
-                events.afterUpdate !== false && (await this.emit("afterUpdate"));
+                events.afterUpdate !== false && (await this.emit("afterUpdate", { params }));
             } else {
-                events.afterCreate !== false && (await this.emit("afterCreate"));
+                events.afterCreate !== false && (await this.emit("afterCreate", { params }));
             }
 
             this.setExisting();
@@ -349,18 +349,18 @@ class Entity {
 
         try {
             const events = params.events || {};
-            events.delete !== false && (await this.emit("delete"));
+            events.delete !== false && (await this.emit("delete", { params }));
 
             params.validation !== false && (await this.validate());
 
-            events.beforeDelete !== false && (await this.emit("beforeDelete"));
+            events.beforeDelete !== false && (await this.emit("beforeDelete", { params }));
 
             if (soft && params.permanent !== true) {
                 await this.getDriver().save(this, params);
             } else {
                 await this.getDriver().delete(this, params);
             }
-            events.afterDelete !== false && (await this.emit("afterDelete"));
+            events.afterDelete !== false && (await this.emit("afterDelete", { params }));
 
             this.getEntityPool().remove(this);
         } catch (e) {
@@ -398,7 +398,7 @@ class Entity {
      * @param ids
      * @param params
      */
-    static async findByIds(ids: Array<mixed>, params: ?Object): Promise<EntityCollection> {
+    static async findByIds(ids: Array<mixed>, params: ?Object): Promise<Array<Entity>> {
         const output = [];
         for (let i = 0; i < ids.length; i++) {
             const entity = await this.findById(ids[i], params);
@@ -427,12 +427,12 @@ class Entity {
         if (_.isObject(result)) {
             const pooled = this.getEntityPool().get(this, result.id);
             if (pooled) {
-                await pooled.emit("read");
+                await pooled.emit("read", { params });
                 return pooled;
             }
 
             const entity = new this().setExisting().populateFromStorage(((result: any): Object));
-            await entity.emit("read");
+            await entity.emit("read", { params });
             this.getEntityPool().add(entity);
             return entity;
         }
@@ -461,10 +461,10 @@ class Entity {
                 const pooled = this.getEntityPool().get(this, result[i].id);
                 if (pooled) {
                     entityCollection.push(pooled);
-                    await pooled.emit("read");
+                    await pooled.emit("read", { params });
                 } else {
                     const entity = new this().setExisting().populateFromStorage(result[i]);
-                    await entity.emit("read");
+                    await entity.emit("read", { params });
                     this.getEntityPool().add(entity);
                     entityCollection.push(entity);
                 }
@@ -569,14 +569,14 @@ class Entity {
      * Returns information about the entity.
      * @returns {{name: string, id: *, attributes: {name: *, class: string|string|string|string|string|string|string}[]}}
      */
-    static describe(options = {}) {
+    static describe(options: Object = {}) {
         const instance = new this();
 
         const omit = _.get(options, "attributes.omit", []);
 
         return {
             name: instance.getClassName(),
-            classId: instance.classId,
+            classId: _.get(instance, "classId"),
             attributes: Object.keys(instance.getAttributes())
                 .map(key => {
                     const attribute = instance.getAttribute(key);
