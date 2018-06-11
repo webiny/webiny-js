@@ -9,6 +9,7 @@ class CopyInput extends React.Component {
     constructor() {
         super();
         this.button = null;
+        this.state = {}
     }
 
     componentDidMount() {
