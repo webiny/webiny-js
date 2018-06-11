@@ -6,7 +6,7 @@ import { i18n, createComponent, app } from "webiny-app";
 const t = i18n.namespace("Security.Modal.ExportModal");
 import { ModalComponent } from "webiny-app-ui";
 
-class ExportModal extends React.Component {
+class ExportPolicyModal extends React.Component {
     constructor(props) {
         super(props);
 
@@ -76,7 +76,7 @@ class ExportModal extends React.Component {
     }
 }
 
-ExportModal.defaultProps = {
+ExportPolicyModal.defaultProps = {
     api: "",
     data: {},
     map: "",
@@ -84,6 +84,6 @@ ExportModal.defaultProps = {
     fields: ""
 };
 
-export default createComponent([ExportModal, ModalComponent], {
+export default createComponent([ExportPolicyModal, ModalComponent], {
     modules: ["Modal", "Copy", "CodeHighlight", "Loader", "Button"]
 });

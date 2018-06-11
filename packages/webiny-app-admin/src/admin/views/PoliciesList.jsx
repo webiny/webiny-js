@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
-import ExportModal from "./PoliciesList/ExportModal";
-import ImportModal from "./PoliciesList/ImportModal";
+import ExportPolicyModal from "./PoliciesList/ExportPolicyModal";
+import ImportPolicyModal from "./PoliciesList/ImportPolicyModal";
 import { i18n, createComponent } from "webiny-app";
 const t = i18n.namespace("Security.PoliciesList");
 
@@ -125,12 +125,14 @@ class PoliciesList extends React.Component {
                         )}
                     </ViewSwitcher.View>
                     <ViewSwitcher.View name="exportModal" modal>
-                        {({ data: { data } }) => <ExportModal name="exportModal" data={data} />}
+                        {({ data: { data } }) => (
+                            <ExportPolicyModal name="exportModal" data={data} />
+                        )}
                     </ViewSwitcher.View>
 
                     <ViewSwitcher.View name="importModal" modal>
                         {() => (
-                            <ImportModal
+                            <ImportPolicyModal
                                 name="importModal"
                                 onSuccess={() => this.list.loadRecords()}
                             />
