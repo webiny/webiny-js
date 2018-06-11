@@ -1,6 +1,5 @@
 import React from "react";
 import { app, i18n, createComponent } from "webiny-app";
-
 const t = i18n.namespace("Security.ApiTokensForm");
 
 class ApiTokensForm extends React.Component {
@@ -13,6 +12,7 @@ class ApiTokensForm extends React.Component {
 
     render() {
         const {
+            Alert,
             AdminLayout,
             Form,
             FormData,
@@ -28,22 +28,17 @@ class ApiTokensForm extends React.Component {
             AutoCompleteList
         } = this.props.modules;
 
+        const onSubmitSuccess = app.router.getParams().id ? "ApiTokens.List" : null;
+
         return (
             <AdminLayout>
                 <FormData
                     entity="SecurityApiToken"
                     withRouter
                     fields="id name token description groups { id name } policies { id name }"
-                    onSubmitSuccess="ApiTokens.List"
+                    onSubmitSuccess={onSubmitSuccess}
                     onCancel="ApiTokens.List"
                     defaultModel={{ groups: [], policies: [] }}
-                    onSuccessMessage={data => (
-                        <span>
-                            {t`API Token {apiToken} was saved successfully!`({
-                                apiToken: <strong>{data.model.firstName}</strong>
-                            })}
-                        </span>
-                    )}
                 >
                     {({ model, onSubmit, loading, invalidFields, error }) => (
                         <Form model={model} onSubmit={onSubmit} invalidFields={invalidFields}>
@@ -63,6 +58,12 @@ class ApiTokensForm extends React.Component {
                                             </View.Error>
                                         )}
                                         <View.Body>
+                                            {model.id && (
+                                                <Alert type="info" title={t`Success`}>
+                                                    {t`To disable API token, you must delete it.`}
+                                                </Alert>
+                                            )}
+
                                             {loading && <Loader />}
                                             <Grid.Row>
                                                 <Grid.Col all={6}>
@@ -175,7 +176,7 @@ class ApiTokensForm extends React.Component {
                                                         <Textarea
                                                             label={t`Token`}
                                                             name="token"
-                                                            placeholder={t`Save API token first...`}
+                                                            placeholder={t`To receive a token, you must save it first.`}
                                                             disabled
                                                             description={t`Sent via "Authorization" header. Generated automatically and cannot be changed.`}
                                                         />
@@ -224,6 +225,7 @@ export default createComponent(ApiTokensForm, {
         "OptionsData",
         "AutoCompleteList",
         "Link",
+        "Alert",
         {
             AdminLayout: "Admin.Layout"
         }

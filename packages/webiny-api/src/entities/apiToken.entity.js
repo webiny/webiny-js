@@ -10,13 +10,12 @@ class ApiToken extends Identity {
         this.attr("token")
             .char()
             .setValidators();
+    }
 
-        this.on("beforeUpdate", async () => {
-            if (!this.token) {
-                // 2147483647 = maximum value of unix timestamp (year 2038).
-                this.token = await app.services.get("security").createToken(this, 2147483647);
-            }
-        });
+    async activate(): Promise<ApiToken> {
+        // 2147483647 = maximum value of unix timestamp (year 2038).
+        this.token = await app.services.get("security").createToken(this, 2147483647);
+        return this;
     }
 }
 

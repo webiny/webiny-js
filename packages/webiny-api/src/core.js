@@ -3,7 +3,8 @@ import type Schema from "./graphql/Schema";
 import { SecurityService } from "./services";
 import { GraphQLUnionType } from "graphql";
 import createLoginQueries from "./security/graphql/createLoginQueries";
-import createListEntitiesQueries from "./security/graphql/createListEntitiesQueries";
+import createListEntitiesQuery from "./security/graphql/createListEntitiesQuery";
+import overrideCreateApiTokenMutation from "./security/graphql/overrideCreateApiTokenMutation";
 import convertToGraphQL from "./attributes/convertToGraphQL";
 import {
     ApiToken,
@@ -81,7 +82,8 @@ export default () => {
 
                 // Create login queries
                 createLoginQueries(app, app.config, schema);
-                createListEntitiesQueries(app, app.config, schema);
+                createListEntitiesQuery(app, app.config, schema);
+                overrideCreateApiTokenMutation(app, app.config, schema);
             });
 
             app.entities.addEntityClass(ApiToken);
