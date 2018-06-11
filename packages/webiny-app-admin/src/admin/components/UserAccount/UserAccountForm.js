@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { app, createComponent, i18n } from "webiny-app";
 import gql from "graphql-tag";
-import TwoFactorAuthActivation from "./TwoFactorAuthActivation";
+// import TwoFactorAuthActivation from "./TwoFactorAuthActivation";
 
 // import TwoFactorAuthConfirmation from './TwoFactorAuthConfirmation';
 
@@ -16,7 +16,7 @@ class UserAccount extends React.Component {
             model: {}
         };
 
-        this.auth = app.services.get("authentication");
+        this.auth = app.security;
         this.growler = app.services.get("growler");
         this.onSubmit = this.onSubmit.bind(this);
     }
@@ -86,13 +86,11 @@ class UserAccount extends React.Component {
                 Grid,
                 Input,
                 Button,
-                Switch,
                 Loader,
                 Email,
                 Gravatar,
                 Section,
-                Password,
-                ChangeConfirm
+                Password
             }
         } = this.props;
 
@@ -161,7 +159,7 @@ class UserAccount extends React.Component {
                                                 </validator>
                                             </Password>
                                         </Bind>
-                                        <ChangeConfirm
+                                        {/* <ChangeConfirm
                                             message={({ value }) => (value ? "Dummy" : null)}
                                             renderDialog={function() {
                                                 return <TwoFactorAuthActivation />;
@@ -176,7 +174,7 @@ class UserAccount extends React.Component {
                                                     />
                                                 </Bind>
                                             )}
-                                        </ChangeConfirm>
+                                        </ChangeConfirm>*/}
                                         {/*<TwoFactorAuthConfirmation ref={ref => this.twoFactorAuthConfirmation = ref}/>*/}
                                     </Grid.Col>
                                 </Grid.Row>
