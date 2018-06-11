@@ -27,7 +27,6 @@ class MySQLTable extends Table {
 
         this.column("owner").char(24);
         this.column("ownerClassId").varChar(100);
-        this.column("groups").json();
     }
 }
 

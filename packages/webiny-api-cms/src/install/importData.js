@@ -1,196 +1,52 @@
-import { Group } from "webiny-api";
+import { Group, Policy } from "webiny-api";
 import { Category } from "webiny-api-cms";
-import _ from "lodash";
 
 export default async () => {
     const cmsGroup = new Group();
     cmsGroup.populate({
         name: "CMS",
         description: "Manage CMS pages, categories, redirects etc.",
-        slug: "cms",
+        slug: "cms"
+    });
+
+    await cmsGroup.save();
+
+    const cmsPublicPolicy = new Policy();
+    cmsPublicPolicy.populate({
+        name: "CmsPublicAccess",
+        slug: "cms-public-access",
+        description: "Allows anonymous visitors to load pages",
         permissions: {
             api: {
-                getCmsPage: {
+                loadPageRevision: {
                     id: true,
                     slug: true,
                     title: true,
-                    pinned: true,
-                    status: true,
-                    content: { id: true, data: true, type: true, origin: true, settings: true },
-                    category: { id: true, title: true },
-                    createdBy: true,
-                    createdOn: true,
-                    revisions: {
-                        id: true,
-                        name: true,
-                        slug: true,
-                        title: true,
-                        active: true,
-                        content: { id: true, data: true, type: true, origin: true, settings: true },
-                        savedOn: true,
-                        createdBy: true,
-                        createdOn: true,
-                        updatedOn: true
-                    },
-                    activeRevision: { id: true }
+                    content: true
                 },
-                createImage: { id: true, src: true, width: true, height: true },
-                updateImage: { id: true, src: true, width: true, height: true },
-                deleteImage: true,
-                getCmsWidget: true,
-                listCmsPages: {
-                    list: {
-                        id: true,
-                        slug: true,
-                        title: true,
-                        pinned: true,
-                        status: true,
-                        category: { id: true, slug: true, title: true },
-                        createdBy: true,
-                        createdOn: true,
-                        revisions: {
-                            id: true,
-                            name: true,
-                            slug: true,
-                            title: true,
-                            active: true,
-                            content: {
-                                id: true,
-                                data: true,
-                                type: true,
-                                origin: true,
-                                settings: true
-                            },
-                            savedOn: true,
-                            createdBy: true,
-                            createdOn: true,
-                            updatedOn: true,
-                            createdByClassId: true
-                        },
-                        createdByClassId: true
-                    },
-                    meta: { count: true, totalCount: true, totalPages: true }
-                },
-                createCmsPage: {
+                loadPageByUrl: {
                     id: true,
                     slug: true,
                     title: true,
-                    status: true,
-                    content: { id: true, data: true, type: true, origin: true, settings: true },
-                    activeRevision: { id: true }
-                },
-                updateCmsPage: {
-                    id: true,
-                    slug: true,
-                    title: true,
-                    pinned: true,
-                    status: true,
-                    content: { id: true, data: true, type: true, origin: true, settings: true },
-                    category: { id: true, title: true },
-                    createdBy: true,
-                    createdOn: true,
-                    revisions: {
-                        id: true,
-                        name: true,
-                        slug: true,
-                        title: true,
-                        active: true,
-                        content: { id: true, data: true, type: true, origin: true, settings: true },
-                        savedOn: true,
-                        createdBy: true,
-                        createdOn: true,
-                        updatedOn: true
-                    }
-                },
-                getCmsCategory: true,
-                deleteCmsCategory: true,
-                getCmsRevision: {
-                    id: true,
-                    name: true,
-                    page: { id: true },
-                    slug: true,
-                    title: true,
-                    active: true,
-                    content: { id: true, data: true, type: true, origin: true, settings: true }
-                },
-                listCmsWidgets: {
-                    list: { id: true, title: true },
-                    meta: { count: true, totalCount: true, totalPages: true }
-                },
-                listCmsRevisions: {
-                    list: { id: true, slug: true, title: true },
-                    meta: { count: true, totalCount: true, totalPages: true }
-                },
-                loadPageRevision: { id: true, slug: true, title: true, content: true },
-                createCmsCategory: { id: true, url: true, slug: true, title: true },
-                createCmsRevision: { id: true },
-                listCmsCategories: {
-                    list: { id: true, url: true, slug: true, title: true, createdOn: true },
-                    meta: { count: true, totalCount: true, totalPages: true }
-                },
-                updateCmsCategory: { id: true, url: true, slug: true, title: true },
-                updateCmsRevision: {
-                    id: true,
-                    name: true,
-                    slug: true,
-                    title: true,
-                    active: true,
-                    content: { id: true, data: true, type: true, origin: true, settings: true }
-                },
-                listCmsWidgetPresets: {
-                    list: {
-                        id: true,
-                        title: true,
-                        type: true,
-                        data: true
-                    },
-                    meta: { count: true, totalCount: true, totalPages: true }
-                },
-                createCmsWidgetPreset: {
-                    id: true,
-                    title: true,
-                    type: true,
-                    data: true
+                    content: true
                 }
             },
             entities: {
-                File: { operations: {} },
-                Image: { operations: { read: true, create: true, delete: true, update: true } },
-                CmsPage: { operations: { read: true, create: true, delete: true, update: true } },
-                CmsWidget: { operations: { read: true, create: true, delete: true, update: true } },
-                CmsWidgetPreset: {
-                    operations: { read: true, create: true, delete: true, update: true }
-                },
-                CmsCategory: {
-                    operations: { read: true, create: true, delete: true, update: true }
-                },
-                CmsRevision: {
-                    operations: { read: true, create: true, delete: true, update: true }
+                CmsPage: {
+                    other: {
+                        operations: {
+                            read: true
+                        }
+                    }
                 }
             }
         }
     });
 
-    await cmsGroup.save();
+    await cmsPublicPolicy.save();
 
     const defaultGroup = await Group.findOne({ query: { slug: "default" } });
-    const clonedPermissions = _.cloneDeep(defaultGroup.permissions);
-
-    _.set(clonedPermissions, "api.loadPageRevision", {
-        id: true,
-        slug: true,
-        title: true,
-        content: true
-    });
-
-    _.set(clonedPermissions, "api.loadPageByUrl", {
-        id: true,
-        slug: true,
-        title: true,
-        content: true
-    });
-
-    defaultGroup.permissions = clonedPermissions;
+    defaultGroup.policies = [...(await defaultGroup.policies), cmsPublicPolicy];
     await defaultGroup.save();
 
     const blogCategory = new Category();

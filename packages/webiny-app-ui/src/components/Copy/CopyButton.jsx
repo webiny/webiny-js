@@ -1,6 +1,6 @@
-import React from 'react';
-import _ from 'lodash';
-import { app, i18n, createComponent } from 'webiny-app';
+import React from "react";
+import _ from "lodash";
+import { app, i18n, createComponent } from "webiny-app";
 
 const t = i18n.namespace("Webiny.Ui.Copy.CopyButton");
 class CopyButton extends React.Component {
@@ -31,12 +31,12 @@ class CopyButton extends React.Component {
             }
         });
 
-        this.clipboard.on('success', () => {
+        this.clipboard.on("success", () => {
             const onSuccessMessage = this.props.onSuccessMessage;
             if (_.isFunction(onSuccessMessage)) {
                 onSuccessMessage();
             } else if (_.isString(onSuccessMessage)) {
-                app.services.get('growler').info(onSuccessMessage);
+                app.services.get("growler").info(onSuccessMessage);
             }
         });
     }
@@ -46,10 +46,10 @@ class CopyButton extends React.Component {
             return this.props.render.call(this);
         }
 
-        const props = _.omit(this.props, ['renderer', 'onSuccessMessage', 'onCopy', 'value']);
+        const props = _.omit(this.props, ["renderer", "onSuccessMessage", "onCopy", "value"]);
         const { Button } = props.modules;
 
-        return <Button onRef={ref => this.dom = ref} {...props}/>;
+        return <Button onRef={ref => (this.dom = ref)} {...props} />;
     }
 }
 
@@ -61,4 +61,6 @@ CopyButton.defaultProps = {
     value: null
 };
 
-export default createComponent(CopyButton, { modules: ['Button', { Clipboard: () => import('clipboard') }] });
+export default createComponent(CopyButton, {
+    modules: ["Button", { Clipboard: "Vendor.Clipboard" }]
+});

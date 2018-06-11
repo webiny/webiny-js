@@ -47,7 +47,10 @@ class CopyInput extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { modules: { Button, FormGroup }, styles } = this.props;
+        const {
+            modules: { Button, FormGroup },
+            styles
+        } = this.props;
 
         const props = {
             readOnly: true,
@@ -84,5 +87,5 @@ CopyInput.defaultProps = {
 
 export default createComponent([CopyInput, FormComponent], {
     styles,
-    modules: ["Button", "FormGroup", { Clipboard: () => import("clipboard") }]
+    modules: ["Button", "FormGroup", { Clipboard: "Vendor.Clipboard" }]
 });

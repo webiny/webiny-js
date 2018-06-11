@@ -55,12 +55,12 @@ class ExportModal extends React.Component {
                     </Modal.Body>
                     <Modal.Footer>
                         <Button type="default" label="Cancel" onClick={this.props.hide} />
-                        {/* <Copy.Button
+                         <Copy.Button
                             label={t`Copy`}
                             type="primary"
                             value={this.state.content}
                             renderIf={this.state.content}
-                        />*/}
+                        />
                     </Modal.Footer>
                 </Modal.Content>
             </Modal.Dialog>
@@ -77,5 +77,5 @@ ExportModal.defaultProps = {
 };
 
 export default createComponent([ExportModal, ModalComponent], {
-    modules: ["Modal" /*"Copy",*/ /*"CodeHighlight"*/, , "Loader", "Button"]
+    modules: ["Modal", "Copy", "CodeHighlight", "Loader", "Button"]
 });

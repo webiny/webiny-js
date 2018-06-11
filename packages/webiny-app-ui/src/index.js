@@ -309,6 +309,10 @@ const app = () => {
                 factory: () => import("./components/Wizard")
             },
             {
+                name: "Vendor.Clipboard",
+                factory: () => import("clipboard")
+            },
+            {
                 name: "Vendor.Cropper",
                 factory: () => import("./vendor/Cropper")
             },
