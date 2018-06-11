@@ -171,6 +171,7 @@ class UsersForm extends React.Component {
                                                                 <Password
                                                                     label={t`New password`}
                                                                     name="password"
+                                                                    validators="required,password"
                                                                     placeholder={t`Type a new password`}
                                                                 />
                                                             </Bind>
@@ -179,7 +180,7 @@ class UsersForm extends React.Component {
                                                                 <Password
                                                                     label={t`Confirm password`}
                                                                     name="confirmPassword"
-                                                                    validators="eq:@password"
+                                                                    validators="required,password,eq:@password"
                                                                     placeholder={t`Retype the new password`}
                                                                 >
                                                                     <validator name="eq">
