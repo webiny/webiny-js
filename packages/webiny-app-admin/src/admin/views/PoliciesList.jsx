@@ -58,14 +58,16 @@ class PoliciesList extends React.Component {
 
                                                 <List {...listProps}>
                                                     <List.FormFilters>
-                                                        {({ apply }) => (
+                                                        {({ apply, Bind }) => (
                                                             <Grid.Row>
                                                                 <Grid.Col all={12}>
-                                                                    <Input
-                                                                        name="search.query"
-                                                                        placeholder={t`Search by name, description or slug`}
-                                                                        onEnter={apply()}
-                                                                    />
+                                                                    <Bind>
+                                                                        <Input
+                                                                            name="search.query"
+                                                                            placeholder={t`Search by name, description or slug`}
+                                                                            onEnter={apply()}
+                                                                        />
+                                                                    </Bind>
                                                                 </Grid.Col>
                                                             </Grid.Row>
                                                         )}

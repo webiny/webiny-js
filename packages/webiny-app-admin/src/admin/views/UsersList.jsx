@@ -27,15 +27,10 @@ class UsersList extends React.Component {
         const { View, List, ListData, Link, Icon, Input, AdminLayout, Loader } = this.props.modules;
         const Table = List.Table;
 
-        const groups = <Link route="Groups.List">{t`Groups`}</Link>;
-        const permissions = <Link route="Permissions.List">{t`Permissions`}</Link>;
-
         return (
             <AdminLayout>
                 <View.List>
-                    <View.Header
-                        title={t`Security - Users`}
-                    >
+                    <View.Header title={t`Security - Users`}>
                         <Link type="primary" route="Users.Create" align="right">
                             <Icon icon="plus-circle" />
                             {t`Create user`}
@@ -53,12 +48,14 @@ class UsersList extends React.Component {
                                     {loading && <Loader />}
                                     <List {...listProps}>
                                         <List.FormFilters>
-                                            {({ apply }) => (
-                                                <Input
-                                                    name="search.query"
-                                                    placeholder={t`Search by name or email`}
-                                                    onEnter={apply()}
-                                                />
+                                            {({ apply, Bind }) => (
+                                                <Bind>
+                                                    <Input
+                                                        name="search.query"
+                                                        placeholder={t`Search by name or email`}
+                                                        onEnter={apply()}
+                                                    />
+                                                </Bind>
                                             )}
                                         </List.FormFilters>
                                         <Table>
