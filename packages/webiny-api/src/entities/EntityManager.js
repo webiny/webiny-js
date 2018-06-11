@@ -25,7 +25,7 @@ class EntityManager {
         callbacks.map(cb => cb(entity));
     }
 
-    addEntityClass(entityClass: Class<Entity>): EntityManager {
+    registerEntity(entityClass: Class<Entity>): EntityManager {
         this.entityClasses.push(entityClass);
         return this;
     }

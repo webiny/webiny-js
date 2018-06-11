@@ -10,20 +10,20 @@ export default () => {
     return {
         init({ api }: Object, next: Function) {
             api.graphql.schema(schema => {
-                schema.addEntity(Page);
-                schema.addEntity(Category);
-                schema.addEntity(Revision);
-                schema.addEntity(Widget);
-                schema.addEntity(WidgetPreset);
+                schema.registerEntity(Page);
+                schema.registerEntity(Category);
+                schema.registerEntity(Revision);
+                schema.registerEntity(Widget);
+                schema.registerEntity(WidgetPreset);
 
                 addPageQueries(schema);
             });
 
-            api.entities.addEntityClass(Page);
-            api.entities.addEntityClass(Category);
-            api.entities.addEntityClass(Revision);
-            api.entities.addEntityClass(Widget);
-            api.entities.addEntityClass(WidgetPreset);
+            api.entities.registerEntity(Page);
+            api.entities.registerEntity(Category);
+            api.entities.registerEntity(Revision);
+            api.entities.registerEntity(Widget);
+            api.entities.registerEntity(WidgetPreset);
 
             next();
         },

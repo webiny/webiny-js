@@ -58,14 +58,14 @@ export default () => {
 
             api.graphql.schema((schema: Schema) => {
                 schema.addAttributeConverter(convertToGraphQL);
-                schema.addEntity(ApiToken);
-                schema.addEntity(File);
-                schema.addEntity(Image);
-                schema.addEntity(Group);
-                schema.addEntity(Groups2Entities);
-                schema.addEntity(Policy);
-                schema.addEntity(Policies2Entities);
-                schema.addEntity(User);
+                schema.registerEntity(ApiToken);
+                schema.registerEntity(File);
+                schema.registerEntity(Image);
+                schema.registerEntity(Group);
+                schema.registerEntity(Groups2Entities);
+                schema.registerEntity(Policy);
+                schema.registerEntity(Policies2Entities);
+                schema.registerEntity(User);
 
                 schema.addType({
                     meta: {
@@ -92,14 +92,14 @@ export default () => {
                 overrideCreateApiTokenMutation(api, api.config, schema);
             });
 
-            api.entities.addEntityClass(ApiToken);
-            api.entities.addEntityClass(File);
-            api.entities.addEntityClass(Image);
-            api.entities.addEntityClass(Group);
-            api.entities.addEntityClass(Groups2Entities);
-            api.entities.addEntityClass(Policy);
-            api.entities.addEntityClass(Policies2Entities);
-            api.entities.addEntityClass(User);
+            api.entities.registerEntity(ApiToken);
+            api.entities.registerEntity(File);
+            api.entities.registerEntity(Image);
+            api.entities.registerEntity(Group);
+            api.entities.registerEntity(Groups2Entities);
+            api.entities.registerEntity(Policy);
+            api.entities.registerEntity(Policies2Entities);
+            api.entities.registerEntity(User);
 
             next();
         },

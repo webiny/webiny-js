@@ -38,7 +38,7 @@ class Schema {
         return (this.types[name] && this.types[name].type) || null;
     }
 
-    addEntity(entityClass: Class<Entity>, options?: SchemaEntityOptions = { crud: true }) {
+    registerEntity(entityClass: Class<Entity>, options?: SchemaEntityOptions = { crud: true }) {
         // 1. Create entity type (and all related types recursively)
         addEntityToSchema(entityClass, this);
         // 2. optionally create CRUD fields
