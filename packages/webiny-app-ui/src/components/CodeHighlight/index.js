@@ -12,7 +12,6 @@ class CodeHighlight extends React.Component {
     }
 
     doHighlight() {
-        console.log(this.props.modules);
         this.props.modules.hljs.highlightBlock(this.dom);
     }
 
