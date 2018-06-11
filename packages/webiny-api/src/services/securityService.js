@@ -22,10 +22,6 @@ class SecurityService implements IAuthentication {
     }
 
     async init() {
-        if (process.env.INSTALL === "true") {
-            return;
-        }
-
         this.defaultPermissions = await Policy.getDefaultPoliciesPermissions();
 
         // Attach event listeners.

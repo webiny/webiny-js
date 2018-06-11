@@ -50,7 +50,11 @@ export default () => {
                 return new SecurityService(api.config.security);
             });
 
-            await api.services.get("security").init();
+            // If we are in the install process, we don't need to initialize security just yet. Let's first allow
+            // all apps to be installed, and then do the initialization in the "postInstall" lifecycle event.
+            if (!(process.env.INSTALL === "true")) {
+                await api.services.get("security").init();
+            }
 
             api.graphql.schema((schema: Schema) => {
                 schema.addAttributeConverter(convertToGraphQL);
@@ -103,7 +107,12 @@ export default () => {
         async install(params: Object, next: Function) {
             const { default: install } = await import("./install");
             await install();
+            next();
+        },
 
+        async postInstall(params: Object, next: Function) {
+            const { api } = params;
+            await api.services.get("security").init();
             next();
         }
     };
