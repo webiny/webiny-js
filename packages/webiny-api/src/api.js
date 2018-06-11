@@ -12,7 +12,14 @@ import coreApp from "./core";
 import { argv } from "yargs";
 process.env.INSTALL = JSON.stringify(argv.install || false);
 
-declare type AppType = { init: Function, install?: Function };
+declare type AppType = {
+    preInit?: Function,
+    init: Function,
+    postInit?: Function,
+    install?: Function,
+    preInstall?: Function,
+    postInstall?: Function
+};
 
 class Api {
     config: Object;
@@ -52,16 +59,39 @@ class Api {
         // Initialize registered Webiny apps.
         await compose(this.apps.map(app => app.init))({ api: this });
 
-        // Optionally run install for each registered app
+        // Optionally run install process for each registered app.
         if (process.env.INSTALL === "true") {
-            const installers = [];
+            // Installation happens in three stages - "pre", "main" and "post" stage.
+            // "pre" - will be executed first, before main chain.
+            // "main" - will be executed after all install processes are finished in the pre stage
+            // "post" - will be executed after all install processes are finished in the main stage
+            //
+            // Good example of usage is initialization of security service. After main stage is done, core app will
+            // initialize security service in the "post" step.
+            const install = {
+                pre: [],
+                main: [],
+                post: []
+            };
+
             this.apps.map(app => {
+                if (typeof app.preInstall === "function") {
+                    install.pre.push(app.preInstall);
+                }
+
                 if (typeof app.install === "function") {
-                    installers.push(app.install);
+                    install.main.push(app.install);
+                }
+
+                if (typeof app.postInstall === "function") {
+                    install.post.push(app.postInstall);
                 }
             });
 
-            await compose(installers)({ api: this });
+            await compose(install.pre)({ api: this });
+            await compose(install.main)({ api: this });
+            await compose(install.post)({ api: this });
+
             process.env.INSTALL = "false";
         }
 
