@@ -6,7 +6,7 @@ import { MemoryDriver } from "webiny-entity-memory";
 import registerAttributes from "./../src/attributes/registerFileAttributes";
 import registerBufferAttribute from "../src/attributes/registerBufferAttribute";
 import { Entity, File } from "../src/entities";
-import userFactory from "./utils/user.entity";
+import userFactory from "./utils/User.entity";
 import MockDriver from "./utils/storageDriverMock";
 
 describe("Files attribute test", () => {

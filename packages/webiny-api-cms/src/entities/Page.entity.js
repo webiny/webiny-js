@@ -1,9 +1,9 @@
 // @flow
 import _ from "lodash";
 import { Entity } from "webiny-api";
-import Category from "./category.entity";
-import WidgetModel from "./widget.model";
-import Revision from "./revision.entity";
+import Category from "./Category.entity";
+import WidgetModel from "./Widget.model";
+import Revision from "./Revision.entity";
 
 class Page extends Entity {
     static filter: Object;

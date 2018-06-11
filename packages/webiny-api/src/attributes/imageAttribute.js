@@ -2,7 +2,7 @@
 import _ from "lodash";
 import FileAttribute from "./fileAttribute";
 import type { ImageProcessor } from "../../types";
-import Image, { type ImagePresets } from "../entities/image.entity";
+import Image, { type ImagePresets } from "../entities/Image.entity";
 
 class ImageAttribute extends FileAttribute {
     quality: number;

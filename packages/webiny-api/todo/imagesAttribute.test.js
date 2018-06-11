@@ -6,7 +6,7 @@ import { MemoryDriver } from "webiny-entity-memory";
 import registerAttributes from "./../src/attributes/registerImageAttributes";
 import registerBufferAttribute from "../src/attributes/registerBufferAttribute";
 import { Entity, Image } from "../src/entities";
-import entityFactory from "./utils/event.entity";
+import entityFactory from "./utils/Event.entity";
 import MockDriver from "./utils/storageDriverMock";
 import imageProcessor from "./utils/imageProcessor";
 

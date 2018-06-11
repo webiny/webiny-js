@@ -1,6 +1,6 @@
 import { GraphQLNonNull } from "graphql";
 import GraphQLJSON from "graphql-type-json";
-import ApiToken from "./../../entities/apiToken.entity";
+import ApiToken from "./../../entities/ApiToken.entity";
 import { ModelError } from "webiny-model";
 import InvalidAttributesError from "./../../../src/graphql/utils/crud/InvalidAttributesError";
 

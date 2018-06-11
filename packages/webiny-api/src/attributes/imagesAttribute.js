@@ -4,7 +4,7 @@ import FilesAttribute from "./filesAttribute";
 import { Image } from "./../index";
 import type { ImageProcessor } from "../../types";
 import ImageAttribute from "./imageAttribute";
-import type { ImagePresets } from "../entities/image.entity";
+import type { ImagePresets } from "../entities/Image.entity";
 
 class ImagesAttribute extends FilesAttribute {
     setProcessor(processor: ImageProcessor): ImageAttribute {

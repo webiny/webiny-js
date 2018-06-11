@@ -1,5 +1,4 @@
 import React, { Fragment } from "react";
-
 import _ from "lodash";
 import { i18n, createComponent } from "webiny-app";
 

@@ -1,9 +1,9 @@
 // @flow
-import Page from "./entities/page.entity";
-import Revision from "./entities/revision.entity";
-import Category from "./entities/category.entity";
-import Widget from "./entities/widget.entity";
-import WidgetPreset from "./entities/widgetPreset.entity";
+import Page from "./entities/Page.entity";
+import Revision from "./entities/Revision.entity";
+import Category from "./entities/Category.entity";
+import Widget from "./entities/Widget.entity";
+import WidgetPreset from "./entities/WidgetPreset.entity";
 import addPageQueries from "./queries/page";
 
 export default () => {
