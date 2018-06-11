@@ -126,7 +126,7 @@ export default () => {
 
             app.router.addRoute({
                 name: "Users.Create",
-                path: "/Users/new",
+                path: "/users/new",
                 component: () => import("./admin/views/UsersForm").then(m => m.default),
                 title: "Security - Create User",
                 group: securityManager
