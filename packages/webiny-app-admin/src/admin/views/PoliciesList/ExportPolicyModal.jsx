@@ -6,6 +6,8 @@ import { i18n, createComponent, app } from "webiny-app";
 const t = i18n.namespace("Security.Modal.ExportModal");
 import { ModalComponent } from "webiny-app-ui";
 
+import css from "./exportPolicyModal.scss";
+
 class ExportPolicyModal extends React.Component {
     constructor(props) {
         super(props);
@@ -46,7 +48,9 @@ class ExportPolicyModal extends React.Component {
 
         return (
             <Modal.Dialog>
-                <Modal.Content>
+
+
+                <Modal.Content className={css.exportPolicyModal}>
                     <Modal.Header
                         title={t`Export {label}`({ label: this.props.data.name })}
                         onClose={this.props.hide}
