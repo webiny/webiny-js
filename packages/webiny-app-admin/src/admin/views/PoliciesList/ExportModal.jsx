@@ -31,7 +31,12 @@ class ExportModal extends React.Component {
                 `
             })
             .then(({ data }) => {
-                const content = _.pick(data.getSecurityPolicy, ["name", "slug", "description", "permissions"]);
+                const content = _.pick(data.getSecurityPolicy, [
+                    "name",
+                    "slug",
+                    "description",
+                    "permissions"
+                ]);
                 this.setState({ loading: false, content: JSON.stringify(content, null, 2) });
             });
     }
@@ -50,7 +55,10 @@ class ExportModal extends React.Component {
                         {this.state.loading ? (
                             <Loader />
                         ) : (
-                            <pre style={{ maxHeight: 500 }}>{this.state.content}</pre>
+                            <div>
+                                <CodeHighlight language="json">{this.state.content}</CodeHighlight>
+                            </div>
+
                         )}
                     </Modal.Body>
                     <Modal.Footer>

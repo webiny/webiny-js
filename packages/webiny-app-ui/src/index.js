@@ -337,6 +337,10 @@ const app = () => {
                 factory: () => import("./vendor/ReactCustomScrollbars")
             },
             {
+                name: "Vendor.Highlight",
+                factory: () => import("./vendor/Highlight")
+            },
+            {
                 name: "Vendor.Select2",
                 factory: () => import("./vendor/Select2")
             }

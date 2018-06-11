@@ -34,4 +34,4 @@ CodeHighlight.defaultProps = {
     language: "html"
 };
 
-export default createComponent(CodeHighlight, { modules: [{ hljs: "Webiny/Vendors/Highlight" }] });
+export default createComponent(CodeHighlight, { modules: { hljs: "Vendor.Highlight" } });
