@@ -144,6 +144,7 @@ class UserAccount extends React.Component {
                                             <Password
                                                 label={t`New password`}
                                                 name="password"
+                                                validators="password"
                                                 placeholder={t`Type your new password`}
                                             />
                                         </Bind>
