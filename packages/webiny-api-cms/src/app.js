@@ -1,9 +1,9 @@
 // @flow
 import Page from "./entities/page.entity";
-import Layout from "./entities/layout.entity";
 import Revision from "./entities/revision.entity";
 import Category from "./entities/category.entity";
 import Widget from "./entities/widget.entity";
+import WidgetPreset from "./entities/widgetPreset.entity";
 import addPageQueries from "./queries/page";
 
 export default () => {
@@ -11,10 +11,10 @@ export default () => {
         init({ app }: Object, next: Function) {
             app.graphql.schema(schema => {
                 schema.addEntity(Page);
-                schema.addEntity(Layout);
                 schema.addEntity(Category);
                 schema.addEntity(Revision);
                 schema.addEntity(Widget);
+                schema.addEntity(WidgetPreset);
 
                 addPageQueries(schema);
             });
@@ -23,6 +23,7 @@ export default () => {
             app.entities.addEntityClass(Category);
             app.entities.addEntityClass(Revision);
             app.entities.addEntityClass(Widget);
+            app.entities.addEntityClass(WidgetPreset);
 
             next();
         },

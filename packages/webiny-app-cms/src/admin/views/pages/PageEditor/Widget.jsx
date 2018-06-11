@@ -1,7 +1,7 @@
 import React from "react";
 import classSet from "classnames";
 import { createComponent } from "webiny-app";
-import WidgetContainer from "./../../../components/WidgetContainer";
+import { WidgetContainer } from "webiny-app-cms";
 import styles from "./Widget.scss?prefix=wby-cms-editor-widget";
 
 class Widget extends React.Component {
@@ -9,6 +9,7 @@ class Widget extends React.Component {
         const {
             moveUp,
             moveDown,
+            selectWidget,
             editWidget,
             deleteWidget,
             widget,
@@ -36,6 +37,9 @@ class Widget extends React.Component {
                     </span>
                     <span onClick={() => deleteWidget(widget)} className={styles.action}>
                         <Icon icon={"trash-alt"} /> Delete{" "}
+                    </span>
+                    <span onClick={selectWidget} className={styles.action}>
+                        <Icon icon={"plus-circle"} /> Add widget{" "}
                     </span>
                 </div>
                 <Form model={widget.data || {}} onChange={onChange}>

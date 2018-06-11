@@ -3,7 +3,7 @@ import _ from "lodash";
 import $ from "jquery";
 import classSet from "classnames";
 import { createComponent } from "webiny-app";
-import styles from "./styles.css?prefix=Webiny_Ui_Dropdown";
+import styles from "./styles.scss?prefix=Webiny_Ui_Dropdown";
 
 class Dropdown extends React.Component {
     constructor(props) {

@@ -1,6 +1,6 @@
 import React from "react";
 import { createComponent } from "webiny-app";
-import styles from "./styles.css?prefix=Webiny_Ui_Dropdown";
+import styles from "./styles.scss?prefix=Webiny_Ui_Dropdown";
 
 class Divider extends React.Component {
     render() {

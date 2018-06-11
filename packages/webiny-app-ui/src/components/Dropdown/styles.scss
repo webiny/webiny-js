@@ -199,7 +199,7 @@
 
 @keyframes slideInDown {
 	from {
-		transform: translate3d(0, -100%, 0);
+		transform: translateY(-50px);
 		visibility: visible;
 	}
 
@@ -215,8 +215,8 @@
 
 	to {
 		visibility: hidden;
-		height: 0px;
+		height: 0;
 		overflow: hidden;
-		transform: translate3d(0, -100%, 0);
+		transform: translateY(-50px);
 	}
 }

@@ -1,8 +1,12 @@
 import React from "react";
-import { createComponent } from "webiny-app";
-import WidgetSettingsContainer from "./../../../components/WidgetSettingsContainer";
+import { Component } from "webiny-app";
+import { WidgetSettingsContainer } from "webiny-app-cms";
 
-class WidgetSettings extends React.Component {
+@Component({
+    modules: ["Form", "Icon"],
+    services: ["cms"]
+})
+export default class WidgetSettings extends React.Component {
     render() {
         const {
             modules: { Form },
@@ -34,8 +38,3 @@ class WidgetSettings extends React.Component {
         );
     }
 }
-
-export default createComponent(WidgetSettings, {
-    modules: ["Form", "Icon"],
-    services: ["cms"]
-});

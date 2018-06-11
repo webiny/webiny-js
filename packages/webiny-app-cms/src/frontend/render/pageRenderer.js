@@ -2,7 +2,7 @@ import React from "react";
 import invariant from "invariant";
 import compose from "webiny-compose";
 import { app } from "webiny-app";
-import Page from "./Page";
+import { WidgetContainer } from "webiny-app-cms";
 
 /**
  * Default logic for single widget rendering.
@@ -13,7 +13,8 @@ const defaultWidgetRender = ({ widget }) => {
     const widgetDefinition = cms.getWidget(widget.type);
     invariant(widgetDefinition, `Missing widget definition for type "${widget.type}"`);
 
-    return React.cloneElement(widgetDefinition.widget.render({ widget }), { widget });
+    const widgetElement = widgetDefinition.widget.render({ WidgetContainer, widget });
+    return React.cloneElement(widgetElement, { widget });
 };
 
 /**
@@ -51,6 +52,7 @@ export const createRenderer = config => {
             // $FlowIgnore
             content.push(React.cloneElement(output, { key: data.content[i].id }));
         }
-        return <Page page={data}>{content}</Page>;
+
+        return config.page ? config.page(content) : <section>{content}</section>;
     };
 };

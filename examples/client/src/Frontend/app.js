@@ -14,7 +14,13 @@ if (!app.initialized) {
     app.use(cmsApp());
 
     app.router.configure({
-        middleware: [cmsMiddleware(), resolveMiddleware(), renderMiddleware()]
+        middleware: [
+            cmsMiddleware({
+                // page: content => <div style={{ width: 500, margin: "0 auto"}}>{content}</div>
+            }),
+            resolveMiddleware(),
+            renderMiddleware()
+        ]
     });
 
     app.router.addRoute({

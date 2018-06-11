@@ -4,18 +4,6 @@ import PageContent from "./PageEditor/PageContent";
 import Header from "./PageEditor/Header";
 
 class PageEditor extends React.Component {
-    filterContent({ content, ...model }, submit) {
-        model.content = content.map(widget => {
-            if (widget.origin) {
-                delete widget["data"];
-            }
-
-            return widget;
-        });
-
-        submit(model);
-    }
-
     render() {
         const { Form, FormData, FormError, Loader } = this.props.modules;
 
@@ -27,7 +15,7 @@ class PageEditor extends React.Component {
                 fields={"id name active title slug content { id type data }"}
             >
                 {({ model, submit, error, loading }) => (
-                    <Form model={model} onSubmit={model => this.filterContent(model, submit)}>
+                    <Form model={model} onSubmit={submit} onChange={model => console.log(model)}>
                         {({ submit, model, Bind }) => (
                             <Fragment>
                                 {loading && <Loader />}

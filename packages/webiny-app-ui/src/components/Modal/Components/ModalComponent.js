@@ -17,7 +17,7 @@ class ModalComponent extends React.Component {
             isDialogShown: false
         };
 
-        this.modalShowDuration = 500;
+        this.modalShowDuration = 400;
         this.modalHideDuration = 250;
         this.backdropShowDuration = 100;
         this.backdropHideDuration = 200;
@@ -28,10 +28,6 @@ class ModalComponent extends React.Component {
         }
 
         this.modalContainer = document.querySelector(props.modalContainerTag);
-
-        ["show", "hide", "bindHandlers", "unbindHandlers", "animationFinish"].map(m => {
-            this[m] = this[m].bind(this);
-        });
     }
 
     componentWillMount() {
@@ -68,7 +64,7 @@ class ModalComponent extends React.Component {
         return !_.isEqual(nextProps, this.props) || !_.isEqual(nextState, this.state);
     }
 
-    bindHandlers() {
+    bindHandlers = () => {
         this.unbindHandlers();
         const namespace = "." + this.id;
         $(this.props.modalContainerTag)
@@ -90,13 +86,13 @@ class ModalComponent extends React.Component {
                 }
                 this.clickStartedOnBackdrop = false;
             });
-    }
+    };
 
-    unbindHandlers() {
+    unbindHandlers = () => {
         $(this.props.modalContainerTag).off("." + this.id);
-    }
+    };
 
-    hide() {
+    hide = () => {
         if (!this.state.isDialogShown || this.state.animating) {
             return Promise.resolve(true);
         }
@@ -110,9 +106,9 @@ class ModalComponent extends React.Component {
                 });
             });
         });
-    }
+    };
 
-    show(data = this.props.data || {}) {
+    show = (data = this.props.data || {}) => {
         // This shows the modal container element in case it was previously hidden by another dialog
         this.props.onShow();
 
@@ -128,15 +124,16 @@ class ModalComponent extends React.Component {
                 });
             });
         });
-    }
+    };
 
-    animationFinish(isDialogShown) {
+    onEntered = () => {
         this.setState({ animating: false });
-        if (!isDialogShown) {
-            this.setState({ isShown: false }, this.props.onHidden);
-            this.hideResolve && this.hideResolve();
-        }
-    }
+    };
+
+    onExited = () => {
+        this.setState({ animating: false, isShown: false }, this.props.onHidden);
+        this.hideResolve && this.hideResolve();
+    };
 
     renderDialog() {
         if (!this.state.isShown) {
@@ -160,10 +157,25 @@ class ModalComponent extends React.Component {
             <div style={_.merge({}, { display: "block" }, this.props.style)}>
                 <Animate
                     trigger={this.state.isDialogShown}
-                    show={{ opacity: 0.8, duration: this.backdropShowDuration, ease: "easeIn" }}
-                    hide={{ opacity: 0, duration: this.backdropHideDuration, ease: "easeOut" }}
+                    enterAnimation={{
+                        opacity: 0.8,
+                        duration: this.backdropShowDuration,
+                        type: "easeIn"
+                    }}
+                    exitAnimation={{
+                        opacity: 0,
+                        duration: this.backdropHideDuration,
+                        type: "easeOut"
+                    }}
                 >
-                    <div className={styles.backdrop} style={{ opacity: 0 }} data-role="backdrop" />
+                    {({ ref }) => (
+                        <div
+                            ref={ref}
+                            className={styles.backdrop}
+                            style={{ opacity: 0 }}
+                            data-role="backdrop"
+                        />
+                    )}
                 </Animate>
                 <div
                     className={className}
@@ -173,32 +185,40 @@ class ModalComponent extends React.Component {
                 >
                     <Animate
                         trigger={this.state.isDialogShown}
-                        onFinish={this.animationFinish}
-                        show={{
+                        onEntered={this.onEntered}
+                        onExited={this.onExited}
+                        enterAnimation={{
                             translateY: 50,
-                            ease: "spring",
+                            type: "spring",
                             duration: this.modalShowDuration,
                             frequency: 50,
                             friction: 300
                         }}
-                        hide={{
+                        exitAnimation={{
                             translateY: -100,
-                            ease: "easeOut",
+                            type: "easeOut",
                             opacity: 0,
                             duration: this.modalHideDuration
                         }}
                     >
-                        <div
-                            className={classSet(styles.dialog, styles.show, this.props.className)}
-                            style={{ top: -50 }}
-                            data-role="dialog"
-                        >
-                            {React.cloneElement(content, {
-                                data: this.state.data,
-                                hide: this.hide,
-                                animating: this.state.animating
-                            })}
-                        </div>
+                        {({ ref }) => (
+                            <div
+                                ref={ref}
+                                className={classSet(
+                                    styles.dialog,
+                                    styles.show,
+                                    this.props.className
+                                )}
+                                style={{ top: -50 }}
+                                data-role="dialog"
+                            >
+                                {React.cloneElement(content, {
+                                    data: this.state.data,
+                                    hide: this.hide,
+                                    animating: this.state.animating
+                                })}
+                            </div>
+                        )}
                     </Animate>
                 </div>
             </div>
@@ -226,5 +246,5 @@ ModalComponent.defaultProps = {
 
 export default createComponent(ModalComponent, {
     styles,
-    modules: ["Animate", { dynamics: () => import("dynamics.js") }]
+    modules: ["Animate"]
 });

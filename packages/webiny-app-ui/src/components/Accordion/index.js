@@ -25,7 +25,11 @@ class Accordion extends React.Component {
     static Item = Item;
 
     onClick = index => {
-        this.setState({ active: index });
+        this.setState(state => {
+            return {
+                active: state.active === index ? null : index
+            };
+        });
     };
 
     render() {

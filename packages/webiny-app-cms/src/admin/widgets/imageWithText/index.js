@@ -32,10 +32,11 @@ class ImageWithText extends EditorWidget {
     renderSettings({ WidgetSettingsContainer }) {
         return (
             <WidgetSettingsContainer>
-                {({ settingsGroup, widgetProps }) => [
+                {({ settingsGroup, styleGroup, widgetProps }) => [
                     settingsGroup(
                         <Settings {...widgetProps} handleImage={this.handleImage.bind(this)} />
-                    )
+                    ),
+                    styleGroup()
                 ]}
             </WidgetSettingsContainer>
         );

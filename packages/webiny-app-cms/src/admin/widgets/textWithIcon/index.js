@@ -18,11 +18,12 @@ class TextWidget extends EditorWidget {
     renderSettings({ WidgetSettingsContainer }) {
         return (
             <WidgetSettingsContainer>
-                {({ widgetProps, settingsGroup, cssGroup }) => [
+                {({ widgetProps, settingsGroup, styleGroup, presetGroup }) => [
                     // Register widget settings using the built-in HOC
+                    presetGroup(),
                     settingsGroup(<WidgetSettings {...widgetProps} />),
-                    // Register CSS settings using the built-in HOC
-                    cssGroup()
+                    // Register style settings using the built-in HOC
+                    styleGroup()
                 ]}
             </WidgetSettingsContainer>
         );

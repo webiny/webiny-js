@@ -12,17 +12,14 @@
     min-width: 950px;
     min-height: 87vh;
     margin: 50px auto;
-    padding: 10px 0;
   }
 
   .editorSidebar {
     position: fixed;
-    right: 0;
+    right: -400px;
     width: 400px;
     top: 53px;
     z-index: 100;
-    opacity: 0;
-    transform: translateX(400px);
     border: 1px solid #DCDCDC;
     height: 100vh;
     background-color: #fff;

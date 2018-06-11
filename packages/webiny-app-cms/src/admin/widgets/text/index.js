@@ -17,9 +17,10 @@ class ParagraphWidget extends EditorWidget {
     renderSettings({ WidgetSettingsContainer }) {
         return (
             <WidgetSettingsContainer>
-                {({ cssGroup }) => [
-                    // Register CSS settings using the built-in HOC
-                    cssGroup()
+                {({ styleGroup, presetGroup }) => [
+                    presetGroup(),
+                    // Register style settings using the built-in HOC
+                    styleGroup()
                 ]}
             </WidgetSettingsContainer>
         );

@@ -1,7 +1,7 @@
 // @flow
 import { Entity } from "webiny-api";
 
-class Widget extends Entity {
+class WidgetPreset extends Entity {
     constructor() {
         super();
 
@@ -11,7 +11,7 @@ class Widget extends Entity {
     }
 }
 
-Widget.classId = "CmsWidget";
-Widget.tableName = "Cms_Widgets";
+WidgetPreset.classId = "CmsWidgetPreset";
+WidgetPreset.tableName = "Cms_WidgetPresets";
 
-export default Widget;
+export default WidgetPreset;

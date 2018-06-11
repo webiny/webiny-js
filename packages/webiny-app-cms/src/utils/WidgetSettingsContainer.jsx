@@ -1,7 +1,10 @@
 import React from "react";
-import { createComponent } from "webiny-app";
+import { Component } from "webiny-app";
+import WidgetStyle from "./SettingsGroup/WidgetStyle";
+import WidgetPreset from "./SettingsGroup/WidgetPreset";
 
-class WidgetSettingsContainer extends React.Component {
+@Component({ modules: ["Accordion"] })
+export default class WidgetSettingsContainer extends React.Component {
     getRenderProps = () => {
         const {
             widget,
@@ -9,13 +12,16 @@ class WidgetSettingsContainer extends React.Component {
             Bind,
             modules: { Accordion }
         } = this.props;
+
+        const widgetProps = {
+            widget,
+            onChange,
+            Bind
+        };
+
         return {
             Group: Accordion.Item,
-            widgetProps: {
-                widget,
-                onChange,
-                Bind
-            },
+            widgetProps,
             settingsGroup: element => {
                 return (
                     <Accordion.Item icon="cog" title={"Settings"}>
@@ -23,13 +29,18 @@ class WidgetSettingsContainer extends React.Component {
                     </Accordion.Item>
                 );
             },
-            cssGroup: element => {
-                if (!element) {
-                    element = "Default CSS settings";
-                }
-
+            styleGroup: element => {
                 return (
-                    <Accordion.Item icon={"sliders-h"} title={"CSS"}>
+                    <Accordion.Item icon={"sliders-h"} title={"Style"}>
+                        <WidgetStyle {...widgetProps} />
+                        {element}
+                    </Accordion.Item>
+                );
+            },
+            presetGroup: element => {
+                return (
+                    <Accordion.Item icon="save" title={"Preset"}>
+                        <WidgetPreset {...widgetProps} />
                         {element}
                     </Accordion.Item>
                 );
@@ -52,5 +63,3 @@ class WidgetSettingsContainer extends React.Component {
         );
     }
 }
-
-export default createComponent(WidgetSettingsContainer, { modules: ["Accordion"] });

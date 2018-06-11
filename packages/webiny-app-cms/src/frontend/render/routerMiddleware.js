@@ -1,10 +1,12 @@
 // @flow
+import type { Node } from "react";
 import api from "./api";
 import { createRenderer } from "./pageRenderer";
 
 declare type CmsMiddlewareConfig = {
     widget?: Array<(params: Object, next: Function, finish: Function) => void>,
-    handle?: (params: Object) => boolean
+    handle?: (params: Object) => boolean,
+    page?: (content: Node) => Node
 };
 
 export default (config: CmsMiddlewareConfig = {}) => {

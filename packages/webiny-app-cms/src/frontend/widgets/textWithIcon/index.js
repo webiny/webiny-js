@@ -3,8 +3,12 @@ import { Widget } from "webiny-app-cms";
 import TextWithIconWidget from "./Widget";
 
 class TextWithIcon extends Widget {
-    render({ widget }) {
-        return <TextWithIconWidget data={widget.data} />;
+    render({ WidgetContainer }) {
+        return (
+            <WidgetContainer>
+                {({ widgetProps }) => <TextWithIconWidget {...widgetProps} />}
+            </WidgetContainer>
+        );
     }
 }
 

@@ -136,6 +136,21 @@ export default async () => {
                     title: true,
                     active: true,
                     content: { id: true, data: true, type: true, origin: true, settings: true }
+                },
+                listCmsWidgetPresets: {
+                    list: {
+                        id: true,
+                        title: true,
+                        type: true,
+                        data: true
+                    },
+                    meta: { count: true, totalCount: true, totalPages: true }
+                },
+                createCmsWidgetPreset: {
+                    id: true,
+                    title: true,
+                    type: true,
+                    data: true
                 }
             },
             entities: {
@@ -143,6 +158,9 @@ export default async () => {
                 Image: { operations: { read: true, create: true, delete: true, update: true } },
                 CmsPage: { operations: { read: true, create: true, delete: true, update: true } },
                 CmsWidget: { operations: { read: true, create: true, delete: true, update: true } },
+                CmsWidgetPreset: {
+                    operations: { read: true, create: true, delete: true, update: true }
+                },
                 CmsCategory: {
                     operations: { read: true, create: true, delete: true, update: true }
                 },

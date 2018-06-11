@@ -9,18 +9,29 @@ class ValidationMessage extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { modules: { Animate }, children, show } = this.props;
+        const {
+            modules: { Animate },
+            children,
+            show
+        } = this.props;
 
         let css = show ? styles.validationMessageError : null;
 
         return (
             <Animate
                 trigger={show}
-                hide={this.props.hideValidationAnimation}
-                show={this.props.showValidationAnimation}
-                className={styles.validationMessageHolder}
+                mountOnEnter
+                unmountOnExit
+                enterAnimation={this.props.showValidationAnimation}
+                exitAnimation={this.props.hideValidationAnimation}
             >
-                <span className={classSet(styles.validationMessage, css)}>{children}</span>
+                {({ ref }) => (
+                    <div className={styles.validationMessageHolder}>
+                        <span ref={ref} className={classSet(styles.validationMessage, css)}>
+                            {children}
+                        </span>
+                    </div>
+                )}
             </Animate>
         );
     }
@@ -28,8 +39,8 @@ class ValidationMessage extends React.Component {
 
 ValidationMessage.defaultProps = {
     show: false,
-    hideValidationAnimation: { translateY: 0, opacity: 0, duration: 225 },
-    showValidationAnimation: { translateY: 50, opacity: 1, duration: 225 }
+    showValidationAnimation: { type: "easeIn", translateY: 50, opacity: 1, duration: 225 },
+    hideValidationAnimation: { type: "easeOut", translateY: 0, opacity: 0, duration: 225 }
 };
 
 export default createComponent(ValidationMessage, { modules: ["Animate"], styles });

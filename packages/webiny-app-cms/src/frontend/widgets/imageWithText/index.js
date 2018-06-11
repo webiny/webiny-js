@@ -4,7 +4,7 @@ import { Widget } from "webiny-app-cms";
 import placeholderImage from "./placeholder.jpg";
 
 const ImageWithTextComponent = Component({ modules: ["SlateEditor"] })(
-    ({ data, modules: { SlateEditor } }) => {
+    ({ widget: { data }, modules: { SlateEditor } }) => {
         const image = (
             <div
                 style={{
@@ -41,8 +41,12 @@ const ImageWithTextComponent = Component({ modules: ["SlateEditor"] })(
  * "Image with text" widget plugin
  */
 class ImageWithText extends Widget {
-    render({ widget: { data } }) {
-        return <ImageWithTextComponent data={data} />;
+    render({ WidgetContainer }) {
+        return (
+            <WidgetContainer>
+                {({ widgetProps }) => <ImageWithTextComponent {...widgetProps} />}
+            </WidgetContainer>
+        );
     }
 }
 

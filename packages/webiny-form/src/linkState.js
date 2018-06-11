@@ -20,7 +20,8 @@ export default (component, key, callback, defaultValue = null) => {
 
                 return promise.then(value => {
                     component.setState(
-                        state => {
+                        cs => {
+                            const state = _.cloneDeep(cs);
                             _.set(state, key, value);
                             return state;
                         },

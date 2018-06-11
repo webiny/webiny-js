@@ -3,7 +3,8 @@ import _ from "lodash";
 import { Component } from "webiny-app";
 import shortid from "shortid";
 import Widget from "./Widget";
-import WidgetSettings from "./WidgetSettings";
+import Sidebar from "./Sidebar";
+import WidgetSettingsSidebar from "./WidgetSettingsSidebar";
 import AddWidget from "./AddWidget";
 import styles from "./PageContent.scss?prefix=wby-cms-editor";
 
@@ -13,6 +14,7 @@ import styles from "./PageContent.scss?prefix=wby-cms-editor";
 })
 export default class PageContent extends React.Component {
     state = {
+        toggleSidebar: false,
         activeWidget: null,
         dragging: false,
         toggleWidget: false
@@ -20,9 +22,9 @@ export default class PageContent extends React.Component {
 
     cms = this.props.services.cms;
 
-    checkKey = (event) => {
+    checkKey = event => {
         if (event.keyCode === 27) {
-            this.setState({ activeWidget: null });
+            this.setState({ toggleSidebar: false });
         }
     };
 
@@ -86,8 +88,10 @@ export default class PageContent extends React.Component {
     };
 
     showSettings = widget => {
-        this.setState({ activeWidget: widget.id });
+        this.setState({ activeWidget: widget.id, toggleSidebar: true });
     };
+
+    selectWidget = () => {};
 
     render() {
         const {
@@ -103,59 +107,44 @@ export default class PageContent extends React.Component {
             <Grid.Row>
                 <div className={styles.editorContainer}>
                     <div className={styles.editorContent}>
-                        <AddWidget onAdd={widget => this.addWidget(widget, 0)} />
                         {value.map((widget, index) => (
                             <Fragment key={widget.id}>
-                                <div
-                                    style={{
-                                        padding: "0 20px",
-                                        backgroundColor: "white"
+                                <Widget
+                                    selectWidget={this.selectWidget}
+                                    addWidget={widget => this.addWidget(widget, 0)}
+                                    moveUp={() => this.reorder(index, index - 1)}
+                                    moveDown={() => this.reorder(index, index + 1)}
+                                    onChange={data => {
+                                        this.onWidgetChange(widget.id, data);
                                     }}
-                                >
-                                    <Widget
-                                        moveUp={() => this.reorder(index, index - 1)}
-                                        moveDown={() => this.reorder(index, index + 1)}
-                                        onChange={data => {
-                                            this.onWidgetChange(widget.id, data);
-                                        }}
-                                        editWidget={this.showSettings}
-                                        deleteWidget={this.removeWidget}
-                                        widget={widget}
-                                    />
-                                </div>
-                                <AddWidget onAdd={widget => this.addWidget(widget, index + 1)} />
+                                    editWidget={this.showSettings}
+                                    deleteWidget={this.removeWidget}
+                                    widget={widget}
+                                />
                             </Fragment>
                         ))}
                         <Animate
-                            trigger={!!this.state.activeWidget}
-                            hide={{ translateX: 400, opacity: 0, duration: 225 }}
-                            show={{ translateX: 0, opacity: 1, duration: 225 }}
+                            trigger={this.state.toggleSidebar}
+                            enterAnimation={{ type: "easeInOut", translateX: -400, duration: 250}}
+                            exitAnimation={{ type: "easeInOut", translateX: 400, duration: 250}}
+                            onExited={() => this.setState({ activeWidget: null })}
                         >
-                            <div className={styles.editorSidebar}>
-                                <span
-                                    onClick={() => this.setState({ activeWidget: null })}
-                                    style={{
-                                        position: "absolute",
-                                        cursor: "pointer",
-                                        right: 15,
-                                        top: 18
-                                    }}
-                                >
-                                    {widget && `(${widget.type})`}
-                                    {"  "}
-                                    <Icon icon={"times"} size={"lg"} />
-                                </span>
-                                {this.state.activeWidget && (
-                                    <WidgetSettings
-                                        key={this.state.activeWidget}
-                                        onClose={() => this.setState({ activeWidget: null })}
-                                        onChange={data =>
-                                            this.onWidgetChange(this.state.activeWidget, data)
-                                        }
-                                        widget={widget}
-                                    />
-                                )}
-                            </div>
+                            {({ ref }) => (
+                                <Sidebar offset={53}>
+                                    {({ height }) => (
+                                        <WidgetSettingsSidebar
+                                            animationTarget={ref}
+                                            className={styles.editorSidebar}
+                                            height={height}
+                                            widget={widget}
+                                            onChange={data => {
+                                                this.onWidgetChange(this.state.activeWidget, data);
+                                            }}
+                                            onClose={() => this.setState({ toggleSidebar: false })}
+                                        />
+                                    )}
+                                </Sidebar>
+                            )}
                         </Animate>
                     </div>
                 </div>
