@@ -57,7 +57,27 @@ class Api {
         options: Object = {}
     ): Promise<Function> {
         // Initialize registered Webiny apps.
-        await compose(this.apps.map(app => app.init))({ api: this });
+        // "pre" and "post" lifecycle events were added additionally, after the same was done in
+        // the "install" process. Read the comment below to get a better understanding.
+        const init = { pre: [], main: [], post: [] };
+
+        this.apps.map(app => {
+            if (typeof app.preInit === "function") {
+                init.pre.push(app.preInit);
+            }
+
+            if (typeof app.init === "function") {
+                init.main.push(app.init);
+            }
+
+            if (typeof app.postInit === "function") {
+                init.post.push(app.postInit);
+            }
+        });
+
+        await compose(init.pre)({ api: this });
+        await compose(init.main)({ api: this });
+        await compose(init.post)({ api: this });
 
         // Optionally run install process for each registered app.
         if (process.env.INSTALL === "true") {
@@ -68,11 +88,7 @@ class Api {
             //
             // Good example of usage is initialization of security service. After main stage is done, core app will
             // initialize security service in the "post" step.
-            const install = {
-                pre: [],
-                main: [],
-                post: []
-            };
+            const install = { pre: [], main: [], post: [] };
 
             this.apps.map(app => {
                 if (typeof app.preInstall === "function") {
