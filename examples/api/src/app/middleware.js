@@ -1,5 +1,5 @@
 import {
-    app,
+    api,
     File,
     Image,
     User,
@@ -26,7 +26,7 @@ export default async () => {
         publicUrl: "http://localhost:9000/storage/"
     });
 
-    app.configure({
+    api.configure({
         database: { connection },
         entity: {
             // Instantiate driver with DB connection
@@ -77,8 +77,8 @@ export default async () => {
         }
     });
 
-    app.use(myApp());
-    app.use(cmsApp({}));
+    api.use(myApp());
+    api.use(cmsApp({}));
 
-    return app;
+    return api;
 };

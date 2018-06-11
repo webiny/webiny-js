@@ -1,5 +1,5 @@
 // @flow
-import { app } from "./../../";
+import { api } from "./../../";
 import _ from "lodash";
 
 const checkScope = (selectionSet, scopesList, parentFields = "") => {
@@ -42,7 +42,7 @@ export default async (params: Object) => {
         return;
     }
 
-    const security = app.services.get("security");
+    const security = api.services.get("security");
     const permissions = security.getIdentity(true);
 
     // If all enabled (eg. super-admin), return immediately, no need to do further checks.

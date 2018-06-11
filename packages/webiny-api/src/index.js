@@ -1,7 +1,7 @@
-import Api from "./app";
-const app = new Api();
+import Api from "./api";
+const api = new Api();
 
-export { app };
+export { api };
 
 export { default as graphql } from "./graphql/middleware";
 export { default as InvalidAttributesError } from "./graphql/utils/crud/InvalidAttributesError";

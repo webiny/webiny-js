@@ -6,12 +6,12 @@ import InvalidAttributesError from "./../../../src/graphql/utils/crud/InvalidAtt
 
 /**
  * We needed to override basic create operation because an additional token activation is needed after initial save.
- * @param app
+ * @param api
  * @param config
  * @param schema
  * @returns {ApiToken}
  */
-export default (app, config, schema) => {
+export default (api, config, schema) => {
     schema.mutation["createSecurityApiToken"] = {
         description: `Create a single SecurityApiToken entity.`,
         type: schema.getType("SecurityApiToken"),

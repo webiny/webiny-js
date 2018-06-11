@@ -1,12 +1,12 @@
 // @flow
-import { app } from "./..";
+import { api } from "./..";
 import { Entity as BaseEntity } from "webiny-entity";
 
 import RequestEntityPool from "./RequestEntityPool";
 class Entity extends BaseEntity {
     constructor() {
         super();
-        app.entities.applyExtensions(this);
+        api.entities.applyExtensions(this);
 
         this.attr("ownerClassId")
             .char()
@@ -60,11 +60,11 @@ Entity.pool = new RequestEntityPool();
 // We don't need a standalone "deletedBy" attribute, since its value would be the same as in "savedBy"
 // and "updatedBy" attributes. Check these attributes to find out who deleted an entity.
 Entity.on("save", async ({ entity }) => {
-    if (!app.getRequest()) {
+    if (!api.getRequest()) {
         return;
     }
 
-    const identity = app.services.get("security").getIdentity();
+    const identity = api.services.get("security").getIdentity();
 
     entity.savedBy = identity;
     if (entity.isExisting()) {

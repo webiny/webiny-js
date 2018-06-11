@@ -28,15 +28,16 @@ import registerImageAttributes from "./attributes/registerImageAttributes";
 export default () => {
     return {
         async init(params: Object, next: Function) {
-            const { app } = params;
+            const { api } = params;
 
             // Configure Entity layer
-            if (app.config.entity) {
+            if (api.config.entity) {
                 // Register Entity driver
-                Entity.driver = app.config.entity.driver;
+                Entity.driver = api.config.entity.driver;
+
                 // Register attributes
-                app.config.entity.attributes &&
-                    app.config.entity.attributes({
+                api.config.entity.attributes &&
+                    api.config.entity.attributes({
                         bufferAttribute: registerBufferAttribute,
                         passwordAttribute: registerPasswordAttribute,
                         identityAttribute: registerIdentityAttribute,
@@ -45,13 +46,13 @@ export default () => {
                     });
             }
 
-            app.services.register("security", () => {
-                return new SecurityService(app.config.security);
+            api.services.register("security", () => {
+                return new SecurityService(api.config.security);
             });
 
-            await app.services.get("security").init();
+            await api.services.get("security").init();
 
-            app.graphql.schema((schema: Schema) => {
+            api.graphql.schema((schema: Schema) => {
                 schema.addAttributeConverter(convertToGraphQL);
                 schema.addEntity(ApiToken);
                 schema.addEntity(File);
@@ -69,7 +70,7 @@ export default () => {
                     type: new GraphQLUnionType({
                         name: "IdentityType",
                         types: () =>
-                            app.config.security.identities.map(({ identity: Identity }) => {
+                            api.config.security.identities.map(({ identity: Identity }) => {
                                 return schema.getType(Identity.classId);
                             }),
                         resolveType(identity) {
@@ -81,19 +82,20 @@ export default () => {
                 schema.addAttributeConverter(convertToGraphQL);
 
                 // Create login queries
-                createLoginQueries(app, app.config, schema);
-                createListEntitiesQuery(app, app.config, schema);
-                overrideCreateApiTokenMutation(app, app.config, schema);
+
+                createLoginQueries(api, api.config, schema);
+                createListEntitiesQuery(api, api.config, schema);
+                overrideCreateApiTokenMutation(api, api.config, schema);
             });
 
-            app.entities.addEntityClass(ApiToken);
-            app.entities.addEntityClass(File);
-            app.entities.addEntityClass(Image);
-            app.entities.addEntityClass(Group);
-            app.entities.addEntityClass(Groups2Entities);
-            app.entities.addEntityClass(Policy);
-            app.entities.addEntityClass(Policies2Entities);
-            app.entities.addEntityClass(User);
+            api.entities.addEntityClass(ApiToken);
+            api.entities.addEntityClass(File);
+            api.entities.addEntityClass(Image);
+            api.entities.addEntityClass(Group);
+            api.entities.addEntityClass(Groups2Entities);
+            api.entities.addEntityClass(Policy);
+            api.entities.addEntityClass(Policies2Entities);
+            api.entities.addEntityClass(User);
 
             next();
         },

@@ -16,8 +16,8 @@ const createLoginDataForIdentity = (Identity, schema) => {
 };
 
 // Create a login query for each identity and strategy
-export default (app, config, schema) => {
-    const security = app.services.get("security");
+export default (api, config, schema) => {
+    const security = api.services.get("security");
     // For each Identity...
     config.security.identities.map(({ identity: Identity, authenticate }) => {
         // If identity does not need an authentication mechanism (eg. API key), continue with next identity.
@@ -66,7 +66,7 @@ export default (app, config, schema) => {
     schema.query["getIdentity"] = {
         type: schema.getType("IdentityType"),
         resolve() {
-            return app.services.get("security").getIdentity();
+            return api.services.get("security").getIdentity();
         }
     };
 
@@ -76,7 +76,7 @@ export default (app, config, schema) => {
             data: { type: new GraphQLNonNull(GraphQLJSON) }
         },
         async resolve(root, args) {
-            const identity = app.services.get("security").getIdentity();
+            const identity = api.services.get("security").getIdentity();
 
             if (!identity) {
                 throw Error("Identity not found.");

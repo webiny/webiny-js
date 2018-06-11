@@ -50,7 +50,7 @@ class Api {
         options: Object = {}
     ): Promise<Function> {
         // Initialize registered Webiny apps.
-        await compose(this.apps.map(app => app.init))({ app: this });
+        await compose(this.apps.map(app => app.init))({ api: this });
 
         // Optionally run install for each registered app
         if (process.env.INSTALL === "true") {
@@ -61,7 +61,7 @@ class Api {
                 }
             });
 
-            await compose(installers)({ app: this });
+            await compose(installers)({ api: this });
             process.env.INSTALL = "false";
         }
 

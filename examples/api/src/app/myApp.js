@@ -2,8 +2,8 @@ import { GraphQLString } from "graphql";
 
 export default () => {
     return {
-        init({ app }, next) {
-            app.graphql.schema(schema => {
+        init({ api }, next) {
+            api.graphql.schema(schema => {
                 schema.query["sendInvoiceToUser"] = {
                     description: "Send email with invoice in the attachment",
                     type: GraphQLString,

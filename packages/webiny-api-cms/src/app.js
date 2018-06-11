@@ -8,8 +8,8 @@ import addPageQueries from "./queries/page";
 
 export default () => {
     return {
-        init({ app }: Object, next: Function) {
-            app.graphql.schema(schema => {
+        init({ api }: Object, next: Function) {
+            api.graphql.schema(schema => {
                 schema.addEntity(Page);
                 schema.addEntity(Category);
                 schema.addEntity(Revision);
@@ -19,11 +19,11 @@ export default () => {
                 addPageQueries(schema);
             });
 
-            app.entities.addEntityClass(Page);
-            app.entities.addEntityClass(Category);
-            app.entities.addEntityClass(Revision);
-            app.entities.addEntityClass(Widget);
-            app.entities.addEntityClass(WidgetPreset);
+            api.entities.addEntityClass(Page);
+            api.entities.addEntityClass(Category);
+            api.entities.addEntityClass(Revision);
+            api.entities.addEntityClass(Widget);
+            api.entities.addEntityClass(WidgetPreset);
 
             next();
         },

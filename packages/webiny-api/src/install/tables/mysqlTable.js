@@ -1,7 +1,7 @@
-import { MySQLTable as BaseMySQLTable, app } from "../../";
+import { MySQLTable as BaseMySQLTable, api } from "../..";
 
 class MySQLTable extends BaseMySQLTable {}
 
-MySQLTable.getDriver().setConnection(app.config.database.connection);
+MySQLTable.getDriver().setConnection(api.config.database.connection);
 
 export default MySQLTable;

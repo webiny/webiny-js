@@ -1,5 +1,5 @@
 // @flow
-import { app } from "webiny-api";
+import { api } from "webiny-api";
 import _ from "lodash";
 
 export default async (params: Object) => {
@@ -13,13 +13,13 @@ export default async (params: Object) => {
     };
 
     // Let's merge default permissions.
-    const security = await app.services.get("security");
+    const security = await api.services.get("security");
     req.security.permissions = _.cloneDeep(security.getDefaultPermissions());
 
     const token =
-        typeof app.config.security.header === "function"
-            ? app.config.security.token(req)
-            : req.get(app.config.security.header || "Authorization");
+        typeof api.config.security.header === "function"
+            ? api.config.security.token(req)
+            : req.get(api.config.security.header || "Authorization");
 
     if (!token) {
         return;
