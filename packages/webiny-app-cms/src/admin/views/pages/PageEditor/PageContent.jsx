@@ -9,11 +9,12 @@ import AddWidget from "./AddWidget";
 import styles from "./PageContent.scss?prefix=wby-cms-editor";
 
 @Component({
-    modules: ["Grid", "Animate", "Icon"],
+    modules: ["Animate", "Icon", "Button"],
     services: ["cms"]
 })
 export default class PageContent extends React.Component {
     state = {
+        selectWidget: null,
         toggleSidebar: false,
         activeWidget: null,
         dragging: false,
@@ -24,7 +25,11 @@ export default class PageContent extends React.Component {
 
     checkKey = event => {
         if (event.keyCode === 27) {
-            this.setState({ toggleSidebar: false });
+            if (this.state.selectWidget !== null) {
+                this.setState({ selectWidget: null });
+            } else {
+                this.setState({ toggleSidebar: false });
+            }
         }
     };
 
@@ -36,15 +41,21 @@ export default class PageContent extends React.Component {
         document.removeEventListener("keydown", this.checkKey, false);
     }
 
-    addWidget = (widget, index) => {
+    addWidget = ({type, widget}) => {
         let { value, onChange } = this.props;
         if (!value) {
             value = [];
         }
 
-        value.splice(index, 0, _.merge({ data: {} }, widget, { id: shortid.generate() }));
+        value.splice(this.state.selectWidget, 0, {
+            data: { ...(widget.options.data || {}) },
+            type,
+            id: shortid.generate()
+        });
 
-        onChange(value);
+        this.setState({ selectWidget: null }, () => {
+            onChange(value);
+        });
     };
 
     beforeRemoveWidget = ({ widget }) => {
@@ -91,12 +102,16 @@ export default class PageContent extends React.Component {
         this.setState({ activeWidget: widget.id, toggleSidebar: true });
     };
 
-    selectWidget = () => {};
+    selectWidget = index => {
+        this.setState({
+            selectWidget: index
+        });
+    };
 
     render() {
         const {
             value,
-            modules: { Grid, Animate, Icon }
+            modules: { Animate, Icon, Button }
         } = this.props;
 
         const widget = _.find(this.props.value, {
@@ -104,51 +119,60 @@ export default class PageContent extends React.Component {
         });
 
         return (
-            <Grid.Row>
-                <div className={styles.editorContainer}>
-                    <div className={styles.editorContent}>
-                        {value.map((widget, index) => (
-                            <Fragment key={widget.id}>
-                                <Widget
-                                    selectWidget={this.selectWidget}
-                                    addWidget={widget => this.addWidget(widget, 0)}
-                                    moveUp={() => this.reorder(index, index - 1)}
-                                    moveDown={() => this.reorder(index, index + 1)}
-                                    onChange={data => {
-                                        this.onWidgetChange(widget.id, data);
-                                    }}
-                                    editWidget={this.showSettings}
-                                    deleteWidget={this.removeWidget}
-                                    widget={widget}
-                                />
-                            </Fragment>
-                        ))}
-                        <Animate
-                            trigger={this.state.toggleSidebar}
-                            enterAnimation={{ type: "easeInOut", translateX: -400, duration: 250}}
-                            exitAnimation={{ type: "easeInOut", translateX: 400, duration: 250}}
-                            onExited={() => this.setState({ activeWidget: null })}
-                        >
-                            {({ ref }) => (
-                                <Sidebar offset={53}>
-                                    {({ height }) => (
-                                        <WidgetSettingsSidebar
-                                            animationTarget={ref}
-                                            className={styles.editorSidebar}
-                                            height={height}
-                                            widget={widget}
-                                            onChange={data => {
-                                                this.onWidgetChange(this.state.activeWidget, data);
-                                            }}
-                                            onClose={() => this.setState({ toggleSidebar: false })}
-                                        />
-                                    )}
-                                </Sidebar>
-                            )}
-                        </Animate>
-                    </div>
+            <div className={styles.editorContainer}>
+                <AddWidget show={this.state.selectWidget !== null} onAdd={this.addWidget} />
+                <div className={styles.editorContent}>
+                    {!value.length && (
+                        <div style={{ textAlign: "center", paddingTop: "50%" }}>
+                            <p style={{ fontSize: 16, fontWeight: "bold" }}>
+                                Well, it's time to add some content!<br />Begin by clicking the
+                                button below :)
+                            </p>
+                            <Button type={"primary"} onClick={() => this.selectWidget(0)}>
+                                <Icon icon={"plus-circle"} /> Add widget
+                            </Button>
+                        </div>
+                    )}
+                    {value.map((widget, index) => (
+                        <Fragment key={widget.id}>
+                            <Widget
+                                selectWidget={() => this.selectWidget(index + 1)}
+                                moveUp={() => this.reorder(index, index - 1)}
+                                moveDown={() => this.reorder(index, index + 1)}
+                                onChange={data => {
+                                    this.onWidgetChange(widget.id, data);
+                                }}
+                                editWidget={this.showSettings}
+                                deleteWidget={this.removeWidget}
+                                widget={widget}
+                            />
+                        </Fragment>
+                    ))}
+                    <Animate
+                        trigger={this.state.toggleSidebar}
+                        enterAnimation={{ type: "easeInOut", translateX: -400, duration: 250 }}
+                        exitAnimation={{ type: "easeInOut", translateX: 400, duration: 250 }}
+                        onExited={() => this.setState({ activeWidget: null })}
+                    >
+                        {({ ref }) => (
+                            <Sidebar offset={53}>
+                                {({ height }) => (
+                                    <WidgetSettingsSidebar
+                                        animationTarget={ref}
+                                        className={styles.editorSidebar}
+                                        height={height}
+                                        widget={widget}
+                                        onChange={data => {
+                                            this.onWidgetChange(this.state.activeWidget, data);
+                                        }}
+                                        onClose={() => this.setState({ toggleSidebar: false })}
+                                    />
+                                )}
+                            </Sidebar>
+                        )}
+                    </Animate>
                 </div>
-            </Grid.Row>
+            </div>
         );
     }
 }

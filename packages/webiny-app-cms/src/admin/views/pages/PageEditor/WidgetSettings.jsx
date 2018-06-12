@@ -1,6 +1,6 @@
 import React from "react";
 import { Component } from "webiny-app";
-import { WidgetSettingsContainer } from "webiny-app-cms";
+import { WidgetSettingsContainer } from "webiny-app-cms/lib/admin";
 
 @Component({
     modules: ["Form", "Icon"],

@@ -2,21 +2,31 @@ import React from "react";
 import compose from "webiny-compose";
 import _ from "lodash";
 import { app } from "webiny-app";
-import { EditorWidget } from "webiny-app-cms";
+import EditorWidget from "../../utils/EditorWidget";
 
 import Widget from "./Widget";
 import Settings from "./Settings";
-import image from "./image-with-text.png";
+import widgetImage from "./image-with-text.png";
 
 class ImageWithText extends EditorWidget {
+    options = {
+        title: "Image with text",
+        description: "Image on one side with a paragraph of text on another. ",
+        image: widgetImage,
+        data: {
+            text:
+                "Nullam molestie, tortor id rhoncus scelerisque, ex justo tincidunt nisl, non dignissim justo urna ac ex. Etiam a ultrices justo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames.",
+            image: null,
+            imagePosition: "left",
+            imageSize: 50,
+            padding: 15
+        }
+    };
+
     removeWidget({ widget }) {
         if (widget.data.image) {
             return this.deleteImage(widget.data.image.id);
         }
-    }
-
-    renderSelector() {
-        return <img src={image} alt={"Image with text"} width={"100%"} />;
     }
 
     renderWidget({ WidgetContainer }) {

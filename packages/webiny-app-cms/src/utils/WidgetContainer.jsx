@@ -9,10 +9,10 @@ const WidgetContainer = ({ page, children, ...widgetProps }) => {
                   React.cloneElement(child, { page, widgetProps })
               );
 
-    const { style } = widgetProps.widget.data;
+    const { style = {}} = widgetProps.widget.data;
 
-    const { className: widgetClass, ...widgetStyle } = style.widget;
-    const { className: contentClass, ...contentStyle } = style.content;
+    const { className: widgetClass, ...widgetStyle } = style.widget || {};
+    const { className: contentClass, ...contentStyle } = style.content || {};
 
     return (
         <div className={widgetClass} style={widgetStyle}>

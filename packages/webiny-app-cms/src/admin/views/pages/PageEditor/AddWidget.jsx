@@ -1,77 +1,54 @@
-import React, { Fragment } from "react";
-import { createComponent } from "webiny-app";
+import React from "react";
+import classSet from "classnames";
+import { Component } from "webiny-app";
 import styles from "./AddWidget.scss?prefix=wby-cms-editor-addWidget";
 
-class AddWidget extends React.Component {
+@Component({ modules: ["Icon"], services: ["cms"] })
+export default class AddWidget extends React.Component {
     state = {
-        selectWidget: false
+        search: ""
     };
 
-    selectWidget = () => {
-        this.setState({ selectWidget: true });
+    renderWidget = ({ type, widget}) => {
+        const {
+            modules: { Icon }
+        } = this.props;
+
+        return (
+            <div key={type} className={styles.widget} onClick={() => this.props.onAdd({ type, widget })}>
+                <img src={widget.options.image} width={"100%"} />
+                <div className={styles.description}>
+                    <h3>{widget.options.title}</h3>
+                    <p>{widget.options.description}</p>
+                </div>
+                <div className={styles.overlay} />
+                <div className={styles.insert}>
+                    <span>Insert widget</span>
+                    <div className={styles.icon}>
+                        <Icon icon={"plus-circle"} size={"5x"} />
+                    </div>
+                </div>
+            </div>
+        );
     };
 
     render() {
         const {
-            modules: { Icon, Tabs },
-            services: { cms },
-            onAdd
+            modules: { Icon },
+            show,
+            services: { cms }
         } = this.props;
         return (
-            <div className={styles.container}>
-                {this.state.selectWidget ? (
-                    <Fragment>
-                        <div className={styles.widgetSelector}>
-                            <Icon
-                                style={{
-                                    position: "absolute",
-                                    right: 20,
-                                    top: -40,
-                                    cursor: "pointer",
-                                    color: "#bbbbbb"
-                                }}
-                                icon={"times"}
-                                size={"2x"}
-                                onClick={() => this.setState({ selectWidget: false })}
-                            />
-                            <Tabs position={"left"}>
-                                {cms.getWidgetGroups().map(group => (
-                                    <Tabs.Tab
-                                        key={group.name}
-                                        icon={group.icon}
-                                        label={group.title}
-                                    >
-                                        {cms.getEditorWidgets(group.name).map(widget => (
-                                            <div
-                                                key={widget.type}
-                                                style={{ cursor: "pointer" }}
-                                                onClick={() => {
-                                                    this.setState({ selectWidget: false }, () =>
-                                                        onAdd(widget)
-                                                    );
-                                                }}
-                                            >
-                                                {cms
-                                                    .getEditorWidget(widget.type)
-                                                    .widget.renderSelector()}
-                                            </div>
-                                        ))}
-                                    </Tabs.Tab>
-                                ))}
-                            </Tabs>
-                        </div>
-                    </Fragment>
-                ) : (
-                    <Fragment>
-                        <span className={styles.line} />
-                        <span className={styles.addContent} onClick={this.selectWidget}>
-                            <Icon icon={"plus-circle"} /> Add new content
-                        </span>
-                    </Fragment>
-                )}
+            <div className={classSet(styles.container, show && styles.show)}>
+                {cms.getWidgetGroups().map(group => (
+                    <div className={styles.group} key={group.name}>
+                        <h2>{group.title}</h2>
+                        {cms
+                            .getEditorWidgets(group.name)
+                            .map(widget => this.renderWidget(cms.getEditorWidget(widget.type)))}
+                    </div>
+                ))}
             </div>
         );
     }
 }
-
-export default createComponent(AddWidget, { modules: ["Icon", "Tabs"], services: ["cms"] });

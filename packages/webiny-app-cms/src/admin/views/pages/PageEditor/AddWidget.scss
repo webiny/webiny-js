@@ -1,49 +1,95 @@
 .container {
-    width: 100%;
-    text-align: center;
-    min-height: 37px;
-    position: relative;
-    padding: 5px 20px;
+    width: 780px;
+    z-index: 100;
+    position: fixed;
+    padding: 15px;
+    background-color: #fff;
+    border: 1px solid #eee;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: transform 250ms ease-in-out, opacity 150ms ease-in-out;
+    box-shadow: 0 1px 7px -2px rgba(0, 0, 0, 0.43);
 
-    .line {
-        display: none;
+    &.show {
+        transform: translateY(0);
+        opacity: 1;
     }
 
-    &:hover {
-        .line {
+    .group {
+        float: left;
+        width: 100%;
+        text-align: left;
+
+        h2 {
             display: block;
-            height: 2px;
-            background-color: #41bfb0;
-            margin: 12px 0;
         }
 
-        .addContent {
-            display: block;
-        }
-    }
+        .widget {
+            position: relative;
+            float: left;
+            cursor: pointer;
+            border: 1px solid #eee;
+            width: 250px;
+            height: 230px;
+            margin: 5px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 
-    .addContent {
-        border-radius: 15px;
-        color: #ffffff;
-        display: none;
-        cursor: pointer;
-        position: relative;
-        height: 25px;
-        padding: 3px 13px;
-        background-color: #41bfb0;
-        margin: -25px auto;
-        width: 170px;
-    }
 
-    .widgetSelector {
-        position: relative;
-        display: block;
-        min-height: 500px;
-        border: 1px solid #f6f6f6;
+            &:hover {
+                > .overlay, .insert {
+                    display: block;
+                }
+            }
 
-        :global(.wui-tabs-panes) {
-            height: 500px;
-            overflow: scroll;
+            .description {
+                padding: 8px;
+                font-size: 12px;
+
+                > h3 {
+                    font-size: 18px;
+                    margin: 5px 5px 5px 0;
+                }
+            }
+
+            .overlay {
+                display: none;
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                background-color: #fff;
+                opacity: 0.7;
+            }
+
+            .insert {
+                display: none;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                text-align: center;
+
+                > span {
+                    margin: 40px 0 20px;
+                    font-size: 16px;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                    display: block;
+                    opacity: 0.9;
+                }
+
+                .icon {
+                    opacity: 0.7;
+                    position: relative;
+                    margin: 0 auto;
+                    width: 98px;
+                }
+            }
         }
     }
 }

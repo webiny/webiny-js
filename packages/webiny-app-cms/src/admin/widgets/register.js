@@ -35,44 +35,19 @@ export default () => {
     cmsService.addEditorWidget({
         group: "text",
         type: "text",
-        title: "Text",
-        widget: new TextWidget(),
-        data: {
-            text:
-                "Nullam molestie, tortor id rhoncus scelerisque, ex justo tincidunt nisl, non dignissim justo urna ac ex. Etiam a ultrices justo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut aliquet at nulla id laoreet. Fusce tellus diam, suscipit vel interdum ac, consequat vel ex."
-        }
+        widget: new TextWidget()
     });
 
     cmsService.addEditorWidget({
         group: "text",
         type: "text-with-icon",
-        title: "Text with icon",
-        widget: new TextWithIconWidget(),
-        data: {
-            text:
-                "Nullam molestie, tortor id rhoncus scelerisque, ex justo tincidunt nisl, non dignissim justo urna ac ex. Etiam a ultrices justo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut aliquet at nulla id laoreet. Fusce tellus diam, suscipit vel interdum ac, consequat vel ex.",
-            iconSize: "3x",
-            icon: {
-                icon: "star",
-                id: "fas-star",
-                prefix: "fas"
-            }
-        }
+        widget: new TextWithIconWidget()
     });
 
     cmsService.addEditorWidget({
         group: "media",
         type: "image-with-text",
-        title: "Image with text",
-        widget: new ImageWithTextWidget(),
-        data: {
-            text:
-                "Nullam molestie, tortor id rhoncus scelerisque, ex justo tincidunt nisl, non dignissim justo urna ac ex. Etiam a ultrices justo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames.",
-            image: null,
-            imagePosition: "left",
-            imageSize: 50,
-            padding: 15
-        }
+        widget: new ImageWithTextWidget()
     });
 
     // Preview widgets

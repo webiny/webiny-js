@@ -7,7 +7,6 @@ class WidgetTable extends MySQLTable {
         this.column("title").varChar(50);
         this.column("type").varChar(50);
         this.column("data").json();
-        this.column("settings").json();
     }
 }
 

@@ -1,9 +1,42 @@
-import React, { Fragment } from "react";
-import { createComponent } from "webiny-app";
+import React from "react";
+import { app, Component } from "webiny-app";
 import PageContent from "./PageEditor/PageContent";
 import Header from "./PageEditor/Header";
+import { PageEditorProvider } from "../../utils/context/pageEditorContext";
 
-class PageEditor extends React.Component {
+@Component({
+    modules: ["Loader", "Form", "FormData", "FormError"]
+})
+export default class PageEditor extends React.Component {
+    state = {
+        widgetPresets: []
+    };
+
+    async componentDidMount() {
+        // Load widgetPresets
+        const listWidgetPresets = app.graphql.generateList("CmsWidgetPreset");
+        listWidgetPresets({
+            fields: "id type title data",
+            variables: { sort: "title", perPage: 1000 }
+        }).then(({ data }) => {
+            this.setState({ widgetPresets: data.list });
+        });
+    }
+
+    createPreset = async (title, type, data) => {
+        const create = app.graphql.generateCreate("CmsWidgetPreset", "id");
+
+        await create({ variables: { data: { title, type, data } } });
+    };
+
+    getEditorProviderValue = revision => {
+        return {
+            revision,
+            widgetPresets: this.state.widgetPresets,
+            createPreset: this.createPreset
+        };
+    };
+
     render() {
         const { Form, FormData, FormError, Loader } = this.props.modules;
 
@@ -17,14 +50,14 @@ class PageEditor extends React.Component {
                 {({ model, submit, error, loading }) => (
                     <Form model={model} onSubmit={submit} onChange={model => console.log(model)}>
                         {({ submit, model, Bind }) => (
-                            <Fragment>
+                            <PageEditorProvider value={this.getEditorProviderValue(model)}>
                                 {loading && <Loader />}
                                 {error && <FormError error={error} />}
                                 <Header page={model} onSave={submit} Bind={Bind} />
                                 <Bind>
                                     <PageContent page={model} name={"content"} />
                                 </Bind>
-                            </Fragment>
+                            </PageEditorProvider>
                         )}
                     </Form>
                 )}
@@ -32,19 +65,3 @@ class PageEditor extends React.Component {
         );
     }
 }
-
-export default createComponent(PageEditor, {
-    modules: [
-        "List",
-        "Input",
-        "Select",
-        "Grid",
-        "Modal",
-        "Loader",
-        "Tabs",
-        "Form",
-        "FormData",
-        "FormError",
-        "Button"
-    ]
-});

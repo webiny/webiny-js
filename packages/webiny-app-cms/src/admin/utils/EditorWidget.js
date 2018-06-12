@@ -1,19 +1,14 @@
+// @flow
 class EditorWidget {
-    constructor() {
-        // Here for future upgrades
-    }
+    options: Object;
 
-    makeLocal({ widget }) {
-        return Promise.resolve(widget);
+    constructor(options: Object = {}) {
+        this.options = { ...this.options, ...options };
     }
 
     // eslint-disable-next-line
-    removeWidget(widget) {
+    removeWidget(widget: Object): Promise<mixed> {
         return Promise.resolve();
-    }
-
-    renderSelector() {
-        throw new Error(`Implement "renderSelector" method in your editor widget class!`);
     }
 
     renderWidget() {
