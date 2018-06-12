@@ -1,6 +1,6 @@
 import React from "react";
-import { app, createComponent } from "webiny-app";
-import { ModalComponent } from "webiny-app-ui";
+import { app, createComponent } from "webiny-client";
+import { ModalComponent } from "webiny-client-ui";
 
 class CustomDialog extends React.Component {
     render() {

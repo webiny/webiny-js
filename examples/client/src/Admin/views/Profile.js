@@ -1,5 +1,5 @@
 import React from "react";
-import { app, createComponent, i18n } from "webiny-app";
+import { app, createComponent, i18n } from "webiny-client";
 import CustomDialog from "./CustomDialog";
 
 const t = i18n.namespace("NewClient.Frontend.Views.Profile");

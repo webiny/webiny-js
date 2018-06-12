@@ -1,0 +1,35 @@
+import React from 'react';
+import { createComponent } from 'webiny-client';
+import classSet from "classnames";
+import styles from './styles.css?prefix=wui-view';
+
+class Body extends React.Component {
+    render() {
+        if (this.props.render) {
+            return this.props.render.call(this);
+        }
+
+        const { modules: { Panel }, styles } = this.props;
+
+        const classes = classSet(
+            styles.panelBody,
+            {
+                [styles.panelNoPadding]: this.props.noPadding,
+                [styles.panelNoColor]: this.props.noColor
+            }
+        );
+
+        return (
+            <Panel.Body className={classes}>
+                {this.props.children}
+            </Panel.Body>
+        );
+    }
+}
+
+Body.defaultProps = {
+    noPadding: false,
+    noColor: false,
+};
+
+export default createComponent(Body, { modules: ['Panel'], styles });

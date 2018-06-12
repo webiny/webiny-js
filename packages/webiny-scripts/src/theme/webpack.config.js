@@ -1,5 +1,5 @@
 const path = require("path");
-const vendor = require("webiny-app/lib/vendor");
+const vendor = require("webiny-client/lib/vendor");
 
 module.exports = ({ themeRoot }) => {
     return {

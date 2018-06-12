@@ -1,0 +1,49 @@
+{
+  "name": "webiny-client",
+  "version": "0.0.0-semantically-released",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "files": [
+    "lib/"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "apollo-cache-inmemory": "^1.1.12",
+    "apollo-client": "^2.2.8",
+    "apollo-link": "^1.2.1",
+    "apollo-link-context": "^1.0.7",
+    "apollo-link-http": "^1.5.3",
+    "babel-polyfill": "^6.26.0",
+    "classnames": "^2.2.5",
+    "console-polyfill": "^0.3.0",
+    "graphql": "^0.13.2",
+    "graphql-tag": "^2.8.0",
+    "hoist-non-react-statics": "^2.3.1",
+    "jquery": "^3.3.1",
+    "lodash": "^4.17.4",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
+    "react-error-boundary": "^1.2.1",
+    "react-hot-loader": "^4.0.0",
+    "webiny-compose": "0.0.0-semantically-released",
+    "webiny-i18n": "0.0.0-semantically-released",
+    "webiny-i18n-react": "0.0.0-semantically-released",
+    "webiny-react-router": "0.0.0-semantically-released",
+    "webiny-service-manager": "0.0.0-semantically-released"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0"
+  },
+  "scripts": {
+    "build": "babel src -d lib --source-maps --copy-files",
+    "build:watch": "babel src -d lib --source-maps --copy-files --watch"
+  }
+}

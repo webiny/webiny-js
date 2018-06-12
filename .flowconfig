@@ -4,8 +4,8 @@
 [libs]
 flow-typed
 packages/webiny-api/flow-typed/npm
-packages/webiny-app/flow-typed/npm
-packages/webiny-app-security/flow-typed/npm
+packages/webiny-client/flow-typed/npm
+packages/webiny-client-security/flow-typed/npm
 packages/webiny-api-security/flow-typed/npm
 packages/webiny-entity-mysql/flow-typed/npm
 packages/webiny-file-storage/flow-typed

@@ -6,9 +6,9 @@ import {
     renderMiddleware,
     authenticationMiddleware,
     Router
-} from "webiny-app";
-import { app as adminApp, Menu } from "webiny-app-admin";
-import { app as cmsAdminApp } from "webiny-app-cms/lib/admin";
+} from "webiny-client";
+import { app as adminApp, Menu } from "webiny-client-admin";
+import { app as cmsAdminApp } from "webiny-client-cms/lib/admin";
 import userIdentity from "./userIdentity";
 import apiConfig from "./../apiConfig";
 import { hot } from "react-hot-loader";

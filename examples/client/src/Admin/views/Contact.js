@@ -1,5 +1,5 @@
 import React from "react";
-import { createComponent } from "webiny-app";
+import { createComponent } from "webiny-client";
 
 class View extends React.Component {
     render() {

@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../src/admin/index.js"],"names":["default"],"mappings":";;;;;;;;;;;wCAASA,O","file":"index.js","sourcesContent":["export { default as app } from \"./app\";\n"]}

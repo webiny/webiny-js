@@ -1,7 +1,7 @@
 export default `
 import React from 'react';
 import _ from 'lodash';
-import {Webiny} from 'webiny-app';
+import {Webiny} from 'webiny-client';
 import matchOption from './matchOption';
 import i18n from 'webiny-i18n';
 
