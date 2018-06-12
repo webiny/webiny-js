@@ -89,7 +89,8 @@ class Policy extends Entity {
             .setValidators("required");
         this.attr("slug")
             .char()
-            .setValidators("required");
+            .setValidators("required")
+            .setOnce();
         this.attr("description")
             .char()
             .setValidators("required");
@@ -98,6 +99,24 @@ class Policy extends Entity {
             .object()
             .setValidators()
             .setValue({ entities: {}, api: {} });
+
+        this.on("delete", async () => {
+            if (this.slug === "super-admin") {
+                throw Error("Cannot delete super admin policy.");
+            }
+
+            const inUse = await Policies2Entities.count({ query: { policy: this.id } });
+            if (inUse) {
+                throw Error("Cannot delete policy, already in use.");
+            }
+        });
+
+        this.on("beforeCreate", async () => {
+            const existingPolicy = await Policy.findOne({ query: { slug: this.slug } });
+            if (existingPolicy) {
+                throw Error(`Policy with slug "${this.slug}" already exists.`);
+            }
+        });
     }
 
     static async getDefaultPolicies() {
@@ -134,13 +153,6 @@ class Policy extends Entity {
 Policy.classId = "SecurityPolicy";
 Policy.tableName = "Security_Policies";
 
-Policy.on("delete", async ({ entity }) => {
-    const inUse = await Policies2Entities.count({ query: { policy: entity.id } });
-    if (inUse) {
-        throw Error("Cannot delete policy, already in use.");
-    }
-});
-
 class Policies2Entities extends Entity {
     constructor() {
         super();
@@ -166,7 +178,9 @@ class Group extends Entity {
             .setValidators("required");
         this.attr("slug")
             .char()
-            .setValidators("required");
+            .setValidators("required")
+            .setOnce();
+
         this.attr("description")
             .char()
             .setValidators("required");
@@ -175,9 +189,21 @@ class Group extends Entity {
             .entities(Policy, "entity")
             .setUsing(Policies2Entities, "policy");
 
-        this.on("delete", () => {
+        this.on("delete", async () => {
             if (this.slug === "default") {
                 throw Error("Cannot delete default group.");
+            }
+
+            const inUse = await Groups2Entities.count({ query: { group: this.id } });
+            if (inUse) {
+                throw Error("Cannot delete group, already in use.");
+            }
+        });
+
+        this.on("beforeCreate", async () => {
+            const existingGroup = await Group.findOne({ query: { slug: this.slug } });
+            if (existingGroup) {
+                throw Error(`Group with slug "${this.slug}" already exists.`);
             }
         });
     }
@@ -189,13 +215,6 @@ class Group extends Entity {
 
 Group.classId = "SecurityGroup";
 Group.tableName = "Security_Groups";
-
-Group.on("delete", async ({ entity }) => {
-    const inUse = await Groups2Entities.count({ query: { group: entity.id } });
-    if (inUse) {
-        throw Error("Cannot delete group, already in use.");
-    }
-});
 
 class Groups2Entities extends Entity {
     constructor() {

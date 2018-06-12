@@ -27,7 +27,7 @@ class CodeEditor extends React.Component {
     }
 
     componentDidMount() {
-        this.codeMirror = this.props.CodeMirror.fromTextArea(
+        this.codeMirror = this.props.modules.CodeMirror.fromTextArea(
             this.getTextareaElement(),
             this.options
         );
@@ -105,7 +105,10 @@ class CodeEditor extends React.Component {
             placeholder: this.props.placeholder
         });
 
-        const { styles, modules: { FormGroup } } = this.props;
+        const {
+            styles,
+            modules: { FormGroup }
+        } = this.props;
 
         return (
             <FormGroup valid={this.state.isValid} className={classSet(this.props.className)}>

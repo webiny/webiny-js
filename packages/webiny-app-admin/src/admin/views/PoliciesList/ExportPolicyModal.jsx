@@ -1,9 +1,8 @@
 import React from "react";
-import gql from "graphql-tag";
 import _ from "lodash";
 
 import { i18n, createComponent, app } from "webiny-app";
-const t = i18n.namespace("Security.Modal.ExportModal");
+const t = i18n.namespace("Security.Modal.ExportPolicyModal");
 import { ModalComponent } from "webiny-app-ui";
 
 import css from "./exportPolicyModal.scss";
@@ -11,7 +10,6 @@ import css from "./exportPolicyModal.scss";
 class ExportPolicyModal extends React.Component {
     constructor(props) {
         super(props);
-
         this.state = {
             content: "",
             loading: true
@@ -19,28 +17,14 @@ class ExportPolicyModal extends React.Component {
     }
 
     componentWillMount() {
-        app.graphql
-            .query({
-                query: gql`
-                    {
-                        getSecurityPolicy: getSecurityPolicy(id: "${this.props.data.id}") {
-                            name
-                            slug
-                            description
-                            permissions
-                        }
-                    }
-                `
-            })
-            .then(({ data }) => {
-                const content = _.pick(data.getSecurityPolicy, [
-                    "name",
-                    "slug",
-                    "description",
-                    "permissions"
-                ]);
-                this.setState({ loading: false, content: JSON.stringify(content, null, 2) });
-            });
+        const getPolicy = app.graphql.generateGet(
+            "SecurityPolicy",
+            "id name slug description permissions"
+        );
+        getPolicy({ variables: { id: this.props.data.id } }).then(({ data }) => {
+            const content = _.pick(data, ["name", "slug", "description", "permissions"]);
+            this.setState({ loading: false, content: JSON.stringify(content, null, 2) });
+        });
     }
 
     render() {
@@ -48,13 +32,12 @@ class ExportPolicyModal extends React.Component {
 
         return (
             <Modal.Dialog>
-
-
                 <Modal.Content className={css.exportPolicyModal}>
                     <Modal.Header
                         title={t`Export {label}`({ label: this.props.data.name })}
                         onClose={this.props.hide}
                     />
+
                     <Modal.Body style={this.state.loading ? { height: 200 } : {}}>
                         {this.state.loading ? (
                             <Loader />
@@ -62,12 +45,11 @@ class ExportPolicyModal extends React.Component {
                             <div>
                                 <CodeHighlight language="json">{this.state.content}</CodeHighlight>
                             </div>
-
                         )}
                     </Modal.Body>
                     <Modal.Footer>
                         <Button type="default" label="Cancel" onClick={this.props.hide} />
-                         <Copy.Button
+                        <Copy.Button
                             label={t`Copy`}
                             type="primary"
                             value={this.state.content}
