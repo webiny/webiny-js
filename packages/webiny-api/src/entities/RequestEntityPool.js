@@ -1,10 +1,10 @@
 // @flow
 import { EntityPool } from "webiny-entity";
-import { app } from "./..";
+import { api } from "./..";
 
 class RequestEntityPool extends EntityPool {
     getPool() {
-        const request = app.getRequest();
+        const request = api.getRequest();
         if (!request) {
             return this.pool;
         }
@@ -17,7 +17,7 @@ class RequestEntityPool extends EntityPool {
     }
 
     flush(): this {
-        const request = app.getRequest();
+        const request = api.getRequest();
         if (!request) {
             return this;
         }

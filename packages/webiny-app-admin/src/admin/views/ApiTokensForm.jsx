@@ -25,7 +25,8 @@ class ApiTokensForm extends React.Component {
             Button,
             Textarea,
             Loader,
-            AutoCompleteList
+            AutoCompleteList,
+            Copy
         } = this.props.modules;
 
         const onSubmitSuccess = app.router.getParams().id ? "ApiTokens.List" : null;
@@ -173,7 +174,8 @@ class ApiTokensForm extends React.Component {
                                                 <Grid.Col all={12}>
                                                     <Section title={t`API Token`} />
                                                     <Bind>
-                                                        <Textarea
+
+                                                        <Copy.Input
                                                             label={t`Token`}
                                                             name="token"
                                                             placeholder={t`To receive a token, you must save it first.`}
@@ -226,6 +228,7 @@ export default createComponent(ApiTokensForm, {
         "AutoCompleteList",
         "Link",
         "Alert",
+        "Copy",
         {
             AdminLayout: "Admin.Layout"
         }

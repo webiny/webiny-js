@@ -1,17 +1,17 @@
 import { GraphQLNonNull } from "graphql";
 import GraphQLJSON from "graphql-type-json";
-import ApiToken from "./../../entities/apiToken.entity";
+import ApiToken from "./../../entities/ApiToken.entity";
 import { ModelError } from "webiny-model";
 import InvalidAttributesError from "./../../../src/graphql/utils/crud/InvalidAttributesError";
 
 /**
  * We needed to override basic create operation because an additional token activation is needed after initial save.
- * @param app
+ * @param api
  * @param config
  * @param schema
  * @returns {ApiToken}
  */
-export default (app, config, schema) => {
+export default (api, config, schema) => {
     schema.mutation["createSecurityApiToken"] = {
         description: `Create a single SecurityApiToken entity.`,
         type: schema.getType("SecurityApiToken"),

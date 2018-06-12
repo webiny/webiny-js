@@ -28,15 +28,16 @@ import registerImageAttributes from "./attributes/registerImageAttributes";
 export default () => {
     return {
         async init(params: Object, next: Function) {
-            const { app } = params;
+            const { api } = params;
 
             // Configure Entity layer
-            if (app.config.entity) {
+            if (api.config.entity) {
                 // Register Entity driver
-                Entity.driver = app.config.entity.driver;
+                Entity.driver = api.config.entity.driver;
+
                 // Register attributes
-                app.config.entity.attributes &&
-                    app.config.entity.attributes({
+                api.config.entity.attributes &&
+                    api.config.entity.attributes({
                         bufferAttribute: registerBufferAttribute,
                         passwordAttribute: registerPasswordAttribute,
                         identityAttribute: registerIdentityAttribute,
@@ -45,22 +46,26 @@ export default () => {
                     });
             }
 
-            app.services.register("security", () => {
-                return new SecurityService(app.config.security);
+            api.services.register("security", () => {
+                return new SecurityService(api.config.security);
             });
 
-            await app.services.get("security").init();
+            // If we are in the install process, we don't need to initialize security just yet. Let's first allow
+            // all apps to be installed, and then do the initialization in the "postInstall" lifecycle event.
+            if (!(process.env.INSTALL === "true")) {
+                await api.services.get("security").init();
+            }
 
-            app.graphql.schema((schema: Schema) => {
+            api.graphql.schema((schema: Schema) => {
                 schema.addAttributeConverter(convertToGraphQL);
-                schema.addEntity(ApiToken);
-                schema.addEntity(File);
-                schema.addEntity(Image);
-                schema.addEntity(Group);
-                schema.addEntity(Groups2Entities);
-                schema.addEntity(Policy);
-                schema.addEntity(Policies2Entities);
-                schema.addEntity(User);
+                schema.registerEntity(ApiToken);
+                schema.registerEntity(File);
+                schema.registerEntity(Image);
+                schema.registerEntity(Group);
+                schema.registerEntity(Groups2Entities);
+                schema.registerEntity(Policy);
+                schema.registerEntity(Policies2Entities);
+                schema.registerEntity(User);
 
                 schema.addType({
                     meta: {
@@ -69,7 +74,7 @@ export default () => {
                     type: new GraphQLUnionType({
                         name: "IdentityType",
                         types: () =>
-                            app.config.security.identities.map(({ identity: Identity }) => {
+                            api.config.security.identities.map(({ identity: Identity }) => {
                                 return schema.getType(Identity.classId);
                             }),
                         resolveType(identity) {
@@ -81,19 +86,20 @@ export default () => {
                 schema.addAttributeConverter(convertToGraphQL);
 
                 // Create login queries
-                createLoginQueries(app, app.config, schema);
-                createListEntitiesQuery(app, app.config, schema);
-                overrideCreateApiTokenMutation(app, app.config, schema);
+
+                createLoginQueries(api, api.config, schema);
+                createListEntitiesQuery(api, api.config, schema);
+                overrideCreateApiTokenMutation(api, api.config, schema);
             });
 
-            app.entities.addEntityClass(ApiToken);
-            app.entities.addEntityClass(File);
-            app.entities.addEntityClass(Image);
-            app.entities.addEntityClass(Group);
-            app.entities.addEntityClass(Groups2Entities);
-            app.entities.addEntityClass(Policy);
-            app.entities.addEntityClass(Policies2Entities);
-            app.entities.addEntityClass(User);
+            api.entities.registerEntity(ApiToken);
+            api.entities.registerEntity(File);
+            api.entities.registerEntity(Image);
+            api.entities.registerEntity(Group);
+            api.entities.registerEntity(Groups2Entities);
+            api.entities.registerEntity(Policy);
+            api.entities.registerEntity(Policies2Entities);
+            api.entities.registerEntity(User);
 
             next();
         },
@@ -101,7 +107,12 @@ export default () => {
         async install(params: Object, next: Function) {
             const { default: install } = await import("./install");
             await install();
+            next();
+        },
 
+        async postInstall(params: Object, next: Function) {
+            const { api } = params;
+            await api.services.get("security").init();
             next();
         }
     };

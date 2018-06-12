@@ -1,7 +1,7 @@
 // @flow
 import { EntityAttributesContainer } from "webiny-entity";
 import IdentityAttribute from "./identityAttribute";
-import { app } from "./..";
+import { api } from "./..";
 import type { EntityAttributeOptions } from "webiny-entity/types";
 
 export default () => {
@@ -13,7 +13,7 @@ export default () => {
         const model = this.getParentModel();
         model.setAttribute(
             this.name,
-            new IdentityAttribute(this.name, this, app.services.get("security"), options)
+            new IdentityAttribute(this.name, this, api.services.get("security"), options)
         );
         return model.getAttribute(this.name);
     };

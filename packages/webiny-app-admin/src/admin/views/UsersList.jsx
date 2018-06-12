@@ -1,5 +1,4 @@
 import React, { Fragment } from "react";
-
 import _ from "lodash";
 import { i18n, createComponent } from "webiny-app";
 
@@ -26,9 +25,6 @@ class UsersList extends React.Component {
     render() {
         const { View, List, ListData, Link, Icon, Input, AdminLayout, Loader } = this.props.modules;
         const Table = List.Table;
-
-        const groups = <Link route="Groups.List">{t`Groups`}</Link>;
-        const permissions = <Link route="Permissions.List">{t`Permissions`}</Link>;
 
         return (
             <AdminLayout>

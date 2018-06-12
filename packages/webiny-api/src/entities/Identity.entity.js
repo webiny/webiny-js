@@ -1,6 +1,6 @@
 // @flow
-import Entity from "./entity";
-import { Policy, Policies2Entities } from "./entity";
+import Entity from "./Entity";
+import { Policy, Policies2Entities } from "./Entity";
 import type { IAuthorizable } from "../../types";
 
 /**

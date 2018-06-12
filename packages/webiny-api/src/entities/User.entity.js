@@ -1,5 +1,5 @@
 // @flow
-import Identity from "./identity.entity";
+import Identity from "./Identity.entity";
 
 class User extends Identity {
     constructor() {

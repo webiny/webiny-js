@@ -12,7 +12,14 @@ import coreApp from "./core";
 import { argv } from "yargs";
 process.env.INSTALL = JSON.stringify(argv.install || false);
 
-declare type AppType = { init: Function, install?: Function };
+declare type AppType = {
+    preInit?: Function,
+    init: Function,
+    postInit?: Function,
+    install?: Function,
+    preInstall?: Function,
+    postInstall?: Function
+};
 
 class Api {
     config: Object;
@@ -50,18 +57,57 @@ class Api {
         options: Object = {}
     ): Promise<Function> {
         // Initialize registered Webiny apps.
-        await compose(this.apps.map(app => app.init))({ app: this });
+        // "pre" and "post" lifecycle events were added additionally, after the same was done in
+        // the "install" process. Read the comment below to get a better understanding.
+        const init = { pre: [], main: [], post: [] };
 
-        // Optionally run install for each registered app
+        this.apps.map(app => {
+            if (typeof app.preInit === "function") {
+                init.pre.push(app.preInit);
+            }
+
+            if (typeof app.init === "function") {
+                init.main.push(app.init);
+            }
+
+            if (typeof app.postInit === "function") {
+                init.post.push(app.postInit);
+            }
+        });
+
+        await compose(init.pre)({ api: this });
+        await compose(init.main)({ api: this });
+        await compose(init.post)({ api: this });
+
+        // Optionally run install process for each registered app.
         if (process.env.INSTALL === "true") {
-            const installers = [];
+            // Installation happens in three stages - "pre", "main" and "post" stage.
+            // "pre" - will be executed first, before main chain.
+            // "main" - will be executed after all install processes are finished in the pre stage
+            // "post" - will be executed after all install processes are finished in the main stage
+            //
+            // Good example of usage is initialization of security service. After main stage is done, core app will
+            // initialize security service in the "post" step.
+            const install = { pre: [], main: [], post: [] };
+
             this.apps.map(app => {
+                if (typeof app.preInstall === "function") {
+                    install.pre.push(app.preInstall);
+                }
+
                 if (typeof app.install === "function") {
-                    installers.push(app.install);
+                    install.main.push(app.install);
+                }
+
+                if (typeof app.postInstall === "function") {
+                    install.post.push(app.postInstall);
                 }
             });
 
-            await compose(installers)({ app: this });
+            await compose(install.pre)({ api: this });
+            await compose(install.main)({ api: this });
+            await compose(install.post)({ api: this });
+
             process.env.INSTALL = "false";
         }
 

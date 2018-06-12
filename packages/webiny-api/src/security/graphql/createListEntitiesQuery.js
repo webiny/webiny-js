@@ -1,13 +1,7 @@
-import {
-    GraphQLObjectType,
-    GraphQLString,
-    GraphQLInt,
-    GraphQLList,
-    GraphQLBoolean
-} from "graphql";
+import { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList, GraphQLBoolean } from "graphql";
 import GraphQLJSON from "graphql-type-json";
 
-export default (app, config, schema) => {
+export default (api, config, schema) => {
     schema.addType({
         type: new GraphQLObjectType({
             name: "EntityAttributesAttribute",
@@ -49,7 +43,7 @@ export default (app, config, schema) => {
             }
         }),
         async resolve() {
-            const list = app.entities.getEntityClasses().map(entityClass => {
+            const list = api.entities.getEntityClasses().map(entityClass => {
                 return entityClass.describe();
             });
 

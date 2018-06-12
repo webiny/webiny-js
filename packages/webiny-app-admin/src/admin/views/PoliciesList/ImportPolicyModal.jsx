@@ -1,10 +1,10 @@
 import React from "react";
 
 import { i18n, createComponent, app } from "webiny-app";
-const t = i18n.namespace("Security.Modal.ExportModal");
+const t = i18n.namespace("Security.Modal.ImportPolicyModal");
 import { ModalComponent } from "webiny-app-ui";
 
-class CategoryModal extends React.Component {
+class ImportPolicyModal extends React.Component {
     render() {
         const {
             Modal,
@@ -15,7 +15,8 @@ class CategoryModal extends React.Component {
             Input,
             Grid,
             Loader,
-            Textarea
+            Textarea,
+            CodeEditor
         } = this.props.modules;
 
         return (
@@ -31,6 +32,7 @@ class CategoryModal extends React.Component {
                         <Form
                             model={model}
                             onSubmit={({ data }) => {
+                                console.log("ide");
                                 return onSubmit(JSON.parse(data));
                             }}
                             invalidFields={invalidFields}
@@ -38,13 +40,13 @@ class CategoryModal extends React.Component {
                             {({ form, Bind }) => (
                                 <Modal.Content>
                                     {loading && <Loader />}
-                                    <Modal.Header title="Import" onClose={this.props.hide} />
+                                    <Modal.Header title={t`Import`} onClose={this.props.hide} />
                                     <Modal.Body>
                                         {error && <FormError error={error} />}
                                         <Grid.Row>
                                             <Grid.Col all={12}>
                                                 <Bind>
-                                                    <Textarea
+                                                    <CodeEditor
                                                         mode="text/javascript"
                                                         name="data"
                                                         validators="required"
@@ -56,10 +58,15 @@ class CategoryModal extends React.Component {
                                     <Modal.Footer>
                                         <Button
                                             type="default"
-                                            label="Cancel"
+                                            label={t`Cancel`}
                                             onClick={this.props.hide}
                                         />
-                                        <Button type="primary" label="Save" onClick={form.submit} />
+
+                                        <Button
+                                            type="primary"
+                                            label={t`Save`}
+                                            onClick={form.submit}
+                                        />
                                     </Modal.Footer>
                                 </Modal.Content>
                             )}
@@ -71,7 +78,7 @@ class CategoryModal extends React.Component {
     }
 }
 
-export default createComponent([CategoryModal, ModalComponent], {
+export default createComponent([ImportPolicyModal, ModalComponent], {
     modules: [
         "Modal",
         "Button",
@@ -81,6 +88,7 @@ export default createComponent([CategoryModal, ModalComponent], {
         "FormError",
         "Grid",
         "Loader",
-        "Textarea"
+        "Textarea",
+        "CodeEditor"
     ]
 });

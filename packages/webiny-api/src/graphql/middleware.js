@@ -1,6 +1,6 @@
 // @flow
 import { execute } from "graphql";
-import { app } from "webiny-api";
+import { api } from "webiny-api";
 import compose from "webiny-compose";
 import httpError from "http-errors";
 import getGraphQLParams from "./utils/getGraphQLParams";
@@ -34,7 +34,7 @@ export default (middleware: Function) => {
             }
 
             params.output = await execute(
-                app.graphql.getSchema(),
+                api.graphql.getSchema(),
                 params.graphql.documentAST,
                 null,
                 params.req,

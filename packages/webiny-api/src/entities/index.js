@@ -1,7 +1,7 @@
-export { Group, Groups2Entities, Entity, Policy, Policies2Entities } from "./entity";
-export { default as File } from "./file.entity";
-export { default as Image } from "./image.entity";
-export { default as Settings } from "./settings.entity";
-export { default as Identity } from "./identity.entity";
-export { default as User } from "./user.entity";
-export { default as ApiToken } from "./apiToken.entity";
+export { Group, Groups2Entities, Entity, Policy, Policies2Entities } from "./Entity";
+export { default as File } from "./File.entity";
+export { default as Image } from "./Image.entity";
+export { default as Settings } from "./Settings.entity";
+export { default as Identity } from "./Identity.entity";
+export { default as User } from "./User.entity";
+export { default as ApiToken } from "./ApiToken.entity";

@@ -28,9 +28,7 @@ class GroupsList extends React.Component {
                     <ViewSwitcher.View name="listView" defaultView>
                         {({ showView }) => (
                             <View.List>
-                                <View.Header
-                                    title={t`Security - Groups`}
-                                >
+                                <View.Header title={t`Security - Groups`}>
                                     <ButtonGroup>
                                         <Link type="primary" route="Groups.Create">
                                             <Icon icon="plus-circle" />
@@ -51,14 +49,16 @@ class GroupsList extends React.Component {
 
                                                 <List {...listProps}>
                                                     <List.FormFilters>
-                                                        {({ apply }) => (
+                                                        {({ apply, Bind }) => (
                                                             <Grid.Row>
                                                                 <Grid.Col all={12}>
-                                                                    <Input
-                                                                        name="search.query"
-                                                                        placeholder={t`Search by name, description or slug`}
-                                                                        onEnter={apply()}
-                                                                    />
+                                                                    <Bind>
+                                                                        <Input
+                                                                            name="search.query"
+                                                                            placeholder={t`Search by name, description or slug`}
+                                                                            onEnter={apply()}
+                                                                        />
+                                                                    </Bind>
                                                                 </Grid.Col>
                                                             </Grid.Row>
                                                         )}

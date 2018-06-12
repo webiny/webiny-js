@@ -1,29 +1,29 @@
 // @flow
-import Page from "./entities/page.entity";
-import Revision from "./entities/revision.entity";
-import Category from "./entities/category.entity";
-import Widget from "./entities/widget.entity";
-import WidgetPreset from "./entities/widgetPreset.entity";
+import Page from "./entities/Page.entity";
+import Revision from "./entities/Revision.entity";
+import Category from "./entities/Category.entity";
+import Widget from "./entities/Widget.entity";
+import WidgetPreset from "./entities/WidgetPreset.entity";
 import addPageQueries from "./queries/page";
 
 export default () => {
     return {
-        init({ app }: Object, next: Function) {
-            app.graphql.schema(schema => {
-                schema.addEntity(Page);
-                schema.addEntity(Category);
-                schema.addEntity(Revision);
-                schema.addEntity(Widget);
-                schema.addEntity(WidgetPreset);
+        init({ api }: Object, next: Function) {
+            api.graphql.schema(schema => {
+                schema.registerEntity(Page);
+                schema.registerEntity(Category);
+                schema.registerEntity(Revision);
+                schema.registerEntity(Widget);
+                schema.registerEntity(WidgetPreset);
 
                 addPageQueries(schema);
             });
 
-            app.entities.addEntityClass(Page);
-            app.entities.addEntityClass(Category);
-            app.entities.addEntityClass(Revision);
-            app.entities.addEntityClass(Widget);
-            app.entities.addEntityClass(WidgetPreset);
+            api.entities.registerEntity(Page);
+            api.entities.registerEntity(Category);
+            api.entities.registerEntity(Revision);
+            api.entities.registerEntity(Widget);
+            api.entities.registerEntity(WidgetPreset);
 
             next();
         },

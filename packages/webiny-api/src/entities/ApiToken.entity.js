@@ -1,6 +1,6 @@
 // @flow
-import Identity from "./identity.entity";
-import { app } from "./..";
+import Identity from "./Identity.entity";
+import { api } from "./..";
 
 class ApiToken extends Identity {
     constructor() {
@@ -14,7 +14,7 @@ class ApiToken extends Identity {
 
     async activate(): Promise<ApiToken> {
         // 2147483647 = maximum value of unix timestamp (year 2038).
-        this.token = await app.services.get("security").createToken(this, 2147483647);
+        this.token = await api.services.get("security").createToken(this, 2147483647);
         return this;
     }
 }

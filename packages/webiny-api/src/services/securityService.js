@@ -1,7 +1,7 @@
 // @flow
 import { Identity } from "./../index";
 import AuthenticationError from "./AuthenticationError";
-import { Entity, Policy, app } from "./..";
+import { Entity, Policy, api } from "./..";
 import type { IAuthentication, IToken } from "./../../types";
 import _ from "lodash";
 import type { $Request } from "express";
@@ -22,10 +22,6 @@ class SecurityService implements IAuthentication {
     }
 
     async init() {
-        if (process.env.INSTALL === "true") {
-            return;
-        }
-
         this.defaultPermissions = await Policy.getDefaultPoliciesPermissions();
 
         // Attach event listeners.
@@ -36,7 +32,7 @@ class SecurityService implements IAuthentication {
                     return;
                 }
 
-                const { identity } = app.getRequest();
+                const { identity } = api.getRequest();
 
                 const canExecuteOperation = await this.canExecuteOperation(
                     identity,
@@ -65,12 +61,12 @@ class SecurityService implements IAuthentication {
 
     getIdentity(permissions: boolean = false) {
         return permissions
-            ? app.getRequest().security.permissions
-            : app.getRequest().security.identity;
+            ? api.getRequest().security.permissions
+            : api.getRequest().security.identity;
     }
 
     setIdentity(identity: Identity) {
-        app.getRequest().security.identity = identity;
+        api.getRequest().security.identity = identity;
         return this;
     }
 
@@ -143,12 +139,12 @@ class SecurityService implements IAuthentication {
     }
 
     setSuperUser(flag: boolean): SecurityService {
-        _.set(app.getRequest(), "security.superUser", flag);
+        _.set(api.getRequest(), "security.superUser", flag);
         return this;
     }
 
     getSuperUser() {
-        return _.get(app.getRequest(), "security.superUser");
+        return _.get(api.getRequest(), "security.superUser");
     }
 
     /**

@@ -3,7 +3,7 @@ import express from "express";
 import addDays from "date-fns/add_days";
 import { assert, expect } from "chai";
 import { MemoryDriver } from "webiny-entity-memory";
-import { app, middleware, endpointMiddleware, Entity } from "webiny-api";
+import { api, middleware, endpointMiddleware, Entity } from "webiny-api";
 import {
     authenticationMiddleware,
     authorizationMiddleware,
@@ -120,7 +120,7 @@ describe("Security test", () => {
     });
 
     it("should return error response with WBY_INTERNAL_ERROR", () => {
-        const authService = app.security;
+        const authService = api.security;
         sandbox.stub(authService, "authenticate").callsFake(() => {
             return {
                 promise: () => {
@@ -230,7 +230,7 @@ describe("Security test", () => {
 
     it("additional identity attributes - should set identity to attributes correctly", async () => {
         const identity = new MyUser().populate({ id: "identityID", username: "identity" });
-        let getRequestStub = sandbox.stub(app, "getRequest").callsFake(() => {
+        let getRequestStub = sandbox.stub(api, "getRequest").callsFake(() => {
             return {
                 identity
             };
@@ -258,7 +258,7 @@ describe("Security test", () => {
         assert.equal(await user.updatedBy, identity);
 
         getRequestStub.restore();
-        getRequestStub = sandbox.stub(app, "getRequest").callsFake(() => {
+        getRequestStub = sandbox.stub(api, "getRequest").callsFake(() => {
             return { identity: null };
         });
 

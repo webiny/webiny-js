@@ -2,7 +2,7 @@
 import path from "path";
 import _ from "lodash";
 import type { EntityFindParams, EntitySaveParams, EntityDeleteParams } from "webiny-entity/types";
-import File from "./file.entity";
+import File from "./File.entity";
 import type { ImageProcessor } from "../../types";
 
 export type ImagePresets = {
