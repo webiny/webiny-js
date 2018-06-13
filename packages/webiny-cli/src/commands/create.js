@@ -15,6 +15,7 @@ exports.builder = yargs => {
 
 exports.handler = async function(argv) {
     const name = argv.name;
+    cli.validateName(name);
 
     const cwd = process.cwd();
     const paths = {
