@@ -117,6 +117,21 @@ class Policy extends Entity {
                 throw Error(`Policy with slug "${this.slug}" already exists.`);
             }
         });
+
+        // Let's just make sure security is up-to-date with all of the default policies.
+        this.on("afterSave", async () => {
+            api.services
+                .get("security")
+                .setDefaultPermissions(await Policy.getDefaultPoliciesPermissions());
+        });
+    }
+
+    /**
+     * Returns true if policy is assigned to a default group.
+     */
+    async isDefault(): Promise<boolean> {
+        const defaultGroup = await Group.getDefaultGroup();
+        return Policies2Entities.count({ query: { entity: defaultGroup.id, policy: this.id } }) > 0;
     }
 
     static async getDefaultPolicies() {
@@ -206,6 +221,20 @@ class Group extends Entity {
                 throw Error(`Group with slug "${this.slug}" already exists.`);
             }
         });
+
+        // Let's just make sure security is up-to-date with all of the default policies.
+        // We can do this only when working with the default group (policies are a bit different).
+        this.on("afterSave", async () => {
+            if (this.isDefault()) {
+                api.services
+                    .get("security")
+                    .setDefaultPermissions(await Policy.getDefaultPoliciesPermissions());
+            }
+        });
+    }
+
+    isDefault() {
+        return this.slug === "default";
     }
 
     static async getDefaultGroup() {

@@ -22,7 +22,7 @@ class SecurityService implements IAuthentication {
     }
 
     async init() {
-        this.defaultPermissions = await Policy.getDefaultPoliciesPermissions();
+        this.setDefaultPermissions(await Policy.getDefaultPoliciesPermissions());
 
         // Attach event listeners.
         ["create", "update", "delete", "read"].forEach(operation => {
@@ -59,13 +59,18 @@ class SecurityService implements IAuthentication {
         return this.defaultPermissions;
     }
 
+    setDefaultPermissions(permissions: Object): SecurityService {
+        this.defaultPermissions = permissions;
+        return this;
+    }
+
     getIdentity(permissions: boolean = false) {
         return permissions
             ? api.getRequest().security.permissions
             : api.getRequest().security.identity;
     }
 
-    setIdentity(identity: Identity) {
+    setIdentity(identity: Identity): SecurityService {
         api.getRequest().security.identity = identity;
         return this;
     }
