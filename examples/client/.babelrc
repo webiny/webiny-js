@@ -12,6 +12,7 @@
     ["babel-plugin-transform-class-properties"],
     ["babel-plugin-transform-object-rest-spread", {"useBuiltIns": true}],
     ["babel-plugin-syntax-dynamic-import"],
+    ["babel-plugin-transform-decorators-legacy"],
     ["babel-plugin-transform-builtin-extend", {"globals": ["Error"]}],
     ["babel-plugin-transform-runtime", {
       "polyfill": false,
