@@ -8,7 +8,14 @@ import addPageQueries from "./queries/page";
 
 export default () => {
     return {
-        configure({ api }: Object, next: Function) {
+        async install(params: {}, next: Function) {
+            const { default: install } = await import("./install");
+            await install();
+
+            next();
+        },
+
+        init({ api }: Object, next: Function) {
             api.graphql.schema(schema => {
                 schema.registerEntity(Page);
                 schema.registerEntity(Category);
@@ -24,12 +31,6 @@ export default () => {
             api.entities.registerEntity(Revision);
             api.entities.registerEntity(Widget);
             api.entities.registerEntity(WidgetPreset);
-
-            next();
-        },
-        async install(params: {}, next: Function) {
-            const { default: install } = await import("./install");
-            await install();
 
             next();
         }
