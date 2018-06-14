@@ -7,6 +7,7 @@ class PageTable extends MySQLTable {
         this.column("title").varChar(300);
         this.column("slug").varChar(300);
         this.column("category").char(24);
+        this.column("settings").json();
         this.column("content").json();
         this.column("status").enum("draft", "published", "trash");
         this.column("pinned")

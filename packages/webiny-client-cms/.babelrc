@@ -8,6 +8,9 @@
         "babel-preset-react"
     ],
     "plugins": [
+        ["babel-plugin-module-resolver", {
+            "root": ["./src"]
+        }],
         ["babel-plugin-lodash"],
         ["babel-plugin-transform-class-properties"],
         ["babel-plugin-transform-object-rest-spread", {"useBuiltIns": true}],
