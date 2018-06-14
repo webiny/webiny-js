@@ -1,7 +1,7 @@
 // @flow
 import { Entity } from "webiny-api";
 import Page from "./Page.entity";
-import WidgetModel from "./widget.model";
+import WidgetModel from "./Widget.model";
 
 class Revision extends Entity {
     constructor() {
