@@ -7,7 +7,8 @@ import GraphQL from "./graphql/GraphQL";
 import EntityManager from "./entities/EntityManager";
 import type { $Request, $Response } from "express";
 import createMiddleware from "./graphql/middleware.js";
-import coreApp from "./core";
+import coreApp from "./coreApp";
+import chalk from "chalk";
 
 import { argv } from "yargs";
 process.env.INSTALL = JSON.stringify(argv.install || false);
@@ -18,7 +19,8 @@ declare type AppType = {
     postInit?: Function,
     install?: Function,
     preInstall?: Function,
-    postInstall?: Function
+    postInstall?: Function,
+    configure?: Function
 };
 
 class Api {
@@ -56,59 +58,29 @@ class Api {
         middleware: Function => Array<Function>,
         options: Object = {}
     ): Promise<Function> {
-        // Initialize registered Webiny apps.
-        // "pre" and "post" lifecycle events were added additionally, after the same was done in
-        // the "install" process. Read the comment below to get a better understanding.
-        const init = { pre: [], main: [], post: [] };
+        // Let's process all hooks, attached by all used apps. Descriptions of hooks in the following lines.
+        try {
+            // Used for configuring, eg. entity layer, services, graphql or some other internal config parameter.
+            await this.processHooks("configure");
 
-        this.apps.map(app => {
-            if (typeof app.preInit === "function") {
-                init.pre.push(app.preInit);
+            if (process.env.INSTALL === "true") {
+                // Executed if installation process is running. Will be automatically started on first run.
+                this.log("Starting the installation process...", "info");
+                await this.processHooks("preInstall");
+                await this.processHooks("install");
+                await this.processHooks("postInstall");
+
+                process.env.INSTALL = "false";
+                this.log("Installation complete!", "success");
             }
 
-            if (typeof app.init === "function") {
-                init.main.push(app.init);
-            }
-
-            if (typeof app.postInit === "function") {
-                init.post.push(app.postInit);
-            }
-        });
-
-        await compose(init.pre)({ api: this });
-        await compose(init.main)({ api: this });
-        await compose(init.post)({ api: this });
-
-        // Optionally run install process for each registered app.
-        if (process.env.INSTALL === "true") {
-            // Installation happens in three stages - "pre", "main" and "post" stage.
-            // "pre" - will be executed first, before main chain.
-            // "main" - will be executed after all install processes are finished in the pre stage
-            // "post" - will be executed after all install processes are finished in the main stage
-            //
-            // Good example of usage is initialization of security service. After main stage is done, core app will
-            // initialize security service in the "post" step.
-            const install = { pre: [], main: [], post: [] };
-
-            this.apps.map(app => {
-                if (typeof app.preInstall === "function") {
-                    install.pre.push(app.preInstall);
-                }
-
-                if (typeof app.install === "function") {
-                    install.main.push(app.install);
-                }
-
-                if (typeof app.postInstall === "function") {
-                    install.post.push(app.postInstall);
-                }
-            });
-
-            await compose(install.pre)({ api: this });
-            await compose(install.main)({ api: this });
-            await compose(install.post)({ api: this });
-
-            process.env.INSTALL = "false";
+            // Once everything was configured and optionally installed, initialization of each app starts.
+            await this.processHooks("preInit");
+            await this.processHooks("init");
+            await this.processHooks("postInit");
+        } catch (e) {
+            this.log(`An error occurred in the "${e.hook}" process:\n${e.message}`, "error");
+            process.exit();
         }
 
         const log = debug("webiny-api");
@@ -142,6 +114,42 @@ class Api {
                 })();
             });
         };
+    }
+
+    /**
+     * Used for development purposes, to highlight more important messages to the user.
+     * @param message
+     * @param type
+     */
+    log(message: string, type: ?string) {
+        switch (type) {
+            case "success":
+                return console.log(chalk.green(message));
+            case "info":
+                return console.log(chalk.blue(message));
+            case "warning":
+                return console.log(chalk.yellow(message));
+            case "error":
+                return console.log(chalk.red(message));
+            default:
+                console.log(message);
+        }
+    }
+
+    async processHooks(hook: string) {
+        const hooks = [];
+        this.apps.forEach(app => {
+            if (typeof app[hook] === "function") {
+                hooks.push(app[hook]);
+            }
+        });
+
+        try {
+            await compose(hooks)({ api: this });
+        } catch (e) {
+            e.hook = hook;
+            throw e;
+        }
     }
 }
 

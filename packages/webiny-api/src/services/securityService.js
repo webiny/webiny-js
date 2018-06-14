@@ -15,13 +15,18 @@ class SecurityService implements IAuthentication {
         identities: Array<Object>
     };
     defaultPermissions: { api: {}, entities: {} };
-
+    initialized: boolean;
     constructor(config: Object) {
+        this.initialized = false;
         this.config = config;
         this.defaultPermissions = { api: {}, entities: {} };
     }
 
     async init() {
+        if (this.initialized) {
+            return;
+        }
+
         this.setDefaultPermissions(await Policy.getDefaultPoliciesPermissions());
 
         // Attach event listeners.
@@ -53,6 +58,8 @@ class SecurityService implements IAuthentication {
                 }
             });
         });
+
+        this.initialized = true;
     }
 
     getDefaultPermissions() {

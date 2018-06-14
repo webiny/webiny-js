@@ -1,5 +1,5 @@
 // @flow
-import { Sync, ConsoleLog } from "webiny-sql-table-sync";
+import { Sync } from "webiny-sql-table-sync";
 import { CategoryTable, PageTable, RevisionTable, WidgetTable, WidgetPresetTable } from "./tables";
 
 export default async () => {
@@ -7,8 +7,7 @@ export default async () => {
 
     const sync = new Sync({
         tables,
-        drop: true,
-        logClass: ConsoleLog
+        drop: true
     });
     await sync.execute();
 };

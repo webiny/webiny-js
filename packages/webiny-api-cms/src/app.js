@@ -8,7 +8,7 @@ import addPageQueries from "./queries/page";
 
 export default () => {
     return {
-        init({ api }: Object, next: Function) {
+        configure({ api }: Object, next: Function) {
             api.graphql.schema(schema => {
                 schema.registerEntity(Page);
                 schema.registerEntity(Category);

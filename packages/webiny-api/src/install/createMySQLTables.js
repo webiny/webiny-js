@@ -1,5 +1,5 @@
 // @flow
-import { Sync, ConsoleLog } from "webiny-sql-table-sync";
+import { Sync } from "webiny-sql-table-sync";
 import {
     ApiTokenTable,
     Groups2Entities,
@@ -27,8 +27,7 @@ export default async () => {
 
     const sync = new Sync({
         tables,
-        drop: true,
-        logClass: ConsoleLog
+        drop: true
     });
     await sync.execute();
 };

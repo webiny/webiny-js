@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "build": "babel src -d dist",
-    "develop": "cross-env NODE_ENV=development DEBUG=webiny* node --inspect=9005 api/src/express --require=babel-register --port 9000",
+    "develop": "cross-env NODE_ENV=development node api/src/express --require=babel-register --port 9000",
+    "develop:debug": "cross-env NODE_ENV=development DEBUG=webiny* node --inspect=9005 api/src/express --require=babel-register --port 9000",
     "clean":  "rimraf node_modules/graphql*",
     "postinstall": "yarn clean"
   },
