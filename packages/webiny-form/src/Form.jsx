@@ -4,6 +4,13 @@ import linkState from "./linkState";
 import validation from "./validation";
 
 class Form extends React.Component {
+    static defaultProps = {
+        model: {},
+        disabled: false,
+        validateOnFirstSubmit: false,
+        onSubmit: null
+    };
+
     state = {
         model: {},
         wasSubmitted: false,
@@ -81,18 +88,19 @@ class Form extends React.Component {
         });
     };
 
-    validate = () => {
+    validate = async () => {
         let allIsValid = true;
 
         // Inputs must be validated in a queue because we may have async validators
-        let chain = Promise.resolve(allIsValid);
-        Object.keys(this.inputs).forEach(name => {
+        const inputNames = Object.keys(this.inputs);
+        for (let i = 0; i < inputNames.length; i++) {
+            const name = inputNames[i];
             const { validators } = this.inputs[name];
             if (_.isEmpty(validators)) {
                 return;
             }
 
-            const hasValue = !!this.state.model[name];
+            const hasValue = !!_.get(this.state.model, name);
             const isInputValid = _.get(this.state.validation, name + ".isValid");
 
             const shouldValidate = !!(
@@ -102,26 +110,22 @@ class Form extends React.Component {
 
             if (shouldValidate) {
                 if (isInputValid === false || _.isNil(isInputValid)) {
-                    chain = chain.then(() => {
-                        return this.validateInput(name).then(validationResult => {
-                            if (validationResult === false) {
-                                allIsValid = false;
-                            }
-                            return allIsValid;
-                        });
-                    });
+                    const validationResult = await this.validateInput(name);
+                    if (validationResult === false) {
+                        allIsValid = false;
+                    }
                 }
             }
-        });
+        }
 
-        return chain;
+        return allIsValid;
     };
 
     validateInput = name => {
         if ((this.props.validateOnFirstSubmit && !this.state.wasSubmitted) || !this.inputs[name]) {
             return Promise.resolve(null);
         }
-        const value = this.state.model[name];
+        const value = _.get(this.state.model, name);
         const { validators, validationMessages } = this.inputs[name];
         const hasValidators = _.keys(validators).length;
 
@@ -253,7 +257,12 @@ class Form extends React.Component {
         };
 
         // Assign value and onChange props
-        const ls = linkState(this, "model." + name, changeCallback, defaultValue);
+        const ls = linkState(
+            this,
+            name === "*" ? "model" : "model." + name,
+            changeCallback,
+            defaultValue
+        );
 
         const onChange = (newValue, cb) => {
             // When linkState is done processing the value change...
@@ -292,7 +301,7 @@ class Form extends React.Component {
         return _.cloneDeepWith(collection, omitFn);
     };
 
-    __onKeyDown = (e) => {
+    __onKeyDown = e => {
         if (
             (e.metaKey || e.ctrlKey) &&
             ["s", "Enter"].indexOf(e.key) > -1 &&
@@ -326,12 +335,5 @@ class Form extends React.Component {
         );
     }
 }
-
-Form.defaultProps = {
-    model: {},
-    disabled: false,
-    validateOnFirstSubmit: false,
-    onSubmit: null
-};
 
 export default Form;
