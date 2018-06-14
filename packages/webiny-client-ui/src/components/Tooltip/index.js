@@ -1,7 +1,6 @@
-import React from 'react';
-import $ from 'jquery';
-import { createComponent } from "webiny-client";
-import TooltipContent from './TooltipContent';
+import React from "react";
+import $ from "jquery";
+import TooltipContent from "./TooltipContent";
 
 class Tooltip extends React.Component {
     constructor() {
@@ -26,17 +25,26 @@ class Tooltip extends React.Component {
     componentDidMount() {
         // We attach different event listeners, depending on received 'trigger' prop.
         switch (this.props.trigger) {
-            case 'click':
-                $(this.ref).first().on('click', this.onClick);
+            case "click":
+                $(this.ref)
+                    .first()
+                    .on("click", this.onClick);
                 break;
-            default: // Hover
-                $(this.ref).first().on('mouseenter', this.onMouseEnter);
-                $(this.ref).first().on('mouseleave', this.onMouseLeave);
+            default:
+                // Hover
+                $(this.ref)
+                    .first()
+                    .on("mouseenter", this.onMouseEnter);
+                $(this.ref)
+                    .first()
+                    .on("mouseleave", this.onMouseLeave);
         }
     }
 
     componentWillUnmount() {
-        $(this.ref).first().off();
+        $(this.ref)
+            .first()
+            .off();
     }
 
     onClick() {
@@ -85,17 +93,17 @@ class Tooltip extends React.Component {
      */
     mustShowTooltipContent() {
         switch (this.props.trigger) {
-            case 'click':
+            case "click":
                 return this.state.click.target;
-                break;
-            default: // hover
+            default:
+                // hover
                 return this.state.hover.target;
         }
     }
 
     render() {
         return (
-            <span ref={ref => this.ref = ref}>
+            <span ref={ref => (this.ref = ref)}>
                 {this.props.target}
                 {this.mustShowTooltipContent() && (
                     <TooltipContent
@@ -105,7 +113,8 @@ class Tooltip extends React.Component {
                         onMouseLeave={this.onContentLeave}
                         content={this.props.children}
                         placement={this.props.placement}
-                        targetFirstChildElement={this.ref.firstChild}/>
+                        targetFirstChildElement={this.ref.firstChild}
+                    />
                 )}
             </span>
         );
@@ -113,9 +122,9 @@ class Tooltip extends React.Component {
 }
 
 Tooltip.defaultProps = {
-    placement: 'right',
-    trigger: 'hover',
+    placement: "right",
+    trigger: "hover",
     target: null
 };
 
-export default createComponent(Tooltip);
+export default Tooltip;

@@ -1,9 +1,12 @@
 import React from "react";
 import _ from "lodash";
 import $ from "jquery";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 import ReactDOMServer from "react-dom/server";
 
+@Component({
+    modules: ["Vendor.Select2"]
+})
 class SimpleSelect extends React.Component {
     constructor(props) {
         super(props);
@@ -252,6 +255,4 @@ SimpleSelect.defaultProps = {
     matcher: null
 };
 
-export default createComponent(SimpleSelect, {
-    modules: ["Vendor.Select2"]
-});
+export default SimpleSelect;

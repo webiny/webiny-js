@@ -1,7 +1,8 @@
 import React from "react";
-import { createComponent, i18n } from "webiny-client";
+import { Component, i18n } from "webiny-client";
 
 const t = i18n.namespace("Webiny.Ui.List.Table.FieldInfo");
+@Component({ modules: ["Modal", "Button", "Icon"] })
 class FieldInfo extends React.Component {
     constructor(props) {
         super(props);
@@ -51,4 +52,4 @@ class FieldInfo extends React.Component {
     }
 }
 
-export default createComponent(FieldInfo, { modules: ["Modal", "Button", "Icon"] });
+export default FieldInfo;

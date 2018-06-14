@@ -5,7 +5,7 @@ import placeholderImage from "./placeholder.jpg";
 @Component({
     modules: ["SlateEditor"]
 })
-export default class ImageWithTextWidget extends React.Component {
+class ImageWithTextWidget extends React.Component {
     render() {
         const {
             widget: { data },
@@ -33,8 +33,8 @@ export default class ImageWithTextWidget extends React.Component {
                 }}
                 key={"text"}
             >
-                <Bind>
-                    <SlateEditor name={"text"} />
+                <Bind name={"text"}>
+                    <SlateEditor />
                 </Bind>
             </div>
         );
@@ -46,3 +46,5 @@ export default class ImageWithTextWidget extends React.Component {
         );
     }
 }
+
+export default ImageWithTextWidget;

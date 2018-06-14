@@ -1,13 +1,16 @@
 import React, { Fragment } from "react";
 import TogglePermissionButton from "./../components/TogglePermissionButton";
 import _ from "lodash";
-import { i18n, createComponent } from "webiny-client";
+import { i18n, Component } from "webiny-client";
 const t = i18n.namespace("Security.EntitiesList");
 
 const entityOperationPath = (classId, permissionClass, operation) => {
     return `permissions.entities.${classId}.${permissionClass}.operations.${operation}`;
 };
 
+@Component({
+    modules: ["List", "ListData", "Grid", "Input", "Loader"]
+})
 class EntitiesList extends React.Component {
     renderCrudTogglePermissionButtons({ permissionClass, $this, data }) {
         const { model } = this.props.form.state;
@@ -137,6 +140,4 @@ class EntitiesList extends React.Component {
     }
 }
 
-export default createComponent(EntitiesList, {
-    modules: ["List", "ListData", "Grid", "Input", "Loader"]
-});
+export default EntitiesList;

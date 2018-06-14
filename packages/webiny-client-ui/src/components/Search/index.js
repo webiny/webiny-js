@@ -1,11 +1,16 @@
 import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
-import { i18n, createComponent } from "webiny-client";
-import { FormComponent } from "webiny-client-ui";
+import { i18n, Component } from "webiny-client";
+import { withFormComponent } from "webiny-client-ui";
 import styles from "./styles.css?prefix=Webiny_Ui_Search";
 
 const t = i18n.namespace("Webiny.Ui.Search");
+@withFormComponent()
+@Component({
+    modules: ["Link", "Icon", "FormGroup"],
+    styles
+})
 class Search extends React.Component {
     constructor(props) {
         super(props);
@@ -351,7 +356,4 @@ Search.defaultProps = {
     }
 };
 
-export default createComponent([Search, FormComponent], {
-    modules: ["Link", "Icon", "FormGroup"],
-    styles
-});
+export default Search;

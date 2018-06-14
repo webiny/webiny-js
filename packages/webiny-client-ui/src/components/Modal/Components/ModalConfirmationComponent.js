@@ -1,38 +1,31 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
-import { ModalComponent } from "webiny-client-ui";
+import { Component } from "webiny-client";
+import withModalDialog from "../withModalDialog";
 
+@withModalDialog()
+@Component()
 class ModalConfirmationComponent extends React.Component {
-    constructor(props) {
-        super(props);
+    state = {
+        loading: false
+    };
 
-        this.state = {
-            loading: false
-        };
-
-        this.onCancel = this.onCancel.bind(this);
-        this.onConfirm = this.onConfirm.bind(this);
-        this.showLoading = this.showLoading.bind(this);
-        this.hideLoading = this.hideLoading.bind(this);
-    }
-
-    showLoading() {
+    showLoading = () => {
         this.setState({ loading: true });
-    }
+    };
 
-    hideLoading() {
+    hideLoading = () => {
         this.setState({ loading: false });
-    }
+    };
 
-    onCancel() {
+    onCancel = () => {
         if (!this.props.animating) {
             if (_.isFunction(this.props.onCancel)) {
                 return this.props.onCancel(this);
             }
             return this.props.hide();
         }
-    }
+    };
 
     /**
      * This function is executed when dialog is confirmed, it handles all the maintenance stuff and executes `onConfirm` callback
@@ -46,7 +39,7 @@ class ModalConfirmationComponent extends React.Component {
      * @param data
      * @returns {Promise.<TResult>}
      */
-    onConfirm(data = null) {
+    onConfirm = (data = null) => {
         if (!this.props.animating && _.isFunction(this.props.onConfirm)) {
             this.showLoading();
             data = _.isPlainObject(data) ? data : this.props.data;
@@ -66,13 +59,12 @@ class ModalConfirmationComponent extends React.Component {
                 }
             });
         }
-    }
+    };
 
     render() {
-        const { children, ...props } = this.props;
+        const { children } = this.props;
 
-        return React.cloneElement(children, {
-            ...props,
+        return children({
             loading: this.state.loading,
             onConfirm: this.onConfirm,
             onCancel: this.onCancel
@@ -88,4 +80,4 @@ ModalConfirmationComponent.defaultProps = {
     data: null
 };
 
-export default createComponent([ModalConfirmationComponent, ModalComponent]);
+export default ModalConfirmationComponent;

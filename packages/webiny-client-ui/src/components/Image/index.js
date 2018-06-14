@@ -1,12 +1,17 @@
 import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
-import { createComponent, i18n } from "webiny-client";
-import { FormComponent } from "webiny-client-ui";
+import { Component, i18n } from "webiny-client";
+import { withFormComponent } from "webiny-client-ui";
 import ImagePreview from "./Preview";
 import styles from "./styles.css?prefix=Webiny_Ui_Image";
 
 const t = i18n.namespace("Webiny.Ui.Image");
+@withFormComponent()
+@Component({
+    modules: ["FileReader", "Alert", "Cropper", "FormGroup"],
+    styles
+})
 class Image extends React.Component {
     constructor(props) {
         super(props);
@@ -83,7 +88,10 @@ class Image extends React.Component {
     }
 
     getCropper(children = null) {
-        const { cropper, modules: { Cropper } } = this.props;
+        const {
+            cropper,
+            modules: { Cropper }
+        } = this.props;
 
         if (!cropper) {
             return null;
@@ -160,7 +168,10 @@ class Image extends React.Component {
             return this.getCropper();
         }
 
-        const { modules: { FileReader, FormGroup }, styles } = this.props;
+        const {
+            modules: { FileReader, FormGroup },
+            styles
+        } = this.props;
 
         let message = null;
         if (!this.props.value) {
@@ -229,7 +240,4 @@ Image.defaultProps = {
     sizeLimit: 2485760
 };
 
-export default createComponent([Image, FormComponent], {
-    modules: ["FileReader", "Alert", "Cropper", "FormGroup"],
-    styles
-});
+export default Image;

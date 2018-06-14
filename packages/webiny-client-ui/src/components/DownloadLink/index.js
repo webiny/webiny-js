@@ -1,11 +1,12 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 
 /**
  * TODO: DownloadLink
  * This component needs to be reviewed in context of GraphQL and how we plan on performing downloads (ex: PDF)
  */
+@Component({ modules: ["Downloader", "Link"] })
 class DownloadLink extends React.Component {
     constructor(props) {
         super(props);
@@ -42,7 +43,10 @@ class DownloadLink extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { modules: { Downloader, Link }, ...props } = this.props;
+        const {
+            modules: { Downloader, Link },
+            ...props
+        } = this.props;
         const downloader = <Downloader onReady={downloader => (this.downloader = downloader)} />;
         props.onClick = () => {
             if (this.props.disabled) {
@@ -88,4 +92,4 @@ DownloadLink.defaultProps = {
     disabled: false
 };
 
-export default createComponent(DownloadLink, { modules: ["Downloader", "Link"] });
+export default DownloadLink;

@@ -1,10 +1,11 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent, i18n } from "webiny-client";
+import { Component, i18n } from "webiny-client";
 import icons from "./icons";
 
 const t = i18n.namespace("Webiny.Ui.IconPicker");
 
+@Component({ modules: ["Select", "Icon"] })
 class IconPicker extends React.Component {
     constructor(props) {
         super(props);
@@ -67,4 +68,4 @@ IconPicker.defaultProps = {
     useDataAsValue: true
 };
 
-export default createComponent(IconPicker, { modules: ["Select", "Icon"] });
+export default IconPicker;

@@ -1,12 +1,15 @@
 import React from "react";
 import _ from "lodash";
 
-import { i18n, createComponent, app } from "webiny-client";
+import { i18n, Component, app } from "webiny-client";
 const t = i18n.namespace("Security.Modal.ExportPolicyModal");
-import { ModalComponent } from "webiny-client-ui";
-
+import { withModalDialog } from "webiny-client-ui";
 import css from "./exportPolicyModal.scss";
 
+@withModalDialog()
+@Component({
+    modules: ["Modal", "Copy", "CodeHighlight", "Loader", "Button"]
+})
 class ExportPolicyModal extends React.Component {
     constructor(props) {
         super(props);
@@ -70,6 +73,4 @@ ExportPolicyModal.defaultProps = {
     fields: ""
 };
 
-export default createComponent([ExportPolicyModal, ModalComponent], {
-    modules: ["Modal", "Copy", "CodeHighlight", "Loader", "Button"]
-});
+export default ExportPolicyModal;

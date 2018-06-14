@@ -1,15 +1,21 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 import styles from "./styles.css?prefix=Webiny_Ui_Section";
 
+@Component({ modules: ["Icon"], styles })
 class Section extends React.Component {
     render() {
         if (this.props.render) {
             return this.props.render.call(this);
         }
 
-        const { modules: { Icon }, styles, title, children } = this.props;
+        const {
+            modules: { Icon },
+            styles,
+            title,
+            children
+        } = this.props;
         let icon = null;
         if (this.props.icon) {
             icon = <Icon icon={this.props.icon} />;
@@ -33,4 +39,4 @@ Section.defaultProps = {
     icon: null
 };
 
-export default createComponent(Section, { modules: ["Icon"], styles });
+export default Section;

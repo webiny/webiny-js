@@ -1,10 +1,15 @@
 import React from "react";
 import _ from "lodash";
-import { i18n, createComponent } from "webiny-client";
-import { FormComponent } from "webiny-client-ui";
+import { i18n, Component } from "webiny-client";
+import { withFormComponent } from "webiny-client-ui";
 import styles from "./styles.css?prefix=Webiny_Ui_Avatar";
 
 const t = i18n.namespace("Webiny.Ui.Avatar");
+@withFormComponent()
+@Component({
+    modules: ["Alert", "FileReader", "Cropper", "Button"],
+    styles
+})
 class Avatar extends React.Component {
     constructor(props) {
         super(props);
@@ -82,7 +87,10 @@ class Avatar extends React.Component {
     }
 
     getCropper() {
-        const { cropper, modules: { Cropper } } = this.props;
+        const {
+            cropper,
+            modules: { Cropper }
+        } = this.props;
 
         if (!cropper) {
             return null;
@@ -148,7 +156,10 @@ class Avatar extends React.Component {
         }
 
         const model = { ...this.props.value };
-        const { modules: { Alert, Button, FileReader }, styles } = this.props;
+        const {
+            modules: { Alert, Button, FileReader },
+            styles
+        } = this.props;
 
         let imageSrc = this.props.defaultImage;
         if (model) {
@@ -212,7 +223,4 @@ Avatar.defaultProps = {
     sizeLimit: 2485760
 };
 
-export default createComponent([Avatar, FormComponent], {
-    modules: ["Alert", "FileReader", "Cropper", "Button"],
-    styles
-});
+export default Avatar;

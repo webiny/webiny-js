@@ -1,7 +1,29 @@
 import React from "react";
-import { app, i18n, createComponent } from "webiny-client";
+import { app, i18n, Component } from "webiny-client";
 const t = i18n.namespace("Security.ApiTokensForm");
 
+@Component({
+    modules: [
+        "View",
+        "Form",
+        "FormData",
+        "FormError",
+        "Grid",
+        "Input",
+        "Textarea",
+        "Button",
+        "Section",
+        "Loader",
+        "OptionsData",
+        "AutoCompleteList",
+        "Link",
+        "Alert",
+        "Copy",
+        {
+            AdminLayout: "Admin.Layout"
+        }
+    ]
+})
 class ApiTokensForm extends React.Component {
     constructor() {
         super();
@@ -71,22 +93,15 @@ class ApiTokensForm extends React.Component {
                                                     <Section title={t`Info`} />
                                                     <Grid.Row>
                                                         <Grid.Col all={12}>
-                                                            <Bind>
-                                                                <Input
-                                                                    label={t`Name`}
-                                                                    name="name"
-                                                                    validators="required"
-                                                                />
+                                                            <Bind name="name" validators={["required"]}>
+                                                                <Input label={t`Name`} />
                                                             </Bind>
                                                         </Grid.Col>
                                                     </Grid.Row>
                                                     <Grid.Row>
                                                         <Grid.Col all={12}>
-                                                            <Bind>
-                                                                <Textarea
-                                                                    label={t`Short description`}
-                                                                    name="description"
-                                                                />
+                                                            <Bind name="description">
+                                                                <Textarea label={t`Short description`} />
                                                             </Bind>
                                                         </Grid.Col>
                                                     </Grid.Row>
@@ -110,13 +125,12 @@ class ApiTokensForm extends React.Component {
                                                                         }}
                                                                     >
                                                                         {({ options }) => (
-                                                                            <Bind>
+                                                                            <Bind name="groups">
                                                                                 <AutoCompleteList
                                                                                     options={
                                                                                         options
                                                                                     }
                                                                                     label={t`Groups`}
-                                                                                    name="groups"
                                                                                     onSearch={query => {
                                                                                         this.setState(
                                                                                             state => {
@@ -124,8 +138,7 @@ class ApiTokensForm extends React.Component {
                                                                                                 return state;
                                                                                             }
                                                                                         );
-                                                                                    }}
-                                                                                />
+                                                                                    }} />
                                                                             </Bind>
                                                                         )}
                                                                     </OptionsData>
@@ -148,11 +161,10 @@ class ApiTokensForm extends React.Component {
                                                                 }}
                                                             >
                                                                 {({ options }) => (
-                                                                    <Bind>
+                                                                    <Bind name="policies">
                                                                         <AutoCompleteList
                                                                             options={options}
                                                                             label={t`Policies`}
-                                                                            name="policies"
                                                                             onSearch={query => {
                                                                                 this.setState(
                                                                                     state => {
@@ -160,8 +172,7 @@ class ApiTokensForm extends React.Component {
                                                                                         return state;
                                                                                     }
                                                                                 );
-                                                                            }}
-                                                                        />
+                                                                            }} />
                                                                     </Bind>
                                                                 )}
                                                             </OptionsData>
@@ -173,15 +184,13 @@ class ApiTokensForm extends React.Component {
                                             <Grid.Row>
                                                 <Grid.Col all={12}>
                                                     <Section title={t`API Token`} />
-                                                    <Bind>
+                                                    <Bind name="token">
 
                                                         <Copy.Input
                                                             label={t`Token`}
-                                                            name="token"
                                                             placeholder={t`To receive a token, you must save it first.`}
                                                             disabled
-                                                            description={t`Sent via "Authorization" header. Generated automatically and cannot be changed.`}
-                                                        />
+                                                            description={t`Sent via "Authorization" header. Generated automatically and cannot be changed.`} />
                                                     </Bind>
                                                 </Grid.Col>
                                             </Grid.Row>
@@ -212,25 +221,4 @@ class ApiTokensForm extends React.Component {
     }
 }
 
-export default createComponent(ApiTokensForm, {
-    modules: [
-        "View",
-        "Form",
-        "FormData",
-        "FormError",
-        "Grid",
-        "Input",
-        "Textarea",
-        "Button",
-        "Section",
-        "Loader",
-        "OptionsData",
-        "AutoCompleteList",
-        "Link",
-        "Alert",
-        "Copy",
-        {
-            AdminLayout: "Admin.Layout"
-        }
-    ]
-});
+export default ApiTokensForm;

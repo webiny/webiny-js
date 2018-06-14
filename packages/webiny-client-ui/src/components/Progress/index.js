@@ -1,7 +1,8 @@
 import React from "react";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 import styles from "./styles.css?prefix=Webiny_Ui_Progress";
 
+@Component({ styles })
 class Progress extends React.Component {
     render() {
         if (this.props.render) {
@@ -31,4 +32,4 @@ Progress.defaultProps = {
     value: 0
 };
 
-export default createComponent(Progress, { styles });
+export default Progress;

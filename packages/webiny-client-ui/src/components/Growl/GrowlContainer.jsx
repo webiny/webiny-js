@@ -2,9 +2,10 @@ import React from 'react';
 import _ from 'lodash';
 import classSet from "classnames";
 import dynamics from 'dynamics.js';
-import { createComponent } from 'webiny-client';
+import { Component } from 'webiny-client';
 import styles from './styles.css?prefix=Webiny_Ui_Growl';
 
+@Component({ styles })
 class GrowlContainer extends React.Component {
 
     constructor(props) {
@@ -87,4 +88,4 @@ GrowlContainer.defaultProps = {
     onComponentDidMount: _.noop
 };
 
-export default createComponent(GrowlContainer, { styles });
+export default GrowlContainer;

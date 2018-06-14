@@ -1,7 +1,19 @@
 import React from "react";
 import _ from "lodash";
-import { app, createComponent } from "webiny-client";
+import { app, Component } from "webiny-client";
 
+@Component({
+    modules: [
+        {
+            userMenuItems: () => {
+                return app.modules.loadByTag("user-menu-item").then(modules => {
+                    return Object.values(modules).filter(m => !_.isNil(m));
+                });
+            },
+            logoutMenuItem: "Admin.UserMenu.Logout"
+        }
+    ]
+})
 class UserMenu extends React.Component {
     constructor(props) {
         super(props);
@@ -83,15 +95,4 @@ class UserMenu extends React.Component {
     }
 }
 
-export default createComponent(UserMenu, {
-    modules: [
-        {
-            userMenuItems: () => {
-                return app.modules.loadByTag("user-menu-item").then(modules => {
-                    return Object.values(modules).filter(m => !_.isNil(m));
-                });
-            },
-            logoutMenuItem: "Admin.UserMenu.Logout"
-        }
-    ]
-});
+export default UserMenu;

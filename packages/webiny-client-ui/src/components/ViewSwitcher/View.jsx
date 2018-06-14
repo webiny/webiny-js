@@ -1,7 +1,8 @@
 import React from 'react';
 import _ from 'lodash';
-import { app, createComponent } from 'webiny-client';
+import { app, Component } from 'webiny-client';
 
+@Component()
 class View extends React.Component {
 
     constructor(props) {
@@ -89,4 +90,4 @@ View.defaultProps = {
     modal: false
 };
 
-export default createComponent(View);
+export default View;

@@ -1,7 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 
+@Component({ modules: ["Icon", "Link", "Downloader"] })
 class ModalAction extends React.Component {
     render() {
         if (this.props.render) {
@@ -53,4 +54,4 @@ ModalAction.defaultProps = {
     download: false
 };
 
-export default createComponent(ModalAction, { modules: ["Icon", "Link", "Downloader"] });
+export default ModalAction;

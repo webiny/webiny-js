@@ -1,8 +1,9 @@
 import React from "react";
 import classSet from "classnames";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 import styles from "../styles.scss?prefix=wui-modal";
 
+@Component({ styles })
 class Content extends React.Component {
     render() {
         if (this.props.render) {
@@ -18,4 +19,4 @@ class Content extends React.Component {
     }
 }
 
-export default createComponent(Content, { styles });
+export default Content;

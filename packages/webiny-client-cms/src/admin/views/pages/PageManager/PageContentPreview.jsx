@@ -1,14 +1,16 @@
 import React from "react";
 import invariant from "invariant";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 import blankBalloon from "./assets/blank-state-balloon.jpg";
 
+@Component({ modules: ["Alert"], services: ["cms"] })
 class PageContentPreview extends React.Component {
     renderPreviewWidget(data) {
         const widget = { ...data };
         const {
             services: { cms }
         } = this.props;
+
         const widgetData = cms.getWidget(widget.type);
         invariant(widgetData, `Missing widget definition for type "${widget.type}"`);
 
@@ -38,4 +40,4 @@ class PageContentPreview extends React.Component {
     }
 }
 
-export default createComponent(PageContentPreview, { modules: ["Alert"], services: ["cms"] });
+export default PageContentPreview;

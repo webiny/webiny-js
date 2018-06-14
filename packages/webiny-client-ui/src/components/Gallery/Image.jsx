@@ -1,9 +1,10 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 import filesize from "filesize";
 import styles from "./styles.css?prefix=Webiny_Ui_Gallery_Image";
 
+@Component({ modules: ["Link"], styles })
 class Image extends React.Component {
     constructor(props) {
         super(props);
@@ -65,4 +66,4 @@ class Image extends React.Component {
     }
 }
 
-export default createComponent(Image, { modules: ["Link"], styles });
+export default Image;

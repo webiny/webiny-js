@@ -1,8 +1,9 @@
 import React from 'react';
 import _ from 'lodash';
-import { createComponent } from 'webiny-client';
+import { Component } from 'webiny-client';
 import filesize from 'filesize';
 
+@Component({ modules: ['List'], tableField: true })
 class FileSizeField extends React.Component {
     render() {
         const { modules: { List }, render, options, ...props } = this.props;
@@ -22,4 +23,4 @@ FileSizeField.defaultProps = {
     options: {}
 };
 
-export default createComponent(FileSizeField, { modules: ['List'], tableField: true });
+export default FileSizeField;

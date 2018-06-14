@@ -1,7 +1,8 @@
 import React from 'react';
 import _ from 'lodash';
-import { createComponent } from 'webiny-client';
+import { Component } from 'webiny-client';
 
+@Component({ modules: ['Form'], listFiltersComponent: true })
 class FormFilters extends React.Component {
 
     constructor(props) {
@@ -55,4 +56,4 @@ FormFilters.defaultProps = {
     }
 };
 
-export default createComponent(FormFilters, { modules: ['Form'], listFiltersComponent: true });
+export default FormFilters;

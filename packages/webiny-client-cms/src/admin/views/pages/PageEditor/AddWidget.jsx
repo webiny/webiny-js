@@ -4,7 +4,7 @@ import { Component } from "webiny-client";
 import styles from "./AddWidget.scss?prefix=wby-cms-editor-addWidget";
 
 @Component({ modules: ["Icon"], services: ["cms"] })
-export default class AddWidget extends React.Component {
+class AddWidget extends React.Component {
     state = {
         search: ""
     };
@@ -52,3 +52,5 @@ export default class AddWidget extends React.Component {
         );
     }
 }
+
+export default AddWidget;

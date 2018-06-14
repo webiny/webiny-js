@@ -1,8 +1,9 @@
 import React from 'react';
 import classSet from 'classnames';
-import { createComponent } from 'webiny-client';
+import { Component } from 'webiny-client';
 import styles from './styles.css?prefix=wui-view';
 
+@Component({ styles })
 class ChartBlock extends React.Component {
     render() {
         if (this.props.render) {
@@ -30,4 +31,4 @@ ChartBlock.defaultProps = {
     className: ''
 };
 
-export default createComponent(ChartBlock, { styles });
+export default ChartBlock;

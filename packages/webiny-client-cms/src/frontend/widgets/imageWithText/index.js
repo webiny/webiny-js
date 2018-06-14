@@ -40,6 +40,9 @@ const ImageWithTextComponent = Component({ modules: ["SlateEditor"] })(
 /**
  * "Image with text" widget plugin
  */
+@Component({
+    modules: ["Select", "IconPicker", "Grid"]
+})
 class ImageWithText extends Widget {
     render({ WidgetContainer }) {
         return (

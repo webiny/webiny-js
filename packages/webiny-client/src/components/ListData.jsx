@@ -1,10 +1,12 @@
 import React from "react";
 import _ from "lodash";
-import { app, i18n, createComponent } from "webiny-client";
-import ListContext from "./ListContext";
+import { app, i18n, Component } from "webiny-client";
+import withListContext from "./withListContext";
 
 const t = i18n.namespace("Webiny.ListData");
 
+@withListContext()
+@Component()
 class ListData extends React.Component {
     constructor(props) {
         super(props);
@@ -138,4 +140,4 @@ ListData.defaultProps = {
     autoRefresh: false
 };
 
-export default createComponent([ListData, ListContext]);
+export default ListData;

@@ -1,7 +1,8 @@
 import React from 'react';
-import { createComponent } from 'webiny-client';
+import { Component } from 'webiny-client';
 import styles from './../styles.css?prefix=wui-view';
 
+@Component({ styles })
 class HeaderCenter extends React.Component {
     render() {
         if (this.props.render) {
@@ -16,4 +17,4 @@ class HeaderCenter extends React.Component {
     }
 }
 
-export default createComponent(HeaderCenter, { styles });
+export default HeaderCenter;

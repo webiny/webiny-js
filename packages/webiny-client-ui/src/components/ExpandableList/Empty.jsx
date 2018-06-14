@@ -1,8 +1,9 @@
 import React from 'react';
 import _ from 'lodash';
-import { createComponent, i18n } from 'webiny-client';
+import { Component, i18n } from 'webiny-client';
 
 const t = i18n.namespace("Webiny.Ui.ExpandableList.Empty");
+@Component()
 class Empty extends React.Component {
     render() {
         const { children, render, message } = this.props;
@@ -33,4 +34,4 @@ Empty.defaultProps = {
     )
 };
 
-export default createComponent(Empty);
+export default Empty;

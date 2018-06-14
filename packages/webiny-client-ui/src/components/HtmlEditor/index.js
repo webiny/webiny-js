@@ -1,9 +1,13 @@
 import React from "react";
 import _ from "lodash";
-import { app, i18n, createComponent } from "webiny-client";
-import { FormComponent } from "webiny-client-ui";
+import { app, i18n, Component } from "webiny-client";
+import { withFormComponent } from "webiny-client-ui";
 
 const t = i18n.namespace("Webiny.Ui.HtmlEditor");
+@withFormComponent()
+@Component({
+    modules: ["Alert", "Cropper", "FileReader", "Progress", "FormGroup", { Quill: "Vendors/Quill" }]
+})
 class HtmlEditor extends React.Component {
     constructor(props) {
         super(props);
@@ -129,7 +133,10 @@ class HtmlEditor extends React.Component {
     }
 
     getCropper(children = null) {
-        const { cropper, modules: { Cropper } } = this.props;
+        const {
+            cropper,
+            modules: { Cropper }
+        } = this.props;
 
         if (!cropper) {
             return null;
@@ -252,6 +259,4 @@ HtmlEditor.defaultProps = {
     }
 };
 
-export default createComponent([HtmlEditor, FormComponent], {
-    modules: ["Alert", "Cropper", "FileReader", "Progress", "FormGroup", { Quill: "Vendors/Quill" }]
-});
+export default HtmlEditor;

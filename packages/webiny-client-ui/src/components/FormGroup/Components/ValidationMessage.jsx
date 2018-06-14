@@ -1,8 +1,9 @@
 import React from "react";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 import classSet from "classnames";
 import styles from "./../styles.css?prefix=wui-formGroup";
 
+@Component({ modules: ["Animate"], styles })
 class ValidationMessage extends React.Component {
     render() {
         if (this.props.render) {
@@ -43,4 +44,4 @@ ValidationMessage.defaultProps = {
     hideValidationAnimation: { type: "easeOut", translateY: 0, opacity: 0, duration: 225 }
 };
 
-export default createComponent(ValidationMessage, { modules: ["Animate"], styles });
+export default ValidationMessage;

@@ -1,11 +1,18 @@
 import React from "react";
-import { createComponent, i18n } from "webiny-client";
+import { Component, i18n } from "webiny-client";
 import _ from "lodash";
 
 const t = i18n.namespace("Webiny.Ui.Wizard.Actions.Finish");
+@Component({ modules: ["Button"] })
 class Finish extends React.Component {
     render() {
-        const { modules: { Button }, onClick, render, wizard, ...props } = this.props;
+        const {
+            modules: { Button },
+            onClick,
+            render,
+            wizard,
+            ...props
+        } = this.props;
         if (render) {
             return render.call(this);
         }
@@ -35,4 +42,4 @@ Finish.defaultProps = {
     label: t`Finish`
 };
 
-export default createComponent(Finish, { modules: ["Button"] });
+export default Finish;

@@ -1,8 +1,9 @@
 import React from "react";
 import classSet from "classnames";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 import styles from "./Widget.scss";
 
+@Component({ services: ["cms"] })
 class Widget extends React.Component {
     render() {
         const {
@@ -24,4 +25,4 @@ class Widget extends React.Component {
     }
 }
 
-export default createComponent(Widget, { services: ["cms"] });
+export default Widget;

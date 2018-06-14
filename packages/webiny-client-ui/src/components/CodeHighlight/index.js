@@ -1,7 +1,8 @@
 import React from "react";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 import "./styles.scss?extract";
 
+@Component({ modules: { hljs: "Vendor.Highlight" } })
 class CodeHighlight extends React.Component {
     componentDidMount() {
         this.doHighlight();
@@ -34,4 +35,4 @@ CodeHighlight.defaultProps = {
     language: "html"
 };
 
-export default createComponent(CodeHighlight, { modules: { hljs: "Vendor.Highlight" } });
+export default CodeHighlight;

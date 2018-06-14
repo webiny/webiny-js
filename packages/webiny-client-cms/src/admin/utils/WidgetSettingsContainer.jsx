@@ -4,7 +4,7 @@ import WidgetStyle from "./SettingsGroup/WidgetStyle";
 import WidgetPreset from "./SettingsGroup/WidgetPreset";
 
 @Component({ modules: ["Accordion"] })
-export default class WidgetSettingsContainer extends React.Component {
+class WidgetSettingsContainer extends React.Component {
     getRenderProps = () => {
         const {
             widget,
@@ -63,3 +63,5 @@ export default class WidgetSettingsContainer extends React.Component {
         );
     }
 }
+
+export default WidgetSettingsContainer;

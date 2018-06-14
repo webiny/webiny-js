@@ -1,11 +1,15 @@
 import React from "react";
-import { createComponent } from "webiny-client";
-import { FormComponent } from "webiny-client-ui";
+import { Component } from "webiny-client";
+import { withFormComponent } from "webiny-client-ui";
 import css from "./styles.scss?prefix=Webiny_Ui_AutoCompleteList";
 
 import classNames from "classnames";
 import _ from "lodash";
 
+@withFormComponent()
+@Component({
+    modules: ["Icon", "FormGroup", "Search", "Tags"]
+})
 class AutoCompleteList extends React.Component {
     render() {
         const { Search, Tags } = this.props.modules;
@@ -64,6 +68,4 @@ class AutoCompleteList extends React.Component {
 
 AutoCompleteList.defaultProps = {};
 
-export default createComponent([AutoCompleteList, FormComponent], {
-    modules: ["Icon", "FormGroup", "Search", "Tags"]
-});
+export default AutoCompleteList;

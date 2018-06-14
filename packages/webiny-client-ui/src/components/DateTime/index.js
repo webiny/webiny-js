@@ -1,9 +1,13 @@
 import React from "react";
 import _ from "lodash";
-import { i18n, createComponent } from "webiny-client";
-import { FormComponent } from "webiny-client-ui";
+import { i18n, Component } from "webiny-client";
+import { withFormComponent } from "webiny-client-ui";
 import styles from "./styles.css?prefix=Webiny_Ui_DateTime";
 
+@withFormComponent()
+@Component({
+    modules: ["Icon", "InputLayout", { Flatpickr: "Vendor.FlatPickr" }]
+})
 class DateTime extends React.Component {
     constructor(props) {
         super(props);
@@ -98,6 +102,4 @@ DateTime.defaultProps = {
     options: null
 };
 
-export default createComponent([DateTime, FormComponent], {
-    modules: ["Icon", "InputLayout", { Flatpickr: "Vendor.FlatPickr" }]
-});
+export default DateTime;

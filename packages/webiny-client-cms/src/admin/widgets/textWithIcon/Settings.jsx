@@ -1,6 +1,9 @@
 import React from "react";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 
+@Component({
+    modules: ["Select", "IconPicker", "Grid"]
+})
 class TextWidgetSettings extends React.Component {
     render() {
         const {
@@ -11,16 +14,15 @@ class TextWidgetSettings extends React.Component {
             <React.Fragment>
                 <Grid.Row>
                     <Grid.Col all={6}>
-                        <Bind>
-                            <IconPicker name={"icon"} label={"Icon"} />
+                        <Bind name={"icon"}>
+                            <IconPicker label={"Icon"} />
                         </Bind>
                     </Grid.Col>
                     <Grid.Col all={6}>
-                        <Bind>
+                        <Bind name={"iconSize"}>
                             <Select
                                 label={"Icon size"}
                                 placeholder={"Select size"}
-                                name={"iconSize"}
                                 options={[
                                     { value: "xs", label: "Extra small" },
                                     { value: "sm", label: "Small" },
@@ -30,8 +32,7 @@ class TextWidgetSettings extends React.Component {
                                     { value: "5x", label: "5x" },
                                     { value: "7x", label: "7x" },
                                     { value: "10x", label: "10x" }
-                                ]}
-                            />
+                                ]} />
                         </Bind>
                     </Grid.Col>
                 </Grid.Row>
@@ -40,6 +41,4 @@ class TextWidgetSettings extends React.Component {
     }
 }
 
-export default createComponent(TextWidgetSettings, {
-    modules: ["Select", "IconPicker", "Grid"]
-});
+export default TextWidgetSettings;

@@ -1,7 +1,8 @@
 import React from "react";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 import styles from "./styles.scss?prefix=Webiny_Ui_Dropdown";
 
+@Component({ styles })
 class Divider extends React.Component {
     render() {
         if (this.props.render) {
@@ -12,4 +13,4 @@ class Divider extends React.Component {
     }
 }
 
-export default createComponent(Divider, { styles });
+export default Divider;

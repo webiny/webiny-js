@@ -1,7 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 
+@Component({ modules: ["Link", "Icon", "DownloadLink"] })
 class Action extends React.Component {
     render() {
         if (this.props.render) {
@@ -43,4 +44,4 @@ Action.defaultProps = {
     download: null
 };
 
-export default createComponent(Action, { modules: ["Link", "Icon", "DownloadLink"] });
+export default Action;

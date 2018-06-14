@@ -1,6 +1,9 @@
 import React from "react";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 
+@Component({
+    modules: [{ pluralize: () => import("pluralize") }]
+})
 class Pluralize extends React.Component {
     render() {
         let noun = this.props.noun;
@@ -28,6 +31,4 @@ Pluralize.defaultProps = {
     pattern: "{count} {noun}"
 };
 
-export default createComponent(Pluralize, {
-    modules: [{ pluralize: () => import("pluralize") }]
-});
+export default Pluralize;

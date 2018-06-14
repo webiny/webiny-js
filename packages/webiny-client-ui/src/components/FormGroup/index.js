@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 import styles from "./styles.css?prefix=wui-formGroup";
 import Required from "./Components/Required";
 import Label from "./Components/Label";
@@ -10,6 +10,7 @@ import ValidationIcon from "./Components/ValidationIcon";
 import ValidationMessage from "./Components/ValidationMessage";
 import DescriptionMessage from "./Components/DescriptionMessage";
 
+@Component({ styles })
 class FormGroup extends React.Component {
     render() {
         if (this.props.render) {
@@ -40,4 +41,4 @@ _.assign(FormGroup, {
     DescriptionMessage
 });
 
-export default createComponent(FormGroup, { styles });
+export default FormGroup;

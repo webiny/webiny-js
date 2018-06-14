@@ -1,5 +1,4 @@
 // @flow
-import * as React from "react";
 import _ from "lodash";
 import { validation } from "webiny-validation";
 import type { Validator } from "webiny-validation/types";
@@ -14,24 +13,7 @@ class Validation {
         return validator;
     }
 
-    getValidatorsFromProps(props: Object) {
-        let { defaultValidators, validators } = props;
-        if (!validators) {
-            validators = [];
-        }
-
-        if (typeof validators === "string") {
-            validators = validators.split(",");
-        }
-
-        if (defaultValidators) {
-            validators.push(defaultValidators);
-        }
-
-        return this.parseValidateProperty(validators);
-    }
-
-    parseValidateProperty(validators: string | Array<any>): Object {
+    parseValidators(validators: string | Array<any>): Object {
         if (!validators) {
             return {};
         }
@@ -54,29 +36,9 @@ class Validation {
         return parsedValidators;
     }
 
-    parseCustomValidationMessages(elements: React.Element<*> | Array<React.Element<*>>) {
-        const customMessages = {};
-
-        if (!elements) {
-            return customMessages;
-        }
-
-        if (!Array.isArray(elements)) {
-            elements = [elements];
-        }
-
-        elements.forEach(item => {
-            if (item.type === "validator" && item.props.children) {
-                customMessages[item.props.name] = item.props.children;
-            }
-        });
-
-        return customMessages;
-    }
-
     async validate(value: any, validators: string | Object, formData: Object = {}): Promise<any> {
-        if (typeof validators === "string") {
-            validators = this.parseValidateProperty(validators);
+        if (typeof validators === "string" || Array.isArray(validators)) {
+            validators = this.parseValidators(validators);
         }
 
         const results = {};

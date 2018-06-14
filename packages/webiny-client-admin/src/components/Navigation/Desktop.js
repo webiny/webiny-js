@@ -1,9 +1,10 @@
 import React from "react";
 import classSet from "classnames";
-import { app, createComponent } from "webiny-client";
+import { app, Component } from "webiny-client";
 import _ from "lodash";
 import utils from "./utils";
 
+@Component({ modules: ["Link", "Icon"] })
 class Desktop extends React.Component {
     constructor(props) {
         super(props);
@@ -112,4 +113,4 @@ class Desktop extends React.Component {
     }
 }
 
-export default createComponent(Desktop, { modules: ["Link", "Icon"] });
+export default Desktop;

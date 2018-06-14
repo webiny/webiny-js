@@ -1,10 +1,18 @@
 import React from "react";
 import $ from "jquery";
 import _ from "lodash";
-import { createComponent, i18n } from "webiny-client";
+import { Component, i18n } from "webiny-client";
 import classSet from "classnames";
 
 const t = i18n.namespace("Webiny.Ui.Carousel");
+@Component({
+    modules: [
+        // owl.carousel attaches itself to jQuery object and does not export anything
+        "Vendor.OwlCarousel"
+    ]
+}) // owl.carousel attaches itself to jQuery object and does not export anything
+// owl.carousel attaches itself to jQuery object and does not export anything
+// owl.carousel attaches itself to jQuery object and does not export anything
 class Carousel extends React.Component {
     constructor(props) {
         super(props);
@@ -81,9 +89,4 @@ Carousel.defaultProps = {
     className: null
 };
 
-export default createComponent(Carousel, {
-    modules: [
-        // owl.carousel attaches itself to jQuery object and does not export anything
-        "Vendor.OwlCarousel"
-    ]
-});
+export default Carousel;

@@ -1,12 +1,12 @@
-import React from 'react';
-import _ from 'lodash';
-import $ from 'jquery';
-import { createComponent } from 'webiny-client';
-import './styles.scss';
-import ReactDOMServer from 'react-dom/server';
+import React from "react";
+import _ from "lodash";
+import $ from "jquery";
+import { Component } from "webiny-client";
+import "./styles.scss";
+import ReactDOMServer from "react-dom/server";
 
+@Component()
 class Popover extends React.Component {
-
     componentDidMount() {
         this.initPopover.call(this);
     }
@@ -33,7 +33,7 @@ class Popover extends React.Component {
             html = ReactDOMServer.renderToStaticMarkup(this.props.children);
         }
         return (
-            <span ref={ref => this.dom = ref} title={this.props.title} data-content={html}>
+            <span ref={ref => (this.dom = ref)} title={this.props.title} data-content={html}>
                 {this.props.target}
             </span>
         );
@@ -42,8 +42,8 @@ class Popover extends React.Component {
 
 Popover.defaultProps = {
     title: null,
-    trigger: 'hover',
-    placement: 'right'
+    trigger: "hover",
+    placement: "right"
 };
 
-export default createComponent(Popover);
+export default Popover;

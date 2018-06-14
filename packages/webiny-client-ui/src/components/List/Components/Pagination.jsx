@@ -1,10 +1,15 @@
 import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
-import { createComponent, i18n } from "webiny-client";
+import { Component, i18n } from "webiny-client";
 import styles from "../styles.css?prefix=Webiny_Ui_List_Pagination";
 
 const t = i18n.namespace("Webiny.Ui.List.Pagination");
+@Component({
+    modules: ["Grid", "Dropdown"],
+    styles,
+    listPaginationComponent: true
+})
 class Pagination extends React.Component {
     constructor(props) {
         super(props);
@@ -158,8 +163,4 @@ Pagination.defaultProps = {
     }
 };
 
-export default createComponent(Pagination, {
-    modules: ["Grid", "Dropdown"],
-    styles,
-    listPaginationComponent: true
-});
+export default Pagination;

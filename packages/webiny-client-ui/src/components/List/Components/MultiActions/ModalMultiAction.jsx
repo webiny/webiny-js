@@ -1,7 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 
+@Component({ modules: ["Link"] })
 class ModalMultiAction extends React.Component {
     constructor(props) {
         super(props);
@@ -68,4 +69,4 @@ ModalMultiAction.defaultProps = {
     hide: _.noop
 };
 
-export default createComponent(ModalMultiAction, { modules: ["Link"] });
+export default ModalMultiAction;

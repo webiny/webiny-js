@@ -1,9 +1,25 @@
 import React, { Fragment } from "react";
 import ExportPolicyModal from "./PoliciesList/ExportPolicyModal";
 import ImportPolicyModal from "./PoliciesList/ImportPolicyModal";
-import { i18n, createComponent } from "webiny-client";
+import { i18n, Component } from "webiny-client";
 const t = i18n.namespace("Security.PoliciesList");
 
+@Component({
+    modules: [
+        { AdminLayout: "Admin.Layout" },
+        "ViewSwitcher",
+        "View",
+        "Link",
+        "Icon",
+        "Grid",
+        "Input",
+        "List",
+        "ListData",
+        "Button",
+        "Loader",
+        "ButtonGroup"
+    ]
+})
 class PoliciesList extends React.Component {
     render() {
         const {
@@ -61,12 +77,8 @@ class PoliciesList extends React.Component {
                                                         {({ apply, Bind }) => (
                                                             <Grid.Row>
                                                                 <Grid.Col all={12}>
-                                                                    <Bind>
-                                                                        <Input
-                                                                            name="search.query"
-                                                                            placeholder={t`Search by name, description or slug`}
-                                                                            onEnter={apply()}
-                                                                        />
+                                                                    <Bind name="search.query">
+                                                                        <Input placeholder={t`Search by name, description or slug`} onEnter={apply()} />
                                                                     </Bind>
                                                                 </Grid.Col>
                                                             </Grid.Row>
@@ -146,19 +158,4 @@ class PoliciesList extends React.Component {
     }
 }
 
-export default createComponent(PoliciesList, {
-    modules: [
-        { AdminLayout: "Admin.Layout" },
-        "ViewSwitcher",
-        "View",
-        "Link",
-        "Icon",
-        "Grid",
-        "Input",
-        "List",
-        "ListData",
-        "Button",
-        "Loader",
-        "ButtonGroup"
-    ]
-});
+export default PoliciesList;

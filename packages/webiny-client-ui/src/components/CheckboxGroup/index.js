@@ -1,9 +1,14 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
-import { FormComponent } from "webiny-client-ui";
+import { Component } from "webiny-client";
+import { withFormComponent } from "webiny-client-ui";
 import styles from "./styles.css?prefix=Webiny_Ui_CheckboxGroup";
 
+@withFormComponent()
+@Component({
+    modules: ["Checkbox", "FormGroup"],
+    styles
+})
 class CheckboxGroup extends React.Component {
     constructor(props) {
         super(props);
@@ -39,7 +44,10 @@ class CheckboxGroup extends React.Component {
      * @returns {Array}
      */
     renderOptions(callback = null) {
-        const { modules: { Checkbox }, disabled } = this.props;
+        const {
+            modules: { Checkbox },
+            disabled
+        } = this.props;
         return this.props.options.map((item, key) => {
             const checked = _.find(this.props.value, opt => {
                 if (_.isPlainObject(opt)) {
@@ -80,7 +88,10 @@ class CheckboxGroup extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { modules: { FormGroup }, styles } = this.props;
+        const {
+            modules: { FormGroup },
+            styles
+        } = this.props;
 
         return (
             <FormGroup valid={this.props.validation.isValid} className={this.props.className}>
@@ -102,7 +113,4 @@ CheckboxGroup.defaultProps = {
     formatOptionValue: ({ value }) => value
 };
 
-export default createComponent([CheckboxGroup, FormComponent], {
-    modules: ["Checkbox", "FormGroup"],
-    styles
-});
+export default CheckboxGroup;

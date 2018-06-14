@@ -1,14 +1,18 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 
+@Component({ modules: ["Link", "Icon"] })
 class Link extends React.Component {
     render() {
         if (this.props.render) {
             return this.props.render.call(this);
         }
 
-        const { modules: { Link, Icon }, ...props } = this.props;
+        const {
+            modules: { Link, Icon },
+            ...props
+        } = this.props;
         const icon = props.icon ? <Icon icon={props.icon} /> : null;
         let link = (
             <Link onClick={this.props.onClick} route={this.props.route} params={this.props.params}>
@@ -29,4 +33,4 @@ Link.defaultProps = {
     params: null
 };
 
-export default createComponent(Link, { modules: ["Link", "Icon"] });
+export default Link;

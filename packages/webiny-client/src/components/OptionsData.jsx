@@ -1,7 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import { app, createComponent } from "webiny-client";
+import { app, Component } from "webiny-client";
 
+@Component()
 class OptionsData extends React.Component {
     constructor(props) {
         super(props);
@@ -18,7 +19,7 @@ class OptionsData extends React.Component {
         this.normalizeOption = this.normalizeOption.bind(this);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         // Prepare actions
         const { entity, fields, searchOnly } = this.props;
         let { actions } = this.props;
@@ -71,6 +72,11 @@ class OptionsData extends React.Component {
     }
 
     loadOptions(query) {
+        if (this.props.data) {
+            this.setState({ options: this.props.data.map(this.normalizeOption) });
+            return;
+        }
+
         this.setState({ loading: true });
 
         return this.actions
@@ -136,4 +142,4 @@ OptionsData.defaultProps = {
     valueKey: null // used only for rendering to map complex options to model values (only used when component value is an object)
 };
 
-export default createComponent(OptionsData);
+export default OptionsData;

@@ -1,10 +1,11 @@
 import React from "react";
 import classNames from "classnames";
 import css from "./FieldsList.scss";
-import { createComponent, i18n } from "webiny-client";
+import { Component, i18n } from "webiny-client";
 import _ from "lodash";
 const t = i18n.namespace("Security.PermissionsForm.Scopes.FieldsSelector.FieldsList");
 
+@Component({ modules: [] })
 class FieldsList extends React.Component {
     constructor() {
         super();
@@ -112,4 +113,4 @@ FieldsList.defaultProps = {
     initialPath: null
 };
 
-export default createComponent(FieldsList, { modules: [] });
+export default FieldsList;

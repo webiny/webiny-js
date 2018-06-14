@@ -1,8 +1,9 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 import RouteAction from "./RouteAction";
 
+@Component({ modules: ["Link", "Icon"] })
 class EditAction extends React.Component {
     render() {
         if (this.props.render) {
@@ -40,4 +41,4 @@ EditAction.defaultProps = {
     icon: ["fas", "pencil-alt"]
 };
 
-export default createComponent(EditAction, { modules: ["Link", "Icon"] });
+export default EditAction;

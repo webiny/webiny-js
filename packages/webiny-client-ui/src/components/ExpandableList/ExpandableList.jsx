@@ -1,12 +1,13 @@
 import React from 'react';
 import _ from 'lodash';
-import { createComponent, isElementOfType } from 'webiny-client';
+import { Component, isElementOfType } from 'webiny-client';
 import Empty from './Empty';
 import Row from './Row';
 import Field from './Field';
 import ActionSet from './ActionSet';
 import './styles.scss';
 
+@Component()
 class ExpandableList extends React.Component {
     constructor(props) {
         super(props);
@@ -101,4 +102,4 @@ ExpandableList.defaultProps = {
     type: 'simple'
 };
 
-export default createComponent(ExpandableList);
+export default ExpandableList;

@@ -1,9 +1,10 @@
 import React from "react";
 import css from "./FieldsSelector.scss";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 import _ from "lodash";
 import FieldsList from "./FieldsSelector/FieldsList";
 
+@Component({ modules: [] })
 class FieldsSelector extends React.Component {
     constructor() {
         super();
@@ -55,4 +56,4 @@ FieldsSelector.defaultProps = {
     onMultiToggle: _.noop
 };
 
-export default createComponent(FieldsSelector, { modules: [] });
+export default FieldsSelector;

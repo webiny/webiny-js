@@ -1,11 +1,12 @@
 import React from "react";
 import classNames from "classnames";
 import css from "./AttributesPermissions.scss";
-import { createComponent, app } from "webiny-client";
+import { Component, app } from "webiny-client";
 import _ from "lodash";
 import gql from "graphql-tag";
 import AttributeTooltip from "./AttributesPermissions/AttributeTooltip";
 
+@Component({ modules: ["Icon", "Tooltip"] })
 class AttributesPermissions extends React.Component {
     constructor() {
         super();
@@ -151,4 +152,4 @@ AttributesPermissions.defaultProps = {
     classesGroups: null
 };
 
-export default createComponent(AttributesPermissions, { modules: ["Icon", "Tooltip"] });
+export default AttributesPermissions;

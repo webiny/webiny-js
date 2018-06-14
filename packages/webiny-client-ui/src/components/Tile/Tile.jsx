@@ -1,8 +1,9 @@
 import React from 'react';
 import classSet from "classnames";
-import { createComponent } from 'webiny-client';
+import { Component } from 'webiny-client';
 import styles from './styles.css?prefix=Webiny_Ui_Tile';
 
+@Component({ styles })
 class Tile extends React.Component {
     render() {
         if (this.props.render) {
@@ -32,4 +33,4 @@ Tile.defaultProps = {
     type: 'default'
 };
 
-export default createComponent(Tile, { styles });
+export default Tile;

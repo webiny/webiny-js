@@ -1,7 +1,16 @@
 import React from "react";
 import _ from "lodash";
-import { app, createComponent } from "webiny-client";
+import { app, Component } from "webiny-client";
 
+@Component({
+    modules: [
+        "Link",
+        {
+            Desktop: "Admin.Navigation.Desktop",
+            Mobile: "Admin.Navigation.Mobile"
+        }
+    ]
+})
 class Navigation extends React.Component {
     constructor(props) {
         super(props);
@@ -60,12 +69,4 @@ class Navigation extends React.Component {
     }
 }
 
-export default createComponent(Navigation, {
-    modules: [
-        "Link",
-        {
-            Desktop: "Admin.Navigation.Desktop",
-            Mobile: "Admin.Navigation.Mobile"
-        }
-    ]
-});
+export default Navigation;

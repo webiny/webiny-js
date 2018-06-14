@@ -9,8 +9,8 @@ const Widget = ({ widget: { data }, Bind, modules: { Icon, SlateEditor } }) => {
                     <Icon icon={data.icon.icon} size={data.iconSize} />
                 </div>
             )}
-            <Bind>
-                <SlateEditor name="text" />
+            <Bind name="text">
+                <SlateEditor />
             </Bind>
         </div>
     );

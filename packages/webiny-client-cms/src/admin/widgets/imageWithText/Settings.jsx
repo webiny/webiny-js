@@ -9,9 +9,8 @@ const ImageWithTextSettings = (props) => {
                 beforeChange={(value, onChange) => {
                     handleImage(props, value, onChange);
                 }}
-            >
+                name={"image"}>
                 <Image
-                    name={"image"}
                     label={"Image"}
                     cropper={{
                         title: "Crop your image",
@@ -22,30 +21,19 @@ const ImageWithTextSettings = (props) => {
                             width: 300,
                             height: 300
                         }
-                    }}
-                />
+                    }} />
             </Bind>
-            <Bind>
+            <Bind name={"imagePosition"}>
                 <Select
                     label={"Image position"}
                     placeholder={"Select position"}
-                    name={"imagePosition"}
-                    options={[{ value: "left", label: "Left" }, { value: "right", label: "Right" }]}
-                />
+                    options={[{ value: "left", label: "Left" }, { value: "right", label: "Right" }]} />
             </Bind>
-            <Bind>
-                <Input
-                    label={"Image size"}
-                    placeholder={"Enter size in %"}
-                    name={"imageSize"}
-                />
+            <Bind name={"imageSize"}>
+                <Input label={"Image size"} placeholder={"Enter size in %"} />
             </Bind>
-            <Bind>
-                <Input
-                    label={"Box padding"}
-                    placeholder={"Enter padding in px"}
-                    name={"padding"}
-                />
+            <Bind name={"padding"}>
+                <Input label={"Box padding"} placeholder={"Enter padding in px"} />
             </Bind>
         </Fragment>
     );

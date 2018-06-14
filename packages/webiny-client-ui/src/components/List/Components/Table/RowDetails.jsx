@@ -1,8 +1,9 @@
 import React from 'react';
 import classSet from "classnames";
-import { createComponent } from 'webiny-client';
+import { Component } from 'webiny-client';
 import styles from '../../styles.css?prefix=Webiny_Ui_Row_Details';
 
+@Component({ styles })
 class RowDetails extends React.Component {
     render() {
         if (this.props.render) {
@@ -25,4 +26,4 @@ RowDetails.defaultProps = {
     className: null
 };
 
-export default createComponent(RowDetails, { styles });
+export default RowDetails;

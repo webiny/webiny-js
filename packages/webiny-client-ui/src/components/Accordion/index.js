@@ -1,9 +1,9 @@
 import React from "react";
 import classSet from "classnames";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 import styles from "./styles.scss?prefix=wui-accordion";
 
-const Item = createComponent(props => {
+const Item = props => {
     const { title, icon, children, isActive, onClick, styles, Icon } = props;
 
     return (
@@ -15,8 +15,9 @@ const Item = createComponent(props => {
             <div className={styles.body}>{children}</div>
         </div>
     );
-});
+};
 
+@Component({ styles, modules: ["Icon"] })
 class Accordion extends React.Component {
     state = {
         active: 0
@@ -53,4 +54,4 @@ class Accordion extends React.Component {
     }
 }
 
-export default createComponent(Accordion, { styles, modules: ["Icon"] });
+export default Accordion;

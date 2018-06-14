@@ -1,8 +1,9 @@
 import React from 'react';
-import { createComponent, i18n } from 'webiny-client';
+import { Component, i18n } from 'webiny-client';
 
 const t = i18n.namespace("Webiny.Admin.Auth.Forbidden");
 
+@Component({modules: ['Icon', 'View']})
 class Forbidden extends React.Component {
     render() {
         const {Icon, View} = this.props;
@@ -21,4 +22,4 @@ class Forbidden extends React.Component {
     }
 }
 
-export default createComponent(Forbidden, {modules: ['Icon', 'View']});
+export default Forbidden;

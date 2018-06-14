@@ -1,7 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent, i18n } from "webiny-client";
+import { Component, i18n } from "webiny-client";
 
+@Component({ modules: ["List"], tableField: true })
 class TimeField extends React.Component {
     render() {
         const { modules: { List }, format, render, ...props } = this.props;
@@ -32,4 +33,4 @@ TimeField.defaultProps = {
     format: null
 };
 
-export default createComponent(TimeField, { modules: ["List"], tableField: true });
+export default TimeField;

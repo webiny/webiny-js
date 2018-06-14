@@ -1,8 +1,9 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent, i18n } from "webiny-client";
+import { Component, i18n } from "webiny-client";
 
 const t = i18n.namespace("Webiny.Ui.FileReader");
+@Component()
 class FileReader extends React.Component {
     constructor(props) {
         super(props);
@@ -109,4 +110,4 @@ FileReader.defaultProps = {
     onReady: _.noop
 };
 
-export default createComponent(FileReader);
+export default FileReader;

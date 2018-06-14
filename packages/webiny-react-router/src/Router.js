@@ -108,6 +108,10 @@ class Router {
             match.query = qs.parse(this.history.location.search);
             parseBoolean(match.query);
 
+            if (route.route) {
+                route = _.merge(route, _.find(this.routes, { name: route.route }));
+            }
+
             this.route = route;
             this.match = match;
 

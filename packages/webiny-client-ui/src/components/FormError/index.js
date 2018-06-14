@@ -1,7 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 
+@Component({ modules: ["Alert"] })
 class FormError extends React.Component {
     render() {
         if (this.props.render) {
@@ -56,4 +57,4 @@ FormError.defaultProps = {
     onClose: _.noop
 };
 
-export default createComponent(FormError, { modules: ["Alert"] });
+export default FormError;

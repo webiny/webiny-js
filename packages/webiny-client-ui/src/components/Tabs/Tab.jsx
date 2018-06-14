@@ -1,10 +1,11 @@
 import React from "react";
 import _ from 'lodash';
-import { createComponent } from 'webiny-client';
+import { Component } from 'webiny-client';
 
 /**
  * Skeleton class for possible future upgrades
  */
+@Component({ tab: true })
 class Tab extends React.Component {
 
 }
@@ -13,4 +14,4 @@ Tab.defaultProps = {
     onClick: _.noop
 };
 
-export default createComponent(Tab, { tab: true });
+export default Tab;

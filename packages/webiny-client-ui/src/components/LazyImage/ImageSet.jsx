@@ -1,7 +1,8 @@
 import React from 'react';
 import _ from 'lodash';
-import { createComponent } from 'webiny-client';
+import { Component } from 'webiny-client';
 
+@Component()
 class ImageSet extends React.Component {
     constructor(props) {
         super(props);
@@ -67,4 +68,4 @@ ImageSet.defaultProps = {
     offset: 0
 };
 
-export default createComponent(ImageSet);
+export default ImageSet;

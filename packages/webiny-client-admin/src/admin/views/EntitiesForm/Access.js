@@ -2,13 +2,14 @@ import React, { Fragment } from "react";
 import css from "./Access.scss";
 import TogglePermissionButton from "./../components/TogglePermissionButton";
 
-import { createComponent, i18n } from "webiny-client";
+import { Component, i18n } from "webiny-client";
 import { app } from "webiny-client";
 import gql from "graphql-tag";
 import _ from "lodash";
 
 const t = i18n.namespace("Security.PermissionsForm.Access");
 
+@Component({ modules: ["Grid", "List"] })
 class Access extends React.Component {
     constructor() {
         super();
@@ -184,4 +185,4 @@ Access.defaultProps = {
     form: null
 };
 
-export default createComponent(Access, { modules: ["Grid", "List"] });
+export default Access;

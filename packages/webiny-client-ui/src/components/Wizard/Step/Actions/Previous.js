@@ -1,10 +1,17 @@
 import React from "react";
-import { createComponent, i18n } from "webiny-client";
+import { Component, i18n } from "webiny-client";
 
 const t = i18n.namespace("Webiny.Ui.Wizard.Actions.Previous");
+@Component({ modules: ["Button"] })
 class Previous extends React.Component {
     render() {
-        const { modules: { Button }, render, wizard, onClick, ...props } = this.props;
+        const {
+            modules: { Button },
+            render,
+            wizard,
+            onClick,
+            ...props
+        } = this.props;
 
         if (render) {
             return render.call(this);
@@ -30,4 +37,4 @@ Previous.defaultProps = {
     onClick: null,
     label: t`Back`
 };
-export default createComponent(Previous, { modules: ["Button"] });
+export default Previous;

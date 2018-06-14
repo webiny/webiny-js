@@ -1,9 +1,12 @@
 import React from "react";
-import { createComponent, i18n } from "webiny-client";
+import { Component, i18n } from "webiny-client";
 
 const t = i18n.namespace("Webiny.Admin.UserAccount.TwoFactorAuthConfirmation");
 
 // TODO: @i18nRefactor Class extended old "Webiny.Ui.ModalComponent".
+@Component({
+    modules: ["Modal", "Data", "Grid", "Alert", "Button", "Section"]
+})
 class TwoFactorAuthConfirmation extends React.Component {
     renderDialog() {
         const { Modal, Data, Grid, Alert, Button, Section } = this.props;
@@ -52,6 +55,4 @@ class TwoFactorAuthConfirmation extends React.Component {
     }
 }
 
-export default createComponent(TwoFactorAuthConfirmation, {
-    modules: ["Modal", "Data", "Grid", "Alert", "Button", "Section"]
-});
+export default TwoFactorAuthConfirmation;

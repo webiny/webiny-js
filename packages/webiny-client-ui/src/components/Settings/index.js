@@ -1,7 +1,8 @@
 import React from "react";
-import { app, createComponent, i18n } from "webiny-client";
+import { app, Component, i18n } from "webiny-client";
 
 const t = i18n.namespace("Webiny.Ui.Settings");
+@Component({ modules: ["Form"] })
 class Settings extends React.Component {
     render() {
         if (this.props.render) {
@@ -44,4 +45,4 @@ Settings.defaultProps = {
     onSubmitSuccess: null
 };
 
-export default createComponent(Settings, { modules: ["Form"] });
+export default Settings;

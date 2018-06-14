@@ -1,9 +1,10 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent, isElementOfType, i18n } from "webiny-client";
+import { Component, isElementOfType, i18n } from "webiny-client";
 
 const t = i18n.namespace("Ui.List.Table.Actions");
 
+@Component({ modules: ["Dropdown"] })
 class Actions extends React.Component {
     constructor(props) {
         super(props);
@@ -76,4 +77,4 @@ Actions.defaultProps = {
     hide: false
 };
 
-export default createComponent(Actions, { modules: ["Dropdown"] });
+export default Actions;

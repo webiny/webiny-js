@@ -1,7 +1,10 @@
 import React from "react";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 import CategoryModal from "./CategoryModal";
 
+@Component({
+    modules: ["ViewSwitcher", "View", "Link", "Icon", "List", "ListData"]
+})
 class CategoryList extends React.Component {
     render() {
         const {
@@ -34,6 +37,7 @@ class CategoryList extends React.Component {
                         <ViewSwitcher.View name={"list"} defaultView>
                             {({ showView }) => (
                                 <ListData
+                                    withRouter
                                     onReady={actions => (this.list = actions)}
                                     entity={"CmsCategory"}
                                     fields={"id title slug url createdOn"}
@@ -116,6 +120,4 @@ class CategoryList extends React.Component {
     }
 }
 
-export default createComponent(CategoryList, {
-    modules: ["ViewSwitcher", "View", "Link", "Icon", "List", "ListData"]
-});
+export default CategoryList;

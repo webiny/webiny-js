@@ -1,10 +1,28 @@
 import React from "react";
-import { app, i18n, createComponent } from "webiny-client";
+import { app, i18n, Component } from "webiny-client";
 import EntitiesList from "./PoliciesForm/EntitiesList";
 import ApiAccess from "./PoliciesForm/ApiAccess";
 
 const t = i18n.namespace("Security.PoliciesForm");
 
+@Component({
+    modules: [
+        "Form",
+        "FormData",
+        "OptionsData",
+        "FormError",
+        "View",
+        "Input",
+        "Button",
+        "Grid",
+        "Section",
+        "Loader",
+        "Tabs",
+        {
+            AdminLayout: "Admin.Layout"
+        }
+    ]
+})
 class PoliciesForm extends React.Component {
     render() {
         const {
@@ -60,32 +78,20 @@ class PoliciesForm extends React.Component {
 
                                             <Grid.Row>
                                                 <Grid.Col all={6}>
-                                                    <Bind>
-                                                        <Input
-                                                            label={t`Name`}
-                                                            name="name"
-                                                            validators="required"
-                                                        />
+                                                    <Bind name="name" validators={["required"]}>
+                                                        <Input label={t`Name`} />
                                                     </Bind>
                                                 </Grid.Col>
                                                 <Grid.Col all={6}>
-                                                    <Bind>
-                                                        <Input
-                                                            label={t`Slug`}
-                                                            name="slug"
-                                                            validators="required"
-                                                        />
+                                                    <Bind name="slug" validators={["required"]}>
+                                                        <Input label={t`Slug`} />
                                                     </Bind>
                                                 </Grid.Col>
                                             </Grid.Row>
                                             <Grid.Row>
                                                 <Grid.Col all={12}>
-                                                    <Bind>
-                                                        <Input
-                                                            label={t`Description`}
-                                                            name="description"
-                                                            validators="required"
-                                                        />
+                                                    <Bind name="description" validators={["required"]}>
+                                                        <Input label={t`Description`} />
                                                     </Bind>
                                                 </Grid.Col>
                                             </Grid.Row>
@@ -134,21 +140,4 @@ class PoliciesForm extends React.Component {
     }
 }
 
-export default createComponent(PoliciesForm, {
-    modules: [
-        "Form",
-        "FormData",
-        "OptionsData",
-        "FormError",
-        "View",
-        "Input",
-        "Button",
-        "Grid",
-        "Section",
-        "Loader",
-        "Tabs",
-        {
-            AdminLayout: "Admin.Layout"
-        }
-    ]
-});
+export default PoliciesForm;

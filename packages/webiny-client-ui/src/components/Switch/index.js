@@ -1,10 +1,15 @@
 import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
-import { createComponent } from "webiny-client";
-import FormComponent from "./../FormComponent";
+import { Component } from "webiny-client";
+import withFormComponent from "./../FormComponent/withFormComponent";
 import styles from "./styles.css?prefix=Webiny_Ui_Switch";
 
+@withFormComponent()
+@Component({
+    modules: ["FormGroup"],
+    styles
+})
 class Switch extends React.Component {
     constructor(props) {
         super(props);
@@ -29,7 +34,10 @@ class Switch extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { modules: { FormGroup }, styles } = this.props;
+        const {
+            modules: { FormGroup },
+            styles
+        } = this.props;
         let classes = classSet(styles.switch, styles.switchInline);
         if (this.props.disabled) {
             classes += " " + styles.disabled;
@@ -63,7 +71,4 @@ Switch.defaultProps = {
     style: {}
 };
 
-export default createComponent([Switch, FormComponent], {
-    modules: ["FormGroup"],
-    styles
-});
+export default Switch;

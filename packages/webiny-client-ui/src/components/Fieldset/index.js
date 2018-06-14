@@ -1,8 +1,9 @@
 import React from "react";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 import classSet from "classnames";
 import styles from "./styles.css?prefix=Webiny_Ui_Fieldset";
 
+@Component({ styles })
 class Fieldset extends React.Component {
     render() {
         if (this.props.render) {
@@ -25,4 +26,4 @@ Fieldset.defaultProps = {
     style: null
 };
 
-export default createComponent(Fieldset, { styles });
+export default Fieldset;

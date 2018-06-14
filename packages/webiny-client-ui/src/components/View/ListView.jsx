@@ -1,10 +1,11 @@
 import React from 'react';
-import { createComponent, isElementOfType } from 'webiny-client';
+import { Component, isElementOfType } from 'webiny-client';
 import Header from './Header';
 import Body from './Body';
 import Footer from './Footer';
 import styles from './styles.css?prefix=wui-view';
 
+@Component({ modules: ['Panel'], styles })
 class ListView extends React.Component {
 
     constructor(props) {
@@ -67,4 +68,4 @@ class ListView extends React.Component {
     }
 }
 
-export default createComponent(ListView, { modules: ['Panel'], styles });
+export default ListView;

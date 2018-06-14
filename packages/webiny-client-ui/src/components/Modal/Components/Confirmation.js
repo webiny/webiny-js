@@ -1,16 +1,26 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent, i18n } from "webiny-client";
-import { ModalConfirmationComponent } from "webiny-client-ui";
+import { Component, i18n } from "webiny-client";
+import withModalConfirmation from "../withModalConfirmation";
 import Dialog from "./Dialog";
 import Content from "./Content";
 import Body from "./Body";
 import Footer from "./Footer";
 
 const t = i18n.namespace("Webiny.Ui.Modal.Confirmation");
+
+@withModalConfirmation()
+@Component({
+    modules: ["Button", "Loader"]
+})
 class Confirmation extends React.Component {
     render() {
-        const { modules: { Loader, Button }, styles, title, render } = this.props;
+        const {
+            modules: { Loader, Button },
+            styles,
+            title,
+            render
+        } = this.props;
         if (render) {
             return render.call(this);
         }
@@ -60,6 +70,4 @@ Confirmation.defaultProps = {
     cancel: t`No`
 };
 
-export default createComponent([Confirmation, ModalConfirmationComponent], {
-    modules: ["Button", "Loader"]
-});
+export default Confirmation;

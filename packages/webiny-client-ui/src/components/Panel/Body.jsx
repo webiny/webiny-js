@@ -1,8 +1,9 @@
 import React from 'react';
 import classSet from "classnames";
-import { createComponent } from 'webiny-client';
+import { Component } from 'webiny-client';
 import styles from './styles.css?prefix=wui-panel';
 
+@Component({ styles })
 class Body extends React.Component {
     render() {
         if (this.props.render) {
@@ -18,4 +19,4 @@ Body.defaultProps = {
     style: null
 };
 
-export default createComponent(Body, { styles });
+export default Body;

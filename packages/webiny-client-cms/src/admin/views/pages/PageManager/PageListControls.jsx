@@ -1,7 +1,10 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 
+@Component({
+    modules: ["Dropdown", "Checkbox", "Grid", "OptionsData"]
+})
 class PageListControls extends React.Component {
     constructor() {
         super();
@@ -67,6 +70,4 @@ class PageListControls extends React.Component {
     }
 }
 
-export default createComponent(PageListControls, {
-    modules: ["Dropdown", "Checkbox", "Grid", "OptionsData"]
-});
+export default PageListControls;

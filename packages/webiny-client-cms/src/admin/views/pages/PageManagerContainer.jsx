@@ -1,6 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import { app, createComponent } from "webiny-client";
+import { app, Component } from "webiny-client";
 import PageManager from "./PageManager/PageManager";
 import { PageManagerProvider } from "./PageManager/PageManagerContext";
 
@@ -12,6 +12,7 @@ const fields = `
     ${createdBy}
 `;
 
+@Component({ modules: ["ListData"] })
 class PageManagerContainer extends React.Component {
     constructor() {
         super();
@@ -135,4 +136,4 @@ class PageManagerContainer extends React.Component {
     }
 }
 
-export default createComponent(PageManagerContainer, { modules: ["ListData"] });
+export default PageManagerContainer;

@@ -2,12 +2,13 @@ import React from "react";
 import ReactDOM from "react-dom";
 import _ from "lodash";
 import $ from "jquery";
-import { createComponent, isElementOfType } from "webiny-client";
+import { Component, isElementOfType } from "webiny-client";
 import Field from "./Field";
 import ActionSet from "./ActionSet";
 import RowDetailsList from "./RowDetailsList";
 import RowDetailsContent from "./RowDetailsContent";
 
+@Component({ modules: ["Grid"] })
 class Row extends React.Component {
     constructor(props) {
         super(props);
@@ -210,4 +211,4 @@ Row.defaultProps = {
     onClick: _.noop
 };
 
-export default createComponent(Row, { modules: ["Grid"] });
+export default Row;

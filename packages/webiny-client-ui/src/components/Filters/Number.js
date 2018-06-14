@@ -1,6 +1,7 @@
 import React from "react";
-import { createComponent, i18n } from "webiny-client";
+import { Component, i18n } from "webiny-client";
 
+@Component()
 class Number extends React.Component {
     render() {
         try {
@@ -17,4 +18,4 @@ Number.defaultProps = {
     value: null
 };
 
-export default createComponent(Number);
+export default Number;

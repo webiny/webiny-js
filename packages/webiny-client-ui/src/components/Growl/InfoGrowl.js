@@ -1,8 +1,9 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 import Growl from "./Growl";
 
+@Component()
 class InfoGrowl extends React.Component {
     render() {
         if (this.props.render) {
@@ -20,4 +21,4 @@ InfoGrowl.defaultProps = {
     message: null
 };
 
-export default createComponent(InfoGrowl);
+export default InfoGrowl;

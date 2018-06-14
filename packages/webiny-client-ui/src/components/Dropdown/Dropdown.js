@@ -2,9 +2,10 @@ import React from "react";
 import _ from "lodash";
 import $ from "jquery";
 import classSet from "classnames";
-import { createComponent } from "webiny-client";
-import styles from "./styles.scss?prefix=Webiny_Ui_Dropdown";
+import { Component } from "webiny-client";
+import styles from "./styles.scss?prefix=wui-dropdown";
 
+@Component({ styles })
 class Dropdown extends React.Component {
     constructor(props) {
         super(props);
@@ -66,7 +67,8 @@ class Dropdown extends React.Component {
             alignClasses[props.align],
             props.className,
             this.id,
-            this.props.type === "balloon" && styles.balloon
+            this.props.type === "balloon" && styles.balloon,
+            props.maxWidth && styles.maxWidth
         );
 
         const buttonClasses = classSet("dropdown-toggle", styles.dropdownToggle);
@@ -104,6 +106,7 @@ Dropdown.defaultProps = {
     disabled: false,
     listStyle: null,
     className: null,
+    maxWidth: false,
     onShow: _.noop,
     onShown: _.noop,
     onHide: _.noop,
@@ -111,4 +114,4 @@ Dropdown.defaultProps = {
     type: "default"
 };
 
-export default createComponent(Dropdown, { styles });
+export default Dropdown;

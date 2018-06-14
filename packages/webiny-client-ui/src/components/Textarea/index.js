@@ -1,12 +1,20 @@
 import React from "react";
 import classSet from "classnames";
-import { createComponent } from "webiny-client";
-import { FormComponent } from "webiny-client-ui";
+import { Component } from "webiny-client";
+import { withFormComponent } from "webiny-client-ui";
 import styles from "./styles.css?prefix=Webiny_Ui_Textarea";
 
+@withFormComponent()
+@Component({
+    modules: ["DelayedOnChange", "FormGroup"],
+    styles
+})
 class Textarea extends React.Component {
     render() {
-        const { modules: { FormGroup, DelayedOnChange }, styles } = this.props;
+        const {
+            modules: { FormGroup, DelayedOnChange },
+            styles
+        } = this.props;
 
         const props = {
             onBlur: this.validate,
@@ -41,7 +49,4 @@ Textarea.defaultProps = {
     delay: 400
 };
 
-export default createComponent([Textarea, FormComponent], {
-    modules: ["DelayedOnChange", "FormGroup"],
-    styles
-});
+export default Textarea;

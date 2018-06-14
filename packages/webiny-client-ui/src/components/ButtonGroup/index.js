@@ -1,8 +1,9 @@
 import React from "react";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 import classSet from "classnames";
 import styles from "./styles.scss?prefix=Webiny_Ui_ButtonGroup";
 
+@Component({ styles })
 class ButtonGroup extends React.Component {
     render() {
         if (this.props.render) {
@@ -14,4 +15,4 @@ class ButtonGroup extends React.Component {
     }
 }
 
-export default createComponent(ButtonGroup, { styles });
+export default ButtonGroup;

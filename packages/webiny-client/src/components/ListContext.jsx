@@ -145,7 +145,7 @@ class ListContext extends React.Component {
             ...(withRouter ? this.getRouterContext(props) : this.getStandaloneContext(props))
         };
         
-        return React.cloneElement(children, listProps);
+        return children(listProps);
     }
 }
 

@@ -1,25 +1,19 @@
 import React from "react";
 import _ from "lodash";
-import { app, createComponent, i18n } from "webiny-client";
+import { app, Component, i18n } from "webiny-client";
 
 const t = i18n.namespace("Webiny.Ui.ChangeConfirm");
+
+@Component({ modules: ["Modal"] })
 class ChangeConfirm extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.dialogId = _.uniqueId("change-confirm-");
-        this.message = null;
-
-        this.onChange = this.onChange.bind(this);
-        this.onConfirm = this.onConfirm.bind(this);
-        this.onCancel = this.onCancel.bind(this);
-    }
+    dialogId = _.uniqueId("change-confirm-");
+    message = null;
 
     shouldComponentUpdate(nextProps) {
         return !_.isEqual(nextProps, this.props);
     }
 
-    onChange(value, realOnChange) {
+    onChange = (value, realOnChange) => {
         let msg = this.props.message;
         if (_.isFunction(msg)) {
             msg = msg({ value });
@@ -34,15 +28,15 @@ class ChangeConfirm extends React.Component {
         this.message = msg;
         this.value = value;
         app.services.get("modal").show(this.dialogId);
-    }
+    };
 
-    onCancel() {
+    onCancel = () => {
         app.services.get("modal").hide(this.dialogId);
-    }
+    };
 
-    onConfirm() {
+    onConfirm = () => {
         return this.realOnChange(this.value);
-    }
+    };
 
     render() {
         if (this.props.render) {
@@ -60,7 +54,10 @@ class ChangeConfirm extends React.Component {
             cancel: this.props.cancel
         };
 
-        const { modules: { Modal } } = this.props;
+        const {
+            modules: { Modal }
+        } = this.props;
+
         const dialog = _.isFunction(this.props.renderDialog) ? (
             this.props.renderDialog()
         ) : (
@@ -86,4 +83,4 @@ ChangeConfirm.defaultProps = {
     renderDialog: null
 };
 
-export default createComponent(ChangeConfirm, { modules: ["Modal"] });
+export default ChangeConfirm;

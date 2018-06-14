@@ -1,8 +1,9 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent, isElementOfType } from "webiny-client";
+import { Component, isElementOfType } from "webiny-client";
 import View from "./View";
 
+@Component()
 class Switcher extends React.Component {
     constructor(props) {
         super(props);
@@ -80,4 +81,4 @@ class Switcher extends React.Component {
     }
 }
 
-export default createComponent(Switcher);
+export default Switcher;

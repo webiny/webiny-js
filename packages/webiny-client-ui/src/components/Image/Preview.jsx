@@ -1,7 +1,8 @@
 import React from 'react';
-import { createComponent } from 'webiny-client';
+import { Component } from 'webiny-client';
 import styles from './styles.css?prefix=Webiny_Ui_Image';
 
+@Component({ modules: ['Link'], styles })
 class ImagePreview extends React.Component {
 
     constructor(props) {
@@ -41,4 +42,4 @@ class ImagePreview extends React.Component {
     }
 }
 
-export default createComponent(ImagePreview, { modules: ['Link'], styles });
+export default ImagePreview;

@@ -1,6 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import { app, createComponent, i18n } from "webiny-client";
+import { app, Component, i18n } from "webiny-client";
 import gql from "graphql-tag";
 // import TwoFactorAuthActivation from "./TwoFactorAuthActivation";
 
@@ -8,6 +8,28 @@ import gql from "graphql-tag";
 
 const t = i18n.namespace("Webiny.Admin.UserAccount");
 
+@Component({
+    modules: [
+        { AdminLayout: "Admin.Layout" },
+        "View",
+        "Form",
+        "FormError",
+        "Grid",
+        "Gravatar",
+        "Loader",
+        "Input",
+        "Email",
+        "Password",
+        "Button",
+        "Section",
+        "ChangeConfirm",
+        "Switch",
+        "Modal",
+        "Data",
+        "Link",
+        "Icon"
+    ]
+})
 class UserAccount extends React.Component {
     constructor(props) {
         super(props);
@@ -114,22 +136,14 @@ class UserAccount extends React.Component {
                                 <Grid.Row>
                                     <Grid.Col md={6} sm={12}>
                                         <Section title={t`Your account`} />
-                                        <Bind>
-                                            <Input
-                                                label={t`First name`}
-                                                name="firstName"
-                                                validators="required"
-                                            />
+                                        <Bind name="firstName" validators={["required"]}>
+                                            <Input label={t`First name`} />
                                         </Bind>
-                                        <Bind>
-                                            <Input
-                                                label={t`Last name`}
-                                                name="lastName"
-                                                validators="required"
-                                            />
+                                        <Bind name="lastName" validators={["required"]}>
+                                            <Input label={t`Last name`} />
                                         </Bind>
-                                        <Bind>
-                                            <Email label={t`Email`} name="email" />
+                                        <Bind name="email">
+                                            <Email label={t`Email`} />
                                         </Bind>
                                         <div className="form-group">
                                             <label className="control-label">{t`Gravatar`}</label>
@@ -140,25 +154,21 @@ class UserAccount extends React.Component {
                                     </Grid.Col>
                                     <Grid.Col md={6} sm={12}>
                                         <Section title={t`Reset password`} />
-                                        <Bind>
+                                        <Bind name="password" validators={["password"]}>
                                             <Password
                                                 label={t`New password`}
-                                                name="password"
-                                                validators="password"
                                                 placeholder={t`Type your new password`}
                                             />
                                         </Bind>
-                                        <Bind>
+                                        <Bind
+                                            name="confirmPassword"
+                                            validators={["eq:@password"]}
+                                            validationMessages={{ eg: t`Passwords do not match` }}
+                                        >
                                             <Password
                                                 label={t`Confirm password`}
-                                                name="confirmPassword"
-                                                validators="eq:@password"
                                                 placeholder={t`Re-type your new password`}
-                                            >
-                                                <validator name="eq">
-                                                    {t`Passwords do not match`}
-                                                </validator>
-                                            </Password>
+                                            />
                                         </Bind>
                                         {/* <ChangeConfirm
                                             message={({ value }) => (value ? "Dummy" : null)}
@@ -200,25 +210,4 @@ UserAccount.defaultProps = {
     fields: `id firstName lastName email gravatar`
 };
 
-export default createComponent(UserAccount, {
-    modules: [
-        { AdminLayout: "Admin.Layout" },
-        "View",
-        "Form",
-        "FormError",
-        "Grid",
-        "Gravatar",
-        "Loader",
-        "Input",
-        "Email",
-        "Password",
-        "Button",
-        "Section",
-        "ChangeConfirm",
-        "Switch",
-        "Modal",
-        "Data",
-        "Link",
-        "Icon"
-    ]
-});
+export default UserAccount;

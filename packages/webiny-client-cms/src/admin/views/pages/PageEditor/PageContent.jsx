@@ -12,7 +12,7 @@ import styles from "./PageContent.scss?prefix=wby-cms-editor";
     modules: ["Animate", "Icon", "Button"],
     services: ["cms"]
 })
-export default class PageContent extends React.Component {
+class PageContent extends React.Component {
     state = {
         selectWidget: null,
         toggleSidebar: false,
@@ -176,3 +176,5 @@ export default class PageContent extends React.Component {
         );
     }
 }
+
+export default PageContent;

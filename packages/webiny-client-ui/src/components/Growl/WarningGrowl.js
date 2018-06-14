@@ -1,8 +1,9 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 import Growl from "./Growl";
 
+@Component()
 class WarningGrowl extends React.Component {
     render() {
         if (this.props.render) {
@@ -21,4 +22,4 @@ WarningGrowl.defaultProps = {
     type: "warning"
 };
 
-export default createComponent(WarningGrowl);
+export default WarningGrowl;

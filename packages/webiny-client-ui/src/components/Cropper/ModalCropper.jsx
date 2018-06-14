@@ -1,18 +1,18 @@
 import React from 'react';
 import _ from 'lodash';
-import { app, createComponent, i18n } from 'webiny-client';
-import BaseCropper from './BaseCropper';
+import { app, Component, i18n } from 'webiny-client';
+import withBaseCropper from "./withBaseCropper";
 import CropperDialog from "./CropperDialog";
 
 const t = i18n.namespace("Webiny.Ui.Cropper.ModalCropper");
+
+@withBaseCropper()
+@Component({
+    modules: ['Modal', 'Button']
+})
 class ModalCropper extends React.Component {
-    constructor() {
-        super();
-        this.dialogId = _.uniqueId('modal-cropper-');
-        this.hide = this.hide.bind(this);
-        this.show = this.show.bind(this);
-        this.applyCropping = this.applyCropping.bind(this);
-    }
+
+    dialogId = _.uniqueId('modal-cropper-');
 
     componentDidUpdate(prevProps) {
         if (!prevProps.image && this.props.image) {
@@ -31,20 +31,20 @@ class ModalCropper extends React.Component {
             || !_.isEqual(nextState, this.state);
     }
 
-    applyCropping() {
+    applyCropping = () => {
         const model = this.props.getImageModel();
         this.hide().then(() => {
             this.props.onCrop(model);
         });
-    }
+    };
 
-    hide() {
+    hide = () => {
         return app.services.get('modal').hide(this.dialogId);
-    }
+    };
 
-    show() {
+    show = () => {
         return app.services.get('modal').show(this.dialogId);
-    }
+    };
 
     render() {
         const { modules: { Modal, Button }, ...props } = this.props;
@@ -96,6 +96,4 @@ ModalCropper.defaultProps = {
     onHidden: _.noop
 };
 
-export default createComponent([ModalCropper, BaseCropper], {
-    modules: ['Modal', 'Button']
-});
+export default ModalCropper;

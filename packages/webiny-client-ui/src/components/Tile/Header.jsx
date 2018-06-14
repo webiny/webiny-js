@@ -1,8 +1,9 @@
 import React from 'react';
 import classSet from "classnames";
-import { createComponent } from 'webiny-client';
+import { Component } from 'webiny-client';
 import styles from './styles.css?prefix=Webiny_Ui_Tile_Header';
 
+@Component({ styles, modules: ['Icon'] })
 class Header extends React.Component {
     render() {
         if (this.props.render) {
@@ -28,4 +29,4 @@ Header.defaultProps = {
     title: null
 };
 
-export default createComponent(Header, { styles, modules: ['Icon'] });
+export default Header;

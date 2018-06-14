@@ -1,8 +1,18 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 
+@Component({
+    modules: ["List", "ChangeConfirm", "Switch"],
+    tableField: true
+})
 class ToggleField extends React.Component {
+    static defaultProps = {
+        message: null,
+        onChange: null,
+        disabled: false
+    };
+
     render() {
         const { modules: { ChangeConfirm, Switch, List }, render, ...tdProps } = this.props;
 
@@ -40,13 +50,5 @@ class ToggleField extends React.Component {
     }
 }
 
-ToggleField.defaultProps = {
-    message: null,
-    onChange: null,
-    disabled: false
-};
 
-export default createComponent(ToggleField, {
-    modules: ["List", "ChangeConfirm", "Switch"],
-    tableField: true
-});
+export default ToggleField;

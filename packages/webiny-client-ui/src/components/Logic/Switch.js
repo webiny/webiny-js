@@ -1,7 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
+import { Component } from "webiny-client";
 
+@Component()
 class Switch extends React.Component {
     render() {
         if (this.props.render) {
@@ -47,4 +48,4 @@ Switch.defaultProps = {
     value: "__empty__"
 };
 
-export default createComponent(Switch);
+export default Switch;

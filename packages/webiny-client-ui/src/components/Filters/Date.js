@@ -1,6 +1,7 @@
 import React from "react";
-import { createComponent, i18n } from "webiny-client";
+import { Component, i18n } from "webiny-client";
 
+@Component()
 class Date extends React.Component {
     render() {
         try {
@@ -17,4 +18,4 @@ Date.defaultProps = {
     value: null
 };
 
-export default createComponent(Date);
+export default Date;

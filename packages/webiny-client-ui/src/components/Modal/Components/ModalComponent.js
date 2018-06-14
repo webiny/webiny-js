@@ -3,9 +3,13 @@ import ReactDOM from "react-dom";
 import _ from "lodash";
 import $ from "jquery";
 import classSet from "classnames";
-import { app, createComponent } from "webiny-client";
+import { app, Component } from "webiny-client";
 import styles from "../styles.scss?prefix=wui-modal";
 
+@Component({
+    styles,
+    modules: ["Animate"]
+})
 class ModalComponent extends React.Component {
     constructor(props) {
         super(props);
@@ -142,16 +146,14 @@ class ModalComponent extends React.Component {
 
         const {
             modules: { Animate },
-            styles
+            styles,
+            children
         } = this.props;
+
         const className = classSet(styles.modal, {
             [styles.wide]: this.props.wide,
             [styles.fullScreen]: this.props.fullScreen
         });
-        let content = this.props.children;
-        if (_.isFunction(content)) {
-            content = content.call(this, { dialog: this });
-        }
 
         return (
             <div style={_.merge({}, { display: "block" }, this.props.style)}>
@@ -212,7 +214,8 @@ class ModalComponent extends React.Component {
                                 style={{ top: -50 }}
                                 data-role="dialog"
                             >
-                                {React.cloneElement(content, {
+                                {children.call(this, {
+                                    dialog: this,
                                     data: this.state.data,
                                     hide: this.hide,
                                     animating: this.state.animating
@@ -244,7 +247,4 @@ ModalComponent.defaultProps = {
     style: {}
 };
 
-export default createComponent(ModalComponent, {
-    styles,
-    modules: ["Animate"]
-});
+export default ModalComponent;
