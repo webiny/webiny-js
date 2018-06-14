@@ -125,6 +125,10 @@ class MemoryDriver extends Driver {
 
         return this;
     }
+
+    test() {
+        return true;
+    }
 }
 
 export default MemoryDriver;

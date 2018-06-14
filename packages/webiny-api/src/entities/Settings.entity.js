@@ -1,5 +1,5 @@
 // @flow
-import Entity from "./entity";
+import Entity from "./Entity";
 
 class Settings extends Entity {
     constructor() {

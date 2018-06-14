@@ -1,5 +1,5 @@
 // @flow
-import type Entity from "./entity";
+import type Entity from "./Entity";
 type ExtensionCallback = ({ id: string, entity: Entity }) => void;
 
 class EntityManager {

@@ -71,6 +71,14 @@ class MySQLConnection {
         });
     }
 
+    /**
+     * Tests connection - just sends a simple query.
+     */
+    async test(): Promise<boolean> {
+        await this.query("SELECT version()");
+        return true;
+    }
+
     async __executeQueriesWithConnection(connection: ConnectionClass, queries: Array<string>) {
         const results = [];
         for (let i = 0; i < queries.length; i++) {

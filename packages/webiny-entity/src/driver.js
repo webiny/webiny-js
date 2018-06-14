@@ -65,6 +65,10 @@ class Driver {
     isId(entity: Entity | Class<Entity>, id: mixed, params: ?Object): boolean {
         return typeof id === "string";
     }
+
+    test() {
+        return true;
+    }
 }
 
 export default Driver;

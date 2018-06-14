@@ -5,7 +5,7 @@ import { Storage } from "webiny-file-storage";
 import type { EntitySaveParams, EntityDeleteParams } from "webiny-entity/types";
 import mdbid from "mdbid";
 import type { IFileData } from "webiny-file-storage/types";
-import Entity from "./entity";
+import Entity from "./Entity";
 
 class File extends Entity {
     storage: Storage;

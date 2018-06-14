@@ -4,7 +4,7 @@ const table = require("./entity/table");
 const cli = require("./../cli");
 
 exports.command = "entity <name>";
-exports.describe = "Create a new entity";
+exports.describe = "Create a new entity.";
 exports.builder = yargs => {
     return yargs.positional("name", {
         describe: "Name of entity.",
@@ -13,7 +13,9 @@ exports.builder = yargs => {
 };
 
 exports.handler = function(argv) {
-    const name = argv.name;
+    const name = argv.name.charAt(0).toUpperCase() + argv.name.slice(1);
+    cli.validateName(name);
+
     const paths = {
         entity: cli.directory.api + "/src/app/entities/" + name + ".entity.js",
         table: cli.directory.api + "/src/app/tables/" + name + ".mysql.js"

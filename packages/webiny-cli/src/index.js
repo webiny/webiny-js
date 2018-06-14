@@ -5,6 +5,9 @@
  */
 require("yargs")
     .usage(`Usage: webiny <command>`)
+    .demandCommand()
+    .recommendCommands()
+    .strict()
     .command(require("./commands/create"))
     .command(require("./commands/entity"))
     .help("h")
