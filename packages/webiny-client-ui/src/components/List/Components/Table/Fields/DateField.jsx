@@ -1,8 +1,8 @@
 import React from 'react';
 import _ from 'lodash';
-import { Component, i18n } from 'webiny-client';
+import { inject, i18n } from 'webiny-client';
 
-@Component({ modules: ['List'], tableField: true })
+@inject({ modules: ['List'], tableField: true })
 class DateField extends React.Component {
     render() {
         const { modules: { List }, format, render, ...props } = this.props;

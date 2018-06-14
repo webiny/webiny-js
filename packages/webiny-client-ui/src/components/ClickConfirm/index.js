@@ -1,6 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import { app, Component, i18n } from "webiny-client";
+import { app, inject, i18n } from "webiny-client";
 
 /**
  * If onClick function we are handling returns a function, the confirmation dialog will be hidden before executing the function.
@@ -8,7 +8,7 @@ import { app, Component, i18n } from "webiny-client";
  */
 
 const t = i18n.namespace("Webiny.Ui.ClickConfirm");
-@Component({ modules: ["Modal"] })
+@inject({ modules: ["Modal"] })
 class ClickConfirm extends React.Component {
     constructor(props) {
         super(props);

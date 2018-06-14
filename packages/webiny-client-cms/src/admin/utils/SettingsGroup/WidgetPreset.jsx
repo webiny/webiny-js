@@ -1,10 +1,10 @@
 import React from "react";
 import _ from "lodash";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import { withPageEditor } from "../context/pageEditorContext";
 
 @withPageEditor()
-@Component({
+@inject({
     modules: ["Button", "Input", "Grid", "Dropdown", "FormGroup", "Icon", "Link", "ClickConfirm"]
 })
 class WidgetPreset extends React.Component {

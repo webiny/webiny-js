@@ -1,12 +1,12 @@
 import React from "react";
 import _ from "lodash";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 
 /**
  * TODO: Downloader
  * This component needs to be reviewed in context of GraphQL and how we plan on performing downloads (ex: PDF)
  */
-@Component()
+@inject()
 class Downloader extends React.Component {
     constructor(props) {
         super(props);

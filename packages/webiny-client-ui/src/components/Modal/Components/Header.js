@@ -1,10 +1,10 @@
 import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import styles from "../styles.scss?prefix=wui-modal";
 
-@Component({ styles })
+@inject({ styles })
 class Header extends React.Component {
     render() {
         let headerContent = "";

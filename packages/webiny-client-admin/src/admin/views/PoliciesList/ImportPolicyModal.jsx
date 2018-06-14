@@ -1,11 +1,11 @@
 import React from "react";
 
-import { i18n, Component } from "webiny-client";
+import { i18n, inject } from "webiny-client";
 const t = i18n.namespace("Security.Modal.ImportPolicyModal");
 import { withModalDialog } from "webiny-client-ui";
 
 @withModalDialog()
-@Component({
+@inject({
     modules: [
         "Modal",
         "Button",

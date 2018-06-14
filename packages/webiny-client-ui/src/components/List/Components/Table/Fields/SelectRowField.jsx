@@ -1,8 +1,8 @@
 import React from "react";
-import { Component, LazyLoad } from "webiny-client";
+import { inject, LazyLoad } from "webiny-client";
 import styles from "../../../styles.css?prefix=wui--table-selectRowField";
 
-@Component({
+@inject({
     modules: ["Checkbox", "List"],
     styles,
     tableField: true

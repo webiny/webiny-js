@@ -1,8 +1,8 @@
 import React from 'react';
 import _ from 'lodash';
-import { Component } from 'webiny-client';
+import { inject } from 'webiny-client';
 
-@Component()
+@inject()
 class ImageSet extends React.Component {
     constructor(props) {
         super(props);

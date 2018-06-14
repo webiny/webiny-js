@@ -1,9 +1,9 @@
 import React, { Fragment } from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import Widget from "./Widget";
 import styles from "./AddWidget.scss?prefix=wby-cms-editor-addWidget";
 
-@Component({ modules: ["Icon"], services: ["cms"] })
+@inject({ modules: ["Icon"], services: ["cms"] })
 class AddWidget extends React.Component {
     state = {
         selectWidget: true

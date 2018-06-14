@@ -1,9 +1,9 @@
 import React from 'react';
 import classSet from "classnames";
-import { Component } from 'webiny-client';
+import { inject } from 'webiny-client';
 import styles from './styles.css?prefix=wui-tabs';
 
-@Component({ styles })
+@inject({ styles })
 class TabContent extends React.Component {
     render() {
         if (!this.props.disabled && (this.props.active || this.props.alwaysRender)) {

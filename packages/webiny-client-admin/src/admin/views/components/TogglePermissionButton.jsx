@@ -1,10 +1,10 @@
 import React from "react";
 import styles from "./TogglePermissionButton.scss";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import _ from "lodash";
 import classNames from "classnames";
 
-@Component({
+@inject({
     modules: ["Button"]
 })
 class TogglePermissionButton extends React.Component {

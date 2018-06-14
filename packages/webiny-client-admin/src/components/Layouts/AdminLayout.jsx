@@ -1,11 +1,11 @@
 import React from 'react';
-import { Component } from 'webiny-client';
+import { inject } from 'webiny-client';
 
 /**
  * AdminLayout is the main container that will hold all other components.
  * This component is the first one to render in the <body> element.
  */
-@Component({
+@inject({
     modules: [{
         Header: 'Admin.Header',
         Navigation: 'Admin.Navigation',

@@ -1,11 +1,11 @@
 import React from 'react';
 import _ from 'lodash';
-import { Component, i18n } from 'webiny-client';
+import { inject, i18n } from 'webiny-client';
 import styles from '../../styles.css?prefix=Webiny_Ui_List_Empty';
 
 const t = i18n.namespace("Webiny.Ui.List.Table.Empty");
 
-@Component({ styles })
+@inject({ styles })
 class Empty extends React.Component {
     render() {
         const { render, children, message } = this.props;

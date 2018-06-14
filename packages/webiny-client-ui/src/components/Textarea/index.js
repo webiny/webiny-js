@@ -1,11 +1,11 @@
 import React from "react";
 import classSet from "classnames";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import { withFormComponent } from "webiny-client-ui";
 import styles from "./styles.css?prefix=Webiny_Ui_Textarea";
 
 @withFormComponent()
-@Component({
+@inject({
     modules: ["DelayedOnChange", "FormGroup"],
     styles
 })

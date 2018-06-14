@@ -1,10 +1,10 @@
 import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
-import { app, Component } from "webiny-client";
+import { app, inject } from "webiny-client";
 import styles from "./styles.css?prefix=wui-link";
 
-@Component({ styles })
+@inject({ styles })
 class Link extends React.Component {
     static defaultProps = {
         align: null,

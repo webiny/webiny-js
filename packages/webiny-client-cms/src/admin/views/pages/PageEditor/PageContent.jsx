@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import _ from "lodash";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import shortid from "shortid";
 import Widget from "./Widget";
 import Sidebar from "./Sidebar";
@@ -8,7 +8,7 @@ import WidgetSettingsSidebar from "./WidgetSettingsSidebar";
 import AddWidget from "./AddWidget";
 import styles from "./PageContent.scss?prefix=wby-cms-editor";
 
-@Component({
+@inject({
     modules: ["Animate", "Icon", "Button"],
     services: ["cms"]
 })

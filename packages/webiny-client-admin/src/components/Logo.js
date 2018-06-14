@@ -1,8 +1,8 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import logo from "./../assets/images/logo.png";
 
-@Component()
+@inject()
 class Logo extends React.Component {
     constructor(props) {
         super(props);

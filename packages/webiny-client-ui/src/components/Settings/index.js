@@ -1,8 +1,8 @@
 import React from "react";
-import { app, Component, i18n } from "webiny-client";
+import { app, inject, i18n } from "webiny-client";
 
 const t = i18n.namespace("Webiny.Ui.Settings");
-@Component({ modules: ["Form"] })
+@inject({ modules: ["Form"] })
 class Settings extends React.Component {
     render() {
         if (this.props.render) {

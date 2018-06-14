@@ -1,11 +1,11 @@
 import React from "react";
 import _ from "lodash";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import classSet from "classnames";
 import AlertContainer from "./Container";
 import styles from "./styles.css?prefix=Webiny_Ui_Alert";
 
-@Component({ styles, modules: ["Icon"] })
+@inject({ styles, modules: ["Icon"] })
 class Alert extends React.Component {
     render() {
         if (this.props.render) {

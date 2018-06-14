@@ -1,11 +1,11 @@
 import React from "react";
 import classSet from "classnames";
-import { app, Component } from "webiny-client";
+import { app, inject } from "webiny-client";
 import _ from "lodash";
 import $ from "jquery";
 import utils from "./utils";
 
-@Component({ modules: ["Link"] })
+@inject({ modules: ["Link"] })
 class Mobile extends React.Component {
     constructor(props) {
         super(props);

@@ -1,13 +1,13 @@
 import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
-import { Component, isElementOfType, elementHasFlag } from "webiny-client";
+import { inject, isElementOfType, elementHasFlag } from "webiny-client";
 import SelectRowField from "./Fields/SelectRowField";
 import Actions from "./Actions";
 import FieldInfo from "./FieldInfo";
 import styles from "../../styles.css?prefix=wui-table-row";
 
-@Component({ styles })
+@inject({ styles })
 class Row extends React.Component {
     constructor(props) {
         super(props);

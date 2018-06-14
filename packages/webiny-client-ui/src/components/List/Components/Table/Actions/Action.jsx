@@ -1,8 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 
-@Component({ modules: ["Icon", "Link", "DownloadLink"] })
+@inject({ modules: ["Icon", "Link", "DownloadLink"] })
 class Action extends React.Component {
     render() {
         if (this.props.render) {

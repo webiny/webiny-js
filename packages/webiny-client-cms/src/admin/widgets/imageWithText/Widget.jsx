@@ -1,8 +1,8 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import placeholderImage from "./placeholder.jpg";
 
-@Component({
+@inject({
     modules: ["SlateEditor"]
 })
 class ImageWithTextWidget extends React.Component {

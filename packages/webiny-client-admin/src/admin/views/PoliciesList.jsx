@@ -1,10 +1,10 @@
 import React, { Fragment } from "react";
 import ExportPolicyModal from "./PoliciesList/ExportPolicyModal";
 import ImportPolicyModal from "./PoliciesList/ImportPolicyModal";
-import { i18n, Component } from "webiny-client";
+import { i18n, inject } from "webiny-client";
 const t = i18n.namespace("Security.PoliciesList");
 
-@Component({
+@inject({
     modules: [
         { AdminLayout: "Admin.Layout" },
         "ViewSwitcher",

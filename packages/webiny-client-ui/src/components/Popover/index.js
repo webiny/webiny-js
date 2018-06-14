@@ -1,11 +1,11 @@
 import React from "react";
 import _ from "lodash";
 import $ from "jquery";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import "./styles.scss";
 import ReactDOMServer from "react-dom/server";
 
-@Component()
+@inject()
 class Popover extends React.Component {
     componentDidMount() {
         this.initPopover.call(this);

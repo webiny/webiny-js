@@ -1,8 +1,8 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import styles from "./styles.css?prefix=Webiny_Ui_Progress";
 
-@Component({ styles })
+@inject({ styles })
 class Progress extends React.Component {
     render() {
         if (this.props.render) {

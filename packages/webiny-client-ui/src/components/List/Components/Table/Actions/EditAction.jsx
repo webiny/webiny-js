@@ -1,9 +1,9 @@
 import React from "react";
 import _ from "lodash";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import RouteAction from "./RouteAction";
 
-@Component({ modules: ["Link", "Icon"] })
+@inject({ modules: ["Link", "Icon"] })
 class EditAction extends React.Component {
     render() {
         if (this.props.render) {

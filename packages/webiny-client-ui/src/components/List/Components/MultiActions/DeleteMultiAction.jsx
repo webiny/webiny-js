@@ -1,10 +1,10 @@
 import React from 'react';
 import _ from 'lodash';
-import { app, Component, i18n } from 'webiny-client';
+import { app, inject, i18n } from 'webiny-client';
 import ModalMultiAction from './ModalMultiAction';
 
 const t = i18n.namespace("Webiny.Ui.List.MultiActions.DeleteMultiAction");
-@Component({ modules: ['Modal'] })
+@inject({ modules: ['Modal'] })
 class DeleteMultiAction extends React.Component {
 
     constructor(props) {

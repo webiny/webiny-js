@@ -1,12 +1,12 @@
 import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import withFormComponent from "./../FormComponent/withFormComponent";
 import styles from "./styles.css?prefix=Webiny_Ui_Switch";
 
 @withFormComponent()
-@Component({
+@inject({
     modules: ["FormGroup"],
     styles
 })

@@ -1,10 +1,10 @@
 import React from "react";
 import classSet from "classnames";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import FontAwesomeIcon from "@fortawesome/react-fontawesome";
 import styles from "./styles.css?prefix=wui--icon";
 
-@Component({ styles })
+@inject({ styles })
 class Icon extends React.Component {
     render() {
         const { styles, type, onClick, render, ...props } = this.props;

@@ -3,13 +3,13 @@ import css from "./ApiAccess.scss";
 import _ from "lodash";
 import QueryMutationFieldsList from "./ApiAccess/QueryMutationFieldsList";
 import FieldsSelector from "./ApiAccess/FieldsSelector";
-import { Component, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 import fetch from "isomorphic-fetch";
 import query from "./ApiAccess/introspectionQuery";
 
 const t = i18n.namespace("Security.PermissionsForm.Scopes");
 
-@Component({ modules: ["Grid"] })
+@inject({ modules: ["Grid"] })
 class ApiAccess extends React.Component {
     constructor(props) {
         super(props);

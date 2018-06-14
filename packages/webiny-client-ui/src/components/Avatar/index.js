@@ -1,12 +1,12 @@
 import React from "react";
 import _ from "lodash";
-import { i18n, Component } from "webiny-client";
+import { i18n, inject } from "webiny-client";
 import { withFormComponent } from "webiny-client-ui";
 import styles from "./styles.css?prefix=Webiny_Ui_Avatar";
 
 const t = i18n.namespace("Webiny.Ui.Avatar");
 @withFormComponent()
-@Component({
+@inject({
     modules: ["Alert", "FileReader", "Cropper", "Button"],
     styles
 })

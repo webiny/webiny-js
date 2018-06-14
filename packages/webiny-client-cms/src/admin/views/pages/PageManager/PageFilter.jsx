@@ -1,10 +1,10 @@
 import React from "react";
 import classSet from "classnames";
 import _ from "lodash";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import styles from "./PageFilter.scss?prefix=Webiny_CMS_PageFilter";
 
-@Component({ modules: ["Icon", "Link"] })
+@inject({ modules: ["Icon", "Link"] })
 class PageFilter extends React.Component {
     constructor(props) {
         super();

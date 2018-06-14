@@ -1,10 +1,10 @@
 import React from "react";
 import _ from "lodash";
-import { Component, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 import ModalAction from "./ModalAction";
 
 const t = i18n.namespace("Webiny.Ui.List.Table.Actions");
-@Component({ modules: ["Modal"] })
+@inject({ modules: ["Modal"] })
 class DeleteAction extends React.Component {
     constructor() {
         super();

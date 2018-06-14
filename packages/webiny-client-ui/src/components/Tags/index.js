@@ -1,13 +1,13 @@
 import React from "react";
 import _ from "lodash";
-import { Component, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 import { withFormComponent } from "webiny-client-ui";
 import { validation } from "webiny-validation";
 import styles from "./styles.css?prefix=Webiny_Ui_Tags";
 
 const t = i18n.namespace("Webiny.Ui.Tags");
 @withFormComponent()
-@Component({
+@inject({
     modules: ["Icon", "FormGroup"],
     styles
 })

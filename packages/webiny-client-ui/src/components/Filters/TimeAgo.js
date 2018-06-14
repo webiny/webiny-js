@@ -1,7 +1,7 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 
-@Component({ modules: [{ moment: "Webiny/Vendors/Moment" }] })
+@inject({ modules: [{ moment: "Webiny/Vendors/Moment" }] })
 class TimeAgo extends React.Component {
     render() {
         const {

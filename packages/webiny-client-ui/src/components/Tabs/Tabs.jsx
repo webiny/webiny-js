@@ -1,12 +1,12 @@
 import React from 'react';
 import _ from 'lodash';
 import classSet from "classnames";
-import { app, Component } from 'webiny-client';
+import { app, inject } from 'webiny-client';
 import TabHeader from './TabHeader';
 import TabContent from './TabContent';
 import styles from './styles.css?prefix=wui-tabs';
 
-@Component({ styles, tabs: true })
+@inject({ styles, tabs: true })
 class Tabs extends React.Component {
     constructor() {
         super();

@@ -1,10 +1,10 @@
 import React from "react";
 import _ from "lodash";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import filesize from "filesize";
 import styles from "./styles.css?prefix=Webiny_Ui_Gallery_Image";
 
-@Component({ modules: ["Link"], styles })
+@inject({ modules: ["Link"], styles })
 class Image extends React.Component {
     constructor(props) {
         super(props);

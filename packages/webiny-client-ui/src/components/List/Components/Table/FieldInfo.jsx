@@ -1,8 +1,8 @@
 import React from "react";
-import { Component, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 
 const t = i18n.namespace("Webiny.Ui.List.Table.FieldInfo");
-@Component({ modules: ["Modal", "Button", "Icon"] })
+@inject({ modules: ["Modal", "Button", "Icon"] })
 class FieldInfo extends React.Component {
     constructor(props) {
         super(props);

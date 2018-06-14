@@ -1,5 +1,5 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 
 import styles from "./Header.scss?prefix=wby-cms-editor";
 
@@ -26,4 +26,4 @@ const Header = ({ onSave, page, Bind, modules: { Link, Input } }) => {
     );
 };
 
-export default Component({ modules: ["Link", "Input"] })(Header);
+export default inject({ modules: ["Link", "Input"] })(Header);

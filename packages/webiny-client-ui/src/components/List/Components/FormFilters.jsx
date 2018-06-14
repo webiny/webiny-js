@@ -1,8 +1,8 @@
 import React from 'react';
 import _ from 'lodash';
-import { Component } from 'webiny-client';
+import { inject } from 'webiny-client';
 
-@Component({ modules: ['Form'], listFiltersComponent: true })
+@inject({ modules: ['Form'], listFiltersComponent: true })
 class FormFilters extends React.Component {
 
     constructor(props) {

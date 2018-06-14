@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import _ from "lodash";
-import { Component, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 import InfiniteScroll from "react-infinite-scroller";
 
 import { PageDetailsProvider } from "./PageDetailsContext";
@@ -14,7 +14,7 @@ import styles from "./PageManager.scss?prefix=wby-cms-pageManager";
 
 const t = i18n.namespace("Cms.Admin.Views.PageManager");
 
-@Component({
+@inject({
     modules: [
         "View",
         "ViewSwitcher",

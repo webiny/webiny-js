@@ -1,10 +1,10 @@
 import React from 'react';
 import _ from 'lodash';
 import classSet from "classnames";
-import { Component } from 'webiny-client';
+import { inject } from 'webiny-client';
 import styles from './styles.css?prefix=Webiny_Ui_RadioGroup_Radio';
 
-@Component({ styles })
+@inject({ styles })
 class Radio extends React.Component {
 
     constructor(props) {

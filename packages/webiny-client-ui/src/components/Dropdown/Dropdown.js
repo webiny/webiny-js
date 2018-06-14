@@ -2,10 +2,10 @@ import React from "react";
 import _ from "lodash";
 import $ from "jquery";
 import classSet from "classnames";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import styles from "./styles.scss?prefix=wui-dropdown";
 
-@Component({ styles })
+@inject({ styles })
 class Dropdown extends React.Component {
     constructor(props) {
         super(props);

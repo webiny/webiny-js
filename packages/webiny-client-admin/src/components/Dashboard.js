@@ -1,8 +1,8 @@
 import React from "react";
-import { i18n, Component } from "webiny-client";
+import { i18n, inject } from "webiny-client";
 
 const t = i18n.namespace("Webiny.Admin.Layout.Dashboard");
-@Component()
+@inject()
 class Dashboard extends React.Component {
     render() {
         const { View } = this.props;

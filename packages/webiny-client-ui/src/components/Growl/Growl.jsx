@@ -1,9 +1,9 @@
 import React from 'react';
 import classSet from "classnames";
-import { Component } from 'webiny-client';
+import { inject } from 'webiny-client';
 import styles from './styles.css?prefix=Webiny_Ui_Growl';
 
-@Component({ styles })
+@inject({ styles })
 class Growl extends React.Component {
     constructor(props) {
         super(props);

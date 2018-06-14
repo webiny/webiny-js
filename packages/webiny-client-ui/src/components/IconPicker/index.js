@@ -1,11 +1,11 @@
 import React from "react";
 import _ from "lodash";
-import { Component, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 import icons from "./icons";
 
 const t = i18n.namespace("Webiny.Ui.IconPicker");
 
-@Component({ modules: ["Select", "Icon"] })
+@inject({ modules: ["Select", "Icon"] })
 class IconPicker extends React.Component {
     constructor(props) {
         super(props);

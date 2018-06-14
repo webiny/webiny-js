@@ -1,11 +1,11 @@
 import React from "react";
 import _ from "lodash";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import { withFormComponent } from "webiny-client-ui";
 import SimpleSelect from "./SimpleSelect";
 
 @withFormComponent()
-@Component({
+@inject({
     modules: ["FormGroup"]
 })
 class Select extends React.Component {

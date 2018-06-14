@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import classSet from "classnames";
 import styles from "./Menu.scss?prefix=wby-cms-slate-menu";
 
-@Component({ modules: ["Icon"] })
+@inject({ modules: ["Icon"] })
 class Menu extends React.Component {
     /**
      * Check if the current selection has a mark with `type` in it.

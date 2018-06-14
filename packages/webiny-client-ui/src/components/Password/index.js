@@ -1,9 +1,9 @@
 import React from "react";
-import { Component, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 
 const t = i18n.namespace("Webiny.Ui.Password");
 
-@Component({
+@inject({
     modules: ["Link", "Icon", "Input"]
 })
 class Password extends React.Component {

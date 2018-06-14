@@ -1,6 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import { Component, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 import withModalDialog from "../withModalDialog";
 import Dialog from "./Dialog";
 import Content from "./Content";
@@ -11,7 +11,7 @@ import styles from "../styles.scss?prefix=wui-success";
 const t = i18n.namespace("Webiny.Ui.Modal.Success");
 
 @withModalDialog()
-@Component({ modules: ["Button", "Icon"] })
+@inject({ modules: ["Button", "Icon"] })
 class Success extends React.Component {
     renderFooter() {
         let {

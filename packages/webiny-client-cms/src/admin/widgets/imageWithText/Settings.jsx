@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 
 const ImageWithTextSettings = (props) => {
     const { Bind, handleImage, modules: { Select, Image, Input } } = props;
@@ -39,6 +39,6 @@ const ImageWithTextSettings = (props) => {
     );
 };
 
-export default Component({
+export default inject({
     modules: ["Select", "Image", "Input"]
 })(ImageWithTextSettings);

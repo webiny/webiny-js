@@ -1,9 +1,9 @@
 import React from "react";
 import classSet from "classnames";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import styles from "./styles.css?prefix=Webiny_Ui_Loader";
 
-@Component({ styles })
+@inject({ styles })
 class Loader extends React.Component {
     constructor() {
         super();

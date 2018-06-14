@@ -1,5 +1,5 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import { withModalDialog } from "webiny-client-ui";
 
 const categoryURL = value => {
@@ -11,7 +11,7 @@ const categoryURL = value => {
 };
 
 @withModalDialog()
-@Component({
+@inject({
     modules: ["Modal", "Button", "Input", "Form", "FormData", "FormError", "Grid", "Loader"]
 })
 class CategoryModal extends React.Component {

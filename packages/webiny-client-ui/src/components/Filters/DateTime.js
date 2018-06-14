@@ -1,7 +1,7 @@
 import React from "react";
-import { i18n, Component } from "webiny-client";
+import { i18n, inject } from "webiny-client";
 
-@Component()
+@inject()
 class DateTime extends React.Component {
     render() {
         try {

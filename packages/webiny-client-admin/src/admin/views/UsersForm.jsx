@@ -1,9 +1,9 @@
 import React from "react";
-import {app, i18n, Component} from "webiny-client";
+import {app, i18n, inject} from "webiny-client";
 
 const t = i18n.namespace("Security.UsersForm");
 
-@Component({
+@inject({
     modules: [
         "View",
         "Form",

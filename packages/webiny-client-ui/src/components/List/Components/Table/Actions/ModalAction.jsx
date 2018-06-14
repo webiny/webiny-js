@@ -1,8 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 
-@Component({ modules: ["Icon", "Link", "Downloader"] })
+@inject({ modules: ["Icon", "Link", "Downloader"] })
 class ModalAction extends React.Component {
     render() {
         if (this.props.render) {

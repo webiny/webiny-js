@@ -1,6 +1,6 @@
 import React from "react";
 import classSet from "classnames";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import styles from "./styles.scss?prefix=wui-accordion";
 
 const Item = props => {
@@ -17,7 +17,7 @@ const Item = props => {
     );
 };
 
-@Component({ styles, modules: ["Icon"] })
+@inject({ styles, modules: ["Icon"] })
 class Accordion extends React.Component {
     state = {
         active: 0

@@ -11,29 +11,29 @@ const errorHandler = (error: Error, componentStack: string) => {
 };
 
 /**
- * This function creates a wrapper class around given component to allow component styling and lazy loading of dependencies
+ * This function creates a wrapper class around given component to lazy-load and inject dependencies
  */
 export default (Component, options = {}) => {
     // Create a copy of styles to use as default styles
     let defaultStyles = { ...options.styles };
 
-    class DepsLoader extends React.Component {
+    class InjectDeps extends React.Component {
         static configure(config) {
             // defaultProps are merged
-            _.merge(DepsLoader.defaultProps, config.defaultProps || {});
+            _.merge(InjectDeps.defaultProps, config.defaultProps || {});
             delete config.defaultProps;
 
             // modules are overwritten
             if (_.hasIn(config, "options.modules")) {
-                DepsLoader.options.modules = config.options.modules;
+                InjectDeps.options.modules = config.options.modules;
                 delete config.options.modules;
             }
 
             // Merge the rest
-            _.merge(DepsLoader.options, config.options || {});
+            _.merge(InjectDeps.options, config.options || {});
 
             // Create new defaultStyles object to hold modified styles
-            defaultStyles = { ...DepsLoader.options.styles };
+            defaultStyles = { ...InjectDeps.options.styles };
         }
 
         render() {
@@ -74,10 +74,10 @@ export default (Component, options = {}) => {
         }
     }
 
-    DepsLoader.displayName = "DepsLoader";
-    DepsLoader.__originalComponent = Component;
-    DepsLoader.options = options;
-    DepsLoader.defaultProps = _.assign({}, Component.defaultProps);
+    InjectDeps.displayName = "InjectDeps";
+    InjectDeps.__originalComponent = Component;
+    InjectDeps.options = options;
+    InjectDeps.defaultProps = _.assign({}, Component.defaultProps);
 
-    return hoistNonReactStatics(DepsLoader, Component);
+    return hoistNonReactStatics(InjectDeps, Component);
 };

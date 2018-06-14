@@ -1,10 +1,10 @@
 import React from "react";
-import { app, Component } from "webiny-client";
+import { app, inject } from "webiny-client";
 import PageContent from "./PageEditor/PageContent";
 import Header from "./PageEditor/Header";
 import { PageEditorProvider } from "../../utils/context/pageEditorContext";
 
-@Component({
+@inject({
     modules: ["Loader", "Form", "FormData", "FormError"]
 })
 class PageEditor extends React.Component {

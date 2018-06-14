@@ -1,11 +1,11 @@
 import React from "react";
-import { Component, isElementOfType } from "webiny-client";
+import { inject, isElementOfType } from "webiny-client";
 import Header from "./Header";
 import Body from "./Body";
 import Footer from "./Footer";
 import styles from "./styles.css?prefix=wui-view";
 
-@Component({ modules: ["Panel"], styles })
+@inject({ modules: ["Panel"], styles })
 class View extends React.Component {
     constructor(props) {
         super(props);

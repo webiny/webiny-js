@@ -1,5 +1,5 @@
 import React from 'react';
-import { isElementOfType, Component } from 'webiny-client';
+import { isElementOfType, inject } from 'webiny-client';
 import Header from './Header';
 import HeaderLeft from './DashboardComponents/HeaderLeft';
 import HeaderCenter from './DashboardComponents/HeaderCenter';
@@ -7,7 +7,7 @@ import HeaderRight from './DashboardComponents/HeaderRight';
 import Body from './Body';
 import styles from './styles.css?prefix=wui-view';
 
-@Component({ styles })
+@inject({ styles })
 class DashboardView extends React.Component {
 
     constructor(props) {

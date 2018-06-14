@@ -1,5 +1,5 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 
 const Widget = ({ widget: { data }, Bind, modules: { Icon, SlateEditor } }) => {
     return (
@@ -16,4 +16,4 @@ const Widget = ({ widget: { data }, Bind, modules: { Icon, SlateEditor } }) => {
     );
 };
 
-export default Component({ modules: ["Icon", "SlateEditor"] })(Widget);
+export default inject({ modules: ["Icon", "SlateEditor"] })(Widget);

@@ -2,10 +2,10 @@ import React from 'react';
 import _ from 'lodash';
 import classSet from "classnames";
 import dynamics from 'dynamics.js';
-import { Component } from 'webiny-client';
+import { inject } from 'webiny-client';
 import styles from './styles.css?prefix=Webiny_Ui_Growl';
 
-@Component({ styles })
+@inject({ styles })
 class GrowlContainer extends React.Component {
 
     constructor(props) {

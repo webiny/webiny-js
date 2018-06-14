@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import _ from "lodash";
-import { i18n, Component } from "webiny-client";
+import { i18n, inject } from "webiny-client";
 import PageContentPreview from "./PageContentPreview";
 import PageRevisions from "./PageRevisions";
 import styles from "./PageDetails.scss";
@@ -8,7 +8,7 @@ import blankState from "./assets/blank-state-preview.svg";
 
 const t = i18n.namespace("Cms.Admin.Views.PageDetails");
 
-@Component({
+@inject({
     modules: ["Tabs", "Select", "Icon", "Link", "Dropdown"]
 })
 class PageDetails extends React.Component {

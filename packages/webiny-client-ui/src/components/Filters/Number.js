@@ -1,7 +1,7 @@
 import React from "react";
-import { Component, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 
-@Component()
+@inject()
 class Number extends React.Component {
     render() {
         try {

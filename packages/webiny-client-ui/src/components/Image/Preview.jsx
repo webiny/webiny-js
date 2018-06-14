@@ -1,8 +1,8 @@
 import React from 'react';
-import { Component } from 'webiny-client';
+import { inject } from 'webiny-client';
 import styles from './styles.css?prefix=Webiny_Ui_Image';
 
-@Component({ modules: ['Link'], styles })
+@inject({ modules: ['Link'], styles })
 class ImagePreview extends React.Component {
 
     constructor(props) {

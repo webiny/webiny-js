@@ -1,8 +1,8 @@
 import React, { createElement, isValidElement } from "react";
 import $ from "jquery";
-import { app, Component } from "webiny-client";
+import { app, inject } from "webiny-client";
 
-@Component({
+@inject({
     modules: [
         {
             components: () =>

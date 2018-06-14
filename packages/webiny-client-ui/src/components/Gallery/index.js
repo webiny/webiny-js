@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import $ from "jquery";
 import classSet from "classnames";
-import { Component, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 import { linkState } from "webiny-form";
 import { withFormComponent } from "webiny-client-ui";
 import Image from "./Image";
@@ -14,7 +14,7 @@ placeholder.textContent = "Drop here";
 
 const t = i18n.namespace("Webiny.Ui.Gallery");
 @withFormComponent()
-@Component({
+@inject({
     modules: ["Alert", "Cropper", "FileReader", "Input", "FormGroup"],
     styles
 })

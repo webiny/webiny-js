@@ -1,14 +1,14 @@
 import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
-import { Component, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 import { withFormComponent } from "webiny-client-ui";
 import ImagePreview from "./Preview";
 import styles from "./styles.css?prefix=Webiny_Ui_Image";
 
 const t = i18n.namespace("Webiny.Ui.Image");
 @withFormComponent()
-@Component({
+@inject({
     modules: ["FileReader", "Alert", "Cropper", "FormGroup"],
     styles
 })

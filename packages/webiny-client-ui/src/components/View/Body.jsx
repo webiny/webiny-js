@@ -1,9 +1,9 @@
 import React from 'react';
-import { Component } from 'webiny-client';
+import { inject } from 'webiny-client';
 import classSet from "classnames";
 import styles from './styles.css?prefix=wui-view';
 
-@Component({ modules: ['Panel'], styles })
+@inject({ modules: ['Panel'], styles })
 class Body extends React.Component {
     render() {
         if (this.props.render) {

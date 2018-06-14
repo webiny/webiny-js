@@ -1,9 +1,9 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import WidgetStyle from "./SettingsGroup/WidgetStyle";
 import WidgetPreset from "./SettingsGroup/WidgetPreset";
 
-@Component({ modules: ["Accordion"] })
+@inject({ modules: ["Accordion"] })
 class WidgetSettingsContainer extends React.Component {
     getRenderProps = () => {
         const {

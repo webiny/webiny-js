@@ -1,10 +1,10 @@
 import React from "react";
 import styles from "./AttributeTooltip.scss";
-import { Component, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 import _ from "lodash";
 const t = i18n.namespace("Security.EntitiesForm.Access.Permissions.TogglePermissionButton");
 
-@Component({ modules: ["Input", "Scrollbar"] })
+@inject({ modules: ["Input", "Scrollbar"] })
 class AttributeTooltip extends React.Component {
     constructor() {
         super();

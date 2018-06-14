@@ -1,11 +1,11 @@
 import React from "react";
 import _ from "lodash";
-import { app, Component } from "webiny-client";
+import { app, inject } from "webiny-client";
 import { withModalDialog } from "webiny-client-ui";
 import slugify from "slugify";
 
 @withModalDialog()
-@Component({
+@inject({
     modules: [
         "Modal",
         "Button",

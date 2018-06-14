@@ -1,9 +1,9 @@
 import React from "react";
-import { Component, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 import _ from "lodash";
 
 const t = i18n.namespace("Webiny.Ui.Wizard.Actions.Previous");
-@Component({ modules: ["Button"] })
+@inject({ modules: ["Button"] })
 class Next extends React.Component {
     render() {
         const {

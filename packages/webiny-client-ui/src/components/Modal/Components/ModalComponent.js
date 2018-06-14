@@ -3,10 +3,10 @@ import ReactDOM from "react-dom";
 import _ from "lodash";
 import $ from "jquery";
 import classSet from "classnames";
-import { app, Component } from "webiny-client";
+import { app, inject } from "webiny-client";
 import styles from "../styles.scss?prefix=wui-modal";
 
-@Component({
+@inject({
     styles,
     modules: ["Animate"]
 })

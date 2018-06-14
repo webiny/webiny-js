@@ -1,9 +1,9 @@
 import React from 'react';
-import { Component } from 'webiny-client';
+import { inject } from 'webiny-client';
 import styles from './styles.css?prefix=wui-view'
 import classSet from "classnames";
 
-@Component({ modules: ['Panel'], styles })
+@inject({ modules: ['Panel'], styles })
 class Footer extends React.Component {
     render() {
         if (this.props.render) {

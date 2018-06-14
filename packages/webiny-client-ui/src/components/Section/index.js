@@ -1,9 +1,9 @@
 import React from "react";
 import _ from "lodash";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import styles from "./styles.css?prefix=Webiny_Ui_Section";
 
-@Component({ modules: ["Icon"], styles })
+@inject({ modules: ["Icon"], styles })
 class Section extends React.Component {
     render() {
         if (this.props.render) {

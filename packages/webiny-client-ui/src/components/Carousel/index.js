@@ -1,11 +1,11 @@
 import React from "react";
 import $ from "jquery";
 import _ from "lodash";
-import { Component, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 import classSet from "classnames";
 
 const t = i18n.namespace("Webiny.Ui.Carousel");
-@Component({
+@inject({
     modules: [
         // owl.carousel attaches itself to jQuery object and does not export anything
         "Vendor.OwlCarousel"

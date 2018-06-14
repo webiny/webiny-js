@@ -1,8 +1,8 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import CategoryModal from "./CategoryModal";
 
-@Component({
+@inject({
     modules: ["ViewSwitcher", "View", "Link", "Icon", "List", "ListData"]
 })
 class CategoryList extends React.Component {

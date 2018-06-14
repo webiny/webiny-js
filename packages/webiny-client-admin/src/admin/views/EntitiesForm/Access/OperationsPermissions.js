@@ -1,6 +1,6 @@
 import React from "react";
 import css from "./OperationsPermissions.scss";
-import { Component, i18n, app } from "webiny-client";
+import { inject, i18n, app } from "webiny-client";
 import gql from "graphql-tag";
 
 import _ from "lodash";
@@ -8,7 +8,7 @@ import TogglePermissionButton from "./../../components/TogglePermissionButton";
 
 const t = i18n.namespace("Security.EntitiesForm.Access.Permissions.TogglePermissionButton");
 
-@Component({ modules: [] })
+@inject({ modules: [] })
 class OperationsPermissions extends React.Component {
     toggleOperation(name) {
         const current = this.props.classesGroups.current;

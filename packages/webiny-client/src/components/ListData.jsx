@@ -1,12 +1,12 @@
 import React from "react";
 import _ from "lodash";
-import { app, i18n, Component } from "webiny-client";
+import { app, i18n, inject } from "webiny-client";
 import withListContext from "./withListContext";
 
 const t = i18n.namespace("Webiny.ListData");
 
 @withListContext()
-@Component()
+@inject()
 class ListData extends React.Component {
     constructor(props) {
         super(props);

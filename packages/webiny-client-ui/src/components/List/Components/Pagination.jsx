@@ -1,11 +1,11 @@
 import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
-import { Component, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 import styles from "../styles.css?prefix=Webiny_Ui_List_Pagination";
 
 const t = i18n.namespace("Webiny.Ui.List.Pagination");
-@Component({
+@inject({
     modules: ["Grid", "Dropdown"],
     styles,
     listPaginationComponent: true

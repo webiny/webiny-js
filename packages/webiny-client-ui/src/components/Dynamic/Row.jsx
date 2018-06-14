@@ -1,8 +1,8 @@
 
 import React from "react";
-import { Component } from 'webiny-client';
+import { inject } from 'webiny-client';
 
-@Component()
+@inject()
 class Row extends React.Component {
     render() {
         return this.props.children;

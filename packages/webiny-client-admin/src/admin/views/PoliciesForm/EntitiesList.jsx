@@ -1,14 +1,14 @@
 import React, { Fragment } from "react";
 import TogglePermissionButton from "./../components/TogglePermissionButton";
 import _ from "lodash";
-import { i18n, Component } from "webiny-client";
+import { i18n, inject } from "webiny-client";
 const t = i18n.namespace("Security.EntitiesList");
 
 const entityOperationPath = (classId, permissionClass, operation) => {
     return `permissions.entities.${classId}.${permissionClass}.operations.${operation}`;
 };
 
-@Component({
+@inject({
     modules: ["List", "ListData", "Grid", "Input", "Loader"]
 })
 class EntitiesList extends React.Component {

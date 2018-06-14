@@ -1,5 +1,5 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import { withFormComponent } from "webiny-client-ui";
 import css from "./styles.scss?prefix=Webiny_Ui_AutoCompleteList";
 
@@ -7,7 +7,7 @@ import classNames from "classnames";
 import _ from "lodash";
 
 @withFormComponent()
-@Component({
+@inject({
     modules: ["Icon", "FormGroup", "Search", "Tags"]
 })
 class AutoCompleteList extends React.Component {

@@ -1,9 +1,9 @@
 import React from "react";
 import _ from "lodash";
-import { Component, elementHasFlag } from "webiny-client";
+import { inject, elementHasFlag } from "webiny-client";
 import styles from "./styles.css?prefix=wui-list";
 
-@Component({
+@inject({
     modules: ["Grid"],
     styles
 })

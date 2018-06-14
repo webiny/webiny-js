@@ -1,8 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import { app, Component } from "webiny-client";
+import { app, inject } from "webiny-client";
 
-@Component({ modules: ["Link", "Icon"] })
+@inject({ modules: ["Link", "Icon"] })
 class RouteAction extends React.Component {
     constructor(props) {
         super(props);

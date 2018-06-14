@@ -1,6 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import { app, Component, i18n } from "webiny-client";
+import { app, inject, i18n } from "webiny-client";
 import gql from "graphql-tag";
 // import TwoFactorAuthActivation from "./TwoFactorAuthActivation";
 
@@ -8,7 +8,7 @@ import gql from "graphql-tag";
 
 const t = i18n.namespace("Webiny.Admin.UserAccount");
 
-@Component({
+@inject({
     modules: [
         { AdminLayout: "Admin.Layout" },
         "View",

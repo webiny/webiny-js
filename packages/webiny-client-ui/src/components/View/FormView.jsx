@@ -1,12 +1,12 @@
 import React from "react";
-import { isElementOfType, Component } from "webiny-client";
+import { isElementOfType, inject } from "webiny-client";
 import Header from "./Header";
 import Error from "./Error";
 import Body from "./Body";
 import Footer from "./Footer";
 import styles from "./styles.css?prefix=wui-view";
 
-@Component({ modules: ["Panel"], styles })
+@inject({ modules: ["Panel"], styles })
 class FormView extends React.Component {
     constructor(props) {
         super(props);

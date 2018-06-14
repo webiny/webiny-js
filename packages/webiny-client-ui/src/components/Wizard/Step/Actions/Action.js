@@ -1,7 +1,7 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 
-@Component({ modules: ["Button"] })
+@inject({ modules: ["Button"] })
 class Action extends React.Component {
     render() {
         const {

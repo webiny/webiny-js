@@ -1,9 +1,9 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import classSet from "classnames";
 import styles from "../../styles.css?prefix=wui-table-header";
 
-@Component({ modules: ["Icon"], styles })
+@inject({ modules: ["Icon"], styles })
 class Header extends React.Component {
     constructor(props) {
         super(props);

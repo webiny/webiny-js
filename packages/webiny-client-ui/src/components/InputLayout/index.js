@@ -1,9 +1,9 @@
 import React from "react";
 import _ from "lodash";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import styles from "./styles.css?prefix=Webiny_Ui_InputLayout";
 
-@Component({
+@inject({
     modules: ["Icon", "FormGroup"],
     styles
 })

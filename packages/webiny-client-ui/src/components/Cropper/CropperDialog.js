@@ -1,9 +1,9 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import { withModalDialog } from "webiny-client-ui";
 
 @withModalDialog()
-@Component({ modules: ["Modal"] })
+@inject({ modules: ["Modal"] })
 class CropperDialog extends React.Component {
     render() {
         const {

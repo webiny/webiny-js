@@ -1,8 +1,8 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import { WidgetSettingsContainer } from "webiny-client-cms/lib/admin";
 
-@Component({
+@inject({
     modules: ["Form", "Icon"],
     services: ["cms"]
 })

@@ -1,12 +1,12 @@
 import React from "react";
 import _ from "lodash";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import { withFormComponent } from "webiny-client-ui";
 import SimpleMDE from "simplemde";
 import styles from "./styles.scss?prefix=Webiny_Ui_MarkdownEditor";
 
 @withFormComponent()
-@Component({ styles })
+@inject({ styles })
 class MarkdownEditor extends React.Component {
     constructor(props) {
         super(props);

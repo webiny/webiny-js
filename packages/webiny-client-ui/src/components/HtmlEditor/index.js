@@ -1,11 +1,11 @@
 import React from "react";
 import _ from "lodash";
-import { app, i18n, Component } from "webiny-client";
+import { app, i18n, inject } from "webiny-client";
 import { withFormComponent } from "webiny-client-ui";
 
 const t = i18n.namespace("Webiny.Ui.HtmlEditor");
 @withFormComponent()
-@Component({
+@inject({
     modules: ["Alert", "Cropper", "FileReader", "Progress", "FormGroup", { Quill: "Vendors/Quill" }]
 })
 class HtmlEditor extends React.Component {

@@ -2,13 +2,13 @@ import React from "react";
 import ReactDOM from "react-dom";
 import _ from "lodash";
 import $ from "jquery";
-import { Component, isElementOfType } from "webiny-client";
+import { inject, isElementOfType } from "webiny-client";
 import Field from "./Field";
 import ActionSet from "./ActionSet";
 import RowDetailsList from "./RowDetailsList";
 import RowDetailsContent from "./RowDetailsContent";
 
-@Component({ modules: ["Grid"] })
+@inject({ modules: ["Grid"] })
 class Row extends React.Component {
     constructor(props) {
         super(props);

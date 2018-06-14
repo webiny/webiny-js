@@ -1,10 +1,10 @@
 import React from "react";
 import _ from "lodash";
-import { app, Component, i18n } from "webiny-client";
+import { app, inject, i18n } from "webiny-client";
 
 const t = i18n.namespace("Webiny.Ui.ChangeConfirm");
 
-@Component({ modules: ["Modal"] })
+@inject({ modules: ["Modal"] })
 class ChangeConfirm extends React.Component {
     dialogId = _.uniqueId("change-confirm-");
     message = null;

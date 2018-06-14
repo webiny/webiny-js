@@ -1,9 +1,9 @@
 import React from "react";
 import invariant from "invariant";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import blankBalloon from "./assets/blank-state-balloon.jpg";
 
-@Component({ modules: ["Alert"], services: ["cms"] })
+@inject({ modules: ["Alert"], services: ["cms"] })
 class PageContentPreview extends React.Component {
     renderPreviewWidget(data) {
         const widget = { ...data };

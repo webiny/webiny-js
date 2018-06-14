@@ -1,13 +1,13 @@
 import React from "react";
 import _ from "lodash";
-import { Component, document } from "webiny-client";
+import { inject, document } from "webiny-client";
 import { withFormComponent } from "webiny-client";
 import styles from "./styles.css?prefix=Webiny_Ui_GoogleMap";
 
 // TODO: https://www.npmjs.com/package/react-google-maps
 
 @withFormComponent()
-@Component({ styles })
+@inject({ styles })
 class GoogleMap extends React.Component {
     constructor(props) {
         super(props);

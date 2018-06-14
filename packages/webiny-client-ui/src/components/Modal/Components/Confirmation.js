@@ -1,6 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import { Component, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 import withModalConfirmation from "../withModalConfirmation";
 import Dialog from "./Dialog";
 import Content from "./Content";
@@ -10,7 +10,7 @@ import Footer from "./Footer";
 const t = i18n.namespace("Webiny.Ui.Modal.Confirmation");
 
 @withModalConfirmation()
-@Component({
+@inject({
     modules: ["Button", "Loader"]
 })
 class Confirmation extends React.Component {

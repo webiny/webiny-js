@@ -1,9 +1,9 @@
 import React from 'react';
 import _ from 'lodash';
-import { Component } from 'webiny-client';
+import { inject } from 'webiny-client';
 import filesize from 'filesize';
 
-@Component({ modules: ['List'], tableField: true })
+@inject({ modules: ['List'], tableField: true })
 class FileSizeField extends React.Component {
     render() {
         const { modules: { List }, render, options, ...props } = this.props;

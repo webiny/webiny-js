@@ -1,9 +1,9 @@
 import React from 'react';
-import { Component } from 'webiny-client';
+import { inject } from 'webiny-client';
 import classSet from 'classnames';
 import styles from './../styles.css?prefix=wui-view';
 
-@Component({ styles })
+@inject({ styles })
 class HeaderLeft extends React.Component {
     render() {
         if (this.props.render) {

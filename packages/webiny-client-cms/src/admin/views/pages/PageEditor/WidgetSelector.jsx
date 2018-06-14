@@ -1,9 +1,9 @@
 import React from "react";
 import classSet from "classnames";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import styles from "./Widget.scss";
 
-@Component({ services: ["cms"] })
+@inject({ services: ["cms"] })
 class Widget extends React.Component {
     render() {
         const {

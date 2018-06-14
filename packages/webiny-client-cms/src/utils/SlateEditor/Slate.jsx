@@ -2,13 +2,13 @@ import React from "react";
 import { Editor } from "slate-react";
 import { Value } from "slate";
 import _ from "lodash";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import defaultValue from "./defaultValue";
 
 import styles from "./Slate.scss?prefix=wby-cms-slate-menu";
 import Menu from "./Menu";
 
-@Component()
+@inject()
 class SlateEditor extends React.Component {
     constructor(props) {
         super();

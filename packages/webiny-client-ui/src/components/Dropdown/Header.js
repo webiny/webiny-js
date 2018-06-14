@@ -1,8 +1,8 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import styles from "./styles.scss?prefix=Webiny_Ui_Dropdown";
 
-@Component({ styles })
+@inject({ styles })
 class Header extends React.Component {
     render() {
         if (this.props.render) {

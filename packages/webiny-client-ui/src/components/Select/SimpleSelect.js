@@ -1,10 +1,10 @@
 import React from "react";
 import _ from "lodash";
 import $ from "jquery";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import ReactDOMServer from "react-dom/server";
 
-@Component({
+@inject({
     modules: ["Vendor.Select2"]
 })
 class SimpleSelect extends React.Component {

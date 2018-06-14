@@ -1,9 +1,9 @@
 import React from "react";
 import _ from "lodash";
-import { Component, isElementOfType } from "webiny-client";
+import { inject, isElementOfType } from "webiny-client";
 import View from "./View";
 
-@Component()
+@inject()
 class Switcher extends React.Component {
     constructor(props) {
         super(props);

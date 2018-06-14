@@ -1,12 +1,12 @@
 import React from "react";
 import _ from "lodash";
-import { app, i18n, Component } from "webiny-client";
+import { app, i18n, inject } from "webiny-client";
 import { withFormComponent } from "webiny-client-ui";
 import styles from "./styles.css?prefix=wui--copy-input";
 
 const t = i18n.namespace("Webiny.Ui.Copy.CopyInput");
 @withFormComponent()
-@Component({
+@inject({
     styles,
     modules: ["Button", "FormGroup", { Clipboard: "Vendor.Clipboard" }]
 })

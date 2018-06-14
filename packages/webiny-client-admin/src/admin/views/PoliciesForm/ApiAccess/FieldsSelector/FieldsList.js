@@ -1,11 +1,11 @@
 import React from "react";
 import classNames from "classnames";
 import css from "./FieldsList.scss";
-import { Component, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 import _ from "lodash";
 const t = i18n.namespace("Security.PermissionsForm.Scopes.FieldsSelector.FieldsList");
 
-@Component({ modules: [] })
+@inject({ modules: [] })
 class FieldsList extends React.Component {
     constructor() {
         super();

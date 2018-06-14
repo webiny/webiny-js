@@ -1,11 +1,11 @@
 import React from "react";
-import { app, i18n, Component } from "webiny-client";
+import { app, i18n, inject } from "webiny-client";
 import EntitiesList from "./PoliciesForm/EntitiesList";
 import ApiAccess from "./PoliciesForm/ApiAccess";
 
 const t = i18n.namespace("Security.PoliciesForm");
 
-@Component({
+@inject({
     modules: [
         "Form",
         "FormData",

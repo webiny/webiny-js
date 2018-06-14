@@ -1,9 +1,9 @@
 import React from 'react';
 import _ from 'lodash';
-import { Component, i18n } from 'webiny-client';
+import { inject, i18n } from 'webiny-client';
 
 const t = i18n.namespace("Webiny.Ui.ExpandableList.Empty");
-@Component()
+@inject()
 class Empty extends React.Component {
     render() {
         const { children, render, message } = this.props;

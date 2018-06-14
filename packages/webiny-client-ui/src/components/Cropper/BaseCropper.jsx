@@ -1,10 +1,10 @@
 import React from "react";
 import _ from 'lodash';
-import { Component, i18n } from 'webiny-client';
+import { inject, i18n } from 'webiny-client';
 
 const t = i18n.namespace("Webiny.Ui.Cropper.BaseCropper");
 
-@Component({ modules: [{ Cropper: 'Vendor.Cropper' }] })
+@inject({ modules: [{ Cropper: 'Vendor.Cropper' }] })
 class BaseCropper extends React.Component {
     state = {
         width: 0,

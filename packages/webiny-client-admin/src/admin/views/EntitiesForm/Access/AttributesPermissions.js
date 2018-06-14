@@ -1,12 +1,12 @@
 import React from "react";
 import classNames from "classnames";
 import css from "./AttributesPermissions.scss";
-import { Component, app } from "webiny-client";
+import { inject, app } from "webiny-client";
 import _ from "lodash";
 import gql from "graphql-tag";
 import AttributeTooltip from "./AttributesPermissions/AttributeTooltip";
 
-@Component({ modules: ["Icon", "Tooltip"] })
+@inject({ modules: ["Icon", "Tooltip"] })
 class AttributesPermissions extends React.Component {
     constructor() {
         super();

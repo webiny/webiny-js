@@ -1,11 +1,11 @@
 import React from 'react';
 import _ from 'lodash';
 import classSet from "classnames";
-import { i18n, Component } from 'webiny-client';
+import { i18n, inject } from 'webiny-client';
 import styles from './styles.css?prefix=wui-tabs';
 
 const t = i18n.namespace("Webiny.Ui.Tabs");
-@Component({ modules: ['Icon'], styles })
+@inject({ modules: ['Icon'], styles })
 class TabHeader extends React.Component {
     render() {
         if (this.props.render) {

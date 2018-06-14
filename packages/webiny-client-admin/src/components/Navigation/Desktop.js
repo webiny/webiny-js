@@ -1,10 +1,10 @@
 import React from "react";
 import classSet from "classnames";
-import { app, Component } from "webiny-client";
+import { app, inject } from "webiny-client";
 import _ from "lodash";
 import utils from "./utils";
 
-@Component({ modules: ["Link", "Icon"] })
+@inject({ modules: ["Link", "Icon"] })
 class Desktop extends React.Component {
     constructor(props) {
         super(props);

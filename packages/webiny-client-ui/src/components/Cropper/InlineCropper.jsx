@@ -1,9 +1,9 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import withBaseCropper from "./withBaseCropper";
 
 @withBaseCropper()
-@Component({ modules: ["Button"] })
+@inject({ modules: ["Button"] })
 class InlineCropper extends React.Component {
     render() {
         if (this.props.render) {

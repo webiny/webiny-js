@@ -1,8 +1,8 @@
 import React from 'react';
-import { Component, i18n, isElementOfType } from 'webiny-client';
+import { inject, i18n, isElementOfType } from 'webiny-client';
 
 const t = i18n.namespace("Webiny.Ui.List.Table.MultiActions");
-@Component({ modules: ['Dropdown'], listMultiActionsComponent: true })
+@inject({ modules: ['Dropdown'], listMultiActionsComponent: true })
 class MultiActions extends React.Component {
     render() {
         if (this.props.render) {

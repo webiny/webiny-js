@@ -1,8 +1,8 @@
 import React from "react";
-import { Component, isElementOfType, i18n } from "webiny-client";
+import { inject, isElementOfType, i18n } from "webiny-client";
 
 const t = i18n.namespace("Webiny.Ui.ExpandableList.ActionSet");
-@Component({ modules: ["Dropdown"] })
+@inject({ modules: ["Dropdown"] })
 class ActionSet extends React.Component {
     render() {
         if (this.props.render) {

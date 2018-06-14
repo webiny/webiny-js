@@ -1,8 +1,8 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import WidgetSettings from "./WidgetSettings";
 
-export default Component({ modules: ["Icon"] })(props => {
+export default inject({ modules: ["Icon"] })(props => {
     const {
         className,
         height = "100vh",

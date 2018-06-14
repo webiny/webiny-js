@@ -1,8 +1,8 @@
 import React from 'react';
 import _ from 'lodash';
-import { Component } from 'webiny-client';
+import { inject } from 'webiny-client';
 
-@Component({ modules: ['Gravatar', 'List'], tableField: true })
+@inject({ modules: ['Gravatar', 'List'], tableField: true })
 class GravatarField extends React.Component {
     render() {
         const { modules: { Gravatar, List }, size, render, ...props } = this.props;

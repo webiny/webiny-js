@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
-import { Component, isElementOfType, elementHasFlag } from "webiny-client";
+import { inject, isElementOfType, elementHasFlag } from "webiny-client";
 import Row from "./Row";
 import FieldInfo from "./FieldInfo";
 import Actions from "./Actions";
@@ -12,7 +12,7 @@ import Empty from "./Empty";
 import SelectRowField from "./Fields/SelectRowField";
 import styles from "../../styles.css?prefix=wui-table";
 
-@Component({ styles, listDataComponent: true })
+@inject({ styles, listDataComponent: true })
 class Table extends React.Component {
     constructor(props) {
         super(props);

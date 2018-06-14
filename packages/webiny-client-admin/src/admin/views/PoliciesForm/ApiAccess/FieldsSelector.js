@@ -1,10 +1,10 @@
 import React from "react";
 import css from "./FieldsSelector.scss";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import _ from "lodash";
 import FieldsList from "./FieldsSelector/FieldsList";
 
-@Component({ modules: [] })
+@inject({ modules: [] })
 class FieldsSelector extends React.Component {
     constructor() {
         super();

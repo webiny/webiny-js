@@ -1,7 +1,7 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 
-@Component({ modules: ["Input", "Grid", "Section"] })
+@inject({ modules: ["Input", "Grid", "Section"] })
 class WidgetStyle extends React.Component {
     render() {
         const {

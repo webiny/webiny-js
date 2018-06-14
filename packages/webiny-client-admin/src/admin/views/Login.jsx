@@ -1,13 +1,13 @@
 import React from "react";
 import classSet from "classnames";
 import invariant from "invariant";
-import { app, Component, i18n } from "webiny-client";
+import { app, inject, i18n } from "webiny-client";
 import logoOrange from "webiny-client-admin/lib/assets/images/logo_orange.png";
 import styles from "./Login.css?prefix=Login";
 
 const t = i18n.namespace("Webiny.Admin.Auth.Login");
 
-@Component({
+@inject({
     modules: ["Form", "Input", "Password", "Button", "Email", "Loader", "Alert"]
 })
 class Login extends React.Component {

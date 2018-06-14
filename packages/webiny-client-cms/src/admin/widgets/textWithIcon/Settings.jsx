@@ -1,7 +1,7 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 
-@Component({
+@inject({
     modules: ["Select", "IconPicker", "Grid"]
 })
 class TextWidgetSettings extends React.Component {

@@ -1,9 +1,9 @@
 import React from "react";
 import _ from "lodash";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import Growl from "./Growl";
 
-@Component()
+@inject()
 class WarningGrowl extends React.Component {
     render() {
         if (this.props.render) {

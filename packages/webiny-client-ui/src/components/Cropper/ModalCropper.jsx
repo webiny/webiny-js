@@ -1,13 +1,13 @@
 import React from 'react';
 import _ from 'lodash';
-import { app, Component, i18n } from 'webiny-client';
+import { app, inject, i18n } from 'webiny-client';
 import withBaseCropper from "./withBaseCropper";
 import CropperDialog from "./CropperDialog";
 
 const t = i18n.namespace("Webiny.Ui.Cropper.ModalCropper");
 
 @withBaseCropper()
-@Component({
+@inject({
     modules: ['Modal', 'Button']
 })
 class ModalCropper extends React.Component {
