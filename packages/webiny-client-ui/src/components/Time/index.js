@@ -1,9 +1,13 @@
 import React from "react";
 import _ from "lodash";
-import { i18n, createComponent } from "webiny-client";
-import { FormComponent } from "webiny-client-ui";
+import { i18n, inject } from "webiny-client";
+import { withFormComponent } from "webiny-client-ui";
 import styles from "./styles.css?prefix=Webiny_Ui_Time";
 
+@withFormComponent()
+@inject({
+    modules: ["Icon", "InputLayout", { Flatpickr: "Vendor.FlatPickr" }]
+})
 class Time extends React.Component {
     constructor(props) {
         super(props);
@@ -104,6 +108,4 @@ Time.defaultProps = {
     options: null
 };
 
-export default createComponent([Time, FormComponent], {
-    modules: ["Icon", "InputLayout", { Flatpickr: "Vendor.FlatPickr" }]
-});
+export default Time;

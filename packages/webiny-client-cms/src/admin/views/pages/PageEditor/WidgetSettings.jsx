@@ -1,12 +1,12 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import { WidgetSettingsContainer } from "webiny-client-cms/lib/admin";
 
-@Component({
+@inject({
     modules: ["Form", "Icon"],
     services: ["cms"]
 })
-export default class WidgetSettings extends React.Component {
+class WidgetSettings extends React.Component {
     render() {
         const {
             modules: { Form },
@@ -38,3 +38,5 @@ export default class WidgetSettings extends React.Component {
         );
     }
 }
+
+export default WidgetSettings;

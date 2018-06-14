@@ -1,35 +1,18 @@
 import React from "react";
 import _ from "lodash";
-import invariant from "invariant";
 import linkState from "./linkState";
 import validation from "./validation";
 
 class Form extends React.Component {
-    constructor(props) {
-        super(props);
+    state = {
+        model: {},
+        wasSubmitted: false,
+        validation: {}
+    };
 
-        this.state = {
-            model: {},
-            wasSubmitted: false,
-            validation: {}
-        };
-
-        this.isValid = null;
-        this.inputs = {};
-        this.lastRender = [];
-
-        [
-            "registerComponent",
-            "attachValidators",
-            "validateInput",
-            "submit",
-            "validate",
-            "onInvalid",
-            "__onKeyDown"
-        ].map(m => {
-            this[m] = this[m].bind(this);
-        });
-    }
+    isValid = null;
+    inputs = {};
+    lastRender = [];
 
     componentWillMount() {
         this.setState({ model: _.cloneDeep(this.props.model) });
@@ -70,16 +53,16 @@ class Form extends React.Component {
         });
     }
 
-    onInvalid() {
+    onInvalid = () => {
         if (typeof this.props.onInvalid === "function") {
             this.props.onInvalid();
         }
-    }
+    };
 
     /**
      * MAIN FORM ACTION METHODS
      */
-    submit({ event } = {}) {
+    submit = ({ event } = {}) => {
         // If event is present - prevent default behaviour
         if (event && event.preventDefault) {
             event.preventDefault();
@@ -96,9 +79,9 @@ class Form extends React.Component {
             }
             return this.onInvalid();
         });
-    }
+    };
 
-    validate() {
+    validate = () => {
         let allIsValid = true;
 
         // Inputs must be validated in a queue because we may have async validators
@@ -132,16 +115,15 @@ class Form extends React.Component {
         });
 
         return chain;
-    }
+    };
 
-    validateInput(name) {
+    validateInput = name => {
         if ((this.props.validateOnFirstSubmit && !this.state.wasSubmitted) || !this.inputs[name]) {
             return Promise.resolve(null);
         }
         const value = this.state.model[name];
-        const validators = this.inputs[name].validators;
+        const { validators, validationMessages } = this.inputs[name];
         const hasValidators = _.keys(validators).length;
-        const messages = this.inputs[name].messages;
 
         // Validate input
         const formData = {
@@ -187,8 +169,8 @@ class Form extends React.Component {
             .catch(validationError => {
                 // Set custom error message if defined
                 const validator = validationError.getValidator();
-                if (validator in messages) {
-                    validationError.setMessage(messages[validator]);
+                if (validator in validationMessages) {
+                    validationError.setMessage(validationMessages[validator]);
                 }
 
                 // Set component state to reflect validation error
@@ -208,31 +190,41 @@ class Form extends React.Component {
 
                 return false;
             });
-    }
+    };
 
     /**
      * @private
      * @param {Object} props
-     * @param {Node} props.children React element
-     * @param {Function} props.beforeChange Before change callback
-     * @param {Function} props.afterChange After change callback
      * @returns {*}
      */
-    registerComponent({ children: input, beforeChange, afterChange }) {
-        const props = { ...input.props };
+    registerComponent = props => {
+        const {
+            name,
+            defaultValue,
+            validators = [],
+            validationMessages = {},
+            children: input,
+            beforeChange
+        } = props;
 
-        invariant(props.name, "To bind a component you must specify a `name` prop!");
+        let { afterChange } = props;
 
-        this.lastRender.push(props.name);
+        const isElement = typeof input !== "function";
 
-        this.inputs[props.name] = {};
-        this.attachValidators(props);
+        // Track component rendering
+        this.lastRender.push(name);
+
+        // Store validators and custom messages
+        this.inputs[name] = {
+            validators: validation.parseValidators(validators),
+            validationMessages
+        };
 
         // Build new input props
         const newProps = {
             form: this,
-            validate: () => this.validateInput(props.name),
-            validation: this.state.validation[props.name] || {
+            validate: () => this.validateInput(name),
+            validation: this.state.validation[name] || {
                 isValid: null,
                 message: null,
                 results: null
@@ -252,7 +244,7 @@ class Form extends React.Component {
 
         // Create an onChange callback
         const changeCallback = (value, oldValue) => {
-            const { props: inputProps } = this.inputs[props.name];
+            const { props: inputProps } = this.inputs[name];
 
             // Bind onChange callback params (we do it here because later we no longer have access to these values)
             if (_.isFunction(afterChange)) {
@@ -261,7 +253,7 @@ class Form extends React.Component {
         };
 
         // Assign value and onChange props
-        const ls = linkState(this, "model." + props.name, changeCallback, props.defaultValue);
+        const ls = linkState(this, "model." + name, changeCallback, defaultValue);
 
         const onChange = (newValue, cb) => {
             // When linkState is done processing the value change...
@@ -283,15 +275,10 @@ class Form extends React.Component {
             onChange: beforeChange ? newValue => beforeChange(newValue, onChange) : onChange
         });
 
-        this.inputs[props.name].props = newProps;
+        this.inputs[name].props = newProps;
 
-        return React.cloneElement(input, newProps);
-    }
-
-    attachValidators(props) {
-        this.inputs[props.name].validators = validation.getValidatorsFromProps(props);
-        this.inputs[props.name].messages = validation.parseCustomValidationMessages(props.children);
-    }
+        return isElement ? React.cloneElement(input, newProps) : input(newProps);
+    };
 
     __removeKeys(collection, excludeKeys = ["$key", "$index"]) {
         function omitFn(value) {

@@ -1,10 +1,12 @@
 import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
-import { createComponent, LazyLoad } from "webiny-client";
-import { FormComponent } from "webiny-client-ui";
+import { inject, LazyLoad } from "webiny-client";
+import { withFormComponent } from "webiny-client-ui";
 import styles from "./styles.css?prefix=Webiny_Ui_Checkbox";
 
+@withFormComponent()
+@inject({ styles })
 class Checkbox extends React.Component {
     constructor(props) {
         super(props);
@@ -90,4 +92,4 @@ Checkbox.defaultProps = {
     }
 };
 
-export default createComponent([Checkbox, FormComponent], { styles });
+export default Checkbox;

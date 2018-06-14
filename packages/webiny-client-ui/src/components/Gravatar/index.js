@@ -1,6 +1,7 @@
-import React from 'react';
-import { createComponent } from 'webiny-client';
+import React from "react";
+import { inject } from "webiny-client";
 
+@inject()
 class Gravatar extends React.Component {
     render() {
         if (this.props.render) {
@@ -8,15 +9,13 @@ class Gravatar extends React.Component {
         }
 
         const props = {
-            src: '//www.gravatar.com/avatar/' + this.props.hash + '?s=' + this.props.size,
+            src: "//www.gravatar.com/avatar/" + this.props.hash + "?s=" + this.props.size,
             width: this.props.size,
             height: this.props.size,
             className: this.props.className
         };
 
-        return (
-            <img {...props}/>
-        );
+        return <img {...props} />;
     }
 }
 
@@ -26,4 +25,4 @@ Gravatar.defaultProps = {
     className: null
 };
 
-export default createComponent(Gravatar);
+export default Gravatar;

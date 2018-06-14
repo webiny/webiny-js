@@ -1,7 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
+import { inject } from "webiny-client";
 
+@inject({ modules: ["List"], tableField: true })
 class CaseField extends React.Component {
     render() {
         if (this.props.render) {
@@ -38,4 +39,4 @@ class CaseField extends React.Component {
     }
 }
 
-export default createComponent(CaseField, { modules: ["List"], tableField: true });
+export default CaseField;

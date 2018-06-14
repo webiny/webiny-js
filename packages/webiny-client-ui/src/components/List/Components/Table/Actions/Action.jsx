@@ -1,7 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
+import { inject } from "webiny-client";
 
+@inject({ modules: ["Icon", "Link", "DownloadLink"] })
 class Action extends React.Component {
     render() {
         if (this.props.render) {
@@ -58,4 +59,4 @@ Action.defaultProps = {
     hide: false
 };
 
-export default createComponent(Action, { modules: ["Icon", "Link", "DownloadLink"] });
+export default Action;

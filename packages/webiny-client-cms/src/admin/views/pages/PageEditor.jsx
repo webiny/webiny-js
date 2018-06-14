@@ -1,18 +1,22 @@
 import React from "react";
-import { app, Component } from "webiny-client";
+import { app, inject } from "webiny-client";
 import PageContent from "./PageEditor/PageContent";
 import Header from "./PageEditor/Header";
 import { PageEditorProvider } from "../../utils/context/pageEditorContext";
 
-@Component({
+@inject({
     modules: ["Loader", "Form", "FormData", "FormError"]
 })
-export default class PageEditor extends React.Component {
+class PageEditor extends React.Component {
     state = {
         widgetPresets: []
     };
 
     async componentDidMount() {
+        this.loadWidgetPresets();
+    }
+
+    loadWidgetPresets = () => {
         // Load widgetPresets
         const listWidgetPresets = app.graphql.generateList("CmsWidgetPreset");
         listWidgetPresets({
@@ -21,19 +25,26 @@ export default class PageEditor extends React.Component {
         }).then(({ data }) => {
             this.setState({ widgetPresets: data.list });
         });
-    }
+    };
 
-    createPreset = async (title, type, data) => {
+    createPreset = (title, type, data) => {
         const create = app.graphql.generateCreate("CmsWidgetPreset", "id");
 
-        await create({ variables: { data: { title, type, data } } });
+        return create({ variables: { data: { title, type, data } } }).then(this.loadWidgetPresets);
+    };
+
+    deletePreset = id => {
+        const deletePreset = app.graphql.generateDelete("CmsWidgetPreset");
+
+        return deletePreset({ variables: { id } }).then(this.loadWidgetPresets);
     };
 
     getEditorProviderValue = revision => {
         return {
             revision,
             widgetPresets: this.state.widgetPresets,
-            createPreset: this.createPreset
+            createPreset: this.createPreset,
+            deletePreset: this.deletePreset
         };
     };
 
@@ -48,14 +59,14 @@ export default class PageEditor extends React.Component {
                 fields={"id name active title slug content { id type data }"}
             >
                 {({ model, submit, error, loading }) => (
-                    <Form model={model} onSubmit={submit} onChange={model => console.log(model)}>
+                    <Form model={model} onSubmit={submit}>
                         {({ submit, model, Bind }) => (
                             <PageEditorProvider value={this.getEditorProviderValue(model)}>
                                 {loading && <Loader />}
                                 {error && <FormError error={error} />}
                                 <Header page={model} onSave={submit} Bind={Bind} />
-                                <Bind>
-                                    <PageContent page={model} name={"content"} />
+                                <Bind name={"content"}>
+                                    <PageContent page={model} />
                                 </Bind>
                             </PageEditorProvider>
                         )}
@@ -65,3 +76,5 @@ export default class PageEditor extends React.Component {
         );
     }
 }
+
+export default PageEditor;

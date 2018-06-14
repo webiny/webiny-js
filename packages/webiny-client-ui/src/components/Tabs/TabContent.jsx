@@ -1,8 +1,9 @@
 import React from 'react';
 import classSet from "classnames";
-import { createComponent } from 'webiny-client';
+import { inject } from 'webiny-client';
 import styles from './styles.css?prefix=wui-tabs';
 
+@inject({ styles })
 class TabContent extends React.Component {
     render() {
         if (!this.props.disabled && (this.props.active || this.props.alwaysRender)) {
@@ -30,4 +31,4 @@ TabContent.defaultProps = {
     disabled: false // "private" prop passed by Tabs component
 };
 
-export default createComponent(TabContent, { styles });
+export default TabContent;

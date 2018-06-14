@@ -1,7 +1,8 @@
 import React from "react";
-import { createComponent, LazyLoad } from "webiny-client";
+import { inject, LazyLoad } from "webiny-client";
 import styles from "./../styles.css?prefix=wui-formGroup";
 
+@inject()
 class Label extends React.Component {
     render() {
         if (this.props.render) {
@@ -32,4 +33,4 @@ Label.defaultProps = {
     tooltip: null
 };
 
-export default createComponent(Label);
+export default Label;

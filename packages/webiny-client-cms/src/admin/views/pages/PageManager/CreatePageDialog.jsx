@@ -1,9 +1,25 @@
 import React from "react";
 import _ from "lodash";
-import { app, createComponent } from "webiny-client";
-import { ModalComponent } from "webiny-client-ui";
+import { app, inject } from "webiny-client";
+import { withModalDialog } from "webiny-client-ui";
 import slugify from "slugify";
 
+@withModalDialog()
+@inject({
+    modules: [
+        "Modal",
+        "Button",
+        "Form",
+        "FormData",
+        "FormError",
+        "OptionsData",
+        "Select",
+        "Input",
+        "Loader",
+        "Icon",
+        "Link"
+    ]
+})
 class CreatePageDialog extends React.Component {
     generateSlug({ form, model }) {
         if (!model.title) {
@@ -69,10 +85,9 @@ class CreatePageDialog extends React.Component {
                                             perPage={100}
                                         >
                                             {({ options }) => (
-                                                <Bind>
+                                                <Bind name={"category"}>
                                                     <Select
                                                         useDataAsValue
-                                                        name={"category"}
                                                         options={options}
                                                         placeholder={"Select a page category"}
                                                         label={"Page category"}
@@ -93,12 +108,10 @@ class CreatePageDialog extends React.Component {
                                             )}
                                         </OptionsData>
                                         {model.category && (
-                                            <Bind>
+                                            <Bind validators={"required"} name={"title"}>
                                                 <Input
                                                     label={"Page title"}
-                                                    validators={"required"}
                                                     placeholder={"Enter a page title"}
-                                                    name={"title"}
                                                     onBlur={() => {
                                                         if (_.isEmpty(model.slug)) {
                                                             this.generateSlug({ form, model });
@@ -109,11 +122,10 @@ class CreatePageDialog extends React.Component {
                                         )}
 
                                         {model.category && (
-                                            <Bind>
+                                            <Bind name={"slug"}>
                                                 <Input
                                                     label={"Page slug"}
                                                     placeholder={"Enter a page slug"}
-                                                    name={"slug"}
                                                     addonLeft={model.category && model.category.url}
                                                     addonRight={
                                                         <Link
@@ -151,18 +163,4 @@ class CreatePageDialog extends React.Component {
     }
 }
 
-export default createComponent([CreatePageDialog, ModalComponent], {
-    modules: [
-        "Modal",
-        "Button",
-        "Form",
-        "FormData",
-        "FormError",
-        "OptionsData",
-        "Select",
-        "Input",
-        "Loader",
-        "Icon",
-        "Link"
-    ]
-});
+export default CreatePageDialog;

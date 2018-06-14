@@ -1,17 +1,30 @@
 import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
-import { app, createComponent } from "webiny-client";
-import styles from "./styles.css?prefix=wui--link";
+import { app, inject } from "webiny-client";
+import styles from "./styles.css?prefix=wui-link";
 
+@inject({ styles })
 class Link extends React.Component {
-    constructor(props) {
-        super(props);
+    static defaultProps = {
+        align: null,
+        type: null,
+        size: null,
+        url: null,
+        mailTo: null,
+        title: null,
+        route: null,
+        preventScroll: false,
+        params: {},
+        newTab: false,
+        className: null,
+        tabIndex: null,
+        onClick: null
+    };
 
-        this.getLinkProps = this.getLinkProps.bind(this);
-    }
+    allowedProps = ["className", "style", "target", "href", "onClick", "title", "tabIndex"];
 
-    getLinkProps() {
+    getLinkProps = () => {
         const props = _.clone(this.props);
         const { styles } = this.props;
 
@@ -108,7 +121,7 @@ class Link extends React.Component {
             props.onClick = e => this.props.onClick({ event: e });
         }
         return finalProps;
-    }
+    };
 
     render() {
         if (this.props.render) {
@@ -119,31 +132,4 @@ class Link extends React.Component {
     }
 }
 
-// We can define this on prototype since it is not going to change between instances and we want to it accessible via "this"
-Link.prototype.allowedProps = [
-    "className",
-    "style",
-    "target",
-    "href",
-    "onClick",
-    "title",
-    "tabIndex"
-];
-
-Link.defaultProps = {
-    align: null,
-    type: null,
-    size: null,
-    url: null,
-    mailTo: null,
-    title: null,
-    route: null,
-    preventScroll: false,
-    params: {},
-    newTab: false,
-    className: null,
-    tabIndex: null,
-    onClick: null
-};
-
-export default createComponent(Link, { styles });
+export default Link;

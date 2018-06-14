@@ -1,9 +1,12 @@
 import React from "react";
 import _ from "lodash";
 
-import { i18n, createComponent } from "webiny-client";
+import { i18n, inject } from "webiny-client";
 const t = i18n.namespace("Security.Permissions");
 
+@inject({
+    modules: ["List", "Switch", "Link"]
+})
 class PermissionsSettings extends React.Component {
     render() {
         const { List, Switch, Link } = this.props.modules;
@@ -45,6 +48,4 @@ PermissionsSettings.defaultProps = {
     options: []
 };
 
-export default createComponent(PermissionsSettings, {
-    modules: ["List", "Switch", "Link"]
-});
+export default PermissionsSettings;

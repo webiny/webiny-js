@@ -1,5 +1,5 @@
 import React from "react";
-import { createComponent, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 
 const t = i18n.namespace("Webiny.Admin.Layout.UserMenu.AccountPreferencesMenu");
 
@@ -13,4 +13,4 @@ const AccountPreferencesMenu = props => {
     );
 };
 
-export default createComponent(AccountPreferencesMenu, { modules: ["Link"] });
+export default inject({ modules: ["Link"] })(AccountPreferencesMenu);

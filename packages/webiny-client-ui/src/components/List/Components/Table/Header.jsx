@@ -1,8 +1,9 @@
 import React from "react";
-import { createComponent } from "webiny-client";
+import { inject } from "webiny-client";
 import classSet from "classnames";
 import styles from "../../styles.css?prefix=wui-table-header";
 
+@inject({ modules: ["Icon"], styles })
 class Header extends React.Component {
     constructor(props) {
         super(props);
@@ -84,4 +85,4 @@ Header.defaultProps = {
     sortableIcon: ["fas", "sort"]
 };
 
-export default createComponent(Header, { modules: ["Icon"], styles });
+export default Header;

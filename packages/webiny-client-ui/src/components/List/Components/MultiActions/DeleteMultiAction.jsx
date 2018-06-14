@@ -1,9 +1,10 @@
 import React from 'react';
 import _ from 'lodash';
-import { app, createComponent, i18n } from 'webiny-client';
+import { app, inject, i18n } from 'webiny-client';
 import ModalMultiAction from './ModalMultiAction';
 
 const t = i18n.namespace("Webiny.Ui.List.MultiActions.DeleteMultiAction");
+@inject({ modules: ['Modal'] })
 class DeleteMultiAction extends React.Component {
 
     constructor(props) {
@@ -74,4 +75,4 @@ DeleteMultiAction.defaultProps = {
     }
 };
 
-export default createComponent(DeleteMultiAction, { modules: ['Modal'] });
+export default DeleteMultiAction;

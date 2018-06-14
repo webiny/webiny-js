@@ -1,8 +1,9 @@
 import React from 'react';
-import { createComponent } from 'webiny-client';
+import { inject } from 'webiny-client';
 import styles from './styles.css?prefix=wui-view'
 import classSet from "classnames";
 
+@inject({ modules: ['Panel'], styles })
 class Footer extends React.Component {
     render() {
         if (this.props.render) {
@@ -28,4 +29,4 @@ Footer.defaultProps = {
     align: null
 };
 
-export default createComponent(Footer, { modules: ['Panel'], styles });
+export default Footer;

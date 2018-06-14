@@ -1,18 +1,24 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent, i18n } from "webiny-client";
-import { ModalComponent } from "webiny-client-ui";
+import { inject, i18n } from "webiny-client";
+import withModalDialog from "../withModalDialog";
 import Dialog from "./Dialog";
 import Content from "./Content";
 import Body from "./Body";
 import Footer from "./Footer";
-import styles from "../styles.scss?prefix=Webiny_Ui_Success";
+import styles from "../styles.scss?prefix=wui-success";
 
 const t = i18n.namespace("Webiny.Ui.Modal.Success");
 
+@withModalDialog()
+@inject({ modules: ["Button", "Icon"] })
 class Success extends React.Component {
     renderFooter() {
-        let { modules: { Button }, closeBtn, onClose } = this.props;
+        let {
+            modules: { Button },
+            closeBtn,
+            onClose
+        } = this.props;
         let button = null;
 
         if (_.isFunction(closeBtn)) {
@@ -47,7 +53,10 @@ class Success extends React.Component {
             content = content(this);
         }
 
-        const { modules: { Icon }, onShown } = this.props;
+        const {
+            modules: { Icon },
+            onShown
+        } = this.props;
         return (
             <Dialog
                 modalContainerTag="success-modal"
@@ -77,4 +86,4 @@ Success.defaultProps = {
     onShown: _.noop
 };
 
-export default createComponent([Success, ModalComponent], { modules: ["Button", "Icon"] });
+export default Success;

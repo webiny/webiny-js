@@ -1,8 +1,11 @@
 import React from "react";
-import { createComponent, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 
 const t = i18n.namespace("Webiny.Ui.Password");
 
+@inject({
+    modules: ["Link", "Icon", "Input"]
+})
 class Password extends React.Component {
     constructor() {
         super();
@@ -33,7 +36,11 @@ class Password extends React.Component {
     }
 
     render() {
-        const { modules: { Icon, Input, Link }, render, ...props } = this.props;
+        const {
+            modules: { Icon, Input, Link },
+            render,
+            ...props
+        } = this.props;
 
         if (render) {
             return render.call(this);
@@ -54,6 +61,4 @@ Password.defaultProps = {
     defaultValidate: "password"
 };
 
-export default createComponent(Password, {
-    modules: ["Link", "Icon", "Input"]
-});
+export default Password;

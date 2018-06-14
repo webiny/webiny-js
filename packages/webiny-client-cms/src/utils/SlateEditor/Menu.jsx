@@ -1,9 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { createComponent } from "webiny-client";
+import { inject } from "webiny-client";
 import classSet from "classnames";
 import styles from "./Menu.scss?prefix=wby-cms-slate-menu";
 
+@inject({ modules: ["Icon"] })
 class Menu extends React.Component {
     /**
      * Check if the current selection has a mark with `type` in it.
@@ -75,4 +76,4 @@ class Menu extends React.Component {
     }
 }
 
-export default createComponent(Menu, { modules: ["Icon"] });
+export default Menu;

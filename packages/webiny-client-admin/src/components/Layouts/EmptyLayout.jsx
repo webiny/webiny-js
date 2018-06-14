@@ -1,6 +1,7 @@
 import React from 'react';
-import { createComponent } from 'webiny-client';
+import { inject } from 'webiny-client';
 
+@inject()
 class EmptyLayout extends React.Component {
     render() {
         return (
@@ -15,4 +16,4 @@ class EmptyLayout extends React.Component {
     }
 }
 
-export default createComponent(EmptyLayout);
+export default EmptyLayout;

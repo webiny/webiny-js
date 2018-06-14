@@ -1,6 +1,6 @@
 import React from "react";
-import { createComponent } from "webiny-client";
-import { ModalComponent } from "webiny-client-ui";
+import { inject } from "webiny-client";
+import { withModalDialog } from "webiny-client-ui";
 
 const categoryURL = value => {
     if (value.startsWith("/") && value.endsWith("/")) {
@@ -10,6 +10,10 @@ const categoryURL = value => {
     throw new Error("Category URL must begin and end with a forward slash (`/`)");
 };
 
+@withModalDialog()
+@inject({
+    modules: ["Modal", "Button", "Input", "Form", "FormData", "FormError", "Grid", "Loader"]
+})
 class CategoryModal extends React.Component {
     render() {
         const {
@@ -43,32 +47,19 @@ class CategoryModal extends React.Component {
                                         {error && <FormError error={error} />}
                                         <Grid.Row>
                                             <Grid.Col all={12}>
-                                                <Bind>
-                                                    <Input
-                                                        label="Title"
-                                                        name="title"
-                                                        placeholder="Enter category title"
-                                                        validators="required"
-                                                    />
+                                                <Bind name="title" validators={["required"]}>
+                                                    <Input label="Title" placeholder="Enter category title" />
                                                 </Bind>
-                                                <Bind>
-                                                    <Input
-                                                        label="Slug"
-                                                        name="slug"
-                                                        placeholder="Enter category slug"
-                                                        validators="required"
-                                                    />
+                                                <Bind name="slug" validators={["required"]}>
+                                                    <Input label="Slug" placeholder="Enter category slug" />
                                                 </Bind>
-                                                <Bind>
+                                                <Bind name="url" validators={["required", categoryURL]}>
                                                     <Input
                                                         label="URL"
                                                         placeholder="Enter category URL"
                                                         description={
                                                             "This URL will be added to all pages in this category."
-                                                        }
-                                                        name="url"
-                                                        validators={["required", categoryURL]}
-                                                    />
+                                                        } />
                                                 </Bind>
                                             </Grid.Col>
                                         </Grid.Row>
@@ -91,6 +82,4 @@ class CategoryModal extends React.Component {
     }
 }
 
-export default createComponent([CategoryModal, ModalComponent], {
-    modules: ["Modal", "Button", "Input", "Form", "FormData", "FormError", "Grid", "Loader"]
-});
+export default CategoryModal;

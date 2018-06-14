@@ -1,6 +1,7 @@
 import React from 'react';
-import { createComponent } from 'webiny-client';
+import { inject } from 'webiny-client';
 
+@inject()
 class RowDetailsList extends React.Component {
     render() {
         if (this.props.render) {
@@ -16,4 +17,4 @@ class RowDetailsList extends React.Component {
     }
 }
 
-export default createComponent(RowDetailsList);
+export default RowDetailsList;

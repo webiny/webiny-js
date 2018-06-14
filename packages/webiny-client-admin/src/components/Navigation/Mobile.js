@@ -1,10 +1,11 @@
 import React from "react";
 import classSet from "classnames";
-import { app, createComponent } from "webiny-client";
+import { app, inject } from "webiny-client";
 import _ from "lodash";
 import $ from "jquery";
 import utils from "./utils";
 
+@inject({ modules: ["Link"] })
 class Mobile extends React.Component {
     constructor(props) {
         super(props);
@@ -129,4 +130,4 @@ class Mobile extends React.Component {
     }
 }
 
-export default createComponent(Mobile, { modules: ["Link"] });
+export default Mobile;

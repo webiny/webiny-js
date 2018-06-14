@@ -1,7 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
+import { inject } from "webiny-client";
 
+@inject({ modules: ["Link", "DownloadLink"] })
 class MultiAction extends React.Component {
     constructor(props) {
         super(props);
@@ -44,4 +45,4 @@ MultiAction.defaultProps = {
     data: []
 };
 
-export default createComponent(MultiAction, { modules: ["Link", "DownloadLink"] });
+export default MultiAction;

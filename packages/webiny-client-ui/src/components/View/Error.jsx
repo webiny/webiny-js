@@ -1,6 +1,6 @@
-import { Component } from 'react';
+import React from "react";
 
-class Error extends Component {
+class Error extends React.Component {
     render() {
         return this.props.children;
     }

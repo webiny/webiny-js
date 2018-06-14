@@ -1,7 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 
+@inject({ modules: ["List"], tableField: true })
 class DateTimeField extends React.Component {
     render() {
         const { modules: { List }, format, render, ...props } = this.props;
@@ -32,4 +33,4 @@ DateTimeField.defaultProps = {
     format: null
 };
 
-export default createComponent(DateTimeField, { modules: ["List"], tableField: true });
+export default DateTimeField;

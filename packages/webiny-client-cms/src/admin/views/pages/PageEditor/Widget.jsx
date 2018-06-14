@@ -1,9 +1,10 @@
 import React from "react";
 import classSet from "classnames";
-import { createComponent } from "webiny-client";
+import { inject } from "webiny-client";
 import { WidgetContainer } from "webiny-client-cms";
 import styles from "./Widget.scss?prefix=wby-cms-editor-widget";
 
+@inject({modules: ["Form", "Icon"], services: ["cms"] })
 class Widget extends React.Component {
     render() {
         const {
@@ -62,4 +63,4 @@ class Widget extends React.Component {
     }
 }
 
-export default createComponent(Widget, {modules: ["Form", "Icon"], services: ["cms"] });
+export default Widget;

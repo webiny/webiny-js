@@ -1,8 +1,12 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
+import { inject } from "webiny-client";
 import styles from "./styles.css?prefix=Webiny_Ui_InputLayout";
 
+@inject({
+    modules: ["Icon", "FormGroup"],
+    styles
+})
 class InputLayout extends React.Component {
     constructor(props) {
         super(props);
@@ -90,7 +94,4 @@ InputLayout.defaultProps = {
     input: null
 };
 
-export default createComponent(InputLayout, {
-    modules: ["Icon", "FormGroup"],
-    styles
-});
+export default InputLayout;

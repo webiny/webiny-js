@@ -1,9 +1,21 @@
 import React, { Fragment } from "react";
 import _ from "lodash";
-import { i18n, createComponent } from "webiny-client";
+import { i18n, inject } from "webiny-client";
 
 const t = i18n.namespace("Security.UsersList");
 
+@inject({
+    modules: [
+        { AdminLayout: "Admin.Layout" },
+        "View",
+        "List",
+        "ListData",
+        "Link",
+        "Icon",
+        "Loader",
+        "Input"
+    ]
+})
 class UsersList extends React.Component {
     constructor(props) {
         super(props);
@@ -48,12 +60,8 @@ class UsersList extends React.Component {
                                     <List {...listProps}>
                                         <List.FormFilters>
                                             {({ apply, Bind }) => (
-                                                <Bind>
-                                                    <Input
-                                                        name="search.query"
-                                                        placeholder={t`Search by name or email`}
-                                                        onEnter={apply()}
-                                                    />
+                                                <Bind name="search.query">
+                                                    <Input placeholder={t`Search by name or email`} onEnter={apply()} />
                                                 </Bind>
                                             )}
                                         </List.FormFilters>
@@ -109,15 +117,4 @@ class UsersList extends React.Component {
     }
 }
 
-export default createComponent(UsersList, {
-    modules: [
-        { AdminLayout: "Admin.Layout" },
-        "View",
-        "List",
-        "ListData",
-        "Link",
-        "Icon",
-        "Loader",
-        "Input"
-    ]
-});
+export default UsersList;

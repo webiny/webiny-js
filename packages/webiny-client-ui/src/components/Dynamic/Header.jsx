@@ -1,6 +1,7 @@
 import React from 'react';
-import { createComponent } from 'webiny-client';
+import { inject } from 'webiny-client';
 
+@inject()
 class Header extends React.Component {
     render() {
         if (this.props.render) {
@@ -11,4 +12,4 @@ class Header extends React.Component {
     }
 }
 
-export default createComponent(Header);
+export default Header;

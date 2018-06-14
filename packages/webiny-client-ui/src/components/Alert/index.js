@@ -1,17 +1,23 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
+import { inject } from "webiny-client";
 import classSet from "classnames";
 import AlertContainer from "./Container";
 import styles from "./styles.css?prefix=Webiny_Ui_Alert";
 
+@inject({ styles, modules: ["Icon"] })
 class Alert extends React.Component {
     render() {
         if (this.props.render) {
             return this.props.render.call(this);
         }
 
-        const { styles, type, onClose, modules: { Icon } } = this.props;
+        const {
+            styles,
+            type,
+            onClose,
+            modules: { Icon }
+        } = this.props;
 
         const typeClasses = {
             info: styles.alertInfo,
@@ -67,4 +73,4 @@ Alert.defaultProps = {
     className: null
 };
 
-export default createComponent(Alert, { styles, modules: ["Icon"] });
+export default Alert;

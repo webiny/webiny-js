@@ -1,11 +1,16 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent, i18n } from "webiny-client";
-import { FormComponent } from "webiny-client-ui";
+import { inject, i18n } from "webiny-client";
+import { withFormComponent } from "webiny-client-ui";
 import { validation } from "webiny-validation";
 import styles from "./styles.css?prefix=Webiny_Ui_Tags";
 
 const t = i18n.namespace("Webiny.Ui.Tags");
+@withFormComponent()
+@inject({
+    modules: ["Icon", "FormGroup"],
+    styles
+})
 class Tags extends React.Component {
     constructor(props) {
         super(props);
@@ -161,7 +166,4 @@ Tags.defaultProps = {
     }
 };
 
-export default createComponent([Tags, FormComponent], {
-    modules: ["Icon", "FormGroup"],
-    styles
-});
+export default Tags;

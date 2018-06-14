@@ -1,6 +1,7 @@
 import React from 'react';
-import { createComponent } from 'webiny-client';
+import { inject } from 'webiny-client';
 
+@inject()
 class Image extends React.Component {
     render() {
         if (this.props.render) {
@@ -27,4 +28,4 @@ Image.defaultProps = {
     height: null
 };
 
-export default createComponent(Image);
+export default Image;

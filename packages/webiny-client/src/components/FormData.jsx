@@ -1,7 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import { app, createComponent } from "webiny-client";
+import { app, inject } from "webiny-client";
 
+@inject()
 class FormData extends React.Component {
     constructor() {
         super();
@@ -159,4 +160,4 @@ FormData.defaultProps = {
     }
 };
 
-export default createComponent(FormData);
+export default FormData;

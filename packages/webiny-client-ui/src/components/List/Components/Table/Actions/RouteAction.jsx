@@ -1,7 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import { app, createComponent } from "webiny-client";
+import { app, inject } from "webiny-client";
 
+@inject({ modules: ["Link", "Icon"] })
 class RouteAction extends React.Component {
     constructor(props) {
         super(props);
@@ -63,4 +64,4 @@ RouteAction.defaultProps = {
     hide: null
 };
 
-export default createComponent(RouteAction, { modules: ["Link", "Icon"] });
+export default RouteAction;

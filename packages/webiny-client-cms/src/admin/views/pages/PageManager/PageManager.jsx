@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import _ from "lodash";
-import { createComponent, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 import InfiniteScroll from "react-infinite-scroller";
 
 import { PageDetailsProvider } from "./PageDetailsContext";
@@ -14,6 +14,19 @@ import styles from "./PageManager.scss?prefix=wby-cms-pageManager";
 
 const t = i18n.namespace("Cms.Admin.Views.PageManager");
 
+@inject({
+    modules: [
+        "View",
+        "ViewSwitcher",
+        "Link",
+        "Icon",
+        "Input",
+        "Grid",
+        "Modal",
+        "Button",
+        "Scrollbar"
+    ]
+})
 class PageManager extends React.Component {
     constructor() {
         super();
@@ -183,16 +196,4 @@ class PageManager extends React.Component {
     }
 }
 
-export default createComponent(PageManager, {
-    modules: [
-        "View",
-        "ViewSwitcher",
-        "Link",
-        "Icon",
-        "Input",
-        "Grid",
-        "Modal",
-        "Button",
-        "Scrollbar"
-    ]
-});
+export default PageManager;

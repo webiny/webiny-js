@@ -1,9 +1,10 @@
 import React from 'react';
 import _ from 'lodash';
-import { createComponent } from 'webiny-client';
+import { inject } from 'webiny-client';
 import classSet from "classnames";
 import styles from '../../../styles.css?prefix=wui-table-rowDetailsField';
 
+@inject({ modules: ['Link', 'List'], tableField: true, styles })
 class RowDetailsField extends React.Component {
     render() {
         const { modules: { Link, List }, styles, render, ...tdProps } = this.props;
@@ -41,4 +42,4 @@ RowDetailsField.defaultProps = {
     hide: false
 };
 
-export default createComponent(RowDetailsField, { modules: ['Link', 'List'], tableField: true, styles });
+export default RowDetailsField;

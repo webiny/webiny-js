@@ -1,7 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import { app, createComponent } from "webiny-client";
+import { app, inject } from "webiny-client";
 
+@inject({ modules: ["Modal"] })
 class ClickSuccess extends React.Component {
     constructor(props) {
         super(props);
@@ -76,4 +77,4 @@ ClickSuccess.defaultProps = {
     renderDialog: null
 };
 
-export default createComponent(ClickSuccess, { modules: ["Modal"] });
+export default ClickSuccess;

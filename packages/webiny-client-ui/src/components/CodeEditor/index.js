@@ -1,10 +1,15 @@
 import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
-import { createComponent } from "webiny-client";
-import { FormComponent } from "webiny-client-ui";
+import { inject } from "webiny-client";
+import { withFormComponent } from "webiny-client-ui";
 import styles from "./styles.css?prefix=Webiny_Ui_CodeEditor";
 
+@withFormComponent()
+@inject({
+    styles,
+    modules: ["FormGroup", { CodeMirror: "Vendor.CodeMirror" }]
+})
 class CodeEditor extends React.Component {
     constructor(props) {
         super(props);
@@ -137,7 +142,4 @@ CodeEditor.defaultProps = {
     autoFormat: false
 };
 
-export default createComponent([CodeEditor, FormComponent], {
-    styles,
-    modules: ["FormGroup", { CodeMirror: "Vendor.CodeMirror" }]
-});
+export default CodeEditor;

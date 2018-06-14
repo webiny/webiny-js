@@ -1,10 +1,17 @@
 import React from 'react';
-import { createComponent } from 'webiny-client';
+import { inject } from 'webiny-client';
 
 /**
  * AdminLayout is the main container that will hold all other components.
  * This component is the first one to render in the <body> element.
  */
+@inject({
+    modules: [{
+        Header: 'Admin.Header',
+        Navigation: 'Admin.Navigation',
+        Footer: 'Admin.Footer'
+    }]
+})
 class AdminLayout extends React.Component {
     render() {
         const { Navigation, Header, Footer } = this.props.modules;
@@ -24,10 +31,4 @@ class AdminLayout extends React.Component {
     }
 }
 
-export default createComponent(AdminLayout, {
-    modules: [{
-        Header: 'Admin.Header',
-        Navigation: 'Admin.Navigation',
-        Footer: 'Admin.Footer'
-    }]
-});
+export default AdminLayout;

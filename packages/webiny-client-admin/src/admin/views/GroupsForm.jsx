@@ -1,8 +1,27 @@
 import React from "react";
-import { app, i18n, createComponent } from "webiny-client";
+import { app, i18n, inject } from "webiny-client";
 
 const t = i18n.namespace("Security.GroupsForm");
 
+@inject({
+    modules: [
+        "Form",
+        "FormData",
+        "OptionsData",
+        "FormError",
+        "View",
+        "Input",
+        "Button",
+        "Grid",
+        "Section",
+        "Loader",
+        "Tabs",
+        "AutoCompleteList",
+        {
+            AdminLayout: "Admin.Layout"
+        }
+    ]
+})
 class GroupsForm extends React.Component {
     constructor() {
         super();
@@ -70,32 +89,20 @@ class GroupsForm extends React.Component {
 
                                             <Grid.Row>
                                                 <Grid.Col all={6}>
-                                                    <Bind>
-                                                        <Input
-                                                            label={t`Name`}
-                                                            name="name"
-                                                            validators="required"
-                                                        />
+                                                    <Bind name="name" validators={["required"]}>
+                                                        <Input label={t`Name`} />
                                                     </Bind>
                                                 </Grid.Col>
                                                 <Grid.Col all={6}>
-                                                    <Bind>
-                                                        <Input
-                                                            label={t`Slug`}
-                                                            name="slug"
-                                                            validators="required"
-                                                        />
+                                                    <Bind name="slug" validators={["required"]}>
+                                                        <Input label={t`Slug`} />
                                                     </Bind>
                                                 </Grid.Col>
                                             </Grid.Row>
                                             <Grid.Row>
                                                 <Grid.Col all={12}>
-                                                    <Bind>
-                                                        <Input
-                                                            label={t`Description`}
-                                                            name="description"
-                                                            validators="required"
-                                                        />
+                                                    <Bind name="description" validators={["required"]}>
+                                                        <Input label={t`Description`} />
                                                     </Bind>
                                                 </Grid.Col>
                                             </Grid.Row>
@@ -112,18 +119,16 @@ class GroupsForm extends React.Component {
                                                         }}
                                                     >
                                                         {({ options }) => (
-                                                            <Bind>
+                                                            <Bind name="policies">
                                                                 <AutoCompleteList
                                                                     options={options}
                                                                     label={t`Policies`}
-                                                                    name="policies"
                                                                     onSearch={query => {
                                                                         this.setState(state => {
                                                                             state.searchQuery.policy = query;
                                                                             return state;
                                                                         });
-                                                                    }}
-                                                                />
+                                                                    }} />
                                                             </Bind>
                                                         )}
                                                     </OptionsData>
@@ -154,22 +159,4 @@ class GroupsForm extends React.Component {
     }
 }
 
-export default createComponent(GroupsForm, {
-    modules: [
-        "Form",
-        "FormData",
-        "OptionsData",
-        "FormError",
-        "View",
-        "Input",
-        "Button",
-        "Grid",
-        "Section",
-        "Loader",
-        "Tabs",
-        "AutoCompleteList",
-        {
-            AdminLayout: "Admin.Layout"
-        }
-    ]
-});
+export default GroupsForm;

@@ -1,8 +1,12 @@
 import React from "react";
 import _ from "lodash";
-import { app, createComponent } from "webiny-client";
-import { ModalComponent } from "webiny-client-ui";
+import { app, inject } from "webiny-client";
+import { withModalDialog } from "webiny-client-ui";
 
+@withModalDialog()
+@inject({
+    modules: ["Modal", "Button", "Form", "FormData", "FormError", "Input", "Loader"]
+})
 class CreateRevisionDialog extends React.Component {
     render() {
         const {
@@ -34,14 +38,8 @@ class CreateRevisionDialog extends React.Component {
                                     <Modal.Header title="Create a revision" onClose={hide} />
                                     <Modal.Body>
                                         {error && <FormError error={error} />}
-                                        <Bind>
-                                            <Input
-                                                autoFocus
-                                                label={"Revision name"}
-                                                validators={"required"}
-                                                placeholder={"Enter a revision name"}
-                                                name={"name"}
-                                            />
+                                        <Bind validators={"required"} name={"name"}>
+                                            <Input autoFocus label={"Revision name"} placeholder={"Enter a revision name"} />
                                         </Bind>
                                     </Modal.Body>
                                     <Modal.Footer align="right">
@@ -66,6 +64,4 @@ class CreateRevisionDialog extends React.Component {
     }
 }
 
-export default createComponent([CreateRevisionDialog, ModalComponent], {
-    modules: ["Modal", "Button", "Form", "FormData", "FormError", "Input", "Loader"]
-});
+export default CreateRevisionDialog;

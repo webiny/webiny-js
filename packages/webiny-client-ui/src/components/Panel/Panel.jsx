@@ -1,8 +1,9 @@
 import React from 'react';
 import classSet from "classnames";
-import { createComponent } from 'webiny-client';
+import { inject } from 'webiny-client';
 import styles from './styles.css?prefix=wui-panel';
 
+@inject({ styles })
 class Panel extends React.Component {
     render() {
         if (this.props.render) {
@@ -14,4 +15,4 @@ class Panel extends React.Component {
     }
 }
 
-export default createComponent(Panel, { styles });
+export default Panel;

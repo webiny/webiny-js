@@ -1,10 +1,15 @@
 import React from "react";
 import _ from "lodash";
-import { app, i18n, createComponent } from "webiny-client";
-import { FormComponent } from "webiny-client-ui";
+import { app, i18n, inject } from "webiny-client";
+import { withFormComponent } from "webiny-client-ui";
 import styles from "./styles.css?prefix=wui--copy-input";
 
 const t = i18n.namespace("Webiny.Ui.Copy.CopyInput");
+@withFormComponent()
+@inject({
+    styles,
+    modules: ["Button", "FormGroup", { Clipboard: "Vendor.Clipboard" }]
+})
 class CopyInput extends React.Component {
     constructor() {
         super();
@@ -86,7 +91,4 @@ CopyInput.defaultProps = {
     onCopy: _.noop
 };
 
-export default createComponent([CopyInput, FormComponent], {
-    styles,
-    modules: ["Button", "FormGroup", { Clipboard: "Vendor.Clipboard" }]
-});
+export default CopyInput;

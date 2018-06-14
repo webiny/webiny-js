@@ -1,11 +1,14 @@
 import React from "react";
 import css from "./QueryMutationFieldsList.scss";
-import { createComponent, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 import _ from "lodash";
 import classNames from "classnames";
 
 const t = i18n.namespace("Security.PermissionsForm.Scopes.QueryMutationFieldsList");
 
+@inject({
+    modules: ["Input", "Checkbox", "Scrollbar"]
+})
 class QueryMutationFieldsList extends React.Component {
     constructor() {
         super();
@@ -92,6 +95,4 @@ QueryMutationFieldsList.defaultProps = {
     selected: null
 };
 
-export default createComponent(QueryMutationFieldsList, {
-    modules: ["Input", "Checkbox", "Scrollbar"]
-});
+export default QueryMutationFieldsList;

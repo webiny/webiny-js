@@ -1,9 +1,24 @@
 import React from "react";
 
-import { i18n, createComponent, app } from "webiny-client";
+import { i18n, inject } from "webiny-client";
 const t = i18n.namespace("Security.Modal.ImportPolicyModal");
-import { ModalComponent } from "webiny-client-ui";
+import { withModalDialog } from "webiny-client-ui";
 
+@withModalDialog()
+@inject({
+    modules: [
+        "Modal",
+        "Button",
+        "Input",
+        "Form",
+        "FormData",
+        "FormError",
+        "Grid",
+        "Loader",
+        "Textarea",
+        "CodeEditor"
+    ]
+})
 class ImportPolicyModal extends React.Component {
     render() {
         const {
@@ -45,12 +60,8 @@ class ImportPolicyModal extends React.Component {
                                         {error && <FormError error={error} />}
                                         <Grid.Row>
                                             <Grid.Col all={12}>
-                                                <Bind>
-                                                    <CodeEditor
-                                                        mode="text/javascript"
-                                                        name="data"
-                                                        validators="required"
-                                                    />
+                                                <Bind name="data" validators={["required"]}>
+                                                    <CodeEditor mode="text/javascript" />
                                                 </Bind>
                                             </Grid.Col>
                                         </Grid.Row>
@@ -78,17 +89,4 @@ class ImportPolicyModal extends React.Component {
     }
 }
 
-export default createComponent([ImportPolicyModal, ModalComponent], {
-    modules: [
-        "Modal",
-        "Button",
-        "Input",
-        "Form",
-        "FormData",
-        "FormError",
-        "Grid",
-        "Loader",
-        "Textarea",
-        "CodeEditor"
-    ]
-});
+export default ImportPolicyModal;

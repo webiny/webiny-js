@@ -1,8 +1,12 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent, elementHasFlag } from "webiny-client";
-import styles from "./styles.css?prefix=wui--list";
+import { inject, elementHasFlag } from "webiny-client";
+import styles from "./styles.css?prefix=wui-list";
 
+@inject({
+    modules: ["Grid"],
+    styles
+})
 class List extends React.Component {
     constructor(props) {
         super(props);
@@ -157,7 +161,4 @@ List.defaultProps = {
     }
 };
 
-export default createComponent(List, {
-    modules: ["Grid"],
-    styles
-});
+export default List;

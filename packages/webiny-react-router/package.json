@@ -18,7 +18,6 @@
   "license": "MIT",
   "dependencies": {
     "babel-runtime": "^6.26.0",
-    "react": "^16.3.2",
     "jquery": "^3.3.1",
     "lodash": "^4.17.5",
     "query-string": "^6.0.0",
@@ -28,6 +27,9 @@
     "webiny-compose": "0.0.0-semantically-released",
     "debug": "^3.1.0",
     "history": "^4.7.2"
+  },
+  "peerDependencies": {
+    "react": "^16.4.0"
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",

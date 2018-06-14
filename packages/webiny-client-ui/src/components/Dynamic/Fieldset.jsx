@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
-import { createComponent, isElementOfType } from 'webiny-client';
-import { FormComponent } from 'webiny-client-ui';
+import { inject, isElementOfType } from 'webiny-client';
+import { withFormComponent } from 'webiny-client-ui';
 import Row from './Row';
 import Header from './Header';
 import Empty from './Empty';
@@ -29,6 +29,8 @@ function insertKey(data) {
     return model;
 }
 
+@withFormComponent()
+@inject()
 class Fieldset extends React.Component {
 
     constructor(props) {
@@ -162,4 +164,4 @@ Fieldset.defaultProps = {
     defaultValue: []
 };
 
-export default createComponent([Fieldset, FormComponent]);
+export default Fieldset;

@@ -5,7 +5,9 @@ import FormGroup from "./../FormGroup";
 class FormComponent extends React.Component {
     render() {
         const { children, ...props } = this.props;
-        return React.cloneElement(children, props);
+        return typeof children === "function"
+            ? children(props)
+            : React.cloneElement(children, props);
     }
 }
 

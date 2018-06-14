@@ -1,10 +1,11 @@
 import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
-import { createComponent } from "webiny-client";
+import { inject } from "webiny-client";
 import RouteAction from "./Actions/RouteAction";
 import styles from "../../styles.css?prefix=Webiny_Ui_List_Field";
 
+@inject({ styles, tableField: true })
 class Field extends React.Component {
     constructor(props) {
         super(props);
@@ -76,4 +77,4 @@ Field.defaultProps = {
     hide: false
 };
 
-export default createComponent(Field, { styles, tableField: true });
+export default Field;

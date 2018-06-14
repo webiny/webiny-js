@@ -1,8 +1,9 @@
 import React from 'react';
 import classSet from "classnames";
-import { createComponent } from 'webiny-client';
+import { inject } from 'webiny-client';
 import styles from './styles.css?prefix=Webiny_Ui_Tile_Body';
 
+@inject({ styles })
 class Body extends React.Component {
     render() {
         if (this.props.render) {
@@ -17,4 +18,4 @@ class Body extends React.Component {
     }
 }
 
-export default createComponent(Body, { styles });
+export default Body;

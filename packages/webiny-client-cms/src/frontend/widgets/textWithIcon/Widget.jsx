@@ -1,7 +1,7 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 
-export default Component({ modules: ["Icon", "SlateEditor"] })(
+export default inject({ modules: ["Icon", "SlateEditor"] })(
     ({ widget: { data }, modules: { Icon, SlateEditor } }) => {
         return (
             <div>

@@ -1,9 +1,12 @@
 import React from "react";
 import styles from "./TogglePermissionButton.scss";
-import { createComponent } from "webiny-client";
+import { inject } from "webiny-client";
 import _ from "lodash";
 import classNames from "classnames";
 
+@inject({
+    modules: ["Button"]
+})
 class TogglePermissionButton extends React.Component {
     constructor() {
         super();
@@ -43,6 +46,4 @@ TogglePermissionButton.defaultProps = {
     onClick: _.noop
 };
 
-export default createComponent(TogglePermissionButton, {
-    modules: ["Button"]
-});
+export default TogglePermissionButton;

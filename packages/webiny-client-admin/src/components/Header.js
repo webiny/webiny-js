@@ -1,7 +1,17 @@
 import React, { createElement, isValidElement } from "react";
 import $ from "jquery";
-import { app, createComponent } from "webiny-client";
+import { app, inject } from "webiny-client";
 
+@inject({
+    modules: [
+        {
+            components: () =>
+                app.modules.loadByTag("header-component").then(modules => {
+                    return Object.values(modules).filter(m => m);
+                })
+        }
+    ]
+})
 class Header extends React.Component {
     toggleMobile() {
         $("body").toggleClass("mobile-nav");
@@ -31,13 +41,4 @@ class Header extends React.Component {
     }
 }
 
-export default createComponent(Header, {
-    modules: [
-        {
-            components: () =>
-                app.modules.loadByTag("header-component").then(modules => {
-                    return Object.values(modules).filter(m => m);
-                })
-        }
-    ]
-});
+export default Header;

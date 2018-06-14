@@ -1,6 +1,7 @@
 import React from "react";
-import { createComponent } from "webiny-client";
+import { inject } from "webiny-client";
 
+@inject({ listFiltersComponent: true })
 class Filters extends React.Component {
     render() {
         if (this.props.render) {
@@ -18,4 +19,4 @@ class Filters extends React.Component {
     }
 }
 
-export default createComponent(Filters, { listFiltersComponent: true });
+export default Filters;

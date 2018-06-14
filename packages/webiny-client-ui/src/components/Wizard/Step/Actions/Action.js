@@ -1,9 +1,14 @@
 import React from "react";
-import { createComponent } from "webiny-client";
+import { inject } from "webiny-client";
 
+@inject({ modules: ["Button"] })
 class Action extends React.Component {
     render() {
-        const { render, modules: { Button }, ...props } = this.props;
+        const {
+            render,
+            modules: { Button },
+            ...props
+        } = this.props;
 
         if (render) {
             return render.call(this);
@@ -18,4 +23,4 @@ Action.defaultProps = {
     wizard: null
 };
 
-export default createComponent(Action, { modules: ["Button"] });
+export default Action;

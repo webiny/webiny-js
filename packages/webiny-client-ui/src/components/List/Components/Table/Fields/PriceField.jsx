@@ -1,7 +1,11 @@
 import React from 'react';
 import _ from 'lodash';
-import { createComponent, i18n } from 'webiny-client';
+import { inject, i18n } from 'webiny-client';
 
+@inject({
+    modules: ['List'],
+    tableField: true
+})
 class PriceField extends React.Component {
     render() {
         const { modules: { List }, render, ...props} = this.props;
@@ -25,7 +29,4 @@ PriceField.defaultProps = {
     default: '-'
 };
 
-export default createComponent(PriceField, {
-    modules: ['List'],
-    tableField: true
-});
+export default PriceField;

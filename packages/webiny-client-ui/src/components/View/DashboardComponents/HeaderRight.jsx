@@ -1,7 +1,8 @@
 import React from 'react';
-import { createComponent } from 'webiny-client';
+import { inject } from 'webiny-client';
 import styles from './../styles.css?prefix=wui-view';
 
+@inject({ styles })
 class HeaderRight extends React.Component {
     render() {
         if (this.props.render) {
@@ -18,4 +19,4 @@ class HeaderRight extends React.Component {
     }
 }
 
-export default createComponent(HeaderRight, { styles });
+export default HeaderRight;

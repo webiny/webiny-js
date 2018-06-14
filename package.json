@@ -31,6 +31,7 @@
     "cz-lerna-changelog": "^1.2.1",
     "documentation": "^5.3.5",
     "dotenv": "^5.0.1",
+    "env-ci": "2.0.1",
     "eslint": "^4.16.0",
     "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-flowtype": "^2.41.0",
@@ -88,9 +89,5 @@
       "eslint --fix",
       "git add"
     ]
-  },
-  "dependencies": {
-    "env-ci": "2.0.1",
-    "react": "16.3.2"
   }
 }

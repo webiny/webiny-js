@@ -1,8 +1,9 @@
 import React from 'react';
-import { createComponent } from 'webiny-client';
+import { inject } from 'webiny-client';
 import classSet from "classnames";
 import styles from './styles.css?prefix=wui-view';
 
+@inject({ modules: ['Panel'], styles })
 class Body extends React.Component {
     render() {
         if (this.props.render) {
@@ -32,4 +33,4 @@ Body.defaultProps = {
     noColor: false,
 };
 
-export default createComponent(Body, { modules: ['Panel'], styles });
+export default Body;

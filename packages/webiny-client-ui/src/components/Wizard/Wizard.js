@@ -14,7 +14,9 @@ class Wizard extends Webiny.Ui.Component {
             return this.props.render.call(this);
         }
 
-        const { modules: { Form } } = this.props;
+        const {
+            modules: { Form }
+        } = this.props;
 
         return (
             <Form
@@ -61,6 +63,4 @@ Wizard.defaultProps = {
     form: {}
 };
 
-export default createComponent(Wizard, {
-    modules: ["Form"]
-});
+export default Wizard;

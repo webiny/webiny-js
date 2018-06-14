@@ -1,11 +1,11 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import placeholderImage from "./placeholder.jpg";
 
-@Component({
+@inject({
     modules: ["SlateEditor"]
 })
-export default class ImageWithTextWidget extends React.Component {
+class ImageWithTextWidget extends React.Component {
     render() {
         const {
             widget: { data },
@@ -33,8 +33,8 @@ export default class ImageWithTextWidget extends React.Component {
                 }}
                 key={"text"}
             >
-                <Bind>
-                    <SlateEditor name={"text"} />
+                <Bind name={"text"}>
+                    <SlateEditor />
                 </Bind>
             </div>
         );
@@ -46,3 +46,5 @@ export default class ImageWithTextWidget extends React.Component {
         );
     }
 }
+
+export default ImageWithTextWidget;

@@ -1,12 +1,15 @@
 import React from "react";
 import classSet from "classnames";
 import invariant from "invariant";
-import { app, createComponent, i18n } from "webiny-client";
+import { app, inject, i18n } from "webiny-client";
 import logoOrange from "webiny-client-admin/lib/assets/images/logo_orange.png";
 import styles from "./Login.css?prefix=Login";
 
 const t = i18n.namespace("Webiny.Admin.Auth.Login");
 
+@inject({
+    modules: ["Form", "Input", "Password", "Button", "Email", "Loader", "Alert"]
+})
 class Login extends React.Component {
     constructor(props) {
         super(props);
@@ -49,38 +52,26 @@ class Login extends React.Component {
                                     <div className="clear" />
 
                                     {this.state.twoFactorAuth && (
-                                        <Bind>
+                                        <Bind name="twoFactorAuthCode" validators={["required"]}>
                                             <Input
-                                                name="twoFactorAuthCode"
                                                 placeholder={t`Enter your verification code`}
                                                 label={t`Verification code`}
-                                                validators="required"
                                                 onEnter={form.submit}
-                                                autoFocus={true}
-                                            />
+                                                autoFocus={true} />
                                         </Bind>
                                     )}
 
                                     {!this.state.twoFactorAuth && (
                                         <div>
-                                            <Bind>
+                                            <Bind name="username" validators={["required", "email"]}>
                                                 <Email
-                                                    name="username"
                                                     placeholder={t`Enter email`}
                                                     label={t`Email address`}
-                                                    validators="required"
                                                     onEnter={form.submit}
-                                                    autoFocus={true}
-                                                />
+                                                    autoFocus={true} />
                                             </Bind>
-                                            <Bind>
-                                                <Password
-                                                    name="password"
-                                                    placeholder={t`Password`}
-                                                    label={t`Password`}
-                                                    validators="required"
-                                                    onEnter={form.submit}
-                                                />
+                                            <Bind name="password" validators={["required"]}>
+                                                <Password placeholder={t`Password`} label={t`Password`} onEnter={form.submit} />
                                             </Bind>
                                         </div>
                                     )}
@@ -132,6 +123,4 @@ Login.defaultProps = {
     }
 };
 
-export default createComponent(Login, {
-    modules: ["Form", "Input", "Password", "Button", "Email", "Loader", "Alert"]
-});
+export default Login;

@@ -1,9 +1,10 @@
 import React from "react";
 import classSet from "classnames";
-import { createComponent } from "webiny-client";
+import { inject } from "webiny-client";
 import FontAwesomeIcon from "@fortawesome/react-fontawesome";
 import styles from "./styles.css?prefix=wui--icon";
 
+@inject({ styles })
 class Icon extends React.Component {
     render() {
         const { styles, type, onClick, render, ...props } = this.props;
@@ -50,4 +51,4 @@ Icon.defaultProps = {
     element: "span"
 };
 
-export default createComponent(Icon, { styles });
+export default Icon;

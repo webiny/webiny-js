@@ -12,11 +12,11 @@ import "./assets/styles.scss?extract";
 import growler from "./services/growler";
 import ModalService from "./services/modal";
 
-export { default as ModalComponent } from "./components/Modal/Components/ModalComponent";
-export {
-    default as ModalConfirmationComponent
-} from "./components/Modal/Components/ModalConfirmationComponent";
+export { default as withModalDialog } from "./components/Modal/withModalDialog";
+export { default as withModalConfirmation } from "./components/Modal/withModalConfirmation";
+
 export { default as FormComponent } from "./components/FormComponent";
+export { default as withFormComponent } from "./components/FormComponent/withFormComponent";
 
 const app = () => {
     return ({ app }, next) => {

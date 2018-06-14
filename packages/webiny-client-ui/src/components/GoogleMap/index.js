@@ -1,11 +1,13 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent, document } from "webiny-client";
-import { FormComponent } from "webiny-client";
+import { inject, document } from "webiny-client";
+import { withFormComponent } from "webiny-client";
 import styles from "./styles.css?prefix=Webiny_Ui_GoogleMap";
 
 // TODO: https://www.npmjs.com/package/react-google-maps
 
+@withFormComponent()
+@inject({ styles })
 class GoogleMap extends React.Component {
     constructor(props) {
         super(props);
@@ -138,4 +140,4 @@ GoogleMap.defaultProps = {
     onChange: _.noop
 };
 
-export default createComponent([GoogleMap, FormComponent], { styles });
+export default GoogleMap;

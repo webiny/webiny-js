@@ -1,6 +1,10 @@
 import React from "react";
-import { createComponent } from "webiny-client";
+import { inject } from "webiny-client";
 
+@inject({
+    modules: ["List", { moment: "Vendor.Moment" }],
+    tableField: true
+})
 class TimeAgoField extends React.Component {
     render() {
         const { modules: { List, moment }, data, name, render, ...props } = this.props;
@@ -18,7 +22,4 @@ class TimeAgoField extends React.Component {
     }
 }
 
-export default createComponent(TimeAgoField, {
-    modules: ["List", { moment: "Vendor.Moment" }],
-    tableField: true
-});
+export default TimeAgoField;

@@ -1,10 +1,22 @@
 import React, { Fragment } from "react";
 
 import _ from "lodash";
-import { i18n, createComponent } from "webiny-client";
+import { i18n, inject } from "webiny-client";
 
 const t = i18n.namespace("Security.ApiTokensList");
 
+@inject({
+    modules: [
+        { AdminLayout: "Admin.Layout" },
+        "View",
+        "List",
+        "ListData",
+        "Link",
+        "Icon",
+        "Loader",
+        "Input"
+    ]
+})
 class ApiTokensList extends React.Component {
     constructor(props) {
         super(props);
@@ -77,15 +89,4 @@ class ApiTokensList extends React.Component {
     }
 }
 
-export default createComponent(ApiTokensList, {
-    modules: [
-        { AdminLayout: "Admin.Layout" },
-        "View",
-        "List",
-        "ListData",
-        "Link",
-        "Icon",
-        "Loader",
-        "Input"
-    ]
-});
+export default ApiTokensList;

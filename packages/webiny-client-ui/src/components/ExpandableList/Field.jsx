@@ -1,8 +1,9 @@
 import React from 'react';
 import _ from 'lodash';
 import classSet from "classnames";
-import { createComponent } from 'webiny-client';
+import { inject } from 'webiny-client';
 
+@inject()
 class Field extends React.Component {
     render() {
         if (this.props.render) {
@@ -26,4 +27,4 @@ Field.defaultProps = {
     width: null
 };
 
-export default createComponent(Field);
+export default Field;

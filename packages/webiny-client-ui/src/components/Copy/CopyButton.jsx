@@ -1,8 +1,11 @@
 import React from "react";
 import _ from "lodash";
-import { app, i18n, createComponent } from "webiny-client";
+import { app, i18n, inject } from "webiny-client";
 
 const t = i18n.namespace("Webiny.Ui.Copy.CopyButton");
+@inject({
+    modules: ["Button", { Clipboard: "Vendor.Clipboard" }]
+})
 class CopyButton extends React.Component {
     constructor() {
         super();
@@ -61,6 +64,4 @@ CopyButton.defaultProps = {
     value: null
 };
 
-export default createComponent(CopyButton, {
-    modules: ["Button", { Clipboard: "Vendor.Clipboard" }]
-});
+export default CopyButton;

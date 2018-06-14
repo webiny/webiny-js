@@ -1,10 +1,10 @@
 import React from "react";
 import classSet from "classnames";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import styles from "./AddWidget.scss?prefix=wby-cms-editor-addWidget";
 
-@Component({ modules: ["Icon"], services: ["cms"] })
-export default class AddWidget extends React.Component {
+@inject({ modules: ["Icon"], services: ["cms"] })
+class AddWidget extends React.Component {
     state = {
         search: ""
     };
@@ -52,3 +52,5 @@ export default class AddWidget extends React.Component {
         );
     }
 }
+
+export default AddWidget;

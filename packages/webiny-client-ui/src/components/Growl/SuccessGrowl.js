@@ -1,8 +1,9 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
+import { inject } from "webiny-client";
 import Growl from "./Growl";
 
+@inject()
 class SuccessGrowl extends React.Component {
     render() {
         if (this.props.render) {
@@ -21,4 +22,4 @@ SuccessGrowl.defaultProps = {
     type: "success"
 };
 
-export default createComponent(SuccessGrowl);
+export default SuccessGrowl;

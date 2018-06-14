@@ -1,9 +1,9 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import { Widget } from "webiny-client-cms";
 import placeholderImage from "./placeholder.jpg";
 
-const ImageWithTextComponent = Component({ modules: ["SlateEditor"] })(
+const ImageWithTextComponent = inject({ modules: ["SlateEditor"] })(
     ({ widget: { data }, modules: { SlateEditor } }) => {
         const image = (
             <div
@@ -40,6 +40,9 @@ const ImageWithTextComponent = Component({ modules: ["SlateEditor"] })(
 /**
  * "Image with text" widget plugin
  */
+@inject({
+    modules: ["Select", "IconPicker", "Grid"]
+})
 class ImageWithText extends Widget {
     render({ WidgetContainer }) {
         return (

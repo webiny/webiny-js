@@ -1,11 +1,16 @@
 import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
-import { createComponent } from "webiny-client";
-import { FormComponent } from "webiny-client-ui";
+import { inject } from "webiny-client";
+import { withFormComponent } from "webiny-client-ui";
 import Radio from "./Radio";
 import styles from "./styles.css?prefix=Webiny_Ui_RadioGroup";
 
+@withFormComponent()
+@inject({
+    modules: ["FormGroup"],
+    styles
+})
 class RadioGroup extends React.Component {
     constructor(props) {
         super(props);
@@ -78,7 +83,12 @@ class RadioGroup extends React.Component {
             return this.props.render.call(this);
         }
 
-        const { modules: { FormGroup }, styles, className, disabled } = this.props;
+        const {
+            modules: { FormGroup },
+            styles,
+            className,
+            disabled
+        } = this.props;
 
         return (
             <FormGroup className={classSet(className, disabled && styles.disabled)}>
@@ -100,7 +110,4 @@ RadioGroup.defaultProps = {
     renderRadio: null
 };
 
-export default createComponent([RadioGroup, FormComponent], {
-    modules: ["FormGroup"],
-    styles
-});
+export default RadioGroup;

@@ -1,10 +1,10 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import WidgetStyle from "./SettingsGroup/WidgetStyle";
 import WidgetPreset from "./SettingsGroup/WidgetPreset";
 
-@Component({ modules: ["Accordion"] })
-export default class WidgetSettingsContainer extends React.Component {
+@inject({ modules: ["Accordion"] })
+class WidgetSettingsContainer extends React.Component {
     getRenderProps = () => {
         const {
             widget,
@@ -63,3 +63,5 @@ export default class WidgetSettingsContainer extends React.Component {
         );
     }
 }
+
+export default WidgetSettingsContainer;

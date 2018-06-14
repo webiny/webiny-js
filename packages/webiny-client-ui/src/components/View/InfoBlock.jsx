@@ -1,9 +1,10 @@
 import React from 'react';
-import { createComponent } from 'webiny-client';
+import { inject } from 'webiny-client';
 import classSet from "classnames";
 import styles from './styles.css?prefix=wui-view';
 
 
+@inject({ styles })
 class InfoBlock extends React.Component {
     render() {
         if (this.props.render) {
@@ -36,4 +37,4 @@ InfoBlock.defaultProps = {
     className: ''
 };
 
-export default createComponent(InfoBlock, { styles });
+export default InfoBlock;

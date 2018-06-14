@@ -1,7 +1,12 @@
 import React from "react";
-import { createComponent, LazyLoad } from "webiny-client";
+import { inject, LazyLoad } from "webiny-client";
 import styles from "../../../styles.css?prefix=wui--table-selectRowField";
 
+@inject({
+    modules: ["Checkbox", "List"],
+    styles,
+    tableField: true
+})
 class SelectRowField extends React.Component {
     render() {
         const {
@@ -50,8 +55,4 @@ SelectRowField.defaultProps = {
     }
 };
 
-export default createComponent(SelectRowField, {
-    modules: ["Checkbox", "List"],
-    styles,
-    tableField: true
-});
+export default SelectRowField;

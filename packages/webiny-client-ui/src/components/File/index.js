@@ -1,11 +1,16 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent, i18n } from "webiny-client";
-import { FormComponent } from "webiny-client-ui";
+import { inject, i18n } from "webiny-client";
+import { withFormComponent } from "webiny-client-ui";
 import styles from "./styles.css?prefix=wui--file";
 
 const t = i18n.namespace("Webiny.Ui.File");
 
+@withFormComponent()
+@inject({
+    modules: ["FileReader", "FormGroup", "Alert"],
+    styles
+})
 class SimpleFile extends React.Component {
     constructor(props) {
         super(props);
@@ -177,7 +182,4 @@ SimpleFile.defaultProps = {
     }
 };
 
-export default createComponent([SimpleFile, FormComponent], {
-    modules: ["FileReader", "FormGroup", "Alert"],
-    styles
-});
+export default SimpleFile;

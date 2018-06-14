@@ -1,8 +1,8 @@
 import React from "react";
-import { Component } from "webiny-client";
+import { inject } from "webiny-client";
 import { Widget } from "webiny-client-cms";
 
-const TextComponent = Component({ modules: ["SlateEditor"] })(
+const TextComponent = inject({ modules: ["SlateEditor"] })(
     ({ widget: { data }, modules: { SlateEditor } }) => <SlateEditor value={data.text} />
 );
 

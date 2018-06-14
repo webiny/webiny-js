@@ -1,9 +1,13 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
-import { FormComponent } from "webiny-client-ui";
+import { inject } from "webiny-client";
+import { withFormComponent } from "webiny-client-ui";
 import SimpleSelect from "./SimpleSelect";
 
+@withFormComponent()
+@inject({
+    modules: ["FormGroup"]
+})
 class Select extends React.Component {
     shouldComponentUpdate(props) {
         return (
@@ -57,6 +61,4 @@ Select.defaultProps = {
     renderSelected: null
 };
 
-export default createComponent([Select, FormComponent], {
-    modules: ["FormGroup"]
-});
+export default Select;

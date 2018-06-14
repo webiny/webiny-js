@@ -1,9 +1,14 @@
 import React from "react";
-import { createComponent } from "webiny-client";
+import { inject } from "webiny-client";
 
+@inject({ modules: ["Input"] })
 class Email extends React.Component {
     render() {
-        const { modules: { Input }, render, ...props } = this.props;
+        const {
+            modules: { Input },
+            render,
+            ...props
+        } = this.props;
         if (render) {
             return render.call(this);
         }
@@ -18,8 +23,4 @@ class Email extends React.Component {
     }
 }
 
-Email.defaultProps = {
-    defaultValidators: "email"
-};
-
-export default createComponent(Email, { modules: ["Input"] });
+export default Email;

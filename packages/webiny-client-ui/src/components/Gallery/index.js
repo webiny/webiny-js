@@ -2,9 +2,9 @@ import React from "react";
 import _ from "lodash";
 import $ from "jquery";
 import classSet from "classnames";
-import { createComponent, i18n } from "webiny-client";
+import { inject, i18n } from "webiny-client";
 import { linkState } from "webiny-form";
-import { FormComponent } from "webiny-client-ui";
+import { withFormComponent } from "webiny-client-ui";
 import Image from "./Image";
 import styles from "./styles.css?prefix=Webiny_Ui_Gallery";
 
@@ -13,6 +13,11 @@ placeholder.className = styles.placeholder;
 placeholder.textContent = "Drop here";
 
 const t = i18n.namespace("Webiny.Ui.Gallery");
+@withFormComponent()
+@inject({
+    modules: ["Alert", "Cropper", "FileReader", "Input", "FormGroup"],
+    styles
+})
 class Gallery extends React.Component {
     constructor(props) {
         super(props);
@@ -412,7 +417,4 @@ Gallery.defaultProps = {
 
 Gallery.Image = Image;
 
-export default createComponent([Gallery, FormComponent], {
-    modules: ["Alert", "Cropper", "FileReader", "Input", "FormGroup"],
-    styles
-});
+export default Gallery;

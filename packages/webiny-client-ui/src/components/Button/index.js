@@ -1,9 +1,10 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
+import { inject } from "webiny-client";
 import classSet from "classnames";
 import styles from "./styles.css?prefix=Webiny_Ui_Button";
 
+@inject({ styles, modules: ["Tooltip", "Icon"] })
 class Button extends React.Component {
     constructor(props) {
         super(props);
@@ -27,7 +28,10 @@ class Button extends React.Component {
             return render.call(this);
         }
 
-        const { modules: { Tooltip, Icon }, styles } = props;
+        const {
+            modules: { Tooltip, Icon },
+            styles
+        } = props;
 
         if (props.disabled || !this.state.enabled) {
             props["disabled"] = true;
@@ -105,4 +109,4 @@ Button.defaultProps = {
     onRef: _.noop
 };
 
-export default createComponent(Button, { styles, modules: ["Tooltip", "Icon"] });
+export default Button;

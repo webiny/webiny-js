@@ -1,9 +1,14 @@
 import React from "react";
 import _ from "lodash";
-import { createComponent } from "webiny-client";
-import FormComponent from "./../FormComponent";
+import { inject } from "webiny-client";
+import withFormComponent from "./../FormComponent/withFormComponent";
 import styles from "./styles.css?prefix=wui-input";
 
+@withFormComponent()
+@inject({
+    modules: ["DelayedOnChange", "Icon", "FormGroup"],
+    styles
+})
 class Input extends React.Component {
     constructor(props) {
         super(props);
@@ -154,7 +159,4 @@ Input.defaultProps = {
     }
 };
 
-export default createComponent([Input, FormComponent], {
-    modules: ["DelayedOnChange", "Icon", "FormGroup"],
-    styles
-});
+export default Input;

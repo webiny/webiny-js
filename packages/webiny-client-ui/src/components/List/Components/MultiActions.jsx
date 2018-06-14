@@ -1,7 +1,8 @@
 import React from 'react';
-import { createComponent, i18n, isElementOfType } from 'webiny-client';
+import { inject, i18n, isElementOfType } from 'webiny-client';
 
 const t = i18n.namespace("Webiny.Ui.List.Table.MultiActions");
+@inject({ modules: ['Dropdown'], listMultiActionsComponent: true })
 class MultiActions extends React.Component {
     render() {
         if (this.props.render) {
@@ -35,4 +36,4 @@ MultiActions.defaultProps = {
     label: t`With selected...`
 };
 
-export default createComponent(MultiActions, { modules: ['Dropdown'], listMultiActionsComponent: true });
+export default MultiActions;

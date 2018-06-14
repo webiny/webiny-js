@@ -1,8 +1,24 @@
 import React, { Fragment } from "react";
 
-import { i18n, createComponent } from "webiny-client";
+import { i18n, inject } from "webiny-client";
 const t = i18n.namespace("Security.GroupsList");
 
+@inject({
+    modules: [
+        { AdminLayout: "Admin.Layout" },
+        "ViewSwitcher",
+        "View",
+        "Link",
+        "Icon",
+        "Grid",
+        "Input",
+        "List",
+        "ListData",
+        "Button",
+        "Loader",
+        "ButtonGroup"
+    ]
+})
 class GroupsList extends React.Component {
     render() {
         const {
@@ -52,12 +68,8 @@ class GroupsList extends React.Component {
                                                         {({ apply, Bind }) => (
                                                             <Grid.Row>
                                                                 <Grid.Col all={12}>
-                                                                    <Bind>
-                                                                        <Input
-                                                                            name="search.query"
-                                                                            placeholder={t`Search by name, description or slug`}
-                                                                            onEnter={apply()}
-                                                                        />
+                                                                    <Bind name="search.query">
+                                                                        <Input placeholder={t`Search by name, description or slug`} onEnter={apply()} />
                                                                     </Bind>
                                                                 </Grid.Col>
                                                             </Grid.Row>
@@ -116,19 +128,4 @@ class GroupsList extends React.Component {
     }
 }
 
-export default createComponent(GroupsList, {
-    modules: [
-        { AdminLayout: "Admin.Layout" },
-        "ViewSwitcher",
-        "View",
-        "Link",
-        "Icon",
-        "Grid",
-        "Input",
-        "List",
-        "ListData",
-        "Button",
-        "Loader",
-        "ButtonGroup"
-    ]
-});
+export default GroupsList;
