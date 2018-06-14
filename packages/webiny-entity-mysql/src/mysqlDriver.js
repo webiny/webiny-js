@@ -249,6 +249,11 @@ class MySQLDriver extends Driver {
         return this.tables.prefix + params.classId;
     }
 
+    async test() {
+        await this.getConnection().test();
+        return true;
+    }
+
     static __preparePerPageOption(clonedOptions: Object): void {
         if ("perPage" in clonedOptions) {
             clonedOptions.limit = clonedOptions.perPage;
