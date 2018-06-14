@@ -1,10 +1,9 @@
 import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
-import { app, inject } from "webiny-client";
+import { app } from "webiny-client";
 import styles from "./styles.css?prefix=wui-link";
 
-@inject({ styles })
 class Link extends React.Component {
     static defaultProps = {
         align: null,
@@ -25,8 +24,7 @@ class Link extends React.Component {
     allowedProps = ["className", "style", "target", "href", "onClick", "title", "tabIndex"];
 
     getLinkProps = () => {
-        const props = _.clone(this.props);
-        const { styles } = this.props;
+        const { ...props } = this.props;
 
         props.href = "javascript:void(0)";
 
@@ -75,7 +73,6 @@ class Link extends React.Component {
         const sizeClasses = {
             normal: "",
             large: styles.btnLarge
-            //small: 'btn-sm' // sven: this option doesn't exist in css
         };
 
         const classes = {};
@@ -120,6 +117,7 @@ class Link extends React.Component {
         if (props.onClick) {
             props.onClick = e => this.props.onClick({ event: e });
         }
+
         return finalProps;
     };
 

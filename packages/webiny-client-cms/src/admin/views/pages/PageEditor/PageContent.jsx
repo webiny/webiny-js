@@ -119,7 +119,7 @@ class PageContent extends React.Component {
         });
 
         return (
-            <div className={styles.editorContainer}>
+            <React.Fragment>
                 <AddWidget show={this.state.selectWidget !== null} onAdd={this.addWidget} />
                 <div className={styles.editorContent}>
                     {!value.length && (
@@ -172,7 +172,7 @@ class PageContent extends React.Component {
                         )}
                     </Animate>
                 </div>
-            </div>
+            </React.Fragment>
         );
     }
 }

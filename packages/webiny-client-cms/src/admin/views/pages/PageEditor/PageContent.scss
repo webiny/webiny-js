@@ -1,9 +1,4 @@
 .editorContainer {
-  position: relative;
-  display: flex;
-  margin: 53px auto 0 auto;
-  padding: 0 50px;
-
   .editorContent {
     position: relative;
     border: 1px solid #DCDCDC;
@@ -11,7 +6,7 @@
     width: 950px;
     min-width: 950px;
     min-height: 87vh;
-    margin: 50px auto;
+    margin: 0 auto;
   }
 
   .editorSidebar {

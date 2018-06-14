@@ -280,7 +280,7 @@ class Form extends React.Component {
         return isElement ? React.cloneElement(input, newProps) : input(newProps);
     };
 
-    __removeKeys(collection, excludeKeys = ["$key", "$index"]) {
+    __removeKeys = (collection, excludeKeys = ["$key", "$index"]) => {
         function omitFn(value) {
             if (value && typeof value === "object") {
                 excludeKeys.forEach(key => {
@@ -290,9 +290,9 @@ class Form extends React.Component {
         }
 
         return _.cloneDeepWith(collection, omitFn);
-    }
+    };
 
-    __onKeyDown(e) {
+    __onKeyDown = (e) => {
         if (
             (e.metaKey || e.ctrlKey) &&
             ["s", "Enter"].indexOf(e.key) > -1 &&
@@ -304,7 +304,7 @@ class Form extends React.Component {
             e.stopPropagation();
             this.submit();
         }
-    }
+    };
 
     render() {
         const children = this.props.children;

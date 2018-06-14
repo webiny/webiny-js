@@ -5,9 +5,7 @@ class WidgetModel extends Model {
         super();
         this.attr("id").char();
         this.attr("type").char();
-        this.attr("origin").char();
         this.attr("data").object();
-        this.attr("settings").object();
     }
 
     copy() {

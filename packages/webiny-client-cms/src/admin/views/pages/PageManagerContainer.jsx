@@ -8,7 +8,7 @@ const createdBy = "createdBy { ... on SecurityUser { firstName lastName } }";
 const fields = `
     id title slug status createdOn pinned
     category { title }
-    revisions { id name slug title active content { id type origin data settings } savedOn createdOn ${createdBy}}
+    revisions { id name slug title active content { id type data } savedOn createdOn ${createdBy}}
     ${createdBy}
 `;
 

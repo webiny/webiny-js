@@ -3,6 +3,7 @@ import { app, inject } from "webiny-client";
 import PageContent from "./PageEditor/PageContent";
 import Header from "./PageEditor/Header";
 import { PageEditorProvider } from "../../utils/context/pageEditorContext";
+import styles from "./PageEditor.scss?prefix=wby-cms-editor";
 
 @inject({
     modules: ["Loader", "Form", "FormData", "FormError"]
@@ -62,12 +63,18 @@ class PageEditor extends React.Component {
                     <Form model={model} onSubmit={submit}>
                         {({ submit, model, Bind }) => (
                             <PageEditorProvider value={this.getEditorProviderValue(model)}>
-                                {loading && <Loader />}
-                                {error && <FormError error={error} />}
-                                <Header page={model} onSave={submit} Bind={Bind} />
-                                <Bind name={"content"}>
-                                    <PageContent page={model} />
-                                </Bind>
+                                <div className={styles.editorContainer}>
+                                    {loading && <Loader />}
+                                    <Header page={model} onSave={submit} Bind={Bind} />
+                                    {error && (
+                                        <div className={styles.error}>
+                                            <FormError error={error} />
+                                        </div>
+                                    )}
+                                    <Bind name={"content"}>
+                                        <PageContent page={model} />
+                                    </Bind>
+                                </div>
                             </PageEditorProvider>
                         )}
                     </Form>
