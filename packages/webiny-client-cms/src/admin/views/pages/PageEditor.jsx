@@ -1,7 +1,8 @@
 import React from "react";
 import { app, inject } from "webiny-client";
-import PageContent from "./PageEditor/PageContent";
 import Header from "./PageEditor/Header";
+import Content from "./PageEditor/Content";
+import Settings from "./PageEditor/Settings";
 import { PageEditorProvider } from "../../utils/context/pageEditorContext";
 import styles from "./PageEditor.scss?prefix=wby-cms-editor";
 
@@ -56,23 +57,34 @@ class PageEditor extends React.Component {
             <FormData
                 withRouter
                 entity={"CmsRevision"}
-                defaultModel={{ content: [] }}
-                fields={"id name active title slug content { id type data }"}
+                defaultModel={{ content: [], settings: {} }}
+                fields={"id name active title slug content { id type data } settings"}
             >
                 {({ model, submit, error, loading }) => (
                     <Form model={model} onSubmit={submit}>
                         {({ submit, model, Bind }) => (
                             <PageEditorProvider value={this.getEditorProviderValue(model)}>
+                                <Bind name={"*"}>
+                                    <Settings onReady={ref => (this.settings = ref)} />
+                                </Bind>
                                 <div className={styles.editorContainer}>
+                                    <div id={"wby-cms-editor-portal"} />
                                     {loading && <Loader />}
-                                    <Header page={model} onSave={submit} Bind={Bind} />
+                                    <Bind name={"title"}>
+                                        <Header
+                                            page={model}
+                                            onSave={submit}
+                                            onCancel={() => app.router.goToRoute("Cms.Page.List")}
+                                            onSettings={() => this.settings.show()}
+                                        />
+                                    </Bind>
                                     {error && (
                                         <div className={styles.error}>
                                             <FormError error={error} />
                                         </div>
                                     )}
                                     <Bind name={"content"}>
-                                        <PageContent page={model} />
+                                        <Content page={model} />
                                     </Bind>
                                 </div>
                             </PageEditorProvider>

@@ -19,6 +19,8 @@ class Page extends Entity {
             .char()
             .setValidators("required");
 
+        this.attr("settings").object();
+
         this.attr("content").models(WidgetModel);
 
         this.attr("activeRevision")

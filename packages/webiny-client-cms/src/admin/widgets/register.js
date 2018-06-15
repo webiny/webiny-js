@@ -6,9 +6,9 @@ import TextWidget from "./text";
 import TextWithIconWidget from "./textWithIcon";
 import ImageWithTextWidget from "./imageWithText";
 
-import TextWidgetRender from "./../../frontend/widgets/text";
-import TextWithIconWidgetRender from "./../../frontend/widgets/textWithIcon";
-import ImageWithTextWidgetRender from "./../../frontend/widgets/imageWithText";
+import TextWidgetRender from "frontend/widgets/text";
+import TextWithIconWidgetRender from "frontend/widgets/textWithIcon";
+import ImageWithTextWidgetRender from "frontend/widgets/imageWithText";
 
 export default () => {
     const cmsService: CMS = app.services.get("cms");
@@ -35,19 +35,22 @@ export default () => {
     cmsService.addEditorWidget({
         group: "text",
         type: "text",
-        widget: new TextWidget()
+        widget: new TextWidget(),
+        tags: ["text", "paragraph", "blog"]
     });
 
     cmsService.addEditorWidget({
         group: "text",
         type: "text-with-icon",
-        widget: new TextWithIconWidget()
+        widget: new TextWithIconWidget(),
+        tags: ["text", "paragraph", "blog", "icon"]
     });
 
     cmsService.addEditorWidget({
         group: "media",
         type: "image-with-text",
-        widget: new ImageWithTextWidget()
+        widget: new ImageWithTextWidget(),
+        tags: ["text", "paragraph", "blog", "image", "picture", "photo", "foto"]
     });
 
     // Preview widgets

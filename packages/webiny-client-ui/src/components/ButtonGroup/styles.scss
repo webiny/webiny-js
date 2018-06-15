@@ -6,9 +6,9 @@
       margin-right: 0;
     }
 
-    &:first-child:not(:last-child):hover {
+    /*&:first-child:not(:last-child):hover {
       box-shadow: none;
-    }
+    }*/
 
     &:last-child:not(:first-child) {
       border-bottom-left-radius: 0;
@@ -16,9 +16,9 @@
       margin-left: 0px;
     }
 
-    &:last-child:not(:first-child):hover {
+    /*&:last-child:not(:first-child):hover {
       box-shadow: none;
-    }
+    }*/
 
     &:not(:last-child):not(:first-child) {
       border-radius: 0;

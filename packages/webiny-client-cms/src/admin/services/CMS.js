@@ -1,6 +1,5 @@
 // @flow
 import _ from "lodash";
-import { app } from "webiny-client";
 import type { Widget, EditorWidget } from "../../index";
 
 export type WidgetGroup = {
@@ -12,7 +11,8 @@ export type WidgetGroup = {
 export type WidgetData = {
     type: string,
     group: string,
-    widget: EditorWidget
+    widget: EditorWidget,
+    tags?: Array<string>
 };
 
 class CMS {
@@ -57,15 +57,38 @@ class CMS {
         return this.widgetGroups;
     }
 
-    getEditorWidgets(group: ?string) {
+    getEditorWidgets(group: ?string): Array<WidgetData> {
         return group ? this.editorWidgets.filter(w => w.group === group) : this.editorWidgets;
     }
 
-    getEditorWidget(type: string, extraFilters: Object = {}) {
+    getEditorWidget(type: string, extraFilters: Object = {}): WidgetData {
         return _.find(this.editorWidgets, { type, ...extraFilters });
     }
 
-    createGlobalWidget(data: Object) {
+    findEditorWidgets(tag: string): Array<mixed> {
+        tag = _.trim(tag);
+
+        let allWidgets = this.editorWidgets;
+        if (tag.length) {
+            allWidgets = this.editorWidgets.filter(w => {
+                return !!_.find(w.tags || [], wTag => wTag.startsWith(tag));
+            });
+        }
+
+        const groups = {};
+        allWidgets.forEach(w => {
+            if (!groups[w.group]) {
+                const widget = _.find(this.widgetGroups, { name: w.group });
+                groups[w.group] = { ...widget, widgets: [] };
+            }
+
+            groups[w.group].widgets.push(w);
+        });
+
+        return Object.values(groups);
+    }
+
+    /*createGlobalWidget(data: Object) {
         const createWidget = app.graphql.generateCreate("CmsWidget", "id");
         return createWidget({ variables: { data } }).then(({ data: { id } }) => {
             // Register new global widget
@@ -99,7 +122,7 @@ class CMS {
             const index = _.findIndex(this.editorWidgets, { group: "global", origin: id });
             this.editorWidgets.splice(index, 1);
         });
-    }
+    }*/
 }
 
 export default CMS;

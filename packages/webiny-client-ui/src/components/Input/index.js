@@ -10,13 +10,35 @@ import styles from "./styles.css?prefix=wui-input";
     styles
 })
 class Input extends React.Component {
-    constructor(props) {
-        super(props);
+    static defaultProps = {
+        delay: 400,
+        onEnter: _.noop, // NOTE: only works if inside a Form
+        onKeyDown: _.noop,
+        onKeyUp: _.noop,
+        onBlur: _.noop,
+        onRef: _.noop,
+        type: "text",
+        autoFocus: null,
+        addonLeft: null,
+        addonRight: null,
+        iconLeft: null,
+        iconRight: null,
+        wrapperClassName: "",
+        renderValidationIcon() {
+            if (!this.props.showValidationIcon || this.props.validation.isValid === null) {
+                return null;
+            }
 
-        this.focus = this.focus.bind(this);
-    }
+            const { FormGroup } = this.props.modules;
 
-    onKeyDown({ event }) {
+            if (this.props.validation.isValid === true) {
+                return <FormGroup.ValidationIcon />;
+            }
+            return <FormGroup.ValidationIcon error />;
+        }
+    };
+
+    onKeyDown = ({ event }) => {
         if (event.metaKey || event.ctrlKey) {
             return;
         }
@@ -31,11 +53,11 @@ class Input extends React.Component {
             default:
                 break;
         }
-    }
+    };
 
-    focus() {
+    focus = () => {
         this.dom.focus();
-    }
+    };
 
     render() {
         if (this.props.render) {
@@ -63,9 +85,7 @@ class Input extends React.Component {
             placeholder: this.props.placeholder,
             onKeyUp: event => this.props.onKeyUp({ event, component: this }),
             onKeyDown: event =>
-                (this.props.onKeyDown !== _.noop
-                    ? this.props.onKeyDown
-                    : this.onKeyDown.bind(this))({
+                (this.props.onKeyDown !== _.noop ? this.props.onKeyDown : this.onKeyDown)({
                     event,
                     component: this
                 }),
@@ -131,32 +151,5 @@ class Input extends React.Component {
         );
     }
 }
-
-Input.defaultProps = {
-    delay: 400,
-    onEnter: _.noop, // NOTE: only works if inside a Form
-    onKeyDown: _.noop,
-    onKeyUp: _.noop,
-    onRef: _.noop,
-    type: "text",
-    autoFocus: null,
-    addonLeft: null,
-    addonRight: null,
-    iconLeft: null,
-    iconRight: null,
-    wrapperClassName: "",
-    renderValidationIcon() {
-        if (!this.props.showValidationIcon || this.props.validation.isValid === null) {
-            return null;
-        }
-
-        const { FormGroup } = this.props.modules;
-
-        if (this.props.validation.isValid === true) {
-            return <FormGroup.ValidationIcon />;
-        }
-        return <FormGroup.ValidationIcon error />;
-    }
-};
 
 export default Input;

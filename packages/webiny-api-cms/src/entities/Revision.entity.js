@@ -21,6 +21,8 @@ class Revision extends Entity {
             .char()
             .setValidators("required");
 
+        this.attr("settings").object();
+
         this.attr("content")
             .models(WidgetModel)
             .onSet(widgets => {
@@ -56,6 +58,7 @@ class Revision extends Entity {
                 const page = await this.page;
                 page.title = this.title;
                 page.slug = this.slug;
+                page.settings = this.settings;
 
                 page.content = this.content.map(block => {
                     return block.copy();
