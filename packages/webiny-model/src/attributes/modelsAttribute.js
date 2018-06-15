@@ -107,7 +107,7 @@ class ModelsAttribute extends Attribute {
         }
     }
 
-    async getStorageValue(): Promise<Array<Object>> {
+    async getStorageValue(): Promise<Array<Object> | Object> {
         const value = this.getValue();
         if (this.keyValue) {
             if (value instanceof Object) {

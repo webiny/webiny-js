@@ -16,7 +16,8 @@ export type ImageProcessor = ({
 export type AttributeToTypeParams = {
     attr: Attribute,
     schema: Schema,
-    modelToType: Function
+    modelToType: Function,
+    convertModelToType: Function
 };
 
 /**

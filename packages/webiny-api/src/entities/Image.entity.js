@@ -6,7 +6,7 @@ import File from "./File.entity";
 import type { ImageProcessor } from "../../types";
 
 export type ImagePresets = {
-    [preset: string]: [{ action: string }]
+    [preset: string]: Array<{ action: string }>
 };
 
 class Image extends File {

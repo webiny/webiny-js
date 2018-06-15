@@ -1,4 +1,4 @@
-// @flow
+// Add flow later
 import { Entity } from "webiny-api";
 import addDays from "date-fns/add_days";
 import subDays from "date-fns/sub_days";

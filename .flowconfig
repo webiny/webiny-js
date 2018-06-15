@@ -18,4 +18,5 @@ module.system.node.resolve_dirname=node_modules
 module.system.node.resolve_dirname=./src
 esproposal.class_static_fields=enable
 suppress_comment= \\(.\\|\n\\)*\\$FlowIgnore
+suppress_comment= \\(.\\|\n\\)*\\$FlowFixMe
 [strict]
