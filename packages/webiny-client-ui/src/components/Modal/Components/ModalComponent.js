@@ -4,7 +4,7 @@ import _ from "lodash";
 import $ from "jquery";
 import classSet from "classnames";
 import { app, inject } from "webiny-client";
-import styles from "../styles.scss?prefix=wui-modal";
+import styles from "../styles.module.scss";
 
 @inject({
     styles,

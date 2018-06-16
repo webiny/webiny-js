@@ -3,7 +3,7 @@ import _ from "lodash";
 import { inject } from "webiny-client";
 import classSet from "classnames";
 import AlertContainer from "./Container";
-import styles from "./styles.css?prefix=Webiny_Ui_Alert";
+import styles from "./styles.module.css";
 
 @inject({ styles, modules: ["Icon"] })
 class Alert extends React.Component {

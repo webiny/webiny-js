@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import classSet from "classnames";
 import { i18n, inject } from 'webiny-client';
-import styles from './styles.css?prefix=wui-tabs';
+import styles from "./styles.module.css";
 
 const t = i18n.namespace("Webiny.Ui.Tabs");
 @inject({ modules: ['Icon'], styles })

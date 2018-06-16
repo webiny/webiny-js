@@ -5,7 +5,7 @@ import HeaderLeft from './DashboardComponents/HeaderLeft';
 import HeaderCenter from './DashboardComponents/HeaderCenter';
 import HeaderRight from './DashboardComponents/HeaderRight';
 import Body from './Body';
-import styles from './styles.css?prefix=wui-view';
+import styles from "./styles.module.css";
 
 @inject({ styles })
 class DashboardView extends React.Component {

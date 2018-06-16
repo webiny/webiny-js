@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./AttributeTooltip.scss";
+import styles from "./AttributeTooltip.module.scss";
 import { inject, i18n } from "webiny-client";
 import _ from "lodash";
 const t = i18n.namespace("Security.EntitiesForm.Access.Permissions.TogglePermissionButton");

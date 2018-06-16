@@ -4,7 +4,7 @@ import _ from "lodash";
 import { i18n, inject, app } from "webiny-client";
 const t = i18n.namespace("Security.Modal.ExportPolicyModal");
 import { withModalDialog } from "webiny-client-ui";
-import css from "./exportPolicyModal.scss";
+import css from "./exportPolicyModal.module.scss";
 
 @withModalDialog()
 @inject({

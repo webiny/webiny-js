@@ -4,7 +4,7 @@ import classSet from "classnames";
 import { inject, i18n } from "webiny-client";
 import { withFormComponent } from "webiny-client-ui";
 import ImagePreview from "./Preview";
-import styles from "./styles.css?prefix=Webiny_Ui_Image";
+import styles from "./styles.module.css";
 
 const t = i18n.namespace("Webiny.Ui.Image");
 @withFormComponent()

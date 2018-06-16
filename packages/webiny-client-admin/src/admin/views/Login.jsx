@@ -3,7 +3,7 @@ import classSet from "classnames";
 import invariant from "invariant";
 import { app, inject, i18n } from "webiny-client";
 import logoOrange from "webiny-client-admin/lib/assets/images/logo_orange.png";
-import styles from "./Login.css?prefix=Login";
+import styles from "./Login.module.css";
 
 const t = i18n.namespace("Webiny.Admin.Auth.Login");
 

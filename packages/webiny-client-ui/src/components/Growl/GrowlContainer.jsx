@@ -3,7 +3,7 @@ import _ from 'lodash';
 import classSet from "classnames";
 import dynamics from 'dynamics.js';
 import { inject } from 'webiny-client';
-import styles from './styles.css?prefix=Webiny_Ui_Growl';
+import styles from "./styles.module.css";
 
 @inject({ styles })
 class GrowlContainer extends React.Component {

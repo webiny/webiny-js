@@ -1,5 +1,5 @@
 import React from "react";
-import css from "./ApiAccess.scss";
+import css from "./ApiAccess.module.scss";
 import _ from "lodash";
 import QueryMutationFieldsList from "./ApiAccess/QueryMutationFieldsList";
 import FieldsSelector from "./ApiAccess/FieldsSelector";

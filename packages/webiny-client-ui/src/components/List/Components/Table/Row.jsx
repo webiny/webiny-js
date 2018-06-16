@@ -5,7 +5,7 @@ import { inject, isElementOfType, elementHasFlag } from "webiny-client";
 import SelectRowField from "./Fields/SelectRowField";
 import Actions from "./Actions";
 import FieldInfo from "./FieldInfo";
-import styles from "../../styles.css?prefix=wui-table-row";
+import styles from "../../styles.module.css";
 
 @inject({ styles })
 class Row extends React.Component {

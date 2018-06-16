@@ -3,7 +3,7 @@ import _ from "lodash";
 import { app, i18n } from "webiny-client";
 import CreateRevisionDialog from "./CreateRevisionDialog";
 import { PageDetailsConsumer } from "./../PageManager/PageDetailsContext";
-import styles from "./PageRevisions.scss?prefix=Webiny_CMS_PageRevisions";
+import styles from "./PageRevisions.module.scss";
 
 const t = i18n.namespace("Cms.Admin.Views.PageRevisions");
 

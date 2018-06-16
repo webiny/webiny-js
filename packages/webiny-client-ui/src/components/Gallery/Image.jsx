@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { inject } from "webiny-client";
 import filesize from "filesize";
-import styles from "./styles.css?prefix=Webiny_Ui_Gallery_Image";
+import styles from "./styles.module.css";
 
 @inject({ modules: ["Link"], styles })
 class Image extends React.Component {

@@ -3,7 +3,7 @@ import _ from "lodash";
 import { inject } from "webiny-client";
 import { withFormComponent } from "webiny-client-ui";
 import SimpleMDE from "simplemde";
-import styles from "./styles.scss?prefix=Webiny_Ui_MarkdownEditor";
+import styles from "./styles.module.scss";
 
 @withFormComponent()
 @inject({ styles })

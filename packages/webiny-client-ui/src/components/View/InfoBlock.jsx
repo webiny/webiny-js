@@ -1,7 +1,7 @@
 import React from 'react';
 import { inject } from 'webiny-client';
 import classSet from "classnames";
-import styles from './styles.css?prefix=wui-view';
+import styles from "./styles.module.css";
 
 
 @inject({ styles })

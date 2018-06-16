@@ -8,7 +8,6 @@ if (window) {
 
 require("bootstrap-sass");
 
-import "./assets/styles.scss?extract";
 import growler from "./services/growler";
 import ModalService from "./services/modal";
 

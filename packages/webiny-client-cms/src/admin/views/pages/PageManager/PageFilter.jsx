@@ -2,7 +2,7 @@ import React from "react";
 import classSet from "classnames";
 import _ from "lodash";
 import { inject } from "webiny-client";
-import styles from "./PageFilter.scss?prefix=Webiny_CMS_PageFilter";
+import styles from "./PageFilter.module.scss";
 
 @inject({ modules: ["Icon", "Link"] })
 class PageFilter extends React.Component {

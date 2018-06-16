@@ -12,6 +12,9 @@ import userIdentity from "./userIdentity";
 import apiConfig from "./../apiConfig";
 import { hot } from "react-hot-loader";
 
+import "webiny-client-ui/lib/assets/styles.scss";
+import "webiny-client-admin/lib/assets/styles.scss";
+
 if (!app.initialized) {
     app.use(adminApp());
     app.use(cmsAdminApp());

@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import classSet from "classnames";
 import { inject } from "webiny-client";
-import styles from "./AddWidget.scss?prefix=wby-cms-editor-addWidget";
+import styles from "./AddWidget.module.scss";
 
 @inject({ modules: ["Icon", "Input"], services: ["cms"] })
 class AddWidget extends React.Component {

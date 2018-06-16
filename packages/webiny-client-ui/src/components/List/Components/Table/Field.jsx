@@ -3,7 +3,7 @@ import _ from "lodash";
 import classSet from "classnames";
 import { inject } from "webiny-client";
 import RouteAction from "./Actions/RouteAction";
-import styles from "../../styles.css?prefix=Webiny_Ui_List_Field";
+import styles from "../../styles.module.css";
 
 @inject({ styles, tableField: true })
 class Field extends React.Component {

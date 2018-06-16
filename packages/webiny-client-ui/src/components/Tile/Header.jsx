@@ -1,7 +1,7 @@
 import React from 'react';
 import classSet from "classnames";
 import { inject } from 'webiny-client';
-import styles from './styles.css?prefix=Webiny_Ui_Tile_Header';
+import styles from "./styles.module.css";
 
 @inject({ styles, modules: ['Icon'] })
 class Header extends React.Component {

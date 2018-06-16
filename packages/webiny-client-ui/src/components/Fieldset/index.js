@@ -1,7 +1,7 @@
 import React from "react";
 import { inject } from "webiny-client";
 import classSet from "classnames";
-import styles from "./styles.css?prefix=Webiny_Ui_Fieldset";
+import styles from "./styles.module.css";
 
 @inject({ styles })
 class Fieldset extends React.Component {

@@ -3,7 +3,7 @@ import { inject, isElementOfType } from 'webiny-client';
 import Header from './Header';
 import Body from './Body';
 import Footer from './Footer';
-import styles from './styles.css?prefix=wui-view';
+import styles from "./styles.module.css";
 
 @inject({ modules: ['Panel'], styles })
 class ListView extends React.Component {

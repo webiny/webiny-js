@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import css from "./Access.scss";
+import css from "./Access.module.scss";
 import TogglePermissionButton from "./../components/TogglePermissionButton";
 
 import { inject, i18n } from "webiny-client";

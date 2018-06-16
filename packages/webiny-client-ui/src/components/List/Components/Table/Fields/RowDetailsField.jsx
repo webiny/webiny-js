@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import { inject } from 'webiny-client';
 import classSet from "classnames";
-import styles from '../../../styles.css?prefix=wui-table-rowDetailsField';
+import styles from "../../../styles.module.css";
 
 @inject({ modules: ['Link', 'List'], tableField: true, styles })
 class RowDetailsField extends React.Component {

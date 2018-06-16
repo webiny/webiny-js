@@ -1,7 +1,7 @@
 import React from "react";
 import { inject } from "webiny-client";
 import classSet from "classnames";
-import styles from "../../styles.css?prefix=wui-table-header";
+import styles from "../../styles.module.css";
 
 @inject({ modules: ["Icon"], styles })
 class Header extends React.Component {

@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { app, i18n, inject } from "webiny-client";
 import { withFormComponent } from "webiny-client-ui";
-import styles from "./styles.css?prefix=wui--copy-input";
+import styles from "./styles.module.css";
 
 const t = i18n.namespace("Webiny.Ui.Copy.CopyInput");
 @withFormComponent()

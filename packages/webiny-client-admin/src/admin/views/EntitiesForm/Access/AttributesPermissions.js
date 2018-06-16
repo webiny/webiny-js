@@ -1,6 +1,6 @@
 import React from "react";
 import classNames from "classnames";
-import css from "./AttributesPermissions.scss";
+import css from "./AttributesPermissions.module.scss";
 import { inject, app } from "webiny-client";
 import _ from "lodash";
 import gql from "graphql-tag";

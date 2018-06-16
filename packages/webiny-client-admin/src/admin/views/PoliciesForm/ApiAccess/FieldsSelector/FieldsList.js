@@ -1,6 +1,6 @@
 import React from "react";
 import classNames from "classnames";
-import css from "./FieldsList.scss";
+import css from "./FieldsList.module.scss";
 import { inject, i18n } from "webiny-client";
 import _ from "lodash";
 const t = i18n.namespace("Security.PermissionsForm.Scopes.FieldsSelector.FieldsList");

@@ -4,7 +4,7 @@ import classSet from "classnames";
 import { app, inject } from 'webiny-client';
 import TabHeader from './TabHeader';
 import TabContent from './TabContent';
-import styles from './styles.css?prefix=wui-tabs';
+import styles from "./styles.module.css";
 
 @inject({ styles, tabs: true })
 class Tabs extends React.Component {

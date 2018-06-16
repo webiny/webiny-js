@@ -1,0 +1,20 @@
+.editorContent {
+  position: relative;
+  border: 1px solid #DCDCDC;
+  background-color: #ffffff;
+  width: 950px;
+  min-width: 950px;
+  min-height: 87vh;
+  margin: 0 auto;
+}
+
+.editorSidebar {
+  position: fixed;
+  right: -400px;
+  width: 400px;
+  top: 53px;
+  z-index: 100;
+  border: 1px solid #DCDCDC;
+  height: 100vh;
+  background-color: #fff;
+}

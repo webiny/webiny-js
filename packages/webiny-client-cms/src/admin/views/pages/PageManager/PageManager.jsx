@@ -10,7 +10,7 @@ import PageList from "./PageList";
 import PageDetails from "./PageDetails";
 import CreatePageDialog from "./CreatePageDialog";
 
-import styles from "./PageManager.scss?prefix=wby-cms-pageManager";
+import styles from "./PageManager.module.scss";
 
 const t = i18n.namespace("Cms.Admin.Views.PageManager");
 

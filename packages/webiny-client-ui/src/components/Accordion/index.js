@@ -1,7 +1,7 @@
 import React from "react";
 import classSet from "classnames";
 import { inject } from "webiny-client";
-import styles from "./styles.scss?prefix=wui-accordion";
+import styles from "./styles.module.scss";
 
 const Item = props => {
     const { title, icon, children, isActive, onClick, styles, Icon } = props;

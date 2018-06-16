@@ -1,6 +1,6 @@
 import React from "react";
 import { inject } from "webiny-client";
-import styles from "./Header.scss?prefix=wby-cms-editor";
+import styles from "./Header.module.scss";
 
 export default inject({ modules: ["Link", "Input", "ButtonGroup"] })(
     ({

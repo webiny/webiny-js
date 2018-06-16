@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { inject } from "webiny-client";
 import classSet from "classnames";
-import styles from "./styles.css?prefix=Webiny_Ui_Button";
+import styles from "./styles.module.css";
 
 @inject({ styles, modules: ["Tooltip", "Icon"] })
 class Button extends React.Component {
