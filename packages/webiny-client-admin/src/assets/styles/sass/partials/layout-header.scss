@@ -6,7 +6,7 @@
 }
 
 .navbar-header {
-  background: url(../../../images/header_bg.jpg) repeat top left;
+  background: url($webiny-client-admin + '/assets/images/header_bg.jpg') repeat top left;
   text-align: center;
   padding: 16px;
 
@@ -67,7 +67,7 @@
     padding: 0;
     border: 1px solid #E0E0E0;
     span.top-arr {
-      background: url(../../../images/arr.png) no-repeat top left;
+      background: url($webiny-client-admin + '/assets/images/arr.png') no-repeat top left;
       width: 18px;
       height: 11px;
       position: absolute;
@@ -130,7 +130,7 @@
       right: -17px;
     }
     span.top-arr {
-      background: url(../../../images/arr.png) no-repeat top left;
+      background: url($webiny-client-admin + '/assets/images/arr.png') no-repeat top left;
       width: 18px;
       height: 11px;
       position: absolute;

@@ -10,10 +10,8 @@ import { app as adminApp, Menu } from "webiny-client-admin";
 import { app as cmsAdminApp } from "webiny-client-cms/lib/admin";
 import userIdentity from "./userIdentity";
 import apiConfig from "./../apiConfig";
+import "./app.scss";
 import { hot } from "react-hot-loader";
-
-import "webiny-client-ui/lib/assets/styles.scss";
-import "webiny-client-admin/lib/assets/styles.scss";
 
 if (!app.initialized) {
     app.use(adminApp());

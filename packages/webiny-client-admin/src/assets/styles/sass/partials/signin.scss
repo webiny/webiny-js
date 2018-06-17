@@ -1,5 +1,5 @@
 .sign-in {
-  /*background: #FFFFFF url(../../../images/bg-login.png) repeat;*/
+  /*background: #FFFFFF url($webiny-client-admin + '/assets/images/bg-login'.png) repeat;*/
   height: 100%;
   padding: 20px;
   text-align: center;
@@ -33,7 +33,7 @@
   }
   h2 span {
     display: inline-block;
-    background: url(../../../images/icons.png) no-repeat -46px -3px;
+    background: url($webiny-client-admin + '/assets/images/icons.png') no-repeat -46px -3px;
     width: 20px;
     height: 26px;
     margin-right: 5px;
@@ -45,7 +45,7 @@
   .input-holder {
     position: relative;
     &.success span.not {
-      background: url(../../../images/icons.png) no-repeat 1px 2px;
+      background: url($webiny-client-admin + '/assets/images/icons.png') no-repeat 1px 2px;
       width: 42px;
       height: 39px;
       display: block;
@@ -55,7 +55,7 @@
       z-index: 1;
     }
     &.error span.not {
-      background: url(../../../images/icons.png) no-repeat 1px -41px;
+      background: url($webiny-client-admin + '/assets/images/icons.png') no-repeat 1px -41px;
       width: 42px;
       height: 39px;
       display: block;
@@ -70,10 +70,10 @@
       top: 44px;
       z-index: 1;
       .icheckbox_minimal {
-        background: url("../../../images/icons.png") no-repeat scroll -97px -6px rgba(0, 0, 0, 0);
+        background: url($webiny-client-admin + "/assets/images/icons.png") no-repeat scroll -97px -6px rgba(0, 0, 0, 0);
         border: 1px solid #DB840F;
         &.checked {
-          background: url("../../../images/icons.png") no-repeat scroll -97px -30px rgba(0, 0, 0, 0);
+          background: url($webiny-client-admin + "/assets/images/icons.png") no-repeat scroll -97px -30px rgba(0, 0, 0, 0);
           border: 1px solid #DB840F;
         }
       }
@@ -84,7 +84,7 @@
     }
   }
   .icheckbox_minimal {
-    background: url(../../../images/icons.png) no-repeat -72px -6px;
+    background: url($webiny-client-admin + '/assets/images/icons.png') no-repeat -72px -6px;
     display: block;
     width: 24px;
     height: 24px;
@@ -93,7 +93,7 @@
     margin: 0 5px 0 0;
     border: 2px solid #FA5A28;
     &.checked {
-      background: url(../../../images/icons.png) no-repeat -99px -30px;
+      background: url($webiny-client-admin + '/assets/images/icons.png') no-repeat -99px -30px;
       display: block;
       width: 24px;
       height: 24px;
@@ -123,7 +123,7 @@
     height: 18px;
     margin: 5px 0 0 5px;
 
-    background: url(../../../images/icons.png) no-repeat -46px -40px;
+    background: url($webiny-client-admin + '/assets/images/icons.png') no-repeat -46px -40px;
   }
   span.info .notification {
     display: block;
@@ -328,7 +328,7 @@
 
   .sign-in {
     .input-holder.success span.not {
-      background: url("../../../images/icons.png") no-repeat scroll 1px 2px rgba(0, 0, 0, 0);
+      background: url($webiny-client-admin + "/assets/images/icons.png") no-repeat scroll 1px 2px rgba(0, 0, 0, 0);
     }
     padding: 0;
 
@@ -372,15 +372,15 @@
 @media only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-o-min-device-pixel-ratio: 13 / 10), only screen and (min-resolution: 120dpi) {
   .sign-in {
     h2 span {
-      background: url(../../../images/icons_retina.png) no-repeat -51px -1px;
+      background: url($webiny-client-admin + '/assets/images/icons_retina.png') no-repeat -51px -1px;
       background-size: 180px 82px;
     }
     .input-holder.success span.not {
-      background: url(../../../images/icons_retina.png) no-repeat 1px 1px;
+      background: url($webiny-client-admin + '/assets/images/icons_retina.png') no-repeat 1px 1px;
       background-size: 180px 82px;
     }
     a.info {
-      background: url(../../../images/icons_retina.png) no-repeat -49px -33px;
+      background: url($webiny-client-admin + '/assets/images/icons_retina.png') no-repeat -49px -33px;
       background-size: 180px 82px;
       width: 24px;
       height: 24px;
@@ -388,38 +388,38 @@
     }
     .btn-primary {
       span {
-        background: url(../../../images/icons_retina.png) no-repeat -79px -3px;
+        background: url($webiny-client-admin + '/assets/images/icons_retina.png') no-repeat -79px -3px;
         background-size: 180px 82px;
       }
       &:active span, &:hover span {
-        background: url(../../../images/icons_retina.png) no-repeat -79px -33px;
+        background: url($webiny-client-admin + '/assets/images/icons_retina.png') no-repeat -79px -33px;
         background-size: 180px 82px;
       }
     }
     .input-holder.error span.not {
-      background: url(../../../images/icons_retina.png) no-repeat 1px -44px;
+      background: url($webiny-client-admin + '/assets/images/icons_retina.png') no-repeat 1px -44px;
       background-size: 180px 82px;
     }
     .btn-primary {
       &.reset {
         span, &:active span, &:hover span {
-          background: url(../../../images/icons_retina.png) no-repeat -113px -3px;
+          background: url($webiny-client-admin + '/assets/images/icons_retina.png') no-repeat -113px -3px;
           background-size: 180px 82px;
         }
       }
       &.save {
         span, &:active span, &:hover span {
-          background: url(../../../images/icons_retina.png) no-repeat -148px -3px;
+          background: url($webiny-client-admin + '/assets/images/icons_retina.png') no-repeat -148px -3px;
           background-size: 180px 82px;
         }
       }
     }
     .input-holder label.chk .icheckbox_minimal.checked {
-      background: url(../../../images/icons_retina.png) no-repeat -111px -63px;
+      background: url($webiny-client-admin + '/assets/images/icons_retina.png') no-repeat -111px -63px;
       background-size: 180px 82px;
     }
     .icheckbox_minimal.checked {
-      background: url(../../../images/icons_retina.png) no-repeat -81px -63px;
+      background: url($webiny-client-admin + '/assets/images/icons_retina.png') no-repeat -81px -63px;
       background-size: 180px 82px;
     }
     a.info .tooltip-inner {

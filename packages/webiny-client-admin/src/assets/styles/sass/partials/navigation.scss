@@ -1,6 +1,6 @@
 .master-navigation {
   .navbar-header {
-    background: url(../../../images/header_bg.jpg) repeat top left;
+    background: url($webiny-client-admin + '/assets/images/header_bg.jpg') repeat top left;
     text-align: center;
     padding: 16px;
     /*a.logo {
@@ -1038,7 +1038,7 @@ body.opened-mobile-nav {
           margin-top: 11px;
         }
         span.top-arr {
-          background: url(../../../images/arr.png) no-repeat top left;
+          background: url($webiny-client-admin + '/assets/images/arr.png') no-repeat top left;
           width: 18px;
           height: 11px;
           position: absolute;
@@ -1075,7 +1075,7 @@ body.opened-mobile-nav {
         }
       }
       .checked {
-        background: #fff url(../../../images/icons.png) no-repeat -74px -51px;
+        background: #fff url($webiny-client-admin + '/assets/images/icons.png') no-repeat -74px -51px;
         border: 1px solid #333;
       }
     }
@@ -1105,7 +1105,7 @@ body.opened-mobile-nav {
     padding: 0;
     border: 1px solid #E0E0E0;
     span.top-arr {
-      background: url(../../../images/arr.png) no-repeat top left;
+      background: url($webiny-client-admin + '/assets/images/arr.png') no-repeat top left;
       width: 18px;
       height: 11px;
       position: absolute;
@@ -1160,7 +1160,7 @@ body.opened-mobile-nav {
       right: -17px;
     }
     span.top-arr {
-      background: url(../../../images/arr.png) no-repeat top left;
+      background: url($webiny-client-admin + '/assets/images/arr.png') no-repeat top left;
       width: 18px;
       height: 11px;
       position: absolute;

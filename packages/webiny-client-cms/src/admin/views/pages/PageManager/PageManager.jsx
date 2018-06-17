@@ -61,7 +61,7 @@ class PageManager extends React.Component {
                     description={t`Your list of pages. Click the button on the right to create a new page.`}
                 >
                     <Link type="primary" align="right" onClick={() => this.createModal.show()}>
-                        <Icon icon={["fa", "plus-circle"]} /> {t`Create new page`}
+                        <Icon icon={["fa", "plus-circle"]} /> {t`Create page`}
                     </Link>
                     <CreatePageDialog onReady={ref => (this.createModal = ref)} />
                 </View.Header>

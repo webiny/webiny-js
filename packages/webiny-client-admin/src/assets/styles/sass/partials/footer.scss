@@ -10,7 +10,7 @@ footer {
     margin: 0 10px 25px 15px;
   }
   .swich {
-    background: url(../../../images/swich.png);
+    background: url($webiny-client-admin + '/assets/images/swich.png');
     width: 70px;
     height: 24px;
     float: left;

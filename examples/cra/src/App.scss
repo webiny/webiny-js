@@ -1,3 +1,8 @@
+$webiny-client-admin: "~webiny-client-admin/lib";
+$icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
+@import "~webiny-client-ui/lib/assets/styles.scss";
+@import "~webiny-client-admin/lib/assets/styles.scss";
+
 .App {
   text-align: center;
 }
