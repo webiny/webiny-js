@@ -36,6 +36,7 @@
     "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-flowtype": "^2.41.0",
     "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jest": "^21.17.0",
     "eslint-plugin-node": "^5.2.1",
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-react": "^7.7.0",
@@ -59,12 +60,10 @@
     "build": "lerna run --parallel build",
     "ci": "yarn coverage && cat ./coverage/lcov.info | coveralls",
     "clear": "lerna exec -- rimraf lib",
-    "client:watch": "lerna run --scope=webiny-client-ui --scope=webiny-client --scope=webiny-skeleton-app --scope=webiny-backend-app --parallel --stream build:watch",
+    "client:watch": "lerna run --scope=webiny-client* --parallel --stream build:watch",
     "commit": "git-cz",
-    "commit:check": "yarn flow && yarn lint-staged && yarn test",
+    "commit:check": "yarn lint-staged && yarn test",
     "coverage": "yarn test --coverage",
-    "coverage:html": "yarn coverage --reporters=html",
-    "coverage:check": "scripts/coverage.js --check=true",
     "flow": "flow",
     "lint-staged": "lint-staged",
     "prettier": "prettier --config .prettierrc.js --write",
@@ -75,7 +74,6 @@
     "test": "jest"
   },
   "pre-commit": [
-    "flow",
     "lint-staged",
     "test"
   ],
@@ -92,8 +90,13 @@
     ]
   },
   "jest": {
-    "coveragePathIgnorePatterns": ["/node_modules/", "/tests/"],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/tests/"
+    ],
     "setupTestFrameworkScriptFile": "jest-extended",
-    "testMatch": [ "<rootDir>/packages/**/tests/**/*.test.js" ]
+    "testMatch": [
+      "<rootDir>/packages/**/tests/**/*.test.js"
+    ]
   }
 }
