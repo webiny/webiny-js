@@ -1,8 +1,7 @@
-import { assert } from "chai";
 import Model from "./../src/model";
 
-describe("dirty and clean test", function() {
-    it("should make attributes dirty", async () => {
+describe("dirty and clean test", () => {
+    test("should make attributes dirty", async () => {
         const model = new Model(function() {
             this.attr("firstName").char();
             this.attr("lastName").char();
@@ -10,24 +9,24 @@ describe("dirty and clean test", function() {
             this.attr("createdOn").date();
         });
 
-        assert.isTrue(model.isClean());
+        expect(model.isClean()).toBe(true);
 
         model.lastName = "Test1";
 
-        assert.isFalse(model.getAttribute("firstName").value.isDirty());
-        assert.isTrue(model.getAttribute("lastName").value.isDirty());
-        assert.isFalse(model.getAttribute("number").value.isDirty());
-        assert.isFalse(model.getAttribute("createdOn").value.isDirty());
+        expect(model.getAttribute("firstName").value.isDirty()).toBe(false);
+        expect(model.getAttribute("lastName").value.isDirty()).toBe(true);
+        expect(model.getAttribute("number").value.isDirty()).toBe(false);
+        expect(model.getAttribute("createdOn").value.isDirty()).toBe(false);
 
-        assert.isFalse(model.isClean());
+        expect(model.isClean()).toBe(false);
 
         model.clean();
-        assert.isTrue(model.isClean());
+        expect(model.isClean()).toBe(true);
 
         model.lastName = "Test1";
-        assert.isTrue(model.isClean());
+        expect(model.isClean()).toBe(true);
 
         model.lastName = "Test2";
-        assert.isFalse(model.isClean());
+        expect(model.isClean()).toBe(false);
     });
 });

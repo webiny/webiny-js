@@ -1,4 +1,3 @@
-import { assert } from "chai";
 import Entity from "./../entities/entity";
 import { Model } from "webiny-model";
 
@@ -20,8 +19,8 @@ class ModelEntity extends Entity {
 
 ModelEntity.classId = "BooleanEntity";
 
-describe("models attribute test", function() {
-    it("it must return JSON string as storage value", async () => {
+describe("models attribute test", () => {
+    test("it must return JSON string as storage value", async () => {
         const entity = new ModelEntity();
         entity.populate({
             name: "Test-1",
@@ -32,28 +31,28 @@ describe("models attribute test", function() {
             ]
         });
 
-        assert.isArray(await entity.customModels);
+        expect(Array.isArray(await entity.customModels)).toBe(true);
 
         const data = await entity.toStorage();
-        assert.deepEqual(data, {
+        expect(data).toEqual({
             name: "Test-1",
             customModels:
                 '[{"name":"test","age":30},{"name":"test2","age":50},{"name":"test3","age":100}]'
         });
     });
 
-    it("it must return value itself if it's missing (eg. null)", async () => {
+    test("it must return value itself if it's missing (eg. null)", async () => {
         const entity = new ModelEntity();
         entity.populate({ name: "Test-1" });
         entity.getAttribute("customModels").value.dirty = false;
 
         const data = await entity.toStorage();
-        assert.deepEqual(data, {
+        expect(data).toEqual({
             name: "Test-1"
         });
     });
 
-    it("once received from storage, value should be converted to a plain object, otherwise nothing should be set", async () => {
+    test("once received from storage, value should be converted to a plain object, otherwise nothing should be set", async () => {
         const entity = new ModelEntity();
         entity.populateFromStorage({
             name: "Test-1",
@@ -61,7 +60,7 @@ describe("models attribute test", function() {
                 '[{"name":"test","age":30},{"name":"test2","age":50},{"name":"test3","age":100}]'
         });
 
-        assert.deepEqual(await entity.toJSON("name,customModels[name,age]"), {
+        expect(await entity.toJSON("name,customModels[name,age]")).toEqual({
             id: null,
             name: "Test-1",
             customModels: [
@@ -79,17 +78,17 @@ describe("models attribute test", function() {
                 }
             ]
         });
-        assert.isTrue(entity.isClean());
+        expect(entity.isClean()).toBe(true);
 
         entity.populateFromStorage({
             name: "Test-1",
             customModel: null
         });
 
-        assert.isTrue(entity.isClean());
+        expect(entity.isClean()).toBe(true);
     });
 
-    it("should be able to assign value from one entity's models attribute to other entity", async () => {
+    test("should be able to assign value from one entity's models attribute to other entity", async () => {
         const entity1 = new ModelEntity();
 
         const entity2 = new ModelEntity();
@@ -100,7 +99,7 @@ describe("models attribute test", function() {
             { name: "test3", age: 100 }
         ];
 
-        assert.deepEqual(await entity2.toJSON("name,customModels[name,age]"), {
+        expect(await entity2.toJSON("name,customModels[name,age]")).toEqual({
             id: null,
             name: "entity2",
             customModels: [
@@ -124,13 +123,13 @@ describe("models attribute test", function() {
         entity1.customModels = entity2.customModels;
 
         const data = await entity1.toStorage();
-        assert.deepEqual(data, {
+        expect(data).toEqual({
             customModels:
                 '[{"name":"test","age":30},{"name":"test2","age":50},{"name":"test3","age":100}]'
         });
     });
 
-    it("should be able to assign value from one entity's models attribute to other entity (from storage test)", async () => {
+    test("should be able to assign value from one entity's models attribute to other entity (from storage test)", async () => {
         const entity1 = new ModelEntity();
         entity1.populateFromStorage({ name: "entity1", customModels: "[]" });
 
@@ -144,7 +143,7 @@ describe("models attribute test", function() {
         entity1.customModels = entity2.customModels;
 
         const data = await entity1.toStorage();
-        assert.deepEqual(data, {
+        expect(data).toEqual({
             customModels:
                 '[{"name":"test","age":30},{"name":"test2","age":50},{"name":"test3","age":100}]'
         });

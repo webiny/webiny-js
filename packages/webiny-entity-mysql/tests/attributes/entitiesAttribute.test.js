@@ -1,4 +1,3 @@
-import { assert } from "chai";
 import { EntityCollection } from "webiny-entity";
 import { ComplexEntity, SimpleEntity } from "./../entities/complexEntity";
 import sinon from "sinon";
@@ -6,13 +5,13 @@ import User from "webiny-entity/tests/entities/user";
 
 const sandbox = sinon.sandbox.create();
 
-describe("entities attribute test", function() {
+describe("entities attribute test", () => {
     beforeEach(() => User.getEntityPool().flush());
     afterEach(() => sandbox.restore());
 
-    it("it must populate the attribute correctly", async () => {
+    test("it must populate the attribute correctly", async () => {
         const entity = new ComplexEntity();
-        assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state, {
+        expect(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state).toEqual({
             loading: false,
             loaded: false
         });
@@ -23,27 +22,27 @@ describe("entities attribute test", function() {
             { name: "Test-3" }
         ];
 
-        assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state, {
+        expect(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state).toEqual({
             loading: false,
             loaded: false
         });
 
         let simpleEntities = await entity.simpleEntitiesLoadedFromTable;
-        assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state, {
+        expect(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state).toEqual({
             loading: false,
             loaded: false
         });
 
-        assert.lengthOf(simpleEntities, 3);
-        assert.instanceOf(simpleEntities[0], SimpleEntity);
-        assert.instanceOf(simpleEntities[1], SimpleEntity);
-        assert.instanceOf(simpleEntities[2], SimpleEntity);
-        assert.isNull(simpleEntities[0].id);
-        assert.isNull(simpleEntities[1].id);
-        assert.isNull(simpleEntities[2].id);
-        assert.equal(simpleEntities[0].name, "Test-1");
-        assert.equal(simpleEntities[1].name, "Test-2");
-        assert.equal(simpleEntities[2].name, "Test-3");
+        expect(simpleEntities.length).toBe(3);
+        expect(simpleEntities[0]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[1]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[2]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[0].id).toBeNull();
+        expect(simpleEntities[1].id).toBeNull();
+        expect(simpleEntities[2].id).toBeNull();
+        expect(simpleEntities[0].name).toEqual("Test-1");
+        expect(simpleEntities[1].name).toEqual("Test-2");
+        expect(simpleEntities[2].name).toEqual("Test-3");
 
         const simpleEntity1 = new SimpleEntity();
         simpleEntity1.name = "Test-1";
@@ -56,42 +55,42 @@ describe("entities attribute test", function() {
 
         entity.simpleEntitiesLoadedFromTable = [simpleEntity1, simpleEntity2, simpleEntity3];
         await entity.simpleEntitiesLoadedFromTable;
-        assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state, {
+        expect(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state).toEqual({
             loading: false,
             loaded: false
         });
 
         simpleEntities = await entity.simpleEntitiesLoadedFromTable;
-        assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state, {
+        expect(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state).toEqual({
             loading: false,
             loaded: false
         });
 
-        assert.lengthOf(simpleEntities, 3);
-        assert.instanceOf(simpleEntities[0], SimpleEntity);
-        assert.instanceOf(simpleEntities[1], SimpleEntity);
-        assert.instanceOf(simpleEntities[2], SimpleEntity);
-        assert.isNull(simpleEntities[0].id);
-        assert.isNull(simpleEntities[1].id);
-        assert.isNull(simpleEntities[2].id);
-        assert.equal(simpleEntities[0].name, "Test-1");
-        assert.equal(simpleEntities[1].name, "Test-2");
-        assert.equal(simpleEntities[2].name, "Test-3");
+        expect(simpleEntities.length).toBe(3);
+        expect(simpleEntities[0]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[1]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[2]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[0].id).toBeNull();
+        expect(simpleEntities[1].id).toBeNull();
+        expect(simpleEntities[2].id).toBeNull();
+        expect(simpleEntities[0].name).toEqual("Test-1");
+        expect(simpleEntities[1].name).toEqual("Test-2");
+        expect(simpleEntities[2].name).toEqual("Test-3");
 
-        assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state, {
+        expect(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state).toEqual({
             loading: false,
             loaded: false
         });
         entity.simpleEntitiesLoadedFromTable = null;
 
-        assert.isNull(await entity.simpleEntitiesLoadedFromTable);
-        assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state, {
+        expect(await entity.simpleEntitiesLoadedFromTable).toBeNull();
+        expect(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state).toEqual({
             loading: false,
             loaded: false
         });
     });
 
-    it("it null is set, it should accept it", async () => {
+    test("it null is set, it should accept it", async () => {
         const entity = new ComplexEntity();
 
         entity.simpleEntitiesLoadedFromTable = [
@@ -100,20 +99,20 @@ describe("entities attribute test", function() {
             { name: "Test-3" }
         ];
         entity.simpleEntitiesLoadedFromTable = null;
-        assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state, {
+        expect(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state).toEqual({
             loading: false,
             loaded: false
         });
-        assert.lengthOf(entity.getAttribute("simpleEntitiesLoadedFromTable").value.queue, 0);
+        expect(entity.getAttribute("simpleEntitiesLoadedFromTable").value.queue.length).toBe(0);
 
-        assert.isNull(await entity.simpleEntitiesLoadedFromTable);
-        assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state, {
+        expect(await entity.simpleEntitiesLoadedFromTable).toBeNull();
+        expect(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state).toEqual({
             loading: false,
             loaded: false
         });
     });
 
-    it("it should return correct toStorage data", async () => {
+    test("it should return correct toStorage data", async () => {
         let entity = new ComplexEntity();
         entity.simpleEntitiesLoadedFromTable = [
             { id: 1, name: "Test-1" },
@@ -127,20 +126,20 @@ describe("entities attribute test", function() {
         let expected = {
             simpleEntities: "[]"
         };
-        assert.deepEqual(actual, expected);
+        expect(actual).toEqual(expected);
 
         entity = new ComplexEntity();
         actual = await entity.toStorage();
         expected = {};
-        assert.deepEqual(actual, expected);
+        expect(actual).toEqual(expected);
     });
 
-    it("should return EntityCollection which is the default value of the attribute", async () => {
+    test("should return EntityCollection which is the default value of the attribute", async () => {
         const entity = new ComplexEntity();
-        assert.instanceOf(await entity.simpleEntitiesLoadedFromTable, EntityCollection);
+        expect(await entity.simpleEntitiesLoadedFromTable).toBeInstanceOf(EntityCollection);
     });
 
-    it("should load entities from another table - only when the attribute is actually accessed", async () => {
+    test("should load entities from another table - only when the attribute is actually accessed", async () => {
         sandbox
             .stub(ComplexEntity.getDriver().getConnection(), "query")
             .onCall(0)
@@ -182,45 +181,44 @@ describe("entities attribute test", function() {
             });
 
         const entity = await ComplexEntity.findOne();
-        assert.equal(entity.id, 1);
+        expect(entity.id).toEqual(1);
 
-        assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state, {
+        expect(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state).toEqual({
             loading: false,
             loaded: false
         });
-        assert.instanceOf(
-            entity.getAttribute("simpleEntitiesLoadedFromTable").value.getCurrent(),
-            EntityCollection
-        );
-        assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state, {
+        expect(
+            entity.getAttribute("simpleEntitiesLoadedFromTable").value.getCurrent()
+        ).toBeInstanceOf(EntityCollection);
+        expect(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state).toEqual({
             loading: false,
             loaded: false
         });
 
         // After getting the attribute, let's check if everything was loaded correctly.
         const simpleEntities = await entity.simpleEntitiesLoadedFromTable;
-        assert.deepEqual(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state, {
+        expect(entity.getAttribute("simpleEntitiesLoadedFromTable").value.state).toEqual({
             loading: false,
             loaded: true
         });
 
-        assert.lengthOf(simpleEntities, 3);
-        assert.instanceOf(simpleEntities[0], SimpleEntity);
-        assert.instanceOf(simpleEntities[1], SimpleEntity);
-        assert.instanceOf(simpleEntities[2], SimpleEntity);
-        assert.equal(simpleEntities[0].id, 2);
-        assert.equal(simpleEntities[1].id, 3);
-        assert.equal(simpleEntities[2].id, 4);
-        assert.equal(simpleEntities[0].name, "This is a test B");
-        assert.equal(simpleEntities[1].name, "This is a test C");
-        assert.equal(simpleEntities[2].name, "This is a test D");
+        expect(simpleEntities.length).toBe(3);
+        expect(simpleEntities[0]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[1]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[2]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[0].id).toEqual(2);
+        expect(simpleEntities[1].id).toEqual(3);
+        expect(simpleEntities[2].id).toEqual(4);
+        expect(simpleEntities[0].name).toEqual("This is a test B");
+        expect(simpleEntities[1].name).toEqual("This is a test C");
+        expect(simpleEntities[2].name).toEqual("This is a test D");
 
         SimpleEntity.getDriver()
             .getConnection()
             .query.restore();
     });
 
-    it("when saving main entity, it should save linked entities only if auto save is enabled", async () => {
+    test("when saving main entity, it should save linked entities only if auto save is enabled", async () => {
         const entity = new ComplexEntity();
         entity.populate({
             name: "This is a test",
@@ -250,23 +248,23 @@ describe("entities attribute test", function() {
             .getConnection()
             .query.restore();
 
-        assert.equal(entity.id, "one");
-        assert.isTrue(entity.getAttribute("id").value.isClean());
+        expect(entity.id).toEqual("one");
+        expect(entity.getAttribute("id").value.isClean()).toBe(true);
 
         let simpleEntities = await entity.simpleEntitiesLoadedFromTable;
-        assert.instanceOf(simpleEntities[0], SimpleEntity);
-        assert.instanceOf(simpleEntities[1], SimpleEntity);
-        assert.instanceOf(simpleEntities[2], SimpleEntity);
+        expect(simpleEntities[0]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[1]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[2]).toBeInstanceOf(SimpleEntity);
 
-        assert.isNull(simpleEntities[0].id);
-        assert.isNull(simpleEntities[1].id);
-        assert.isNull(simpleEntities[2].id);
+        expect(simpleEntities[0].id).toBeNull();
+        expect(simpleEntities[1].id).toBeNull();
+        expect(simpleEntities[2].id).toBeNull();
 
         simpleEntities[0].name = "Test-1-UPDATE";
         simpleEntities[1].name = "Test-2-UPDATE";
         simpleEntities[2].name = "Test-3-UPDATE";
 
-        assert.isTrue(entity.getAttribute("simpleEntitiesLoadedFromTable").value.isDirty());
+        expect(entity.getAttribute("simpleEntitiesLoadedFromTable").value.isDirty()).toBe(true);
 
         // Now let's try to save entity with auto save enabled on "simpleEntitiesLoadedFromTable" attribute.
         entity.getAttribute("simpleEntitiesLoadedFromTable").setAutoSave();
@@ -307,26 +305,26 @@ describe("entities attribute test", function() {
 
         await entity.save();
 
-        assert.equal(entitySave.callCount, 3);
+        expect(entitySave.callCount).toEqual(3);
 
         entity
             .getDriver()
             .getConnection()
             .query.restore();
 
-        assert.equal(entity.id, "one");
-        assert.isTrue(entity.getAttribute("id").value.isClean());
-        assert.isTrue(entity.getAttribute("simpleEntitiesLoadedFromTable").value.isClean());
+        expect(entity.id).toEqual("one");
+        expect(entity.getAttribute("id").value.isClean()).toBe(true);
+        expect(entity.getAttribute("simpleEntitiesLoadedFromTable").value.isClean()).toBe(true);
 
         simpleEntities = await entity.simpleEntitiesLoadedFromTable;
 
-        assert.instanceOf(simpleEntities[0], SimpleEntity);
-        assert.instanceOf(simpleEntities[1], SimpleEntity);
-        assert.instanceOf(simpleEntities[2], SimpleEntity);
+        expect(simpleEntities[0]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[1]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[2]).toBeInstanceOf(SimpleEntity);
 
-        assert.equal(simpleEntities[2].id, "two");
-        assert.equal(simpleEntities[1].id, "three");
-        assert.equal(simpleEntities[0].id, "four");
+        expect(simpleEntities[2].id).toEqual("two");
+        expect(simpleEntities[1].id).toEqual("three");
+        expect(simpleEntities[0].id).toEqual("four");
 
         generateIDStub.restore();
     });

@@ -1,4 +1,3 @@
-import { assert } from "chai";
 import Model from "./../src/model";
 import ModelError from "./../src/modelError";
 
@@ -16,28 +15,28 @@ const model = new Model({
     }
 });
 
-describe("construct with object as first argument", function() {
-    it("should just create a new instance, even if empty object was passed", () => {
+describe("construct with object as first argument", () => {
+    test("should just create a new instance, even if empty object was passed", () => {
         const emptyParamsObject = new Model({});
-        assert.instanceOf(emptyParamsObject, Model);
+        expect(emptyParamsObject).toBeInstanceOf(Model);
     });
 
-    it("invalid param, that is not an object or function, must be ignored", () => {
+    test("invalid param, that is not an object or function, must be ignored", () => {
         const emptyParamsObject = new Model(123);
-        assert.instanceOf(emptyParamsObject, Model);
+        expect(emptyParamsObject).toBeInstanceOf(Model);
     });
 
-    it("inline definition - should return three attributes when getAttributes is called", () => {
-        assert.hasAllKeys(model.getAttributes(), ["firstName", "lastName", "age"]);
+    test("inline definition - should return three attributes when getAttributes is called", () => {
+        expect(Object.keys(model.getAttributes())).toEqual(["firstName", "lastName", "age"]);
     });
 
-    it("inline definition - should return attribute when called with getAttribute is called", async function() {
-        assert.isDefined(model.getAttribute("firstName"));
-        assert.isDefined(model.getAttribute("lastName"));
-        assert.isDefined(model.getAttribute("age"));
+    test("inline definition - should return attribute when called with getAttribute is called", async () => {
+        expect(model.getAttribute("firstName")).toBeDefined();
+        expect(model.getAttribute("lastName")).toBeDefined();
+        expect(model.getAttribute("age")).toBeDefined();
     });
 
-    it("inline definition - should successfully validate basic attributes", async () => {
+    test("inline definition - should successfully validate basic attributes", async () => {
         let error = null;
         try {
             await model.populate({});
@@ -46,15 +45,15 @@ describe("construct with object as first argument", function() {
             error = e;
         }
 
-        assert.instanceOf(error, ModelError);
-        assert.equal(error.code, ModelError.INVALID_ATTRIBUTES);
+        expect(error).toBeInstanceOf(ModelError);
+        expect(error.code).toEqual(ModelError.INVALID_ATTRIBUTES);
 
-        assert.isDefined(error.data.invalidAttributes.firstName);
-        assert.isDefined(error.data.invalidAttributes.lastName);
-        assert.isDefined(error.data.invalidAttributes.age);
+        expect(error.data.invalidAttributes.firstName).toBeDefined();
+        expect(error.data.invalidAttributes.lastName).toBeDefined();
+        expect(error.data.invalidAttributes.age).toBeDefined();
     });
 
-    it("inline definition - should successfully populate", async () => {
+    test("inline definition - should successfully populate", async () => {
         let error = null;
         try {
             await model.populate({ firstName: "John", lastName: "Doe", age: 50 });
@@ -62,6 +61,6 @@ describe("construct with object as first argument", function() {
             error = e;
         }
 
-        assert.isNull(error);
+        expect(error).toBeNull();
     });
 });

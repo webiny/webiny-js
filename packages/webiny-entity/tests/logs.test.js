@@ -2,10 +2,10 @@ import { EntityWithLogs, EntityWithoutLogs } from "./entities/entityWithLogs";
 import { DateAttribute } from "webiny-model";
 import { expect } from "chai";
 
-describe("entity with logs enabled test", function() {
+describe("entity with logs enabled test", () => {
     beforeEach(() => EntityWithLogs.getEntityPool().flush());
 
-    it("should not have createdOn, savedOn and updatedOn if logging is not enabled", async () => {
+    test("should not have createdOn, savedOn and updatedOn if logging is not enabled", async () => {
         const entity = new EntityWithoutLogs();
 
         expect(entity.getAttribute("createdOn")).to.equal(undefined);
@@ -13,7 +13,7 @@ describe("entity with logs enabled test", function() {
         expect(entity.getAttribute("savedOn")).to.equal(undefined);
     });
 
-    it("it must have createdOn, savedOn and updatedOn attributes defined", async () => {
+    test("it must have createdOn, savedOn and updatedOn attributes defined", async () => {
         const entity = new EntityWithLogs();
 
         expect(entity.getAttribute("createdOn")).to.be.instanceOf(DateAttribute);
@@ -25,7 +25,7 @@ describe("entity with logs enabled test", function() {
         expect(entity.savedOn).to.equal(null);
     });
 
-    it("it must update createdOn, updatedOn and savedOn correctly when saving entity", async () => {
+    test("it must update createdOn, updatedOn and savedOn correctly when saving entity", async () => {
         const entity = new EntityWithLogs();
         entity.name = "newOne";
         await entity.save();

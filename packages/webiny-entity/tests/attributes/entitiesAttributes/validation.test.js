@@ -3,72 +3,62 @@ import { ModelError } from "webiny-model";
 import { MainEntity, Entity1, Entity2 } from "../../entities/entitiesAttributeEntities";
 import sinon from "sinon";
 
-import { assert } from "chai";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-
-chai.use(chaiAsPromised);
-chai.should();
-
 const sandbox = sinon.sandbox.create();
 
-describe("attribute entities test", function() {
+describe("attribute entities test", () => {
     afterEach(() => sandbox.restore());
 
     const entity = new MainEntity();
 
-    it("should set empty EntityCollection - attributes should accept array of entities", async () => {
+    test("should set empty EntityCollection - attributes should accept array of entities", async () => {
         entity.attribute1 = new Entity1();
-        assert.instanceOf(await entity.attribute1, Entity1);
+        expect(await entity.attribute1).toBeInstanceOf(Entity1);
 
         entity.attribute2 = new Entity1();
-        assert.instanceOf(await entity.attribute2, Entity1);
+        expect(await entity.attribute2).toBeInstanceOf(Entity1);
     });
 
-    it("should pass - empty arrays set", async () => {
+    test("should pass - empty arrays set", async () => {
         entity.attribute1 = [];
         entity.attribute2 = [];
         await entity.validate();
     });
 
-    it("should fail - arrays with empty plain objects set - nested validation must be triggered", async () => {
+    test("should fail - arrays with empty plain objects set - nested validation must be triggered", async () => {
         entity.attribute1 = [{}, {}];
         entity.attribute2 = [{}, {}, {}];
         try {
             await entity.validate();
         } catch (e) {
             const attr1 = e.data.invalidAttributes.attribute1;
-            assert.lengthOf(attr1.data, 2);
-            assert.equal(attr1.data[0].data.index, 0);
-            assert.equal(
-                attr1.data[0].data.invalidAttributes.name.code,
+            expect(attr1.data.length).toBe(2);
+            expect(attr1.data[0].data.index).toEqual(0);
+            expect(attr1.data[0].data.invalidAttributes.name.code).toEqual(
                 ModelError.INVALID_ATTRIBUTE
             );
-            assert.equal(attr1.data[0].data.invalidAttributes.name.data.validator, "required");
-            assert.notExists(attr1.data[0].data.invalidAttributes.type);
+            expect(attr1.data[0].data.invalidAttributes.name.data.validator).toEqual("required");
+            expect(attr1.data[0].data.invalidAttributes.type).toBeUndefined();
 
             const attr2 = e.data.invalidAttributes.attribute2;
-            assert.lengthOf(attr2.data, 3);
-            assert.equal(attr2.data[0].data.index, 0);
-            assert.equal(attr2.data[1].data.index, 1);
-            assert.equal(attr2.data[2].data.index, 2);
+            expect(attr2.data.length).toBe(3);
+            expect(attr2.data[0].data.index).toEqual(0);
+            expect(attr2.data[1].data.index).toEqual(1);
+            expect(attr2.data[2].data.index).toEqual(2);
 
-            assert.equal(
-                attr2.data[0].data.invalidAttributes.firstName.code,
+            expect(attr2.data[0].data.invalidAttributes.firstName.code).toEqual(
                 ModelError.INVALID_ATTRIBUTE
             );
-            assert.equal(
-                attr2.data[0].data.invalidAttributes.lastName.code,
+            expect(attr2.data[0].data.invalidAttributes.lastName.code).toEqual(
                 ModelError.INVALID_ATTRIBUTE
             );
-            assert.notExists(attr2.data[0].data.invalidAttributes.enabled);
+            expect(attr2.data[0].data.invalidAttributes.enabled).toBeUndefined();
 
             return;
         }
         throw Error("Error should've been thrown.");
     });
 
-    it("should pass - valid data sent", async () => {
+    test("should pass - valid data sent", async () => {
         entity.attribute1 = [
             { name: "Enlai", type: "dog" },
             { name: "Rocky", type: "dog" },
@@ -82,7 +72,7 @@ describe("attribute entities test", function() {
         await entity.validate();
     });
 
-    it("should fail - all good except last item of attribute1", async () => {
+    test("should fail - all good except last item of attribute1", async () => {
         entity.attribute1 = [
             { name: "Enlai", type: "dog" },
             { name: "Rocky", type: "dog" },
@@ -97,17 +87,16 @@ describe("attribute entities test", function() {
             await entity.validate();
         } catch (e) {
             const attr1 = e.data.invalidAttributes.attribute1;
-            assert.lengthOf(attr1.data, 1);
-            assert.equal(attr1.data[0].data.index, 2);
-            assert.equal(
-                attr1.data[0].data.invalidAttributes.type.code,
+            expect(attr1.data.length).toBe(1);
+            expect(attr1.data[0].data.index).toEqual(2);
+            expect(attr1.data[0].data.invalidAttributes.type.code).toEqual(
                 ModelError.INVALID_ATTRIBUTE
             );
-            assert.equal(attr1.data[0].data.invalidAttributes.type.data.validator, "in");
+            expect(attr1.data[0].data.invalidAttributes.type.data.validator).toEqual("in");
         }
     });
 
-    it("should correctly validate instances in the attribute and throw errors appropriately", async () => {
+    test("should correctly validate instances in the attribute and throw errors appropriately", async () => {
         const mainEntity = new MainEntity();
 
         mainEntity.attribute1 = [
@@ -144,7 +133,7 @@ describe("attribute entities test", function() {
             error = e;
         }
 
-        assert.deepEqual(error.data, [
+        expect(error.data).toEqual([
             {
                 code: "INVALID_ATTRIBUTE",
                 data: {
@@ -177,7 +166,7 @@ describe("attribute entities test", function() {
         await mainEntity.getAttribute("attribute1").validate();
     });
 
-    it("should validate if attribute is being loaded", async () => {
+    test("should validate if attribute is being loaded", async () => {
         let findById = sandbox
             .stub(MainEntity.getDriver(), "findOne")
             .onCall(0)
@@ -195,23 +184,23 @@ describe("attribute entities test", function() {
         const mainEntity = await MainEntity.findById("mainEntity");
 
         await mainEntity.save();
-        assert.deepEqual(mainEntity.getAttribute("attribute1").value.state, {
+        expect(mainEntity.getAttribute("attribute1").value.state).toEqual({
             loaded: false,
             loading: false
         });
-        assert.equal(findById.callCount, 1);
+        expect(findById.callCount).toEqual(1);
         findById.restore();
 
-        assert.deepEqual(mainEntity.getAttribute("attribute1").value.state, {
+        expect(mainEntity.getAttribute("attribute1").value.state).toEqual({
             loaded: false,
             loading: false
         });
         mainEntity.attribute1 = [{ type: "test" }];
 
-        mainEntity.save().should.be.rejectedWith(ModelError);
+        await expect(mainEntity.save()).rejects.toThrow(ModelError);
     });
 
-    it("should validate on attribute level and recursively on entity level", async () => {
+    test("should validate on attribute level and recursively on entity level", async () => {
         let findById = sandbox
             .stub(MainEntity.getDriver(), "findOne")
             .onCall(0)
@@ -234,8 +223,8 @@ describe("attribute entities test", function() {
             error = e;
         }
 
-        assert.equal(error.data.invalidAttributes.requiredEntity.code, "INVALID_ATTRIBUTE");
-        assert.equal(error.data.invalidAttributes.requiredEntity.data.validator, "required");
+        expect(error.data.invalidAttributes.requiredEntity.code).toEqual("INVALID_ATTRIBUTE");
+        expect(error.data.invalidAttributes.requiredEntity.data.validator).toEqual("required");
 
         mainEntity.requiredEntity = [{ name: "requiredEntity" }];
 
@@ -246,18 +235,18 @@ describe("attribute entities test", function() {
             error = e;
         }
 
-        assert.equal(error.data.invalidAttributes.requiredEntity.code, "INVALID_ATTRIBUTE");
-        assert.equal(error.data.invalidAttributes.requiredEntity.data.validator, "minLength");
+        expect(error.data.invalidAttributes.requiredEntity.code).toEqual("INVALID_ATTRIBUTE");
+        expect(error.data.invalidAttributes.requiredEntity.data.validator).toEqual("minLength");
     });
 
-    it("if an instance of another Entity class was assigned in EntityCollection, validation must fail", async () => {
+    test("if an instance of another Entity class was assigned in EntityCollection, validation must fail", async () => {
         const entity = new MainEntity();
         entity.attribute1 = new EntityCollection([new Entity1(), new Entity2()]);
 
         try {
             await entity.validate();
         } catch (e) {
-            assert.deepEqual(e.data, {
+            expect(e.data).toEqual({
                 invalidAttributes: {
                     attribute1: {
                         code: "INVALID_ATTRIBUTE",
@@ -299,14 +288,14 @@ describe("attribute entities test", function() {
         throw Error(`Error should've been thrown.`);
     });
 
-    it("should fail validating if not an EntityCollection is assigned as value", async () => {
+    test("should fail validating if not an EntityCollection is assigned as value", async () => {
         const entity = new MainEntity();
         entity.attribute1 = 123;
 
         try {
             await entity.validate();
         } catch (e) {
-            assert.deepEqual(e.data.invalidAttributes, {
+            expect(e.data.invalidAttributes).toEqual({
                 attribute1: {
                     code: "INVALID_ATTRIBUTE",
                     data: null,

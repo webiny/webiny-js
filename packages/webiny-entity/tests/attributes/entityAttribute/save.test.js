@@ -1,5 +1,3 @@
-import { assert } from "chai";
-
 import { QueryResult } from "../../../src/index";
 import { User, Company } from "../../entities/userCompanyImage";
 import { One } from "../../entities/oneTwoThree";
@@ -7,14 +5,14 @@ import sinon from "sinon";
 
 const sandbox = sinon.sandbox.create();
 
-describe("entity attribute test", function() {
+describe("entity attribute test", () => {
     afterEach(() => sandbox.restore());
     beforeEach(() => User.getEntityPool().flush());
 
-    it("should return entity from storage", async () => {
+    test("should return entity from storage", async () => {
         const entity = new User();
         entity.getAttribute("company").setStorageValue("A");
-        assert.equal(entity.getAttribute("company").value.getCurrent(), "A");
+        expect(entity.getAttribute("company").value.getCurrent()).toEqual("A");
 
         sandbox.stub(entity.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({ id: "A", name: "TestCompany" });
@@ -23,15 +21,15 @@ describe("entity attribute test", function() {
         const company = await entity.company;
         entity.getDriver().findOne.restore();
 
-        assert.instanceOf(company, Company);
+        expect(company).toBeInstanceOf(Company);
         entity.company.name = "TestCompany";
     });
 
-    it("should return correct storage value", async () => {
+    test("should return correct storage value", async () => {
         const entity = new User();
 
         entity.getAttribute("company").setStorageValue("one");
-        assert.equal(await entity.getAttribute("company").getStorageValue(), "one");
+        expect(await entity.getAttribute("company").getStorageValue()).toEqual("one");
 
         const findById = sandbox
             .stub(entity.getDriver(), "findOne")
@@ -47,16 +45,16 @@ describe("entity attribute test", function() {
 
         entity.company = { id: "five", name: "Test-1" };
         await entity.company;
-        assert.equal(await entity.getAttribute("company").getStorageValue(), "five");
+        expect(await entity.getAttribute("company").getStorageValue()).toEqual("five");
 
         entity.company = null;
         await entity.company;
-        assert.equal(await entity.getAttribute("company").getStorageValue(), null);
+        expect(await entity.getAttribute("company").getStorageValue()).toEqual(null);
 
         findById.restore();
     });
 
-    it("it should auto save linked entity only if it is enabled", async () => {
+    test("it should auto save linked entity only if it is enabled", async () => {
         const user = new User();
 
         let save = sandbox.stub(user.getDriver(), "save").callsFake(entity => {
@@ -80,8 +78,7 @@ describe("entity attribute test", function() {
 
         await user.get("company.image");
 
-        user
-            .getAttribute("company")
+        user.getAttribute("company")
             .value.getCurrent()
             .getAttribute("image")
             .setAutoSave(false);
@@ -90,8 +87,8 @@ describe("entity attribute test", function() {
 
         save.restore();
 
-        assert.equal(save.callCount, 1);
-        assert.equal(user.id, "A");
+        expect(save.callCount).toEqual(1);
+        expect(user.id).toEqual("A");
 
         user.getAttribute("company").setAutoSave();
 
@@ -112,14 +109,13 @@ describe("entity attribute test", function() {
 
         save.restore();
 
-        assert(save.calledTwice);
-        assert.equal(user.id, "A");
-        assert.equal(await user.get("company.id"), "B");
+        expect(save.calledTwice).toBeTruthy();
+        expect(user.id).toEqual("A");
+        expect(await user.get("company.id")).toEqual("B");
 
         // Finally, let's set auto save on image entity too.
 
-        user
-            .getAttribute("company")
+        user.getAttribute("company")
             .value.getCurrent()
             .getAttribute("image")
             .setAutoSave();
@@ -146,13 +142,13 @@ describe("entity attribute test", function() {
         await user.save();
         save.restore();
 
-        assert.equal(save.callCount, 2);
-        assert.equal(user.id, "A");
-        assert.equal(await user.get("company.id"), "B");
-        assert.equal(await user.get("company.image.id"), "C");
+        expect(save.callCount).toEqual(2);
+        expect(user.id).toEqual("A");
+        expect(await user.get("company.id")).toEqual("B");
+        expect(await user.get("company.image.id")).toEqual("C");
     });
 
-    it("auto save must be automatically enabled", async () => {
+    test("auto save must be automatically enabled", async () => {
         const user = new User();
         user.populate({
             firstName: "John",
@@ -187,13 +183,13 @@ describe("entity attribute test", function() {
         await user.save();
         save.restore();
 
-        assert(save.calledThrice);
-        assert.equal(user.id, "A");
-        assert.equal(await user.get("company.id"), "B");
-        assert.equal(await user.get("company.image.id"), "C");
+        expect(save.calledThrice).toBeTruthy();
+        expect(user.id).toEqual("A");
+        expect(await user.get("company.id")).toEqual("B");
+        expect(await user.get("company.image.id")).toEqual("C");
     });
 
-    it("should not trigger saving of same entity (that might be also linked in an another linked entity) twice in one save process", async () => {
+    test("should not trigger saving of same entity (that might be also linked in an another linked entity) twice in one save process", async () => {
         const user = new User();
         user.populate({
             firstName: "John",
@@ -230,15 +226,15 @@ describe("entity attribute test", function() {
         await user.save();
         save.restore();
 
-        assert(save.calledThrice);
-        assert.equal(user.id, "A");
+        expect(save.calledThrice).toBeTruthy();
+        expect(user.id).toEqual("A");
 
         const company = await user.company;
-        assert.equal(company.id, "B");
-        assert.equal((await company.image).id, "C");
+        expect(company.id).toEqual("B");
+        expect((await company.image).id).toEqual("C");
     });
 
-    it("should not trigger save on linked entity since it was not loaded", async () => {
+    test("should not trigger save on linked entity since it was not loaded", async () => {
         const findById = sandbox
             .stub(One.getDriver(), "findOne")
             .onCall(0)
@@ -257,16 +253,16 @@ describe("entity attribute test", function() {
             });
 
         await one.save();
-        assert.equal(save.callCount, 0);
+        expect(save.callCount).toEqual(0);
 
         one.name = "asd";
         await one.save();
 
-        assert.equal(save.callCount, 1);
+        expect(save.callCount).toEqual(1);
         save.restore();
     });
 
-    it("should create new entity and save links correctly", async () => {
+    test("should create new entity and save links correctly", async () => {
         const findById = sandbox
             .stub(One.getDriver(), "findOne")
             .onCall(0)
@@ -299,21 +295,21 @@ describe("entity attribute test", function() {
         await one.save();
         save.restore();
 
-        assert(save.calledThrice);
+        expect(save.calledThrice).toBeTruthy();
 
-        assert.equal(one.id, "one");
+        expect(one.id).toEqual("one");
 
         const two = await one.two;
-        assert.equal(two.id, "two");
+        expect(two.id).toEqual("two");
 
         const three = await two.three;
-        assert.equal(three.id, "three");
+        expect(three.id).toEqual("three");
 
-        assert.equal(await one.getAttribute("two").getStorageValue(), "two");
-        assert.equal(await two.getAttribute("three").getStorageValue(), "three");
+        expect(await one.getAttribute("two").getStorageValue()).toEqual("two");
+        expect(await two.getAttribute("three").getStorageValue()).toEqual("three");
     });
 
-    it("should delete existing entity once new one was assigned and main entity saved", async () => {
+    test("should delete existing entity once new one was assigned and main entity saved", async () => {
         let entityFindById = sandbox
             .stub(One.getDriver(), "findOne")
             .onCall(0)
@@ -322,9 +318,9 @@ describe("entity attribute test", function() {
             });
 
         const one = await One.findById("a");
-        assert.equal(await one.getAttribute("two").getStorageValue(), "two");
-        assert.equal(one.getAttribute("two").value.getCurrent(), "two");
-        assert.equal(one.getAttribute("two").value.getInitial(), "two");
+        expect(await one.getAttribute("two").getStorageValue()).toEqual("two");
+        expect(one.getAttribute("two").value.getCurrent()).toEqual("two");
+        expect(one.getAttribute("two").value.getInitial()).toEqual("two");
 
         one.two = {
             name: "Another Two",
@@ -335,13 +331,13 @@ describe("entity attribute test", function() {
             }
         };
 
-        assert.equal(entityFindById.callCount, 1);
+        expect(entityFindById.callCount).toEqual(1);
         entityFindById.restore();
 
         // ... and now we can be sure the values are set and ready for testing.
-        assert.equal(one.getAttribute("two").value.getInitial(), "two");
-        assert.equal(one.getAttribute("two").value.getCurrent().id, null);
-        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
+        expect(one.getAttribute("two").value.getInitial()).toEqual("two");
+        expect(one.getAttribute("two").value.getCurrent().id).toBeNil();
+        expect(one.getAttribute("two").value.state).toEqual({ loaded: false, loading: false });
 
         // This is what will happen once we execute save method on One entity
 
@@ -393,24 +389,24 @@ describe("entity attribute test", function() {
 
         await one.save();
 
-        assert.equal(entitySave.callCount, 5);
-        assert.equal(entityFindById.callCount, 2);
+        expect(entitySave.callCount).toEqual(5);
+        expect(entityFindById.callCount).toEqual(2);
 
         // Make sure entity with ID 'three' was first deleted, and then the one with ID 'two'.
-        assert.equal(entityDelete.callCount, 2);
-        assert.equal(entityDelete.getCall(0).args[0].id, "three");
-        assert.equal(entityDelete.getCall(1).args[0].id, "two");
+        expect(entityDelete.callCount).toEqual(2);
+        expect(entityDelete.getCall(0).args[0].id).toEqual("three");
+        expect(entityDelete.getCall(1).args[0].id).toEqual("two");
 
-        assert.equal(one.getAttribute("two").value.getInitial().id, "anotherTwo");
-        assert.equal(one.getAttribute("two").value.getCurrent().id, "anotherTwo");
-        assert.deepEqual(one.getAttribute("two").value.state, { loaded: true, loading: false });
+        expect(one.getAttribute("two").value.getInitial().id).toEqual("anotherTwo");
+        expect(one.getAttribute("two").value.getCurrent().id).toEqual("anotherTwo");
+        expect(one.getAttribute("two").value.state).toEqual({ loaded: true, loading: false });
 
         entityFindById.restore();
         entityDelete.restore();
         entitySave.restore();
     });
 
-    it("should load entities on save to make sure they exist", async () => {
+    test("should load entities on save to make sure they exist", async () => {
         let entityFindById = sandbox
             .stub(One.getDriver(), "findOne")
             .onCall(0)
@@ -420,7 +416,7 @@ describe("entity attribute test", function() {
 
         const one = await One.findById("a");
 
-        assert.equal(entityFindById.callCount, 1);
+        expect(entityFindById.callCount).toEqual(1);
         entityFindById.restore();
 
         await one.set("two", "anotherTwo");
@@ -436,8 +432,8 @@ describe("entity attribute test", function() {
 
         await one.save();
 
-        assert.equal(entityFindById.callCount, 1);
-        assert.equal(entitySave.callCount, 1);
+        expect(entityFindById.callCount).toEqual(1);
+        expect(entitySave.callCount).toEqual(1);
 
         entityFindById.restore();
         entitySave.restore();

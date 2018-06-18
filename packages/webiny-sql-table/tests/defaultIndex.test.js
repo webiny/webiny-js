@@ -1,23 +1,22 @@
-import { assert } from "chai";
 import { Index, IndexesContainer } from "./..";
 
-describe("default Index test", function() {
-    it("getIndexesClass should return default class", async () => {
+describe("default Index test", () => {
+    test("getIndexesClass should return default class", async () => {
         const index = new Index("Index", new IndexesContainer(), ["indexedFields"]);
-        assert.equal(index.getType(), "");
+        expect(index.getType()).toEqual("");
     });
 
-    it("getParentIndexesContainer should return default class", async () => {
+    test("getParentIndexesContainer should return default class", async () => {
         const index = new Index("Index", new IndexesContainer(), ["indexedFields"]);
-        assert.instanceOf(index.getParentIndexesContainer(), IndexesContainer);
+        expect(index.getParentIndexesContainer()).toBeInstanceOf(IndexesContainer);
     });
 
-    it("getParentTable should return default class", async () => {
+    test("getParentTable should return default class", async () => {
         const index = new Index("Index", new IndexesContainer(), ["indexedFields"]);
-        assert.isUndefined(index.getParentTable());
+        expect(index.getParentTable()).not.toBeDefined();
     });
 
-    it("columns must be defined, otherwise an Error must be thrown", async () => {
+    test("columns must be defined, otherwise an Error must be thrown", async () => {
         try {
             new Index("Index", new IndexesContainer());
         } catch (e) {

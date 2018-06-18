@@ -1,9 +1,8 @@
-import { assert } from "chai";
 import { Insert } from "../../src/statements";
 import { operators } from "../../src";
 
-describe("INSERT statement test", function() {
-    it("should generate an INSERT statement", async () => {
+describe("INSERT statement test", () => {
+    test("should generate an INSERT statement", async () => {
         const sql = new Insert({
             operation: "insert",
             operators,
@@ -11,10 +10,10 @@ describe("INSERT statement test", function() {
             data: { name: "Test", enabled: 1 }
         }).generate();
 
-        assert.equal(sql, "INSERT INTO `TestTable` (`name`, `enabled`) VALUES ('Test', 1)");
+        expect(sql).toEqual("INSERT INTO `TestTable` (`name`, `enabled`) VALUES ('Test', 1)");
     });
 
-    it("should generate an INSERT statement and preserve false in query", async () => {
+    test("should generate an INSERT statement and preserve false in query", async () => {
         const sql = new Insert(
             {
                 operation: "insert",
@@ -24,10 +23,10 @@ describe("INSERT statement test", function() {
             operators
         ).generate();
 
-        assert.equal(sql, "INSERT INTO `TestTable` (`name`, `enabled`) VALUES ('Test', false)");
+        expect(sql).toEqual("INSERT INTO `TestTable` (`name`, `enabled`) VALUES ('Test', false)");
     });
 
-    it('should generate an INSERT statement with ON DUPLICATE KEY UPDATE (aka "UPSERT")', async () => {
+    test('should generate an INSERT statement with ON DUPLICATE KEY UPDATE (aka "UPSERT")', async () => {
         const sql = new Insert(
             {
                 operation: "insert",
@@ -38,8 +37,7 @@ describe("INSERT statement test", function() {
             operators
         ).generate();
 
-        assert.equal(
-            sql,
+        expect(sql).toEqual(
             "INSERT INTO `TestTable` (`name`, `enabled`) VALUES ('Test', false) ON DUPLICATE KEY UPDATE name = 'Test', enabled = false"
         );
     });

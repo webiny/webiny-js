@@ -1,8 +1,7 @@
-import { assert } from "chai";
 import Model from "./../src/model";
 
-describe("protected test", function() {
-    it("should set attr1 value, but not attr2 value", async () => {
+describe("protected test", () => {
+    test("should set attr1 value, but not attr2 value", async () => {
         const model = new Model(function() {
             this.attr("attr1")
                 .char()
@@ -19,8 +18,8 @@ describe("protected test", function() {
             error = e;
         }
 
-        assert.isNull(error);
-        assert.isNull(model.attr1);
-        assert.equal(model.attr2, "attr2Value");
+        expect(error).toBeNull();
+        expect(model.attr1).toBeNull();
+        expect(model.attr2).toEqual("attr2Value");
     });
 });

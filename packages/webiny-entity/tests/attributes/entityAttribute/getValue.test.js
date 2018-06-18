@@ -1,15 +1,14 @@
-import { assert } from "chai";
 import { One, Two } from "../../entities/oneTwoThree";
 import { QueryResult } from "../../../src";
 import sinon from "sinon";
 
 const sandbox = sinon.sandbox.create();
 
-describe("populate test", function() {
+describe("populate test", () => {
     beforeEach(() => One.getEntityPool().flush());
     afterEach(() => sandbox.restore());
 
-    it("should not load anything if no ID was received from storage", async () => {
+    test("should not load anything if no ID was received from storage", async () => {
         const findById = sandbox
             .stub(One.getDriver(), "findOne")
             .onCall(0)
@@ -18,15 +17,15 @@ describe("populate test", function() {
             });
 
         const entity = await One.findById("one");
-        assert.deepEqual(entity.getAttribute("two").value.state, { loaded: false, loading: false });
+        expect(entity.getAttribute("two").value.state).toEqual({ loaded: false, loading: false });
         await entity.two;
-        assert.deepEqual(entity.getAttribute("two").value.state, { loaded: true, loading: false });
-        assert.isNull(await entity.two);
+        expect(entity.getAttribute("two").value.state).toEqual({ loaded: true, loading: false });
+        expect(await entity.two).toBeNull();
 
         findById.restore();
     });
 
-    it("should load entity if received an ID from storage", async () => {
+    test("should load entity if received an ID from storage", async () => {
         let findById = sandbox
             .stub(One.getDriver(), "findOne")
             .onCall(0)
@@ -35,7 +34,7 @@ describe("populate test", function() {
             });
 
         const entity = await One.findById("one");
-        assert.deepEqual(entity.getAttribute("two").value.state, { loaded: false, loading: false });
+        expect(entity.getAttribute("two").value.state).toEqual({ loaded: false, loading: false });
 
         findById.restore();
 
@@ -44,33 +43,33 @@ describe("populate test", function() {
         });
 
         await entity.two;
-        assert.deepEqual(entity.getAttribute("two").value.state, { loaded: true, loading: false });
-        assert.instanceOf(await entity.two, Two);
-        assert.equal(await entity.get("two.id"), "two");
+        expect(entity.getAttribute("two").value.state).toEqual({ loaded: true, loading: false });
+        expect(await entity.two).toBeInstanceOf(Two);
+        expect(await entity.get("two.id")).toEqual("two");
 
         findById.restore();
     });
 
-    it("when a new value is set, attribute should not load anything even though storage value exists", async () => {
+    test("when a new value is set, attribute should not load anything even though storage value exists", async () => {
         let findOneSpy = sandbox.spy(One.getDriver(), "findOne");
         const entity1 = new One();
-        assert.deepEqual(entity1.getAttribute("two").value.state, {
+        expect(entity1.getAttribute("two").value.state).toEqual({
             loaded: false,
             loading: false
         });
         entity1.two = { id: "invalidTwo" };
-        assert.deepEqual(entity1.getAttribute("two").value.state, {
+        expect(entity1.getAttribute("two").value.state).toEqual({
             loaded: false,
             loading: false
         });
 
-        assert.isObject(await entity1.two, Two);
-        assert.deepEqual(entity1.getAttribute("two").value.state, {
+        expect(typeof (await entity1.two)).toBe("object");
+        expect(entity1.getAttribute("two").value.state).toEqual({
             loaded: false,
             loading: false
         });
 
-        assert.equal(findOneSpy.callCount, 1);
+        expect(findOneSpy.callCount).toEqual(1);
         findOneSpy.restore();
 
         const findById = sandbox
@@ -85,29 +84,29 @@ describe("populate test", function() {
 
         findOneSpy = sandbox.spy(One.getDriver(), "findOne");
 
-        assert.deepEqual(entity2.getAttribute("two").value.state, {
+        expect(entity2.getAttribute("two").value.state).toEqual({
             loaded: false,
             loading: false
         });
 
         entity1.two = { id: "invalidTwo" };
 
-        assert.deepEqual(entity2.getAttribute("two").value.state, {
+        expect(entity2.getAttribute("two").value.state).toEqual({
             loaded: false,
             loading: false
         });
 
-        assert.deepEqual(await entity1.two, { id: "invalidTwo" });
-        assert.equal(findOneSpy.callCount, 1);
+        expect(await entity1.two).toEqual({ id: "invalidTwo" });
+        expect(findOneSpy.callCount).toEqual(1);
         findOneSpy.restore();
     });
 
-    it("when a new id is set, getting the value should return a loaded instance", async () => {
+    test("when a new id is set, getting the value should return a loaded instance", async () => {
         const one = new One();
 
         one.two = { id: "newTwo" };
 
-        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
+        expect(one.getAttribute("two").value.state).toEqual({ loaded: false, loading: false });
 
         let findById = sandbox.stub(One.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({ id: "newTwo", name: "New Two" });
@@ -115,37 +114,37 @@ describe("populate test", function() {
 
         await one.two;
 
-        assert.equal(await one.get("two.id"), "newTwo");
-        assert.equal(await one.get("two.name"), "New Two");
-        assert.equal(findById.callCount, 1);
-        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
+        expect(await one.get("two.id")).toEqual("newTwo");
+        expect(await one.get("two.name")).toEqual("New Two");
+        expect(findById.callCount).toEqual(1);
+        expect(one.getAttribute("two").value.state).toEqual({ loaded: false, loading: false });
 
         findById.restore();
     });
 
-    it("when an invalid id is set, getting the value should return initially set value", async () => {
+    test("when an invalid id is set, getting the value should return initially set value", async () => {
         const one = new One();
 
         one.two = { id: "newTwo" };
 
-        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
+        expect(one.getAttribute("two").value.state).toEqual({ loaded: false, loading: false });
 
         const findById = sandbox.spy(One.getDriver(), "findOne");
         const two = await one.two;
-        assert.equal(findById.callCount, 1);
-        assert.deepEqual(two, { id: "newTwo" });
+        expect(findById.callCount).toEqual(1);
+        expect(two).toEqual({ id: "newTwo" });
 
-        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
+        expect(one.getAttribute("two").value.state).toEqual({ loaded: false, loading: false });
 
         findById.restore();
     });
 
-    it("when loading an instance from passed ID, load must happen only on first call", async () => {
+    test("when loading an instance from passed ID, load must happen only on first call", async () => {
         const one = new One();
 
         one.two = { id: "newTwo" };
 
-        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
+        expect(one.getAttribute("two").value.state).toEqual({ loaded: false, loading: false });
 
         let findById = sandbox.stub(One.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({ id: "newTwo", name: "New Two" });
@@ -155,18 +154,18 @@ describe("populate test", function() {
         await one.two;
         await one.two;
 
-        assert.equal(findById.callCount, 1);
-        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
+        expect(findById.callCount).toEqual(1);
+        expect(one.getAttribute("two").value.state).toEqual({ loaded: false, loading: false });
 
         findById.restore();
     });
 
-    it("should get values correctly even on multiple set calls", async () => {
+    test("should get values correctly even on multiple set calls", async () => {
         const one = new One();
 
         one.two = { id: "newTwo" };
 
-        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
+        expect(one.getAttribute("two").value.state).toEqual({ loaded: false, loading: false });
 
         let findById = sandbox.stub(One.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({ id: "newTwo", name: "New Two" });
@@ -174,26 +173,26 @@ describe("populate test", function() {
 
         await one.two;
 
-        assert.equal(findById.callCount, 1);
-        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
-        assert.instanceOf(await one.two, Two);
-        assert.equal(await one.get("two.name"), "New Two");
+        expect(findById.callCount).toEqual(1);
+        expect(one.getAttribute("two").value.state).toEqual({ loaded: false, loading: false });
+        expect(await one.two).toBeInstanceOf(Two);
+        expect(await one.get("two.name")).toEqual("New Two");
 
         one.two = null;
 
-        assert.isNull(await one.two);
-        assert.equal(findById.callCount, 1);
-        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
+        expect(await one.two).toBeNull();
+        expect(findById.callCount).toEqual(1);
+        expect(one.getAttribute("two").value.state).toEqual({ loaded: false, loading: false });
 
         const newTwo = new Two();
         newTwo.name = "Again new Two";
 
         one.two = newTwo;
 
-        assert.equal(findById.callCount, 1);
-        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
-        assert.instanceOf(await one.two, Two);
-        assert.equal(await one.get("two.name"), "Again new Two");
+        expect(findById.callCount).toEqual(1);
+        expect(one.getAttribute("two").value.state).toEqual({ loaded: false, loading: false });
+        expect(await one.two).toBeInstanceOf(Two);
+        expect(await one.get("two.name")).toEqual("Again new Two");
 
         findById.restore();
     });

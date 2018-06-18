@@ -2,8 +2,8 @@ import sinon from "sinon";
 import SimpleEntity from "./entities/simpleEntity";
 const sandbox = sinon.sandbox.create();
 
-describe("count error test", function() {
-    it("count - an error must be thrown", async () => {
+describe("count error test", () => {
+    test("count - an error must be thrown", async () => {
         sandbox
             .stub(SimpleEntity.getDriver().getConnection(), "query")
             .callsFake((query, callback) => {

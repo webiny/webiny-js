@@ -1,14 +1,13 @@
-import { assert } from "chai";
 import User from "./entities/user";
 import { CharAttribute, BooleanAttribute, IntegerAttribute, FloatAttribute } from "webiny-model";
 
-describe("getAttributes test", function() {
-    it("should return all attributes", async () => {
+describe("getAttributes test", () => {
+    test("should return all attributes", async () => {
         const user = new User();
 
         const allAttributes = user.getAttributes();
 
-        assert.hasAllKeys(allAttributes, [
+        expect(Object.keys(allAttributes)).toContainAllValues([
             "dynamicWithArgs",
             "firstName",
             "lastName",
@@ -17,11 +16,11 @@ describe("getAttributes test", function() {
             "totalSomething",
             "id"
         ]);
-        assert.instanceOf(allAttributes["firstName"], CharAttribute);
-        assert.instanceOf(allAttributes["lastName"], CharAttribute);
-        assert.instanceOf(allAttributes["enabled"], BooleanAttribute);
-        assert.instanceOf(allAttributes["age"], IntegerAttribute);
-        assert.instanceOf(allAttributes["totalSomething"], IntegerAttribute);
-        assert.instanceOf(allAttributes["dynamicWithArgs"], FloatAttribute);
+        expect(allAttributes["firstName"]).toBeInstanceOf(CharAttribute);
+        expect(allAttributes["lastName"]).toBeInstanceOf(CharAttribute);
+        expect(allAttributes["enabled"]).toBeInstanceOf(BooleanAttribute);
+        expect(allAttributes["age"]).toBeInstanceOf(IntegerAttribute);
+        expect(allAttributes["totalSomething"]).toBeInstanceOf(IntegerAttribute);
+        expect(allAttributes["dynamicWithArgs"]).toBeInstanceOf(FloatAttribute);
     });
 });

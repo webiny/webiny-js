@@ -1,4 +1,3 @@
-import { assert } from "chai";
 import Model from "./../src/model";
 
 class Model1 extends Model {
@@ -24,8 +23,8 @@ class Model3 extends Model {
     }
 }
 
-describe("getting and setting nested keys test", function() {
-    it("should set nested values correctly", async () => {
+describe("getting and setting nested keys test", () => {
+    test("should set nested values correctly", async () => {
         const model1 = new Model1();
         model1.char = "char";
         model1.model2 = {};
@@ -33,8 +32,8 @@ describe("getting and setting nested keys test", function() {
         model1.model2.model3 = {};
         model1.model2.model3.boolean = true;
 
-        assert.equal(model1.char, "char");
-        assert.equal(model1.model2.integer, 123);
-        assert.equal(model1.model2.model3.boolean, true);
+        expect(model1.char).toEqual("char");
+        expect(model1.model2.integer).toEqual(123);
+        expect(model1.model2.model3.boolean).toEqual(true);
     });
 });

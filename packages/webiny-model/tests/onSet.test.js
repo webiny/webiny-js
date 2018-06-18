@@ -1,8 +1,7 @@
-import { assert } from "chai";
 import Model from "./../src/model";
 
-describe("onSet test", function() {
-    it("should increment the value by 3 on set", async () => {
+describe("onSet test", () => {
+    test("should increment the value by 3 on set", async () => {
         const model = new Model(function() {
             this.attr("number")
                 .integer()
@@ -10,7 +9,7 @@ describe("onSet test", function() {
         });
 
         model.populate({ number: 2 });
-        assert.equal(model.getAttribute("number").value.getCurrent(), 5);
-        assert.equal(model.number, 5);
+        expect(model.getAttribute("number").value.getCurrent()).toEqual(5);
+        expect(model.number).toEqual(5);
     });
 });

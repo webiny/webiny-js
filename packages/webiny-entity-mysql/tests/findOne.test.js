@@ -1,13 +1,12 @@
-import { assert } from "chai";
 import sinon from "sinon";
 import SimpleEntity from "./entities/simpleEntity";
 
 const sandbox = sinon.sandbox.create();
 
-describe("findOne test", function() {
+describe("findOne test", () => {
     afterEach(() => sandbox.restore());
 
-    it("findOne - must generate correct query", async () => {
+    test("findOne - must generate correct query", async () => {
         const queryStub = sandbox
             .stub(SimpleEntity.getDriver().getConnection(), "query")
             .callsFake(() => {
@@ -16,12 +15,12 @@ describe("findOne test", function() {
 
         await SimpleEntity.findOne();
 
-        assert.deepEqual(queryStub.getCall(0).args[0], "SELECT * FROM `SimpleEntity` LIMIT 1");
+        expect(queryStub.getCall(0).args[0]).toEqual("SELECT * FROM `SimpleEntity` LIMIT 1");
 
         queryStub.restore();
     });
 
-    it("findOne - should find previously inserted entity", async () => {
+    test("findOne - should find previously inserted entity", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
             return [
                 {
@@ -38,13 +37,13 @@ describe("findOne test", function() {
             .getConnection()
             .query.restore();
 
-        assert.equal(simpleEntity.id, 1);
-        assert.equal(simpleEntity.name, "This is a test");
-        assert.equal(simpleEntity.slug, "thisIsATest");
-        assert.isTrue(simpleEntity.enabled);
+        expect(simpleEntity.id).toEqual(1);
+        expect(simpleEntity.name).toEqual("This is a test");
+        expect(simpleEntity.slug).toEqual("thisIsATest");
+        expect(simpleEntity.enabled).toBe(true);
     });
 
-    it("findOne - should include search query if passed", async () => {
+    test("findOne - should include search query if passed", async () => {
         const queryStub = sandbox
             .stub(SimpleEntity.getDriver().getConnection(), "query")
             .callsFake(() => {
@@ -61,8 +60,7 @@ describe("findOne test", function() {
             }
         });
 
-        assert.deepEqual(
-            queryStub.getCall(0).args[0],
+        expect(queryStub.getCall(0).args[0]).toEqual(
             "SELECT * FROM `SimpleEntity` WHERE (((`name` LIKE '%this is%') AND `age` > 30)) LIMIT 1"
         );
 

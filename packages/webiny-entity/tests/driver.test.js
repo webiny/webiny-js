@@ -1,15 +1,14 @@
-import { assert } from "chai";
 import User from "./entities/user";
 import { EntityError } from "../src";
 
-describe("default driver test", function() {
-    it("save method should return the same user instance", async () => {
+describe("default driver test", () => {
+    test("save method should return the same user instance", async () => {
         const user = new User();
         const res = await user.save();
-        assert.isUndefined(res);
+        expect(res).not.toBeDefined();
     });
 
-    it("delete method should return undefined", async () => {
+    test("delete method should return undefined", async () => {
         const user = new User();
 
         let error = null;
@@ -19,43 +18,42 @@ describe("default driver test", function() {
             error = e;
         }
 
-        assert.instanceOf(error, EntityError);
-        assert.equal(error.code, EntityError.CANNOT_DELETE_NO_ID);
+        expect(error).toBeInstanceOf(EntityError);
+        expect(error.code).toEqual(EntityError.CANNOT_DELETE_NO_ID);
 
         user.id = "ABC";
-        assert.isUndefined(await user.delete());
+        expect(await user.delete()).not.toBeDefined();
     });
 
-    it("findById method should return null", async () => {
+    test("findById method should return null", async () => {
         const user = await User.findById(12345);
-        assert.isNull(user);
+        expect(user).toBeNull();
     });
 
-    it("findByIds method should return null", async () => {
+    test("findByIds method should return null", async () => {
         const users = await User.findByIds([1, 2, 3]);
-        assert.isEmpty(users);
-        assert.lengthOf(users, 0);
+        expect(users.length).toBe(0);
     });
 
-    it("findOne method should return null", async () => {
+    test("findOne method should return null", async () => {
         const user = await User.findOne({ query: { id: 12345 } });
-        assert.isNull(user);
+        expect(user).toBeNull();
     });
 
-    it("find method should return empty array", async () => {
+    test("find method should return empty array", async () => {
         const users = await User.find({ query: 12345 });
-        assert.isArray(users);
-        assert.isEmpty(users);
+        expect(Array.isArray(users)).toBe(true);
+        expect(users.length).toBe(0);
     });
 
-    it("count method should return zero", async () => {
-        assert.equal(await User.count(), 0);
+    test("count method should return zero", async () => {
+        expect(await User.count()).toEqual(0);
     });
 
-    it("getConnection must return null (since default driver does not have a connection)", async () => {
-        assert.equal(User.getDriver().getConnection(), null);
+    test("getConnection must return null (since default driver does not have a connection)", async () => {
+        expect(User.getDriver().getConnection()).toEqual(null);
 
         User.getDriver().connection = "Connection";
-        assert.equal(User.getDriver().getConnection(), "Connection");
+        expect(User.getDriver().getConnection()).toEqual("Connection");
     });
 });

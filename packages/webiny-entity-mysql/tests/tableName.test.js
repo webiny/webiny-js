@@ -1,34 +1,34 @@
-import { assert } from "chai";
-
 import SimpleEntity from "./entities/simpleEntity";
 
-describe("table name test", function() {
-    it("it should return classId as table name", async () => {
-        assert.equal(SimpleEntity.getDriver().getTableName(SimpleEntity), "SimpleEntity");
+describe("table name test", () => {
+    test("it should return classId as table name", async () => {
+        expect(SimpleEntity.getDriver().getTableName(SimpleEntity)).toEqual("SimpleEntity");
 
         const entity = new SimpleEntity();
-        assert.equal(entity.getDriver().getTableName(entity), "SimpleEntity");
+        expect(entity.getDriver().getTableName(entity)).toEqual("SimpleEntity");
     });
 
-    it("it should return tableName, defined on the class", async () => {
+    test("it should return tableName, defined on the class", async () => {
         class CustomTableEntity extends SimpleEntity {}
 
         CustomTableEntity.tableName = "SuperCustom";
         const entity = new CustomTableEntity();
 
-        assert.equal(CustomTableEntity.getDriver().getTableName(CustomTableEntity), "SuperCustom");
-        assert.equal(entity.getDriver().getTableName(entity), "SuperCustom");
+        expect(CustomTableEntity.getDriver().getTableName(CustomTableEntity)).toEqual(
+            "SuperCustom"
+        );
+        expect(entity.getDriver().getTableName(entity)).toEqual("SuperCustom");
     });
 
-    it("it should prepend prefix", async () => {
+    test("it should prepend prefix", async () => {
         SimpleEntity.getDriver().setTablePrefix("webiny_");
         const entity = new SimpleEntity();
 
-        assert.equal(SimpleEntity.getDriver().getTableName(SimpleEntity), "webiny_SimpleEntity");
-        assert.equal(entity.getDriver().getTableName(entity), "webiny_SimpleEntity");
+        expect(SimpleEntity.getDriver().getTableName(SimpleEntity)).toEqual("webiny_SimpleEntity");
+        expect(entity.getDriver().getTableName(entity)).toEqual("webiny_SimpleEntity");
     });
 
-    it("it should apply table name naming function", async () => {
+    test("it should apply table name naming function", async () => {
         SimpleEntity.tableName = "SuperCustom";
         SimpleEntity.getDriver()
             .setTablePrefix("webiny_webiny_")
@@ -37,13 +37,11 @@ describe("table name test", function() {
             });
 
         const entity = new SimpleEntity();
-        assert.isFunction(SimpleEntity.getDriver().getTableNaming());
-        assert.equal(
-            SimpleEntity.getDriver().getTableName(SimpleEntity),
+        expect(typeof SimpleEntity.getDriver().getTableNaming()).toBe("function");
+        expect(SimpleEntity.getDriver().getTableName(SimpleEntity)).toEqual(
             "webiny_webiny_SimpleEntitySuperCustom"
         );
-        assert.equal(
-            entity.getDriver().getTableName(entity),
+        expect(entity.getDriver().getTableName(entity)).toEqual(
             "webiny_webiny_SimpleEntitySuperCustom"
         );
     });

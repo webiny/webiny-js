@@ -1,9 +1,9 @@
 module.exports = {
     parser: "babel-eslint",
-    extends: "eslint:recommended",
-    plugins: ["flowtype"],
+    extends: ["eslint:recommended", "plugin:jest/recommended"],
+    plugins: ["flowtype", "jest"],
     env: {
-        mocha: true,
+        jest: true,
         commonjs: true,
         node: true,
         es6: true
@@ -13,8 +13,7 @@ module.exports = {
         sourceType: "module"
     },
     rules: {
-        "flowtype/define-flow-type": 1,
-        "no-console": "off"
+        "flowtype/define-flow-type": 1
     },
     settings: {
         flowtype: {

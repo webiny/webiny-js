@@ -1,10 +1,9 @@
 import { MainEntity } from "../../../entities/entitiesAttributeEntities";
-import { assert } from "chai";
 
-describe("attribute entities test", function() {
+describe("attribute entities test", () => {
     beforeEach(() => MainEntity.getEntityPool().flush());
 
-    it("should not set anything as values since setToStorage is not enabled by default", async () => {
+    test("should not set anything as values since setToStorage is not enabled by default", async () => {
         const mainEntity = new MainEntity();
 
         mainEntity.populateFromStorage({
@@ -12,7 +11,7 @@ describe("attribute entities test", function() {
             attribute2: ["C"]
         });
 
-        assert.isArray(mainEntity.getAttribute("attribute1").value.getCurrent());
-        assert.isArray(mainEntity.getAttribute("attribute2").value.getCurrent());
+        expect(Array.isArray(mainEntity.getAttribute("attribute1").value.getCurrent())).toBe(true);
+        expect(Array.isArray(mainEntity.getAttribute("attribute2").value.getCurrent())).toBe(true);
     });
 });

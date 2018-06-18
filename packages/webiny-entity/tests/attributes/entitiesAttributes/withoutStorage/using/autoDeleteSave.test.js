@@ -6,11 +6,11 @@ import { MainEntity } from "../../../../entities/entitiesAttributeEntities";
 
 const sandbox = sinon.sandbox.create();
 
-describe("attribute entities (using an additional aggregation class) - saving test", function() {
+describe("attribute entities (using an additional aggregation class) - saving test", () => {
     afterEach(() => sandbox.restore());
     beforeEach(() => MainEntity.getEntityPool().flush());
 
-    it("should assign existing values correctly and track links that need to be deleted on consequent save method calls", async () => {
+    test("should assign existing values correctly and track links that need to be deleted on consequent save method calls", async () => {
         let entityFindById = sandbox
             .stub(User.getDriver(), "findOne")
             .callsFake(() => new QueryResult({ id: "A" }));
@@ -201,7 +201,7 @@ describe("attribute entities (using an additional aggregation class) - saving te
         expect(user.getAttribute("groups").value.links.current[2].id).to.equal("usersGroups7th");
     });
 
-    it("must not recreate links", async () => {
+    test("must not recreate links", async () => {
         let entityFindById = sandbox
             .stub(User.getDriver(), "findOne")
             .callsFake(() => new QueryResult({ id: "A" }));

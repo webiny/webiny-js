@@ -15,7 +15,7 @@ describe("Image processor test", () => {
         originalJPEG = fs.readFileSync(__dirname + "/utils/lenna.jpg");
     });
 
-    it("should resize image", async function() {
+    test("should resize image", async () => {
         const transformations = [{ action: "resize", width: 20 }];
 
         const newImage = await ip({ image: originalPNG, transformations });
@@ -25,7 +25,7 @@ describe("Image processor test", () => {
         expect(newHeight).to.equal(20);
     });
 
-    it("should crop image", async function() {
+    test("should crop image", async () => {
         const transformations = [{ action: "crop", width: 35, height: 35 }];
 
         const newImage = await ip({ image: originalPNG, transformations });
@@ -35,7 +35,7 @@ describe("Image processor test", () => {
         expect(newHeight).to.equal(35);
     });
 
-    it("should change image quality", async function() {
+    test("should change image quality", async () => {
         const quality = 90;
         const transformations = [{ action: "quality", quality }];
 

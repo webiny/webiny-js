@@ -1,51 +1,50 @@
-import { assert } from "chai";
 import { User, Image } from "./entities/userCompanyImage";
 import sinon from "sinon";
 import { QueryResult } from "./../src";
 
 const sandbox = sinon.sandbox.create();
 
-describe("async get and set methods test", async function() {
+describe("async get and set methods test", async () => {
     afterEach(() => sandbox.restore());
     beforeEach(() => User.getEntityPool().flush());
 
-    it("should be able to get simple attributes", async () => {
+    test("should be able to get simple attributes", async () => {
         const user = new User();
         await user.set("firstName", "John");
         await user.set("lastName", "Doe");
 
-        assert.equal(await user.get("firstName"), "John");
-        assert.equal(await user.get("lastName"), "Doe");
+        expect(await user.get("firstName")).toEqual("John");
+        expect(await user.get("lastName")).toEqual("Doe");
     });
 
-    it("should be able to get simple attributes", async () => {
+    test("should be able to get simple attributes", async () => {
         const user = new User();
         await user.set("firstName", "John");
         await user.set("lastName", "Doe");
 
-        assert.equal(await user.get("firstName"), "John");
-        assert.equal(await user.get("lastName"), "Doe");
+        expect(await user.get("firstName")).toEqual("John");
+        expect(await user.get("lastName")).toEqual("Doe");
     });
 
-    it("should return empty object if path not set", async () => {
+    test("should return empty object if path not set", async () => {
         const user = new User();
         await user.set("firstName", "John");
         await user.set("lastName", "Doe");
 
-        assert.isUndefined(await user.get());
+        expect(await user.get()).not.toBeDefined();
     });
 
-    it("should return default value properly", async () => {
+    test("should return default value properly", async () => {
         const user = new User();
         await user.set("firstName", "John");
         await user.set("lastName", "Doe");
 
-        assert.equal(await user.get("firstName", "Test"), "John");
-        assert.isUndefined(await user.get("firstName1"));
-        assert.equal(await user.get("firstName1", "Test"), "Test");
+        expect(await user.get("firstName", "Test")).toEqual("John");
+        expect(await user.get("firstName1")).not.toBeDefined();
+        expect(await user.get("firstName1", "Test")).toEqual("Test");
     });
 
-    it("should be able to get values from nested entities", async () => {
+    test("should be able to get values from nested entities", async () => {
         const findById = sandbox
             .stub(User.getDriver(), "findOne")
             .onCall(0)
@@ -76,17 +75,17 @@ describe("async get and set methods test", async function() {
 
         const image = await user.get("company.image");
 
-        assert.equal(findById.callCount, 3);
+        expect(findById.callCount).toEqual(3);
         findById.restore();
 
-        assert.instanceOf(image, Image);
+        expect(image).toBeInstanceOf(Image);
 
-        assert.equal(await user.get("company.image.id"), "C");
-        assert.equal(await user.get("company.image.filename"), "test.jpg");
-        assert.equal(await image.getAttribute("createdBy").value.getCurrent(), "A");
+        expect(await user.get("company.image.id")).toEqual("C");
+        expect(await user.get("company.image.filename")).toEqual("test.jpg");
+        expect(await image.getAttribute("createdBy").value.getCurrent()).toEqual("A");
     });
 
-    it("should be able to directly set values into nested entities", async () => {
+    test("should be able to directly set values into nested entities", async () => {
         const findById = sandbox
             .stub(User.getDriver(), "findOne")
             .onCall(0)
@@ -116,19 +115,19 @@ describe("async get and set methods test", async function() {
         const user = await User.findById("A");
 
         await user.set("company.name", "Test");
-        assert.equal(await user.get("company.name"), "Test");
+        expect(await user.get("company.name")).toEqual("Test");
 
-        assert.equal((await user.get("company")).getAttribute("image").value.getCurrent(), "C");
+        expect((await user.get("company")).getAttribute("image").value.getCurrent()).toEqual("C");
 
         await user.set("company.image.filename", "another.test.jpg");
-        assert.instanceOf(await user.get("company.image"), Image);
-        assert.equal(await user.get("company.image.filename"), "another.test.jpg");
+        expect(await user.get("company.image")).toBeInstanceOf(Image);
+        expect(await user.get("company.image.filename")).toEqual("another.test.jpg");
 
-        assert(findById.calledThrice);
+        expect(findById.calledThrice).toBeTruthy();
         findById.restore();
     });
 
-    it(`should read from objects too, not only attributes`, async () => {
+    test(`should read from objects too, not only attributes`, async () => {
         const user = new User().populate({
             company: {
                 city: "New York"
@@ -136,34 +135,30 @@ describe("async get and set methods test", async function() {
         });
         await user.company;
 
-        user
-            .getAttribute("company")
+        user.getAttribute("company")
             .value.current.getAttribute("name")
             .onGet(() => {
                 return { one: "one", two: { three: "finalValue" } };
             });
 
-        assert.deepEqual(await user.get("company.name.two.three"), "finalValue");
+        expect(await user.get("company.name.two.three")).toEqual("finalValue");
     });
 
-    it(`should return default value when keys on objects (not attributes) are not set`, async () => {
+    test(`should return default value when keys on objects (not attributes) are not set`, async () => {
         const user = new User().populate({ company: {} });
         await user.company;
 
-        user
-            .getAttribute("company")
+        user.getAttribute("company")
             .value.current.getAttribute("name")
             .onGet(() => {
                 return { one: "one", two: { three: "finalValue" } };
             });
 
-        assert.deepEqual(await user.get("company.name.two.three", "defaultValue"), "finalValue");
-        assert.deepEqual(
-            await user.get("company.name.two.three.four", "defaultValue"),
+        expect(await user.get("company.name.two.three", "defaultValue")).toEqual("finalValue");
+        expect(await user.get("company.name.two.three.four", "defaultValue")).toEqual(
             "defaultValue"
         );
-        assert.deepEqual(
-            await user.get("company.name.two.three.four.five", "defaultValue"),
+        expect(await user.get("company.name.two.three.four.five", "defaultValue")).toEqual(
             "defaultValue"
         );
     });

@@ -1,4 +1,3 @@
-import { assert } from "chai";
 import { Entity, Driver, EntityModel, QueryResult } from "./../src";
 import _ from "lodash";
 
@@ -93,13 +92,13 @@ class User extends CustomEntity {
     }
 }
 
-describe("custom driver test", function() {
-    it("should have CustomDriver set as driver driver", async () => {
+describe("custom driver test", () => {
+    test("should have CustomDriver set as driver driver", async () => {
         const user = new User();
-        assert.instanceOf(user.driver, CustomDriver);
+        expect(user.driver).toBeInstanceOf(CustomDriver);
     });
 
-    it("should save entities and then find them", async () => {
+    test("should save entities and then find them", async () => {
         const user1 = new User();
         user1.populate({ firstName: "John", lastName: "Doe", age: 30 });
         await user1.save();
@@ -114,14 +113,14 @@ describe("custom driver test", function() {
 
         const aa = User.getDriver();
         const users = await User.find();
-        assert.lengthOf(users, 3);
+        expect(users.length).toBe(3);
         const usa = [users[0], users[0].age];
-        assert.equal(users[0].age, 30);
-        assert.equal(users[1].age, 25);
-        assert.equal(users[2].age, 100);
+        expect(users[0].age).toEqual(30);
+        expect(users[1].age).toEqual(25);
+        expect(users[2].age).toEqual(100);
     });
 
-    it("should return only one user", async () => {
+    test("should return only one user", async () => {
         const user1 = new User();
         user1.populate({ firstName: "John", lastName: "Doe", age: 250 });
         await user1.save();
@@ -131,27 +130,27 @@ describe("custom driver test", function() {
         await user2.save();
 
         const users1 = await User.find({ query: { age: 250 } });
-        assert.lengthOf(users1, 1);
-        assert.equal(users1[0].firstName, "John");
+        expect(users1.length).toBe(1);
+        expect(users1[0].firstName).toEqual("John");
 
         const users2 = await User.find({ query: { age: 350 } });
-        assert.lengthOf(users2, 1);
-        assert.equal(users2[0].firstName, "John Old");
+        expect(users2.length).toBe(1);
+        expect(users2[0].firstName).toEqual("John Old");
     });
 
-    it("should find by given ID correctly", async () => {
+    test("should find by given ID correctly", async () => {
         const user1 = new User();
         user1.populate({ firstName: "John", lastName: "Doe", age: 250 });
         await user1.save();
 
         const noUser = await User.findById();
-        assert.isNull(noUser);
+        expect(noUser).toBeNull();
 
         const foundUser = await User.findById(user1.id);
-        assert.equal(foundUser.id, user1.id);
+        expect(foundUser.id).toEqual(user1.id);
     });
 
-    it("should delete entity", async () => {
+    test("should delete entity", async () => {
         const user1 = new User();
         user1.populate({ firstName: "John Older", lastName: "Doe Older", age: 500 });
         await user1.save();
@@ -164,12 +163,12 @@ describe("custom driver test", function() {
         await user1Find.delete();
 
         const user1FindAgain = await User.findOne({ query: { age: 500 } });
-        assert.isNull(user1FindAgain);
+        expect(user1FindAgain).toBeNull();
     });
 
-    it("should count entities", async () => {
+    test("should count entities", async () => {
         const currentCount = await User.count();
-        assert.isNumber(currentCount);
+        expect(typeof currentCount).toBe("number");
 
         const user1 = new User();
         user1.populate({ firstName: "John Older", lastName: "Doe Older", age: 5000 });
@@ -179,8 +178,8 @@ describe("custom driver test", function() {
         user2.populate({ firstName: "John Oldest", lastName: "Doe Oldest", age: 10000 });
         await user2.save();
 
-        assert.equal(await User.count(), currentCount + 2);
-        assert.equal(await User.count({ query: { age: 5000 } }), 1);
-        assert.equal(await User.count({ query: { age: 10000 } }), 1);
+        expect(await User.count()).toEqual(currentCount + 2);
+        expect(await User.count({ query: { age: 5000 } })).toEqual(1);
+        expect(await User.count({ query: { age: 10000 } })).toEqual(1);
     });
 });

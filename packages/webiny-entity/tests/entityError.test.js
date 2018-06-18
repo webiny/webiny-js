@@ -1,33 +1,32 @@
-import { assert } from "chai";
 import { EntityError } from "./../src";
 
-describe("entity error test", function() {
-    it("should set default entity error values", async () => {
+describe("entity error test", () => {
+    test("should set default entity error values", async () => {
         const e = new EntityError("Test");
-        assert.equal(e.message, "Test");
-        assert.equal(e.code, null);
-        assert.equal(e.data, null);
+        expect(e.message).toEqual("Test");
+        expect(e.code).toBeNil();
+        expect(e.data).toBeNil();
     });
 
-    it("should set message, type and data", async () => {
+    test("should set message, type and data", async () => {
         const e = new EntityError("Test", "test", { test: true });
-        assert.equal(e.message, "Test");
-        assert.equal(e.code, "test");
-        assert.equal(e.data.test, true);
+        expect(e.message).toEqual("Test");
+        expect(e.code).toEqual("test");
+        expect(e.data.test).toBe(true);
     });
 
-    it("should set message, type and data using setter methods", async () => {
+    test("should set message, type and data using setter methods", async () => {
         const e = new EntityError("Test", "test", { test: true });
-        assert.equal(e.message, "Test");
-        assert.equal(e.code, "test");
-        assert.equal(e.data.test, true);
+        expect(e.message).toEqual("Test");
+        expect(e.code).toEqual("test");
+        expect(e.data.test).toBe(true);
 
         e.message = "Test2";
         e.code = "test2";
         e.data = { test: false };
 
-        assert.equal(e.message, "Test2");
-        assert.equal(e.code, "test2");
-        assert.equal(e.data.test, false);
+        expect(e.message).toEqual("Test2");
+        expect(e.code).toEqual("test2");
+        expect(e.data.test).toBe(false);
     });
 });

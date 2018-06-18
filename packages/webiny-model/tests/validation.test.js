@@ -1,9 +1,8 @@
-import { assert } from "chai";
 import ModelError from "./../src/modelError";
 import ValidationTestModel from "./models/validationTestModel.js";
 
-describe("validation test", function() {
-    it("should throw an error because required fields are missing", async () => {
+describe("validation test", () => {
+    test("should throw an error because required fields are missing", async () => {
         const model = new ValidationTestModel();
 
         let error = null;
@@ -14,15 +13,15 @@ describe("validation test", function() {
             error = e;
         }
 
-        assert.instanceOf(error, ModelError);
-        assert.equal(error.code, ModelError.INVALID_ATTRIBUTES);
+        expect(error).toBeInstanceOf(ModelError);
+        expect(error.code).toEqual(ModelError.INVALID_ATTRIBUTES);
 
-        assert.isDefined(error.data.invalidAttributes.email);
-        assert.isDefined(error.data.invalidAttributes.required1);
-        assert.isDefined(error.data.invalidAttributes.required2);
+        expect(error.data.invalidAttributes.email).toBeDefined();
+        expect(error.data.invalidAttributes.required1).toBeDefined();
+        expect(error.data.invalidAttributes.required2).toBeDefined();
     });
 
-    it("should throw an error because e-mail is in invalid format", async () => {
+    test("should throw an error because e-mail is in invalid format", async () => {
         const model = new ValidationTestModel();
 
         let error = null;
@@ -33,15 +32,15 @@ describe("validation test", function() {
             error = e;
         }
 
-        assert.instanceOf(error, ModelError);
-        assert.equal(error.code, ModelError.INVALID_ATTRIBUTES);
+        expect(error).toBeInstanceOf(ModelError);
+        expect(error.code).toEqual(ModelError.INVALID_ATTRIBUTES);
 
-        assert.isDefined(error.data.invalidAttributes.email);
-        assert.isUndefined(error.data.invalidAttributes.required1);
-        assert.isUndefined(error.data.invalidAttributes.required2);
+        expect(error.data.invalidAttributes.email).toBeDefined();
+        expect(error.data.invalidAttributes.required1).not.toBeDefined();
+        expect(error.data.invalidAttributes.required2).not.toBeDefined();
     });
 
-    it("should't throw errors because all attributes are in order", async () => {
+    test("should't throw errors because all attributes are in order", async () => {
         const model = new ValidationTestModel();
 
         let error = null;
@@ -56,10 +55,10 @@ describe("validation test", function() {
             error = e;
         }
 
-        assert.isNull(error);
+        expect(error).toBeNull();
     });
 
-    it("should throw error because of 'in' validator", async () => {
+    test("should throw error because of 'in' validator", async () => {
         const model = new ValidationTestModel();
 
         let error = null;
@@ -70,7 +69,7 @@ describe("validation test", function() {
             error = e;
         }
 
-        assert.deepEqual(error.data, {
+        expect(error.data).toEqual({
             invalidAttributes: {
                 email: {
                     code: "INVALID_ATTRIBUTE",

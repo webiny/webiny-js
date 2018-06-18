@@ -1,15 +1,13 @@
 // @flow
-import { assert } from "chai";
-
-import i18n from "./..";
+import i18n from "./../src";
 
 describe("locales set / get test", () => {
     beforeEach(() => i18n.clearTranslations());
 
-    it("should set / get locale correctly", () => {
-        assert.isNull(i18n.getLocale());
+    test("should set / get locale correctly", () => {
+        expect(i18n.getLocale()).toBeNull();
 
         i18n.setLocale("en-gb");
-        assert.equal(i18n.getLocale(), "en-gb");
+        expect(i18n.getLocale()).toEqual("en-gb");
     });
 });

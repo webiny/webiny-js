@@ -1,4 +1,3 @@
-import { assert } from "chai";
 import Model from "./../../src/model";
 import ModelError from "./../../src/modelError";
 
@@ -6,23 +5,23 @@ const model = new Model(function() {
     this.attr("attribute").integer();
 });
 
-describe("attribute integer test", function() {
-    it("should accept integer values", () => {
+describe("attribute integer test", () => {
+    test("should accept integer values", () => {
         model.attribute = 5;
-        assert.equal(model.attribute, 5);
+        expect(model.attribute).toEqual(5);
 
         model.attribute = 0;
-        assert.equal(model.attribute, 0);
+        expect(model.attribute).toEqual(0);
 
         model.attribute = null;
-        assert.equal(model.attribute, null);
+        expect(model.attribute).toEqual(null);
 
         model.attribute = undefined;
-        assert.isUndefined(model.attribute);
+        expect(model.attribute).not.toBeDefined();
     });
 
     ["1", "0", 0.5, {}, [], true, false].forEach(value => {
-        it(`shouldn't accept ${typeof value}`, async () => {
+        test(`shouldn't accept ${typeof value}`, async () => {
             let error = null;
             try {
                 model.attribute = value;
@@ -31,23 +30,23 @@ describe("attribute integer test", function() {
                 error = e;
             }
 
-            assert.instanceOf(error, ModelError);
-            assert.equal(error.code, ModelError.INVALID_ATTRIBUTES);
+            expect(error).toBeInstanceOf(ModelError);
+            expect(error.code).toEqual(ModelError.INVALID_ATTRIBUTES);
         });
     });
 
-    it("should be able to add numbers and set the total as a new value", () => {
+    test("should be able to add numbers and set the total as a new value", () => {
         model.attribute = 5;
-        assert.equal(model.attribute, 5);
+        expect(model.attribute).toEqual(5);
 
         model.attribute = model.attribute + 5;
-        assert.equal(model.attribute, 10);
+        expect(model.attribute).toEqual(10);
 
         model.attribute += 5;
-        assert.equal(model.attribute, 15);
+        expect(model.attribute).toEqual(15);
     });
 
-    it("onSet/onGet must be triggered correctly", async () => {
+    test("onSet/onGet must be triggered correctly", async () => {
         const someModel = new Model(function() {
             this.attr("someNumber").integer();
         });
@@ -57,12 +56,12 @@ describe("attribute integer test", function() {
         });
 
         someModel.someNumber = 10;
-        assert.equal(someModel.someNumber, 555);
+        expect(someModel.someNumber).toEqual(555);
 
         someModel.getAttribute("someNumber").onGet(() => {
             return "random";
         });
 
-        assert.equal(someModel.someNumber, "random");
+        expect(someModel.someNumber).toEqual("random");
     });
 });

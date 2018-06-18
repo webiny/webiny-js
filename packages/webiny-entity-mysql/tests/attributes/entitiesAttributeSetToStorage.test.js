@@ -1,22 +1,21 @@
-import { assert } from "chai";
 import { ComplexEntity, SimpleEntity } from "./../entities/complexEntity";
 
-describe("entity attribute test", function() {
-    it("it must populate the attribute correctly (setToStorage enabled)", async () => {
+describe("entity attribute test", () => {
+    test("it must populate the attribute correctly (setToStorage enabled)", async () => {
         const entity = new ComplexEntity();
         entity.simpleEntities = [{ name: "Test-1" }, { name: "Test-2" }, { name: "Test-3" }];
 
         let simpleEntities = await entity.simpleEntities;
-        assert.lengthOf(simpleEntities, 3);
-        assert.instanceOf(simpleEntities[0], SimpleEntity);
-        assert.instanceOf(simpleEntities[1], SimpleEntity);
-        assert.instanceOf(simpleEntities[2], SimpleEntity);
-        assert.isNull(simpleEntities[0].id);
-        assert.isNull(simpleEntities[1].id);
-        assert.isNull(simpleEntities[2].id);
-        assert.equal(simpleEntities[0].name, "Test-1");
-        assert.equal(simpleEntities[1].name, "Test-2");
-        assert.equal(simpleEntities[2].name, "Test-3");
+        expect(simpleEntities.length).toBe(3);
+        expect(simpleEntities[0]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[1]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[2]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[0].id).toBeNull();
+        expect(simpleEntities[1].id).toBeNull();
+        expect(simpleEntities[2].id).toBeNull();
+        expect(simpleEntities[0].name).toEqual("Test-1");
+        expect(simpleEntities[1].name).toEqual("Test-2");
+        expect(simpleEntities[2].name).toEqual("Test-3");
 
         const simpleEntity1 = new SimpleEntity();
         simpleEntity1.name = "Test-1";
@@ -31,29 +30,29 @@ describe("entity attribute test", function() {
 
         simpleEntities = await entity.simpleEntities;
 
-        assert.lengthOf(simpleEntities, 3);
-        assert.instanceOf(simpleEntities[0], SimpleEntity);
-        assert.instanceOf(simpleEntities[1], SimpleEntity);
-        assert.instanceOf(simpleEntities[2], SimpleEntity);
-        assert.isNull(simpleEntities[0].id);
-        assert.isNull(simpleEntities[1].id);
-        assert.isNull(simpleEntities[2].id);
-        assert.equal(simpleEntities[0].name, "Test-1");
-        assert.equal(simpleEntities[1].name, "Test-2");
-        assert.equal(simpleEntities[2].name, "Test-3");
+        expect(simpleEntities.length).toBe(3);
+        expect(simpleEntities[0]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[1]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[2]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[0].id).toBeNull();
+        expect(simpleEntities[1].id).toBeNull();
+        expect(simpleEntities[2].id).toBeNull();
+        expect(simpleEntities[0].name).toEqual("Test-1");
+        expect(simpleEntities[1].name).toEqual("Test-2");
+        expect(simpleEntities[2].name).toEqual("Test-3");
 
         entity.simpleEntities = null;
-        assert.isNull(await entity.simpleEntities);
+        expect(await entity.simpleEntities).toBeNull();
     });
 
-    it("it null is set, it should accept it", async () => {
+    test("it null is set, it should accept it", async () => {
         const entity = new ComplexEntity();
         entity.simpleEntities = [{ name: "Test-1" }, { name: "Test-2" }, { name: "Test-3" }];
         entity.simpleEntities = null;
-        assert.isNull(await entity.simpleEntities);
+        expect(await entity.simpleEntities).toBeNull();
     });
 
-    it("it should return correct toStorage data", async () => {
+    test("it should return correct toStorage data", async () => {
         let entity = new ComplexEntity();
         entity.simpleEntities = [
             { id: "54759eb3c090d83494e2d804", name: "Test-1" },
@@ -65,30 +64,30 @@ describe("entity attribute test", function() {
         let expected = {
             simpleEntities: `["54759eb3c090d83494e2d804","54759eb3c090d83494e2d805","54759eb3c090d83494e2d806"]`
         };
-        assert.deepEqual(actual, expected);
+        expect(actual).toEqual(expected);
 
         entity = new ComplexEntity();
         actual = await entity.toStorage();
         expected = {};
-        assert.deepEqual(actual, expected);
+        expect(actual).toEqual(expected);
     });
 
-    it("when setting storage value, attribute must not be set as dirty ", async () => {
+    test("when setting storage value, attribute must not be set as dirty ", async () => {
         const entity = new ComplexEntity();
         const attribute = entity.getAttribute("simpleEntities");
         attribute.setStorageValue(
             `["54759eb3c090d83494e2d804","54759eb3c090d83494e2d805","54759eb3c090d83494e2d806"]`
         );
-        assert.deepEqual(attribute.value.current, [
+        expect(attribute.value.current).toEqual([
             "54759eb3c090d83494e2d804",
             "54759eb3c090d83494e2d805",
             "54759eb3c090d83494e2d806"
         ]);
-        assert.isFalse(attribute.value.isDirty());
+        expect(attribute.value.isDirty()).toBe(false);
     });
 
-    it("it should return null because no data was assigned", async () => {
+    test("it should return null because no data was assigned", async () => {
         const entity = new ComplexEntity();
-        assert.isNull(await entity.simpleEntity);
+        expect(await entity.simpleEntity).toBeNull();
     });
 });

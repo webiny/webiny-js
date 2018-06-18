@@ -1,14 +1,13 @@
 import sinon from "sinon";
 import SimpleEntity from "./entities/simpleEntity";
-import { assert } from "chai";
 const sandbox = sinon.sandbox.create();
 
 const simpleEntity = new SimpleEntity();
 
-describe("delete test", function() {
+describe("delete test", () => {
     afterEach(() => sandbox.restore());
 
-    it("must generate correct query", async () => {
+    test("must generate correct query", async () => {
         const queryStub = sandbox
             .stub(SimpleEntity.getDriver().getConnection(), "query")
             .callsFake(() => {
@@ -19,15 +18,14 @@ describe("delete test", function() {
         simpleEntity.id = "507f1f77bcf86cd799439011";
         await simpleEntity.delete();
 
-        assert.deepEqual(
-            queryStub.getCall(0).args[0],
+        expect(queryStub.getCall(0).args[0]).toEqual(
             "DELETE FROM `SimpleEntity` WHERE (`id` = '507f1f77bcf86cd799439011') LIMIT 1"
         );
 
         queryStub.restore();
     });
 
-    it("should throw an exception because entity was not previously saved", async () => {
+    test("should throw an exception because entity was not previously saved", async () => {
         sandbox
             .stub(SimpleEntity.getDriver().getConnection(), "query")
             .callsFake((query, callback) => {
@@ -46,7 +44,7 @@ describe("delete test", function() {
         throw Error(`Error should've been thrown.`);
     });
 
-    it("should delete entity", async () => {
+    test("should delete entity", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
             return { insertId: 1 };
         });

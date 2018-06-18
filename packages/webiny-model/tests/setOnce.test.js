@@ -1,8 +1,7 @@
-import { assert } from "chai";
 import Model from "./../src/model";
 
-describe("setOnce test", function() {
-    it("shouldn't allow value change", async () => {
+describe("setOnce test", () => {
+    test("shouldn't allow value change", async () => {
         const model = new Model(function() {
             this.attr("email")
                 .char()
@@ -18,7 +17,7 @@ describe("setOnce test", function() {
         model.something = "warm";
         model.email = "john2@gmail.com";
 
-        assert.equal(model.something, "warm");
-        assert.equal(model.email, "john@gmail.com");
+        expect(model.something).toEqual("warm");
+        expect(model.email).toEqual("john@gmail.com");
     });
 });

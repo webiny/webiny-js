@@ -1,5 +1,3 @@
-import { assert, expect } from "chai";
-
 import { ModelError } from "webiny-model";
 import { Entity, QueryResult } from "../../../src/index";
 import { User, Company, Image } from "../../entities/userCompanyImage";
@@ -9,11 +7,11 @@ import { UsersGroups } from "../../entities/entitiesUsing";
 
 const sandbox = sinon.sandbox.create();
 
-describe("entity attribute test", function() {
+describe("entity attribute test", () => {
     afterEach(() => sandbox.restore());
     beforeEach(() => User.getEntityPool().flush());
 
-    it("should set root and nested values correctly", async () => {
+    test("should set root and nested values correctly", async () => {
         const user = new User();
 
         user.firstName = "John";
@@ -29,22 +27,22 @@ describe("entity attribute test", function() {
         const company = await user.company;
         const image = await company.image;
 
-        assert.equal(user.firstName, "John");
-        assert.equal(user.lastName, "Doe");
-        assert.instanceOf(company, Company);
-        assert.instanceOf(await company.image, Image);
-        assert.equal(company.name, "Company");
-        assert.equal(image.filename, "image.jpg");
-        assert.equal(image.size, 123.45);
+        expect(user.firstName).toEqual("John");
+        expect(user.lastName).toEqual("Doe");
+        expect(company).toBeInstanceOf(Company);
+        expect(await company.image).toBeInstanceOf(Image);
+        expect(company.name).toEqual("Company");
+        expect(image.filename).toEqual("image.jpg");
+        expect(image.size).toEqual(123.45);
 
         image.filename = "image222.jpg";
         image.size = 234.56;
 
-        assert.equal(image.filename, "image222.jpg");
-        assert.equal(image.size, 234.56);
+        expect(image.filename).toEqual("image222.jpg");
+        expect(image.size).toEqual(234.56);
     });
 
-    it("should populate values correctly", async () => {
+    test("should populate values correctly", async () => {
         const user = new User();
         user.populate({
             firstName: "John",
@@ -61,16 +59,16 @@ describe("entity attribute test", function() {
         const company = await user.company;
         const image = await company.image;
 
-        assert.equal(user.firstName, "John");
-        assert.equal(user.lastName, "Doe");
-        assert.instanceOf(company, Company);
-        assert.instanceOf(image, Image);
-        assert.equal(company.name, "Company");
-        assert.equal(image.filename, "image.jpg");
-        assert.equal(image.size, 123.45);
+        expect(user.firstName).toEqual("John");
+        expect(user.lastName).toEqual("Doe");
+        expect(company).toBeInstanceOf(Company);
+        expect(image).toBeInstanceOf(Image);
+        expect(company.name).toEqual("Company");
+        expect(image.filename).toEqual("image.jpg");
+        expect(image.size).toEqual(123.45);
     });
 
-    it("should set entity only once using setter and populate methods", async () => {
+    test("should set entity only once using setter and populate methods", async () => {
         class Primary extends Entity {
             constructor() {
                 super();
@@ -99,10 +97,10 @@ describe("entity attribute test", function() {
         primary.name = "primary";
         primary.secondary = secondary1;
 
-        assert.equal(primary.name, "primary");
+        expect(primary.name).toEqual("primary");
 
         let secondary = await primary.secondary;
-        assert.equal(secondary.name, "secondary1");
+        expect(secondary.name).toEqual("secondary1");
 
         const secondary2 = new Secondary();
         secondary2.name = "secondary2";
@@ -110,11 +108,11 @@ describe("entity attribute test", function() {
         primary.secondary = secondary2;
 
         secondary = await primary.secondary;
-        assert.equal(primary.name, "primary");
-        assert.equal(secondary.name, "secondary1");
+        expect(primary.name).toEqual("primary");
+        expect(secondary.name).toEqual("secondary1");
     });
 
-    it("should throw an exception", async () => {
+    test("should throw an exception", async () => {
         const mainEntity = new One();
 
         const entityPopulate = sandbox
@@ -130,11 +128,11 @@ describe("entity attribute test", function() {
             error = e;
         }
 
-        assert.instanceOf(error, Error);
+        expect(error).toBeInstanceOf(Error);
         entityPopulate.restore();
     });
 
-    it("should set entity only once using setter and populate methods", async () => {
+    test("should set entity only once using setter and populate methods", async () => {
         class Primary extends Entity {
             constructor() {
                 super();
@@ -165,8 +163,8 @@ describe("entity attribute test", function() {
 
         let secondary = await primary.secondary;
 
-        assert.equal(primary.name, "primary");
-        assert.equal(secondary.name, "secondary1");
+        expect(primary.name).toEqual("primary");
+        expect(secondary.name).toEqual("secondary1");
 
         const secondary2 = new Secondary();
         secondary2.name = "secondary2";
@@ -174,26 +172,26 @@ describe("entity attribute test", function() {
         primary.secondary = secondary2;
 
         secondary = await primary.secondary;
-        assert.equal(primary.name, "primary");
-        assert.equal(secondary.name, "secondary1");
+        expect(primary.name).toEqual("primary");
+        expect(secondary.name).toEqual("secondary1");
     });
 
-    it("must set entity to null", async () => {
+    test("must set entity to null", async () => {
         const entity = new User();
         entity.company = { name: "Test-1" };
 
-        assert.instanceOf(await entity.company, Company);
+        expect(await entity.company).toBeInstanceOf(Company);
 
         entity.company = null;
-        assert.isNull(await entity.company);
+        expect(await entity.company).toBeNull();
     });
 
-    it("should return null because no data was assigned", async () => {
+    test("should return null because no data was assigned", async () => {
         const entity = new User();
-        assert.isNull(await entity.company);
+        expect(await entity.company).toBeNull();
     });
 
-    it("should lazy load any of the accessed linked entities", async () => {
+    test("should lazy load any of the accessed linked entities", async () => {
         let findById = sandbox
             .stub(One.getDriver(), "findOne")
             .onCall(0)
@@ -233,42 +231,42 @@ describe("entity attribute test", function() {
             });
 
         const one = await One.findById("one");
-        assert.equal(one.id, "one");
-        assert.equal(one.name, "One");
-        assert.equal(one.getAttribute("two").value.getCurrent(), "two");
+        expect(one.id).toEqual("one");
+        expect(one.name).toEqual("One");
+        expect(one.getAttribute("two").value.getCurrent()).toEqual("two");
 
         const two = await one.two;
-        assert.equal(two.id, "two");
-        assert.equal(two.name, "Two");
+        expect(two.id).toEqual("two");
+        expect(two.name).toEqual("Two");
 
-        assert.equal(two.getAttribute("three").value.getCurrent(), "three");
+        expect(two.getAttribute("three").value.getCurrent()).toEqual("three");
 
         const three = await two.three;
-        assert.equal(three.id, "three");
-        assert.equal(three.name, "Three");
+        expect(three.id).toEqual("three");
+        expect(three.name).toEqual("Three");
 
-        assert.equal(three.getAttribute("four").value.getCurrent(), "four");
+        expect(three.getAttribute("four").value.getCurrent()).toEqual("four");
 
         const four = await three.four;
-        assert.equal(four.id, "four");
-        assert.equal(four.name, "Four");
+        expect(four.id).toEqual("four");
+        expect(four.name).toEqual("Four");
 
         const anotherFour = await three.anotherFour;
-        assert.equal(anotherFour.id, "anotherFour");
-        assert.equal(anotherFour.name, "Another Four");
+        expect(anotherFour.id).toEqual("anotherFour");
+        expect(anotherFour.name).toEqual("Another Four");
 
         const five = await three.five;
-        assert.equal(five.id, "five");
-        assert.equal(five.name, "Five");
+        expect(five.id).toEqual("five");
+        expect(five.name).toEqual("Five");
 
         const six = await three.six;
-        assert.equal(six.id, "six");
-        assert.equal(six.name, "Six");
+        expect(six.id).toEqual("six");
+        expect(six.name).toEqual("Six");
 
         findById.restore();
     });
 
-    it("should set internal loaded flag to true when called for the first time, and no findById calls should be made", async () => {
+    test("should set internal loaded flag to true when called for the first time, and no findById calls should be made", async () => {
         let findById = sandbox
             .stub(One.getDriver(), "findOne")
             .onCall(0)
@@ -279,8 +277,8 @@ describe("entity attribute test", function() {
         const one = await One.findById("one");
         findById.restore();
 
-        assert.equal(one.getAttribute("two").value.getCurrent(), null);
-        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
+        expect(one.getAttribute("two").value.getCurrent()).toEqual(null);
+        expect(one.getAttribute("two").value.state).toEqual({ loaded: false, loading: false });
 
         findById = sandbox.spy(One.getDriver(), "findOne");
         one.two;
@@ -288,20 +286,20 @@ describe("entity attribute test", function() {
         await one.two;
         await one.two;
 
-        assert.equal(findById.callCount, 0);
-        assert.equal(one.getAttribute("two").value.getCurrent(), null);
-        assert.deepEqual(one.getAttribute("two").value.state, { loaded: true, loading: false });
+        expect(findById.callCount).toEqual(0);
+        expect(one.getAttribute("two").value.getCurrent()).toEqual(null);
+        expect(one.getAttribute("two").value.state).toEqual({ loaded: true, loading: false });
 
         await one.two;
 
-        assert.equal(findById.callCount, 0);
-        assert.equal(one.getAttribute("two").value.getCurrent(), null);
-        assert.deepEqual(one.getAttribute("two").value.state, { loaded: true, loading: false });
+        expect(findById.callCount).toEqual(0);
+        expect(one.getAttribute("two").value.getCurrent()).toEqual(null);
+        expect(one.getAttribute("two").value.state).toEqual({ loaded: true, loading: false });
 
         findById.restore();
     });
 
-    it("should not load if values are already set", async () => {
+    test("should not load if values are already set", async () => {
         const mainEntity = new One();
         const entitySave = sandbox.spy(UsersGroups.getDriver(), "save");
         const entityFind = sandbox.spy(UsersGroups.getDriver(), "find");
@@ -309,23 +307,23 @@ describe("entity attribute test", function() {
 
         await mainEntity.two;
 
-        expect(entitySave.callCount).to.equal(0);
-        expect(entityFind.callCount).to.equal(0);
-        expect(entityFindById.callCount).to.equal(0);
+        expect(entitySave.callCount).toBe(0);
+        expect(entityFind.callCount).toBe(0);
+        expect(entityFindById.callCount).toBe(0);
 
         await mainEntity.two;
 
-        expect(entitySave.callCount).to.equal(0);
-        expect(entityFind.callCount).to.equal(0);
-        expect(entityFindById.callCount).to.equal(0);
+        expect(entitySave.callCount).toBe(0);
+        expect(entityFind.callCount).toBe(0);
+        expect(entityFindById.callCount).toBe(0);
 
         entitySave.restore();
         entityFind.restore();
         entityFindById.restore();
     });
 
-    it("getJSONValue method must return value - we don't do any processing toJSON on it", async () => {
+    test("getJSONValue method must return value - we don't do any processing toJSON on it", async () => {
         const user = new User();
-        assert.isNull(await user.getAttribute("company").getJSONValue(), null);
+        expect(await user.getAttribute("company").getJSONValue()).toBeNull();
     });
 });

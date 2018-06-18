@@ -1,11 +1,10 @@
 import { MainEntity, Entity1 } from "../../entities/entitiesAttributeEntities";
 import { EntityCollection } from "../../..";
-import { assert } from "chai";
 
-describe("onSet test", function() {
+describe("onSet test", () => {
     beforeEach(() => MainEntity.getEntityPool().flush());
 
-    it("should return value set inside onSet callback", async () => {
+    test("should return value set inside onSet callback", async () => {
         const entity = new MainEntity();
         const forcedEntityCollection = new EntityCollection([
             new Entity1(),
@@ -20,6 +19,6 @@ describe("onSet test", function() {
 
         entity.onSetTests = [];
 
-        assert.equal(await entity.onSetTests, forcedEntityCollection);
+        expect(await entity.onSetTests).toEqual(forcedEntityCollection);
     });
 });

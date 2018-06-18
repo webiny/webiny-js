@@ -1,14 +1,13 @@
 import { Entity1, MainEntityWithStorage } from "../../../entities/entitiesAttributeEntities";
-import { assert } from "chai";
 import { QueryResult } from "../../../../src";
 import sinon from "sinon";
 const sandbox = sinon.sandbox.create();
 
-describe("attribute entities test", function() {
+describe("attribute entities test", () => {
     afterEach(() => sandbox.restore());
     beforeEach(() => MainEntityWithStorage.getEntityPool().flush());
 
-    it("should use correct storage query to fetch linked entities", async () => {
+    test("should use correct storage query to fetch linked entities", async () => {
         let entityFindById = sandbox
             .stub(MainEntityWithStorage.getDriver(), "findOne")
             .callsFake(() => new QueryResult({ id: "A", attribute1: ["X", "Y", "Z"] }));
@@ -19,22 +18,22 @@ describe("attribute entities test", function() {
         const findSpy = sandbox.spy(MainEntityWithStorage.getDriver(), "findOne");
         await mainEntityWithStorage.attribute1;
 
-        assert.equal(findSpy.getCall(0).args[0], Entity1);
-        assert.equal(findSpy.getCall(1).args[0], Entity1);
-        assert.equal(findSpy.getCall(2).args[0], Entity1);
-        assert.deepEqual(findSpy.getCall(0).args[1], {
+        expect(findSpy.getCall(0).args[0]).toEqual(Entity1);
+        expect(findSpy.getCall(1).args[0]).toEqual(Entity1);
+        expect(findSpy.getCall(2).args[0]).toEqual(Entity1);
+        expect(findSpy.getCall(0).args[1]).toEqual({
             query: {
                 id: "X"
             }
         });
 
-        assert.deepEqual(findSpy.getCall(1).args[1], {
+        expect(findSpy.getCall(1).args[1]).toEqual({
             query: {
                 id: "Y"
             }
         });
 
-        assert.deepEqual(findSpy.getCall(2).args[1], {
+        expect(findSpy.getCall(2).args[1]).toEqual({
             query: {
                 id: "Z"
             }

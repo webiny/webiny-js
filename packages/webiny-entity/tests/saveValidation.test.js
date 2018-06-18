@@ -1,10 +1,8 @@
-import { assert } from "chai";
-
 import { ModelError } from "webiny-model";
 import { User, Company } from "./entities/userCompanyImage";
 
-describe("entity nested validation test", function() {
-    it("should fail because we have an invalid instance", async () => {
+describe("entity nested validation test", () => {
+    test("should fail because we have an invalid instance", async () => {
         const user = new User();
 
         user.firstName = "John";
@@ -21,14 +19,13 @@ describe("entity nested validation test", function() {
             error = e;
         }
 
-        assert.instanceOf(error, ModelError);
-        assert.equal(
-            error.data.invalidAttributes.company.data.invalidAttributes.image.code,
+        expect(error).toBeInstanceOf(ModelError);
+        expect(error.data.invalidAttributes.company.data.invalidAttributes.image.code).toEqual(
             ModelError.INVALID_ATTRIBUTE
         );
     });
 
-    it("should fail because nested data is missing", async () => {
+    test("should fail because nested data is missing", async () => {
         const user = new User();
         user.populate({
             firstName: "John",
@@ -47,24 +44,20 @@ describe("entity nested validation test", function() {
             error = e;
         }
 
-        assert.instanceOf(error, ModelError);
-        assert.equal(
-            error.data.invalidAttributes.company.data.invalidAttributes.image.code,
+        expect(error).toBeInstanceOf(ModelError);
+        expect(error.data.invalidAttributes.company.data.invalidAttributes.image.code).toEqual(
             ModelError.INVALID_ATTRIBUTES
         );
-        assert.equal(
+        expect(
             error.data.invalidAttributes.company.data.invalidAttributes.image.data.invalidAttributes
-                .filename.data.validator,
-            "required"
-        );
+                .filename.data.validator
+        ).toEqual("required");
 
-        assert.equal(
-            error.data.invalidAttributes.company.data.invalidAttributes.name.code,
+        expect(error.data.invalidAttributes.company.data.invalidAttributes.name.code).toEqual(
             ModelError.INVALID_ATTRIBUTE
         );
-        assert.equal(
-            error.data.invalidAttributes.company.data.invalidAttributes.name.data.validator,
-            "required"
-        );
+        expect(
+            error.data.invalidAttributes.company.data.invalidAttributes.name.data.validator
+        ).toEqual("required");
     });
 });

@@ -1,4 +1,3 @@
-import { assert } from "chai";
 import Entity from "./../entities/entity";
 
 class ObjectEntity extends Entity {
@@ -11,14 +10,14 @@ class ObjectEntity extends Entity {
 
 ObjectEntity.classId = "ObjectEntity";
 
-describe("object attribute test", function() {
-    it("must return object, as JSON string", async () => {
+describe("object attribute test", () => {
+    test("must return object, as JSON string", async () => {
         const entity = new ObjectEntity();
         entity.name = "Test";
         entity.random = { a: 1, b: 2, c: "123", d: { x: 1, y: 5 } };
 
         let data = await entity.toStorage();
-        assert.deepEqual(data, {
+        expect(data).toEqual({
             name: "Test",
             random: '{"a":1,"b":2,"c":"123","d":{"x":1,"y":5}}'
         });
@@ -26,23 +25,23 @@ describe("object attribute test", function() {
         entity.random = null;
 
         data = await entity.toStorage();
-        assert.deepEqual(data, {
+        expect(data).toEqual({
             name: "Test",
             random: null
         });
     });
 
-    it("must parse JSON string from storage, and must not set attribute as dirty", async () => {
+    test("must parse JSON string from storage, and must not set attribute as dirty", async () => {
         const entity = new ObjectEntity();
         entity.getAttribute("random").setStorageValue('["a","b","c"]');
 
-        assert.deepEqual(entity.random, ["a", "b", "c"]);
-        assert.isFalse(entity.getAttribute("random").value.isDirty());
-        assert.isTrue(entity.getAttribute("random").value.isSet());
+        expect(entity.random).toEqual(["a", "b", "c"]);
+        expect(entity.getAttribute("random").value.isDirty()).toBe(false);
+        expect(entity.getAttribute("random").value.isSet()).toBe(true);
 
         entity.getAttribute("random").setStorageValue(null);
-        assert.deepEqual(entity.random, null);
-        assert.isFalse(entity.getAttribute("random").value.isDirty());
-        assert.isTrue(entity.getAttribute("random").value.isSet());
+        expect(entity.random).toEqual(null);
+        expect(entity.getAttribute("random").value.isDirty()).toBe(false);
+        expect(entity.getAttribute("random").value.isSet()).toBe(true);
     });
 });

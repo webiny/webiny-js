@@ -1,9 +1,8 @@
-import { assert } from "chai";
 import { MemoryDriver } from "./../src";
 const driver = new MemoryDriver();
 
-describe("import and flush memory test", function() {
-    it("should throw exception because ID is missing on third record", async () => {
+describe("import and flush memory test", () => {
+    test("should throw exception because ID is missing on third record", async () => {
         try {
             driver.import("SimpleEntity", [
                 { id: 1, name: "This is a test", slug: "thisIsATest", enabled: true },
@@ -18,7 +17,7 @@ describe("import and flush memory test", function() {
         throw Error(`Error should've been thrown.`);
     });
 
-    it("should import data correctly", async () => {
+    test("should import data correctly", async () => {
         driver.import("SimpleEntity1", [
             { id: 1, name: "This is a test", slug: "thisIsATest", enabled: true },
             { id: 2, name: "This is a test 222", slug: "thisIsATest222", enabled: false },
@@ -26,27 +25,27 @@ describe("import and flush memory test", function() {
             { id: 4, name: "SameEntity", slug: "sameEntity", enabled: true }
         ]);
 
-        assert.hasAllKeys(driver.data, "SimpleEntity1");
-        assert.lengthOf(driver.data.SimpleEntity1, 4);
+        expect(driver.data).toContainAllKeys(["SimpleEntity1"]);
+        expect(driver.data.SimpleEntity1.length).toBe(4);
 
         driver.import("SimpleEntity2", [
             { id: 1, name: "This is a test", slug: "thisIsATest", enabled: true }
         ]);
 
-        assert.hasAllKeys(driver.data, ["SimpleEntity1", "SimpleEntity2"]);
-        assert.lengthOf(driver.data.SimpleEntity2, 1);
+        expect(driver.data).toContainAllKeys(["SimpleEntity1", "SimpleEntity2"]);
+        expect(driver.data.SimpleEntity2.length).toBe(1);
 
         driver.import("SimpleEntity3", [
             { id: 1, name: "This is a test", slug: "thisIsATest", enabled: true }
         ]);
 
-        assert.hasAllKeys(driver.data, ["SimpleEntity1", "SimpleEntity2", "SimpleEntity3"]);
-        assert.lengthOf(driver.data.SimpleEntity3, 1);
+        expect(driver.data).toContainAllKeys(["SimpleEntity1", "SimpleEntity2", "SimpleEntity3"]);
+        expect(driver.data.SimpleEntity3.length).toBe(1);
     });
 
-    it("import and override existing entries", async () => {
-        assert.equal(driver.data.SimpleEntity1[2].name, "SameEntity");
-        assert.equal(driver.data.SimpleEntity1[3].name, "SameEntity");
+    test("import and override existing entries", async () => {
+        expect(driver.data.SimpleEntity1[2].name).toEqual("SameEntity");
+        expect(driver.data.SimpleEntity1[3].name).toEqual("SameEntity");
 
         driver.import("SimpleEntity1", [
             { id: 1, name: "This is a test", slug: "thisIsATest", enabled: true },
@@ -55,19 +54,19 @@ describe("import and flush memory test", function() {
             { id: 4, name: "SameEntity_OVERRIDDEN", slug: "sameEntity", enabled: true }
         ]);
 
-        assert.hasAllKeys(driver.data, ["SimpleEntity1", "SimpleEntity2", "SimpleEntity3"]);
-        assert.lengthOf(driver.data.SimpleEntity1, 4);
+        expect(driver.data).toContainAllKeys(["SimpleEntity1", "SimpleEntity2", "SimpleEntity3"]);
+        expect(driver.data.SimpleEntity1.length).toBe(4);
 
-        assert.equal(driver.data.SimpleEntity1[2].name, "SameEntity_OVERRIDDEN");
-        assert.equal(driver.data.SimpleEntity1[3].name, "SameEntity_OVERRIDDEN");
+        expect(driver.data.SimpleEntity1[2].name).toEqual("SameEntity_OVERRIDDEN");
+        expect(driver.data.SimpleEntity1[3].name).toEqual("SameEntity_OVERRIDDEN");
     });
 
-    it("should flush data correctly", async () => {
+    test("should flush data correctly", async () => {
         driver.flush("SimpleEntity3");
-        assert.hasAllKeys(driver.data, ["SimpleEntity1", "SimpleEntity2"]);
-        assert.lengthOf(driver.data.SimpleEntity2, 1);
+        expect(driver.data).toContainAllKeys(["SimpleEntity1", "SimpleEntity2"]);
+        expect(driver.data.SimpleEntity2.length).toBe(1);
 
         driver.flush();
-        assert.isEmpty(driver.data);
+        expect(Object.keys(driver.data)).toHaveLength(0);
     });
 });

@@ -1,5 +1,3 @@
-import { assert } from "chai";
-
 import { QueryResult } from "../../../src/index";
 import { One, Two } from "../../entities/oneTwoThree";
 import sinon from "sinon";
@@ -7,11 +5,11 @@ import { MainEntity } from "../../entities/entitiesAttributeEntities";
 
 const sandbox = sinon.sandbox.create();
 
-describe("entity attribute current / initial values syncing", function() {
+describe("entity attribute current / initial values syncing", () => {
     afterEach(() => sandbox.restore());
     beforeEach(() => MainEntity.getEntityPool().flush());
 
-    it("should correctly sync current and initial values", async () => {
+    test("should correctly sync current and initial values", async () => {
         let entityDelete = sandbox.spy(One.getDriver(), "delete");
         let entityFindById = sandbox
             .stub(One.getDriver(), "findOne")
@@ -25,9 +23,9 @@ describe("entity attribute current / initial values syncing", function() {
             });
 
         const one = await One.findById("a");
-        assert.equal(await one.getAttribute("two").getStorageValue(), "two");
-        assert.equal(one.getAttribute("two").value.getCurrent(), "two");
-        assert.equal(one.getAttribute("two").value.getInitial(), "two");
+        expect(await one.getAttribute("two").getStorageValue()).toEqual("two");
+        expect(one.getAttribute("two").value.getCurrent()).toEqual("two");
+        expect(one.getAttribute("two").value.getInitial()).toEqual("two");
 
         await one.set("two", { name: "Another Two" });
 
@@ -47,15 +45,15 @@ describe("entity attribute current / initial values syncing", function() {
 
         await one.save();
 
-        assert.equal(await one.getAttribute("two").getStorageValue(), "anotherTwo");
-        assert.equal(one.getAttribute("two").value.getCurrent().id, "anotherTwo");
-        assert.equal(one.getAttribute("two").value.getInitial().id, "anotherTwo");
+        expect(await one.getAttribute("two").getStorageValue()).toEqual("anotherTwo");
+        expect(one.getAttribute("two").value.getCurrent().id).toEqual("anotherTwo");
+        expect(one.getAttribute("two").value.getInitial().id).toEqual("anotherTwo");
 
         entityDelete.restore();
         entitySave.restore();
     });
 
-    it("should correctly sync initial and current value when null is present", async () => {
+    test("should correctly sync initial and current value when null is present", async () => {
         let entityDelete = sandbox.spy(One.getDriver(), "delete");
         let entityFindById = sandbox.stub(One.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({ id: "one", name: "One", two: null });
@@ -64,16 +62,16 @@ describe("entity attribute current / initial values syncing", function() {
         const one = await One.findById("a");
         entityFindById.restore();
 
-        assert.equal(await one.getAttribute("two").getStorageValue(), null);
-        assert.equal(one.getAttribute("two").value.getCurrent(), null);
-        assert.equal(one.getAttribute("two").value.getInitial(), null);
+        expect(await one.getAttribute("two").getStorageValue()).toEqual(null);
+        expect(one.getAttribute("two").value.getCurrent()).toEqual(null);
+        expect(one.getAttribute("two").value.getInitial()).toEqual(null);
 
         await one.set("two", { name: "Another Two" });
         entityFindById.restore();
 
-        assert.equal(await one.getAttribute("two").getStorageValue(), null);
-        assert.equal(one.getAttribute("two").value.getCurrent().name, "Another Two");
-        assert.equal(one.getAttribute("two").value.getInitial(), null);
+        expect(await one.getAttribute("two").getStorageValue()).toEqual(null);
+        expect(one.getAttribute("two").value.getCurrent().name).toEqual("Another Two");
+        expect(one.getAttribute("two").value.getInitial()).toEqual(null);
 
         let entitySave = sandbox
             .stub(One.getDriver(), "save")
@@ -89,27 +87,27 @@ describe("entity attribute current / initial values syncing", function() {
 
         await one.save();
 
-        assert.equal(await one.getAttribute("two").getStorageValue(), "anotherTwo");
-        assert.equal(one.getAttribute("two").value.getCurrent().id, "anotherTwo");
-        assert.equal(one.getAttribute("two").value.getInitial().id, "anotherTwo");
+        expect(await one.getAttribute("two").getStorageValue()).toEqual("anotherTwo");
+        expect(one.getAttribute("two").value.getCurrent().id).toEqual("anotherTwo");
+        expect(one.getAttribute("two").value.getInitial().id).toEqual("anotherTwo");
 
         await one.set("two", null);
 
-        assert.equal(await one.getAttribute("two").getStorageValue(), null);
-        assert.equal(one.getAttribute("two").value.getCurrent(), null);
-        assert.equal(one.getAttribute("two").value.getInitial().id, "anotherTwo");
+        expect(await one.getAttribute("two").getStorageValue()).toEqual(null);
+        expect(one.getAttribute("two").value.getCurrent()).toEqual(null);
+        expect(one.getAttribute("two").value.getInitial().id).toEqual("anotherTwo");
 
         await one.save();
 
-        assert.equal(await one.getAttribute("two").getStorageValue(), null);
-        assert.equal(one.getAttribute("two").value.getCurrent(), null);
-        assert.equal(one.getAttribute("two").value.getInitial(), null);
+        expect(await one.getAttribute("two").getStorageValue()).toEqual(null);
+        expect(one.getAttribute("two").value.getCurrent()).toEqual(null);
+        expect(one.getAttribute("two").value.getInitial()).toEqual(null);
 
         entityDelete.restore();
         entitySave.restore();
     });
 
-    it("should not load when setting new values but again correctly sync when saving", async () => {
+    test("should not load when setting new values but again correctly sync when saving", async () => {
         let entityFindById = sandbox
             .stub(One.getDriver(), "findOne")
             .onCall(0)
@@ -139,30 +137,30 @@ describe("entity attribute current / initial values syncing", function() {
 
         const one = await One.findById("a");
         const attrTwo = one.getAttribute("two");
-        assert.deepEqual(attrTwo.value.state, { loading: false, loaded: false });
+        expect(attrTwo.value.state).toEqual({ loading: false, loaded: false });
 
         one.two = { name: "Another Two" };
         await one.set("two", { name: "Another Two" });
 
-        assert.deepEqual(attrTwo.value.state, { loading: false, loaded: false });
-        assert.equal(attrTwo.value.current.name, "Another Two");
+        expect(attrTwo.value.state).toEqual({ loading: false, loaded: false });
+        expect(attrTwo.value.current.name).toEqual("Another Two");
 
-        assert.equal(await one.get("two.name"), "Another Two");
-        assert.deepEqual(attrTwo.value.state, { loading: false, loaded: false });
+        expect(await one.get("two.name")).toEqual("Another Two");
+        expect(attrTwo.value.state).toEqual({ loading: false, loaded: false });
 
         // Initial value wasn't loaded - will be loaded on save.
-        assert.equal(attrTwo.value.initial, "two");
+        expect(attrTwo.value.initial).toEqual("two");
 
         await one.save();
 
-        assert.equal(entitySave.callCount, 2);
-        assert.equal(one.id, "one");
-        assert.deepEqual(attrTwo.value.state, { loading: false, loaded: true });
-        assert.deepEqual(attrTwo.value.current.id, "anotherTwo");
-        assert.deepEqual(attrTwo.value.initial.id, "anotherTwo");
+        expect(entitySave.callCount).toEqual(2);
+        expect(one.id).toEqual("one");
+        expect(attrTwo.value.state).toEqual({ loading: false, loaded: true });
+        expect(attrTwo.value.current.id).toEqual("anotherTwo");
+        expect(attrTwo.value.initial.id).toEqual("anotherTwo");
 
         // Also make sure deletes have been called on initially set entity (with id "two").
-        assert.equal(entityDelete.callCount, 1);
+        expect(entityDelete.callCount).toEqual(1);
 
         entitySave.restore();
         entityDelete.restore();

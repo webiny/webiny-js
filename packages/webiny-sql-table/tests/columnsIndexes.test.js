@@ -1,49 +1,48 @@
-import { assert } from "chai";
 import UserTable from "./tables/user.table";
 import { IntColumn, CharColumn } from "./tables/customDriver/columns";
 import { PrimaryIndex, UniqueIndex } from "./tables/customDriver/indexes";
 
-describe("columns and indexes test", function() {
-    it("should return columns and its properties correctly", async () => {
+describe("columns and indexes test", () => {
+    test("should return columns and its properties correctly", async () => {
         const user = new UserTable();
-        assert.instanceOf(user.getColumn("id"), IntColumn);
-        assert.isTrue(user.getColumn("id").getUnsigned());
-        assert.isTrue(user.getColumn("id").getAutoIncrement());
+        expect(user.getColumn("id")).toBeInstanceOf(IntColumn);
+        expect(user.getColumn("id").getUnsigned()).toBe(true);
+        expect(user.getColumn("id").getAutoIncrement()).toBe(true);
 
-        assert.isFalse(user.getColumn("total").getUnsigned());
+        expect(user.getColumn("total").getUnsigned()).toBe(false);
         user.getColumn("total").setAutoIncrement(false);
-        assert.isFalse(user.getColumn("total").getAutoIncrement());
+        expect(user.getColumn("total").getAutoIncrement()).toBe(false);
 
-        assert.isTrue(user.getColumn("totalViews").getUnsigned());
+        expect(user.getColumn("totalViews").getUnsigned()).toBe(true);
         user.getColumn("totalViews").setUnsigned(true);
-        assert.isTrue(user.getColumn("totalViews").getUnsigned());
+        expect(user.getColumn("totalViews").getUnsigned()).toBe(true);
 
-        assert.instanceOf(user.getColumn("name"), CharColumn);
+        expect(user.getColumn("name")).toBeInstanceOf(CharColumn);
     });
 
-    it("should return undefined because of an invalid column name", async () => {
+    test("should return undefined because of an invalid column name", async () => {
         const user = new UserTable();
-        assert.isUndefined(user.getColumn("id123"));
+        expect(user.getColumn("id123")).not.toBeDefined();
     });
 
-    it("should return all columns", async () => {
+    test("should return all columns", async () => {
         const user = new UserTable();
-        assert.lengthOf(Object.keys(user.getColumns()), 4);
+        expect(Object.keys(user.getColumns()).length).toBe(4);
     });
 
-    it("should return indexes correctly", async () => {
+    test("should return indexes correctly", async () => {
         const user = new UserTable();
-        assert.instanceOf(user.getIndex("id"), PrimaryIndex);
-        assert.instanceOf(user.getIndex("name"), UniqueIndex);
+        expect(user.getIndex("id")).toBeInstanceOf(PrimaryIndex);
+        expect(user.getIndex("name")).toBeInstanceOf(UniqueIndex);
     });
 
-    it("should return undefined because of an invalid index name", async () => {
+    test("should return undefined because of an invalid index name", async () => {
         const user = new UserTable();
-        assert.isUndefined(user.getIndex("id123"));
+        expect(user.getIndex("id123")).not.toBeDefined();
     });
 
-    it("should return all indexes", async () => {
+    test("should return all indexes", async () => {
         const user = new UserTable();
-        assert.lengthOf(user.getIndexes(), 4);
+        expect(user.getIndexes().length).toBe(4);
     });
 });

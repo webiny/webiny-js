@@ -1,4 +1,3 @@
-import { assert } from "chai";
 import { UserTable, userTableSql, Table } from "./tables";
 import sinon from "sinon";
 import mysql from "mysql";
@@ -7,12 +6,12 @@ import { MySQLDriver } from "./..";
 
 const sandbox = sinon.sandbox.create();
 
-describe("create table test", function() {
+describe("create table test", () => {
     afterEach(() => {
         sandbox.restore();
     });
 
-    it("should create table correctly", async () => {
+    test("should create table correctly", async () => {
         const userTable = new UserTable();
 
         const sqlQueries = {
@@ -35,13 +34,13 @@ describe("create table test", function() {
         await userTable.drop();
         createStub.restore();
 
-        assert.deepEqual(sqlQueries, {
+        expect(sqlQueries).toEqual({
             create: userTableSql,
             drop: "DROP TABLE IF EXISTS `Users`;"
         });
     });
 
-    it("should create without extra table parameters", async () => {
+    test("should create without extra table parameters", async () => {
         class MySQLTable extends BaseTable {}
 
         MySQLTable.setDriver(
@@ -73,16 +72,16 @@ describe("create table test", function() {
         await blankTable.drop();
         createStub.restore();
 
-        assert.deepEqual(sqlQueries, {
+        expect(sqlQueries).toEqual({
             create: "CREATE TABLE `blankTable` (\n\n);",
             drop: "DROP TABLE IF EXISTS `blankTable`;"
         });
     });
 
-    it("should return only SQL when setting returnSQL option to true", async () => {
+    test("should return only SQL when setting returnSQL option to true", async () => {
         const userTable = new UserTable();
         const sql = await userTable.create({ returnSQL: true });
-        assert.equal(
+        expect(
             "CREATE TABLE `Users` (\n" +
                 "\t`id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,\n" +
                 "\t`name` varchar(100),\n" +
@@ -93,8 +92,7 @@ describe("create table test", function() {
                 "\t`createdOn` datetime,\n" +
                 "\t`meta` json,\n" +
                 "\tPRIMARY KEY (`id`)\n" +
-                ") ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Main Users table...';",
-            sql
-        );
+                ") ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Main Users table...';"
+        ).toEqual(sql);
     });
 });

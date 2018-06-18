@@ -1,22 +1,21 @@
-import { assert } from "chai";
 import { Column, ColumnsContainer } from "./..";
 
 const column = new Column("Column", new ColumnsContainer());
 
-describe("default Column test", function() {
-    it("getColumnsClass should return default class", async () => {
-        assert.equal(column.getType(), "");
+describe("default Column test", () => {
+    test("getColumnsClass should return default class", async () => {
+        expect(column.getType()).toEqual("");
     });
 
-    it("getParentColumnsContainer should return default class", async () => {
-        assert.instanceOf(column.getParentColumnsContainer(), ColumnsContainer);
+    test("getParentColumnsContainer should return default class", async () => {
+        expect(column.getParentColumnsContainer()).toBeInstanceOf(ColumnsContainer);
     });
 
-    it("getParentTable should return default class", async () => {
-        assert.isUndefined(column.getParentTable());
+    test("getParentTable should return default class", async () => {
+        expect(column.getParentTable()).not.toBeDefined();
     });
 
-    it("getArguments by default should return an empty array", async () => {
-        assert.empty(column.getArguments());
+    test("getArguments by default should return an empty array", async () => {
+        expect(column.getArguments()).toHaveLength(0);
     });
 });

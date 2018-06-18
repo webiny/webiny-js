@@ -1,35 +1,33 @@
-import { assert } from "chai";
-
 import extractor from "./../src";
 import mock from "./mock";
 
 describe("extracting values test", () => {
-    it("should return regular root keys", async () => {
+    test("should return regular root keys", async () => {
         const extracted = await extractor.get(mock, "firstName,lastName,enabled");
-        assert.equal(extracted.firstName, "John");
-        assert.equal(extracted.lastName, "Doe");
-        assert.equal(extracted.enabled, true);
+        expect(extracted.firstName).toEqual("John");
+        expect(extracted.lastName).toEqual("Doe");
+        expect(extracted.enabled).toEqual(true);
     });
 
-    it("should return nested keys - marked with dots", async () => {
+    test("should return nested keys - marked with dots", async () => {
         const extracted = await extractor.get(
             mock,
             "subscription.name,subscription.price,subscription.commitment.expiresOn"
         );
-        assert.equal(extracted.subscription.name, "Free");
-        assert.equal(extracted.subscription.price, 0);
-        assert.equal(extracted.subscription.commitment.expiresOn, "never");
+        expect(extracted.subscription.name).toEqual("Free");
+        expect(extracted.subscription.price).toEqual(0);
+        expect(extracted.subscription.commitment.expiresOn).toEqual("never");
     });
 
-    it("should return nested keys in square brackets", async () => {
+    test("should return nested keys in square brackets", async () => {
         const extracted = await extractor.get(mock, "company[name,city]");
-        assert.equal(extracted.company.name, "Webiny LTD");
-        assert.equal(extracted.company.city, "London");
+        expect(extracted.company.name).toEqual("Webiny LTD");
+        expect(extracted.company.city).toEqual("London");
     });
 
-    it("should return more values that were passed after the square brackets (let's make sure internal character counters work)", async () => {
+    test("should return more values that were passed after the square brackets (let's make sure internal character counters work)", async () => {
         const extracted = await extractor.get(mock, "company[name,city],firstName,lastName");
-        assert.deepEqual(extracted, {
+        expect(extracted).toEqual({
             company: {
                 name: "Webiny LTD",
                 city: "London"
@@ -39,9 +37,9 @@ describe("extracting values test", () => {
         });
     });
 
-    it("should return whole object if nested nested keys aren't set", async () => {
+    test("should return whole object if nested nested keys aren't set", async () => {
         const extracted = await extractor.get(mock, `company[name,city,image]`);
-        assert.deepEqual(extracted, {
+        expect(extracted).toEqual({
             company: {
                 name: "Webiny LTD",
                 city: "London",
@@ -57,45 +55,45 @@ describe("extracting values test", () => {
         });
     });
 
-    it("if a key is an array and no nested keys are set, it should be returned completely", async () => {
+    test("if a key is an array and no nested keys are set, it should be returned completely", async () => {
         const extracted = await extractor.get(mock, `age,meta.objects`);
-        assert.equal(extracted.age, 30);
-        assert.isArray(extracted.meta.objects);
-        assert.lengthOf(extracted.meta.objects, 3);
+        expect(extracted.age).toEqual(30);
+        expect(Array.isArray(extracted.meta.objects)).toBe(true);
+        expect(extracted.meta.objects.length).toBe(3);
     });
 
-    it("should support listing paths in multiple lines and return complete data with all nested keys", async () => {
+    test("should support listing paths in multiple lines and return complete data with all nested keys", async () => {
         const extracted = await extractor.get(
             mock,
             `
-			 firstName,lastName,enabled,
-			 subscription.name,subscription.price,
-			 company[name,city,image],
-			 age
-		`
+                 firstName,lastName,enabled,
+                 subscription.name,subscription.price,
+                 company[name,city,image],
+                 age
+            `
         );
 
-        assert.equal(extracted.company.name, "Webiny LTD");
-        assert.equal(extracted.company.city, "London");
-        assert.hasAllKeys(extracted, [
-            "age",
+        expect(extracted.company.name).toEqual("Webiny LTD");
+        expect(extracted.company.city).toEqual("London");
+        expect(Object.keys(extracted)).toEqual([
             "firstName",
             "lastName",
             "enabled",
             "subscription",
-            "company"
+            "company",
+            "age"
         ]);
-        assert.hasAllKeys(extracted.company, ["name", "city", "image"]);
+        expect(Object.keys(extracted.company)).toEqual(["name", "city", "image"]);
     });
 
-    it("should correctly receive value that was returned async", async () => {
+    test("should correctly receive value that was returned async", async () => {
         const extracted = await extractor.get(mock, `promised`);
 
-        assert.hasAllKeys(extracted, ["promised"]);
-        assert.equal(extracted.promised, 100);
+        expect(Object.keys(extracted)).toEqual(["promised"]);
+        expect(extracted.promised).toEqual(100);
     });
 
-    it("should not include fields that do not exist", async () => {
+    test("should not include fields that do not exist", async () => {
         const extracted = await extractor.get(
             mock,
             `
@@ -105,7 +103,7 @@ describe("extracting values test", () => {
 		`
         );
 
-        assert.deepEqual(extracted, {
+        expect(extracted).toEqual({
             firstName: "John",
             lastName: "Doe",
             company: {
@@ -121,13 +119,13 @@ describe("extracting values test", () => {
         });
     });
 
-    it("array tests - should correctly return keys if arrays are present in the path", async () => {
+    test("array tests - should correctly return keys if arrays are present in the path", async () => {
         let extracted = await extractor.get(mock, "meta.objects");
-        assert.deepEqual(extracted.meta.objects, mock.meta.objects);
-        assert.hasAllKeys(extracted.meta, ["objects"]);
+        expect(extracted.meta.objects).toEqual(mock.meta.objects);
+        expect(Object.keys(extracted.meta)).toEqual(["objects"]);
 
         extracted = await extractor.get(mock, "meta.objects.type");
-        assert.deepEqual(extracted, {
+        expect(extracted).toEqual({
             meta: {
                 objects: [{ type: "cube" }, { type: "sphere" }, { type: "pyramid" }]
             }
@@ -138,7 +136,7 @@ describe("extracting values test", () => {
             "meta.objects.type,meta.objects.size,meta.objects.weight"
         );
 
-        assert.deepEqual(extracted, {
+        expect(extracted).toEqual({
             meta: {
                 objects: [
                     {
@@ -161,10 +159,10 @@ describe("extracting values test", () => {
         });
     });
 
-    it("array tests - extraction must work correctly with square brackets", async () => {
+    test("array tests - extraction must work correctly with square brackets", async () => {
         let extracted = await extractor.get(mock, "meta.objects[type,size,weight]");
 
-        assert.deepEqual(extracted, {
+        expect(extracted).toEqual({
             meta: {
                 objects: [
                     {
@@ -188,7 +186,7 @@ describe("extracting values test", () => {
 
         extracted = await extractor.get(mock, "meta.objects[type,size,weight,colors.key]");
 
-        assert.deepEqual(extracted, {
+        expect(extracted).toEqual({
             meta: {
                 objects: [
                     {
@@ -214,7 +212,7 @@ describe("extracting values test", () => {
         });
     });
 
-    it("array tests - extraction must work with deeply nested arrays", async () => {
+    test("array tests - extraction must work with deeply nested arrays", async () => {
         const extractedWithBraces = await extractor.get(
             mock,
             "meta.objects[type,size,weight,colors[key,label]]"
@@ -284,11 +282,11 @@ describe("extracting values test", () => {
             }
         };
 
-        assert.deepEqual(extracted, expectedResult);
-        assert.deepEqual(extractedWithBraces, expectedResult);
+        expect(extracted).toEqual(expectedResult);
+        expect(extractedWithBraces).toEqual(expectedResult);
     });
 
-    it("array tests - extraction must work correctly with square brackets", async () => {
+    test("array tests - extraction must work correctly with square brackets", async () => {
         const extract1 = await extractor.get(mock, "meta.objects");
         const extract2 = await extractor.get(
             mock,
@@ -309,14 +307,14 @@ describe("extracting values test", () => {
 
         const expectedResult = { meta: { objects: mock.meta.objects } };
 
-        assert.deepEqual(extract1, expectedResult);
-        assert.deepEqual(extract2, expectedResult);
-        assert.deepEqual(extract3, expectedResult);
-        assert.deepEqual(extract4, expectedResult);
-        assert.deepEqual(extract5, expectedResult);
+        expect(extract1).toEqual(expectedResult);
+        expect(extract2).toEqual(expectedResult);
+        expect(extract3).toEqual(expectedResult);
+        expect(extract4).toEqual(expectedResult);
+        expect(extract5).toEqual(expectedResult);
     });
 
-    it("should return undefined fields too, if includeUndefined flag was set", async () => {
+    test("should return undefined fields too, if includeUndefined flag was set", async () => {
         const extract = await extractor.get(
             {
                 firstName: "Tom",
@@ -327,24 +325,24 @@ describe("extracting values test", () => {
             { includeUndefined: true }
         );
 
-        assert.deepEqual(extract, {
+        expect(extract).toEqual({
             firstName: "Tom",
             llastName: undefined,
             ager: undefined
         });
     });
 
-    it("should work even if empty data was sent", async () => {
+    test("should work even if empty data was sent", async () => {
         const extract = await extractor.get(null);
-        assert.deepEqual(extract, {});
+        expect(extract).toEqual({});
     });
 
-    it("should work when getting values from arrays", async () => {
+    test("should work when getting values from arrays", async () => {
         let extract = await extractor.get(mock, "simpleList");
-        assert.deepEqual(extract, { simpleList: ["one", "two", "three", "four"] });
+        expect(extract).toEqual({ simpleList: ["one", "two", "three", "four"] });
 
         extract = await extractor.get(mock, "simpleCollection.id,simpleCollection.name");
-        assert.deepEqual(extract, {
+        expect(extract).toEqual({
             simpleCollection: [
                 { id: 1, name: "one" },
                 { id: 2, name: "two" },
@@ -354,26 +352,26 @@ describe("extracting values test", () => {
         });
     });
 
-    it("should handle empty values correctly", async () => {
+    test("should handle empty values correctly", async () => {
         let extract = await extractor.get(null, "nullValue");
-        assert.deepEqual(extract, {});
+        expect(extract).toEqual({});
 
         extract = await extractor.get(true, "nullValue");
-        assert.deepEqual(extract, {});
+        expect(extract).toEqual({});
 
         extract = await extractor.get(false, "nullValue");
-        assert.deepEqual(extract, {});
+        expect(extract).toEqual({});
 
         extract = await extractor.get(null, "something.nullValue");
-        assert.deepEqual(extract, {});
+        expect(extract).toEqual({});
 
         extract = await extractor.get({ age: 30, nullValue: null }, "nullValue.empty,test,age");
-        assert.deepEqual(extract, { age: 30, nullValue: null });
+        expect(extract).toEqual({ age: 30, nullValue: null });
     });
 
-    it("__process should be able to process empty data", async () => {
+    test("__process should be able to process empty data", async () => {
         const extract = await extractor.__process({});
-        assert.deepEqual(extract, {
+        expect(extract).toEqual({
             output: {},
             processed: {
                 characters: 0
@@ -381,12 +379,12 @@ describe("extracting values test", () => {
         });
     });
 
-    it("__modifyOutput should be able to process empty data", async () => {
+    test("__modifyOutput should be able to process empty data", async () => {
         const extract = await extractor.__modifyOutput();
-        assert.isUndefined(extract);
+        expect(extract).not.toBeDefined();
     });
-    it("__modifyOutput should be able to process empty data", async () => {
+    test("__modifyOutput should be able to process empty data", async () => {
         const extract = await extractor.__modifyOutput();
-        assert.isUndefined(extract);
+        expect(extract).not.toBeDefined();
     });
 });

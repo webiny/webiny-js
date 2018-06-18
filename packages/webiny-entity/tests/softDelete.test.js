@@ -5,21 +5,21 @@ import sinon from "sinon";
 
 const sandbox = sinon.sandbox.create();
 
-describe("soft delete test", function() {
+describe("soft delete test", () => {
     beforeEach(() => EntityWithSoftDeletes.getEntityPool().flush());
     afterEach(() => sandbox.restore());
 
-    it("if entity does not have soft delete enabled, it must not have deleted attribute", async () => {
+    test("if entity does not have soft delete enabled, it must not have deleted attribute", async () => {
         const entity = new EntityWithoutSoftDeletes();
         expect(entity.getAttribute("deleted")).to.equal(undefined);
     });
 
-    it("if entity has soft delete enabled, it must have deleted attribute", async () => {
+    test("if entity has soft delete enabled, it must have deleted attribute", async () => {
         const entity = new EntityWithSoftDeletes();
         expect(entity.getAttribute("deleted")).to.be.instanceOf(BooleanAttribute);
     });
 
-    it("should have delete set to true if delete was called", async () => {
+    test("should have delete set to true if delete was called", async () => {
         const entity = new EntityWithSoftDeletes();
         const deleteSpy = sandbox.spy(EntityWithoutSoftDeletes.getDriver(), "delete");
 
@@ -32,7 +32,7 @@ describe("soft delete test", function() {
         expect(deleteSpy.callCount).to.equal(0);
     });
 
-    it("should permanently delete entity if 'permanent' flag was set to true", async () => {
+    test("should permanently delete entity if 'permanent' flag was set to true", async () => {
         const entity = new EntityWithSoftDeletes();
         const deleteSpy = sandbox.spy(EntityWithoutSoftDeletes.getDriver(), "delete");
 
@@ -45,7 +45,7 @@ describe("soft delete test", function() {
         expect(deleteSpy.callCount).to.equal(1);
     });
 
-    it("should not append 'deleted' into query when doing finds/count in entity that does not have soft deletes enabled", async () => {
+    test("should not append 'deleted' into query when doing finds/count in entity that does not have soft deletes enabled", async () => {
         let query = sandbox.spy(EntityWithoutSoftDeletes.getDriver(), "count");
         await EntityWithoutSoftDeletes.count();
         expect(query.getCall(0).args[1]).to.deep.equal({});
@@ -81,7 +81,7 @@ describe("soft delete test", function() {
         query.restore();
     });
 
-    it("should append 'deleted' into query when doing finds/count in entity that has soft delete enabled", async () => {
+    test("should append 'deleted' into query when doing finds/count in entity that has soft delete enabled", async () => {
         let query = sandbox.spy(EntityWithSoftDeletes.getDriver(), "count");
         await EntityWithSoftDeletes.count();
         expect(query.getCall(0).args[1]).to.deep.equal({
@@ -129,7 +129,7 @@ describe("soft delete test", function() {
         query.restore();
     });
 
-    it("should override 'deleted' flag if sent through query", async () => {
+    test("should override 'deleted' flag if sent through query", async () => {
         let query = sandbox.spy(EntityWithSoftDeletes.getDriver(), "count");
         await EntityWithSoftDeletes.count({ query: { deleted: true } });
         expect(query.getCall(0).args[1]).to.deep.equal({

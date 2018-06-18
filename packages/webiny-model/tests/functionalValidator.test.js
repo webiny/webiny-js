@@ -1,8 +1,7 @@
-import { assert } from "chai";
 import Model from "./../src/model";
 
-describe("functional validator test", function() {
-    it("should validate correctly using function as validator", async () => {
+describe("functional validator test", () => {
+    test("should validate correctly using function as validator", async () => {
         const user = new Model(function() {
             this.attr("yearOfBirth")
                 .integer()
@@ -22,8 +21,8 @@ describe("functional validator test", function() {
             error = e;
         }
 
-        assert.equal(error.data.invalidAttributes.yearOfBirth.data, null);
-        assert.equal(error.data.invalidAttributes.yearOfBirth.code, "INVALID_ATTRIBUTE");
-        assert.equal(error.data.invalidAttributes.yearOfBirth.message, "Invalid year passed.");
+        expect(error.data.invalidAttributes.yearOfBirth.data).toEqual(null);
+        expect(error.data.invalidAttributes.yearOfBirth.code).toEqual("INVALID_ATTRIBUTE");
+        expect(error.data.invalidAttributes.yearOfBirth.message).toEqual("Invalid year passed.");
     });
 });

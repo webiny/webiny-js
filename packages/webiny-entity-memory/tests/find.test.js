@@ -1,8 +1,7 @@
-import { assert } from "chai";
 import SimpleEntity from "./entities/simpleEntity";
 
-describe("find test", function() {
-    it("find - should find entities", async () => {
+describe("find test", () => {
+    test("find - should find entities", async () => {
         SimpleEntity.getDriver()
             .flush()
             .import("SimpleEntity", [
@@ -14,42 +13,42 @@ describe("find test", function() {
 
         let entities = await SimpleEntity.find();
 
-        assert.isArray(entities);
-        assert.lengthOf(entities, 4);
+        expect(Array.isArray(entities)).toBe(true);
+        expect(entities.length).toBe(4);
 
-        assert.equal(entities[0].id, 1);
-        assert.equal(entities[0].name, "This is a test");
-        assert.equal(entities[0].slug, "thisIsATest");
-        assert.isTrue(entities[0].enabled);
+        expect(entities[0].id).toEqual(1);
+        expect(entities[0].name).toEqual("This is a test");
+        expect(entities[0].slug).toEqual("thisIsATest");
+        expect(entities[0].enabled).toBe(true);
 
-        assert.equal(entities[1].id, 2);
-        assert.equal(entities[1].name, "This is a test 222");
-        assert.equal(entities[1].slug, "thisIsATest222");
-        assert.isFalse(entities[1].enabled);
+        expect(entities[1].id).toEqual(2);
+        expect(entities[1].name).toEqual("This is a test 222");
+        expect(entities[1].slug).toEqual("thisIsATest222");
+        expect(entities[1].enabled).toBe(false);
 
         entities = await SimpleEntity.find({ query: { name: "SameEntity" } });
 
-        assert.isArray(entities);
-        assert.lengthOf(entities, 2);
+        expect(Array.isArray(entities)).toBe(true);
+        expect(entities.length).toBe(2);
 
-        assert.equal(entities[0].id, 3);
-        assert.equal(entities[0].name, "SameEntity");
-        assert.equal(entities[0].slug, "sameEntity");
-        assert.isFalse(entities[0].enabled);
+        expect(entities[0].id).toEqual(3);
+        expect(entities[0].name).toEqual("SameEntity");
+        expect(entities[0].slug).toEqual("sameEntity");
+        expect(entities[0].enabled).toBe(false);
 
-        assert.equal(entities[1].id, 4);
-        assert.equal(entities[1].name, "SameEntity");
-        assert.equal(entities[1].slug, "sameEntity");
-        assert.isTrue(entities[1].enabled);
+        expect(entities[1].id).toEqual(4);
+        expect(entities[1].name).toEqual("SameEntity");
+        expect(entities[1].slug).toEqual("sameEntity");
+        expect(entities[1].enabled).toBe(true);
 
         entities = await SimpleEntity.find({ query: { name: "SameEntity", enabled: true } });
 
-        assert.isArray(entities);
-        assert.lengthOf(entities, 1);
+        expect(Array.isArray(entities)).toBe(true);
+        expect(entities.length).toBe(1);
 
-        assert.equal(entities[0].id, 4);
-        assert.equal(entities[0].name, "SameEntity");
-        assert.equal(entities[0].slug, "sameEntity");
-        assert.isTrue(entities[0].enabled);
+        expect(entities[0].id).toEqual(4);
+        expect(entities[0].name).toEqual("SameEntity");
+        expect(entities[0].slug).toEqual("sameEntity");
+        expect(entities[0].enabled).toBe(true);
     });
 });

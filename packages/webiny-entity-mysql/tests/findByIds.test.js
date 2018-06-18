@@ -1,14 +1,12 @@
-import { assert } from "chai";
-
 import sinon from "sinon";
 import SimpleEntity from "./entities/simpleEntity";
 const sandbox = sinon.sandbox.create();
 
-describe("findByIds test", function() {
+describe("findByIds test", () => {
     afterEach(() => sandbox.restore());
     beforeEach(() => SimpleEntity.getEntityPool().flush());
 
-    it("must generate correct query", async () => {
+    test("must generate correct query", async () => {
         const queryStub = sandbox
             .stub(SimpleEntity.getDriver().getConnection(), "query")
             .callsFake(() => {
@@ -17,24 +15,21 @@ describe("findByIds test", function() {
 
         await SimpleEntity.findByIds(["a", "b", "c"]);
 
-        assert.deepEqual(
-            queryStub.getCall(0).args[0],
+        expect(queryStub.getCall(0).args[0]).toEqual(
             "SELECT * FROM `SimpleEntity` WHERE (`id` = 'a') LIMIT 1"
         );
-        assert.deepEqual(
-            queryStub.getCall(1).args[0],
+        expect(queryStub.getCall(1).args[0]).toEqual(
             "SELECT * FROM `SimpleEntity` WHERE (`id` = 'b') LIMIT 1"
         );
-        assert.deepEqual(
-            queryStub.getCall(2).args[0],
+        expect(queryStub.getCall(2).args[0]).toEqual(
             "SELECT * FROM `SimpleEntity` WHERE (`id` = 'c') LIMIT 1"
         );
-        assert.equal(queryStub.getCall(3), undefined);
+        expect(queryStub.getCall(3)).toBeNil();
 
         queryStub.restore();
     });
 
-    it("findByIds - should find previously inserted entities", async () => {
+    test("findByIds - should find previously inserted entities", async () => {
         sandbox
             .stub(SimpleEntity.getDriver().getConnection(), "query")
             .onCall(0)
@@ -65,14 +60,14 @@ describe("findByIds test", function() {
             .getConnection()
             .query.restore();
 
-        assert.equal(simpleEntities[0].id, 1);
-        assert.equal(simpleEntities[0].name, "This is a test");
-        assert.equal(simpleEntities[0].slug, "thisIsATest");
-        assert.isTrue(simpleEntities[0].enabled);
+        expect(simpleEntities[0].id).toEqual(1);
+        expect(simpleEntities[0].name).toEqual("This is a test");
+        expect(simpleEntities[0].slug).toEqual("thisIsATest");
+        expect(simpleEntities[0].enabled).toBe(true);
 
-        assert.equal(simpleEntities[1].id, 2);
-        assert.equal(simpleEntities[1].name, "This is a test 222");
-        assert.equal(simpleEntities[1].slug, "thisIsATest222");
-        assert.isFalse(simpleEntities[1].enabled);
+        expect(simpleEntities[1].id).toEqual(2);
+        expect(simpleEntities[1].name).toEqual("This is a test 222");
+        expect(simpleEntities[1].slug).toEqual("thisIsATest222");
+        expect(simpleEntities[1].enabled).toBe(false);
     });
 });

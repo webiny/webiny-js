@@ -1,15 +1,14 @@
 import { QueryResult } from "../../../../src";
 import { MainEntity, Entity1, Entity2 } from "../../../entities/entitiesAttributeEntities";
-import { assert } from "chai";
 import sinon from "sinon";
 
 const sandbox = sinon.sandbox.create();
 
-describe("entity attribute current / initial values syncing", function() {
+describe("entity attribute current / initial values syncing", () => {
     afterEach(() => sandbox.restore());
     beforeEach(() => MainEntity.getEntityPool().flush());
 
-    it("should delete previous initial values since auto save and auto delete are both enabled", async () => {
+    test("should delete previous initial values since auto save and auto delete are both enabled", async () => {
         let entityDelete = sandbox
             .stub(MainEntity.getDriver(), "delete")
             .callsFake(() => new QueryResult());
@@ -28,8 +27,8 @@ describe("entity attribute current / initial values syncing", function() {
 
         await mainEntity.set("attribute1", [{ name: "x", type: "parrot" }]);
 
-        assert.isUndefined(mainEntity.getAttribute("attribute1").value.initial[0]);
-        assert.isUndefined(mainEntity.getAttribute("attribute1").value.initial[1]);
+        expect(mainEntity.getAttribute("attribute1").value.initial[0]).not.toBeDefined();
+        expect(mainEntity.getAttribute("attribute1").value.initial[1]).not.toBeDefined();
 
         let entitySave = sandbox
             .stub(mainEntity.getDriver(), "save")
@@ -43,12 +42,12 @@ describe("entity attribute current / initial values syncing", function() {
 
         await mainEntity.save();
 
-        assert.lengthOf(mainEntity.getAttribute("attribute1").value.initial, 1);
-        assert.equal(mainEntity.getAttribute("attribute1").value.initial[0].id, "X");
-        assert.lengthOf(mainEntity.getAttribute("attribute1").value.current, 1);
-        assert.equal(mainEntity.getAttribute("attribute1").value.current[0].id, "X");
-        assert.equal(entitySave.callCount, 2);
-        assert.equal(entityDelete.callCount, 2);
+        expect(mainEntity.getAttribute("attribute1").value.initial.length).toBe(1);
+        expect(mainEntity.getAttribute("attribute1").value.initial[0].id).toEqual("X");
+        expect(mainEntity.getAttribute("attribute1").value.current.length).toBe(1);
+        expect(mainEntity.getAttribute("attribute1").value.current[0].id).toEqual("X");
+        expect(entitySave.callCount).toEqual(2);
+        expect(entityDelete.callCount).toEqual(2);
 
         entitySave.restore();
         entityFind.restore();
@@ -73,32 +72,32 @@ describe("entity attribute current / initial values syncing", function() {
 
         entityFind.restore();
 
-        assert.equal(mainEntity.getAttribute("attribute2").value.initial[0].id, "D");
-        assert.equal(mainEntity.getAttribute("attribute2").value.initial[1].id, "E");
-        assert.lengthOf(mainEntity.getAttribute("attribute2").value.initial, 2);
+        expect(mainEntity.getAttribute("attribute2").value.initial[0].id).toEqual("D");
+        expect(mainEntity.getAttribute("attribute2").value.initial[1].id).toEqual("E");
+        expect(mainEntity.getAttribute("attribute2").value.initial.length).toBe(2);
 
-        assert.equal(mainEntity.getAttribute("attribute2").value.current[0].id, "D");
-        assert.equal(mainEntity.getAttribute("attribute2").value.current[1].id, "E");
-        assert.equal(mainEntity.getAttribute("attribute2").value.current[2].id, "F");
-        assert.lengthOf(mainEntity.getAttribute("attribute2").value.current, 3);
+        expect(mainEntity.getAttribute("attribute2").value.current[0].id).toEqual("D");
+        expect(mainEntity.getAttribute("attribute2").value.current[1].id).toEqual("E");
+        expect(mainEntity.getAttribute("attribute2").value.current[2].id).toEqual("F");
+        expect(mainEntity.getAttribute("attribute2").value.current.length).toBe(3);
 
         await mainEntity.save();
 
-        assert.equal(mainEntity.getAttribute("attribute2").value.initial[0].id, "D");
-        assert.equal(mainEntity.getAttribute("attribute2").value.initial[1].id, "E");
-        assert.equal(mainEntity.getAttribute("attribute2").value.initial[2].id, "F");
-        assert.lengthOf(mainEntity.getAttribute("attribute2").value.initial, 3);
+        expect(mainEntity.getAttribute("attribute2").value.initial[0].id).toEqual("D");
+        expect(mainEntity.getAttribute("attribute2").value.initial[1].id).toEqual("E");
+        expect(mainEntity.getAttribute("attribute2").value.initial[2].id).toEqual("F");
+        expect(mainEntity.getAttribute("attribute2").value.initial.length).toBe(3);
 
-        assert.equal(mainEntity.getAttribute("attribute2").value.current[0].id, "D");
-        assert.equal(mainEntity.getAttribute("attribute2").value.current[1].id, "E");
-        assert.equal(mainEntity.getAttribute("attribute2").value.current[2].id, "F");
-        assert.lengthOf(mainEntity.getAttribute("attribute2").value.current, 3);
+        expect(mainEntity.getAttribute("attribute2").value.current[0].id).toEqual("D");
+        expect(mainEntity.getAttribute("attribute2").value.current[1].id).toEqual("E");
+        expect(mainEntity.getAttribute("attribute2").value.current[2].id).toEqual("F");
+        expect(mainEntity.getAttribute("attribute2").value.current.length).toBe(3);
 
         attribute2.pop();
         attribute2.pop();
 
-        assert.equal(mainEntity.getAttribute("attribute2").value.current[0].id, "D");
-        assert.lengthOf(mainEntity.getAttribute("attribute2").value.current, 1);
+        expect(mainEntity.getAttribute("attribute2").value.current[0].id).toEqual("D");
+        expect(mainEntity.getAttribute("attribute2").value.current.length).toBe(1);
 
         entitySave = sandbox
             .stub(mainEntity.getDriver(), "save")
@@ -113,8 +112,8 @@ describe("entity attribute current / initial values syncing", function() {
         mainEntity.attribute2 = [...attribute2]; // Force dirty check, since it's not the same array.
         await mainEntity.save();
 
-        assert.equal(entityDelete.callCount, 4);
-        assert.equal(entitySave.callCount, 1);
+        expect(entityDelete.callCount).toEqual(4);
+        expect(entitySave.callCount).toEqual(1);
 
         entityDelete.restore();
         entitySave.restore();

@@ -1,5 +1,3 @@
-import { assert } from "chai";
-
 import { Entity } from "./../src";
 
 class Invoice extends Entity {
@@ -51,8 +49,8 @@ Invoice.on("paid", async ({ entity, price }) => {
     company.invoicesPaidAmount += price;
 });
 
-describe("events test", function() {
-    it("should register and execute static and instance event handlers", async () => {
+describe("events test", () => {
+    test("should register and execute static and instance event handlers", async () => {
         const company1 = new Company();
         company1.name = "Company";
         const invoice1 = new Invoice();
@@ -60,10 +58,10 @@ describe("events test", function() {
         await invoice1.setPaid(100);
         await invoice1.save();
 
-        assert.equal(company1.invoicesPaidCount, 1);
-        assert.equal(company1.invoicesPaidAmount, 100);
-        assert.equal(invoice1.afterSaveCalled, 1);
-        assert.equal(invoice1.beforeSaveCalled, 1);
+        expect(company1.invoicesPaidCount).toEqual(1);
+        expect(company1.invoicesPaidAmount).toEqual(100);
+        expect(invoice1.afterSaveCalled).toEqual(1);
+        expect(invoice1.beforeSaveCalled).toEqual(1);
 
         const company2 = new Company();
         company2.name = "Company";
@@ -72,13 +70,13 @@ describe("events test", function() {
         await await invoice2.setPaid(200);
         await invoice2.save();
 
-        assert.equal(company1.invoicesPaidCount, 1);
-        assert.equal(company1.invoicesPaidAmount, 100);
-        assert.equal(company2.invoicesPaidCount, 1);
-        assert.equal(company2.invoicesPaidAmount, 200);
+        expect(company1.invoicesPaidCount).toEqual(1);
+        expect(company1.invoicesPaidAmount).toEqual(100);
+        expect(company2.invoicesPaidCount).toEqual(1);
+        expect(company2.invoicesPaidAmount).toEqual(200);
 
-        assert.equal(invoice2.afterSaveCalled, 1);
-        assert.equal(invoice2.beforeSaveCalled, 1);
+        expect(invoice2.afterSaveCalled).toEqual(1);
+        expect(invoice2.beforeSaveCalled).toEqual(1);
 
         const company3 = new Company();
         company3.name = "Company";
@@ -87,77 +85,77 @@ describe("events test", function() {
         await await invoice3.setPaid(300);
         await invoice3.save();
 
-        assert.equal(company1.invoicesPaidCount, 1);
-        assert.equal(company1.invoicesPaidAmount, 100);
-        assert.equal(company2.invoicesPaidCount, 1);
-        assert.equal(company2.invoicesPaidAmount, 200);
-        assert.equal(company3.invoicesPaidCount, 1);
-        assert.equal(company3.invoicesPaidAmount, 300);
-        assert.equal(invoice3.afterSaveCalled, 1);
-        assert.equal(invoice3.beforeSaveCalled, 1);
+        expect(company1.invoicesPaidCount).toEqual(1);
+        expect(company1.invoicesPaidAmount).toEqual(100);
+        expect(company2.invoicesPaidCount).toEqual(1);
+        expect(company2.invoicesPaidAmount).toEqual(200);
+        expect(company3.invoicesPaidCount).toEqual(1);
+        expect(company3.invoicesPaidAmount).toEqual(300);
+        expect(invoice3.afterSaveCalled).toEqual(1);
+        expect(invoice3.beforeSaveCalled).toEqual(1);
 
         const invoice4 = new Invoice();
         invoice4.company = company1;
         await invoice4.setPaid(400);
         await invoice4.save();
 
-        assert.equal(company1.invoicesPaidCount, 2);
-        assert.equal(company1.invoicesPaidAmount, 500);
-        assert.equal(company2.invoicesPaidCount, 1);
-        assert.equal(company2.invoicesPaidAmount, 200);
-        assert.equal(company3.invoicesPaidCount, 1);
-        assert.equal(company3.invoicesPaidAmount, 300);
-        assert.equal(invoice4.afterSaveCalled, 1);
-        assert.equal(invoice4.beforeSaveCalled, 1);
+        expect(company1.invoicesPaidCount).toEqual(2);
+        expect(company1.invoicesPaidAmount).toEqual(500);
+        expect(company2.invoicesPaidCount).toEqual(1);
+        expect(company2.invoicesPaidAmount).toEqual(200);
+        expect(company3.invoicesPaidCount).toEqual(1);
+        expect(company3.invoicesPaidAmount).toEqual(300);
+        expect(invoice4.afterSaveCalled).toEqual(1);
+        expect(invoice4.beforeSaveCalled).toEqual(1);
 
         const invoice5 = new Invoice();
         invoice5.company = company2;
         await invoice5.setPaid(100);
         await invoice5.save();
 
-        assert.equal(company1.invoicesPaidCount, 2);
-        assert.equal(company1.invoicesPaidAmount, 500);
-        assert.equal(company2.invoicesPaidCount, 2);
-        assert.equal(company2.invoicesPaidAmount, 300);
-        assert.equal(company3.invoicesPaidCount, 1);
-        assert.equal(company3.invoicesPaidAmount, 300);
-        assert.equal(invoice5.afterSaveCalled, 1);
-        assert.equal(invoice5.beforeSaveCalled, 1);
+        expect(company1.invoicesPaidCount).toEqual(2);
+        expect(company1.invoicesPaidAmount).toEqual(500);
+        expect(company2.invoicesPaidCount).toEqual(2);
+        expect(company2.invoicesPaidAmount).toEqual(300);
+        expect(company3.invoicesPaidCount).toEqual(1);
+        expect(company3.invoicesPaidAmount).toEqual(300);
+        expect(invoice5.afterSaveCalled).toEqual(1);
+        expect(invoice5.beforeSaveCalled).toEqual(1);
 
         const invoice6 = new Invoice();
         invoice6.company = company3;
         await invoice6.setPaid(700);
         await invoice6.save();
 
-        assert.equal(company1.invoicesPaidCount, 2);
-        assert.equal(company1.invoicesPaidAmount, 500);
-        assert.equal(company2.invoicesPaidCount, 2);
-        assert.equal(company2.invoicesPaidAmount, 300);
-        assert.equal(company3.invoicesPaidCount, 2);
-        assert.equal(company3.invoicesPaidAmount, 1000);
-        assert.equal(invoice6.afterSaveCalled, 1);
-        assert.equal(invoice6.beforeSaveCalled, 1);
+        expect(company1.invoicesPaidCount).toEqual(2);
+        expect(company1.invoicesPaidAmount).toEqual(500);
+        expect(company2.invoicesPaidCount).toEqual(2);
+        expect(company2.invoicesPaidAmount).toEqual(300);
+        expect(company3.invoicesPaidCount).toEqual(2);
+        expect(company3.invoicesPaidAmount).toEqual(1000);
+        expect(invoice6.afterSaveCalled).toEqual(1);
+        expect(invoice6.beforeSaveCalled).toEqual(1);
     });
 
-    it("event handler should be triggered only once", async () => {
+    test("event handler should be triggered only once", async () => {
         const invoice1 = new Invoice();
         await invoice1.save();
-        assert.equal(invoice1.beforeSaveCalled, 1);
-        assert.equal(invoice1.afterSaveCalled, 1);
+        expect(invoice1.beforeSaveCalled).toEqual(1);
+        expect(invoice1.afterSaveCalled).toEqual(1);
 
         await invoice1.save();
 
-        assert.equal(invoice1.beforeSaveCalled, 1);
-        assert.equal(invoice1.afterSaveCalled, 2);
+        expect(invoice1.beforeSaveCalled).toEqual(1);
+        expect(invoice1.afterSaveCalled).toEqual(2);
 
         await invoice1.save();
         await invoice1.save();
 
-        assert.equal(invoice1.beforeSaveCalled, 1);
-        assert.equal(invoice1.afterSaveCalled, 4);
+        expect(invoice1.beforeSaveCalled).toEqual(1);
+        expect(invoice1.afterSaveCalled).toEqual(4);
     });
 
-    it("should inherit static events from extended class", async () => {
+    test("should inherit static events from extended class", async () => {
         class FirstClass extends Entity {}
         class SecondClass extends FirstClass {}
 
@@ -168,17 +166,17 @@ describe("events test", function() {
         await FirstClass.emit("someEvent");
         await FirstClass.emit("someEvent");
 
-        assert.equal(counter, 3);
+        expect(counter).toEqual(3);
 
         await SecondClass.emit("someEvent");
         await SecondClass.emit("someEvent");
         await SecondClass.emit("someEvent");
-        assert.equal(counter, 6);
+        expect(counter).toEqual(6);
 
         SecondClass.on("someEvent", () => ++counter);
         await SecondClass.emit("someEvent");
         await SecondClass.emit("someEvent");
         await SecondClass.emit("someEvent");
-        assert.equal(counter, 12);
+        expect(counter).toEqual(12);
     });
 });

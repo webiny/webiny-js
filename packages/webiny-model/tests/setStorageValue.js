@@ -1,4 +1,3 @@
-import { assert } from "chai";
 import Model from "./../src/model";
 
 describe("setStorageValue test", function() {
@@ -9,7 +8,7 @@ describe("setStorageValue test", function() {
                 .setStorageValue("Test");
         });
 
-        assert.isTrue(user.getAttribute("name").value.isSet());
+        expect(user.getAttribute("name").value.isSet()).toBeTruthy();
     });
 
     it("must not set attribute as dirty, even if it has a default value set", async () => {
@@ -19,9 +18,9 @@ describe("setStorageValue test", function() {
                 .setValue("SomeDefaultValue");
         });
 
-        assert.isTrue(user.getAttribute("name").value.isDirty());
+        expect(user.getAttribute("name").value.isDirty()).toBeTruthy();
 
         user.getAttribute("name").setStorageValue("Test");
-        assert.isFalse(user.getAttribute("name").value.isDirty());
+        expect(user.getAttribute("name").value.isDirty()).toBeFalsy();
     });
 });

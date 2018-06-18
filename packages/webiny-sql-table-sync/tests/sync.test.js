@@ -1,5 +1,4 @@
 // @flow
-import { assert } from "chai";
 import sinon from "sinon";
 import { Sync } from "./..";
 import { TableA, TableB } from "./tables";
@@ -7,9 +6,9 @@ import _ from "lodash";
 
 const sandbox = sinon.sandbox.create();
 
-describe("sync test", function() {
+describe("sync test", () => {
     afterEach(() => sandbox.restore());
-    it("should execute queries", async () => {
+    test("should execute queries", async () => {
         const sync = new Sync({
             tables: [TableA, TableB]
         });
@@ -17,68 +16,68 @@ describe("sync test", function() {
         const syncSpy = sandbox.spy(TableA.getDriver(), "sync");
         await sync.execute();
 
-        assert.deepEqual(syncSpy.getCall(0).args[1], { returnSQL: true });
-        assert.deepEqual(syncSpy.getCall(1).args[1], {});
-        assert.deepEqual(syncSpy.getCall(2).args[1], { returnSQL: true });
-        assert.deepEqual(syncSpy.getCall(3).args[1], {});
-        assert.equal(syncSpy.callCount, 4);
+        expect(syncSpy.getCall(0).args[1]).toEqual({ returnSQL: true });
+        expect(syncSpy.getCall(1).args[1]).toEqual({});
+        expect(syncSpy.getCall(2).args[1]).toEqual({ returnSQL: true });
+        expect(syncSpy.getCall(3).args[1]).toEqual({});
+        expect(syncSpy.callCount).toEqual(4);
     });
 
-    it("must not execute queries", async () => {
+    test("must not execute queries", async () => {
         const sync = new Sync({ preview: true, tables: [TableA, TableB] });
 
         const syncSpy = sandbox.spy(TableA.getDriver(), "sync");
         await sync.execute();
 
-        assert.deepEqual(syncSpy.getCall(0).args[1], { returnSQL: true });
-        assert.deepEqual(syncSpy.getCall(1).args[1], { returnSQL: true });
-        assert.equal(syncSpy.callCount, 2);
+        expect(syncSpy.getCall(0).args[1]).toEqual({ returnSQL: true });
+        expect(syncSpy.getCall(1).args[1]).toEqual({ returnSQL: true });
+        expect(syncSpy.callCount).toEqual(2);
     });
 
-    it("must generate DROP statement first and not execute", async () => {
+    test("must generate DROP statement first and not execute", async () => {
         const sync = new Sync({ preview: true, drop: true, tables: [TableA, TableB] });
 
         const dropSpy = sandbox.spy(TableA.getDriver(), "drop");
         const createSpy = sandbox.spy(TableA.getDriver(), "create");
         await sync.execute();
-        assert.deepEqual(dropSpy.getCall(0).args[1], { returnSQL: true });
-        assert.deepEqual(dropSpy.getCall(1).args[1], { returnSQL: true });
-        assert.equal(dropSpy.callCount, 2);
+        expect(dropSpy.getCall(0).args[1]).toEqual({ returnSQL: true });
+        expect(dropSpy.getCall(1).args[1]).toEqual({ returnSQL: true });
+        expect(dropSpy.callCount).toEqual(2);
 
-        assert.deepEqual(createSpy.getCall(0).args[1], { returnSQL: true });
-        assert.deepEqual(createSpy.getCall(1).args[1], { returnSQL: true });
-        assert.equal(createSpy.callCount, 2);
+        expect(createSpy.getCall(0).args[1]).toEqual({ returnSQL: true });
+        expect(createSpy.getCall(1).args[1]).toEqual({ returnSQL: true });
+        expect(createSpy.callCount).toEqual(2);
     });
 
-    it("must generate DROP statement first and not execute", async () => {
+    test("must generate DROP statement first and not execute", async () => {
         const sync = new Sync({ drop: true, tables: [TableA, TableB] });
 
         const dropSpy = sandbox.spy(TableA.getDriver(), "drop");
         const createSpy = sandbox.spy(TableA.getDriver(), "create");
         await sync.execute();
-        assert.deepEqual(dropSpy.getCall(0).args[1], { returnSQL: true });
-        assert.deepEqual(dropSpy.getCall(1).args[1], {});
-        assert.deepEqual(dropSpy.getCall(2).args[1], { returnSQL: true });
-        assert.deepEqual(dropSpy.getCall(3).args[1], {});
-        assert.equal(dropSpy.callCount, 4);
+        expect(dropSpy.getCall(0).args[1]).toEqual({ returnSQL: true });
+        expect(dropSpy.getCall(1).args[1]).toEqual({});
+        expect(dropSpy.getCall(2).args[1]).toEqual({ returnSQL: true });
+        expect(dropSpy.getCall(3).args[1]).toEqual({});
+        expect(dropSpy.callCount).toEqual(4);
 
-        assert.deepEqual(createSpy.getCall(0).args[1], { returnSQL: true });
-        assert.deepEqual(createSpy.getCall(1).args[1], {});
-        assert.deepEqual(createSpy.getCall(2).args[1], { returnSQL: true });
-        assert.deepEqual(createSpy.getCall(3).args[1], {});
-        assert.equal(createSpy.callCount, 4);
+        expect(createSpy.getCall(0).args[1]).toEqual({ returnSQL: true });
+        expect(createSpy.getCall(1).args[1]).toEqual({});
+        expect(createSpy.getCall(2).args[1]).toEqual({ returnSQL: true });
+        expect(createSpy.getCall(3).args[1]).toEqual({});
+        expect(createSpy.callCount).toEqual(4);
     });
 
-    it("should log a warning - no tables passed", async () => {
+    test("should log a warning - no tables passed", async () => {
         const sync = new Sync();
 
         await sync.execute();
         const log = sync.getLog();
-        assert.lengthOf(log, 1);
-        assert.equal(log[0].tags.includes("warning"), true);
+        expect(log.length).toBe(1);
+        expect(log[0].tags.includes("warning")).toEqual(true);
     });
 
-    it("must log errors", async () => {
+    test("must log errors", async () => {
         const sync = new Sync({ tables: [TableA, TableB], execute: true });
 
         const syncSpy = sandbox
@@ -93,13 +92,13 @@ describe("sync test", function() {
         syncSpy.restore();
 
         const log = sync.getLog();
-        assert.isTrue(log[4].tags.includes("error"));
-        assert.equal(_.get(log[4], "data.error.message"), "Error.");
+        expect(log[4].tags.includes("error")).toBe(true);
+        expect(_.get(log[4], "data.error.message")).toEqual("Error.");
     });
 
-    it("must return all tables", async () => {
+    test("must return all tables", async () => {
         const sync = new Sync({ tables: [TableA, TableB], execute: true });
-        assert.equal(sync.getTables()[0], TableA);
-        assert.equal(sync.getTables()[1], TableB);
+        expect(sync.getTables()[0]).toEqual(TableA);
+        expect(sync.getTables()[1]).toEqual(TableB);
     });
 });
