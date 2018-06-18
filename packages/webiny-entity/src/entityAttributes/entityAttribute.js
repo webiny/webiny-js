@@ -1,18 +1,17 @@
 // @flow
 
-import { Attribute } from "webiny-model";
+import { Attribute, AttributeValue, ModelError } from "webiny-model";
 import _ from "lodash";
 import EntityAttributeValue from "./entityAttributeValue";
 import type { EntityAttributesContainer } from "./..";
 import EntityError from "./../entityError";
 import type { EntityAttributeOptions } from "./../../types";
-import { Entity } from "..";
-import { ModelError } from "webiny-model";
+import { Entity, EntityModel } from "..";
 
 declare type EntityClass = Class<Entity> | Array<Class<Entity>>;
 
 class EntityAttribute extends Attribute {
-    value: EntityAttributeValue;
+    value: AttributeValue | EntityAttributeValue;
     classes: { entity: { class: Class<Entity> | Array<Class<Entity>> } };
     auto: {
         save: { enabled: boolean, options: ?Object },
@@ -52,27 +51,31 @@ class EntityAttribute extends Attribute {
          * validation will be called internally in the save method. Save operations will be executed starting from bottom
          * nested entities, ending with the main parent entity.
          */
-        const parentEntity = this.getParentModel().getParentEntity();
+        const parentModel = ((this.getParentModel(): any): EntityModel);
+        const parentEntity = parentModel.getParentEntity();
         parentEntity.on("beforeSave", async () => {
+            const value = ((this.value: any): EntityAttributeValue);
+
             // At this point current value is an instance or is not instance. It cannot be in the 'loading' state, because that was
             // already checked in the validate method - if in that step entity was in 'loading' state, it will be waited before proceeding.
             if (this.getAutoSave()) {
                 // We don't need to validate here because validate method was called on the parent entity, which caused
                 // the validation of data to be executed recursively on all attribute values.
-                if (this.value.getCurrent() instanceof Entity) {
-                    await this.value.getCurrent().save({ validation: false });
+                const current = this.value.getCurrent();
+                if (current instanceof Entity) {
+                    await current.save({ validation: false });
                 }
 
                 // If initially we had a different entity linked, we must delete it.
                 // If initial is empty, that means nothing was ever loaded (attribute was not accessed) and there is nothing to do.
                 // Otherwise, deleteInitial method will internally delete only entities that are not needed anymore.
                 if (this.getAutoDelete()) {
-                    await this.value.deleteInitial(this.auto.delete.options);
+                    await value.deleteInitial(this.auto.delete.options);
                 }
             }
 
             // Set current entities as new initial values.
-            this.value.syncInitial();
+            value.syncInitial();
         });
 
         /**
@@ -81,8 +84,9 @@ class EntityAttribute extends Attribute {
          */
         parentEntity.on("delete", async () => {
             if (this.getAutoDelete()) {
-                await this.value.load();
-                const entity = this.value.getInitial();
+                const value = ((this.value: any): EntityAttributeValue);
+                await value.load();
+                const entity = value.getInitial();
                 if (entity instanceof this.getEntityClass()) {
                     await entity.emit("delete");
                 }
@@ -91,8 +95,9 @@ class EntityAttribute extends Attribute {
 
         parentEntity.on("beforeDelete", async () => {
             if (this.getAutoDelete()) {
-                await this.value.load();
-                const entity = this.value.getInitial();
+                const value = ((this.value: any): EntityAttributeValue);
+                await value.load();
+                const entity = value.getInitial();
                 if (entity instanceof this.getEntityClass()) {
                     // We don't want to fire the "delete" event because its handlers were already executed by upper 'delete' listener.
                     // That listener ensured that all callbacks that might've had blocked the deleted process were executed.
@@ -223,7 +228,8 @@ class EntityAttribute extends Attribute {
         }
 
         if (this.value.isClean()) {
-            await this.value.load();
+            const value = ((this.value: any): EntityAttributeValue);
+            await value.load();
         }
 
         // "Instance of Entity" check is enough at this point.
@@ -237,11 +243,9 @@ class EntityAttribute extends Attribute {
         }
 
         const id = _.get(this.value.getCurrent(), "id", this.value.getCurrent());
-        if (
-            this.getParentModel()
-                .getParentEntity()
-                .isId(id)
-        ) {
+
+        const parentModel = ((this.getParentModel(): any): EntityModel);
+        if (parentModel.getParentEntity().isId(id)) {
             const entity = await entityClass.findById(id);
             if (entity) {
                 // If we initially had object with other data set, we must populate entity with it, otherwise
@@ -270,20 +274,19 @@ class EntityAttribute extends Attribute {
      * @returns {Promise<*>}
      */
     async getStorageValue() {
+        const value = ((this.value: any): EntityAttributeValue);
+
         // Not using getValue method because it would load the entity without need.
-        let current = this.value.getCurrent();
+        let current = value.getCurrent();
 
         // But still, if the value is loading currently, let's wait for it to load completely, and then use that value.
-        if (this.value.isLoading()) {
-            current = await this.value.load();
+        if (value.isLoading()) {
+            current = await value.load();
         }
 
         const id = _.get(current, "id", current);
-        return this.getParentModel()
-            .getParentEntity()
-            .isId(id)
-            ? id
-            : null;
+        const parentModel = ((this.getParentModel(): any): EntityModel);
+        return parentModel.getParentEntity().isId(id) ? id : null;
     }
 
     /**
@@ -292,8 +295,9 @@ class EntityAttribute extends Attribute {
      * @returns {EntityAttribute}
      */
     setStorageValue(value: mixed) {
-        this.value.setCurrent(value, { skipDifferenceCheck: true });
-        this.value.setInitial(value);
+        const valueInstance = ((this.value: any): EntityAttributeValue);
+        valueInstance.setCurrent(value, { skipDifferenceCheck: true });
+        valueInstance.setInitial(value);
         return this;
     }
 
@@ -313,11 +317,13 @@ class EntityAttribute extends Attribute {
      */
     async validate() {
         // If attribute is dirty, has validators or loading is in progress, wait until loaded.
-        if (this.value.isDirty() || this.hasValidators() || this.value.isLoading()) {
-            await this.value.load();
+        const valueInstance = ((this.value: any): EntityAttributeValue);
+
+        if (valueInstance.isDirty() || this.hasValidators() || valueInstance.isLoading()) {
+            await valueInstance.load();
         }
 
-        if (!this.value.isLoaded()) {
+        if (!valueInstance.isLoaded()) {
             return;
         }
 
@@ -350,10 +356,11 @@ class EntityAttribute extends Attribute {
             // can actually link to any type of entity.
             if (!this.canAcceptAnyEntityClass()) {
                 if (!this.getEntityClass()) {
+                    const heldValue = await classIdAttribute.getValue();
                     throw new EntityError(
                         `Entity attribute "${
                             this.name
-                        }" accepts multiple Entity classes but it was not found (classId attribute holds value "${classIdAttribute.getValue()}").`,
+                        }" accepts multiple Entity classes but it was not found (classId attribute holds value "${heldValue}").`,
                         ModelError.INVALID_ATTRIBUTE
                     );
                 }

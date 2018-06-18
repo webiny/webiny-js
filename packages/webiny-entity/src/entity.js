@@ -22,6 +22,7 @@ class Entity {
     };
     static listeners: {};
 
+    id: mixed;
     model: EntityModel;
     listeners: {};
     existing: boolean;
@@ -170,7 +171,7 @@ class Entity {
     /**
      * Returns single attribute by given name.
      */
-    getAttribute(name: string): Attribute {
+    getAttribute(name: string): ?Attribute {
         return this.getModel().getAttribute(name);
     }
 
@@ -195,7 +196,7 @@ class Entity {
     async toJSON(path: ?string): Promise<JSON> {
         return _.merge(
             { id: this.getAttribute("id").getValue() },
-            await this.getModel().toJSON(path)
+            path ? await this.getModel().toJSON(path) : {}
         );
     }
 
@@ -580,6 +581,10 @@ class Entity {
             attributes: Object.keys(instance.getAttributes())
                 .map(key => {
                     const attribute = instance.getAttribute(key);
+                    if (!attribute) {
+                        return null;
+                    }
+
                     if (omit.includes(key)) {
                         return null;
                     }

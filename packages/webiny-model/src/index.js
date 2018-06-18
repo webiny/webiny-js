@@ -1,3 +1,4 @@
+// @flow
 export { default as Attribute } from "./attribute";
 export { default as AttributesContainer } from "./attributesContainer";
 export { default as AttributeValue } from "./attributeValue";

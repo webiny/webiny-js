@@ -2,8 +2,13 @@
 import { ArrayAttribute as BaseArrayAttribute } from "webiny-model";
 
 class ArrayAttribute extends BaseArrayAttribute {
-    setStorageValue(value: string) {
-        return super.setStorageValue(JSON.parse(value));
+    setStorageValue(value: mixed) {
+        if (typeof value === "string") {
+            super.setStorageValue(JSON.parse(value));
+        } else {
+            super.setStorageValue(value);
+        }
+        return this;
     }
 
     async getStorageValue() {

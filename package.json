@@ -61,7 +61,7 @@
     "clear": "lerna exec -- rimraf lib",
     "client:watch": "lerna run --scope=webiny-client-ui --scope=webiny-client --scope=webiny-skeleton-app --scope=webiny-backend-app --parallel --stream build:watch",
     "commit": "git-cz",
-    "commit:check": "yarn flow && yarn lint-staged && yarn test",
+    "commit:check": "yarn lint-staged && yarn test",
     "coverage": "scripts/coverage.js --reporter=text",
     "coverage:html": "scripts/coverage.js --reporter=html",
     "coverage:check": "scripts/coverage.js --check=true",
@@ -75,7 +75,6 @@
     "test": "scripts/test.js"
   },
   "pre-commit": [
-    "flow",
     "lint-staged",
     "test"
   ],

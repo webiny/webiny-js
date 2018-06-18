@@ -10,7 +10,7 @@ export default () => {
      */
     EntityAttributesContainer.prototype.buffer = function(encoding: buffer$NonBufferEncoding) {
         const parent = this.getParentModel();
-        parent.setAttribute(this.name, new BufferAttribute(this.name, encoding));
+        parent.setAttribute(this.name, new BufferAttribute(this.name, this, encoding));
         return parent.getAttribute(this.name);
     };
 };

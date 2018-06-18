@@ -55,7 +55,7 @@ class AttributeValue {
         return !this.isDirty();
     }
 
-    clean(): this {
+    clean(): AttributeValue {
         this.dirty = false;
         return this;
     }

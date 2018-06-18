@@ -1,13 +1,13 @@
 // @flow
 import { AttributeValue } from "webiny-model";
 import type { Attribute } from "webiny-model";
-import { Entity } from "webiny-entity";
+import { Entity, EntityAttribute } from "webiny-entity";
 import _ from "lodash";
 
 class EntityAttributeValue extends AttributeValue {
     queue: Array<Function>;
     initial: ?mixed;
-
+    attribute: EntityAttribute;
     constructor(attribute: Attribute) {
         super(attribute);
         this.queue = [];
@@ -104,9 +104,9 @@ class EntityAttributeValue extends AttributeValue {
      * Value cannot be set as clean if there is no ID present.
      * @returns {EntityAttributeValue}
      */
-    clean() {
+    clean(): EntityAttributeValue {
         if (_.get(this.getCurrent(), "id")) {
-            return super.clean();
+            super.clean();
         }
 
         return this;

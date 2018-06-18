@@ -1,11 +1,15 @@
 // @flow
-import { Attribute } from "webiny-model";
+import { Attribute, AttributesContainer } from "webiny-model";
 
 class BufferAttribute extends Attribute {
     encoding: buffer$NonBufferEncoding;
 
-    constructor(name: string, encoding: buffer$NonBufferEncoding) {
-        super(name);
+    constructor(
+        name: string,
+        attributesContainer: AttributesContainer,
+        encoding: buffer$NonBufferEncoding
+    ) {
+        super(name, attributesContainer);
         this.encoding = encoding;
     }
 
@@ -22,7 +26,7 @@ class BufferAttribute extends Attribute {
     }
 
     // $FlowIgnore
-    async setValue(value) {
+    setValue(value) {
         if (typeof value === "string") {
             value = Buffer.from(value.split(",").pop(), this.encoding);
         }

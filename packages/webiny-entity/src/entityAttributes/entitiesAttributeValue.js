@@ -1,13 +1,17 @@
 // @flow
 import { AttributeValue } from "webiny-model";
 import type { Attribute } from "webiny-model";
+import type { EntitiesAttribute } from "webiny-entity";
 
 import Entity from "./../entity";
 import EntityCollection from "./../entityCollection";
+import _ from "lodash";
 
 class EntitiesAttributeValue extends AttributeValue {
     initial: Array<mixed> | EntityCollection;
-
+    links: Object;
+    queue: Array<Function>;
+    attribute: EntitiesAttribute;
     constructor(attribute: Attribute) {
         super(attribute);
 
@@ -138,7 +142,7 @@ class EntitiesAttributeValue extends AttributeValue {
         }
 
         const initial = this.getInitial(),
-            currentEntitiesIds = this.getCurrent().map(entity => entity.id);
+            currentEntitiesIds = this.getCurrent().map(entity => _.get(entity, "id"));
 
         for (let i = 0; i < initial.length; i++) {
             const currentInitial: mixed = initial[i];
@@ -162,11 +166,17 @@ class EntitiesAttributeValue extends AttributeValue {
 
         for (let i = 0; i < current.length; i++) {
             const entity = current[i];
-            await entity.set(
-                this.attribute.classes.entities.attribute,
-                this.attribute.getParentModel().getParentEntity()
-            );
+            if (entity instanceof Entity) {
+                await entity.set(
+                    this.attribute.classes.entities.attribute,
+                    this.attribute.getParentModel().getParentEntity()
+                );
+            }
         }
+    }
+
+    getCurrent(): EntityCollection {
+        return ((super.getCurrent(): any): EntityCollection);
     }
 
     getInitialLinks(): Array<mixed> | EntityCollection {
@@ -282,11 +292,12 @@ class EntitiesAttributeValue extends AttributeValue {
             if (link && !links.includes(link)) {
                 links.push(link);
             } else {
-                const entity = new (this.attribute.getUsingClass())();
-                await entity.set(this.attribute.getUsingAttribute(), currentEntity);
+                const attribute = ((this.attribute: any): EntitiesAttribute);
+                const entity = new (attribute.getUsingClass())();
+                await entity.set(attribute.getUsingAttribute(), currentEntity);
                 await entity.set(
-                    this.attribute.getEntitiesAttribute(),
-                    this.attribute.getParentModel().getParentEntity()
+                    attribute.getEntitiesAttribute(),
+                    attribute.getParentModel().getParentEntity()
                 );
                 links.push(entity);
             }
@@ -299,7 +310,7 @@ class EntitiesAttributeValue extends AttributeValue {
      * Value cannot be set as clean if ID is missing in one of the entities.
      * @returns {this}
      */
-    clean(): this {
+    clean(): EntitiesAttributeValue {
         const current = this.getCurrent();
         for (let i = 0; i < current.length; i++) {
             if (current[i] instanceof Entity) {
@@ -309,7 +320,8 @@ class EntitiesAttributeValue extends AttributeValue {
             }
         }
 
-        return super.clean();
+        super.clean();
+        return this;
     }
 
     isDirty(): boolean {

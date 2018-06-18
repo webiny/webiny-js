@@ -26,55 +26,55 @@ class DefaultAttributesContainer extends AttributesContainer {
     array(): ArrayAttribute {
         const model = this.getParentModel();
         model.setAttribute(this.name, new ArrayAttribute(this.name, this));
-        return model.getAttribute(this.name);
+        return ((model.getAttribute(this.name): any): ArrayAttribute);
     }
 
     char(): CharAttribute {
         const model = this.getParentModel();
         model.setAttribute(this.name, new CharAttribute(this.name, this));
-        return model.getAttribute(this.name);
+        return ((model.getAttribute(this.name): any): CharAttribute);
     }
 
     boolean(): BooleanAttribute {
         const model = this.getParentModel();
         model.setAttribute(this.name, new BooleanAttribute(this.name, this));
-        return model.getAttribute(this.name);
+        return ((model.getAttribute(this.name): any): BooleanAttribute);
     }
 
     date(): DateAttribute {
         const model = this.getParentModel();
         model.setAttribute(this.name, new DateAttribute(this.name, this));
-        return model.getAttribute(this.name);
+        return ((model.getAttribute(this.name): any): DateAttribute);
     }
 
     integer(): IntegerAttribute {
         const model = this.getParentModel();
         model.setAttribute(this.name, new IntegerAttribute(this.name, this));
-        return model.getAttribute(this.name);
+        return ((model.getAttribute(this.name): any): IntegerAttribute);
     }
 
     float(): FloatAttribute {
         const model = this.getParentModel();
         model.setAttribute(this.name, new FloatAttribute(this.name, this));
-        return model.getAttribute(this.name);
+        return ((model.getAttribute(this.name): any): FloatAttribute);
     }
 
-    model(model: Model): ModelAttribute {
+    model(model: Class<Model>): ModelAttribute {
         const parent = this.getParentModel();
         parent.setAttribute(this.name, new ModelAttribute(this.name, this, model));
-        return parent.getAttribute(this.name);
+        return ((parent.getAttribute(this.name): any): ModelAttribute);
     }
 
-    models(model: Model, keyValue: boolean): ModelsAttribute {
+    models(model: Class<Model>, keyValue: boolean): ModelsAttribute {
         const parent = this.getParentModel();
         parent.setAttribute(this.name, new ModelsAttribute(this.name, this, model, keyValue));
-        return parent.getAttribute(this.name);
+        return ((parent.getAttribute(this.name): any): ModelsAttribute);
     }
 
     object(): ObjectAttribute {
         const model = this.getParentModel();
         model.setAttribute(this.name, new ObjectAttribute(this.name, this));
-        return model.getAttribute(this.name);
+        return ((model.getAttribute(this.name): any): ObjectAttribute);
     }
 }
 

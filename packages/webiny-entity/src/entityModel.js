@@ -1,11 +1,13 @@
 // @flow
-import { Model } from "webiny-model";
+import { Model, DefaultAttributesContainer } from "webiny-model";
 import EntityAttributesContainer from "./entityAttributesContainer";
 import type Entity from "./entity";
 
 class EntityModel extends Model {
+    parentEntity: Entity;
+    attributesContainer: DefaultAttributesContainer | EntityAttributesContainer;
     constructor(params: ?Object) {
-        super(params);
+        super();
         if (params && typeof params === "object") {
             this.setParentEntity(params.parentEntity);
         }

@@ -1,3 +1,4 @@
+// @flow
 export { default as ArrayAttribute } from "./arrayAttribute";
 export { default as ObjectAttribute } from "./objectAttribute";
 export { default as CharAttribute } from "./charAttribute";

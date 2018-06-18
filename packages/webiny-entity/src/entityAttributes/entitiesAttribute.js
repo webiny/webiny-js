@@ -8,14 +8,19 @@ import EntityAttributesContainer from "../entityAttributesContainer";
 
 class EntitiesAttribute extends Attribute {
     value: EntitiesAttributeValue;
-
+    auto: { save: boolean, delete: boolean };
+    classes: {
+        parent: Entity,
+        entities: { class: Class<Entity>, attribute: ?string },
+        using: { class: ?Class<Entity>, attribute: ?string }
+    };
     constructor(
         name: string,
         attributesContainer: EntityAttributesContainer,
         entity: Class<Entity>,
         attributeName: ?string
     ) {
-        super(name, attributesContainer, entity);
+        super(name, attributesContainer);
 
         this.classes = {
             parent: this.getParentModel().getParentEntity().constructor.name,
@@ -169,11 +174,11 @@ class EntitiesAttribute extends Attribute {
         return entitiesClass();
     }
 
-    getEntitiesAttribute(): string {
+    getEntitiesAttribute(): ?string {
         return this.classes.entities.attribute;
     }
 
-    getUsingAttribute(): string {
+    getUsingAttribute(): ?string {
         return this.classes.using.attribute;
     }
 

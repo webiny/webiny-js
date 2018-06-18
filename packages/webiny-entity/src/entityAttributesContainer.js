@@ -28,13 +28,13 @@ class EntityAttributesContainer extends DefaultAttributesContainer {
         return parent.getAttribute(this.name);
     }
 
-    model(model: Model): ModelAttribute {
+    model(model: Class<Model>): ModelAttribute {
         const parent = this.getParentModel();
         parent.setAttribute(this.name, new ModelAttribute(this.name, this, model));
         return parent.getAttribute(this.name);
     }
 
-    models(model: Model): ModelsAttribute {
+    models(model: Class<Model>): ModelsAttribute {
         const parent = this.getParentModel();
         parent.setAttribute(this.name, new ModelsAttribute(this.name, this, model));
         return parent.getAttribute(this.name);

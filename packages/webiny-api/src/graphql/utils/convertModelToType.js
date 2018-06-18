@@ -23,7 +23,8 @@ const convertModelToType = (typeName: string, meta: Object, attributes: Object, 
             fields: () => {
                 const fields = {};
 
-                Object.values(attributes).map((attr: Attribute) => {
+                Object.values(attributes).map(attr => {
+                    attr = ((attr: any): Attribute);
                     if (!attr.getName() || skip.includes(attr.getName())) {
                         return;
                     }
