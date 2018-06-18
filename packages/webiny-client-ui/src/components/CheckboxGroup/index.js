@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { inject } from "webiny-client";
 import { withFormComponent } from "webiny-client-ui";
-import styles from "./styles.css?prefix=Webiny_Ui_CheckboxGroup";
+import styles from "./styles.module.css";
 
 @withFormComponent()
 @inject({

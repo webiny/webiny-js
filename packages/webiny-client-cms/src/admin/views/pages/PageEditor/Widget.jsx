@@ -2,7 +2,7 @@ import React from "react";
 import classSet from "classnames";
 import { inject } from "webiny-client";
 import { WidgetContainer } from "webiny-client-cms";
-import styles from "./Widget.scss?prefix=wby-cms-editor-widget";
+import styles from "./Widget.module.scss";
 
 @inject({modules: ["Form", "Icon"], services: ["cms"] })
 class Widget extends React.Component {

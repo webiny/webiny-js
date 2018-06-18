@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { inject } from "webiny-client";
 import classSet from "classnames";
-import styles from "./Menu.scss?prefix=wby-cms-slate-menu";
+import styles from "./Menu.module.scss";
 
 @inject({ modules: ["Icon"] })
 class Menu extends React.Component {

@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { inject } from "webiny-client";
 import withFormComponent from "./../FormComponent/withFormComponent";
-import styles from "./styles.css?prefix=wui-input";
+import styles from "./styles.module.css";
 
 @withFormComponent()
 @inject({

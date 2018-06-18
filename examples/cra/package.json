@@ -1,0 +1,24 @@
+{
+  "name": "cra",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "react": "^16.4.1",
+    "react-app-rewire-hot-loader": "^1.0.1",
+    "react-app-rewired": "^1.5.2",
+    "react-dom": "^16.4.1",
+    "react-hot-loader": "^4.3.3",
+    "react-scripts": "1.1.4"
+  },
+  "scripts": {
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test --env=jsdom",
+    "eject": "react-app-rewired eject"
+  },
+  "devDependencies": {
+    "node-sass": "^4.9.0",
+    "react-app-rewire-css-modules": "codebandits/react-app-rewire-css-modules",
+    "sass-loader": "^7.0.3"
+  }
+}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { inject } from 'webiny-client';
-import styles from './../styles.css?prefix=wui-view';
+import styles from "./../styles.module.css";
 
 @inject({ styles })
 class HeaderCenter extends React.Component {

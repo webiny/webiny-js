@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./../styles.css?prefix=wui-formGroup";
+import styles from "./../styles.module.css";
 
 class InfoMessage extends React.Component {
     render() {

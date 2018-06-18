@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
 import { inject } from "webiny-client";
-import styles from "../styles.scss?prefix=wui-modal";
+import styles from "../styles.module.scss";
 
 @inject({ styles })
 class Header extends React.Component {

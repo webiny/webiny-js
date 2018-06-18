@@ -5,7 +5,7 @@ import _ from "lodash";
 import { inject } from "webiny-client";
 import defaultValue from "./defaultValue";
 
-import styles from "./Slate.scss?prefix=wby-cms-slate-menu";
+import styles from "./Slate.module.scss";
 import Menu from "./Menu";
 
 @inject()

@@ -1,4 +1,4 @@
-import './styles.scss?extract';
-import Cropper from 'cropperjs';
+import "./styles.scss";
+import Cropper from "cropperjs";
 
 export default Cropper;

@@ -1,6 +1,6 @@
 import React from "react";
 import { i18n } from "webiny-client";
-import styles from "./PageList.scss?prefix=PageList";
+import styles from "./PageList.module.scss";
 
 const t = i18n.namespace("Cms.Admin.Views.PageList");
 

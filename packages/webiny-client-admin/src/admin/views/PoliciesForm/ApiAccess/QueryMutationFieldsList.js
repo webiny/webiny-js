@@ -1,5 +1,5 @@
 import React from "react";
-import css from "./QueryMutationFieldsList.scss";
+import css from "./QueryMutationFieldsList.module.scss";
 import { inject, i18n } from "webiny-client";
 import _ from "lodash";
 import classNames from "classnames";

@@ -3,7 +3,7 @@ import _ from "lodash";
 import classSet from "classnames";
 import { inject, LazyLoad } from "webiny-client";
 import { withFormComponent } from "webiny-client-ui";
-import styles from "./styles.css?prefix=Webiny_Ui_Checkbox";
+import styles from "./styles.module.css";
 
 @withFormComponent()
 @inject({ styles })

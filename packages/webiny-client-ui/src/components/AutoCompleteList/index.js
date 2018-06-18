@@ -1,7 +1,7 @@
 import React from "react";
 import { inject } from "webiny-client";
 import { withFormComponent } from "webiny-client-ui";
-import css from "./styles.scss?prefix=Webiny_Ui_AutoCompleteList";
+import css from "./styles.module.scss";
 
 import classNames from "classnames";
 import _ from "lodash";

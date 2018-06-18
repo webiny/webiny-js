@@ -1,5 +1,5 @@
 import React from "react";
-import css from "./FieldsSelector.scss";
+import css from "./FieldsSelector.module.scss";
 import { inject } from "webiny-client";
 import _ from "lodash";
 import FieldsList from "./FieldsSelector/FieldsList";

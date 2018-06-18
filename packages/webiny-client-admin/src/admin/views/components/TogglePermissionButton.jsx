@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./TogglePermissionButton.scss";
+import styles from "./TogglePermissionButton.module.scss";
 import { inject } from "webiny-client";
 import _ from "lodash";
 import classNames from "classnames";

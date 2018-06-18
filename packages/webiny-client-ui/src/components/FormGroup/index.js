@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import classSet from "classnames";
 import { inject } from "webiny-client";
-import styles from "./styles.css?prefix=wui-formGroup";
+import styles from "./styles.module.css";
 import Required from "./Components/Required";
 import Label from "./Components/Label";
 import InfoMessage from "./Components/InfoMessage";

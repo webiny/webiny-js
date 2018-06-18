@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { i18n, inject } from "webiny-client";
 import { withFormComponent } from "webiny-client-ui";
-import styles from "./styles.css?prefix=Webiny_Ui_Avatar";
+import styles from "./styles.module.css";
 
 const t = i18n.namespace("Webiny.Ui.Avatar");
 @withFormComponent()

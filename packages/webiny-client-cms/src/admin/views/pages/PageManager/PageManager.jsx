@@ -10,7 +10,7 @@ import PageList from "./PageList";
 import PageDetails from "./PageDetails";
 import CreatePageDialog from "./CreatePageDialog";
 
-import styles from "./PageManager.scss?prefix=wby-cms-pageManager";
+import styles from "./PageManager.module.scss";
 
 const t = i18n.namespace("Cms.Admin.Views.PageManager");
 
@@ -61,7 +61,7 @@ class PageManager extends React.Component {
                     description={t`Your list of pages. Click the button on the right to create a new page.`}
                 >
                     <Link type="primary" align="right" onClick={() => this.createModal.show()}>
-                        <Icon icon={["fa", "plus-circle"]} /> {t`Create new page`}
+                        <Icon icon={["fa", "plus-circle"]} /> {t`Create page`}
                     </Link>
                     <CreatePageDialog onReady={ref => (this.createModal = ref)} />
                 </View.Header>

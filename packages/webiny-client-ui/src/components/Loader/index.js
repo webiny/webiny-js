@@ -1,7 +1,7 @@
 import React from "react";
 import classSet from "classnames";
 import { inject } from "webiny-client";
-import styles from "./styles.css?prefix=Webiny_Ui_Loader";
+import styles from "./styles.module.css";
 
 @inject({ styles })
 class Loader extends React.Component {

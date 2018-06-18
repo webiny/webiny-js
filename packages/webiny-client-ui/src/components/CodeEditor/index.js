@@ -3,7 +3,7 @@ import _ from "lodash";
 import classSet from "classnames";
 import { inject } from "webiny-client";
 import { withFormComponent } from "webiny-client-ui";
-import styles from "./styles.css?prefix=Webiny_Ui_CodeEditor";
+import styles from "./styles.module.css";
 
 @withFormComponent()
 @inject({

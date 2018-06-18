@@ -6,7 +6,7 @@ import Widget from "./Widget";
 import Sidebar from "./Sidebar";
 import WidgetSettingsSidebar from "./WidgetSettingsSidebar";
 import AddWidget from "./AddWidget";
-import styles from "./PageContent.scss?prefix=wby-cms-editor";
+import styles from "./Content.module.scss";
 
 @inject({
     modules: ["Animate", "Icon", "Button"],

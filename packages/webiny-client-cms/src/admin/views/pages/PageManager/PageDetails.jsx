@@ -3,7 +3,7 @@ import _ from "lodash";
 import { i18n, inject } from "webiny-client";
 import PageContentPreview from "./PageContentPreview";
 import PageRevisions from "./PageRevisions";
-import styles from "./PageDetails.scss";
+import styles from "./PageDetails.module.scss";
 import blankState from "./assets/blank-state-preview.svg";
 
 const t = i18n.namespace("Cms.Admin.Views.PageDetails");

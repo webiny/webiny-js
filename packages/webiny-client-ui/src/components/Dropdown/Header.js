@@ -1,6 +1,6 @@
 import React from "react";
 import { inject } from "webiny-client";
-import styles from "./styles.scss?prefix=wui-dropdown";
+import styles from "./styles.module.scss";
 
 @inject({ styles })
 class Header extends React.Component {

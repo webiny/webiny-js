@@ -3,7 +3,7 @@ import classSet from "classnames";
 import { inject, isElementOfType, LazyLoad } from "webiny-client";
 import _ from "lodash";
 import Step from "./Step";
-import styles from "./styles.scss?prefix=Webiny_Ui_Wizard";
+import styles from "./styles.module.scss";
 
 /**
  * Wizard component, makes it easier to create wizards, without worrying about common features like steps, navigation, content etc.

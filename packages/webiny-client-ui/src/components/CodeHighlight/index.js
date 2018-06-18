@@ -1,6 +1,6 @@
 import React from "react";
 import { inject } from "webiny-client";
-import "./styles.scss?extract";
+import "./styles.scss";
 
 @inject({ modules: { hljs: "Vendor.Highlight" } })
 class CodeHighlight extends React.Component {

@@ -3,7 +3,7 @@ import _ from "lodash";
 import { inject, i18n } from "webiny-client";
 import { withFormComponent } from "webiny-client-ui";
 import { validation } from "webiny-validation";
-import styles from "./styles.css?prefix=Webiny_Ui_Tags";
+import styles from "./styles.module.css";
 
 const t = i18n.namespace("Webiny.Ui.Tags");
 @withFormComponent()

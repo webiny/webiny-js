@@ -6,7 +6,7 @@ import { inject, i18n } from "webiny-client";
 import { linkState } from "webiny-form";
 import { withFormComponent } from "webiny-client-ui";
 import Image from "./Image";
-import styles from "./styles.css?prefix=Webiny_Ui_Gallery";
+import styles from "./styles.module.css";
 
 const placeholder = document.createElement("div");
 placeholder.className = styles.placeholder;

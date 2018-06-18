@@ -1,5 +1,5 @@
 import React from "react";
-import css from "./OperationsPermissions.scss";
+import css from "./OperationsPermissions.module.scss";
 import { inject, i18n, app } from "webiny-client";
 import gql from "graphql-tag";
 

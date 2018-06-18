@@ -1,2 +1,2 @@
-import './styles.scss?extract';
-import 'imports-loader?$=jquery!owl.carousel';
+import "./styles.scss";
+import "imports-loader?$=jquery!owl.carousel";

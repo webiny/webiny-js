@@ -2,12 +2,12 @@
 
  @font-face {
   font-family: 'fontello';
-  src: url('./../../../fonts/Fontello/fontello.eot?42849929');
-  src: url('./../../../fonts/Fontello/fontello.eot?42849929#iefix') format('embedded-opentype'),
-       url('./../../../fonts/Fontello/fontello.woff2?42849929') format('woff2'),
-       url('./../../../fonts/Fontello/fontello.woff?42849929') format('woff'),
-       url('./../../../fonts/Fontello/fontello.ttf?42849929') format('truetype'),
-       url('./../../../fonts/Fontello/fontello.svg?42849929#fontello') format('svg');
+  src: url($webiny-client-admin + '/assets/fonts/Fontello/fontello.eot?42849929');
+  src: url($webiny-client-admin + '/assets/fonts/Fontello/fontello.eot?42849929#iefix') format('embedded-opentype'),
+       url($webiny-client-admin + '/assets/fonts/Fontello/fontello.woff2?42849929') format('woff2'),
+       url($webiny-client-admin + '/assets/fonts/Fontello/fontello.woff?42849929') format('woff'),
+       url($webiny-client-admin + '/assets/fonts/Fontello/fontello.ttf?42849929') format('truetype'),
+       url($webiny-client-admin + '/assets/fonts/Fontello/fontello.svg?42849929#fontello') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -17,7 +17,7 @@
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
     font-family: 'fontello';
-    src: url('./../../../fonts/fontello.svg?42849929#fontello') format('svg');
+    src: url($webiny-client-admin + '/assets/fonts/fontello.svg?42849929#fontello') format('svg');
   }
 }
 */

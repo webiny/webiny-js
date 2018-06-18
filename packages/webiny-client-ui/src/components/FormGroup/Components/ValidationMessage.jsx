@@ -1,7 +1,7 @@
 import React from "react";
 import { inject } from "webiny-client";
 import classSet from "classnames";
-import styles from "./../styles.css?prefix=wui-formGroup";
+import styles from "./../styles.module.css";
 
 @inject({ modules: ["Animate"], styles })
 class ValidationMessage extends React.Component {

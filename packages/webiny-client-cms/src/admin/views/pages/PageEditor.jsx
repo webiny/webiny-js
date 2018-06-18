@@ -4,7 +4,7 @@ import Header from "./PageEditor/Header";
 import Content from "./PageEditor/Content";
 import Settings from "./PageEditor/Settings";
 import { PageEditorProvider } from "../../utils/context/pageEditorContext";
-import styles from "./PageEditor.scss?prefix=wby-cms-editor";
+import styles from "./PageEditor.module.scss";
 
 @inject({
     modules: ["Loader", "Form", "FormData", "FormError"]
