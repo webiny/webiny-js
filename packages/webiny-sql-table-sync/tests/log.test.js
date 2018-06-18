@@ -21,7 +21,7 @@ describe("Log test", function() {
         sync.logWarning();
         sync.logError();
         sync.logSuccess();
-        sync.__log(undefined, "warning");
+        sync.__log(undefined);
 
         const log = sync.getLog();
         assert.isTrue(log[0].tags.includes("info"));

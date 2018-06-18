@@ -1,5 +1,4 @@
 // @flow
-
 class Log {
     message: string;
     tags: Array<string>;

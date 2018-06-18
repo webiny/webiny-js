@@ -1,15 +1,20 @@
+// @flow
 import chalk from "chalk";
 import Log from "./log";
 
 class ConsoleLog extends Log {
+    static COLOR_ERROR: string;
+    static COLOR_WARNING: string;
+    static COLOR_SUCCESS: string;
+    static COLOR_INFO: string;
+    static COLOR_DEFAULT: string;
     constructor(message: string, data: {}, tags: Array<string>) {
         super(message, data, tags);
         ConsoleLog.output(message, data, tags);
     }
 
-    // TODO: complete tests!
     // Not completely tested because formatting could maybe still change - once finished, update tests too!
-    static output(message, data, tags) {
+    static output(message: string, data: {}, tags: Array<string>) {
         const type = ConsoleLog.__getTypeFromTags(tags);
         let color = ConsoleLog.__getColorFromType(type);
 
@@ -25,6 +30,7 @@ class ConsoleLog extends Log {
             color = "default";
         }
 
+        // $FlowFixMe
         console.log(chalk[color](message));
 
         if (tags.includes("start") && tags.includes("table")) {
@@ -32,7 +38,7 @@ class ConsoleLog extends Log {
         }
     }
 
-    static __getColorFromType(type): string {
+    static __getColorFromType(type: string): string {
         switch (type) {
             case "error":
                 return ConsoleLog.COLOR_ERROR;
@@ -47,7 +53,7 @@ class ConsoleLog extends Log {
         }
     }
 
-    static __getTypeFromTags(tags: Array<string>): ?string {
+    static __getTypeFromTags(tags: Array<string>): string {
         switch (true) {
             case tags.includes("error"):
                 return "error";
@@ -58,7 +64,7 @@ class ConsoleLog extends Log {
             case tags.includes("info"):
                 return "info";
             default:
-                return null;
+                return "";
         }
     }
 

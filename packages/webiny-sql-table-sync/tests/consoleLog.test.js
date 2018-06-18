@@ -33,7 +33,7 @@ describe("ConsoleLog test", function() {
         assert.equal(ConsoleLog.__getTypeFromTags(["a", "warning", "b"]), "warning");
         assert.equal(ConsoleLog.__getTypeFromTags(["a", "success", "b"]), "success");
         assert.equal(ConsoleLog.__getTypeFromTags(["a", "info", "b"]), "info");
-        assert.isNull(ConsoleLog.__getTypeFromTags(["a", "___", "b"]));
+        assert.equal(ConsoleLog.__getTypeFromTags(["a", "___", "b"]), "");
     });
 
     it("must output messages correctly", async () => {

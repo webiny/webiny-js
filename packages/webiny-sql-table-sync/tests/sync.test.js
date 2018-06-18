@@ -3,6 +3,7 @@ import { assert } from "chai";
 import sinon from "sinon";
 import { Sync } from "./..";
 import { TableA, TableB } from "./tables";
+import _ from "lodash";
 
 const sandbox = sinon.sandbox.create();
 
@@ -93,7 +94,7 @@ describe("sync test", function() {
 
         const log = sync.getLog();
         assert.isTrue(log[4].tags.includes("error"));
-        assert.equal(log[4].data.error.message, "Error.");
+        assert.equal(_.get(log[4], "data.error.message"), "Error.");
     });
 
     it("must return all tables", async () => {
