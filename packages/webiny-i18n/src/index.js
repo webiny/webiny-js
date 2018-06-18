@@ -1,3 +1,4 @@
+// @flow
 import I18n from "./I18n";
 
 export { default as defaultProcessor } from "./processors/default";

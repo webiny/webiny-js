@@ -1,3 +1,4 @@
+// @flow
 import hash from "short-hash";
 
 /**
@@ -23,7 +24,7 @@ const getNamespaces = source => {
     return results;
 };
 
-export default source => {
+export default (source: string) => {
     const results = {};
     const allDeclaredNamespaces = getNamespaces(source);
 

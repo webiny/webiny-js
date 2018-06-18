@@ -1,6 +1,7 @@
+// @flow
 export default {
     name: "plural",
-    execute(value, parameters) {
+    execute(value: string, parameters: Array<string>) {
         // Numbers can be single number or ranges.
         for (let i = 0; i < parameters.length; i = i + 2) {
             const current = parameters[i];

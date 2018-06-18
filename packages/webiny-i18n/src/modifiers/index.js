@@ -1,3 +1,5 @@
+// @flow
+
 // Built-in modifiers
 import countModifiers from "./countModifier";
 import genderModifier from "./genderModifier";
