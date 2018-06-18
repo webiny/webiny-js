@@ -1,4 +1,3 @@
-import { assert } from "chai";
 import { One, Two } from "../../../entities/oneTwoThree";
 import { QueryResult } from "../../../../src";
 import sinon from "sinon";
@@ -6,11 +5,11 @@ import { Entity1, MainEntity } from "../../../entities/entitiesAttributeEntities
 
 const sandbox = sinon.sandbox.create();
 
-describe("setValue test", function() {
+describe("setValue test", () => {
     beforeEach(() => One.getEntityPool().flush());
     afterEach(() => sandbox.restore());
 
-    it("should accept a valid ID and load before save", async () => {
+    test("should accept a valid ID and load before save", async () => {
         const entity = new MainEntity();
         entity.attribute1 = ["a", "b", "c"];
 
@@ -47,18 +46,18 @@ describe("setValue test", function() {
         await entity.save();
 
         const attribute1Value = await entity.attribute1;
-        assert.instanceOf(attribute1Value[0], Entity1);
-        assert.instanceOf(attribute1Value[1], Entity1);
-        assert.instanceOf(attribute1Value[2], Entity1);
+        expect(attribute1Value[0]).toBeInstanceOf(Entity1);
+        expect(attribute1Value[1]).toBeInstanceOf(Entity1);
+        expect(attribute1Value[2]).toBeInstanceOf(Entity1);
 
-        assert.equal(attribute1Value[0].id, "a");
-        assert.equal(attribute1Value[1].id, "b");
-        assert.equal(attribute1Value[2].id, "c");
+        expect(attribute1Value[0].id).toEqual("a");
+        expect(attribute1Value[1].id).toEqual("b");
+        expect(attribute1Value[2].id).toEqual("c");
 
         entityFind.restore();
     });
 
-    it("after loading from storage, loaded entity must be populated with received object data", async () => {
+    test("after loading from storage, loaded entity must be populated with received object data", async () => {
         const entity = new MainEntity();
         entity.attribute1 = [
             { id: "a", name: "updated_a" },
@@ -99,17 +98,17 @@ describe("setValue test", function() {
         await entity.save();
 
         const attribute1Value = await entity.attribute1;
-        assert.instanceOf(attribute1Value[0], Entity1);
-        assert.instanceOf(attribute1Value[1], Entity1);
-        assert.instanceOf(attribute1Value[2], Entity1);
+        expect(attribute1Value[0]).toBeInstanceOf(Entity1);
+        expect(attribute1Value[1]).toBeInstanceOf(Entity1);
+        expect(attribute1Value[2]).toBeInstanceOf(Entity1);
 
-        assert.equal(attribute1Value[0].id, "a");
-        assert.equal(attribute1Value[1].id, "b");
-        assert.equal(attribute1Value[2].id, "c");
+        expect(attribute1Value[0].id).toEqual("a");
+        expect(attribute1Value[1].id).toEqual("b");
+        expect(attribute1Value[2].id).toEqual("c");
 
-        assert.equal(attribute1Value[0].name, "updated_a");
-        assert.equal(attribute1Value[1].name, "updated_b");
-        assert.equal(attribute1Value[2].name, "updated_c");
+        expect(attribute1Value[0].name).toEqual("updated_a");
+        expect(attribute1Value[1].name).toEqual("updated_b");
+        expect(attribute1Value[2].name).toEqual("updated_c");
 
         entityFind.restore();
     });

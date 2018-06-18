@@ -5,10 +5,10 @@ import sinon from "sinon";
 
 const sandbox = sinon.sandbox.create();
 
-describe("dynamic entity class test", function() {
+describe("dynamic entity class test", () => {
     afterEach(() => sandbox.restore());
 
-    it("should return a class", async () => {
+    test("should return a class", async () => {
         class C extends Entity {}
 
         C.classId = "C";

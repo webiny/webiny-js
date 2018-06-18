@@ -1,16 +1,14 @@
-import { assert } from "chai";
-
 import SimpleEntity from "./entities/simpleEntity";
 
-describe("driver override test", function() {
-    it("should validate given ID correctly (static call)", async () => {
-        assert.isFalse(SimpleEntity.isId(123));
-        assert.isTrue(SimpleEntity.isId("01234567890123456789adee"));
+describe("driver override test", () => {
+    test("should validate given ID correctly (static call)", async () => {
+        expect(SimpleEntity.isId(123)).toBe(false);
+        expect(SimpleEntity.isId("01234567890123456789adee")).toBe(true);
     });
 
-    it("should validate given ID correctly (instance call)", async () => {
+    test("should validate given ID correctly (instance call)", async () => {
         const user1 = new SimpleEntity();
-        assert.isFalse(user1.isId(123));
-        assert.isTrue(user1.isId("01234567890123456789adee"));
+        expect(user1.isId(123)).toBe(false);
+        expect(user1.isId("01234567890123456789adee")).toBe(true);
     });
 });

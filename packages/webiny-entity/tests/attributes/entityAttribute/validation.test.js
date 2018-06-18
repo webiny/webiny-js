@@ -5,18 +5,12 @@ import { One, Two } from "../../entities/oneTwoThree";
 import sinon from "sinon";
 
 const sandbox = sinon.sandbox.create();
-import { assert } from "chai";
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
 
-chai.use(chaiAsPromised);
-chai.should();
-
-describe("entity attribute test", function() {
+describe("entity attribute test", () => {
     afterEach(() => sandbox.restore());
     beforeEach(() => User.getEntityPool().flush());
 
-    it("should fail because an invalid instance was set", async () => {
+    test("should fail because an invalid instance was set", async () => {
         const user = new User();
 
         user.firstName = "John";
@@ -33,14 +27,13 @@ describe("entity attribute test", function() {
             error = e;
         }
 
-        assert.instanceOf(error, ModelError);
-        assert.equal(
-            error.data.invalidAttributes.company.data.invalidAttributes.image.code,
+        expect(error).toBeInstanceOf(ModelError);
+        expect(error.data.invalidAttributes.company.data.invalidAttributes.image.code).toEqual(
             ModelError.INVALID_ATTRIBUTE
         );
     });
 
-    it("should validate root and nested values ", async () => {
+    test("should validate root and nested values ", async () => {
         const user = new User();
         user.populate({
             firstName: "John",
@@ -59,15 +52,15 @@ describe("entity attribute test", function() {
             error = e;
         }
 
-        assert.instanceOf(error, ModelError);
-        assert.equal(error.code, ModelError.INVALID_ATTRIBUTES);
+        expect(error).toBeInstanceOf(ModelError);
+        expect(error.code).toEqual(ModelError.INVALID_ATTRIBUTES);
         let invalid = error.data.invalidAttributes.company.data.invalidAttributes;
 
-        assert.hasAllKeys(invalid, ["name", "image"]);
-        assert.equal(invalid.name.data.validator, "required");
+        expect(Object.keys(invalid)).toEqual(["name", "image"]);
+        expect(invalid.name.data.validator).toEqual("required");
 
-        assert.hasAllKeys(invalid.image.data.invalidAttributes, ["filename"]);
-        assert.equal(invalid.image.data.invalidAttributes.filename.data.validator, "required");
+        expect(Object.keys(invalid.image.data.invalidAttributes)).toEqual(["filename"]);
+        expect(invalid.image.data.invalidAttributes.filename.data.validator).toEqual("required");
 
         user.populate({
             company: {
@@ -84,12 +77,12 @@ describe("entity attribute test", function() {
             error = e;
         }
 
-        assert.instanceOf(error, ModelError);
-        assert.equal(error.code, ModelError.INVALID_ATTRIBUTES);
+        expect(error).toBeInstanceOf(ModelError);
+        expect(error.code).toEqual(ModelError.INVALID_ATTRIBUTES);
         invalid = error.data.invalidAttributes.company.data.invalidAttributes;
 
-        assert.hasAllKeys(invalid, ["name"]);
-        assert.equal(invalid.name.data.validator, "required");
+        expect(Object.keys(invalid)).toEqual(["name"]);
+        expect(invalid.name.data.validator).toEqual("required");
 
         user.populate({
             company: {
@@ -104,10 +97,10 @@ describe("entity attribute test", function() {
             error = e;
         }
 
-        assert.isNull(error);
+        expect(error).toBeNull();
     });
 
-    it("should validate if attribute is being loaded", async () => {
+    test("should validate if attribute is being loaded", async () => {
         let findById = sandbox
             .stub(One.getDriver(), "findOne")
             .onCall(0)
@@ -118,17 +111,17 @@ describe("entity attribute test", function() {
         const one = await One.findById("one");
 
         await one.save();
-        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
-        assert.equal(findById.callCount, 1);
+        expect(one.getAttribute("two").value.state).toEqual({ loaded: false, loading: false });
+        expect(findById.callCount).toEqual(1);
         findById.restore();
 
-        assert.deepEqual(one.getAttribute("two").value.state, { loaded: false, loading: false });
+        expect(one.getAttribute("two").value.state).toEqual({ loaded: false, loading: false });
         one.two = 123;
 
-        one.save().should.be.rejectedWith(ModelError);
+        await expect(one.save()).rejects.toThrow(ModelError);
     });
 
-    it("should validate on attribute level and recursively on entity level", async () => {
+    test("should validate on attribute level and recursively on entity level", async () => {
         let findById = sandbox
             .stub(One.getDriver(), "findOne")
             .onCall(0)
@@ -139,8 +132,7 @@ describe("entity attribute test", function() {
         const one = await One.findById("one");
         findById.restore();
 
-        one
-            .attr("requiredEntity")
+        one.attr("requiredEntity")
             .entity(Two)
             .setValidators("required");
 
@@ -151,7 +143,7 @@ describe("entity attribute test", function() {
             error = e;
         }
 
-        assert.deepEqual(error.data, {
+        expect(error.data).toEqual({
             invalidAttributes: {
                 requiredEntity: {
                     code: "INVALID_ATTRIBUTE",
@@ -169,7 +161,7 @@ describe("entity attribute test", function() {
         await one.validate();
     });
 
-    it("should throw error since invalid ID was set", async () => {
+    test("should throw error since invalid ID was set", async () => {
         let entityFindById = sandbox
             .stub(One.getDriver(), "findOne")
             .onCall(0)
@@ -179,7 +171,7 @@ describe("entity attribute test", function() {
 
         const one = await One.findById("a");
 
-        assert.equal(entityFindById.callCount, 1);
+        expect(entityFindById.callCount).toEqual(1);
         entityFindById.restore();
 
         one.two = "anotherTwo";
@@ -193,7 +185,7 @@ describe("entity attribute test", function() {
             error = e;
         }
 
-        assert.deepEqual(error.data, {
+        expect(error.data).toEqual({
             invalidAttributes: {
                 two: {
                     code: "INVALID_ATTRIBUTE",

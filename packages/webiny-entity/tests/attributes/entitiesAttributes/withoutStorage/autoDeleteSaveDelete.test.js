@@ -1,6 +1,5 @@
 import { QueryResult } from "../../../../src/index";
 import { MainEntity, Entity1 } from "../../../entities/entitiesAttributeEntities";
-import { assert } from "chai";
 import sinon from "sinon";
 
 const sandbox = sinon.sandbox.create();
@@ -9,7 +8,7 @@ describe("save and delete entities attribute test", () => {
     afterEach(() => sandbox.restore());
     beforeEach(() => MainEntity.getEntityPool().flush());
 
-    it("should recursively trigger validation and save all entities if data is valid", async () => {
+    test("should recursively trigger validation and save all entities if data is valid", async () => {
         const mainEntity = new MainEntity();
         mainEntity.attribute1 = [
             { id: null, name: "Enlai", type: "invalid", markedAsCannotDelete: true },
@@ -46,15 +45,15 @@ describe("save and delete entities attribute test", () => {
             error = e;
         }
 
-        assert.equal(error.data.invalidAttributes.attribute1.code, "INVALID_ATTRIBUTE");
-        assert.lengthOf(error.data.invalidAttributes.attribute1.data, 2);
+        expect(error.data.invalidAttributes.attribute1.code).toEqual("INVALID_ATTRIBUTE");
+        expect(error.data.invalidAttributes.attribute1.data.length).toBe(2);
 
         let items = error.data.invalidAttributes.attribute1.data;
-        assert.equal(items[0].data.index, 0);
-        assert.equal(items[0].data.invalidAttributes.type.data.validator, "in");
+        expect(items[0].data.index).toEqual(0);
+        expect(items[0].data.invalidAttributes.type.data.validator).toEqual("in");
 
-        assert.equal(items[1].data.index, 1);
-        assert.equal(items[1].data.invalidAttributes.type.data.validator, "in");
+        expect(items[1].data.index).toEqual(1);
+        expect(items[1].data.invalidAttributes.type.data.validator).toEqual("in");
 
         await mainEntity.set("attribute1.0.type", "dog");
         await mainEntity.set("attribute1.1.type", "dog");
@@ -66,39 +65,34 @@ describe("save and delete entities attribute test", () => {
             error = e;
         }
 
-        assert.equal(error.data.invalidAttributes.attribute2.code, "INVALID_ATTRIBUTE");
-        assert.lengthOf(error.data.invalidAttributes.attribute2.data, 2);
+        expect(error.data.invalidAttributes.attribute2.code).toEqual("INVALID_ATTRIBUTE");
+        expect(error.data.invalidAttributes.attribute2.data.length).toBe(2);
 
         items = error.data.invalidAttributes.attribute2.data;
-        assert.equal(items[0].data.index, 0);
-        assert.lengthOf(items[0].data.invalidAttributes.entity1Entities.data, 1);
-        assert.deepEqual(
-            items[0].data.invalidAttributes.entity1Entities.data[0],
-
-            {
-                code: "INVALID_ATTRIBUTES",
-                data: {
-                    index: 2,
-                    invalidAttributes: {
-                        type: {
-                            code: "INVALID_ATTRIBUTE",
-                            data: {
-                                message:
-                                    "Value must be one of the following: cat, dog, mouse, parrot.",
-                                value: "invalid",
-                                validator: "in"
-                            },
-                            message: "Invalid attribute."
-                        }
+        expect(items[0].data.index).toEqual(0);
+        expect(items[0].data.invalidAttributes.entity1Entities.data.length).toBe(1);
+        expect(items[0].data.invalidAttributes.entity1Entities.data[0]).toEqual({
+            code: "INVALID_ATTRIBUTES",
+            data: {
+                index: 2,
+                invalidAttributes: {
+                    type: {
+                        code: "INVALID_ATTRIBUTE",
+                        data: {
+                            message: "Value must be one of the following: cat, dog, mouse, parrot.",
+                            value: "invalid",
+                            validator: "in"
+                        },
+                        message: "Invalid attribute."
                     }
-                },
-                message: "Validation failed."
-            }
-        );
+                }
+            },
+            message: "Validation failed."
+        });
 
-        assert.equal(items[1].data.index, 1);
-        assert.lengthOf(items[1].data.invalidAttributes.entity1Entities.data, 1);
-        assert.deepEqual(items[1].data.invalidAttributes.entity1Entities.data[0], {
+        expect(items[1].data.index).toEqual(1);
+        expect(items[1].data.invalidAttributes.entity1Entities.data.length).toBe(1);
+        expect(items[1].data.invalidAttributes.entity1Entities.data[0]).toEqual({
             code: "INVALID_ATTRIBUTES",
             data: {
                 index: 0,
@@ -126,13 +120,13 @@ describe("save and delete entities attribute test", () => {
             error = e;
         }
 
-        assert.equal(error.data.invalidAttributes.attribute2.code, "INVALID_ATTRIBUTE");
-        assert.lengthOf(error.data.invalidAttributes.attribute2.data, 1);
+        expect(error.data.invalidAttributes.attribute2.code).toEqual("INVALID_ATTRIBUTE");
+        expect(error.data.invalidAttributes.attribute2.data.length).toBe(1);
 
         items = error.data.invalidAttributes.attribute2.data;
-        assert.equal(items[0].data.index, 0);
-        assert.lengthOf(items[0].data.invalidAttributes.entity1Entities.data, 1);
-        assert.deepEqual(items[0].data.invalidAttributes.entity1Entities.data[0], {
+        expect(items[0].data.index).toEqual(0);
+        expect(items[0].data.invalidAttributes.entity1Entities.data.length).toBe(1);
+        expect(items[0].data.invalidAttributes.entity1Entities.data[0]).toEqual({
             code: "INVALID_ATTRIBUTES",
             data: {
                 index: 2,
@@ -203,22 +197,22 @@ describe("save and delete entities attribute test", () => {
 
         await mainEntity.save();
 
-        assert.equal(entitySave.callCount, 9);
+        expect(entitySave.callCount).toEqual(9);
 
-        assert.equal(await mainEntity.get("id"), "AA");
-        assert.equal(await mainEntity.get("attribute1.0.id"), "BB");
-        assert.equal(await mainEntity.get("attribute1.1.id"), "CC");
-        assert.equal(await mainEntity.get("attribute2.0.entity1Entities.0.id"), "EE");
-        assert.equal(await mainEntity.get("attribute2.0.entity1Entities.1.id"), "FF");
-        assert.equal(await mainEntity.get("attribute2.0.entity1Entities.2.id"), "GG");
-        assert.equal(await mainEntity.get("attribute2.0.id"), "DD");
-        assert.equal(await mainEntity.get("attribute2.1.entity1Entities.0.id"), "II");
-        assert.equal(await mainEntity.get("attribute2.1.id"), "HH");
+        expect(await mainEntity.get("id")).toEqual("AA");
+        expect(await mainEntity.get("attribute1.0.id")).toEqual("BB");
+        expect(await mainEntity.get("attribute1.1.id")).toEqual("CC");
+        expect(await mainEntity.get("attribute2.0.entity1Entities.0.id")).toEqual("EE");
+        expect(await mainEntity.get("attribute2.0.entity1Entities.1.id")).toEqual("FF");
+        expect(await mainEntity.get("attribute2.0.entity1Entities.2.id")).toEqual("GG");
+        expect(await mainEntity.get("attribute2.0.id")).toEqual("DD");
+        expect(await mainEntity.get("attribute2.1.entity1Entities.0.id")).toEqual("II");
+        expect(await mainEntity.get("attribute2.1.id")).toEqual("HH");
 
         entitySave.restore();
     });
 
-    it("should save only attributes that were loaded", async () => {
+    test("should save only attributes that were loaded", async () => {
         const mainEntity = new MainEntity();
         mainEntity.attribute1 = [
             { id: null, name: "Enlai", type: "dog", markedAsCannotDelete: false },
@@ -247,14 +241,14 @@ describe("save and delete entities attribute test", () => {
 
         await mainEntity.save();
 
-        assert.equal(entitySave.callCount, 3);
-        assert.equal(entityFind.callCount, 0);
+        expect(entitySave.callCount).toEqual(3);
+        expect(entityFind.callCount).toEqual(0);
 
         entitySave.restore();
         entityFind.restore();
     });
 
-    it("auto delete must be automatically enabled and deletion must stop deletion if error was thrown", async () => {
+    test("auto delete must be automatically enabled and deletion must stop deletion if error was thrown", async () => {
         const mainEntity = new MainEntity();
         mainEntity.attribute1 = [
             { id: null, name: "Enlai", type: "dog", markedAsCannotDelete: true },
@@ -332,7 +326,7 @@ describe("save and delete entities attribute test", () => {
 
         await mainEntity.save();
 
-        assert.equal(entitySave.callCount, 9);
+        expect(entitySave.callCount).toEqual(9);
         entitySave.restore();
 
         let entityDelete = sandbox.stub(mainEntity.getDriver(), "delete");
@@ -343,9 +337,9 @@ describe("save and delete entities attribute test", () => {
             error = e;
         }
 
-        assert.instanceOf(error, Error);
-        assert.equal(error.message, "Cannot delete Entity1 entity");
-        assert(entityDelete.notCalled);
+        expect(error).toBeInstanceOf(Error);
+        expect(error.message).toEqual("Cannot delete Entity1 entity");
+        expect(entityDelete.notCalled).toBeTruthy();
 
         await mainEntity.set("attribute1.0.markedAsCannotDelete", false);
 
@@ -355,9 +349,9 @@ describe("save and delete entities attribute test", () => {
             error = e;
         }
 
-        assert.instanceOf(error, Error);
-        assert.equal(error.message, "Cannot delete Entity1 entity");
-        assert(entityDelete.notCalled);
+        expect(error).toBeInstanceOf(Error);
+        expect(error.message).toEqual("Cannot delete Entity1 entity");
+        expect(entityDelete.notCalled).toBeTruthy();
 
         await mainEntity.set("attribute2.0.entity1Entities.0.markedAsCannotDelete", false);
 
@@ -367,9 +361,9 @@ describe("save and delete entities attribute test", () => {
             error = e;
         }
 
-        assert.instanceOf(error, Error);
-        assert.equal(error.message, "Cannot delete Entity1 entity");
-        assert(entityDelete.notCalled);
+        expect(error).toBeInstanceOf(Error);
+        expect(error.message).toEqual("Cannot delete Entity1 entity");
+        expect(entityDelete.notCalled).toBeTruthy();
 
         await mainEntity.set("attribute2.0.entity1Entities.1.markedAsCannotDelete", false);
 
@@ -379,9 +373,9 @@ describe("save and delete entities attribute test", () => {
             error = e;
         }
 
-        assert.instanceOf(error, Error);
-        assert.equal(error.message, "Cannot delete Entity2 entity");
-        assert(entityDelete.notCalled);
+        expect(error).toBeInstanceOf(Error);
+        expect(error.message).toEqual("Cannot delete Entity2 entity");
+        expect(entityDelete.notCalled).toBeTruthy();
 
         await mainEntity.set("attribute2.0.markedAsCannotDelete", false);
 
@@ -391,9 +385,9 @@ describe("save and delete entities attribute test", () => {
             error = e;
         }
 
-        assert.instanceOf(error, Error);
-        assert.equal(error.message, "Cannot delete Entity1 entity");
-        assert(entityDelete.notCalled);
+        expect(error).toBeInstanceOf(Error);
+        expect(error.message).toEqual("Cannot delete Entity1 entity");
+        expect(entityDelete.notCalled).toBeTruthy();
 
         await mainEntity.set("attribute2.1.entity1Entities.0.markedAsCannotDelete", false);
 
@@ -403,18 +397,18 @@ describe("save and delete entities attribute test", () => {
             error = e;
         }
 
-        assert.instanceOf(error, Error);
-        assert.equal(error.message, "Cannot delete Entity2 entity");
-        assert(entityDelete.notCalled);
+        expect(error).toBeInstanceOf(Error);
+        expect(error.message).toEqual("Cannot delete Entity2 entity");
+        expect(entityDelete.notCalled).toBeTruthy();
 
         await mainEntity.set("attribute2.1.markedAsCannotDelete", false);
 
         await mainEntity.delete();
-        assert.equal(entityDelete.callCount, 9);
+        expect(entityDelete.callCount).toEqual(9);
         entityDelete.restore();
     });
 
-    it("should properly delete linked entities even though they are not loaded", async () => {
+    test("should properly delete linked entities even though they are not loaded", async () => {
         let entityFindById = sandbox.stub(MainEntity.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({ id: "A" });
         });
@@ -473,24 +467,24 @@ describe("save and delete entities attribute test", () => {
             error = e;
         }
 
-        assert.deepEqual(mainEntity.getAttribute("attribute1").value.state, {
+        expect(mainEntity.getAttribute("attribute1").value.state).toEqual({
             loaded: true,
             loading: false
         });
-        assert.equal(mainEntity.getAttribute("attribute1").value.current[0].id, "B");
-        assert.equal(mainEntity.getAttribute("attribute1").value.current[1].id, "C");
-        assert.deepEqual(mainEntity.getAttribute("attribute2").value.state, {
+        expect(mainEntity.getAttribute("attribute1").value.current[0].id).toEqual("B");
+        expect(mainEntity.getAttribute("attribute1").value.current[1].id).toEqual("C");
+        expect(mainEntity.getAttribute("attribute2").value.state).toEqual({
             loaded: false,
             loading: false
         });
-        assert.isEmpty(mainEntity.getAttribute("attribute2").value.current);
+        expect(mainEntity.getAttribute("attribute2").value.current.length).toBe(0);
 
-        assert.instanceOf(error, Error);
-        assert.equal(error.message, "Cannot delete Entity1 entity");
-        assert(entityDelete.notCalled);
+        expect(error).toBeInstanceOf(Error);
+        expect(error.message).toEqual("Cannot delete Entity1 entity");
+        expect(entityDelete.notCalled).toBeTruthy();
 
-        assert.equal(entityFind.callCount, 1);
-        assert.equal(entityDelete.callCount, 0);
+        expect(entityFind.callCount).toEqual(1);
+        expect(entityDelete.callCount).toEqual(0);
 
         await mainEntity.set("attribute1.0.markedAsCannotDelete", false);
 
@@ -501,25 +495,25 @@ describe("save and delete entities attribute test", () => {
             error = e;
         }
 
-        assert.deepEqual(mainEntity.getAttribute("attribute1").value.state, {
+        expect(mainEntity.getAttribute("attribute1").value.state).toEqual({
             loaded: true,
             loading: false
         });
-        assert.equal(mainEntity.getAttribute("attribute1").value.current[0].id, "B");
-        assert.equal(mainEntity.getAttribute("attribute1").value.current[1].id, "C");
-        assert.deepEqual(mainEntity.getAttribute("attribute2").value.state, {
+        expect(mainEntity.getAttribute("attribute1").value.current[0].id).toEqual("B");
+        expect(mainEntity.getAttribute("attribute1").value.current[1].id).toEqual("C");
+        expect(mainEntity.getAttribute("attribute2").value.state).toEqual({
             loaded: true,
             loading: false
         });
-        assert.equal(mainEntity.getAttribute("attribute2").value.current[0].id, "D");
-        assert.equal(mainEntity.getAttribute("attribute2").value.current[1].id, "E");
+        expect(mainEntity.getAttribute("attribute2").value.current[0].id).toEqual("D");
+        expect(mainEntity.getAttribute("attribute2").value.current[1].id).toEqual("E");
 
-        assert.instanceOf(error, Error);
-        assert.equal(error.message, "Cannot delete Entity2 entity");
-        assert(entityDelete.notCalled);
+        expect(error).toBeInstanceOf(Error);
+        expect(error.message).toEqual("Cannot delete Entity2 entity");
+        expect(entityDelete.notCalled).toBeTruthy();
 
-        assert.equal(entityFind.callCount, 3);
-        assert.equal(entityDelete.callCount, 0);
+        expect(entityFind.callCount).toEqual(3);
+        expect(entityDelete.callCount).toEqual(0);
 
         await mainEntity.set("attribute2.0.markedAsCannotDelete", false);
 
@@ -530,10 +524,10 @@ describe("save and delete entities attribute test", () => {
             error = e;
         }
 
-        assert.isNull(error);
+        expect(error).toBeNull();
 
-        assert.equal(entityFind.callCount, 4);
-        assert.equal(entityDelete.callCount, 9);
+        expect(entityFind.callCount).toEqual(4);
+        expect(entityDelete.callCount).toEqual(9);
 
         entityFind.restore();
         entityDelete.restore();

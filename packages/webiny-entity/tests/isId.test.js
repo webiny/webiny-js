@@ -1,15 +1,14 @@
-import { assert } from "chai";
 import User from "./entities/user";
 
-describe("driver override test", function() {
-    it("should validate given ID correctly (static call)", async () => {
-        assert.isFalse(User.isId(123));
-        assert.isTrue(User.isId("asd"));
+describe("driver override test", () => {
+    test("should validate given ID correctly (static call)", async () => {
+        expect(User.isId(123)).toBe(false);
+        expect(User.isId("asd")).toBe(true);
     });
 
-    it("should validate given ID correctly (static call)", async () => {
+    test("should validate given ID correctly (static call)", async () => {
         const user = new User();
-        assert.isFalse(user.isId(123));
-        assert.isTrue(user.isId("asd"));
+        expect(user.isId(123)).toBe(false);
+        expect(user.isId("asd")).toBe(true);
     });
 });

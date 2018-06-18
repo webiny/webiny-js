@@ -1,13 +1,12 @@
-import { assert } from "chai";
 import sinon from "sinon";
 import SimpleEntity from "./entities/simpleEntity";
 
 const sandbox = sinon.sandbox.create();
 
-describe("count test", function() {
+describe("count test", () => {
     afterEach(() => sandbox.restore());
 
-    it("must generate correct query", async () => {
+    test("must generate correct query", async () => {
         const queryStub = sandbox
             .stub(SimpleEntity.getDriver().getConnection(), "query")
             .callsFake(() => {
@@ -16,15 +15,14 @@ describe("count test", function() {
 
         await SimpleEntity.count();
 
-        assert.deepEqual(
-            queryStub.getCall(0).args[0],
+        expect(queryStub.getCall(0).args[0]).toEqual(
             "SELECT COUNT(*) AS count FROM `SimpleEntity`"
         );
 
         queryStub.restore();
     });
 
-    it("should count entities", async () => {
+    test("should count entities", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
             return [{ count: 1 }];
         });
@@ -34,10 +32,10 @@ describe("count test", function() {
             .getConnection()
             .query.restore();
 
-        assert.equal(count, 1);
+        expect(count).toEqual(1);
     });
 
-    it("should include search query if passed", async () => {
+    test("should include search query if passed", async () => {
         const queryStub = sandbox
             .stub(SimpleEntity.getDriver().getConnection(), "query")
             .callsFake(() => {
@@ -54,8 +52,7 @@ describe("count test", function() {
             }
         });
 
-        assert.deepEqual(
-            queryStub.getCall(0).args[0],
+        expect(queryStub.getCall(0).args[0]).toEqual(
             "SELECT COUNT(*) AS count FROM `SimpleEntity` WHERE (((`name` LIKE '%this is%') AND `age` > 30))"
         );
 

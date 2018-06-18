@@ -1,14 +1,7 @@
-import chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-
-chai.use(chaiAsPromised);
-chai.should();
-const expect = chai.expect;
-
 import Storage from "../src/storage";
 import MockDriver from "./mockDriver";
 
-describe("Storage class test", function() {
+describe("Storage class test", () => {
     const cdnUrl = "https://cdn.webiny.com";
     const mockDriver = new MockDriver({ cdnUrl, createDatePrefix: true });
 
@@ -24,86 +17,84 @@ describe("Storage class test", function() {
         data: { body: "file2", meta: { ext: "png", size: 173, timeModified: Date.now() } }
     };
 
-    it("should return an empty list of keys", function() {
-        return storage.getKeys("/").should.become([]);
+    test("should return an empty list of keys", async () => {
+        await expect(storage.getKeys("/")).resolves.toEqual([]);
     });
 
-    it("should store a file", async function() {
+    test("should store a file", async () => {
         const newKey = await storage.setFile(file1.key, file1.data);
-        expect(newKey).to.be.a("string");
+        expect(newKey).toBeString();
         file1.key = newKey;
     });
 
-    it("should set file meta", async function() {
+    test("should set file meta", async () => {
         await storage.setMeta(file1.key, file1Meta);
-        return storage
-            .getMeta(file1.key)
-            .should.become(file1Meta)
-            .then(() => {
-                file1.data.meta = file1Meta;
-            });
+        await expect(storage.getMeta(file1.key)).resolves.toEqual(file1Meta);
+        file1.data.meta = file1Meta;
     });
 
-    it("should update a file without changing the key", async function() {
+    test("should update a file without changing the key", async () => {
         file1.data.body = "file1-updated";
         const newKey = await storage.setFile(file1.key, file1.data);
-        expect(newKey).to.equal(file1.key);
+        await expect(newKey).toEqual(file1.key);
     });
 
-    it("should return a list of file keys", async function() {
+    test("should return a list of file keys", async () => {
         file2.key = await storage.setFile(file2.key, file2.data);
-        return storage.getKeys("/").should.become([file1.key, file2.key]);
+        await expect(storage.getKeys("/")).resolves.toEqual([file1.key, file2.key]);
     });
 
-    it("should return a file", function() {
-        return storage.getFile(file1.key).should.become(file1.data);
+    test("should return a file", async () => {
+        await expect(storage.getFile(file1.key)).resolves.toEqual(file1.data);
     });
 
-    it("should return file meta", function() {
-        return storage.getMeta(file2.key).should.become(file2.data.meta);
+    test("should return file meta", async () => {
+        await expect(storage.getMeta(file2.key)).resolves.toEqual(file2.data.meta);
     });
 
-    it("should not return file meta", function() {
-        return storage.getMeta("/path/246").should.become(null);
+    test("should not return file meta", async () => {
+        await expect(storage.getMeta("/path/246")).resolves.toBe(null);
     });
 
-    it("should confirm that file exists", function() {
-        return storage.exists(file1.key).should.become(true);
+    test("should confirm that file exists", async () => {
+        await expect(storage.exists(file1.key)).resolves.toBe(true);
     });
 
-    it("should confirm that file does not exist", function() {
-        return storage.exists("/path/114").should.become(false);
+    test("should confirm that file does not exist", async () => {
+        await expect(storage.exists("/path/114")).resolves.toBe(false);
     });
 
-    it("should return time when file was modified", function() {
-        return storage.getTimeModified(file2.key).should.become(file2.data.meta.timeModified);
+    test("should return time when file was modified", async () => {
+        await expect(storage.getTimeModified(file2.key)).resolves.toBe(
+            file2.data.meta.timeModified
+        );
     });
 
-    it("should return file size", function() {
-        return storage.getSize(file2.key).should.become(file2.data.meta.size);
+    test("should return file size", async () => {
+        await expect(storage.getSize(file2.key)).resolves.toBe(file2.data.meta.size);
     });
 
-    it("should return file content type", function() {
-        return storage.getContentType(file1.key).should.become(file1.data.meta.type);
+    test("should return file content type", async () => {
+        await expect(storage.getContentType(file1.key)).resolves.toBe(file1.data.meta.type);
     });
 
-    it("should return a public file URL", function() {
-        expect(storage.getURL(file1.key)).to.equal(cdnUrl + file1.key);
+    test("should return a public file URL", () => {
+        expect(storage.getURL(file1.key)).toBe(cdnUrl + file1.key);
     });
 
-    it("should return an absolute path to file", function() {
-        return storage.getAbsolutePath(file1.key).should.become(file1.key);
+    test("should return an absolute path to file", async () => {
+        await expect(storage.getAbsolutePath(file1.key)).resolves.toBe(file1.key);
     });
 
-    it("should rename a file", async function() {
+    test("should rename a file", async () => {
         const newKey = "/new/key";
         await storage.rename(file1.key, newKey);
         file1.key = newKey;
-        return storage.getFile("/new/key").should.become(file1.data);
+        await expect(storage.getFile("/new/key")).resolves.toEqual(file1.data);
     });
 
-    it("should delete a file", async function() {
+    test("should delete a file", async () => {
         await storage.delete(file1.key);
-        return storage.getFile(file1.key).should.be.rejected;
+        await expect(storage.getFile(file1.key)).rejects.toThrow();
     });
 });

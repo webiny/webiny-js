@@ -1,15 +1,14 @@
-import { assert } from "chai";
 import { User } from "./../entities/modelAttributeEntities";
 import sinon from "sinon";
 import { QueryResult } from "../..";
 
 const sandbox = sinon.sandbox.create();
 
-describe("custom attribute test", function() {
+describe("custom attribute test", () => {
     afterEach(() => sandbox.restore());
     beforeEach(() => User.getEntityPool().flush());
 
-    it("should load entities from database", async () => {
+    test("should load entities from database", async () => {
         let entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({
                 id: "xyz",
@@ -36,11 +35,11 @@ describe("custom attribute test", function() {
         const user = await User.findById("xyz");
         entityFind.restore();
 
-        assert.equal(user.id, "xyz");
+        expect(user.id).toEqual("xyz");
 
         let verification = await user.get("verifications.0");
-        assert.equal(verification.updatedOn, null);
-        assert.equal(verification.status, "pending");
+        expect(verification.updatedOn).toBeNil();
+        expect(verification.status).toEqual("pending");
 
         entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({ id: "ghi", file: "verification.pdf", size: 10, type: "jpg" });
@@ -49,14 +48,14 @@ describe("custom attribute test", function() {
         let document = await verification.document;
         entityFind.restore();
 
-        assert.equal(document.id, "ghi");
-        assert.equal(document.file, "verification.pdf");
-        assert.equal(document.size, 10);
-        assert.equal(document.type, "jpg");
+        expect(document.id).toEqual("ghi");
+        expect(document.file).toEqual("verification.pdf");
+        expect(document.size).toEqual(10);
+        expect(document.type).toEqual("jpg");
 
         verification = await user.get("verifications.1");
-        assert.instanceOf(verification.updatedOn, Date);
-        assert.equal(verification.status, "declined");
+        expect(verification.updatedOn).toBeInstanceOf(Date);
+        expect(verification.status).toEqual("declined");
 
         entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({
@@ -70,15 +69,15 @@ describe("custom attribute test", function() {
         document = await verification.document;
         entityFind.restore();
 
-        assert.equal(document.id, "123");
-        assert.equal(document.file, "verification123.pdf");
-        assert.equal(document.size, 100);
-        assert.equal(document.type, "jpg");
+        expect(document.id).toEqual("123");
+        expect(document.file).toEqual("verification123.pdf");
+        expect(document.size).toEqual(100);
+        expect(document.type).toEqual("jpg");
 
-        assert.lengthOf(user.verifications, 3);
+        expect(user.verifications.length).toBe(3);
     });
 
-    it("should return correct storage value", async () => {
+    test("should return correct storage value", async () => {
         let entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({
                 id: "xyz"
@@ -109,23 +108,23 @@ describe("custom attribute test", function() {
         entityFind.restore();
 
         let storage = await user.toStorage();
-        assert.equal(storage.firstName, null);
-        assert.equal(storage.verification, null);
+        expect(storage.firstName).toBeNil();
+        expect(storage.verification).toBeNil();
 
         let verification1 = storage.verifications[0];
-        assert.equal(verification1.status, "pending");
-        assert.equal(verification1.updatedOn, null);
-        assert.equal(verification1.document, "ghi");
+        expect(verification1.status).toEqual("pending");
+        expect(verification1.updatedOn).toBeNil();
+        expect(verification1.document).toEqual("ghi");
 
         let verification2 = storage.verifications[1];
-        assert.equal(verification2.status, "declined");
-        assert.instanceOf(verification2.updatedOn, Date);
-        assert.equal(verification2.document, "def");
+        expect(verification2.status).toEqual("declined");
+        expect(verification2.updatedOn).toBeInstanceOf(Date);
+        expect(verification2.document).toEqual("def");
 
         let verification3 = storage.verifications[2];
-        assert.equal(verification3.status, "declined");
-        assert.instanceOf(verification3.updatedOn, Date);
-        assert.equal(verification3.document, "abc");
+        expect(verification3.status).toEqual("declined");
+        expect(verification3.updatedOn).toBeInstanceOf(Date);
+        expect(verification3.document).toEqual("abc");
 
         entityFind = sandbox
             .stub(User.getDriver(), "findOne")
@@ -165,22 +164,22 @@ describe("custom attribute test", function() {
 
         entityFind.restore();
 
-        assert.equal(storage.firstName, null);
-        assert.equal(storage.verification, null);
+        expect(storage.firstName).toBeNil();
+        expect(storage.verification).toBeNil();
 
         verification1 = storage.verifications[0];
-        assert.equal(verification1.status, "pending");
-        assert.equal(verification1.updatedOn, null);
-        assert.equal(verification1.document, "ghi");
+        expect(verification1.status).toEqual("pending");
+        expect(verification1.updatedOn).toBeNil();
+        expect(verification1.document).toEqual("ghi");
 
         verification2 = storage.verifications[1];
-        assert.equal(verification2.status, "declined");
-        assert.instanceOf(verification2.updatedOn, Date);
-        assert.equal(verification2.document, "def");
+        expect(verification2.status).toEqual("declined");
+        expect(verification2.updatedOn).toBeInstanceOf(Date);
+        expect(verification2.document).toEqual("def");
 
         verification3 = storage.verifications[2];
-        assert.equal(verification3.status, "declined");
-        assert.instanceOf(verification3.updatedOn, Date);
-        assert.equal(verification3.document, "abc");
+        expect(verification3.status).toEqual("declined");
+        expect(verification3.updatedOn).toBeInstanceOf(Date);
+        expect(verification3.document).toEqual("abc");
     });
 });

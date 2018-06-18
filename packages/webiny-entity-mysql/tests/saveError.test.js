@@ -1,13 +1,12 @@
-import { assert } from "chai";
 import sinon from "sinon";
 import SimpleEntity from "./entities/simpleEntity";
 import CustomIdEntity from "./entities/customIdEntity";
 const sandbox = sinon.sandbox.create();
 
-describe("save error test", function() {
+describe("save error test", () => {
     afterEach(() => sandbox.restore());
 
-    it("should save new entity but an exception must be thrown", async () => {
+    test("should save new entity but an exception must be thrown", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
             throw Error("This is an error.");
         });
@@ -25,7 +24,7 @@ describe("save error test", function() {
         throw Error(`Error should've been thrown.`);
     });
 
-    it("should update existing entity but an exception must be thrown", async () => {
+    test("should update existing entity but an exception must be thrown", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {});
         sandbox.stub(SimpleEntity.getDriver().constructor, "__generateID").callsFake(() => "a");
 
@@ -35,7 +34,7 @@ describe("save error test", function() {
             .getConnection()
             .query.restore();
 
-        assert.equal(simpleEntity.id, "a");
+        expect(simpleEntity.id).toEqual("a");
 
         sandbox
             .stub(SimpleEntity.getDriver().getConnection(), "query")
@@ -56,7 +55,7 @@ describe("save error test", function() {
         throw Error(`Error should've been thrown.`);
     });
 
-    it("should save new entity into database (with hash IDs enabled), but an exception must be thrown", async () => {
+    test("should save new entity into database (with hash IDs enabled), but an exception must be thrown", async () => {
         sandbox.stub(CustomIdEntity.getDriver().getConnection(), "query").callsFake(() => {
             throw Error("This is an error.");
         });
@@ -69,7 +68,7 @@ describe("save error test", function() {
         } catch (e) {
             return;
         } finally {
-            assert.equal(customIdEntity.id, null);
+            expect(customIdEntity.id).toEqual(null);
             CustomIdEntity.getDriver()
                 .getConnection()
                 .query.restore();

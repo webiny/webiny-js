@@ -1,4 +1,3 @@
-import { assert } from "chai";
 import { Model, ModelAttribute } from "./../src";
 import DefaultAttributesContainer from "./../src/defaultAttributesContainer";
 import { AttributesContainer } from "../src";
@@ -17,19 +16,19 @@ class ModelOverride extends Model {
 
 const model = new ModelOverride();
 
-describe("overriding attributes container test", function() {
-    it("old methods should work", () => {
-        assert.isFunction(model.getAttributesContainer().boolean);
-        assert.isFunction(model.getAttributesContainer().char);
-        assert.isFunction(model.getAttributesContainer().integer);
+describe("overriding attributes container test", () => {
+    test("old methods should work", () => {
+        expect(typeof model.getAttributesContainer().boolean).toBe("function");
+        expect(typeof model.getAttributesContainer().char).toBe("function");
+        expect(typeof model.getAttributesContainer().integer).toBe("function");
     });
 
-    it("new method should work", () => {
-        assert.isFunction(model.getAttributesContainer().newAttribute);
-        assert.equal(model.getAttributesContainer().newAttribute(), 5);
+    test("new method should work", () => {
+        expect(typeof model.getAttributesContainer().newAttribute).toBe("function");
+        expect(model.getAttributesContainer().newAttribute()).toEqual(5);
     });
 
-    it("should be able to work with a custom attribute", async () => {
+    test("should be able to work with a custom attribute", async () => {
         class IdentityModel extends Model {
             constructor() {
                 super();
@@ -62,7 +61,7 @@ describe("overriding attributes container test", function() {
         });
 
         const json = await issue.toJSON("title,assignedTo[classId,identity]");
-        assert.deepEqual(json, {
+        expect(json).toEqual({
             title: "testing custom attribute",
             assignedTo: {
                 classId: "User",

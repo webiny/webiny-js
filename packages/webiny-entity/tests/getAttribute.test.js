@@ -1,21 +1,20 @@
-import { assert } from "chai";
 import User from "./entities/user";
 import { CharAttribute, BooleanAttribute, IntegerAttribute } from "webiny-model";
 
-describe("getAttribute test", function() {
-    it("should return attribute", async () => {
+describe("getAttribute test", () => {
+    test("should return attribute", async () => {
         const user = new User();
-        assert.instanceOf(user.getAttribute("firstName"), CharAttribute);
-        assert.instanceOf(user.getAttribute("lastName"), CharAttribute);
-        assert.instanceOf(user.getAttribute("enabled"), BooleanAttribute);
-        assert.instanceOf(user.getAttribute("age"), IntegerAttribute);
+        expect(user.getAttribute("firstName")).toBeInstanceOf(CharAttribute);
+        expect(user.getAttribute("lastName")).toBeInstanceOf(CharAttribute);
+        expect(user.getAttribute("enabled")).toBeInstanceOf(BooleanAttribute);
+        expect(user.getAttribute("age")).toBeInstanceOf(IntegerAttribute);
     });
 
-    it("should return undefined because attributes do not exist", async () => {
+    test("should return undefined because attributes do not exist", async () => {
         const user = new User();
-        assert.isUndefined(user.getAttribute("firstName____"), CharAttribute);
-        assert.isUndefined(user.getAttribute("lastName____"), CharAttribute);
-        assert.isUndefined(user.getAttribute("enabled____"), BooleanAttribute);
-        assert.isUndefined(user.getAttribute("age___"), IntegerAttribute);
+        expect(user.getAttribute("firstName____")).not.toBeDefined();
+        expect(user.getAttribute("lastName____")).not.toBeDefined();
+        expect(user.getAttribute("enabled____")).not.toBeDefined();
+        expect(user.getAttribute("age___")).not.toBeDefined();
     });
 });

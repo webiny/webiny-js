@@ -1,14 +1,13 @@
-import { assert } from "chai";
 import sinon from "sinon";
 import SimpleEntity from "./entities/simpleEntity";
 import CustomIdEntity from "./entities/customIdEntity";
 
 const sandbox = sinon.sandbox.create();
 
-describe("save test", function() {
+describe("save test", () => {
     afterEach(() => sandbox.restore());
 
-    it("must generate correct query", async () => {
+    test("must generate correct query", async () => {
         const queryStub = sandbox
             .stub(SimpleEntity.getDriver().getConnection(), "query")
             .callsFake(() => {
@@ -19,8 +18,7 @@ describe("save test", function() {
         await simpleEntity.save();
 
         // 'slug' and 'enabled' have default value set, that's why they are present in following statement.
-        assert.deepEqual(
-            queryStub.getCall(0).args[0],
+        expect(queryStub.getCall(0).args[0]).toEqual(
             "INSERT INTO `SimpleEntity` (`id`, `slug`, `enabled`) VALUES ('" +
                 simpleEntity.id +
                 "', '', 1)"
@@ -32,8 +30,7 @@ describe("save test", function() {
         simpleEntity.tags = ["test1", "test2"];
 
         await simpleEntity.save();
-        assert.deepEqual(
-            queryStub.getCall(1).args[0],
+        expect(queryStub.getCall(1).args[0]).toEqual(
             "UPDATE `SimpleEntity` SET `name` = 'test case', `slug` = 'testCase', `enabled` = 0, `tags` = '[\\\"test1\\\",\\\"test2\\\"]' WHERE (`id` = '" +
                 simpleEntity.id +
                 "') LIMIT 1"
@@ -42,7 +39,7 @@ describe("save test", function() {
         queryStub.restore();
     });
 
-    it("should save new entity into database and entity should receive an integer ID", async () => {
+    test("should save new entity into database and entity should receive an integer ID", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query");
 
         const simpleEntity = new SimpleEntity();
@@ -51,11 +48,11 @@ describe("save test", function() {
             .getConnection()
             .query.restore();
 
-        assert.lengthOf(simpleEntity.id, 24);
-        assert.isTrue(SimpleEntity.isId(simpleEntity.id));
+        expect(simpleEntity.id.length).toBe(24);
+        expect(SimpleEntity.isId(simpleEntity.id)).toBe(true);
     });
 
-    it("should update existing entity", async () => {
+    test("should update existing entity", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {});
         sandbox.stub(SimpleEntity.getDriver().constructor, "__generateID").callsFake(() => {
             return "a";
@@ -64,16 +61,16 @@ describe("save test", function() {
         const simpleEntity = new SimpleEntity();
         await simpleEntity.save();
 
-        assert.equal(simpleEntity.id, "a");
+        expect(simpleEntity.id).toEqual("a");
 
         await simpleEntity.save();
         SimpleEntity.getDriver()
             .getConnection()
             .query.restore();
-        assert.equal(simpleEntity.id, "a");
+        expect(simpleEntity.id).toEqual("a");
     });
 
-    it("should save new entity into database and entity should receive a hash ID", async () => {
+    test("should save new entity into database and entity should receive a hash ID", async () => {
         sandbox.stub(CustomIdEntity.getDriver().getConnection(), "query").callsFake(() => {
             return { insertId: 1 };
         });
@@ -86,7 +83,7 @@ describe("save test", function() {
             .getConnection()
             .query.restore();
 
-        assert.isString(customIdEntity.id);
-        assert.lengthOf(customIdEntity.id, 24);
+        expect(typeof customIdEntity.id).toBe("string");
+        expect(customIdEntity.id.length).toBe(24);
     });
 });

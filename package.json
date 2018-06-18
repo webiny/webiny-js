@@ -44,10 +44,10 @@
     "flow-copy-source": "^1.3.0",
     "get-stream": "^3.0.0",
     "git-log-parser": "^1.2.0",
+    "jest": "^23.1.0",
+    "jest-extended": "^0.7.2",
     "lerna": "^2.5.1",
     "lint-staged": "^6.0.1",
-    "mocha": "^5.0.0",
-    "nyc": "^11.3.0",
     "pre-commit": "^1.2.2",
     "prettier": "^1.10.2",
     "rimraf": "^2.6.2",
@@ -57,13 +57,13 @@
   },
   "scripts": {
     "build": "lerna run --parallel build",
-    "ci": "nyc --check-coverage yarn test && nyc report --reporter=text-lcov | coveralls",
+    "ci": "yarn coverage && cat ./coverage/lcov.info | coveralls",
     "clear": "lerna exec -- rimraf lib",
     "client:watch": "lerna run --scope=webiny-client-ui --scope=webiny-client --scope=webiny-skeleton-app --scope=webiny-backend-app --parallel --stream build:watch",
     "commit": "git-cz",
     "commit:check": "yarn flow && yarn lint-staged && yarn test",
-    "coverage": "scripts/coverage.js --reporter=text",
-    "coverage:html": "scripts/coverage.js --reporter=html",
+    "coverage": "yarn test --coverage",
+    "coverage:html": "yarn coverage --reporters=html",
     "coverage:check": "scripts/coverage.js --check=true",
     "flow": "flow",
     "lint-staged": "lint-staged",
@@ -72,7 +72,7 @@
     "release:dry": "scripts/release.js --preview --branch=development",
     "release-private": "yarn build && node scripts/private --branch=development --require=babel-register",
     "release-private:dry": "node scripts/private --preview --branch=development --require=babel-register",
-    "test": "scripts/test.js"
+    "test": "jest"
   },
   "pre-commit": [
     "flow",
@@ -90,5 +90,10 @@
       "eslint --fix",
       "git add"
     ]
+  },
+  "jest": {
+    "coveragePathIgnorePatterns": ["/node_modules/", "/tests/"],
+    "setupTestFrameworkScriptFile": "jest-extended",
+    "testMatch": [ "<rootDir>/packages/**/tests/**/*.test.js" ]
   }
 }

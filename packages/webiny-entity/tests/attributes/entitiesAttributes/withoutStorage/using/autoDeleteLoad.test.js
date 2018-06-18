@@ -6,11 +6,11 @@ import { MainEntity } from "../../../../entities/entitiesAttributeEntities";
 
 const sandbox = sinon.sandbox.create();
 
-describe("attribute entities (using an additional aggregation class) - loading test", function() {
+describe("attribute entities (using an additional aggregation class) - loading test", () => {
     afterEach(() => sandbox.restore());
     beforeEach(() => MainEntity.getEntityPool().flush());
 
-    it("should correctly set entity and link (class and attributes)", async () => {
+    test("should correctly set entity and link (class and attributes)", async () => {
         const user = new User();
         const classes = user.getAttribute("groups").classes;
         expect(classes).to.deep.equal({
@@ -26,7 +26,7 @@ describe("attribute entities (using an additional aggregation class) - loading t
         });
     });
 
-    it("should load links and entities correctly", async () => {
+    test("should load links and entities correctly", async () => {
         let entityFindById = sandbox
             .stub(User.getDriver(), "findOne")
             .callsFake(() => new QueryResult({ id: "A" }));
@@ -86,7 +86,7 @@ describe("attribute entities (using an additional aggregation class) - loading t
         entityFind.restore();
     });
 
-    it("should not load if values are already set", async () => {
+    test("should not load if values are already set", async () => {
         const user = new User();
         const entitySave = sandbox.spy(UsersGroups.getDriver(), "save");
         const entityFind = sandbox.spy(UsersGroups.getDriver(), "find");

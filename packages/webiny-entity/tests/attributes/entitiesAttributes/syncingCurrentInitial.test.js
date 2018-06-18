@@ -1,7 +1,6 @@
 import { QueryResult } from "../../../src";
 import { MainEntity, Entity1 } from "../../entities/entitiesAttributeEntities";
 
-import { assert } from "chai";
 import sinon from "sinon";
 
 const sandbox = sinon.sandbox.create();
@@ -9,7 +8,7 @@ const sandbox = sinon.sandbox.create();
 describe("save and delete entities attribute test", () => {
     afterEach(() => sandbox.restore());
 
-    it("should replace entities if direct assign was made or correctly update the list otherwise", async () => {
+    test("should replace entities if direct assign was made or correctly update the list otherwise", async () => {
         let entityFindById = sandbox
             .stub(MainEntity.getDriver(), "findOne")
             .callsFake(() => new QueryResult({ id: "A" }));
@@ -25,13 +24,14 @@ describe("save and delete entities attribute test", () => {
 
         mainEntity.attribute1 = [{ name: "x", type: "parrot" }];
 
-        assert.deepEqual(mainEntity.getAttribute("attribute1").value.state, {
+        expect(mainEntity.getAttribute("attribute1").value.state).toEqual({
             loading: false,
             loaded: false
         });
 
-        assert.isEmpty(mainEntity.getAttribute("attribute1").value.initial);
-        assert.equal(mainEntity.getAttribute("attribute1").value.current[0].name, "x");
+        const value = mainEntity.getAttribute("attribute1").value;
+        expect(value.initial.length).toBe(0);
+        expect(value.current[0].name).toEqual("x");
 
         let entitySave = sandbox
             .stub(mainEntity.getDriver(), "save")
@@ -45,26 +45,26 @@ describe("save and delete entities attribute test", () => {
 
         await mainEntity.save();
 
-        assert.deepEqual(mainEntity.getAttribute("attribute1").value.state, {
+        expect(mainEntity.getAttribute("attribute1").value.state).toEqual({
             loading: false,
             loaded: true
         });
 
-        assert.lengthOf(mainEntity.getAttribute("attribute1").value.initial, 1);
-        assert.equal(mainEntity.getAttribute("attribute1").value.initial[0].id, "X");
-        assert.lengthOf(mainEntity.getAttribute("attribute1").value.current, 1);
-        assert.equal(mainEntity.getAttribute("attribute1").value.current[0].id, "X");
+        expect(mainEntity.getAttribute("attribute1").value.initial.length).toBe(1);
+        expect(mainEntity.getAttribute("attribute1").value.initial[0].id).toEqual("X");
+        expect(mainEntity.getAttribute("attribute1").value.current.length).toBe(1);
+        expect(mainEntity.getAttribute("attribute1").value.current[0].id).toEqual("X");
 
         entitySave.restore();
         entityFind.restore();
 
         mainEntity.attribute1 = [{ name: "y", type: "dog" }, { name: "z", type: "parrot" }];
 
-        assert.lengthOf(mainEntity.getAttribute("attribute1").value.initial, 1);
-        assert.equal(mainEntity.getAttribute("attribute1").value.initial[0].id, "X");
-        assert.lengthOf(mainEntity.getAttribute("attribute1").value.current, 2);
-        assert.equal(mainEntity.getAttribute("attribute1").value.current[0].name, "y");
-        assert.equal(mainEntity.getAttribute("attribute1").value.current[1].name, "z");
+        expect(mainEntity.getAttribute("attribute1").value.initial.length).toBe(1);
+        expect(mainEntity.getAttribute("attribute1").value.initial[0].id).toEqual("X");
+        expect(mainEntity.getAttribute("attribute1").value.current.length).toBe(2);
+        expect(mainEntity.getAttribute("attribute1").value.current[0].name).toEqual("y");
+        expect(mainEntity.getAttribute("attribute1").value.current[1].name).toEqual("z");
 
         entitySave = sandbox
             .stub(mainEntity.getDriver(), "save")
@@ -83,20 +83,20 @@ describe("save and delete entities attribute test", () => {
 
         await mainEntity.save();
 
-        assert.lengthOf(mainEntity.getAttribute("attribute1").value.initial, 2);
-        assert.equal(mainEntity.getAttribute("attribute1").value.initial[0].id, "Y");
-        assert.equal(mainEntity.getAttribute("attribute1").value.initial[1].id, "Z");
-        assert.lengthOf(mainEntity.getAttribute("attribute1").value.current, 2);
-        assert.equal(mainEntity.getAttribute("attribute1").value.current[0].id, "Y");
-        assert.equal(mainEntity.getAttribute("attribute1").value.current[1].id, "Z");
+        expect(mainEntity.getAttribute("attribute1").value.initial.length).toBe(2);
+        expect(mainEntity.getAttribute("attribute1").value.initial[0].id).toEqual("Y");
+        expect(mainEntity.getAttribute("attribute1").value.initial[1].id).toEqual("Z");
+        expect(mainEntity.getAttribute("attribute1").value.current.length).toBe(2);
+        expect(mainEntity.getAttribute("attribute1").value.current[0].id).toEqual("Y");
+        expect(mainEntity.getAttribute("attribute1").value.current[1].id).toEqual("Z");
 
         entitySave.restore();
 
         mainEntity.attribute1 = null;
-        assert.lengthOf(mainEntity.getAttribute("attribute1").value.initial, 2);
-        assert.equal(mainEntity.getAttribute("attribute1").value.initial[0].id, "Y");
-        assert.equal(mainEntity.getAttribute("attribute1").value.initial[1].id, "Z");
+        expect(mainEntity.getAttribute("attribute1").value.initial.length).toBe(2);
+        expect(mainEntity.getAttribute("attribute1").value.initial[0].id).toEqual("Y");
+        expect(mainEntity.getAttribute("attribute1").value.initial[1].id).toEqual("Z");
 
-        assert.isNull(mainEntity.getAttribute("attribute1").value.current);
+        expect(mainEntity.getAttribute("attribute1").value.current).toBeNull();
     });
 });

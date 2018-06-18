@@ -1,9 +1,8 @@
-import { assert } from "chai";
 import Model from "./../src/model";
 import ModelError from "./../src/modelError";
 
-describe("ModelError class test", function() {
-    it("should correctly set / get values", async () => {
+describe("ModelError class test", () => {
+    test("should correctly set / get values", async () => {
         const model = new Model(function() {
             this.attr("number")
                 .integer()
@@ -19,21 +18,21 @@ describe("ModelError class test", function() {
             error = e;
         }
 
-        assert.equal(error.code, "INVALID_ATTRIBUTES");
+        expect(error.code).toEqual("INVALID_ATTRIBUTES");
         error.code = "changed_type";
-        assert.equal(error.code, "changed_type");
+        expect(error.code).toEqual("changed_type");
 
         error.message = "changed_message";
-        assert.equal(error.message, "changed_message");
+        expect(error.message).toEqual("changed_message");
 
         error.data = "changed_data";
-        assert.equal(error.data, "changed_data");
+        expect(error.data).toEqual("changed_data");
     });
 
-    it("should correctly set default on instantiation", async () => {
+    test("should correctly set default on instantiation", async () => {
         const error = new ModelError();
-        assert.equal(error.code, "");
-        assert.equal(error.message, "");
-        assert.deepEqual(error.data, null);
+        expect(error.code).toEqual("");
+        expect(error.message).toEqual("");
+        expect(error.data).toEqual(null);
     });
 });

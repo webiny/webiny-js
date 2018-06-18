@@ -1,8 +1,7 @@
-import { assert } from "chai";
 import { ModelError, Model } from "../..";
 
-describe("populate error test", async function() {
-    it("should throw error - populate can only receive objects", async () => {
+describe("populate error test", async () => {
+    test("should throw error - populate can only receive objects", async () => {
         const user = new Model();
 
         let error = null;
@@ -12,8 +11,8 @@ describe("populate error test", async function() {
             error = e;
         }
 
-        assert.instanceOf(error, ModelError);
-        assert.equal(error.code, ModelError.POPULATE_FAILED_NOT_OBJECT);
+        expect(error).toBeInstanceOf(ModelError);
+        expect(error.code).toEqual(ModelError.POPULATE_FAILED_NOT_OBJECT);
 
         error = null;
         try {
@@ -22,7 +21,7 @@ describe("populate error test", async function() {
             error = e;
         }
 
-        assert.instanceOf(error, ModelError);
-        assert.equal(error.code, ModelError.POPULATE_FAILED_NOT_OBJECT);
+        expect(error).toBeInstanceOf(ModelError);
+        expect(error.code).toEqual(ModelError.POPULATE_FAILED_NOT_OBJECT);
     });
 });

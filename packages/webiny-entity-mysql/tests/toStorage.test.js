@@ -1,8 +1,7 @@
-import { assert } from "chai";
 import { ComplexEntity, SimpleEntity } from "./entities/complexEntity";
 
-describe("toStorage test", function() {
-    it("should correctly adapt the data for MySQL", async () => {
+describe("toStorage test", () => {
+    test("should correctly adapt the data for MySQL", async () => {
         const complexEntity = new ComplexEntity();
         complexEntity.populate({
             firstName: "test",
@@ -39,19 +38,16 @@ describe("toStorage test", function() {
 
         const userStorageValue = await complexEntity.toStorage();
 
-        assert.equal(userStorageValue.firstName, "test");
-        assert.equal(userStorageValue.lastName, "tester");
-        assert.equal(
-            userStorageValue.verification,
+        expect(userStorageValue.firstName).toEqual("test");
+        expect(userStorageValue.lastName).toEqual("tester");
+        expect(userStorageValue.verification).toEqual(
             `{"verified":true,"documentType":"driversLicense"}`
         );
-        assert.equal(
-            userStorageValue.tags,
+        expect(userStorageValue.tags).toEqual(
             `[{"slug":"no-name","label":"No Name"},{"slug":"adult-user","label":"Adult User"}]`
         );
-        assert.equal(userStorageValue.simpleEntity, "000000000000000000000001");
-        assert.equal(
-            userStorageValue.simpleEntities,
+        expect(userStorageValue.simpleEntity).toEqual("000000000000000000000001");
+        expect(userStorageValue.simpleEntities).toEqual(
             `["54759eb3c090d83494e2d804","54759eb3c090d83494e2d805","54759eb3c090d83494e2d806"]`
         );
     });

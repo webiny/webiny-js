@@ -1,15 +1,14 @@
-import { assert } from "chai";
 import { UserTable, Table } from "./tables";
 import sinon from "sinon";
 
 const sandbox = sinon.sandbox.create();
 
-describe("drop table test", function() {
+describe("drop table test", () => {
     afterEach(() => {
         sandbox.restore();
     });
 
-    it("should drop table correctly", async () => {
+    test("should drop table correctly", async () => {
         const userTable = new UserTable();
 
         const sqlQueries = {
@@ -25,14 +24,14 @@ describe("drop table test", function() {
         await userTable.drop();
         dropStub.restore();
 
-        assert.deepEqual(sqlQueries, {
+        expect(sqlQueries).toEqual({
             drop: "DROP TABLE IF EXISTS `Users`;"
         });
     });
 
-    it("should return only SQL when setting returnSQL option to true", async () => {
+    test("should return only SQL when setting returnSQL option to true", async () => {
         const userTable = new UserTable();
         const sql = await userTable.drop({ returnSQL: true });
-        assert.equal(sql, "DROP TABLE IF EXISTS `Users`;");
+        expect(sql).toEqual("DROP TABLE IF EXISTS `Users`;");
     });
 });

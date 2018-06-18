@@ -1,4 +1,3 @@
-import { assert } from "chai";
 import Model from "./../../src/model";
 import ModelError from "./../../src/modelError";
 
@@ -6,21 +5,21 @@ const model = new Model(function() {
     this.attr("attribute").date();
 });
 
-describe("attribute boolean test", function() {
-    it("should accept Date object as value", () => {
+describe("attribute boolean test", () => {
+    test("should accept Date object as value", () => {
         model.attribute = new Date();
-        assert.isDefined(model.attribute);
-        assert.instanceOf(model.attribute, Date);
+        expect(model.attribute).toBeDefined();
+        expect(model.attribute).toBeInstanceOf(Date);
 
         model.attribute = null;
-        assert.equal(model.attribute, null);
+        expect(model.attribute).toEqual(null);
 
         model.attribute = undefined;
-        assert.isUndefined(model.attribute);
+        expect(model.attribute).not.toBeDefined();
     });
 
     [{}, [], true, false].forEach(value => {
-        it(`shouldn't accept ${typeof value}`, async () => {
+        test(`shouldn't accept ${typeof value}`, async () => {
             let error = null;
             try {
                 model.attribute = value;
@@ -29,22 +28,22 @@ describe("attribute boolean test", function() {
                 error = e;
             }
 
-            assert.instanceOf(error, ModelError);
-            assert.equal(error.code, ModelError.INVALID_ATTRIBUTES);
+            expect(error).toBeInstanceOf(ModelError);
+            expect(error.code).toEqual(ModelError.INVALID_ATTRIBUTES);
         });
     });
 
-    it("should accept Date object and string/number should be converted into Date object", () => {
+    test("should accept Date object and string/number should be converted into Date object", () => {
         model.attribute = 1517520575917;
-        assert.instanceOf(model.attribute, Date);
-        assert.equal(+model.attribute, 1517520575917);
+        expect(model.attribute).toBeInstanceOf(Date);
+        expect(+model.attribute).toEqual(1517520575917);
 
         model.attribute = "2018-02-01T21:29:35.917Z";
-        assert.instanceOf(model.attribute, Date);
-        assert.equal(model.attribute.toISOString(), "2018-02-01T21:29:35.917Z");
+        expect(model.attribute).toBeInstanceOf(Date);
+        expect(model.attribute.toISOString()).toEqual("2018-02-01T21:29:35.917Z");
     });
 
-    it("onSet/onGet must be triggered correctly", async () => {
+    test("onSet/onGet must be triggered correctly", async () => {
         const someModel = new Model(function() {
             this.attr("createdOn").char();
         });
@@ -57,12 +56,12 @@ describe("attribute boolean test", function() {
         });
 
         someModel.createdOn = new Date();
-        assert.equal(String(someModel.createdOn), april1st2018String);
+        expect(String(someModel.createdOn)).toEqual(april1st2018String);
 
         someModel.getAttribute("createdOn").onGet(() => {
             return "random";
         });
 
-        assert.equal(someModel.createdOn, "random");
+        expect(someModel.createdOn).toEqual("random");
     });
 });

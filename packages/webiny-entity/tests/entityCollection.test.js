@@ -8,8 +8,8 @@ const getEntities = () => [
     new User().populate({ id: "C", age: 40 })
 ];
 
-describe("EntityCollection test", function() {
-    it("must correctly accept an array of entities", async () => {
+describe("EntityCollection test", () => {
+    test("must correctly accept an array of entities", async () => {
         const entities = getEntities();
         const collection = new EntityCollection(entities);
         expect(collection).to.have.lengthOf(3);
@@ -18,7 +18,7 @@ describe("EntityCollection test", function() {
         expect(collection[2].age).to.equal(40);
     });
 
-    it("must correctly push new entities and all other values without throwing errors", async () => {
+    test("must correctly push new entities and all other values without throwing errors", async () => {
         const entities = getEntities();
         const collection = new EntityCollection(entities);
 
@@ -32,34 +32,34 @@ describe("EntityCollection test", function() {
         expect(collection[3].age).to.equal(45);
     });
 
-    it("must NOT throw an error on construct, if one of the values is not an instance of Entity", async () => {
+    test("must NOT throw an error on construct, if one of the values is not an instance of Entity", async () => {
         new EntityCollection([new User(), new User(), { id: 123 }]);
     });
 
-    it("setParams/getParams methods must work correctly", async () => {
+    test("setParams/getParams methods must work correctly", async () => {
         const collection = new EntityCollection();
         collection.setParams({ a: 123 });
         expect(collection.getParams().a).to.equal(123);
     });
 
-    it("setTotalCount/getTotalCount methods must work correctly", async () => {
+    test("setTotalCount/getTotalCount methods must work correctly", async () => {
         const collection = new EntityCollection();
         collection.setTotalCount(444);
         expect(collection.getTotalCount()).to.equal(444);
     });
 
-    it("setMeta/getMeta methods must work correctly", async () => {
+    test("setMeta/getMeta methods must work correctly", async () => {
         const collection = new EntityCollection();
         collection.setMeta({ a: 123 });
         expect(collection.getMeta().a).to.equal(123);
     });
 
-    it("toJSON must not throw an error if fields are not specified", async () => {
+    test("toJSON must not throw an error if fields are not specified", async () => {
         const collection = new EntityCollection();
         await collection.toJSON();
     });
 
-    it("toJSON must return array consisting of JSON representations of each entity", async () => {
+    test("toJSON must return array consisting of JSON representations of each entity", async () => {
         const collection = new EntityCollection(getEntities());
 
         const json = await collection.toJSON("firstName,age");
@@ -71,7 +71,7 @@ describe("EntityCollection test", function() {
         ]);
     });
 
-    it("toJSON must always include ID, no matter if it was specified or not", async () => {
+    test("toJSON must always include ID, no matter if it was specified or not", async () => {
         const collection = new EntityCollection(getEntities());
 
         const json = await collection.toJSON("firstName,age");

@@ -1,10 +1,9 @@
-import { assert } from "chai";
 import { Delete } from "../../src/statements";
 import { operators } from "../../src";
 import { Entity } from "webiny-entity";
 
-describe("DELETE statement test", function() {
-    it("should generate a DELETE statement", async () => {
+describe("DELETE statement test", () => {
+    test("should generate a DELETE statement", async () => {
         const sql = new Delete(
             {
                 operation: "delete",
@@ -18,8 +17,7 @@ describe("DELETE statement test", function() {
             Entity
         ).generate();
 
-        assert.equal(
-            sql,
+        expect(sql).toEqual(
             "DELETE FROM `TestTable` WHERE (`name` = 'Test' AND `enabled` = true AND `deletedOn` IS NULL) ORDER BY name DESC, createdOn ASC LIMIT 10"
         );
     });

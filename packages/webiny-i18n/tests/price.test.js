@@ -1,20 +1,18 @@
 // @flow
-import { assert } from "chai";
-
-import i18n from "./..";
+import i18n from "./../src";
 
 describe("price test", () => {
-    it("should output price with no formatting set", () => {
-        assert.equal(i18n.price(12), "12.00");
+    test("should output price with no formatting set", () => {
+        expect(i18n.price(12)).toEqual("12.00");
     });
 
-    it("should output price with formatting set", () => {
+    test("should output price with formatting set", () => {
         i18n.defaultFormats.price.symbol = "$";
-        assert.equal(i18n.price(12), "$12.00");
+        expect(i18n.price(12)).toEqual("$12.00");
     });
 
-    it("should output price with inline custom formatting set", () => {
+    test("should output price with inline custom formatting set", () => {
         i18n.defaultFormats.price.symbol = "$";
-        assert.equal(i18n.price(12, { format: "{amount}{symbol}" }), "12.00$");
+        expect(i18n.price(12, { format: "{amount}{symbol}" })).toEqual("12.00$");
     });
 });

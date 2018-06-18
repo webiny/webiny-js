@@ -1,5 +1,3 @@
-import { assert } from "chai";
-
 import { User, Size } from "./models/userModels";
 import { Model } from "../src";
 
@@ -19,84 +17,84 @@ user.populate({
     }
 });
 
-describe("async get and set methods test", async function() {
-    it("should correctly return simple values", async () => {
-        assert.equal(await user.get("firstName"), "John");
-        assert.equal(await user.get("lastName"), "Doe");
-        assert.equal(await user.get("age"), 15);
+describe("async get and set methods test", async () => {
+    test("should correctly return simple values", async () => {
+        expect(await user.get("firstName")).toEqual("John");
+        expect(await user.get("lastName")).toEqual("Doe");
+        expect(await user.get("age")).toEqual(15);
     });
 
-    it("should correctly return nested values", async () => {
-        assert.equal(await user.get("company.name"), "Webiny LTD");
-        assert.equal(await user.get("company.city"), "London");
-        assert.instanceOf(await user.get("company.image.size"), Size);
-        assert.equal(await user.get("company.image.size.width"), 12.5);
-        assert.equal(await user.get("company.image.size.height"), 44);
-        assert.isFalse(await user.get("company.image.visible"));
+    test("should correctly return nested values", async () => {
+        expect(await user.get("company.name")).toEqual("Webiny LTD");
+        expect(await user.get("company.city")).toEqual("London");
+        expect(await user.get("company.image.size")).toBeInstanceOf(Size);
+        expect(await user.get("company.image.size.width")).toEqual(12.5);
+        expect(await user.get("company.image.size.height")).toEqual(44);
+        expect(await user.get("company.image.visible")).toBe(false);
     });
 
-    it("should return undefined", async () => {
-        assert.isUndefined(await user.get("name2"));
-        assert.isUndefined(await user.get("company.name2"));
-        assert.isUndefined(await user.get("company.image.size."));
-        assert.isUndefined(await user.get("company.image.size.__"));
-        assert.isUndefined(await user.get("company.image.size.width "));
+    test("should return undefined", async () => {
+        expect(await user.get("name2")).not.toBeDefined();
+        expect(await user.get("company.name2")).not.toBeDefined();
+        expect(await user.get("company.image.size.")).not.toBeDefined();
+        expect(await user.get("company.image.size.__")).not.toBeDefined();
+        expect(await user.get("company.image.size.width ")).not.toBeDefined();
     });
 
-    it("should return instance of model", async () => {
-        assert.isUndefined(await user.get(), User);
+    test("should return instance of model", async () => {
+        expect(await user.get()).not.toBeDefined();
     });
 
-    it("should correctly set simple values", async () => {
+    test("should correctly set simple values", async () => {
         await user.set("firstName", "Jane");
         await user.set("lastName", "Smith");
         await user.set("age", 30);
 
-        assert.equal(await user.get("firstName"), "Jane");
-        assert.equal(await user.get("lastName"), "Smith");
-        assert.equal(await user.get("age"), 30);
+        expect(await user.get("firstName")).toEqual("Jane");
+        expect(await user.get("lastName")).toEqual("Smith");
+        expect(await user.get("age")).toEqual(30);
     });
 
-    it("should not set anything if key is invalid", async () => {
+    test("should not set anything if key is invalid", async () => {
         const newUser = new User();
         await newUser.set("firstName12", "Jane");
         await newUser.set("company", {});
         await newUser.set("company.name123", "Facebook");
         await newUser.set("compa.name123", "Facebook");
 
-        assert.isNull(newUser.firstName);
-        assert.isUndefined(newUser.firstName12);
-        assert.isNull(newUser.company.name);
-        assert.isUndefined(newUser.company.name123);
+        expect(newUser.firstName).toBeNull();
+        expect(newUser.firstName12).not.toBeDefined();
+        expect(newUser.company.name).toBeNull();
+        expect(newUser.company.name123).not.toBeDefined();
     });
 
-    it("should correctly return nested values", async () => {
+    test("should correctly return nested values", async () => {
         await user.set("company.name", "Facebook");
         await user.set("company.city", "San Francisco");
-        assert.equal(await user.get("company.name"), "Facebook");
-        assert.equal(await user.get("company.city"), "San Francisco");
+        expect(await user.get("company.name")).toEqual("Facebook");
+        expect(await user.get("company.city")).toEqual("San Francisco");
 
         await user.set("company.image.size", { width: 50, height: 100 });
-        assert.instanceOf(await user.get("company.image.size"), Size);
-        assert.equal(await user.get("company.image.size.width"), 50);
-        assert.equal(await user.get("company.image.size.height"), 100);
+        expect(await user.get("company.image.size")).toBeInstanceOf(Size);
+        expect(await user.get("company.image.size.width")).toEqual(50);
+        expect(await user.get("company.image.size.height")).toEqual(100);
 
         await user.set("company.image.size.width", 100);
         await user.set("company.image.size.height", 200);
 
-        assert.instanceOf(await user.get("company.image.size"), Size);
-        assert.equal(await user.get("company.image.size.width"), 100);
-        assert.equal(await user.get("company.image.size.height"), 200);
+        expect(await user.get("company.image.size")).toBeInstanceOf(Size);
+        expect(await user.get("company.image.size.width")).toEqual(100);
+        expect(await user.get("company.image.size.height")).toEqual(200);
 
         await user.set("company.image.visible", true);
-        assert.isTrue(await user.get("company.image.visible"));
+        expect(await user.get("company.image.visible")).toBe(true);
     });
 
-    it("should not set anything since path is invalid", async () => {
+    test("should not set anything since path is invalid", async () => {
         await user.set("name2", 111);
     });
 
-    it("should be able to directly set/get values in arrays", async () => {
+    test("should be able to directly set/get values in arrays", async () => {
         class Pet extends Model {
             constructor() {
                 super();
@@ -121,20 +119,20 @@ describe("async get and set methods test", async function() {
             { name: "Bucky", enabled: false }
         ];
 
-        assert.equal(await user.get("pets.0.name"), "Enlai");
-        assert.equal(await user.get("pets.1.name"), "Lina");
-        assert.equal(await user.get("pets.2.name"), "Bucky");
+        expect(await user.get("pets.0.name")).toEqual("Enlai");
+        expect(await user.get("pets.1.name")).toEqual("Lina");
+        expect(await user.get("pets.2.name")).toEqual("Bucky");
 
         await user.set("pets.0.name", "Enlai_UPDATED");
         await user.set("pets.1.name", "Lina_UPDATED");
         await user.set("pets.2.name", "Bucky_UPDATED");
 
-        assert.equal(await user.get("pets.0.name"), "Enlai_UPDATED");
-        assert.equal(await user.get("pets.1.name"), "Lina_UPDATED");
-        assert.equal(await user.get("pets.2.name"), "Bucky_UPDATED");
+        expect(await user.get("pets.0.name")).toEqual("Enlai_UPDATED");
+        expect(await user.get("pets.1.name")).toEqual("Lina_UPDATED");
+        expect(await user.get("pets.2.name")).toEqual("Bucky_UPDATED");
     });
 
-    it("should return undefined if path does not exist", async () => {
+    test("should return undefined if path does not exist", async () => {
         const user = new User();
         user.populate({
             company: {
@@ -148,25 +146,25 @@ describe("async get and set methods test", async function() {
             }
         });
 
-        assert.isUndefined(await user.get("company.image.file.size.width"));
+        expect(await user.get("company.image.file.size.width")).not.toBeDefined();
     });
 
-    it(`should accept additional ":" arguments on root keys`, async () => {
+    test(`should accept additional ":" arguments on root keys`, async () => {
         const user = new User().populate({ id: "A", age: 30 });
 
-        assert.equal(await user.get("age"), 30);
-        assert.equal(await user.get("age:add:100"), 130);
-        assert.equal(await user.get("age:sub:20"), 10);
+        expect(await user.get("age")).toEqual(30);
+        expect(await user.get("age:add:100")).toEqual(130);
+        expect(await user.get("age:sub:20")).toEqual(10);
     });
 
-    it(`should accept additional ":" arguments on nested keys`, async () => {
+    test(`should accept additional ":" arguments on nested keys`, async () => {
         const user = new User().populate({
             company: {
                 city: "New York"
             }
         });
 
-        assert.equal(await user.get("company.city"), "New York");
-        assert.equal(await user.get("company.city:true"), "new york");
+        expect(await user.get("company.city")).toEqual("New York");
+        expect(await user.get("company.city:true")).toEqual("new york");
     });
 });

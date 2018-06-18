@@ -1,15 +1,14 @@
-import { assert } from "chai";
 import { User } from "./../entities/modelAttributeEntities";
 import sinon from "sinon";
 import { QueryResult } from "../..";
 
 const sandbox = sinon.sandbox.create();
 
-describe("custom attribute test", function() {
+describe("custom attribute test", () => {
     afterEach(() => sandbox.restore());
     beforeEach(() => User.getEntityPool().flush());
 
-    it("should load entities from database", async () => {
+    test("should load entities from database", async () => {
         let entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({
                 id: "xyz",
@@ -24,25 +23,25 @@ describe("custom attribute test", function() {
         const issue = await User.findById("xyz");
         entityFind.restore();
 
-        assert.equal(issue.id, "xyz");
+        expect(issue.id).toEqual("xyz");
 
         entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({ id: "abc", file: "verification.pdf", size: 10, type: "jpg" });
         });
 
-        assert.equal(await issue.get("verification.updatedOn"), null);
-        assert.equal(await issue.get("verification.status"), "pending");
+        expect(await issue.get("verification.updatedOn")).toEqual(null);
+        expect(await issue.get("verification.status")).toEqual("pending");
 
         const document = await issue.get("verification.document");
-        assert.equal(document.id, "abc");
-        assert.equal(document.file, "verification.pdf");
-        assert.equal(document.size, 10);
-        assert.equal(document.type, "jpg");
+        expect(document.id).toEqual("abc");
+        expect(document.file).toEqual("verification.pdf");
+        expect(document.size).toEqual(10);
+        expect(document.type).toEqual("jpg");
 
         entityFind.restore();
     });
 
-    it("should return correct storage value", async () => {
+    test("should return correct storage value", async () => {
         let entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({
                 id: "xyz",
@@ -58,7 +57,7 @@ describe("custom attribute test", function() {
         entityFind.restore();
 
         let storage = await user.toStorage();
-        assert.deepEqual(storage, {});
+        expect(storage).toEqual({});
 
         entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({ id: "abc", file: "verification.pdf", size: 10, type: "jpg" });
@@ -68,7 +67,7 @@ describe("custom attribute test", function() {
         entityFind.restore();
 
         storage = await user.toStorage();
-        assert.deepEqual(storage, {});
+        expect(storage).toEqual({});
 
         user.verification = {
             status: "pending",
@@ -76,7 +75,7 @@ describe("custom attribute test", function() {
             document: "abc"
         };
         storage = await user.toStorage();
-        assert.deepEqual(storage, {
+        expect(storage).toEqual({
             verification: {
                 document: "abc",
                 status: "pending",

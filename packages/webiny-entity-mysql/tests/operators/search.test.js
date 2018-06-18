@@ -1,16 +1,15 @@
-import { assert } from "chai";
 import { operators } from "../../src";
 import Statement from "../../src/statements/statement";
 import { Entity } from "webiny-entity";
 
-describe("$search operator test", function() {
+describe("$search operator test", () => {
     let stmt;
 
-    before(() => {
+    beforeAll(() => {
         stmt = new Statement({ operators }, Entity);
     });
 
-    it("should generate LIKE statements, connected with OR operator", () => {
+    test("should generate LIKE statements, connected with OR operator", () => {
         const sql = ` WHERE ((\`firstName\` LIKE '%adr%' OR \`lastName\` LIKE '%adr%' OR \`email\` LIKE '%adr%'))`;
         let output = stmt.getWhere({
             where: {
@@ -20,7 +19,7 @@ describe("$search operator test", function() {
                 }
             }
         });
-        assert.equal(output, sql);
+        expect(output).toEqual(sql);
 
         output = stmt.getWhere({
             where: {
@@ -31,10 +30,10 @@ describe("$search operator test", function() {
                 }
             }
         });
-        assert.equal(output, sql);
+        expect(output).toEqual(sql);
     });
 
-    it("should generate LIKE statements, connected with AND operator", () => {
+    test("should generate LIKE statements, connected with AND operator", () => {
         let output = stmt.getWhere({
             where: {
                 $search: {
@@ -44,8 +43,7 @@ describe("$search operator test", function() {
                 }
             }
         });
-        assert.equal(
-            output,
+        expect(output).toEqual(
             ` WHERE ((\`firstName\` LIKE '%adr%' AND \`lastName\` LIKE '%adr%' AND \`email\` LIKE '%adr%'))`
         );
     });

@@ -1,11 +1,10 @@
-import { assert } from "chai";
 import UserTable from "./tables/user.table";
 
-describe("toObject test", function() {
-    it("should return object representation of table", async () => {
+describe("toObject test", () => {
+    test("should return object representation of table", async () => {
         const userTable = new UserTable();
 
-        assert.deepEqual(userTable.toObject(), {
+        expect(userTable.toObject()).toEqual({
             autoIncrement: null,
             name: "Users",
             comment: null,

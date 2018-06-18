@@ -1,9 +1,8 @@
-import { assert } from "chai";
 import { Entity, QueryResult } from "../../../../src/index";
 import sinon from "sinon";
 const sandbox = sinon.sandbox.create();
 
-describe("storage values test", function() {
+describe("storage values test", () => {
     afterEach(() => sandbox.restore());
     beforeEach(() => Entity.getEntityPool().flush());
 
@@ -47,7 +46,7 @@ describe("storage values test", function() {
 
     const entity = new MainEntity();
 
-    it("should return correct storage values", async () => {
+    test("should return correct storage values", async () => {
         const mainEntity = new MainEntity();
         mainEntity.attribute1 = [
             { id: "A", name: "Enlai", type: "dog" },
@@ -87,35 +86,35 @@ describe("storage values test", function() {
             });
 
         const attribute1 = await mainEntity.attribute1;
-        assert.lengthOf(attribute1, 3);
-        assert.instanceOf(attribute1[0], Entity1);
-        assert.instanceOf(attribute1[1], Entity1);
-        assert.instanceOf(attribute1[2], Entity1);
+        expect(attribute1.length).toBe(3);
+        expect(attribute1[0]).toBeInstanceOf(Entity1);
+        expect(attribute1[1]).toBeInstanceOf(Entity1);
+        expect(attribute1[2]).toBeInstanceOf(Entity1);
 
         const attribute2 = await mainEntity.attribute2;
-        assert.lengthOf(await attribute2, 2);
-        assert.instanceOf(attribute2[0], Entity2);
-        assert.instanceOf(attribute2[1], Entity2);
+        expect(await attribute2.length).toBe(2);
+        expect(attribute2[0]).toBeInstanceOf(Entity2);
+        expect(attribute2[1]).toBeInstanceOf(Entity2);
 
         const attribute1Value = await mainEntity.getAttribute("attribute1").getStorageValue();
-        assert.equal(attribute1Value[0], "A");
-        assert.equal(attribute1Value[1], "B");
-        assert.equal(attribute1Value[2], "C");
+        expect(attribute1Value[0]).toEqual("A");
+        expect(attribute1Value[1]).toEqual("B");
+        expect(attribute1Value[2]).toEqual("C");
 
         const attribute2Value = await mainEntity.getAttribute("attribute2").getStorageValue();
-        assert.equal(attribute2Value[0], "X");
-        assert.equal(attribute2Value[1], "Y");
+        expect(attribute2Value[0]).toEqual("X");
+        expect(attribute2Value[1]).toEqual("Y");
 
         entity.getDriver().findOne.restore();
 
         mainEntity.attribute1 = null;
         await mainEntity.attribute1;
         const attribute1NullValue = await mainEntity.getAttribute("attribute1").getStorageValue();
-        assert.isEmpty(attribute1NullValue);
-        assert.isNull(await mainEntity.attribute1);
+        expect(attribute1NullValue.length).toBe(0);
+        expect(await mainEntity.attribute1).toBeNull();
     });
 
-    it("should correctly set storage value", async () => {
+    test("should correctly set storage value", async () => {
         const mainEntity = new MainEntity();
 
         mainEntity.populateFromStorage({
@@ -123,9 +122,9 @@ describe("storage values test", function() {
             attribute2: ["C"]
         });
 
-        assert.equal(mainEntity.getAttribute("attribute1").value.getCurrent()[0], "A");
-        assert.equal(mainEntity.getAttribute("attribute1").value.getCurrent()[1], "B");
-        assert.equal(mainEntity.getAttribute("attribute2").value.getCurrent()[0], "C");
+        expect(mainEntity.getAttribute("attribute1").value.getCurrent()[0]).toEqual("A");
+        expect(mainEntity.getAttribute("attribute1").value.getCurrent()[1]).toEqual("B");
+        expect(mainEntity.getAttribute("attribute2").value.getCurrent()[0]).toEqual("C");
 
         sandbox
             .stub(entity.getDriver(), "findOne")
@@ -149,10 +148,10 @@ describe("storage values test", function() {
 
         entity.getDriver().findOne.restore();
 
-        assert.lengthOf(attribute1, 2);
-        assert.equal(attribute1[0].id, "A");
-        assert.equal(attribute1[1].id, "B");
+        expect(attribute1.length).toBe(2);
+        expect(attribute1[0].id).toEqual("A");
+        expect(attribute1[1].id).toEqual("B");
 
-        assert.equal(attribute2[0].id, "C");
+        expect(attribute2[0].id).toEqual("C");
     });
 });

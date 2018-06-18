@@ -1,14 +1,12 @@
-import { assert } from "chai";
-
 import sinon from "sinon";
 import { ComplexEntity, SimpleEntity } from "./entities/complexEntity";
 const sandbox = sinon.sandbox.create();
 
-describe("populateFromStorage test", function() {
+describe("populateFromStorage test", () => {
     afterEach(() => sandbox.restore());
     beforeEach(() => ComplexEntity.getEntityPool().flush());
 
-    it("should populate entity correctly with data received from MySQL", async () => {
+    test("should populate entity correctly with data received from MySQL", async () => {
         sandbox.stub(ComplexEntity.getDriver().getConnection(), "query").callsFake(() => {
             return [
                 {
@@ -23,29 +21,28 @@ describe("populateFromStorage test", function() {
         });
 
         let user = new ComplexEntity();
-        assert.isFalse(user.getAttribute("simpleEntity").value.isLoading());
-        assert.isFalse(user.getAttribute("simpleEntity").value.isLoaded());
+        expect(user.getAttribute("simpleEntity").value.isLoading()).toBe(false);
+        expect(user.getAttribute("simpleEntity").value.isLoaded()).toBe(false);
 
         user = await ComplexEntity.findById(1);
-        assert.isFalse(user.getAttribute("simpleEntity").value.isLoading());
-        assert.isFalse(user.getAttribute("simpleEntity").value.isLoaded());
+        expect(user.getAttribute("simpleEntity").value.isLoading()).toBe(false);
+        expect(user.getAttribute("simpleEntity").value.isLoaded()).toBe(false);
 
         ComplexEntity.getDriver()
             .getConnection()
             .query.restore();
 
-        assert.equal(user.firstName, "test");
-        assert.equal(user.lastName, "tester");
-        assert.isTrue(user.verification.verified);
-        assert.equal(user.verification.documentType, "driversLicense");
-        assert.equal(user.tags[0].slug, "no-name");
-        assert.equal(user.tags[0].label, "No Name");
-        assert.equal(user.tags[1].slug, "adult-user");
-        assert.equal(user.tags[1].label, "Adult User");
-        assert.lengthOf(user.tags, 2);
+        expect(user.firstName).toEqual("test");
+        expect(user.lastName).toEqual("tester");
+        expect(user.verification.verified).toBe(true);
+        expect(user.verification.documentType).toEqual("driversLicense");
+        expect(user.tags[0].slug).toEqual("no-name");
+        expect(user.tags[0].label).toEqual("No Name");
+        expect(user.tags[1].slug).toEqual("adult-user");
+        expect(user.tags[1].label).toEqual("Adult User");
+        expect(user.tags.length).toBe(2);
 
-        assert.equal(
-            user.getAttribute("simpleEntity").value.getCurrent(),
+        expect(user.getAttribute("simpleEntity").value.getCurrent()).toEqual(
             "01234567890123456789adee"
         );
 
@@ -54,17 +51,16 @@ describe("populateFromStorage test", function() {
         });
 
         const simpleEntity = await user.simpleEntity;
-        user
-            .getDriver()
+        user.getDriver()
             .getConnection()
             .query.restore();
 
-        assert.equal(simpleEntity.id, "01234567890123456789adee");
-        assert.equal(simpleEntity.name, "Test-1");
+        expect(simpleEntity.id).toEqual("01234567890123456789adee");
+        expect(simpleEntity.name).toEqual("Test-1");
 
-        assert.equal(user.getAttribute("simpleEntities").value.getCurrent()[0], 22);
-        assert.equal(user.getAttribute("simpleEntities").value.getCurrent()[1], 33);
-        assert.equal(user.getAttribute("simpleEntities").value.getCurrent()[2], 44);
+        expect(user.getAttribute("simpleEntities").value.getCurrent()[0]).toEqual(22);
+        expect(user.getAttribute("simpleEntities").value.getCurrent()[1]).toEqual(33);
+        expect(user.getAttribute("simpleEntities").value.getCurrent()[2]).toEqual(44);
 
         sandbox
             .stub(user.getDriver().getConnection(), "query")
@@ -81,23 +77,22 @@ describe("populateFromStorage test", function() {
                 return [{ id: 4, name: "Test-4" }];
             });
 
-        assert.lengthOf(await user.simpleEntities, 3);
+        expect(await user.simpleEntities).toHaveLength(3);
 
         const simpleEntities = await user.simpleEntities;
-        assert.instanceOf(simpleEntities[0], SimpleEntity);
-        assert.equal(simpleEntities[0].id, 2);
-        assert.equal(simpleEntities[0].name, "Test-2");
+        expect(simpleEntities[0]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[0].id).toEqual(2);
+        expect(simpleEntities[0].name).toEqual("Test-2");
 
-        assert.instanceOf(simpleEntities[1], SimpleEntity);
-        assert.equal(simpleEntities[1].id, 3);
-        assert.equal(simpleEntities[1].name, "Test-3");
+        expect(simpleEntities[1]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[1].id).toEqual(3);
+        expect(simpleEntities[1].name).toEqual("Test-3");
 
-        assert.instanceOf(simpleEntities[2], SimpleEntity);
-        assert.equal(simpleEntities[2].id, 4);
-        assert.equal(simpleEntities[2].name, "Test-4");
+        expect(simpleEntities[2]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[2].id).toEqual(4);
+        expect(simpleEntities[2].name).toEqual("Test-4");
 
-        user
-            .getDriver()
+        user.getDriver()
             .getConnection()
             .query.restore();
     });

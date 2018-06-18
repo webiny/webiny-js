@@ -1,27 +1,26 @@
-import { assert } from "chai";
 import { Driver, ColumnsContainer, IndexesContainer } from "./..";
 
-describe("default Driver test", function() {
-    it("getColumnsClass should return default class", async () => {
+describe("default Driver test", () => {
+    test("getColumnsClass should return default class", async () => {
         const driver = new Driver();
 
         const columnsClass = new (driver.getColumnsClass())();
-        assert.instanceOf(columnsClass, ColumnsContainer);
+        expect(columnsClass).toBeInstanceOf(ColumnsContainer);
     });
 
-    it("getIndexesClass should return default class", async () => {
+    test("getIndexesClass should return default class", async () => {
         const driver = new Driver();
 
         const indexesClass = new (driver.getIndexesClass())();
-        assert.instanceOf(indexesClass, IndexesContainer);
+        expect(indexesClass).toBeInstanceOf(IndexesContainer);
     });
 
-    it("default database methods should return empty results", async () => {
+    test("default database methods should return empty results", async () => {
         const driver = new Driver();
-        assert.equal(await driver.create(), "");
-        assert.equal(await driver.alter(), "");
-        assert.equal(await driver.drop(), "");
-        assert.equal(await driver.truncate(), "");
-        assert.equal(await driver.sync(), "");
+        expect(await driver.create()).toEqual("");
+        expect(await driver.alter()).toEqual("");
+        expect(await driver.drop()).toEqual("");
+        expect(await driver.truncate()).toEqual("");
+        expect(await driver.sync()).toEqual("");
     });
 });

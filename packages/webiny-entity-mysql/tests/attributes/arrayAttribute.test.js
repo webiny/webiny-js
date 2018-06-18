@@ -1,4 +1,3 @@
-import { assert } from "chai";
 import Entity from "./../entities/entity";
 class ArrayEntity extends Entity {
     constructor() {
@@ -10,14 +9,14 @@ class ArrayEntity extends Entity {
 
 ArrayEntity.classId = "ArrayEntity";
 
-describe("array attribute test", function() {
-    it("must return array, as JSON string", async () => {
+describe("array attribute test", () => {
+    test("must return array, as JSON string", async () => {
         const entity = new ArrayEntity();
         entity.name = "Test";
         entity.tags = ["a", "b", "c"];
 
         let data = await entity.toStorage();
-        assert.deepEqual(data, {
+        expect(data).toEqual({
             name: "Test",
             tags: '["a","b","c"]'
         });
@@ -25,23 +24,23 @@ describe("array attribute test", function() {
         entity.tags = null;
 
         data = await entity.toStorage();
-        assert.deepEqual(data, {
+        expect(data).toEqual({
             name: "Test",
             tags: null
         });
     });
 
-    it("must parse JSON string from storage, and must not set attribute as dirty", async () => {
+    test("must parse JSON string from storage, and must not set attribute as dirty", async () => {
         const entity = new ArrayEntity();
         entity.getAttribute("tags").setStorageValue('["a","b","c"]');
 
-        assert.deepEqual(entity.tags, ["a", "b", "c"]);
-        assert.isFalse(entity.getAttribute("tags").value.isDirty());
-        assert.isTrue(entity.getAttribute("tags").value.isSet());
+        expect(entity.tags).toEqual(["a", "b", "c"]);
+        expect(entity.getAttribute("tags").value.isDirty()).toBe(false);
+        expect(entity.getAttribute("tags").value.isSet()).toBe(true);
 
         entity.getAttribute("tags").setStorageValue(null);
-        assert.deepEqual(entity.tags, null);
-        assert.isFalse(entity.getAttribute("tags").value.isDirty());
-        assert.isTrue(entity.getAttribute("tags").value.isSet());
+        expect(entity.tags).toEqual(null);
+        expect(entity.getAttribute("tags").value.isDirty()).toBe(false);
+        expect(entity.getAttribute("tags").value.isSet()).toBe(true);
     });
 });

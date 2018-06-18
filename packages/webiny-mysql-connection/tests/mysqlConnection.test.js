@@ -6,10 +6,10 @@ import { MySQLConnection } from "..";
 
 const sandbox = sinon.sandbox.create();
 
-describe("mysql connection test", async function() {
+describe("mysql connection test", async () => {
     afterEach(() => sandbox.restore());
 
-    it("should correctly differentiate between instances of pool, connection", async () => {
+    test("should correctly differentiate between instances of pool, connection", async () => {
         const instance1 = new MySQLConnection(mysql.createPool({}));
         expect(instance1.isConnectionPool()).to.equal(true);
         expect(instance1.isConnection()).to.equal(false);
@@ -19,7 +19,7 @@ describe("mysql connection test", async function() {
         expect(instance2.isConnection()).to.equal(true);
     });
 
-    it("should not accept other than Connection / Pool instances as connection argument", async () => {
+    test("should not accept other than Connection / Pool instances as connection argument", async () => {
         try {
             new MySQLConnection({});
         } catch (e) {
@@ -28,7 +28,7 @@ describe("mysql connection test", async function() {
         throw Error(`Error should've been thrown.`);
     });
 
-    it("should correctly query using pool of connections", async () => {
+    test("should correctly query using pool of connections", async () => {
         const instance = new MySQLConnection(mysql.createPool({}));
 
         const fakeGetConnection = {
@@ -59,7 +59,7 @@ describe("mysql connection test", async function() {
         releaseSpy.restore();
     });
 
-    it("should correctly execute more than one SQL query using a single connection", async () => {
+    test("should correctly execute more than one SQL query using a single connection", async () => {
         const instance = new MySQLConnection(mysql.createConnection({}));
 
         const queryStub = sandbox
@@ -94,7 +94,7 @@ describe("mysql connection test", async function() {
         endConnectionStub.restore();
     });
 
-    it("should return an error when using a single connection", async () => {
+    test("should return an error when using a single connection", async () => {
         const instance = new MySQLConnection(mysql.createConnection({}));
 
         const queryStub = sandbox
@@ -123,7 +123,7 @@ describe("mysql connection test", async function() {
         throw Error(`Error should've been thrown.`);
     });
 
-    it("should correctly execute more than one SQL query using pool of connections", async () => {
+    test("should correctly execute more than one SQL query using pool of connections", async () => {
         const instance = new MySQLConnection(mysql.createPool({}));
 
         const fakeGetConnection = {
@@ -166,7 +166,7 @@ describe("mysql connection test", async function() {
         queryWithConnectionStub.restore();
     });
 
-    it("should return an error when using a pool of connections", async () => {
+    test("should return an error when using a pool of connections", async () => {
         const instance = new MySQLConnection(mysql.createPool({}));
 
         const fakeGetConnection = {
@@ -195,7 +195,7 @@ describe("mysql connection test", async function() {
         throw Error(`Error should've been thrown.`);
     });
 
-    it("should throw an error on connection error", async () => {
+    test("should throw an error on connection error", async () => {
         const instance = new MySQLConnection(mysql.createPool({}));
         const getConnectionStub = sandbox
             .stub(instance.getInstance(), "getConnection")
@@ -213,7 +213,7 @@ describe("mysql connection test", async function() {
         throw Error(`Error should've been thrown.`);
     });
 
-    it("should throw an error on query error", async () => {
+    test("should throw an error on query error", async () => {
         const instance = new MySQLConnection(mysql.createPool({}));
         let queryExecuted = false;
         const getConnectionStub = sandbox
@@ -242,7 +242,7 @@ describe("mysql connection test", async function() {
         throw Error(`Error should've been thrown.`);
     });
 
-    it("should correctly query using single connection", async () => {
+    test("should correctly query using single connection", async () => {
         const instance = new MySQLConnection(mysql.createConnection({}));
 
         const endStub = sandbox
@@ -264,7 +264,7 @@ describe("mysql connection test", async function() {
         expect(endStub.callCount).to.equal(0);
     });
 
-    it("should correctly more SQL queries using single connection", async () => {
+    test("should correctly more SQL queries using single connection", async () => {
         const instance = new MySQLConnection(mysql.createConnection({}));
 
         const endStub = sandbox
@@ -298,7 +298,7 @@ describe("mysql connection test", async function() {
         expect(endStub.callCount).to.equal(0);
     });
 
-    it("should throw an error on query error", async () => {
+    test("should throw an error on query error", async () => {
         const instance = new MySQLConnection(mysql.createConnection({}));
 
         const endStub = sandbox

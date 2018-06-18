@@ -1,15 +1,13 @@
-import { assert } from "chai";
-
 import sinon from "sinon";
 import SimpleEntity from "./entities/simpleEntity";
 
 const sandbox = sinon.sandbox.create();
 
-describe("search test", function() {
+describe("search test", () => {
     afterEach(() => sandbox.restore());
     beforeEach(() => SimpleEntity.getEntityPool().flush());
 
-    it("should search entities with OR operator", async () => {
+    test("should search entities with OR operator", async () => {
         const queryStub = sandbox
             .stub(SimpleEntity.getDriver().getConnection(), "query")
             .callsFake(() => {
@@ -23,7 +21,7 @@ describe("search test", function() {
             }
         });
 
-        assert.deepEqual(queryStub.getCall(0).args[0], [
+        expect(queryStub.getCall(0).args[0]).toEqual([
             "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE ((`name` LIKE '%this is%' OR `slug` LIKE '%this is%')) LIMIT 10",
             "SELECT FOUND_ROWS() as count"
         ]);
@@ -31,7 +29,7 @@ describe("search test", function() {
         queryStub.restore();
     });
 
-    it("should search entities with AND operator", async () => {
+    test("should search entities with AND operator", async () => {
         const queryStub = sandbox
             .stub(SimpleEntity.getDriver().getConnection(), "query")
             .callsFake(() => {
@@ -46,7 +44,7 @@ describe("search test", function() {
             }
         });
 
-        assert.deepEqual(queryStub.getCall(0).args[0], [
+        expect(queryStub.getCall(0).args[0]).toEqual([
             "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE ((`name` LIKE '%this is%' AND `slug` LIKE '%this is%')) LIMIT 10",
             "SELECT FOUND_ROWS() as count"
         ]);
@@ -54,7 +52,7 @@ describe("search test", function() {
         queryStub.restore();
     });
 
-    it("should search entities over only one column", async () => {
+    test("should search entities over only one column", async () => {
         const queryStub = sandbox
             .stub(SimpleEntity.getDriver().getConnection(), "query")
             .callsFake(() => {
@@ -68,7 +66,7 @@ describe("search test", function() {
             }
         });
 
-        assert.deepEqual(queryStub.getCall(0).args[0], [
+        expect(queryStub.getCall(0).args[0]).toEqual([
             "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE ((`name` LIKE '%this is%')) LIMIT 10",
             "SELECT FOUND_ROWS() as count"
         ]);
@@ -76,7 +74,7 @@ describe("search test", function() {
         queryStub.restore();
     });
 
-    it("should use search and combine it with other sent query parameters", async () => {
+    test("should use search and combine it with other sent query parameters", async () => {
         const queryStub = sandbox
             .stub(SimpleEntity.getDriver().getConnection(), "query")
             .callsFake(() => {
@@ -95,7 +93,7 @@ describe("search test", function() {
             }
         });
 
-        assert.deepEqual(queryStub.getCall(0).args[0], [
+        expect(queryStub.getCall(0).args[0]).toEqual([
             "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE (((`name` LIKE '%this is%' OR `slug` LIKE '%this is%') AND `age` > 30 AND `country` = 'HR')) LIMIT 10",
             "SELECT FOUND_ROWS() as count"
         ]);
@@ -103,7 +101,7 @@ describe("search test", function() {
         queryStub.restore();
     });
 
-    it("must apply search, and also take into consideration other arguments like page, perPage, and order", async () => {
+    test("must apply search, and also take into consideration other arguments like page, perPage, and order", async () => {
         const queryStub = sandbox
             .stub(SimpleEntity.getDriver().getConnection(), "query")
             .callsFake(() => {
@@ -122,7 +120,7 @@ describe("search test", function() {
             }
         });
 
-        assert.deepEqual(queryStub.getCall(0).args[0], [
+        expect(queryStub.getCall(0).args[0]).toEqual([
             "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE (((`name` LIKE '%this is%' OR `slug` LIKE '%this is%') AND `age` <= 30)) ORDER BY createdOn DESC, id ASC LIMIT 7 OFFSET 14",
             "SELECT FOUND_ROWS() as count"
         ]);

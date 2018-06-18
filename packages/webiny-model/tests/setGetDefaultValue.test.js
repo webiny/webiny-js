@@ -1,9 +1,8 @@
-import { assert } from "chai";
 import Model from "./../src/model";
 import sinon from "sinon";
 
-describe("setDefaultValue test", function() {
-    it("should set/get default values", async () => {
+describe("setDefaultValue test", () => {
+    test("should set/get default values", async () => {
         const model = new Model(function() {
             this.attr("email")
                 .char()
@@ -27,14 +26,14 @@ describe("setDefaultValue test", function() {
 
         await model.populate({});
 
-        assert.equal(model.email, "test@gmail.com");
-        assert.equal(model.something, false);
-        assert.equal(model.something2, 555);
-        assert.equal(model.something3, 666);
-        assert.instanceOf(model.createdOn, Date);
+        expect(model.email).toEqual("test@gmail.com");
+        expect(model.something).toEqual(false);
+        expect(model.something2).toEqual(555);
+        expect(model.something3).toEqual(666);
+        expect(model.createdOn).toBeInstanceOf(Date);
     });
 
-    it("should call setValue for setting default value and mark attribute as dirty", async () => {
+    test("should call setValue for setting default value and mark attribute as dirty", async () => {
         const model = new Model(function() {
             this.attr("email")
                 .char()
@@ -42,7 +41,7 @@ describe("setDefaultValue test", function() {
                 .setDefaultValue("test@gmail.com");
         });
 
-        assert.equal(model.email, "test@gmail.com");
-        assert.isTrue(model.getAttribute("email").value.isDirty());
+        expect(model.email).toEqual("test@gmail.com");
+        expect(model.getAttribute("email").value.isDirty()).toBe(true);
     });
 });

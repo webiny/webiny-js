@@ -1,24 +1,23 @@
-import { assert } from "chai";
 import Model from "./../../src/model";
 
-describe("attribute models test", function() {
+describe("attribute models test", () => {
     const model = new Model(function() {
         this.attr("attribute1").array();
         this.attr("attribute2").array();
     });
 
-    it("should fail - attributes should accept primitive values", async () => {
+    test("should fail - attributes should accept primitive values", async () => {
         model.attribute1 = {};
         const a = model.attribute1;
-        assert.isObject(model.attribute1);
+        expect(typeof model.attribute1).toBe("object");
 
         model.attribute2 = new Date();
-        assert.instanceOf(model.attribute2, Date);
+        expect(model.attribute2).toBeInstanceOf(Date);
 
         try {
             await model.validate();
         } catch (e) {
-            assert.deepEqual(e.data, {
+            expect(e.data).toEqual({
                 invalidAttributes: {
                     attribute1: {
                         code: "INVALID_ATTRIBUTE",
@@ -38,20 +37,20 @@ describe("attribute models test", function() {
         throw Error("Error should've been thrown.");
     });
 
-    it("should pass - empty arrays set", async () => {
+    test("should pass - empty arrays set", async () => {
         model.attribute1 = [];
         model.attribute2 = [];
         await model.validate();
     });
 
-    it("should fail - arrays with empty plain objects set - nested validation must be triggered", async () => {
+    test("should fail - arrays with empty plain objects set - nested validation must be triggered", async () => {
         model.attribute1 = [123, 234, "asd"];
         model.attribute2 = [123, {}, 234, "asd"];
 
         try {
             await model.validate();
         } catch (e) {
-            assert.deepEqual(e.data, {
+            expect(e.data).toEqual({
                 invalidAttributes: {
                     attribute2: {
                         code: "INVALID_ATTRIBUTE",
@@ -73,20 +72,20 @@ describe("attribute models test", function() {
         throw Error("Error should've been thrown.");
     });
 
-    it("should pass - valid data sent", async () => {
+    test("should pass - valid data sent", async () => {
         model.attribute1 = [123, "asd"];
         model.attribute2 = [null, true, false, 123, "asd"];
         await model.validate();
     });
 
-    it("should fail - all good except last item of attribute1", async () => {
+    test("should fail - all good except last item of attribute1", async () => {
         model.attribute1 = ["123", true, []];
         model.attribute2 = ["qwe", true, false];
 
         try {
             await model.validate();
         } catch (e) {
-            assert.deepEqual(e.data, {
+            expect(e.data).toEqual({
                 invalidAttributes: {
                     attribute1: {
                         code: "INVALID_ATTRIBUTE",
@@ -106,7 +105,7 @@ describe("attribute models test", function() {
         }
     });
 
-    it("should not set value if setOnce is enabled", async () => {
+    test("should not set value if setOnce is enabled", async () => {
         const newModel = new Model(function() {
             this.attr("attribute1")
                 .array()
@@ -116,18 +115,18 @@ describe("attribute models test", function() {
         newModel.attribute1 = [1, 2, 3];
 
         await newModel.set("attribute1", null);
-        assert.deepEqual(newModel.attribute1, [1, 2, 3]);
+        expect(newModel.attribute1).toEqual([1, 2, 3]);
     });
 
-    it("should return null as a default JSON value", async () => {
+    test("should return null as a default JSON value", async () => {
         const newModel = new Model(function() {
             this.attr("attribute1").array();
         });
 
-        assert.isNull(await newModel.getAttribute("attribute1").getJSONValue());
+        expect(await newModel.getAttribute("attribute1").getJSONValue()).toBeNull();
     });
 
-    it("should not throw validation error if it is empty", async () => {
+    test("should not throw validation error if it is empty", async () => {
         const newModel = new Model(function() {
             this.attr("attribute1").array();
         });
@@ -135,7 +134,7 @@ describe("attribute models test", function() {
         await newModel.validate();
     });
 
-    it("onSet/onGet must be triggered correctly", async () => {
+    test("onSet/onGet must be triggered correctly", async () => {
         const someModel = new Model(function() {
             this.attr("company").array();
         });
@@ -148,13 +147,13 @@ describe("attribute models test", function() {
             company: ["x", "y", "z"]
         });
 
-        assert.deepEqual(someModel.company, ["one", "two", "three"]);
+        expect(someModel.company).toEqual(["one", "two", "three"]);
 
         someModel.getAttribute("company").onGet(() => {
             return ["onGetOverridden"];
         });
 
-        assert.deepEqual(await someModel.toJSON("company"), {
+        expect(await someModel.toJSON("company")).toEqual({
             company: ["onGetOverridden"]
         });
     });

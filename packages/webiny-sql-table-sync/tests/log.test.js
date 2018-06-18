@@ -1,21 +1,20 @@
 // @flow
-import { assert } from "chai";
 import { Log, Sync } from "..";
 
-describe("Log test", function() {
-    it("must set/get data correctly", async () => {
+describe("Log test", () => {
+    test("must set/get data correctly", async () => {
         const log = new Log("Message.", { key: "value" }, ["warning"]);
-        assert.equal(log.getMessage(), "Message.");
-        assert.isTrue(log.tags.includes("warning"));
-        assert.deepEqual(log.getData(), { key: "value" });
+        expect(log.getMessage()).toEqual("Message.");
+        expect(log.tags.includes("warning")).toBe(true);
+        expect(log.getData()).toEqual({ key: "value" });
     });
 
-    it("must return tags", async () => {
+    test("must return tags", async () => {
         const log = new Log("Message.", { key: "value" }, ["warning"]);
-        assert.deepEqual(log.getTags(), ["warning"]);
+        expect(log.getTags()).toEqual(["warning"]);
     });
 
-    it("log methods must work with default values", async () => {
+    test("log methods must work with default values", async () => {
         const sync = new Sync();
         sync.logInfo();
         sync.logWarning();
@@ -24,10 +23,10 @@ describe("Log test", function() {
         sync.__log(undefined, "warning");
 
         const log = sync.getLog();
-        assert.isTrue(log[0].tags.includes("info"));
-        assert.isTrue(log[1].tags.includes("warning"));
-        assert.isTrue(log[2].tags.includes("error"));
-        assert.isTrue(log[3].tags.includes("success"));
-        assert.isFalse(log[4].tags.includes("warning"));
+        expect(log[0].tags.includes("info")).toBe(true);
+        expect(log[1].tags.includes("warning")).toBe(true);
+        expect(log[2].tags.includes("error")).toBe(true);
+        expect(log[3].tags.includes("success")).toBe(true);
+        expect(log[4].tags.includes("warning")).toBe(false);
     });
 });

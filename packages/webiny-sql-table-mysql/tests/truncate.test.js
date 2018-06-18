@@ -1,15 +1,14 @@
-import { assert } from "chai";
 import { UserTable, Table } from "./tables";
 import sinon from "sinon";
 
 const sandbox = sinon.sandbox.create();
 
-describe("truncate table test", function() {
+describe("truncate table test", () => {
     afterEach(() => {
         sandbox.restore();
     });
 
-    it("should truncate table correctly", async () => {
+    test("should truncate table correctly", async () => {
         const userTable = new UserTable();
 
         const sqlQueries = {
@@ -25,14 +24,14 @@ describe("truncate table test", function() {
         await userTable.truncate();
         truncateStub.restore();
 
-        assert.deepEqual(sqlQueries, {
+        expect(sqlQueries).toEqual({
             truncate: "TRUNCATE TABLE `Users`;"
         });
     });
 
-    it("should return only SQL when setting returnSQL option to true", async () => {
+    test("should return only SQL when setting returnSQL option to true", async () => {
         const userTable = new UserTable();
         const sql = await userTable.truncate({ returnSQL: true });
-        assert.equal(sql, "TRUNCATE TABLE `Users`;");
+        expect(sql).toEqual("TRUNCATE TABLE `Users`;");
     });
 });

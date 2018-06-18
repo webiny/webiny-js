@@ -1,8 +1,7 @@
-import { assert } from "chai";
 import SimpleEntity from "./entities/simpleEntity";
 
-describe("findById test", function() {
-    it("findById - should find previously inserted entity", async () => {
+describe("findById test", () => {
+    test("findById - should find previously inserted entity", async () => {
         SimpleEntity.getDriver()
             .flush("SimpleEntity")
             .import("SimpleEntity", [
@@ -16,9 +15,9 @@ describe("findById test", function() {
 
         const simpleEntity = await SimpleEntity.findById(1);
 
-        assert.equal(simpleEntity.id, 1);
-        assert.equal(simpleEntity.name, "This is a test");
-        assert.equal(simpleEntity.slug, "thisIsATest");
-        assert.isTrue(simpleEntity.enabled);
+        expect(simpleEntity.id).toEqual(1);
+        expect(simpleEntity.name).toEqual("This is a test");
+        expect(simpleEntity.slug).toEqual("thisIsATest");
+        expect(simpleEntity.enabled).toBe(true);
     });
 });

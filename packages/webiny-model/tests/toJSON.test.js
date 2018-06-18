@@ -1,5 +1,3 @@
-import { assert } from "chai";
-
 import { User } from "./models/userModels";
 
 const user = new User();
@@ -18,24 +16,24 @@ user.populate({
     }
 });
 
-describe("data extraction test", async function() {
-    it("should correctly extract root values", async () => {
+describe("data extraction test", async () => {
+    test("should correctly extract root values", async () => {
         const data = await user.toJSON("firstName,lastName,age");
-        assert.equal(data.firstName, "John");
-        assert.equal(data.lastName, "Doe");
-        assert.equal(data.age, 15);
+        expect(data.firstName).toEqual("John");
+        expect(data.lastName).toEqual("Doe");
+        expect(data.age).toEqual(15);
     });
 
-    it("should correctly extract simple nested value", async () => {
+    test("should correctly extract simple nested value", async () => {
         const data = await user.toJSON("company.image.file");
-        assert.equal(data.company.image.file, "webiny.jpg");
+        expect(data.company.image.file).toEqual("webiny.jpg");
     });
 
-    it("should correctly extract nested values", async () => {
+    test("should correctly extract nested values", async () => {
         const data = await user.toJSON(
             "firstName,lastName,age,company[name,city,image.size[height]]"
         );
-        assert.deepEqual(data, {
+        expect(data).toEqual({
             firstName: "John",
             lastName: "Doe",
             age: 15,
@@ -51,11 +49,11 @@ describe("data extraction test", async function() {
         });
     });
 
-    it("should correctly extract nested values", async () => {
+    test("should correctly extract nested values", async () => {
         const data = await user.toJSON(
             "firstName,lastName,age,company[name,city,image.size[height]]"
         );
-        assert.deepEqual(data, {
+        expect(data).toEqual({
             firstName: "John",
             lastName: "Doe",
             age: 15,
@@ -71,11 +69,11 @@ describe("data extraction test", async function() {
         });
     });
 
-    it("when requesting attribute that is a model, its data should not be extracted", async () => {
+    test("when requesting attribute that is a model, its data should not be extracted", async () => {
         const data = await user.toJSON(
             "firstName,lastName,age,company[name,city,image.size.width]"
         );
-        assert.deepEqual(data, {
+        expect(data).toEqual({
             firstName: "John",
             lastName: "Doe",
             age: 15,
@@ -91,31 +89,31 @@ describe("data extraction test", async function() {
         });
     });
 
-    it("should return empty object if no path is specified", async () => {
+    test("should return empty object if no path is specified", async () => {
         const data = await user.toJSON();
-        assert.deepEqual(data, {});
+        expect(data).toEqual({});
     });
 
-    it("should not return fields that does not exist", async () => {
+    test("should not return fields that does not exist", async () => {
         const user = new User().populate({ id: "A", age: 30 });
         const extract = await user.toJSON("age,username");
-        assert.deepEqual(extract, { age: 30 });
+        expect(extract).toEqual({ age: 30 });
     });
 
-    it(`should accept additional ":" arguments on root keys`, async () => {
+    test(`should accept additional ":" arguments on root keys`, async () => {
         const user = new User().populate({ id: "A", age: 30 });
 
         let extract = await user.toJSON("age");
-        assert.deepEqual(extract, { age: 30 });
+        expect(extract).toEqual({ age: 30 });
 
         extract = await user.toJSON("age:add:100");
-        assert.deepEqual(extract, { age: 130 });
+        expect(extract).toEqual({ age: 130 });
 
         extract = await user.toJSON("age:sub:20");
-        assert.deepEqual(extract, { age: 10 });
+        expect(extract).toEqual({ age: 10 });
     });
 
-    it(`should accept additional ":" arguments on nested keys`, async () => {
+    test(`should accept additional ":" arguments on nested keys`, async () => {
         const user = new User().populate({
             company: {
                 city: "New York"
@@ -123,36 +121,35 @@ describe("data extraction test", async function() {
         });
 
         let extract = await user.toJSON("company.city");
-        assert.deepEqual(extract, {
+        expect(extract).toEqual({
             company: {
                 city: "New York"
             }
         });
 
         extract = await user.toJSON("company.city:true");
-        assert.deepEqual(extract, {
+        expect(extract).toEqual({
             company: {
                 city: "new york"
             }
         });
     });
 
-    it(`should read from objects too, not only attributes`, async () => {
+    test(`should read from objects too, not only attributes`, async () => {
         const user = new User().populate({
             company: {
                 city: "New York"
             }
         });
 
-        user
-            .getAttribute("company")
+        user.getAttribute("company")
             .value.current.getAttribute("city")
             .onGet(() => {
                 return { one: "one", two: { three: "finalValue" } };
             });
 
         let extract = await user.toJSON("company.city.two.three");
-        assert.deepEqual(extract, {
+        expect(extract).toEqual({
             company: {
                 city: {
                     two: {

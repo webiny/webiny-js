@@ -1,4 +1,3 @@
-import { assert } from "chai";
 import { QueryResult } from "../../../src";
 import { One } from "../../entities/oneTwoThree";
 import sinon from "sinon";
@@ -22,104 +21,104 @@ const getEntity = async () => {
     return entity;
 };
 
-describe("dirty flag test", function() {
+describe("dirty flag test", () => {
     beforeEach(() => One.getEntityPool().flush());
     afterEach(() => sandbox.restore());
 
-    it("when loading from storage, default value must be clean", async () => {
+    test("when loading from storage, default value must be clean", async () => {
         const entity = await getEntity();
         const twoAttribute = entity.getAttribute("two");
-        assert.isFalse(twoAttribute.value.dirty);
+        expect(twoAttribute.value.dirty).toBe(false);
     });
 
-    it("new entity - when setting a value, dirty must be set as true only if different", async () => {
+    test("new entity - when setting a value, dirty must be set as true only if different", async () => {
         let entity = new One();
         let twoAttribute = entity.getAttribute("two");
 
         entity.two = "anotherTwo";
-        assert.isTrue(twoAttribute.value.dirty);
+        expect(twoAttribute.value.dirty).toBe(true);
 
         entity = new One();
         twoAttribute = entity.getAttribute("two");
 
         entity.two = null;
-        assert.isFalse(twoAttribute.value.dirty);
+        expect(twoAttribute.value.dirty).toBe(false);
 
         entity = new One();
         twoAttribute = entity.getAttribute("two");
 
         entity.two = { something: true };
-        assert.isTrue(twoAttribute.value.dirty);
+        expect(twoAttribute.value.dirty).toBe(true);
 
         entity = new One();
         twoAttribute = entity.getAttribute("two");
 
         entity.two = { id: "asd" };
-        assert.isTrue(twoAttribute.value.dirty);
+        expect(twoAttribute.value.dirty).toBe(true);
 
         entity = new One();
         twoAttribute = entity.getAttribute("two");
 
         entity.two = { id: "asd", something: true };
-        assert.isTrue(twoAttribute.value.dirty);
+        expect(twoAttribute.value.dirty).toBe(true);
     });
 
-    it("loaded entity - when setting a value, dirty must be set as true only if different", async () => {
+    test("loaded entity - when setting a value, dirty must be set as true only if different", async () => {
         let entity = await getEntity();
         let twoAttribute = entity.getAttribute("two");
 
         entity.two = "anotherTwo";
-        assert.isTrue(twoAttribute.value.dirty);
+        expect(twoAttribute.value.dirty).toBe(true);
 
         entity = await getEntity();
         twoAttribute = entity.getAttribute("two");
 
         entity.two = "two";
-        assert.isFalse(twoAttribute.value.dirty);
+        expect(twoAttribute.value.dirty).toBe(false);
 
         entity = await getEntity();
         twoAttribute = entity.getAttribute("two");
 
         entity.two = null;
-        assert.isTrue(twoAttribute.value.dirty);
+        expect(twoAttribute.value.dirty).toBe(true);
     });
 
-    it("when setting an object with ID, value must not be dirty if ID is same", async () => {
+    test("when setting an object with ID, value must not be dirty if ID is same", async () => {
         let entity = await getEntity();
         let twoAttribute = entity.getAttribute("two");
 
         entity.two = { id: "two" };
-        assert.isFalse(twoAttribute.value.dirty);
+        expect(twoAttribute.value.dirty).toBe(false);
     });
 
-    it("when setting an object with ID but with additional fields, value must be set as dirty", async () => {
+    test("when setting an object with ID but with additional fields, value must be set as dirty", async () => {
         let entity = await getEntity();
         let twoAttribute = entity.getAttribute("two");
 
         entity.two = { id: "two", someAttr: 1 };
-        assert.isTrue(twoAttribute.value.dirty);
+        expect(twoAttribute.value.dirty).toBe(true);
     });
 
-    it("should not be dirty when loading value from storage", async () => {
+    test("should not be dirty when loading value from storage", async () => {
         const one = await getEntity();
         const twoAttribute = one.getAttribute("two");
-        assert.isFalse(twoAttribute.value.dirty);
+        expect(twoAttribute.value.dirty).toBe(false);
 
         let findById = sandbox.stub(One.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({ id: "two", name: "Two" });
         });
 
         const two = await one.two;
-        assert.isFalse(twoAttribute.value.isDirty());
+        expect(twoAttribute.value.isDirty()).toBe(false);
 
         two.name = "anotherName";
 
-        assert.isTrue(twoAttribute.value.isDirty());
+        expect(twoAttribute.value.isDirty()).toBe(true);
 
         findById.restore();
     });
 
-    it("should save entity only if dirty, amd set it as clean after save", async () => {
+    test("should save entity only if dirty, amd set it as clean after save", async () => {
         const one = await getEntity();
 
         let findById = sandbox.stub(One.getDriver(), "findOne").callsFake(() => {
@@ -132,16 +131,16 @@ describe("dirty flag test", function() {
         const entitySaveSpy = sandbox.spy(One.getDriver(), "save");
 
         await one.save();
-        assert.equal(entitySaveSpy.callCount, 0);
+        expect(entitySaveSpy.callCount).toEqual(0);
 
         two.name = "anotherName";
-        assert.isTrue(two.isDirty());
+        expect(two.isDirty()).toBe(true);
         await one.save();
-        assert.equal(entitySaveSpy.callCount, 1);
-        assert.isTrue(two.isClean());
+        expect(entitySaveSpy.callCount).toEqual(1);
+        expect(two.isClean()).toBe(true);
 
         await one.save();
-        assert.equal(entitySaveSpy.callCount, 1);
-        assert.isTrue(two.isClean());
+        expect(entitySaveSpy.callCount).toEqual(1);
+        expect(two.isClean()).toBe(true);
     });
 });

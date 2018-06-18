@@ -1,5 +1,4 @@
 import { QueryResult } from "../../../../../src/index";
-import { assert, expect } from "chai";
 import sinon from "sinon";
 import { Group, User, UsersGroups } from "../../../../entities/entitiesUsing";
 
@@ -9,7 +8,7 @@ describe("save and delete entities attribute test", () => {
     afterEach(() => sandbox.restore());
     beforeEach(() => User.getEntityPool().flush());
 
-    it("should use correct storage queries to fetch linked entities", async () => {
+    test("should use correct storage queries to fetch linked entities", async () => {
         let entityFindById = sandbox
             .stub(User.getDriver(), "findOne")
             .callsFake(() => new QueryResult({ id: "A" }));
@@ -42,29 +41,29 @@ describe("save and delete entities attribute test", () => {
 
         await user.groups;
 
-        assert.equal(findStub.getCall(0).args[0], UsersGroups);
-        assert.deepEqual(findStub.getCall(0).args[1], {
+        expect(findStub.getCall(0).args[0]).toEqual(UsersGroups);
+        expect(findStub.getCall(0).args[1]).toEqual({
             query: {
                 user: "A"
             }
         });
 
-        assert.equal(findOneStub.getCall(0).args[0], Group);
-        assert.deepEqual(findOneStub.getCall(0).args[1], {
+        expect(findOneStub.getCall(0).args[0]).toEqual(Group);
+        expect(findOneStub.getCall(0).args[1]).toEqual({
             query: {
                 id: "X"
             }
         });
 
-        assert.equal(findOneStub.getCall(1).args[0], Group);
-        assert.deepEqual(findOneStub.getCall(1).args[1], {
+        expect(findOneStub.getCall(1).args[0]).toEqual(Group);
+        expect(findOneStub.getCall(1).args[1]).toEqual({
             query: {
                 id: "Y"
             }
         });
 
-        assert.equal(findOneStub.getCall(2).args[0], Group);
-        assert.deepEqual(findOneStub.getCall(2).args[1], {
+        expect(findOneStub.getCall(2).args[0]).toEqual(Group);
+        expect(findOneStub.getCall(2).args[1]).toEqual({
             query: {
                 id: "Z"
             }
@@ -74,7 +73,7 @@ describe("save and delete entities attribute test", () => {
         findOneStub.restore();
     });
 
-    it("should wait until entities are loaded if loading is in progress", async () => {
+    test("should wait until entities are loaded if loading is in progress", async () => {
         let entityFindById = sandbox
             .stub(User.getDriver(), "findOne")
             .callsFake(() => new QueryResult({ id: "A" }));
@@ -105,7 +104,7 @@ describe("save and delete entities attribute test", () => {
             });
 
         await user.set("groups", [{ name: "Group P" }, { name: "Group Q" }]);
-        assert.deepEqual(user.getAttribute("groups").value.state, {
+        expect(user.getAttribute("groups").value.state).toEqual({
             loading: false,
             loaded: false
         });
@@ -141,21 +140,21 @@ describe("save and delete entities attribute test", () => {
 
         entitySave.restore();
 
-        expect(entitySave.callCount).to.equal(5);
+        expect(entitySave.callCount).toEqual(5);
 
-        expect(user.getAttribute("groups").value.initial).to.have.lengthOf(2);
-        expect(user.getAttribute("groups").value.initial[0].id).to.equal("P");
-        expect(user.getAttribute("groups").value.initial[1].id).to.equal("Q");
-        expect(user.getAttribute("groups").value.current).to.have.lengthOf(2);
-        expect(user.getAttribute("groups").value.current[0].id).to.equal("P");
-        expect(user.getAttribute("groups").value.current[1].id).to.equal("Q");
+        expect(user.getAttribute("groups").value.initial).toHaveLength(2);
+        expect(user.getAttribute("groups").value.initial[0].id).toEqual("P");
+        expect(user.getAttribute("groups").value.initial[1].id).toEqual("Q");
+        expect(user.getAttribute("groups").value.current).toHaveLength(2);
+        expect(user.getAttribute("groups").value.current[0].id).toEqual("P");
+        expect(user.getAttribute("groups").value.current[1].id).toEqual("Q");
 
-        expect(user.getAttribute("groups").value.links.initial).to.have.lengthOf(2);
-        expect(user.getAttribute("groups").value.links.initial[0].id).to.equal("4th");
-        expect(user.getAttribute("groups").value.links.initial[1].id).to.equal("5th");
+        expect(user.getAttribute("groups").value.links.initial).toHaveLength(2);
+        expect(user.getAttribute("groups").value.links.initial[0].id).toEqual("4th");
+        expect(user.getAttribute("groups").value.links.initial[1].id).toEqual("5th");
 
-        expect(user.getAttribute("groups").value.links.current).to.have.lengthOf(2);
-        expect(user.getAttribute("groups").value.links.current[0].id).to.equal("4th");
-        expect(user.getAttribute("groups").value.links.current[1].id).to.equal("5th");
+        expect(user.getAttribute("groups").value.links.current).toHaveLength(2);
+        expect(user.getAttribute("groups").value.links.current[0].id).toEqual("4th");
+        expect(user.getAttribute("groups").value.links.current[1].id).toEqual("5th");
     });
 });

@@ -1,6 +1,3 @@
-import chai from "chai";
-import chaiSubset from "chai-subset";
-import chaiAsPromised from "chai-as-promised";
 import AWS from "aws-sdk";
 import s3MockResponses from "./s3MockResponses";
 import sinon from "sinon";
@@ -8,12 +5,7 @@ import fecha from "fecha";
 import S3StorageDriver from "./../src";
 import type { S3StorageDriverConfig } from "../src";
 
-chai.use(chaiSubset);
-chai.use(chaiAsPromised);
-chai.should();
-const expect = chai.expect;
-
-describe("S3StorageDriver class test", function() {
+describe("S3StorageDriver class test", () => {
     afterEach(() => {
         if (typeof AWS.S3.prototype.makeRequest.restore === "function") {
             AWS.S3.prototype.makeRequest.restore();
@@ -35,45 +27,43 @@ describe("S3StorageDriver class test", function() {
     };
     const s3Driver = new S3StorageDriver(params);
 
-    it("should both Key and Bucket be passed, S3 should return the object", function() {
-        const stub = sinon
+    test("should both Key and Bucket be passed, S3 should return the object", async () => {
+        sinon
             .stub(AWS.S3.prototype, "makeRequest")
             .withArgs("getObject")
             .callsFake((operation, params) => {
-                expect(params.Key).to.equal("testKey");
-                expect(params.Bucket).to.equal("testBucket");
+                expect(params.Key).toBe("testKey");
+                expect(params.Bucket).toBe("testBucket");
                 return {
                     promise: () => {
-                        return new Promise((resolve, reject) => {
+                        return new Promise(resolve => {
                             resolve(s3MockResponses.getObject.success);
                         });
                     }
                 };
             });
 
-        return Promise.all([
-            s3Driver.getFile("testKey").should.eventually.contain({ body: "fooBar" }),
-            s3Driver.getFile("testKey", { opt1: "test" }).should.be.rejected
-        ]).then(() => {
-            AWS.S3.prototype.makeRequest.restore();
-        });
+        const file = await s3Driver.getFile("testKey");
+        expect(file.body).toBe("fooBar");
+        await expect(s3Driver.getFile("testKey", { opt1: "test" })).rejects.toThrow();
+        AWS.S3.prototype.makeRequest.restore();
     });
 
-    it("should fail when trying to save a file with an empty body", function() {
-        expect(s3Driver.setFile("testKey", { body: null })).be.rejected;
+    test("should fail when trying to save a file with an empty body", async () => {
+        await expect(s3Driver.setFile("testKey", { body: null })).rejects.toThrow();
     });
 
-    it("should contact AWS S3 API to store the file", async function() {
+    test("should contact AWS S3 API to store the file", async () => {
         const stub = sinon
             .stub(AWS.S3.prototype, "makeRequest")
             .withArgs("putObject")
             .callsFake((operation, params) => {
-                expect(params.Key).to.equal("testKey");
-                expect(params.Bucket).to.equal("testBucket");
-                expect(params.Metadata[0]).to.deep.equal({ "Cache-Control": "max-age=86400" });
+                expect(params.Key).toBe("testKey");
+                expect(params.Bucket).toBe("testBucket");
+                expect(params.Metadata[0]).toEqual({ "Cache-Control": "max-age=86400" });
                 return {
                     promise: () => {
-                        return new Promise((resolve, reject) => {
+                        return new Promise(resolve => {
                             resolve(params.Key);
                         });
                     }
@@ -84,12 +74,12 @@ describe("S3StorageDriver class test", function() {
             body: "fooBar",
             meta: [{ "Cache-Control": "max-age=86400" }]
         });
-        expect(key).to.equal("testKey");
-        expect(stub.calledOnce).to.be.true;
+        expect(key).toBe("testKey");
+        expect(stub.calledOnce).toBeTrue();
         AWS.S3.prototype.makeRequest.restore();
     });
 
-    it("should create a key that has a date prefix", async function() {
+    test("should create a key that has a date prefix", async () => {
         // create a new driver instance with different config
         let tempParams = Object.assign({}, params);
         tempParams.createDatePrefix = true;
@@ -101,8 +91,8 @@ describe("S3StorageDriver class test", function() {
             .stub(AWS.S3.prototype, "makeRequest")
             .withArgs("putObject")
             .callsFake((operation, params) => {
-                expect(params.Key).to.equal(expectedKey);
-                expect(params.Bucket).to.equal("testBucket");
+                expect(params.Key).toBe(expectedKey);
+                expect(params.Bucket).toBe("testBucket");
                 return {
                     promise: () => {
                         return new Promise(resolve => {
@@ -113,23 +103,23 @@ describe("S3StorageDriver class test", function() {
             });
 
         const key = await tempDriver.setFile("testKey", { body: "fooBar" });
-        expect(key).to.equal(expectedKey);
-        expect(stub.calledOnce).to.be.true;
+        expect(key).toBe(expectedKey);
+        expect(stub.calledOnce).toBeTrue();
         const newKey = await tempDriver.setFile(key, { body: "fooBar" });
-        expect(newKey).to.equal(key);
+        expect(newKey).toBe(key);
         AWS.S3.prototype.makeRequest.restore();
     });
 
-    it("should return object meta", function() {
+    test("should return object meta", () => {
         const stub = sinon
             .stub(AWS.S3.prototype, "makeRequest")
             .withArgs("headObject")
             .callsFake((operation, params) => {
-                expect(params.Key).to.equal("testKey");
-                expect(params.Bucket).to.equal("testBucket");
+                expect(params.Key).toBe("testKey");
+                expect(params.Bucket).toBe("testBucket");
                 return {
                     promise: () => {
-                        return new Promise((resolve, reject) => {
+                        return new Promise(resolve => {
                             resolve(s3MockResponses.headObject.success);
                         });
                     }
@@ -137,20 +127,20 @@ describe("S3StorageDriver class test", function() {
             });
 
         return s3Driver.getMeta("testKey").then(data => {
-            expect(stub.calledOnce).to.be.true;
+            expect(stub.calledOnce).toBeTrue();
             AWS.S3.prototype.makeRequest.restore();
-            expect(data).to.have.any.keys(["AcceptRanges", "ContentLength"]);
-            expect(data).not.to.have.keys("Body");
+            expect(data).toContainAnyKeys(["AcceptRanges", "ContentLength"]);
+            expect(data["Body"]).toBeUndefined();
         });
     });
 
-    it("should set the object meta and submit a request to S3 API", function() {
+    test("should set the object meta and submit a request to S3 API", () => {
         const stub = sinon.stub(AWS.S3.prototype, "makeRequest");
         stub.withArgs("getObject").callsFake((operation, params) => {
-            expect(params.Key).to.equal("testKey");
+            expect(params.Key).toBe("testKey");
             return {
                 promise: () => {
-                    return new Promise((resolve, reject) => {
+                    return new Promise(resolve => {
                         resolve(s3MockResponses.getObject.success);
                     });
                 }
@@ -158,14 +148,14 @@ describe("S3StorageDriver class test", function() {
         });
 
         stub.withArgs("putObject").callsFake((operation, params) => {
-            expect(params.Key).to.equal("testKey");
-            expect(params.Bucket).to.equal("testBucket");
-            expect(params.Body).to.equal("fooBar");
-            expect(params.Metadata.testKey).to.equal("testValue");
-            expect(params.Metadata.ContentType).to.equal("image/jpeg");
+            expect(params.Key).toBe("testKey");
+            expect(params.Bucket).toBe("testBucket");
+            expect(params.Body).toBe("fooBar");
+            expect(params.Metadata.testKey).toBe("testValue");
+            expect(params.Metadata.ContentType).toBe("image/jpeg");
             return {
                 promise: () => {
-                    return new Promise((resolve, reject) => {
+                    return new Promise(resolve => {
                         resolve(s3MockResponses.headObject.success);
                     });
                 }
@@ -174,19 +164,19 @@ describe("S3StorageDriver class test", function() {
 
         return s3Driver.setMeta("testKey", { testKey: "testValue" }).then(data => {
             AWS.S3.prototype.makeRequest.restore();
-            expect(data).to.be.true;
+            expect(data).toBeTrue();
         });
     });
 
-    it("should check if the given object exists", async function() {
+    test("should check if the given object exists", async () => {
         const stub = sinon
             .stub(AWS.S3.prototype, "makeRequest")
             .withArgs("headObject")
             .callsFake((operation, params) => {
-                expect(params.Bucket).to.equal("testBucket");
+                expect(params.Bucket).toBe("testBucket");
                 return {
                     promise: () => {
-                        return new Promise((resolve, reject) => {
+                        return new Promise(resolve => {
                             if (params.Key == "testKey") {
                                 resolve(true);
                             }
@@ -197,44 +187,41 @@ describe("S3StorageDriver class test", function() {
                 };
             });
 
-        expect(await s3Driver.exists("testKey")).to.be.true;
-        expect(await s3Driver.exists("testKey2")).to.be.false;
+        expect(await s3Driver.exists("testKey")).toBeTrue();
+        expect(await s3Driver.exists("testKey2")).toBeFalse();
 
         AWS.S3.prototype.makeRequest.restore();
     });
 
-    it("should list all the objects inside an S3 bucket", function() {
+    test("should list all the objects inside an S3 bucket", async () => {
         sinon
             .stub(AWS.S3.prototype, "makeRequest")
             .withArgs("listObjectsV2")
             .callsFake((operation, params) => {
-                expect(params.Prefix).to.equal("dir1");
-                expect(params.Bucket).to.equal("testBucket");
+                expect(params.Prefix).toBe("dir1");
+                expect(params.Bucket).toBe("testBucket");
                 return {
                     promise: () => {
-                        return new Promise((resolve, reject) => {
+                        return new Promise(resolve => {
                             resolve(s3MockResponses.listObjectsV2.success);
                         });
                     }
                 };
             });
 
-        return Promise.all([
-            s3Driver.getKeys("dir1", "happy").should.eventually.contain("dir1/happyface.jpg"),
-            s3Driver
-                .getKeys("dir1")
-                .should.eventually.contain.members([
-                    "dir2/foo.jpg",
-                    "dir1/happyface.jpg",
-                    "dir1/test.jpg"
-                ]),
-            s3Driver.getKeys().should.be.rejected
-        ]).then(() => {
-            AWS.S3.prototype.makeRequest.restore();
-        });
+        await expect(s3Driver.getKeys("dir1", "happy")).resolves.toContainValue(
+            "dir1/happyface.jpg"
+        );
+        await expect(s3Driver.getKeys("dir1")).resolves.toContainValues([
+            "dir2/foo.jpg",
+            "dir1/happyface.jpg",
+            "dir1/test.jpg"
+        ]);
+        await expect(s3Driver.getKeys()).rejects.toThrow();
+        AWS.S3.prototype.makeRequest.restore();
     });
 
-    it("should list all the objects inside an S3 bucket using continuation token", function() {
+    test("should list all the objects inside an S3 bucket using continuation token", async () => {
         sinon
             .stub(AWS.S3.prototype, "makeRequest")
             .withArgs("listObjectsV2")
@@ -255,16 +242,14 @@ describe("S3StorageDriver class test", function() {
                 }
             });
 
-        return Promise.all([
-            s3Driver
-                .getKeys("dir1")
-                .should.eventually.contain.members(["dir2/foo.jpg", "dir1/happyface.jpg"])
-        ]).then(() => {
-            AWS.S3.prototype.makeRequest.restore();
-        });
+        await expect(s3Driver.getKeys("dir1")).resolves.toContainValues([
+            "dir2/foo.jpg",
+            "dir1/happyface.jpg"
+        ]);
+        AWS.S3.prototype.makeRequest.restore();
     });
 
-    it("should return empty result in case Contents is not an Array", function() {
+    test("should return empty result in case Contents is not an Array", async () => {
         sinon
             .stub(AWS.S3.prototype, "makeRequest")
             .withArgs("listObjectsV2")
@@ -278,21 +263,20 @@ describe("S3StorageDriver class test", function() {
                 };
             });
 
-        return Promise.all([s3Driver.getKeys("dir1").should.eventually.be.empty]).then(() => {
-            AWS.S3.prototype.makeRequest.restore();
-        });
+        await expect(s3Driver.getKeys("dir1")).resolves.toBeEmpty();
+        AWS.S3.prototype.makeRequest.restore();
     });
 
-    it("should call S3 API to delete the given object", function() {
+    test("should call S3 API to delete the given object", () => {
         const stub = sinon
             .stub(AWS.S3.prototype, "makeRequest")
             .withArgs("deleteObject")
             .callsFake((operation, params) => {
-                expect(params.Key).to.equal("testKey");
-                expect(params.Bucket).to.equal("testBucket");
+                expect(params.Key).toBe("testKey");
+                expect(params.Bucket).toBe("testBucket");
                 return {
                     promise: () => {
-                        return new Promise((resolve, reject) => {
+                        return new Promise(resolve => {
                             resolve(true);
                         });
                     }
@@ -300,22 +284,21 @@ describe("S3StorageDriver class test", function() {
             });
 
         return s3Driver.delete("testKey").then(data => {
-            expect(data).to.be.true;
-
-            expect(stub.calledOnce).to.be.true;
+            expect(data).toBeTrue();
+            expect(stub.calledOnce).toBeTrue();
             AWS.S3.prototype.makeRequest.restore();
         });
     });
 
-    it("should copy the object under a new name and delete the old one", function() {
+    test("should copy the object under a new name and delete the old one", () => {
         const stub = sinon.stub(AWS.S3.prototype, "makeRequest");
         stub.withArgs("copyObject").callsFake((operation, params) => {
-            expect(params.Key).to.equal("newKey");
-            expect(params.Bucket).to.equal("testBucket");
-            expect(params.CopySource).to.equal("/testBucket/testKey");
+            expect(params.Key).toBe("newKey");
+            expect(params.Bucket).toBe("testBucket");
+            expect(params.CopySource).toBe("/testBucket/testKey");
             return {
                 promise: () => {
-                    return new Promise((resolve, reject) => {
+                    return new Promise(resolve => {
                         resolve(true);
                     });
                 }
@@ -323,12 +306,12 @@ describe("S3StorageDriver class test", function() {
         });
 
         stub.withArgs("deleteObject").callsFake((operation, params) => {
-            expect(params.Key).to.equal("testKey");
-            expect(params.Bucket).to.equal("testBucket");
+            expect(params.Key).toBe("testKey");
+            expect(params.Bucket).toBe("testBucket");
 
             return {
                 promise: () => {
-                    return new Promise((resolve, reject) => {
+                    return new Promise(resolve => {
                         resolve(true);
                     });
                 }
@@ -336,63 +319,34 @@ describe("S3StorageDriver class test", function() {
         });
 
         return s3Driver.rename("testKey", "newKey").then(data => {
-            expect(data).to.be.true;
+            expect(data).toBeTrue();
             AWS.S3.prototype.makeRequest.restore();
         });
     });
 
-    it("should return the full url to the object", function() {
+    test("should return the full url to the object", () => {
         // using public url
         let url = s3Driver.getURL("testKey");
-        expect(url).to.equal("https://cdn.domain.com/testKey");
+        expect(url).toBe("https://cdn.domain.com/testKey");
 
         // no public url
         let tempParams = Object.assign({}, params);
         tempParams.publicUrl = null;
         const tempDriver = new S3StorageDriver(tempParams);
         url = tempDriver.getURL("testKey");
-        expect(url).to.equal("https://s3.us-east-2.amazonaws.com/testBucket/testKey");
+        expect(url).toBe("https://s3.us-east-2.amazonaws.com/testBucket/testKey");
     });
 
-    it("should call S3 API and return the ContentLength of the object", async function() {
-        const stub = sinon
-            .stub(AWS.S3.prototype, "makeRequest")
-            .withArgs("headObject")
-            .callsFake((operation, params) => {
-                expect(params.Bucket).to.equal("testBucket");
-                return {
-                    promise: () => {
-                        return new Promise((resolve, reject) => {
-                            if (params.Key == "testKey") {
-                                resolve(s3MockResponses.headObject.success);
-                            } else {
-                                resolve({});
-                            }
-                        });
-                    }
-                };
-            });
-
-        return Promise.all([
-            s3Driver.getSize("testKey").should.become(3191),
-            s3Driver.getSize("testKey2").should.be.rejected
-        ]).then(() => {
-            AWS.S3.prototype.makeRequest.restore();
-        });
-
-        AWS.S3.prototype.makeRequest.restore();
-    });
-
-    it("should call S3 API and return the LastModified time of the object", async function() {
+    test("should call S3 API and return the ContentLength of the object", async () => {
         sinon
             .stub(AWS.S3.prototype, "makeRequest")
             .withArgs("headObject")
             .callsFake((operation, params) => {
-                expect(params.Bucket).to.equal("testBucket");
+                expect(params.Bucket).toBe("testBucket");
                 return {
                     promise: () => {
-                        return new Promise((resolve, reject) => {
-                            if (params.Key == "testKey") {
+                        return new Promise(resolve => {
+                            if (params.Key === "testKey") {
                                 resolve(s3MockResponses.headObject.success);
                             } else {
                                 resolve({});
@@ -402,24 +356,21 @@ describe("S3StorageDriver class test", function() {
                 };
             });
 
-        return Promise.all([
-            s3Driver.getTimeModified("testKey").should.become(1471809113000),
-            s3Driver.getTimeModified("testKey2").should.be.rejected
-        ]).then(() => {
-            AWS.S3.prototype.makeRequest.restore();
-        });
+        await expect(s3Driver.getSize("testKey")).resolves.toBe(3191);
+        await expect(s3Driver.getSize("testKey2")).rejects.toThrow();
+        AWS.S3.prototype.makeRequest.restore();
     });
 
-    it("should call S3 API and return the ContentType of the object", function() {
-        const stub = sinon
+    test("should call S3 API and return the LastModified time of the object", async () => {
+        sinon
             .stub(AWS.S3.prototype, "makeRequest")
             .withArgs("headObject")
             .callsFake((operation, params) => {
-                expect(params.Bucket).to.equal("testBucket");
+                expect(params.Bucket).toBe("testBucket");
                 return {
                     promise: () => {
-                        return new Promise((resolve, reject) => {
-                            if (params.Key == "testKey") {
+                        return new Promise(resolve => {
+                            if (params.Key === "testKey") {
                                 resolve(s3MockResponses.headObject.success);
                             } else {
                                 resolve({});
@@ -429,15 +380,36 @@ describe("S3StorageDriver class test", function() {
                 };
             });
 
-        return Promise.all([
-            s3Driver.getContentType("testKey").should.become("image/jpeg"),
-            s3Driver.getContentType("testKey2").should.be.rejected
-        ]).then(() => {
-            AWS.S3.prototype.makeRequest.restore();
-        });
+        await expect(s3Driver.getTimeModified("testKey")).resolves.toBe(1471809113000);
+        await expect(s3Driver.getTimeModified("testKey2")).rejects.toThrow();
+        AWS.S3.prototype.makeRequest.restore();
     });
 
-    it("should reject a promise when trying to get the absolute path", function() {
-        return Promise.resolve(s3Driver.getAbsolutePath("testKey").should.become("testKey"));
+    test("should call S3 API and return the ContentType of the object", async () => {
+        sinon
+            .stub(AWS.S3.prototype, "makeRequest")
+            .withArgs("headObject")
+            .callsFake((operation, params) => {
+                expect(params.Bucket).toBe("testBucket");
+                return {
+                    promise: () => {
+                        return new Promise(resolve => {
+                            if (params.Key === "testKey") {
+                                resolve(s3MockResponses.headObject.success);
+                            } else {
+                                resolve({});
+                            }
+                        });
+                    }
+                };
+            });
+
+        await expect(s3Driver.getContentType("testKey")).resolves.toBe("image/jpeg");
+        await expect(s3Driver.getContentType("testKey2")).rejects.toThrow();
+        AWS.S3.prototype.makeRequest.restore();
+    });
+
+    test("should reject a promise when trying to get the absolute path", async () => {
+        await expect(s3Driver.getAbsolutePath("testKey")).resolves.toBe("testKey");
     });
 });

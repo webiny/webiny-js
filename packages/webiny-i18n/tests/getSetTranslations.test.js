@@ -1,18 +1,16 @@
 // @flow
-import { assert } from "chai";
-
-import i18n from "./..";
+import i18n from "./../src";
 
 describe("all set/get translations related methods test", () => {
     beforeEach(() => i18n.clearTranslations());
 
-    it("should set / get / merge / clear translations correctly", () => {
+    test("should set / get / merge / clear translations correctly", () => {
         i18n.setTranslation("key1", "Key 1 Label");
 
-        assert.equal(i18n.getTranslation("key1"), "Key 1 Label");
-        assert.isUndefined(i18n.getTranslation("key 123"));
+        expect(i18n.getTranslation("key1")).toEqual("Key 1 Label");
+        expect(i18n.getTranslation("key 123")).not.toBeDefined();
 
-        assert.deepEqual(i18n.getTranslations(), { key1: "Key 1 Label" });
+        expect(i18n.getTranslations()).toEqual({ key1: "Key 1 Label" });
 
         i18n.mergeTranslations({
             key1: " Updated Key 1 Label",
@@ -20,24 +18,24 @@ describe("all set/get translations related methods test", () => {
             key3: "Key 3 Label"
         });
 
-        assert.deepEqual(i18n.getTranslations(), {
+        expect(i18n.getTranslations()).toEqual({
             key1: " Updated Key 1 Label",
             key2: "Key 2 Label",
             key3: "Key 3 Label"
         });
 
-        assert.isTrue(i18n.hasTranslation("key1"));
-        assert.isTrue(i18n.hasTranslation("key2"));
-        assert.isTrue(i18n.hasTranslation("key3"));
-        assert.isFalse(i18n.hasTranslation("key4"));
+        expect(i18n.hasTranslation("key1")).toBe(true);
+        expect(i18n.hasTranslation("key2")).toBe(true);
+        expect(i18n.hasTranslation("key3")).toBe(true);
+        expect(i18n.hasTranslation("key4")).toBe(false);
 
         i18n.clearTranslations();
 
-        assert.deepEqual(i18n.getTranslations(), {});
+        expect(i18n.getTranslations()).toEqual({});
 
-        assert.isFalse(i18n.hasTranslation("key1"));
-        assert.isFalse(i18n.hasTranslation("key2"));
-        assert.isFalse(i18n.hasTranslation("key3"));
-        assert.isFalse(i18n.hasTranslation("key4"));
+        expect(i18n.hasTranslation("key1")).toBe(false);
+        expect(i18n.hasTranslation("key2")).toBe(false);
+        expect(i18n.hasTranslation("key3")).toBe(false);
+        expect(i18n.hasTranslation("key4")).toBe(false);
     });
 });

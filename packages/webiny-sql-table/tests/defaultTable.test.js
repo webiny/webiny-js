@@ -1,22 +1,21 @@
-import { assert } from "chai";
 import { Table } from "./..";
 
 const table = new Table();
 
-describe("default Table test", function() {
-    it("getComment should return null by default", async () => {
-        assert.equal(table.getComment(), null);
+describe("default Table test", () => {
+    test("getComment should return null by default", async () => {
+        expect(table.getComment()).toEqual(null);
     });
 
-    it("getAutoIncrement should return null by default", async () => {
-        assert.equal(table.getAutoIncrement(), null);
+    test("getAutoIncrement should return null by default", async () => {
+        expect(table.getAutoIncrement()).toEqual(null);
     });
 
-    it("default database methods should return empty results", async () => {
-        assert.isNull(await table.create());
-        assert.isNull(await table.alter());
+    test("default database methods should return empty results", async () => {
+        expect(await table.create()).toBeNull();
+        expect(await table.alter()).toBeNull();
 
-        assert.isNull(await table.drop());
-        assert.isNull(await table.truncate());
+        expect(await table.drop()).toBeNull();
+        expect(await table.truncate()).toBeNull();
     });
 });

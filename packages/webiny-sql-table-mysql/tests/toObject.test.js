@@ -1,4 +1,3 @@
-import { assert } from "chai";
 import {
     UserTable,
     userTableObject,
@@ -10,22 +9,22 @@ import {
     completeTableObject
 } from "./tables";
 
-describe("toObject test", function() {
-    it("should return simple toObject correctly", async () => {
+describe("toObject test", () => {
+    test("should return simple toObject correctly", async () => {
         const userTable = new UserTable();
-        assert.deepEqual(userTable.toObject(), userTableObject);
+        expect(userTable.toObject()).toEqual(userTableObject);
     });
 
-    it("should return complex toObject correctly", async () => {
+    test("should return complex toObject correctly", async () => {
         const companyTable = new CompanyTable();
-        assert.deepEqual(companyTable.toObject(), companyTableObject);
+        expect(companyTable.toObject()).toEqual(companyTableObject);
 
         const complexTable = new ComplexTable();
-        assert.deepEqual(complexTable.toObject(), complexTableObject);
+        expect(complexTable.toObject()).toEqual(complexTableObject);
     });
 
-    it("should return complete toObject correctly", async () => {
+    test("should return complete toObject correctly", async () => {
         const completeTable = new CompleteTable();
-        assert.deepEqual(completeTable.toObject(), completeTableObject);
+        expect(completeTable.toObject()).toEqual(completeTableObject);
     });
 });

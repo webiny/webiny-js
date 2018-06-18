@@ -2,10 +2,10 @@ import sinon from "sinon";
 import SimpleEntity from "./entities/simpleEntity";
 const sandbox = sinon.sandbox.create();
 
-describe("findByIds error test", function() {
+describe("findByIds error test", () => {
     afterEach(() => sandbox.restore());
 
-    it("findByIds - should throw an error", async () => {
+    test("findByIds - should throw an error", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
             throw Error("This is an error.");
         });

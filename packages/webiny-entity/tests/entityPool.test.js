@@ -5,11 +5,11 @@ import sinon from "sinon";
 
 const sandbox = sinon.sandbox.create();
 
-describe("entity pool test", function() {
+describe("entity pool test", () => {
     beforeEach(() => User.getEntityPool().flush());
     afterEach(() => sandbox.restore());
 
-    it("after save, entity should be present in the pool and after delete it must be removed", async () => {
+    test("after save, entity should be present in the pool and after delete it must be removed", async () => {
         const user = new User();
         user.age = 30;
         sandbox.stub(user.getDriver(), "save").callsFake(entity => {
@@ -30,7 +30,7 @@ describe("entity pool test", function() {
         expect(User.getEntityPool().get(user)).to.equal(undefined);
     });
 
-    it("has and get methods should return true / false correctly (whether is called with a entity class or an instance)", async () => {
+    test("has and get methods should return true / false correctly (whether is called with a entity class or an instance)", async () => {
         const user = new User();
         user.age = 30;
         sandbox.stub(user.getDriver(), "save").callsFake(entity => {
@@ -45,7 +45,7 @@ describe("entity pool test", function() {
         expect(User.getEntityPool().has(User, "A")).to.equal(true);
     });
 
-    it("findById must add to the pool and consequent findById calls must utilize it", async () => {
+    test("findById must add to the pool and consequent findById calls must utilize it", async () => {
         const entityFindById = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({ id: "A" });
         });
@@ -61,7 +61,7 @@ describe("entity pool test", function() {
         expect(user1).to.deep.equal(user2);
     });
 
-    it("find must add to the pool and consequent finds must utilize it", async () => {
+    test("find must add to the pool and consequent finds must utilize it", async () => {
         const entityFind = sandbox.stub(User.getDriver(), "find").callsFake(() => {
             return new QueryResult([{ id: "A" }, { id: "B" }, { id: "C" }]);
         });
@@ -81,7 +81,7 @@ describe("entity pool test", function() {
         expect(users1).to.deep.equal(users2);
     });
 
-    it("findByIds must add to the pool and consequent finds must utilize it", async () => {
+    test("findByIds must add to the pool and consequent finds must utilize it", async () => {
         let entityFindByIds = sandbox
             .stub(User.getDriver(), "findOne")
             .onCall(0)
@@ -145,13 +145,13 @@ describe("entity pool test", function() {
         expect(entityFindByIds.callCount).to.equal(0);
     });
 
-    it("remove method must exist if class was not inserted before", async () => {
+    test("remove method must exist if class was not inserted before", async () => {
         expect(User.getEntityPool().pool).to.be.empty;
         User.getEntityPool().remove(new User());
         expect(User.getEntityPool().pool).to.be.empty;
     });
 
-    it("flush method must empty the pool", async () => {
+    test("flush method must empty the pool", async () => {
         sandbox
             .stub(User.getDriver(), "findOne")
             .onCall(0)
@@ -176,7 +176,7 @@ describe("entity pool test", function() {
         expect(User.getEntityPool().pool).to.be.empty;
     });
 
-    it("findOne must return from pool if possible", async () => {
+    test("findOne must return from pool if possible", async () => {
         const entityFindOne = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({ id: "A" });
         });

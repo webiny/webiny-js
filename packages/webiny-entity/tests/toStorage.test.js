@@ -1,10 +1,9 @@
-import { assert } from "chai";
 import User from "./entities/user";
 import { Entity, Driver, EntityModel, EntityAttributesContainer } from "./../src";
 import { BooleanAttribute } from "webiny-model";
 
-describe("toStorage test", function() {
-    it("should return the same values, except dynamic attribute", async () => {
+describe("toStorage test", () => {
+    test("should return the same values, except dynamic attribute", async () => {
         const user = new User();
         user.populate({
             firstName: "A",
@@ -16,14 +15,14 @@ describe("toStorage test", function() {
 
         const data = await user.toStorage();
 
-        assert.hasAllKeys(data, ["firstName", "lastName", "enabled", "age"]);
-        assert.strictEqual(data["firstName"], "A");
-        assert.strictEqual(data["lastName"], "B");
-        assert.strictEqual(data["age"], 10);
-        assert.strictEqual(data["enabled"], true);
+        expect(Object.keys(data)).toContainAllValues(["firstName", "lastName", "enabled", "age"]);
+        expect(data["firstName"]).toBe("A");
+        expect(data["lastName"]).toBe("B");
+        expect(data["age"]).toBe(10);
+        expect(data["enabled"]).toBe(true);
     });
 
-    it("should return 1 or 0 instead true or false respectively", async () => {
+    test("should return 1 or 0 instead true or false respectively", async () => {
         class CustomBooleanAttribute extends BooleanAttribute {
             setStorageValue(value) {
                 return this.setValue(!!value);
@@ -81,11 +80,11 @@ describe("toStorage test", function() {
 
         const data1 = await customEntity1.toStorage();
 
-        assert.hasAllKeys(data1, ["firstName", "lastName", "enabled", "age"]);
-        assert.strictEqual(data1["firstName"], "A");
-        assert.strictEqual(data1["lastName"], "B");
-        assert.strictEqual(data1["enabled"], 1);
-        assert.strictEqual(data1["age"], 10);
+        expect(Object.keys(data1)).toContainAllValues(["firstName", "lastName", "enabled", "age"]);
+        expect(data1["firstName"]).toBe("A");
+        expect(data1["lastName"]).toBe("B");
+        expect(data1["enabled"]).toBe(1);
+        expect(data1["age"]).toBe(10);
 
         const customEntity2 = new CustomEntity();
         customEntity2.populate({
@@ -98,10 +97,10 @@ describe("toStorage test", function() {
 
         const data2 = await customEntity2.toStorage();
 
-        assert.hasAllKeys(data2, ["firstName", "lastName", "enabled", "age"]);
-        assert.strictEqual(data2["firstName"], "A");
-        assert.strictEqual(data2["lastName"], "B");
-        assert.strictEqual(data2["enabled"], 0);
-        assert.strictEqual(data2["age"], 10);
+        expect(Object.keys(data2)).toContainAllValues(["firstName", "lastName", "enabled", "age"]);
+        expect(data2["firstName"]).toBe("A");
+        expect(data2["lastName"]).toBe("B");
+        expect(data2["enabled"]).toBe(0);
+        expect(data2["age"]).toBe(10);
     });
 });

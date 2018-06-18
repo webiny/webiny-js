@@ -1,14 +1,12 @@
-// @flow
-import { assert } from "chai";
 import compose from "./../src";
 
 describe("middleware composition test", () => {
-    it("should return a new function", () => {
+    test("should return a new function", () => {
         const middleware = compose([]);
-        assert.isFunction(middleware);
+        expect(typeof middleware).toBe("function");
     });
 
-    it("should modify params object", async () => {
+    test("should modify params object", async () => {
         const middleware = compose([
             (params, next) => {
                 params.key = "value";
@@ -20,11 +18,11 @@ describe("middleware composition test", () => {
         const params = {};
         await middleware(params);
 
-        assert.propertyVal(params, "key", "value");
-        assert.propertyVal(params, "key2", "value2");
+        expect(params["key"]).toBe("value");
+        expect(params["key2"]).toBe("value2");
     });
 
-    it("should execute all middleware functions", async () => {
+    test("should execute all middleware functions", async () => {
         const middleware = compose([
             (params, next) => {
                 params.key = "value";
@@ -39,11 +37,11 @@ describe("middleware composition test", () => {
         const params = {};
         await middleware(params);
 
-        assert.propertyVal(params, "key", "value");
-        assert.propertyVal(params, "key2", "value2");
+        expect(params["key"]).toBe("value");
+        expect(params["key2"]).toBe("value2");
     });
 
-    it("should finish execution when 'finish' is called and return a value", async () => {
+    test("should finish execution when 'finish' is called and return a value", async () => {
         const middleware = compose([
             (params, next, finish) => {
                 finish(100);
@@ -56,11 +54,11 @@ describe("middleware composition test", () => {
 
         const params = {};
         const result = await middleware(params);
-        assert.equal(result, 100);
-        assert.notProperty(params, "key2");
+        expect(result).toEqual(100);
+        expect("key2" in params).toBeFalsy();
     });
 
-    it("should abort when an error is thrown", async () => {
+    test("should abort when an error is thrown", async () => {
         const middleware = compose([
             () => {
                 throw new Error("Abort!");
@@ -75,8 +73,8 @@ describe("middleware composition test", () => {
         try {
             await middleware(params);
         } catch (e) {
-            assert.equal(e.message, "Abort!");
+            expect(e.message).toEqual("Abort!");
         }
-        assert.notProperty(params, "key2");
+        expect("key2" in params).toBeFalsy();
     });
 });

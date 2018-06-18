@@ -1,4 +1,3 @@
-import { assert } from "chai";
 import _ from "lodash";
 
 import extractor from "./../src";
@@ -12,24 +11,24 @@ const onRead = (data, key) => {
 };
 
 describe("custom callback test", () => {
-    it("should return root keys", async () => {
+    test("should return root keys", async () => {
         let extracted = await extractor.get(mock, "firstName,lastName,age", { onRead });
 
-        assert.deepEqual(extracted, {
+        expect(extracted).toEqual({
             firstName: "___John___",
             lastName: "___Doe___",
             age: "___30___"
         });
     });
 
-    it("should return nested keys", async () => {
+    test("should return nested keys", async () => {
         const extracted = await extractor.get(
             mock,
             "subscription.name,subscription.price,subscription.commitment.expiresOn",
             { onRead: onRead }
         );
 
-        assert.deepEqual(extracted, {
+        expect(extracted).toEqual({
             subscription: {
                 name: "___Free___",
                 price: "___0___",
@@ -40,10 +39,10 @@ describe("custom callback test", () => {
         });
     });
 
-    it("should return nested keys in square brackets", async () => {
+    test("should return nested keys in square brackets", async () => {
         const extracted = await extractor.get(mock, "company[name,city]", { onRead });
 
-        assert.deepEqual(extracted, {
+        expect(extracted).toEqual({
             company: {
                 name: "___Webiny LTD___",
                 city: "___London___"
@@ -51,9 +50,9 @@ describe("custom callback test", () => {
         });
     });
 
-    it("if a key is an array and no nested keys are set, it should be returned completely", async () => {
+    test("if a key is an array and no nested keys are set, it should be returned completely", async () => {
         const extracted = await extractor.get(mock, `age,meta.objects`, { onRead });
-        assert.deepEqual(extracted, {
+        expect(extracted).toEqual({
             age: "___30___",
             meta: {
                 objects: [

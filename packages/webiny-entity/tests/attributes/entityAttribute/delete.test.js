@@ -1,5 +1,3 @@
-import { assert } from "chai";
-
 import { QueryResult } from "../../../src/index";
 import { User, Company } from "../../entities/userCompanyImage";
 import { One } from "../../entities/oneTwoThree";
@@ -8,10 +6,10 @@ import sinon from "sinon";
 
 const sandbox = sinon.sandbox.create();
 
-describe("entity delete test", function() {
+describe("entity delete test", () => {
     afterEach(() => sandbox.restore());
 
-    it("auto delete must be manually enabled and canDelete must stop deletion if error was thrown", async () => {
+    test("auto delete must be manually enabled and canDelete must stop deletion if error was thrown", async () => {
         const user = new User();
         user.populate({
             firstName: "John",
@@ -58,9 +56,9 @@ describe("entity delete test", function() {
             error = e;
         }
 
-        assert.instanceOf(error, Error);
-        assert.equal(error.message, "Cannot delete Image entity");
-        assert(entityDelete.notCalled);
+        expect(error).toBeInstanceOf(Error);
+        expect(error.message).toEqual("Cannot delete Image entity");
+        expect(entityDelete.notCalled).toBeTruthy();
 
         await user.set("company.image.markedAsCannotDelete", false);
 
@@ -70,9 +68,9 @@ describe("entity delete test", function() {
             error = e;
         }
 
-        assert.instanceOf(error, Error);
-        assert.equal(error.message, "Cannot delete Company entity");
-        assert(entityDelete.notCalled);
+        expect(error).toBeInstanceOf(Error);
+        expect(error.message).toEqual("Cannot delete Company entity");
+        expect(entityDelete.notCalled).toBeTruthy();
 
         await user.set("company.markedAsCannotDelete", false);
 
@@ -82,19 +80,19 @@ describe("entity delete test", function() {
             error = e;
         }
 
-        assert.instanceOf(error, Error);
-        assert.equal(error.message, "Cannot delete User entity");
-        assert(entityDelete.notCalled);
+        expect(error).toBeInstanceOf(Error);
+        expect(error.message).toEqual("Cannot delete User entity");
+        expect(entityDelete.notCalled).toBeTruthy();
 
         await user.set("markedAsCannotDelete", false);
 
         await user.delete();
 
         entityDelete.restore();
-        assert(entityDelete.calledThrice);
+        expect(entityDelete.calledThrice).toBeTruthy();
     });
 
-    it("should properly delete linked entity even though they are not loaded (auto delete enabled)", async () => {
+    test("should properly delete linked entity even though they are not loaded (auto delete enabled)", async () => {
         let findById = sandbox
             .stub(One.getDriver(), "findOne")
             .onCall(0)
@@ -138,13 +136,13 @@ describe("entity delete test", function() {
         let entityDelete = sandbox.stub(one.getDriver(), "delete");
         await one.delete();
 
-        assert.equal(entityDelete.callCount, 7);
+        expect(entityDelete.callCount).toEqual(7);
 
         findById.restore();
         entityDelete.restore();
     });
 
-    it("should not delete linked entities if main entity is deleted and auto delete is not enabled", async () => {
+    test("should not delete linked entities if main entity is deleted and auto delete is not enabled", async () => {
         const entityFindById = sandbox
             .stub(ClassA.getDriver(), "findOne")
             .onCall(0)
@@ -177,18 +175,18 @@ describe("entity delete test", function() {
         await classA.save();
         entitySave.restore();
 
-        assert(entitySave.calledThrice);
+        expect(entitySave.calledThrice).toBeTruthy();
 
-        assert.equal(classA.id, "classA");
+        expect(classA.id).toEqual("classA");
 
         const classB = await classA.classB;
-        assert.equal(classB.id, "classB");
+        expect(classB.id).toEqual("classB");
 
         const classC = await classB.classC;
-        assert.equal(classC.id, "classC");
+        expect(classC.id).toEqual("classC");
 
-        assert.equal(await classA.getAttribute("classB").getStorageValue(), "classB");
-        assert.equal(await classB.getAttribute("classC").getStorageValue(), "classC");
+        expect(await classA.getAttribute("classB").getStorageValue()).toEqual("classB");
+        expect(await classB.getAttribute("classC").getStorageValue()).toEqual("classC");
 
         const entityDelete = sandbox
             .stub(ClassA.getDriver(), "delete")
@@ -198,7 +196,7 @@ describe("entity delete test", function() {
             });
 
         await classA.delete();
-        assert(entityDelete.calledOnce);
+        expect(entityDelete.calledOnce).toBeTruthy();
 
         entityDelete.restore();
     });

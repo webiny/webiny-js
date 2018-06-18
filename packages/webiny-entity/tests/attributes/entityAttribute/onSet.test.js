@@ -1,10 +1,9 @@
-import { assert } from "chai";
 import { One, Two } from "../../entities/oneTwoThree";
 
-describe("onSet test", function() {
+describe("onSet test", () => {
     beforeEach(() => One.getEntityPool().flush());
 
-    it("should return value set inside onSet callback", async () => {
+    test("should return value set inside onSet callback", async () => {
         const one = new One();
         const forcedTwo = new Two();
         forcedTwo.id = "forced";
@@ -13,6 +12,6 @@ describe("onSet test", function() {
 
         one.two = new Two();
 
-        assert.equal(await one.get("two.id"), "forced");
+        expect(await one.get("two.id")).toEqual("forced");
     });
 });

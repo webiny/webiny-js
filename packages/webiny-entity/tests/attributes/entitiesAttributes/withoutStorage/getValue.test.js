@@ -1,15 +1,14 @@
-import { assert } from "chai";
 import { QueryResult } from "../../../../src";
 import sinon from "sinon";
 import { Entity1, MainEntity } from "../../../entities/entitiesAttributeEntities";
 
 const sandbox = sinon.sandbox.create();
 
-describe("getValue test (without Storage)", function() {
+describe("getValue test (without Storage)", () => {
     beforeEach(() => MainEntity.getEntityPool().flush());
     afterEach(() => sandbox.restore());
 
-    it("should load only once when getting value", async () => {
+    test("should load only once when getting value", async () => {
         const entityFindStub = sandbox.stub(MainEntity.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({ id: "mainEntity" });
         });
@@ -19,29 +18,29 @@ describe("getValue test (without Storage)", function() {
 
         const entityFindSpy = sandbox.spy(MainEntity.getDriver(), "find");
 
-        assert.deepEqual(mainEntity.getAttribute("attribute1").value.state, {
+        expect(mainEntity.getAttribute("attribute1").value.state).toEqual({
             loading: false,
             loaded: false
         });
         await mainEntity.attribute1;
-        assert.deepEqual(mainEntity.getAttribute("attribute1").value.state, {
+        expect(mainEntity.getAttribute("attribute1").value.state).toEqual({
             loading: false,
             loaded: true
         });
-        assert.equal(entityFindSpy.callCount, 1);
+        expect(entityFindSpy.callCount).toEqual(1);
 
         await mainEntity.attribute1;
         await mainEntity.attribute1;
         await mainEntity.attribute1;
 
-        assert.deepEqual(mainEntity.getAttribute("attribute1").value.state, {
+        expect(mainEntity.getAttribute("attribute1").value.state).toEqual({
             loading: false,
             loaded: true
         });
-        assert.equal(entityFindSpy.callCount, 1);
+        expect(entityFindSpy.callCount).toEqual(1);
     });
 
-    it("when a new value is set, attribute should not load anything", async () => {
+    test("when a new value is set, attribute should not load anything", async () => {
         const mainEntity = new MainEntity();
         mainEntity.attribute1 = [
             { id: null, name: "Enlai", type: "invalid", markedAsCannotDelete: true },
@@ -49,31 +48,31 @@ describe("getValue test (without Storage)", function() {
             "something"
         ];
 
-        assert.deepEqual(mainEntity.getAttribute("attribute1").value.state, {
+        expect(mainEntity.getAttribute("attribute1").value.state).toEqual({
             loading: false,
             loaded: false
         });
-        assert.lengthOf(mainEntity.getAttribute("attribute1").value.current, 3);
-        assert.isObject(mainEntity.getAttribute("attribute1").value.current[0]);
-        assert.instanceOf(mainEntity.getAttribute("attribute1").value.current[1], Entity1);
-        assert.equal(mainEntity.getAttribute("attribute1").value.current[2], "something");
-        assert.deepEqual(mainEntity.getAttribute("attribute1").value.state, {
+        expect(mainEntity.getAttribute("attribute1").value.current.length).toBe(3);
+        expect(typeof mainEntity.getAttribute("attribute1").value.current[0]).toBe("object");
+        expect(mainEntity.getAttribute("attribute1").value.current[1]).toBeInstanceOf(Entity1);
+        expect(mainEntity.getAttribute("attribute1").value.current[2]).toEqual("something");
+        expect(mainEntity.getAttribute("attribute1").value.state).toEqual({
             loading: false,
             loaded: false
         });
     });
 
-    it("when a new id is set, getting the value should return a loaded instance, or value itself if load failed", async () => {
+    test("when a new id is set, getting the value should return a loaded instance, or value itself if load failed", async () => {
         const mainEntity = new MainEntity();
         mainEntity.attribute1 = ["entity1", "entity2", "invalid"];
 
-        assert.deepEqual(mainEntity.getAttribute("attribute1").value.state, {
+        expect(mainEntity.getAttribute("attribute1").value.state).toEqual({
             loading: false,
             loaded: false
         });
-        assert.lengthOf(mainEntity.getAttribute("attribute1").value.current, 3);
-        assert.equal(mainEntity.getAttribute("attribute1").value.current[0], "entity1");
-        assert.equal(mainEntity.getAttribute("attribute1").value.current[1], "entity2");
+        expect(mainEntity.getAttribute("attribute1").value.current.length).toBe(3);
+        expect(mainEntity.getAttribute("attribute1").value.current[0]).toEqual("entity1");
+        expect(mainEntity.getAttribute("attribute1").value.current[1]).toEqual("entity2");
 
         const entityFindOneStub = sandbox
             .stub(MainEntity.getDriver(), "findOne")
@@ -92,21 +91,21 @@ describe("getValue test (without Storage)", function() {
 
         const entities = await mainEntity.attribute1;
 
-        assert.instanceOf(entities[0], Entity1);
-        assert.equal(entities[0].id, "entity1");
-        assert.instanceOf(entities[1], Entity1);
-        assert.equal(entities[1].id, "entity2");
+        expect(entities[0]).toBeInstanceOf(Entity1);
+        expect(entities[0].id).toEqual("entity1");
+        expect(entities[1]).toBeInstanceOf(Entity1);
+        expect(entities[1].id).toEqual("entity2");
 
-        assert.equal(entities[2], "invalid");
+        expect(entities[2]).toEqual("invalid");
 
         entityFindOneStub.restore();
-        assert.deepEqual(mainEntity.getAttribute("attribute1").value.state, {
+        expect(mainEntity.getAttribute("attribute1").value.state).toEqual({
             loading: false,
             loaded: false
         });
     });
 
-    it("when loading an instance from passed ID, load must happen only on first call, only if not loaded, then load", async () => {
+    test("when loading an instance from passed ID, load must happen only on first call, only if not loaded, then load", async () => {
         const mainEntity = new MainEntity();
         mainEntity.attribute1 = ["entity1", "entity2", "invalid"];
 
@@ -127,7 +126,7 @@ describe("getValue test (without Storage)", function() {
 
         await mainEntity.attribute1;
 
-        assert.equal(entityFindOneStub.callCount, 3);
+        expect(entityFindOneStub.callCount).toEqual(3);
         entityFindOneStub.restore();
 
         const entityFindOneSpy = sandbox.spy(MainEntity.getDriver(), "findOne");
@@ -136,15 +135,15 @@ describe("getValue test (without Storage)", function() {
         await mainEntity.attribute1;
         await mainEntity.attribute1;
 
-        assert.equal(entityFindOneSpy.callCount, 4);
+        expect(entityFindOneSpy.callCount).toEqual(4);
 
-        assert.deepEqual(mainEntity.getAttribute("attribute1").value.state, {
+        expect(mainEntity.getAttribute("attribute1").value.state).toEqual({
             loading: false,
             loaded: false
         });
     });
 
-    it("should get values correctly even on multiple set calls", async () => {
+    test("should get values correctly even on multiple set calls", async () => {
         const mainEntity = new MainEntity();
 
         mainEntity.attribute1 = [
@@ -154,13 +153,13 @@ describe("getValue test (without Storage)", function() {
         ];
 
         const attribute1 = await mainEntity.attribute1;
-        assert.equal(attribute1[0].id, "one");
-        assert.equal(attribute1[1].id, "two");
-        assert.equal(attribute1[2].id, "three");
+        expect(attribute1[0].id).toEqual("one");
+        expect(attribute1[1].id).toEqual("two");
+        expect(attribute1[2].id).toEqual("three");
 
         const attribute1Again = await mainEntity.attribute1;
-        assert.equal(attribute1Again[0].id, "one");
-        assert.equal(attribute1Again[1].id, "two");
-        assert.equal(attribute1Again[2].id, "three");
+        expect(attribute1Again[0].id).toEqual("one");
+        expect(attribute1Again[1].id).toEqual("two");
+        expect(attribute1Again[2].id).toEqual("three");
     });
 });

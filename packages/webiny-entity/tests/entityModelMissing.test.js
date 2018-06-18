@@ -1,5 +1,4 @@
 import { Entity, Driver } from "./../src";
-import { assert } from "chai";
 import { EntityError } from "../src";
 
 class ExtendedEntityDriver extends Driver {
@@ -16,8 +15,8 @@ class ExtendedEntity extends Entity {}
 
 ExtendedEntity.driver = new ExtendedEntityDriver();
 
-describe("entity model missing test", function() {
-    it("should throw an exception because entity model is missing", async () => {
+describe("entity model missing test", () => {
+    test("should throw an exception because entity model is missing", async () => {
         let error = null;
         try {
             new ExtendedEntity();
@@ -25,7 +24,7 @@ describe("entity model missing test", function() {
             error = e;
         }
 
-        assert.instanceOf(error, EntityError);
-        assert.equal(error.code, EntityError.MODEL_MISSING);
+        expect(error).toBeInstanceOf(EntityError);
+        expect(error.code).toEqual(EntityError.MODEL_MISSING);
     });
 });

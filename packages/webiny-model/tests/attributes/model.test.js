@@ -1,10 +1,9 @@
-import { assert } from "chai";
 import Model from "./../../src/model";
 import ModelError from "./../../src/modelError";
 import { User } from "./../models/userModels";
 
-describe("attribute model test", function() {
-    it("should not accept inline functions, must always receive a Model class", async () => {
+describe("attribute model test", () => {
+    test("should not accept inline functions, must always receive a Model class", async () => {
         class ModelAttributeWithoutModelClassModel extends Model {
             constructor() {
                 super();
@@ -15,8 +14,7 @@ describe("attribute model test", function() {
         try {
             new ModelAttributeWithoutModelClassModel();
         } catch (e) {
-            assert.equal(
-                e.message,
+            expect(e.message).toEqual(
                 `"model" attribute "modelAttribute1" received an invalid class (subclass of Model is required).`
             );
             return;
@@ -35,9 +33,9 @@ describe("attribute model test", function() {
             this.attr("attribute2").model(Model2);
         });
 
-        it("attribute1 should accept Model1", async () => {
+        test("attribute1 should accept Model1", async () => {
             model.attribute1 = new Model1();
-            assert.instanceOf(model.attribute1, Model1);
+            expect(model.attribute1).toBeInstanceOf(Model1);
             try {
                 await model.validate();
             } catch (e) {
@@ -45,10 +43,10 @@ describe("attribute model test", function() {
             }
         });
 
-        it("attribute2 should accept Model2", async () => {
+        test("attribute2 should accept Model2", async () => {
             model.attribute2 = new Model2();
-            assert.isObject(model.attribute2);
-            assert.instanceOf(model.attribute2, Model2);
+            expect(typeof model.attribute2).toBe("object");
+            expect(model.attribute2).toBeInstanceOf(Model2);
             try {
                 await model.validate();
             } catch (e) {
@@ -56,7 +54,7 @@ describe("attribute model test", function() {
             }
         });
 
-        it("attribute1 shouldn't accept Model2 (ModelError must be thrown)", async () => {
+        test("attribute1 shouldn't accept Model2 (ModelError must be thrown)", async () => {
             let error = null;
             try {
                 model.attribute1 = new Model2();
@@ -65,11 +63,11 @@ describe("attribute model test", function() {
                 error = e;
             }
 
-            assert.instanceOf(error, ModelError);
-            assert.equal(error.code, ModelError.INVALID_ATTRIBUTES);
+            expect(error).toBeInstanceOf(ModelError);
+            expect(error.code).toEqual(ModelError.INVALID_ATTRIBUTES);
         });
 
-        it("attribute2 shouldn't accept Model1 (ModelError must be thrown", async () => {
+        test("attribute2 shouldn't accept Model1 (ModelError must be thrown", async () => {
             let error = null;
             try {
                 model.attribute2 = new Model1();
@@ -78,13 +76,13 @@ describe("attribute model test", function() {
                 error = e;
             }
 
-            assert.instanceOf(error, ModelError);
-            assert.equal(error.code, ModelError.INVALID_ATTRIBUTES);
+            expect(error).toBeInstanceOf(ModelError);
+            expect(error.code).toEqual(ModelError.INVALID_ATTRIBUTES);
         });
     });
 
     describe("setting nested values to model and all nested models test", () => {
-        it("should correctly populate", async () => {
+        test("should correctly populate", async () => {
             const user = new User();
 
             user.populate({
@@ -102,19 +100,19 @@ describe("attribute model test", function() {
                 }
             });
 
-            assert.equal(user.firstName, "John");
-            assert.equal(user.lastName, "Doe");
-            assert.equal(user.age, 15);
-            assert.equal(user.company.name, "Webiny LTD");
-            assert.equal(user.company.city, "London");
+            expect(user.firstName).toEqual("John");
+            expect(user.lastName).toEqual("Doe");
+            expect(user.age).toEqual(15);
+            expect(user.company.name).toEqual("Webiny LTD");
+            expect(user.company.city).toEqual("London");
 
-            assert.equal(user.company.image.file, "webiny.jpg");
-            assert.equal(user.company.image.visible, false);
-            assert.equal(user.company.image.size.width, 12.5);
-            assert.equal(user.company.image.size.height, 44);
+            expect(user.company.image.file).toEqual("webiny.jpg");
+            expect(user.company.image.visible).toEqual(false);
+            expect(user.company.image.size.width).toEqual(12.5);
+            expect(user.company.image.size.height).toEqual(44);
         });
 
-        it("should trigger validation error on image size (missing width)", async () => {
+        test("should trigger validation error on image size (missing width)", async () => {
             const user = new User();
 
             let error,
@@ -142,12 +140,12 @@ describe("attribute model test", function() {
                         .invalidAttributes.size.data.invalidAttributes.height.data.validator;
             }
 
-            assert.instanceOf(error, ModelError);
-            assert.equal(validator, "required");
+            expect(error).toBeInstanceOf(ModelError);
+            expect(validator).toEqual("required");
         });
     });
 
-    it("validation must be execute on both attribute and model level", async () => {
+    test("validation must be execute on both attribute and model level", async () => {
         const user = new User();
 
         let error = null;
@@ -161,8 +159,8 @@ describe("attribute model test", function() {
             error = e;
         }
 
-        assert.instanceOf(error, ModelError);
-        assert.deepEqual(error.data, {
+        expect(error).toBeInstanceOf(ModelError);
+        expect(error.data).toEqual({
             invalidAttributes: {
                 company: {
                     code: "INVALID_ATTRIBUTE",
@@ -188,8 +186,8 @@ describe("attribute model test", function() {
             error = e;
         }
 
-        assert.instanceOf(error, ModelError);
-        assert.deepEqual(error.data, {
+        expect(error).toBeInstanceOf(ModelError);
+        expect(error.data).toEqual({
             invalidAttributes: {
                 company: {
                     code: "INVALID_ATTRIBUTES",
@@ -221,7 +219,7 @@ describe("attribute model test", function() {
         });
     });
 
-    it("getting values out of model test", () => {
+    test("getting values out of model test", async () => {
         const user = new User();
         user.populate({
             company: {
@@ -235,20 +233,18 @@ describe("attribute model test", function() {
             }
         });
 
-        it("when accessed directly, it should return a plain object with data", async () => {
-            assert.isObject(user.company);
-            assert.isObject(user.company.image);
-            assert.isObject(user.company.image.size);
-        });
+        // when accessed directly, it should return a plain object with data
+        await expect(typeof user.company).toBe("object");
+        await expect(typeof user.company.image).toBe("object");
+        await expect(typeof user.company.image.size).toBe("object");
 
-        it("when accessing nested key directly, it should return its value", async () => {
-            assert.equal(user.company.name, "Webiny LTD");
-            assert.equal(user.company.image.file, "webiny.jpg");
-            assert.equal(user.company.image.size.width, 12.5);
-        });
+        // when accessing nested key directly, it should return its value
+        await expect(user.company.name).toEqual("Webiny LTD");
+        await expect(user.company.image.file).toEqual("webiny.jpg");
+        await expect(user.company.image.size.width).toEqual(12.5);
     });
 
-    it("should not set value if setOnce is enabled", async () => {
+    test("should not set value if setOnce is enabled", async () => {
         const user = new User();
         user.populate({
             company: {
@@ -266,10 +262,10 @@ describe("attribute model test", function() {
 
         await user.set("company", null);
 
-        assert.equal(await user.get("company.image.size.width"), 12.5);
+        expect(await user.get("company.image.size.width")).toEqual(12.5);
     });
 
-    it("should return empty JSON when getJSONValue is called", async () => {
+    test("should return empty JSON when getJSONValue is called", async () => {
         const user = new User();
         user.populate({
             company: {
@@ -283,32 +279,32 @@ describe("attribute model test", function() {
             }
         });
 
-        assert.deepEqual(await user.getAttribute("company").getJSONValue(), {});
+        expect(await user.getAttribute("company").getJSONValue()).toEqual({});
     });
 
-    it("toStorage / toJSON should just return current value if not an instance of Model", async () => {
+    test("toStorage / toJSON should just return current value if not an instance of Model", async () => {
         const user = new User();
         user.populate({ company: 123 });
 
-        assert.equal(await user.getAttribute("company").getJSONValue(), 123);
-        assert.equal(await user.getAttribute("company").getStorageValue(), 123);
+        expect(await user.getAttribute("company").getJSONValue()).toEqual(123);
+        expect(await user.getAttribute("company").getStorageValue()).toEqual(123);
     });
 
-    it("getJSONValue method must return value - we don't do any processing toJSON on it", async () => {
+    test("getJSONValue method must return value - we don't do any processing toJSON on it", async () => {
         const user = new User();
         user.company = null;
-        assert.isNull(await user.getAttribute("company").getJSONValue());
+        expect(await user.getAttribute("company").getJSONValue()).toBeNull();
     });
 
-    it("getStorageValue method must return null", async () => {
+    test("getStorageValue method must return null", async () => {
         const user = new User();
-        assert.deepEqual(await user.getAttribute("company").getStorageValue(), null);
+        expect(await user.getAttribute("company").getStorageValue()).toEqual(null);
 
         user.company = null;
-        assert.deepEqual(await user.getAttribute("company").getStorageValue(), null);
+        expect(await user.getAttribute("company").getStorageValue()).toEqual(null);
     });
 
-    it("getStorageValue must iterate through all attributes and return its storage values", async () => {
+    test("getStorageValue must iterate through all attributes and return its storage values", async () => {
         const user = new User();
 
         user.populate({
@@ -326,7 +322,7 @@ describe("attribute model test", function() {
 
         const data = await user.toStorage();
 
-        assert.deepEqual(data, {
+        expect(data).toEqual({
             firstName: "John",
             lastName: "Doe",
             company: {
@@ -344,7 +340,7 @@ describe("attribute model test", function() {
         });
     });
 
-    it("onSet/onGet must be triggered correctly", async () => {
+    test("onSet/onGet must be triggered correctly", async () => {
         const user = new User();
         user.getAttribute("company").onSet(() => {
             return { name: "onSet Name Value", city: "onSet City Value" };
@@ -357,14 +353,14 @@ describe("attribute model test", function() {
             }
         });
 
-        assert.equal(user.company.name, "onSet Name Value");
-        assert.equal(user.company.city, "onSet City Value");
+        expect(user.company.name).toEqual("onSet Name Value");
+        expect(user.company.city).toEqual("onSet City Value");
 
         user.getAttribute("company").onGet(() => {
             return { random: "Something overridden randomly." };
         });
 
-        assert.deepEqual(await user.toJSON("company"), {
+        expect(await user.toJSON("company")).toEqual({
             company: {
                 random: "Something overridden randomly."
             }

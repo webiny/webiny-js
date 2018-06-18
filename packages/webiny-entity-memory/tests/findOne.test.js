@@ -1,12 +1,19 @@
-import { assert } from "chai";
 import SimpleEntity from "./entities/simpleEntity";
 
-describe("findOne test", function() {
-    it("findOne - should find previously inserted entity", async () => {
+describe("findOne test", () => {
+    beforeAll(() => {
+        SimpleEntity.getDriver()
+            .flush()
+            .import("SimpleEntity", [
+                { id: 1, name: "This is a test", slug: "thisIsATest", enabled: true }
+            ]);
+    });
+
+    test("findOne - should load existing entity", async () => {
         const simpleEntity = await SimpleEntity.findOne({ query: { id: 1 } });
-        assert.equal(simpleEntity.id, 1);
-        assert.equal(simpleEntity.name, "This is a test");
-        assert.equal(simpleEntity.slug, "thisIsATest");
-        assert.isTrue(simpleEntity.enabled);
+        expect(simpleEntity.id).toEqual(1);
+        expect(simpleEntity.name).toEqual("This is a test");
+        expect(simpleEntity.slug).toEqual("thisIsATest");
+        expect(simpleEntity.enabled).toBe(true);
     });
 });

@@ -10,11 +10,11 @@ class User extends Entity {
     }
 }
 
-describe("multiple delete / save prevention test", async function() {
+describe("multiple delete / save prevention test", async () => {
     afterEach(() => sandbox.restore());
     beforeEach(() => User.getEntityPool().flush());
 
-    it("should only call save once", async () => {
+    test("should only call save once", async () => {
         const user = new User();
         const save = sandbox.spy(User.getDriver(), "save");
 
@@ -29,7 +29,7 @@ describe("multiple delete / save prevention test", async function() {
         expect(save.callCount).to.equal(0);
     });
 
-    it("should only call delete once", async () => {
+    test("should only call delete once", async () => {
         const user = new User();
         user.id = "asd";
 

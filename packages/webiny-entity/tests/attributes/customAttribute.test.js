@@ -1,15 +1,14 @@
-import { assert } from "chai";
 import { Issue, User, Company } from "./../entities/customAttributeEntities";
 import sinon from "sinon";
 import { QueryResult } from "../..";
 
 const sandbox = sinon.sandbox.create();
 
-describe("custom attribute test", function() {
+describe("custom attribute test", () => {
     afterEach(() => sandbox.restore());
     beforeEach(() => User.getEntityPool().flush());
 
-    it("should be able to work with a custom attribute", async () => {
+    test("should be able to work with a custom attribute", async () => {
         const user = new User();
         user.populate({ firstName: "John", lastName: "Doe" });
 
@@ -17,7 +16,7 @@ describe("custom attribute test", function() {
         issue1.populate({ title: "testing custom attribute", assignedTo: user });
 
         const json1 = await issue1.toJSON("title,assignedTo[firstName,lastName]");
-        assert.deepEqual(json1, {
+        expect(json1).toEqual({
             id: null,
             assignedTo: {
                 firstName: "John",
@@ -33,7 +32,7 @@ describe("custom attribute test", function() {
         issue2.populate({ title: "testing custom attribute", assignedTo: company });
 
         const json2 = await issue2.toJSON("title,assignedTo[name]");
-        assert.deepEqual(json2, {
+        expect(json2).toEqual({
             id: null,
             assignedTo: {
                 name: "Webiny"
@@ -42,7 +41,7 @@ describe("custom attribute test", function() {
         });
     });
 
-    it("should load entities from database", async () => {
+    test("should load entities from database", async () => {
         let entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({ id: "xyz", assignedTo: "abc", assignedToClassId: "User" });
         });
@@ -50,19 +49,19 @@ describe("custom attribute test", function() {
         const issue = await Issue.findById(1);
         entityFind.restore();
 
-        assert.equal(issue.id, "xyz");
+        expect(issue.id).toEqual("xyz");
 
         entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({ id: 1, firstName: "John", lastName: "Doe" });
         });
 
-        assert.equal(await issue.get("assignedTo.firstName"), "John");
-        assert.equal(await issue.get("assignedTo.lastName"), "Doe");
+        expect(await issue.get("assignedTo.firstName")).toEqual("John");
+        expect(await issue.get("assignedTo.lastName")).toEqual("Doe");
 
         entityFind.restore();
     });
 
-    it("should return correct storage values", async () => {
+    test("should return correct storage values", async () => {
         let entityFind = sandbox.stub(User.getDriver(), "findOne").callsFake(() => {
             return new QueryResult({ id: "xyz", assignedTo: "abc", assignedToClassId: "User" });
         });
@@ -70,16 +69,16 @@ describe("custom attribute test", function() {
         const issue = await Issue.findById(1);
         entityFind.restore();
 
-        assert.equal(issue.id, "xyz");
+        expect(issue.id).toEqual("xyz");
 
         let storage = await issue.toStorage();
-        assert.deepEqual(storage, {});
+        expect(storage).toEqual({});
 
         issue.title = "new one";
         issue.assignedTo = "abcd";
         issue.assignedToClassId = "UserUpdated";
         storage = await issue.toStorage();
-        assert.deepEqual(storage, {
+        expect(storage).toEqual({
             assignedTo: "abcd",
             assignedToClassId: "UserUpdated",
             title: "new one"
@@ -93,7 +92,7 @@ describe("custom attribute test", function() {
         entityFind.restore();
 
         storage = await issue.toStorage();
-        assert.deepEqual(storage, {
+        expect(storage).toEqual({
             title: "new one",
             assignedTo: "abcd",
             assignedToClassId: "UserUpdated"
