@@ -1,3 +1,4 @@
+// @flow
 import FileTable from "./file.mysql";
 
 class ImageTable extends FileTable {

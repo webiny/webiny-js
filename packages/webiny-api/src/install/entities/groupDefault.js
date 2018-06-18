@@ -1,3 +1,4 @@
+// @flow
 import { Group } from "./../..";
 
 export default async () => {

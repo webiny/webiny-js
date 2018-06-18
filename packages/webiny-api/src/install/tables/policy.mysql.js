@@ -1,3 +1,4 @@
+// @flow
 import MySQLTable from "./mysqlTable";
 
 class Policy extends MySQLTable {

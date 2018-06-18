@@ -1,6 +1,7 @@
+// @flow
 import ValidationError from "./../validationError";
 
-export default (value, params) => {
+export default (value: any, params: Array<string>) => {
     if (!value) return;
     value = value + "";
 

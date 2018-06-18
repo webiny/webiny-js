@@ -1,3 +1,4 @@
+// @flow
 export { default as admin } from "./admin";
 export { default as groupDefault } from "./groupDefault";
 export { default as policySecurityFullAccess } from "./policySecurityFullAccess";

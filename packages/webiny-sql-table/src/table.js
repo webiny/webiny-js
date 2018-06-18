@@ -7,12 +7,12 @@ import Driver from "./driver";
 import type { CommandOptions } from "../types";
 
 class Table {
-    static engine: ?string;
-    static tableName: ?string;
-    static defaultCharset: ?string;
-    static collate: ?string;
-    static comment: ?string;
-    static autoIncrement: ?number;
+    static engine: string;
+    static tableName: string;
+    static defaultCharset: string;
+    static collate: string;
+    static comment: string;
+    static autoIncrement: number;
     static driver: Driver;
     columnsContainer: ColumnsContainer;
     indexesContainer: IndexesContainer;
@@ -26,7 +26,7 @@ class Table {
         return this.getColumnsContainer().column(name);
     }
 
-    index(name: string): IndexesContainer {
+    index(name: ?string): IndexesContainer {
         return this.getIndexesContainer().index(name);
     }
 
@@ -118,11 +118,11 @@ class Table {
         return this;
     }
 
-    static getEngine(): ?string {
+    static getEngine(): string {
         return this.engine;
     }
 
-    getEngine(): ?string {
+    getEngine(): string {
         return this.constructor.engine;
     }
 
@@ -131,11 +131,11 @@ class Table {
         return this;
     }
 
-    static getDefaultCharset(): ?string {
+    static getDefaultCharset(): string {
         return this.defaultCharset;
     }
 
-    getDefaultCharset(): ?string {
+    getDefaultCharset(): string {
         return this.constructor.defaultCharset;
     }
 
@@ -148,7 +148,7 @@ class Table {
         return this.collate;
     }
 
-    getCollate(): ?string {
+    getCollate(): string {
         return this.constructor.collate;
     }
 
@@ -157,11 +157,11 @@ class Table {
         return this;
     }
 
-    static getName(): ?string {
+    static getName(): string {
         return this.tableName;
     }
 
-    getName(): ?string {
+    getName(): string {
         return this.constructor.getName();
     }
 
@@ -170,11 +170,11 @@ class Table {
         return this;
     }
 
-    static getComment(): ?string {
+    static getComment(): string {
         return this.comment;
     }
 
-    getComment(): ?string {
+    getComment(): string {
         return this.constructor.getComment();
     }
 
@@ -183,11 +183,11 @@ class Table {
         return this;
     }
 
-    static getAutoIncrement(): ?number {
+    static getAutoIncrement(): number {
         return this.autoIncrement;
     }
 
-    getAutoIncrement(): ?number {
+    getAutoIncrement(): number {
         return this.constructor.getAutoIncrement();
     }
 
@@ -237,12 +237,12 @@ class Table {
     }
 }
 
-Table.engine = null;
-Table.tableName = null;
-Table.defaultCharset = null;
-Table.collate = null;
-Table.comment = null;
-Table.autoIncrement = null;
+Table.engine = "";
+Table.tableName = "";
+Table.defaultCharset = "";
+Table.collate = "";
+Table.comment = "";
+Table.autoIncrement = 0;
 Table.driver = new Driver();
 
 export default Table;

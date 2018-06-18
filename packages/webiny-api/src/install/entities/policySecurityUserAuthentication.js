@@ -1,3 +1,4 @@
+// @flow
 import { Policy, Group } from "./../../";
 
 export default async () => {

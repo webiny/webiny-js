@@ -26,7 +26,7 @@ class ColumnsContainer {
         this.newColumnName = "";
     }
 
-    column(newColumnName: ?string): ColumnsContainer {
+    column(newColumnName: string): ColumnsContainer {
         this.newColumnName = newColumnName;
         return this;
     }

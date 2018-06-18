@@ -44,7 +44,7 @@ class Column extends BaseColumn {
      * Returns SQL definition if column.
      * @returns {string}
      */
-    getSQLValue() {
+    getSQLValue(): string {
         let sql = `\`${this.getName()}\` ${this.getType()}`;
 
         if (this.hasArguments()) {

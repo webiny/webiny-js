@@ -1,3 +1,4 @@
+// @flow
 export { default as ApiTokenTable } from "./apiToken.mysql";
 export { default as FileTable } from "./file.mysql";
 export { default as GroupTable } from "./group.mysql";

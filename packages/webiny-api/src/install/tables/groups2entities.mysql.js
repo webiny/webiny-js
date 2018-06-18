@@ -1,3 +1,4 @@
+// @flow
 import MySQLTable from "./mysqlTable";
 
 class Entities2Groups extends MySQLTable {

@@ -15,9 +15,7 @@ const blacklist = [
     "webiny-client-cms",
     "webiny-client-ui",
     "webiny-form",
-    "webiny-react-router",
-
-    "webiny-api-cms"
+    "webiny-react-router"
 ];
 
 function listPackages(p) {
