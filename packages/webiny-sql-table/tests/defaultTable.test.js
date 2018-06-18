@@ -5,11 +5,11 @@ const table = new Table();
 
 describe("default Table test", function() {
     it("getComment should return null by default", async () => {
-        assert.equal(table.getComment(), null);
+        assert.equal(table.getComment(), "");
     });
 
     it("getAutoIncrement should return null by default", async () => {
-        assert.equal(table.getAutoIncrement(), null);
+        assert.equal(table.getAutoIncrement(), 0);
     });
 
     it("default database methods should return empty results", async () => {

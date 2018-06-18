@@ -11,7 +11,7 @@ class Column extends BaseColumn {
     constructor(
         name: string,
         columnsContainer: ColumnsContainer,
-        columnArguments: ?Array<string | number> = []
+        columnArguments: Array<string | number> = []
     ) {
         super(name, columnsContainer, columnArguments);
 

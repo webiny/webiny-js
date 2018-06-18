@@ -11,7 +11,7 @@ class Column extends BaseColumn {
     constructor(
         name: string,
         columnsContainer: ColumnsContainer,
-        columnArguments: ?Array<string | number> = []
+        columnArguments: Array<string | number> = []
     ) {
         super(name, columnsContainer, columnArguments);
 
@@ -99,7 +99,7 @@ class Column extends BaseColumn {
         return this.autoIncrement;
     }
 
-    getObjectValue() {
+    getObjectValue(): Object {
         const output = super.getObjectValue();
         output.unsigned = this.getUnsigned();
         output.autoIncrement = this.getAutoIncrement();

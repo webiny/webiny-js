@@ -6,12 +6,12 @@ describe("toObject test", function() {
         const userTable = new UserTable();
 
         assert.deepEqual(userTable.toObject(), {
-            autoIncrement: null,
+            autoIncrement: 0,
             name: "Users",
-            comment: null,
-            engine: null,
-            collate: null,
-            defaultCharset: null,
+            comment: "",
+            engine: "",
+            collate: "",
+            defaultCharset: "",
             columns: [
                 {
                     name: "id",
@@ -45,7 +45,7 @@ describe("toObject test", function() {
             indexes: [
                 {
                     columns: ["id"],
-                    name: null,
+                    name: "",
                     type: "PRIMARY"
                 },
                 {

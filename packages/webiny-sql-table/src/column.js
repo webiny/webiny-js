@@ -62,7 +62,7 @@ class Column {
         return this.getParentColumnsContainer().getParentTable();
     }
 
-    getObjectValue(): {} {
+    getObjectValue(): Object {
         return {
             name: this.getName(),
             type: this.getType(),

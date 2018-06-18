@@ -22,11 +22,11 @@ class Table {
         this.indexesContainer = this.createIndexesContainer();
     }
 
-    column(name: string): ColumnsContainer {
+    column(name: string): any {
         return this.getColumnsContainer().column(name);
     }
 
-    index(name: ?string): IndexesContainer {
+    index(name: string = ""): any {
         return this.getIndexesContainer().index(name);
     }
 
@@ -144,7 +144,7 @@ class Table {
         return this;
     }
 
-    static getCollate(): ?string {
+    static getCollate(): string {
         return this.collate;
     }
 

@@ -1,15 +1,19 @@
 // @flow
 import type { Table } from "webiny-sql-table";
+import type Column from "./../columns/column";
+import type KeyIndex from "./../indexes/keyIndex";
 
 export default (table: Table): string => {
     const columns = [];
     table.getColumns().forEach(column => {
-        columns.push(column.getSQLValue());
+        const mysqlColumn = ((column: any): Column);
+        columns.push(mysqlColumn.getSQLValue());
     });
 
     const indexes = [];
     table.getIndexes().forEach(index => {
-        indexes.push(index.getSQLValue());
+        const mysqlIndex = ((index: any): KeyIndex);
+        indexes.push(mysqlIndex.getSQLValue());
     });
 
     let output = columns

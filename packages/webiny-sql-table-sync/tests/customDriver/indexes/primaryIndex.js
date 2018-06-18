@@ -10,8 +10,8 @@ class PrimaryIndex extends Index {
      * Primary indexes don't have a name, so it's safe to return null here.
      * @returns {null}
      */
-    getName(): ?string {
-        return null;
+    getName(): string {
+        return "";
     }
 }
 

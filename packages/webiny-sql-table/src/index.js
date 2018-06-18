@@ -3,7 +3,7 @@ import type Table from "./table";
 import IndexesContainer from "./indexesContainer";
 
 class Index {
-    name: ?string;
+    name: string;
     type: string;
     columns: Array<string>;
     indexesContainer: IndexesContainer;
@@ -33,7 +33,7 @@ class Index {
     /**
      * Returns name of index
      */
-    getName(): ?string {
+    getName(): string {
         return this.name;
     }
 
