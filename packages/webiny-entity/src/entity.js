@@ -11,7 +11,7 @@ import QueryResult from "./queryResult";
 import { EntityError } from "./index";
 
 class Entity {
-    static classId: ?string;
+    static classId: string;
     static driver: Driver;
     static pool: EntityPool;
     static crud: {
@@ -162,10 +162,9 @@ class Entity {
     /**
      * Creates new attribute with name.
      */
-    attr(name: string): EntityAttributesContainer {
-        return this.getModel()
-            .getAttributesContainer()
-            .attr(name);
+    attr(name: string) {
+        const container: EntityAttributesContainer = (this.getModel().getAttributesContainer(): any);
+        return container.attr(name);
     }
 
     /**
@@ -194,8 +193,9 @@ class Entity {
      * Returns entity's JSON representation.
      */
     async toJSON(path: ?string): Promise<JSON> {
+        const attribute: Attribute = (this.getAttribute("id"): any);
         return _.merge(
-            { id: this.getAttribute("id").getValue() },
+            { id: attribute.getValue() },
             path ? await this.getModel().toJSON(path) : {}
         );
     }
@@ -615,7 +615,7 @@ class Entity {
     }
 }
 
-Entity.classId = null;
+Entity.classId = "";
 Entity.driver = new Driver();
 Entity.pool = new EntityPool();
 Entity.crud = {

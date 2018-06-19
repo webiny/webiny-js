@@ -5,15 +5,16 @@ import EntityCollection from "./../entityCollection";
 import Entity from "./../entity";
 import EntitiesAttributeValue from "./entitiesAttributeValue";
 import EntityAttributesContainer from "../entityAttributesContainer";
+import type EntityModel from "./../entityModel";
 
 class EntitiesAttribute extends Attribute {
-    value: EntitiesAttributeValue;
     auto: { save: boolean, delete: boolean };
     classes: {
-        parent: Entity,
+        parent: string,
         entities: { class: Class<Entity>, attribute: ?string },
-        using: { class: ?Class<Entity>, attribute: ?string }
+        using: { class: ?Class<Entity> | Function, attribute: ?string }
     };
+    parentEntity: Entity;
     constructor(
         name: string,
         attributesContainer: EntityAttributesContainer,
@@ -22,8 +23,11 @@ class EntitiesAttribute extends Attribute {
     ) {
         super(name, attributesContainer);
 
+        const parentModel = ((this.getParentModel(): any): EntityModel);
+        this.parentEntity = parentModel.getParentEntity();
+
         this.classes = {
-            parent: this.getParentModel().getParentEntity().constructor.name,
+            parent: this.parentEntity.constructor.name,
             entities: { class: entity, attribute: attributeName },
             using: { class: null, attribute: null }
         };
@@ -34,27 +38,27 @@ class EntitiesAttribute extends Attribute {
         }
 
         /**
-         * Auto save and delete are both enabled by default.
-         * @type {{save: boolean, delete: boolean}}
-         */
-        this.auto = { save: true, delete: true };
-
-        /**
          * By default, we don't want to have links stored in entity attribute directly.
          * @var bool
          */
         this.toStorage = false;
 
-        const parentEntity = this.getParentModel().getParentEntity();
+        /**
+         * Auto save and delete are both enabled by default.
+         * @type {{save: boolean, delete: boolean}}
+         */
+        this.auto = { save: true, delete: true };
 
-        parentEntity.on("save", async () => {
+        this.parentEntity.on("save", async () => {
+            const value: EntitiesAttributeValue = (this.value: any);
+
             // If loading is in progress, wait until loaded.
-            const mustManage = this.value.isDirty() || this.value.isLoading();
+            const mustManage = value.isDirty() || value.isLoading();
             if (!mustManage) {
                 return;
             }
 
-            await this.value.load();
+            await value.load();
 
             await this.normalizeSetValues();
 
@@ -64,9 +68,9 @@ class EntitiesAttribute extends Attribute {
                 // "syncCurrentEntitiesAndLinks" method must be called on this event because link entities must be ready
                 // before the validation of data happens. When validation happens and when link class is set,
                 // validation is triggered on link (aggregation) entity, not on entity end (linked) entity.
-                await this.value.manageCurrentLinks();
+                await value.manageCurrentLinks();
             } else {
-                await this.value.manageCurrent();
+                await value.manageCurrent();
             }
         });
 
@@ -74,12 +78,14 @@ class EntitiesAttribute extends Attribute {
          * Same as in EntityAttribute, entities present here were already validated when parent entity called the validate method.
          * At this point, entities are ready to be saved (only loaded entities).
          */
-        parentEntity.on("afterSave", async () => {
+        this.parentEntity.on("afterSave", async () => {
             // We don't have to do the following check here:
             // this.value.isLoading() && (await this.value.load());
 
+            const value: EntitiesAttributeValue = (this.value: any);
+
             // ...it was already made in the 'save' handler above. Now we only check if not loaded.
-            if (!this.value.isLoaded() || this.value.isClean()) {
+            if (!value.isLoaded() || value.isClean()) {
                 return;
             }
 
@@ -87,39 +93,40 @@ class EntitiesAttribute extends Attribute {
                 // If we are using a link class, we only need to save links, and child entities will be automatically
                 // saved if they were loaded.
                 if (this.getUsingClass()) {
-                    const entities = this.value.getCurrentLinks();
+                    const entities = value.getCurrentLinks();
                     for (let i = 0; i < entities.length; i++) {
                         const current = ((entities[i]: any): Entity);
                         await current.save({ validation: false });
                     }
                 } else {
-                    const entities = await this.value.getCurrent();
+                    const entities = value.getCurrent();
                     for (let i = 0; i < entities.length; i++) {
-                        await entities[i].save({ validation: false });
+                        const current = ((entities[i]: any): Entity);
+                        await current.save({ validation: false });
                     }
                 }
 
                 if (this.getAutoDelete()) {
                     this.getUsingClass()
-                        ? await this.value.deleteInitialLinks()
-                        : await this.value.deleteInitial();
+                        ? await value.deleteInitialLinks()
+                        : await value.deleteInitial();
                 }
             }
 
             // Set current entities as new initial values.
-            this.value.syncInitial();
+            value.syncInitial();
             if (this.getUsingClass()) {
-                this.value.syncInitialLinks();
+                value.syncInitialLinks();
             }
         });
 
-        parentEntity.on("delete", async () => {
+        this.parentEntity.on("delete", async () => {
+            const value: EntitiesAttributeValue = (this.value: any);
+
             if (this.getAutoDelete()) {
-                await this.value.load();
+                await value.load();
                 const entities = {
-                    current: this.getUsingClass()
-                        ? this.value.getCurrentLinks()
-                        : this.value.getCurrent(),
+                    current: this.getUsingClass() ? value.getCurrentLinks() : value.getCurrent(),
                     class: this.getUsingClass() || this.getEntitiesClass()
                 };
                 for (let i = 0; i < entities.current.length; i++) {
@@ -130,13 +137,13 @@ class EntitiesAttribute extends Attribute {
             }
         });
 
-        parentEntity.on("beforeDelete", async () => {
+        this.parentEntity.on("beforeDelete", async () => {
+            const value: EntitiesAttributeValue = (this.value: any);
+
             if (this.getAutoDelete()) {
-                await this.value.load();
+                await value.load();
                 const entities = {
-                    current: this.getUsingClass()
-                        ? this.value.getCurrentLinks()
-                        : this.value.getCurrent(),
+                    current: this.getUsingClass() ? value.getCurrentLinks() : value.getCurrent(),
                     class: this.getUsingClass() || this.getEntitiesClass()
                 };
 
@@ -162,7 +169,7 @@ class EntitiesAttribute extends Attribute {
     }
 
     getUsingClass(): ?Class<Entity> {
-        const entitiesClass = this.classes.using.class;
+        let entitiesClass = this.classes.using.class;
         if (!entitiesClass) {
             return null;
         }
@@ -171,7 +178,11 @@ class EntitiesAttribute extends Attribute {
             return entitiesClass;
         }
 
-        return entitiesClass();
+        /*:: entitiesClass: Function; */
+        if (typeof entitiesClass === "function") {
+            // $FlowFixMe
+            return entitiesClass();
+        }
     }
 
     getEntitiesAttribute(): ?string {
@@ -240,13 +251,14 @@ class EntitiesAttribute extends Attribute {
             return this.dynamic(...arguments);
         }
 
-        if (this.value.isClean()) {
-            await this.value.load();
+        const value = ((this.value: any): EntitiesAttributeValue);
+        if (value.isClean()) {
+            await value.load();
         }
 
         await this.normalizeSetValues();
 
-        return this.value.getCurrent();
+        return value.getCurrent();
     }
 
     /**
@@ -267,45 +279,6 @@ class EntitiesAttribute extends Attribute {
     }
 
     /**
-     * Sets value received from storage.
-     * @param value
-     * @returns {EntityAttribute}
-     */
-    setStorageValue(value: Array<mixed>) {
-        if (this.classes.using.class) {
-            this.value.setCurrentLinks(value, { skipDifferenceCheck: true });
-            this.value.setInitialLinks(value);
-        } else {
-            this.value.setCurrent(value, { skipDifferenceCheck: true });
-            this.value.setInitial(value);
-        }
-        return this;
-    }
-
-    /**
-     * Will not get triggered if setToStorage is set to false, that's why we don't have to do any additional checks here.
-     * It will return only valid IDs, other values will be ignored because they must not enter storage.
-     * @returns {Promise<*>}
-     */
-    async getStorageValue(): Promise<mixed> {
-        if (_.isArray(this.value.getCurrent())) {
-            // Not using getValue method because it would load the entity without need.
-            const storageValue = [];
-            for (let i = 0; i < this.value.getCurrent().length; i++) {
-                const value = this.value.getCurrent()[i];
-                const id = _.get(value, "id", value);
-                this.getParentModel()
-                    .getParentEntity()
-                    .isId(id) && storageValue.push(id);
-            }
-
-            return storageValue;
-        }
-
-        return [];
-    }
-
-    /**
      * Validates current value - if it's not an instance of EntityCollection, an error will be thrown.
      */
     async validateType(value: mixed) {
@@ -315,9 +288,10 @@ class EntitiesAttribute extends Attribute {
         this.expected("instance of Array or EntityCollection", typeof value);
     }
 
-    async getValidationValue() {
+    async getValidationValue(): Promise<EntityCollection> {
         await this.normalizeSetValues();
-        return this.getUsingClass() ? this.value.getCurrentLinks() : this.value.getCurrent();
+        const value = ((this.value: any): EntitiesAttributeValue);
+        return this.getUsingClass() ? value.getCurrentLinks() : value.getCurrent();
     }
 
     async validateValue(value: mixed) {
@@ -364,13 +338,16 @@ class EntitiesAttribute extends Attribute {
      * @returns {Promise<void>}
      */
     async validate() {
+        const valueInstance = ((this.value: any): EntitiesAttributeValue);
+
         // If attribute has validators or loading is in progress, wait until loaded.
-        const mustValidate = this.value.isDirty() || this.hasValidators() || this.value.isLoading();
+        const mustValidate =
+            valueInstance.isDirty() || this.hasValidators() || valueInstance.isLoading();
         if (!mustValidate) {
             return;
         }
 
-        await this.value.load();
+        await valueInstance.load();
 
         const value = await this.getValidationValue();
         const valueValidation = !Attribute.isEmptyValue(value);
@@ -380,13 +357,12 @@ class EntitiesAttribute extends Attribute {
         valueValidation && (await this.validateValue(value));
     }
 
-    async getJSONValue(): mixed | Promise<Array<mixed>> {
-        const value = await this.getValue();
+    async getJSONValue(): Promise<?Array<mixed>> {
+        const value: EntityCollection = await (this.getValue(): any);
         if (value instanceof EntityCollection) {
             return value.toJSON();
         }
-
-        return value;
+        return null;
     }
 
     async normalizeSetValues() {
@@ -411,11 +387,7 @@ class EntitiesAttribute extends Attribute {
             }
 
             const id = _.get(current, "id", current);
-            if (
-                this.getParentModel()
-                    .getParentEntity()
-                    .isId(id)
-            ) {
+            if (this.parentEntity.isId(id)) {
                 const entity = await entityClass.findById(id);
                 if (entity) {
                     // If we initially had object with other data set, we must populate entity with it, otherwise

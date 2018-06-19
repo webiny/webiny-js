@@ -1,6 +1,8 @@
+// @flow
 import Api from "./api";
 const api = new Api();
 
+export { Api };
 export { api };
 
 export { default as graphql } from "./graphql/middleware";

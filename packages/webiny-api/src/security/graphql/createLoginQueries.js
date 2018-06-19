@@ -1,22 +1,30 @@
+// @flow
 import invariant from "invariant";
 import { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLNonNull } from "graphql";
 import GraphQLJSON from "graphql-type-json";
 import { ModelError } from "webiny-model";
 import { InvalidAttributesError } from "webiny-api";
+import type Schema from "./../../graphql/Schema";
+import type { Api } from "./../..";
 
 const createLoginDataForIdentity = (Identity, schema) => {
+    const type = schema.getType(Identity.classId);
+    if (!type) {
+        return;
+    }
+
     return new GraphQLObjectType({
         name: Identity.classId + "LoginData",
         fields: {
             token: { type: GraphQLString },
-            identity: { type: schema.getType(Identity.classId) },
+            identity: { type },
             expiresOn: { type: GraphQLInt }
         }
     });
 };
 
 // Create a login query for each identity and strategy
-export default (api, config, schema) => {
+export default (api: Api, config: Object, schema: Schema) => {
     const security = api.services.get("security");
     // For each Identity...
     config.security.identities.map(({ identity: Identity, authenticate }) => {

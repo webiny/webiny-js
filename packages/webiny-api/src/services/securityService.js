@@ -37,7 +37,12 @@ class SecurityService implements IAuthentication {
                     return;
                 }
 
-                const { identity } = api.getRequest();
+                const request = api.getRequest();
+                if (!request) {
+                    return;
+                }
+
+                const { identity } = request.security;
 
                 const canExecuteOperation = await this.canExecuteOperation(
                     identity,
@@ -72,13 +77,19 @@ class SecurityService implements IAuthentication {
     }
 
     getIdentity(permissions: boolean = false) {
-        return permissions
-            ? api.getRequest().security.permissions
-            : api.getRequest().security.identity;
+        const request = api.getRequest();
+        if (!request) {
+            return null;
+        }
+
+        return permissions ? request.security.permissions : request.security.identity;
     }
 
     setIdentity(identity: Identity): SecurityService {
-        api.getRequest().security.identity = identity;
+        const request = api.getRequest();
+        if (request) {
+            return (request.security.identity = identity);
+        }
         return this;
     }
 
@@ -103,7 +114,7 @@ class SecurityService implements IAuthentication {
         return false;
     }
 
-    async canExecuteOperation(identity: Identity, entity: Entity, operation: string) {
+    async canExecuteOperation(identity: ?Identity, entity: Entity, operation: string) {
         const permissions = this.getIdentity(true);
 
         // If all enabled (eg. super-admin), return immediately, no need to do further checks.
@@ -124,18 +135,20 @@ class SecurityService implements IAuthentication {
             }
         }
 
-        if (this.identityIsOwner(identity, entity)) {
-            for (let i = 0; i < entityPermissions.length; i++) {
-                if (_.get(entityPermissions[i], "owner.operations." + operation)) {
-                    return true;
+        if (identity) {
+            if (this.identityIsOwner(identity, entity)) {
+                for (let i = 0; i < entityPermissions.length; i++) {
+                    if (_.get(entityPermissions[i], "owner.operations." + operation)) {
+                        return true;
+                    }
                 }
             }
-        }
 
-        if (this.identityIsInGroup(identity, entity)) {
-            for (let i = 0; i < entityPermissions.length; i++) {
-                if (_.get(entityPermissions[i], "group.operations." + operation)) {
-                    return true;
+            if (this.identityIsInGroup(identity, entity)) {
+                for (let i = 0; i < entityPermissions.length; i++) {
+                    if (_.get(entityPermissions[i], "group.operations." + operation)) {
+                        return true;
+                    }
                 }
             }
         }
@@ -197,7 +210,7 @@ class SecurityService implements IAuthentication {
      * @param {string} token
      * @return {Promise<null|Identity>} Identity instance.
      */
-    async verifyToken(token: string): Promise<Identity> {
+    async verifyToken(token: string): Promise<?Identity> {
         const decoded = await this.config.token.decode(token.replace("Bearer ", ""));
         let identity = this.getIdentityClass(decoded.data.classId);
 

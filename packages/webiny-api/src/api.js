@@ -6,22 +6,13 @@ import { ServiceManager } from "webiny-service-manager";
 import GraphQL from "./graphql/GraphQL";
 import EntityManager from "./entities/EntityManager";
 import type { $Request, $Response } from "express";
+import type { AppType, ApiRequest } from "./../types";
 import createMiddleware from "./graphql/middleware.js";
 import coreApp from "./coreApp";
 import chalk from "chalk";
 
 import { argv } from "yargs";
 process.env.INSTALL = JSON.stringify(argv.install || false);
-
-declare type AppType = {
-    preInit?: Function,
-    init: Function,
-    postInit?: Function,
-    install?: Function,
-    preInstall?: Function,
-    postInstall?: Function,
-    configure?: Function
-};
 
 class Api {
     config: Object;
@@ -39,7 +30,7 @@ class Api {
         this.apps = [coreApp()];
     }
 
-    getRequest(): ?$Request {
+    getRequest(): ?ApiRequest {
         if (!this.namespace) {
             return null;
         }
@@ -122,16 +113,22 @@ class Api {
      * @param type
      */
     log(message: string, type: ?string) {
+        // eslint-ignore-next-line
         switch (type) {
             case "success":
+                // eslint-disable-next-line
                 return console.log(chalk.green(message));
             case "info":
+                // eslint-disable-next-line
                 return console.log(chalk.blue(message));
             case "warning":
+                // eslint-disable-next-line
                 return console.log(chalk.yellow(message));
             case "error":
+                // eslint-disable-next-line
                 return console.log(chalk.red(message));
             default:
+                // eslint-disable-next-line
                 console.log(message);
         }
     }

@@ -13,7 +13,10 @@ function formatInvalidAttributes(invalidAttributes, prefix = "") {
 
         if (Array.isArray(data)) {
             return _.each(data, (err, index) => {
-                const { data: { invalidAttributes }, message } = err;
+                const {
+                    data: { invalidAttributes },
+                    message
+                } = err;
                 if (!invalidAttributes) {
                     formatted[`${path}.${index}`] = message;
                     return;
@@ -33,16 +36,15 @@ function formatInvalidAttributes(invalidAttributes, prefix = "") {
 }
 
 class InvalidAttributesError extends ModelError {
-    message: string;
-    code: ?string;
-    data: Object;
-
     static from(error: ModelError) {
-        const { message, code, data: { invalidAttributes, ...data } } = error;
-        return new InvalidAttributesError(message, code, {
-            ...data,
-            invalidAttributes: formatInvalidAttributes(invalidAttributes || {})
-        });
+        const { message, code } = error;
+
+        let data: Object = (error.data: any);
+        data.invalidAttributes = formatInvalidAttributes(
+            _.get(error, "data.invalidAttributes", {})
+        );
+
+        return new InvalidAttributesError(message, code, data);
     }
 }
 

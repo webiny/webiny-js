@@ -83,7 +83,7 @@ class Image extends File {
         }
     }
 
-    getURL(preset: ?string): Promise<string> {
+    getURL(preset: ?string) {
         if (!preset) {
             this.ensureStorage();
             return this.storage.getURL(this.key);

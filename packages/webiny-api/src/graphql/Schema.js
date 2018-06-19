@@ -30,7 +30,7 @@ class Schema {
         addDefaultTypes(this);
     }
 
-    addType(data: { meta: Object, type: GraphQLObjectType | GraphQLUnionType }) {
+    addType(data: { meta?: Object, type: GraphQLObjectType | GraphQLUnionType }) {
         this.types[data.type.name] = data;
     }
 

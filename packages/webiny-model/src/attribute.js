@@ -298,7 +298,7 @@ class Attribute {
         return this.toStorage;
     }
 
-    async getStorageValue(): Promise<mixed> {
+    async getStorageValue(): Promise<any> {
         return this.getValue();
     }
 

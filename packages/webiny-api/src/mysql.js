@@ -1,5 +1,6 @@
 // @flow
-import { MySQLDriver, Table } from "webiny-sql-table-mysql";
+import { MySQLDriver } from "webiny-sql-table-mysql";
+import { Table } from "webiny-sql-table";
 
 class MySQLTable extends Table {
     constructor() {

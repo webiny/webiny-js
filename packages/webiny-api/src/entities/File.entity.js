@@ -49,7 +49,7 @@ class File extends Entity {
             .setDefaultValue(0);
     }
 
-    getURL() {
+    getURL(): string | Promise<string> {
         this.ensureStorage();
         return this.storage.getURL(this.key);
     }

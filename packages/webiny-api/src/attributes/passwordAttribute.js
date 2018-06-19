@@ -1,8 +1,10 @@
+// @flow
 import bcrypt from "bcryptjs";
 import { CharAttribute } from "webiny-model";
+import { type EntityAttributesContainer } from "webiny-entity";
 
 export default class PasswordAttribute extends CharAttribute {
-    constructor(name, attributesContainer) {
+    constructor(name: string, attributesContainer: EntityAttributesContainer) {
         super(name, attributesContainer);
 
         this.onSet(value => {

@@ -1,6 +1,7 @@
+// @flow
 import _ from "lodash";
 
-const traverse = obj => {
+const traverse = (obj: Object) => {
     _.forOwn(obj, (val, key) => {
         if (_.isArray(val)) {
             val.forEach(el => {

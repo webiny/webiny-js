@@ -2,8 +2,8 @@
 import type { Attribute } from "webiny-model";
 import type _Schema from "./lib/graphql/Schema";
 import type { Entity as _Entity } from "./lib/index";
-import type { EntityCollection } from "webiny-entity";
-import type { Identity, Role } from "./src";
+import type { Identity } from "./src";
+import type { $Request } from "express";
 
 export type Schema = _Schema;
 export type Entity = _Entity;
@@ -19,25 +19,6 @@ export type AttributeToTypeParams = {
     modelToType: Function,
     convertModelToType: Function
 };
-
-/**
- * Implement this interface to allow objects to be passed to Authorization service.
- * To make users as flexible as possible we only require 2 methods to be implemented: hasRole() and getRoles().
- */
-export interface IAuthorizable {
-    /**
-     * Checks whether the user has the specified role.
-     * @param {string} role
-     * @returns {boolean}
-     */
-    hasRole(role: string): Promise<boolean>;
-
-    /**
-     * Returns all user's roles.
-     * @returns {Array<Role>} All roles assigned to the user.
-     */
-    getRoles(): Promise<Array<Role> | EntityCollection<Role>>;
-}
 
 /**
  * Interface for Authentication service.
@@ -69,7 +50,7 @@ export interface IAuthentication {
      * @param {string} token
      * @returns {Identity}
      */
-    verifyToken(token: string): Promise<Identity>;
+    verifyToken(token: string): Promise<?Identity>;
 
     /**
      * Get identity class.
@@ -109,3 +90,22 @@ export interface IToken {
      */
     decode(token: string): Promise<Object>;
 }
+
+export type AppType = {
+    preInit?: Function,
+    init: Function,
+    postInit?: Function,
+    install?: Function,
+    preInstall?: Function,
+    postInstall?: Function,
+    configure?: Function
+};
+
+export type ApiRequest = $Request & {
+    security: {
+        permissions: Object,
+        identity: ?Identity,
+        sudo: boolean
+    },
+    entityPool: Object
+};

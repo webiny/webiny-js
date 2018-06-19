@@ -1,7 +1,10 @@
+// @flow
 import { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList, GraphQLBoolean } from "graphql";
 import GraphQLJSON from "graphql-type-json";
+import type Schema from "./../../graphql/Schema";
+import type { Api } from "./../..";
 
-export default (api, config, schema) => {
+export default (api: Api, config: Object, schema: Schema) => {
     schema.addType({
         type: new GraphQLObjectType({
             name: "EntityAttributesAttribute",
