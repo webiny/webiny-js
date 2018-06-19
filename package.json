@@ -57,7 +57,7 @@
   },
   "scripts": {
     "build": "lerna run --parallel build",
-    "ci": "yarn coverage && cat ./coverage/lcov.info | coveralls",
+    "ci": "yarn coverage --maxWorkers=4 && cat ./coverage/lcov.info | coveralls",
     "clear": "lerna exec -- rimraf lib",
     "client:watch": "lerna run --scope=webiny-client* --parallel --stream build:watch",
     "commit": "git-cz",
