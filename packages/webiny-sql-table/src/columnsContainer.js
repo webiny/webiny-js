@@ -5,7 +5,7 @@ import _ from "lodash";
 
 class ColumnsContainer {
     parentTable: Table;
-    newColumnName: ?string;
+    newColumnName: string;
     columns: Array<Column>;
 
     constructor(table: Table) {

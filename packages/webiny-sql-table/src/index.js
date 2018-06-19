@@ -33,11 +33,11 @@ class Index {
     /**
      * Returns name of index
      */
-    getName(): string {
+    getName(): ?string {
         return this.name;
     }
 
-    getType(): string {
+    getType(): ?string {
         return "";
     }
 
