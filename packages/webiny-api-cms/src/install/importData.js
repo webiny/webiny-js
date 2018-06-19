@@ -1,3 +1,4 @@
+// @flow
 import { Group, Policy } from "webiny-api";
 import { Category } from "webiny-api-cms";
 

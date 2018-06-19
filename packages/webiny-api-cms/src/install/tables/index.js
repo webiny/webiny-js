@@ -1,3 +1,4 @@
+// @flow
 export { default as PageTable } from "./page.mysql";
 export { default as RevisionTable } from "./revision.mysql";
 export { default as LayoutTable } from "./layout.mysql";

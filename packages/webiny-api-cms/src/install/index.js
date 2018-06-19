@@ -1,3 +1,4 @@
+// @flow
 import createMySQLTables from "./createMySQLTables";
 import importData from "./importData";
 

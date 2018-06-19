@@ -1,6 +1,8 @@
-import { Model } from "webiny-model";
+// @flow
+import { Model, Attribute } from "webiny-model";
 
 class WidgetModel extends Model {
+    id: string;
     constructor() {
         super();
         this.attr("id").char();
@@ -10,8 +12,10 @@ class WidgetModel extends Model {
 
     copy() {
         const model = new WidgetModel();
-        Object.keys(this.getAttributes()).forEach(name => {
-            model[name] = this.getAttribute(name).getValue();
+        Object.keys(this.getAttributes()).forEach((name: string) => {
+            const currentAttribute: Attribute = (this.getAttribute(name): any);
+            const newAttribute: Attribute = (model.getAttribute(name): any);
+            newAttribute.setValue(currentAttribute.getValue());
         });
         return model;
     }

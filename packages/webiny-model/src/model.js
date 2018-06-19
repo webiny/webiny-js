@@ -6,6 +6,7 @@ import ModelError from "./modelError";
 import type Attribute from "./attribute";
 
 class Model {
+    static classId: string;
     attributes: { [string]: Attribute };
     processing: { validation: boolean, dirty: boolean };
     attributesContainer: DefaultAttributesContainer;
@@ -277,5 +278,7 @@ class Model {
         return this;
     }
 }
+
+Model.classId = "";
 
 export default Model;
