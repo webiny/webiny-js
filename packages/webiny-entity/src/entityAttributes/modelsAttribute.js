@@ -1,6 +1,6 @@
 // @flow
 import { ModelsAttribute as BaseModelsAttribute } from "webiny-model";
-import EntityModel from "./../EntityModel";
+import EntityModel from "./../entityModel";
 
 class ModelsAttribute extends BaseModelsAttribute {
     getModelInstance() {
