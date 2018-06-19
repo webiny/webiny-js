@@ -1,3 +1,4 @@
+// @flow
 export { default as BooleanAttribute } from "./booleanAttribute";
 export { default as DateAttribute } from "./dateAttribute";
 export { default as ArrayAttribute } from "./arrayAttribute";

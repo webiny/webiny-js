@@ -1,3 +1,4 @@
+// @flow
 import { EntitiesAttribute as BaseEntitiesAttribute } from "webiny-entity";
 
 class EntitiesAttribute extends BaseEntitiesAttribute {
@@ -5,8 +6,10 @@ class EntitiesAttribute extends BaseEntitiesAttribute {
         return JSON.stringify(await BaseEntitiesAttribute.prototype.getStorageValue.call(this));
     }
 
-    setStorageValue(value) {
-        return super.setStorageValue(JSON.parse(value));
+    setStorageValue(value: mixed) {
+        if (typeof value === "string") {
+            return super.setStorageValue(JSON.parse(value));
+        }
     }
 }
 

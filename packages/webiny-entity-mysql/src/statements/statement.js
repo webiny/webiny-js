@@ -4,12 +4,22 @@ import _ from "lodash";
 import type { Entity } from "webiny-entity";
 import type { Operator, Payload } from "../../types";
 
+declare type StatementOptions = {
+    operators: { [string]: Operator },
+    calculateFoundRows: boolean,
+    table: string,
+    data: Object,
+    limit?: number,
+    offset?: number,
+    sort?: string,
+    where?: Object,
+    columns?: Array<string>,
+    onDuplicateKeyUpdate?: boolean
+};
+
 class Statement {
     entity: Entity;
-    options: {
-        operators: { [string]: Operator }
-    };
-
+    options: StatementOptions;
     constructor(options: Object = {}, entity: Entity) {
         this.options = options;
         this.entity = entity;
@@ -19,7 +29,7 @@ class Statement {
         return "";
     }
 
-    getColumns(options: { columns?: Array<string> }): string {
+    getColumns(options: StatementOptions): string {
         const columns = options.columns || [];
 
         if (_.isEmpty(columns)) {
@@ -29,7 +39,7 @@ class Statement {
         return " " + columns.join(", ");
     }
 
-    getWhere(options: { where?: Object }): string {
+    getWhere(options: StatementOptions): string {
         if (_.isEmpty(options.where)) {
             return "";
         }
@@ -37,7 +47,7 @@ class Statement {
         return " WHERE " + this.process({ $and: options.where });
     }
 
-    getOrder(options: { sort?: Object }): string {
+    getOrder(options: StatementOptions): string {
         if (!(options.sort instanceof Object) || _.isEmpty(options.sort)) {
             return "";
         }
@@ -51,7 +61,7 @@ class Statement {
         return " ORDER BY " + query.join(", ");
     }
 
-    getLimit(options: { limit?: number }): string {
+    getLimit(options: StatementOptions): string {
         const limit = options.limit || 0;
 
         if (_.isNumber(limit) && limit > 0) {
@@ -60,7 +70,7 @@ class Statement {
         return "";
     }
 
-    getOffset(options: { offset?: number }): string {
+    getOffset(options: StatementOptions): string {
         const offset = options.offset || 0;
 
         if (_.isNumber(offset) && offset > 0) {
