@@ -3,7 +3,6 @@
 .*/tests/.*
 [include]
 [libs]
-flow-typed
 packages/webiny-api/flow-typed/npm
 packages/webiny-client/flow-typed/npm
 packages/webiny-client-security/flow-typed/npm

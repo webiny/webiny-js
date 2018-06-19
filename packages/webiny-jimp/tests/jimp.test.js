@@ -1,5 +1,4 @@
 // @flow
-import { expect } from "chai";
 import fs from "fs";
 import imageSize from "image-size";
 import processorFactory from "./../src";
@@ -8,6 +7,8 @@ describe("Image processor test", () => {
     let ip;
     let originalPNG;
     let originalJPEG;
+
+    jest.setTimeout(10000);
 
     beforeEach(() => {
         ip = processorFactory();
@@ -21,8 +22,8 @@ describe("Image processor test", () => {
         const newImage = await ip({ image: originalPNG, transformations });
         const { width: newWidth, height: newHeight } = imageSize(newImage);
 
-        expect(newWidth).to.equal(20);
-        expect(newHeight).to.equal(20);
+        expect(newWidth).toBe(20);
+        expect(newHeight).toBe(20);
     });
 
     test("should crop image", async () => {
@@ -31,8 +32,8 @@ describe("Image processor test", () => {
         const newImage = await ip({ image: originalPNG, transformations });
         const { width: newWidth, height: newHeight } = imageSize(newImage);
 
-        expect(newWidth).to.equal(35);
-        expect(newHeight).to.equal(35);
+        expect(newWidth).toBe(35);
+        expect(newHeight).toBe(35);
     });
 
     test("should change image quality", async () => {
@@ -40,6 +41,6 @@ describe("Image processor test", () => {
         const transformations = [{ action: "quality", quality }];
 
         const newImage = await ip({ image: originalJPEG, transformations });
-        expect(newImage.length).to.not.equal(originalJPEG.length);
+        expect(newImage.length !== originalJPEG.length).toBeTrue();
     });
 });

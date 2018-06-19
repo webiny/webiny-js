@@ -16,6 +16,7 @@
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.2.1",
+    "babel-jest": "^23.0.1",
     "babel-plugin-dynamic-import-node": "^1.2.0",
     "babel-plugin-transform-builtin-extend": "^1.1.2",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
@@ -24,8 +25,6 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-flow": "^6.23.0",
     "babel-preset-react": "^6.24.1",
-    "chai": "^4.1.2",
-    "chai-subset": "^1.6.0",
     "commitizen": "^2.9.6",
     "coveralls": "^3.0.0",
     "cz-lerna-changelog": "^1.2.1",
@@ -58,7 +57,7 @@
   },
   "scripts": {
     "build": "lerna run --parallel build",
-    "ci": "yarn coverage && cat ./coverage/lcov.info | coveralls",
+    "ci": "yarn coverage --maxWorkers=4 && cat ./coverage/lcov.info | coveralls",
     "clear": "lerna exec -- rimraf lib",
     "client:watch": "lerna run --scope=webiny-client* --parallel --stream build:watch",
     "commit": "git-cz",
@@ -90,6 +89,9 @@
     ]
   },
   "jest": {
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    },
     "coveragePathIgnorePatterns": [
       "/node_modules/",
       "/tests/"
