@@ -112,28 +112,6 @@ describe("entities attribute test", () => {
         });
     });
 
-    test("it should return correct toStorage data", async () => {
-        let entity = new ComplexEntity();
-        entity.simpleEntitiesLoadedFromTable = [
-            { id: 1, name: "Test-1" },
-            { id: 2, name: "Test-2" },
-            { id: 3, name: "Test-3" }
-        ];
-
-        entity.simpleEntities = [];
-
-        let actual = await entity.toStorage();
-        let expected = {
-            simpleEntities: "[]"
-        };
-        expect(actual).toEqual(expected);
-
-        entity = new ComplexEntity();
-        actual = await entity.toStorage();
-        expected = {};
-        expect(actual).toEqual(expected);
-    });
-
     test("should return EntityCollection which is the default value of the attribute", async () => {
         const entity = new ComplexEntity();
         expect(await entity.simpleEntitiesLoadedFromTable).toBeInstanceOf(EntityCollection);

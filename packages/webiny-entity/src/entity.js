@@ -571,7 +571,9 @@ class Entity {
      * Returns information about the entity.
      * @returns {{name: string, id: *, attributes: {name: *, class: string|string|string|string|string|string|string}[]}}
      */
-    static describe(options: { name: string, classId: string, attributes: Object } = {}) {
+    static describe(
+        options: Object = {}
+    ): { name: string, classId: string, attributes: Array<?Object> } {
         const instance = new this();
 
         const omit = _.get(options, "attributes.omit", []);

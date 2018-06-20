@@ -219,12 +219,7 @@ class SecurityService implements IAuthentication {
         }
 
         const identityId = decoded.data.identityId;
-        const instance = await identity.findById(identityId);
-        if (!instance) {
-            return null;
-        }
-
-        return instance;
+        return ((identity.findById(identityId): any): ?Identity);
     }
 
     /**

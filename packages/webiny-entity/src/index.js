@@ -1,3 +1,4 @@
+// @flow
 export { default as Entity } from "./entity";
 export { default as EntityError } from "./entityError";
 export { default as EntityModel } from "./entityModel";
