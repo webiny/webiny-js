@@ -1,5 +1,6 @@
 // @flow
-import { MySQLDriver, Table } from "webiny-sql-table-mysql";
+import { MySQLDriver } from "webiny-sql-table-mysql";
+import { Table } from "webiny-sql-table";
 
 class MySQLTable extends Table {
     constructor() {
@@ -8,7 +9,6 @@ class MySQLTable extends Table {
         this.column("id").char(24);
         this.index().primary("id");
 
-        this.column("createdOn").dateTime();
         this.column("createdOn").dateTime();
         this.column("createdBy").char(24);
         this.column("createdByClassId").varChar(100);

@@ -2,6 +2,9 @@
 import { Entity } from "webiny-api";
 
 class Widget extends Entity {
+    title: string;
+    type: string;
+    data: Object;
     constructor() {
         super();
 
@@ -12,6 +15,6 @@ class Widget extends Entity {
 }
 
 Widget.classId = "CmsWidget";
-Widget.tableName = "Cms_Widgets";
+Widget.storageClassId = "Cms_Widgets";
 
 export default Widget;

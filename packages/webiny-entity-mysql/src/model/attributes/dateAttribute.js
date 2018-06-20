@@ -1,8 +1,9 @@
+// @flow
 import { DateAttribute as BaseDateAttribute } from "webiny-model";
 import fecha from "fecha";
 
 class DateAttribute extends BaseDateAttribute {
-    setStorageValue(value) {
+    setStorageValue(value: mixed) {
         if (value === null) {
             return super.setStorageValue(value);
         }

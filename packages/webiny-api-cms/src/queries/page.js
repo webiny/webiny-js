@@ -1,6 +1,8 @@
+// @flow
 import { GraphQLNonNull, GraphQLString, GraphQLObjectType } from "graphql";
 import GraphQLJSON from "graphql-type-json";
 import { Page, Revision, Widget } from "./../";
+import type { Schema } from "webiny-api";
 
 async function formatData(instance: Page | Revision) {
     const page = await instance.toJSON("id,slug,title,content[id,type,data]");
@@ -15,7 +17,7 @@ async function formatData(instance: Page | Revision) {
     return page;
 }
 
-export default schema => {
+export default (schema: Schema) => {
     schema.addType({
         type: new GraphQLObjectType({
             name: "CmsPageData",

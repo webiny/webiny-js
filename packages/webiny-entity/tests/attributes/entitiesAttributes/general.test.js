@@ -204,6 +204,6 @@ describe("attribute entities test", () => {
         entity.attribute1 = 123;
 
         const jsonValue = await entity.getAttribute("attribute1").getJSONValue();
-        expect(jsonValue).toEqual(123);
+        expect(jsonValue).toEqual(null);
     });
 });

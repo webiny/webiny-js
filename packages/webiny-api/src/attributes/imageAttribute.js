@@ -2,11 +2,12 @@
 import _ from "lodash";
 import FileAttribute from "./fileAttribute";
 import type { ImageProcessor } from "../../types";
-import Image, { type ImagePresets } from "../entities/Image.entity";
+import { type ImagePresets } from "../entities/Image.entity";
 
 class ImageAttribute extends FileAttribute {
     quality: number;
-
+    processor: ImageProcessor;
+    presets: ImagePresets;
     setProcessor(processor: ImageProcessor): ImageAttribute {
         this.processor = processor;
         return this;
@@ -17,7 +18,7 @@ class ImageAttribute extends FileAttribute {
         return this;
     }
 
-    setPresets(presets: ImagePresets = {}): Image {
+    setPresets(presets: ImagePresets = {}): ImageAttribute {
         this.presets = presets;
 
         return this;

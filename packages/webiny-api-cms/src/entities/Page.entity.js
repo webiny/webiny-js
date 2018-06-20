@@ -6,8 +6,17 @@ import WidgetModel from "./Widget.model";
 import Revision from "./Revision.entity";
 
 class Page extends Entity {
-    static filter: Object;
+    static filters: Object;
 
+    title: string;
+    slug: string;
+    settings: Object;
+    content: Array<WidgetModel>;
+    activeRevision: Revision;
+    revisions: Array<Revision>;
+    category: Category;
+    status: "draft" | "published" | "trash";
+    pinned: boolean;
     constructor() {
         super();
 
@@ -78,6 +87,6 @@ Page.filters = {
 };
 
 Page.classId = "CmsPage";
-Page.tableName = "Cms_Pages";
+Page.storageClassId = "Cms_Pages";
 
 export default Page;

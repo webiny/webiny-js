@@ -11,17 +11,19 @@ import QueryResult from "./queryResult";
 import { EntityError } from "./index";
 
 class Entity {
-    static classId: ?string;
+    static classId: string;
+    static storageClassId: string;
     static driver: Driver;
     static pool: EntityPool;
+    static listeners: {};
     static crud: {
         logs?: boolean,
         delete?: {
             soft?: boolean
         }
     };
-    static listeners: {};
-
+    classId: string;
+    storageClassId: string;
     id: mixed;
     model: EntityModel;
     listeners: {};
@@ -31,7 +33,6 @@ class Entity {
     updatedOn: ?Date;
     savedOn: ?Date;
     deleted: ?boolean;
-
     constructor(): Entity {
         const proxy = new Proxy((this: Object), {
             set: (instance, key, value) => {
@@ -45,7 +46,7 @@ class Entity {
                 return true;
             },
             get: (instance, key) => {
-                if (["classId", "driver"].includes(key)) {
+                if (["classId", "storageClassId", "driver"].includes(key)) {
                     return instance.constructor[key];
                 }
 
@@ -162,10 +163,9 @@ class Entity {
     /**
      * Creates new attribute with name.
      */
-    attr(name: string): EntityAttributesContainer {
-        return this.getModel()
-            .getAttributesContainer()
-            .attr(name);
+    attr(name: string) {
+        const container: EntityAttributesContainer = (this.getModel().getAttributesContainer(): any);
+        return container.attr(name);
     }
 
     /**
@@ -194,8 +194,9 @@ class Entity {
      * Returns entity's JSON representation.
      */
     async toJSON(path: ?string): Promise<JSON> {
+        const attribute: Attribute = (this.getAttribute("id"): any);
         return _.merge(
-            { id: this.getAttribute("id").getValue() },
+            { id: attribute.getValue() },
             path ? await this.getModel().toJSON(path) : {}
         );
     }
@@ -570,7 +571,9 @@ class Entity {
      * Returns information about the entity.
      * @returns {{name: string, id: *, attributes: {name: *, class: string|string|string|string|string|string|string}[]}}
      */
-    static describe(options: Object = {}) {
+    static describe(
+        options: Object = {}
+    ): { name: string, classId: string, attributes: Array<?Object> } {
         const instance = new this();
 
         const omit = _.get(options, "attributes.omit", []);
@@ -615,7 +618,8 @@ class Entity {
     }
 }
 
-Entity.classId = null;
+Entity.classId = "";
+Entity.storageClassId = "";
 Entity.driver = new Driver();
 Entity.pool = new EntityPool();
 Entity.crud = {

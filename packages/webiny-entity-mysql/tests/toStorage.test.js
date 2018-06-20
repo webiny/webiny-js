@@ -47,8 +47,5 @@ describe("toStorage test", () => {
             `[{"slug":"no-name","label":"No Name"},{"slug":"adult-user","label":"Adult User"}]`
         );
         expect(userStorageValue.simpleEntity).toEqual("000000000000000000000001");
-        expect(userStorageValue.simpleEntities).toEqual(
-            `["54759eb3c090d83494e2d804","54759eb3c090d83494e2d805","54759eb3c090d83494e2d806"]`
-        );
     });
 });

@@ -1,3 +1,4 @@
+// @flow
 export { Group, Groups2Entities, Entity, Policy, Policies2Entities } from "./Entity";
 export { default as File } from "./File.entity";
 export { default as Image } from "./Image.entity";

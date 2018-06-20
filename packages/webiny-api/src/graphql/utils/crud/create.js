@@ -1,9 +1,13 @@
+// @flow
 import { GraphQLNonNull } from "graphql";
 import GraphQLJSON from "graphql-type-json";
 import { ModelError } from "webiny-model";
 import InvalidAttributesError from "./InvalidAttributesError";
 
-export default (entityClass, schema) => {
+import type { Entity } from "webiny-entity";
+import type Schema from "./../../Schema";
+
+export default (entityClass: Class<Entity>, schema: Schema) => {
     const entityType = schema.getType(entityClass.classId);
 
     schema.mutation["create" + entityClass.classId] = {

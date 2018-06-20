@@ -8,7 +8,7 @@ import EntityCollection from "./../entityCollection";
 import _ from "lodash";
 
 class EntitiesAttributeValue extends AttributeValue {
-    initial: Array<mixed> | EntityCollection;
+    initial: EntityCollection;
     links: Object;
     queue: Array<Function>;
     attribute: EntitiesAttribute;
@@ -56,43 +56,24 @@ class EntitiesAttributeValue extends AttributeValue {
                 .getParentEntity()
                 .isExisting()
         ) {
-            if (this.attribute.getToStorage()) {
-                if (classes.using.class) {
-                    if (this.hasInitialLinks()) {
-                        this.links.initial = await classes.using.class.findByIds(
-                            this.links.initial
-                        );
+            let id = await this.attribute
+                .getParentModel()
+                .getAttribute("id")
+                .getStorageValue();
 
-                        this.initial = new EntityCollection();
-                        for (let i = 0; i < this.links.initial.length; i++) {
-                            this.initial.push(await this.links.initial[i][classes.using.attribute]);
-                        }
-                    }
-                } else {
-                    if (this.hasInitial()) {
-                        this.initial = await classes.entities.class.findByIds(this.initial);
-                    }
+            if (classes.using.class) {
+                this.links.initial = await classes.using.class.find({
+                    query: { [classes.entities.attribute]: id }
+                });
+
+                this.initial = new EntityCollection();
+                for (let i = 0; i < this.links.initial.length; i++) {
+                    this.initial.push(await this.links.initial[i][classes.using.attribute]);
                 }
             } else {
-                let id = await this.attribute
-                    .getParentModel()
-                    .getAttribute("id")
-                    .getStorageValue();
-
-                if (classes.using.class) {
-                    this.links.initial = await classes.using.class.find({
-                        query: { [classes.entities.attribute]: id }
-                    });
-
-                    this.initial = new EntityCollection();
-                    for (let i = 0; i < this.links.initial.length; i++) {
-                        this.initial.push(await this.links.initial[i][classes.using.attribute]);
-                    }
-                } else {
-                    this.initial = await classes.entities.class.find({
-                        query: { [classes.entities.attribute]: id }
-                    });
-                }
+                this.initial = await classes.entities.class.find({
+                    query: { [classes.entities.attribute]: id }
+                });
             }
 
             if (this.isClean()) {
@@ -117,12 +98,12 @@ class EntitiesAttributeValue extends AttributeValue {
         return this.current;
     }
 
-    setInitial(value: Array<mixed> | EntityCollection): this {
+    setInitial(value: EntityCollection): this {
         this.initial = value;
         return this;
     }
 
-    getInitial(): Array<mixed> | EntityCollection {
+    getInitial(): EntityCollection {
         return this.initial;
     }
 
@@ -158,7 +139,7 @@ class EntitiesAttributeValue extends AttributeValue {
      * Creates a new array that contains all currently loaded entities.
      */
     syncInitial(): void {
-        this.initial = this.getCurrent().map(entity => entity);
+        this.initial = new EntityCollection(this.getCurrent().map(entity => entity));
     }
 
     async manageCurrent() {

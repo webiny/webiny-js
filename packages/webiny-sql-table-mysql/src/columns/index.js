@@ -1,3 +1,4 @@
+// @flow
 export { default as CharColumn } from "./charColumn";
 export { default as VarCharColumn } from "./varCharColumn";
 export { default as TinyTextColumn } from "./tinyTextColumn";

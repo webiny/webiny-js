@@ -1,11 +1,18 @@
+// @flow
 import { GraphQLInt } from "graphql";
 import GraphQLJSON from "graphql-type-json";
 import pluralize from "pluralize";
 import parseBoolean from "./parseBoolean";
 import { List, SearchInput } from "./types";
 
-export default (entityClass, schema) => {
+import type { Entity } from "webiny-entity";
+import type Schema from "./../../Schema";
+
+export default (entityClass: Class<Entity>, schema: Schema) => {
     const entityType = schema.getType(entityClass.classId);
+    if (!entityType) {
+        return;
+    }
 
     schema.query["list" + pluralize.plural(entityClass.classId)] = {
         description: `Get a list of ${entityClass.classId} entities.`,

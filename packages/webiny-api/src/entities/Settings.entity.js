@@ -17,6 +17,6 @@ class Settings extends Entity {
 }
 
 Settings.classId = "Settings";
-Settings.tableName = "Settings";
+Settings.storageClassId = "Settings";
 
 export default Settings;

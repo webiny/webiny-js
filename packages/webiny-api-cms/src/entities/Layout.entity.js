@@ -3,6 +3,9 @@ import { Entity } from "webiny-api";
 import WidgetModel from "./widget.model";
 
 class Layout extends Entity {
+    title: string;
+    slug: string;
+    content: Array<WidgetModel>;
     constructor() {
         super();
 
@@ -29,6 +32,6 @@ class Layout extends Entity {
 }
 
 Layout.classId = "CmsLayout";
-Layout.tableName = "Cms_Layouts";
+Layout.storageClassId = "Cms_Layouts";
 
 export default Layout;

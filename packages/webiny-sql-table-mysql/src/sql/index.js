@@ -1,3 +1,4 @@
+// @flow
 // Table structure statements.
 export { default as createTable } from "./createTable";
 export { default as alterTable } from "./alterTable";

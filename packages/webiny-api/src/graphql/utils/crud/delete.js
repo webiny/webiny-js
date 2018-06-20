@@ -1,6 +1,10 @@
+// @flow
 import { GraphQLString, GraphQLBoolean, GraphQLNonNull } from "graphql";
 
-export default (entityClass, schema) => {
+import type { Entity } from "webiny-entity";
+import type Schema from "./../../Schema";
+
+export default (entityClass: Class<Entity>, schema: Schema) => {
     schema.mutation["delete" + entityClass.classId] = {
         description: `Delete a single ${entityClass.classId} entity.`,
         type: GraphQLBoolean,

@@ -3,6 +3,7 @@ import path from "path";
 import fileType from "file-type";
 import { Storage } from "webiny-file-storage";
 import type { EntitySaveParams, EntityDeleteParams } from "webiny-entity/types";
+import type { Attribute } from "webiny-model";
 import mdbid from "mdbid";
 import type { IFileData } from "webiny-file-storage/types";
 import Entity from "./Entity";
@@ -11,7 +12,18 @@ class File extends Entity {
     storage: Storage;
     storageFolder: string;
     tags: Array<string>;
-
+    name: string;
+    title: string;
+    size: number;
+    type: string;
+    ext: string;
+    data: Buffer;
+    key: string;
+    src: string;
+    tags: Array<string>;
+    ref: Entity;
+    refClassId: string;
+    order: number;
     constructor() {
         super();
 
@@ -49,7 +61,7 @@ class File extends Entity {
             .setDefaultValue(0);
     }
 
-    getURL() {
+    getURL(): string | Promise<string> {
         this.ensureStorage();
         return this.storage.getURL(this.key);
     }
@@ -63,7 +75,7 @@ class File extends Entity {
      * @inheritDoc
      */
     // eslint-disable-next-line
-    async save(params: EntitySaveParams & Object = {}) {
+    async save(params: EntitySaveParams & ?Object = {}) {
         // If new file contents is being saved...
         if (this.data) {
             this.ensureStorage();
@@ -84,14 +96,15 @@ class File extends Entity {
             this.type = mime;
         }
 
-        this.getAttribute("data").reset();
+        const dataAttribute: Attribute = (this.getAttribute("data"): any);
+        dataAttribute.reset();
         return Entity.prototype.save.call(this, params);
     }
 
     /**
      * @inheritDoc
      */
-    async delete(params: EntityDeleteParams & Object = { permanent: true }): Promise<void> {
+    async delete(params: EntityDeleteParams & ?Object = { permanent: true }): Promise<void> {
         await Entity.prototype.delete.call(this, params);
         await this.deleteFileFromStorage();
     }
@@ -172,6 +185,6 @@ class File extends Entity {
 }
 
 File.classId = "File";
-File.tableName = "Files";
+File.storageClassId = "Files";
 
 export default File;

@@ -15,7 +15,7 @@ class KeyIndex extends Index {
             sql = this.getType() + " KEY";
         }
 
-        sql += ` \`${this.getName()}\``;
+        sql += ` \`${this.getName() || ""}\``;
         sql += ` (${columns})`;
         return sql;
     }

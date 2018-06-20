@@ -1,9 +1,19 @@
 // @flow
 import { api } from "./..";
 import { Entity as BaseEntity } from "webiny-entity";
-
+import type { Identity } from "./..";
 import RequestEntityPool from "./RequestEntityPool";
+
 class Entity extends BaseEntity {
+    ownerClassId: string;
+    owner: ?Identity;
+    groups: Array<Group>;
+    savedByClassId: ?string;
+    savedBy: ?Identity;
+    createdByClassId: ?string;
+    createdBy: ?Identity;
+    updatedByClassId: ?string;
+    updatedBy: ?Identity;
     constructor() {
         super();
         api.entities.applyExtensions(this);
@@ -82,6 +92,10 @@ export default Entity;
  */
 
 class Policy extends Entity {
+    name: string;
+    slug: string;
+    description: string;
+    permissions: Object;
     constructor() {
         super();
         this.attr("name")
@@ -131,7 +145,11 @@ class Policy extends Entity {
      */
     async isDefault(): Promise<boolean> {
         const defaultGroup = await Group.getDefaultGroup();
-        return Policies2Entities.count({ query: { entity: defaultGroup.id, policy: this.id } }) > 0;
+        return (
+            (await Policies2Entities.count({
+                query: { entity: defaultGroup.id, policy: this.id }
+            })) > 0
+        );
     }
 
     static async getDefaultPolicies() {
@@ -166,9 +184,12 @@ class Policy extends Entity {
 }
 
 Policy.classId = "SecurityPolicy";
-Policy.tableName = "Security_Policies";
+Policy.storageClassId = "Security_Policies";
 
 class Policies2Entities extends Entity {
+    entity: Entity;
+    entityClassId: string;
+    policy: Policy;
     constructor() {
         super();
         this.attr("entity").entity([], { classIdAttribute: "entityClassId" });
@@ -178,7 +199,7 @@ class Policies2Entities extends Entity {
 }
 
 Policies2Entities.classId = "SecurityPolicies2Entities";
-Policies2Entities.tableName = "Security_Policies2Entities";
+Policies2Entities.storageClassId = "Security_Policies2Entities";
 
 export { Policies2Entities, Policy };
 
@@ -186,6 +207,10 @@ export { Policies2Entities, Policy };
  * ************************************************ Groups entities ************************************************
  */
 class Group extends Entity {
+    name: string;
+    slug: string;
+    description: string;
+    policies: Array<Policy>;
     constructor() {
         super();
         this.attr("name")
@@ -196,9 +221,7 @@ class Group extends Entity {
             .setValidators("required")
             .setOnce();
 
-        this.attr("description")
-            .char()
-            .setValidators("required");
+        this.attr("description").char();
 
         this.attr("policies")
             .entities(Policy, "entity")
@@ -243,9 +266,12 @@ class Group extends Entity {
 }
 
 Group.classId = "SecurityGroup";
-Group.tableName = "Security_Groups";
+Group.storageClassId = "Security_Groups";
 
 class Groups2Entities extends Entity {
+    entity: Entity;
+    entityClassId: string;
+    group: Group;
     constructor() {
         super();
         this.attr("entity").entity([], { classIdAttribute: "entityClassId" });
@@ -255,6 +281,6 @@ class Groups2Entities extends Entity {
 }
 
 Groups2Entities.classId = "SecurityGroups2Entities";
-Groups2Entities.tableName = "Security_Groups2Entities";
+Groups2Entities.storageClassId = "Security_Groups2Entities";
 
 export { Group, Groups2Entities };

@@ -55,17 +55,23 @@ class MemoryDriver extends Driver {
     }
 
     // eslint-disable-next-line
-    async count(entity: Entity, params: EntityFindParams): Promise<QueryResult> {
+    async count(entity: Entity | Class<Entity>, params: EntityFindParams): Promise<QueryResult> {
         const results = await this.find(entity, params);
         return new QueryResult(results.getResult().length);
     }
 
-    async findOne(entity: Entity, params: EntityFindOneParams & {}): Promise<QueryResult> {
+    async findOne(
+        entity: Entity | Class<Entity>,
+        params: EntityFindOneParams & {}
+    ): Promise<QueryResult> {
         return new QueryResult(_.find(this.data[entity.classId], params.query));
     }
 
     // eslint-disable-next-line
-    async find(entity: Entity, params: EntityFindParams & Object): Promise<QueryResult> {
+    async find(
+        entity: Entity | Class<Entity>,
+        params: EntityFindParams & Object
+    ): Promise<QueryResult> {
         const records = this.data[entity.classId];
         if (!records) {
             return new QueryResult([]);

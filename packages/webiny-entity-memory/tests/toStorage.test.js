@@ -34,8 +34,6 @@ describe("toStorage test", () => {
         simpleEntity4.id = "D";
         simpleEntity4.name = "Test-4";
 
-        complexEntity.simpleEntities = [simpleEntity2, simpleEntity3, simpleEntity4];
-
         const userStorageValue = await complexEntity.toStorage();
 
         expect(userStorageValue.firstName).toEqual("test");
@@ -49,6 +47,5 @@ describe("toStorage test", () => {
             { slug: "adult-user", label: "Adult User" }
         ]);
         expect(userStorageValue.simpleEntity).toEqual("A");
-        expect(userStorageValue.simpleEntities).toEqual(["B", "C", "D"]);
     });
 });

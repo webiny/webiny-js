@@ -1,3 +1,4 @@
+// @flow
 export { default as app } from "./app";
 export { default as Page } from "./entities/Page.entity";
 export { default as Category } from "./entities/Category.entity";

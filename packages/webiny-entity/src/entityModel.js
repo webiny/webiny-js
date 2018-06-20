@@ -1,11 +1,10 @@
 // @flow
-import { Model, DefaultAttributesContainer } from "webiny-model";
+import { Model } from "webiny-model";
 import EntityAttributesContainer from "./entityAttributesContainer";
 import type Entity from "./entity";
 
 class EntityModel extends Model {
     parentEntity: Entity;
-    attributesContainer: DefaultAttributesContainer | EntityAttributesContainer;
     constructor(params: ?Object) {
         super();
         if (params && typeof params === "object") {
@@ -18,7 +17,7 @@ class EntityModel extends Model {
         return this;
     }
 
-    getParentEntity(): ?Entity {
+    getParentEntity(): Entity {
         return this.parentEntity;
     }
 

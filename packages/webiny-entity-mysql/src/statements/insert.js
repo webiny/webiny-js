@@ -1,3 +1,4 @@
+// @flow
 import Statement from "./statement";
 import _ from "lodash";
 

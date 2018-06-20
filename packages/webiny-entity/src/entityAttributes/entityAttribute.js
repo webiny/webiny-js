@@ -1,6 +1,5 @@
 // @flow
-
-import { Attribute, AttributeValue, ModelError } from "webiny-model";
+import { Attribute, ModelError } from "webiny-model";
 import _ from "lodash";
 import EntityAttributeValue from "./entityAttributeValue";
 import type { EntityAttributesContainer } from "./..";
@@ -11,14 +10,13 @@ import { Entity, EntityModel } from "..";
 declare type EntityClass = Class<Entity> | Array<Class<Entity>>;
 
 class EntityAttribute extends Attribute {
-    value: AttributeValue | EntityAttributeValue;
     classes: { entity: { class: Class<Entity> | Array<Class<Entity>> } };
     auto: {
         save: { enabled: boolean, options: ?Object },
         delete: { enabled: boolean, options: ?Object }
     };
     options: EntityAttributeOptions;
-
+    parentEntity: Entity;
     constructor(
         name: string,
         attributesContainer: EntityAttributesContainer,
@@ -26,6 +24,9 @@ class EntityAttribute extends Attribute {
         options: EntityAttributeOptions = {}
     ) {
         super(name, attributesContainer);
+
+        const parentModel = ((this.getParentModel(): any): EntityModel);
+        this.parentEntity = parentModel.getParentEntity();
 
         this.options = options;
 
@@ -51,9 +52,7 @@ class EntityAttribute extends Attribute {
          * validation will be called internally in the save method. Save operations will be executed starting from bottom
          * nested entities, ending with the main parent entity.
          */
-        const parentModel = ((this.getParentModel(): any): EntityModel);
-        const parentEntity = parentModel.getParentEntity();
-        parentEntity.on("beforeSave", async () => {
+        this.parentEntity.on("beforeSave", async () => {
             const value = ((this.value: any): EntityAttributeValue);
 
             // At this point current value is an instance or is not instance. It cannot be in the 'loading' state, because that was
@@ -82,7 +81,7 @@ class EntityAttribute extends Attribute {
          * Once parent entity starts the delete process, we must also make the same on all linked entities.
          * The deletes are done on initial storage entities, not on entities stored as current value.
          */
-        parentEntity.on("delete", async () => {
+        this.parentEntity.on("delete", async () => {
             if (this.getAutoDelete()) {
                 const value = ((this.value: any): EntityAttributeValue);
                 await value.load();
@@ -93,7 +92,7 @@ class EntityAttribute extends Attribute {
             }
         });
 
-        parentEntity.on("beforeDelete", async () => {
+        this.parentEntity.on("beforeDelete", async () => {
             if (this.getAutoDelete()) {
                 const value = ((this.value: any): EntityAttributeValue);
                 await value.load();
@@ -244,8 +243,7 @@ class EntityAttribute extends Attribute {
 
         const id = _.get(this.value.getCurrent(), "id", this.value.getCurrent());
 
-        const parentModel = ((this.getParentModel(): any): EntityModel);
-        if (parentModel.getParentEntity().isId(id)) {
+        if (this.parentEntity.isId(id)) {
             const entity = await entityClass.findById(id);
             if (entity) {
                 // If we initially had object with other data set, we must populate entity with it, otherwise
@@ -285,8 +283,7 @@ class EntityAttribute extends Attribute {
         }
 
         const id = _.get(current, "id", current);
-        const parentModel = ((this.getParentModel(): any): EntityModel);
-        return parentModel.getParentEntity().isId(id) ? id : null;
+        return this.parentEntity.isId(id) ? id : null;
     }
 
     /**
@@ -357,6 +354,15 @@ class EntityAttribute extends Attribute {
             if (!this.canAcceptAnyEntityClass()) {
                 if (!this.getEntityClass()) {
                     const heldValue = await classIdAttribute.getValue();
+                    if (!(typeof heldValue === "string")) {
+                        throw new EntityError(
+                            `Entity attribute "${
+                                this.name
+                            }" accepts multiple Entity classes but it was not found (classId attribute holds invalid non-string value).`,
+                            ModelError.INVALID_ATTRIBUTE
+                        );
+                    }
+
                     throw new EntityError(
                         `Entity attribute "${
                             this.name

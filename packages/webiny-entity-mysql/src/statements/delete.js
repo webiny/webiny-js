@@ -1,3 +1,4 @@
+// @flow
 import Statement from "./statement";
 
 class Delete extends Statement {

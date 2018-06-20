@@ -4,6 +4,12 @@ import Page from "./Page.entity";
 import WidgetModel from "./Widget.model";
 
 class Revision extends Entity {
+    page: Page;
+    name: string;
+    slug: string;
+    settings: Object;
+    content: Array<WidgetModel>;
+    active: boolean;
     constructor() {
         super();
 
@@ -70,6 +76,6 @@ class Revision extends Entity {
 }
 
 Revision.classId = "CmsRevision";
-Revision.tableName = "Cms_Revisions";
+Revision.storageClassId = "Cms_Revisions";
 
 export default Revision;
