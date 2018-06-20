@@ -19,25 +19,25 @@ class EntityAttributesContainer extends DefaultAttributesContainer {
     ): EntityAttribute {
         const parent = this.getParentModel();
         parent.setAttribute(this.name, new EntityAttribute(this.name, this, entity, options));
-        return parent.getAttribute(this.name);
+        return ((parent.getAttribute(this.name): any): EntityAttribute);
     }
 
     entities(entity: Class<Entity>, attribute: ?string = null): EntitiesAttribute {
         const parent = this.getParentModel();
         parent.setAttribute(this.name, new EntitiesAttribute(this.name, this, entity, attribute));
-        return parent.getAttribute(this.name);
+        return ((parent.getAttribute(this.name): any): EntitiesAttribute);
     }
 
     model(model: Class<Model>): ModelAttribute {
         const parent = this.getParentModel();
         parent.setAttribute(this.name, new ModelAttribute(this.name, this, model));
-        return parent.getAttribute(this.name);
+        return ((parent.getAttribute(this.name): any): ModelAttribute);
     }
 
-    models(model: Class<Model>): ModelsAttribute {
+    models(model: Class<Model>, keyValue: boolean = false): ModelsAttribute {
         const parent = this.getParentModel();
-        parent.setAttribute(this.name, new ModelsAttribute(this.name, this, model));
-        return parent.getAttribute(this.name);
+        parent.setAttribute(this.name, new ModelsAttribute(this.name, this, model, keyValue));
+        return ((parent.getAttribute(this.name): any): ModelsAttribute);
     }
 }
 
