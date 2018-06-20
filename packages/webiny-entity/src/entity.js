@@ -12,17 +12,18 @@ import { EntityError } from "./index";
 
 class Entity {
     static classId: string;
+    static storageClassId: string;
     static driver: Driver;
     static pool: EntityPool;
+    static listeners: {};
     static crud: {
         logs?: boolean,
         delete?: {
             soft?: boolean
         }
     };
-    static listeners: {};
-
     classId: string;
+    storageClassId: string;
     id: mixed;
     model: EntityModel;
     listeners: {};
@@ -32,7 +33,6 @@ class Entity {
     updatedOn: ?Date;
     savedOn: ?Date;
     deleted: ?boolean;
-
     constructor(): Entity {
         const proxy = new Proxy((this: Object), {
             set: (instance, key, value) => {
@@ -46,7 +46,7 @@ class Entity {
                 return true;
             },
             get: (instance, key) => {
-                if (["classId", "driver"].includes(key)) {
+                if (["classId", "storageClassId", "driver"].includes(key)) {
                     return instance.constructor[key];
                 }
 
@@ -571,7 +571,7 @@ class Entity {
      * Returns information about the entity.
      * @returns {{name: string, id: *, attributes: {name: *, class: string|string|string|string|string|string|string}[]}}
      */
-    static describe(options: Object = {}) {
+    static describe(options: { name: string, classId: string, attributes: Object } = {}) {
         const instance = new this();
 
         const omit = _.get(options, "attributes.omit", []);
@@ -617,6 +617,7 @@ class Entity {
 }
 
 Entity.classId = "";
+Entity.storageClassId = "";
 Entity.driver = new Driver();
 Entity.pool = new EntityPool();
 Entity.crud = {

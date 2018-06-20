@@ -76,6 +76,6 @@ class Revision extends Entity {
 }
 
 Revision.classId = "CmsRevision";
-Revision.tableName = "Cms_Revisions";
+Revision.storageClassId = "Cms_Revisions";
 
 export default Revision;

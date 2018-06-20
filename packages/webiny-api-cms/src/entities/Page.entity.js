@@ -87,6 +87,6 @@ Page.filters = {
 };
 
 Page.classId = "CmsPage";
-Page.tableName = "Cms_Pages";
+Page.storageClassId = "Cms_Pages";
 
 export default Page;

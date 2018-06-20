@@ -15,6 +15,6 @@ class Widget extends Entity {
 }
 
 Widget.classId = "CmsWidget";
-Widget.tableName = "Cms_Widgets";
+Widget.storageClassId = "Cms_Widgets";
 
 export default Widget;

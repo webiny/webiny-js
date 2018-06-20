@@ -193,6 +193,6 @@ class Image extends File {
 }
 
 Image.classId = "Image";
-Image.tableName = "Images";
+Image.storageClassId = "Images";
 
 export default Image;

@@ -26,6 +26,6 @@ class Category extends Entity {
 }
 
 Category.classId = "CmsCategory";
-Category.tableName = "Cms_Categories";
+Category.storageClassId = "Cms_Categories";
 
 export default Category;

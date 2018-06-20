@@ -23,6 +23,6 @@ class ApiToken extends Identity {
 }
 
 ApiToken.classId = "SecurityApiToken";
-ApiToken.tableName = "Security_ApiTokens";
+ApiToken.storageClassId = "Security_ApiTokens";
 
 export default ApiToken;

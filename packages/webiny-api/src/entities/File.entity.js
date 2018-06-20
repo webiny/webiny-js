@@ -185,6 +185,6 @@ class File extends Entity {
 }
 
 File.classId = "File";
-File.tableName = "Files";
+File.storageClassId = "Files";
 
 export default File;

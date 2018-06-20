@@ -184,7 +184,7 @@ class Policy extends Entity {
 }
 
 Policy.classId = "SecurityPolicy";
-Policy.tableName = "Security_Policies";
+Policy.storageClassId = "Security_Policies";
 
 class Policies2Entities extends Entity {
     entity: Entity;
@@ -199,7 +199,7 @@ class Policies2Entities extends Entity {
 }
 
 Policies2Entities.classId = "SecurityPolicies2Entities";
-Policies2Entities.tableName = "Security_Policies2Entities";
+Policies2Entities.storageClassId = "Security_Policies2Entities";
 
 export { Policies2Entities, Policy };
 
@@ -266,7 +266,7 @@ class Group extends Entity {
 }
 
 Group.classId = "SecurityGroup";
-Group.tableName = "Security_Groups";
+Group.storageClassId = "Security_Groups";
 
 class Groups2Entities extends Entity {
     entity: Entity;
@@ -281,6 +281,6 @@ class Groups2Entities extends Entity {
 }
 
 Groups2Entities.classId = "SecurityGroups2Entities";
-Groups2Entities.tableName = "Security_Groups2Entities";
+Groups2Entities.storageClassId = "Security_Groups2Entities";
 
 export { Group, Groups2Entities };

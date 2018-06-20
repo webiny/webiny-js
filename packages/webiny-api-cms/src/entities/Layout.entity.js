@@ -32,6 +32,6 @@ class Layout extends Entity {
 }
 
 Layout.classId = "CmsLayout";
-Layout.tableName = "Cms_Layouts";
+Layout.storageClassId = "Cms_Layouts";
 
 export default Layout;

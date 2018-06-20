@@ -14,6 +14,6 @@ class WidgetPreset extends Entity {
 }
 
 WidgetPreset.classId = "CmsWidgetPreset";
-WidgetPreset.tableName = "Cms_WidgetPresets";
+WidgetPreset.storageClassId = "Cms_WidgetPresets";
 
 export default WidgetPreset;

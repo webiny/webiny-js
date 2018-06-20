@@ -234,6 +234,7 @@ class MySQLDriver extends Driver {
         const isClass = typeof entity === "function";
         const params = {
             classId: isClass ? entity.classId : entity.constructor.classId,
+            storageClassId: isClass ? entity.storageClassId : entity.constructor.storageClassId,
             tableName: isClass ? entity.tableName : entity.constructor.tableName
         };
 
@@ -246,7 +247,9 @@ class MySQLDriver extends Driver {
             return this.tables.prefix + params.tableName;
         }
 
-        return this.tables.prefix + params.classId;
+        return (
+            this.tables.prefix + (params.storageClassId ? params.storageClassId : params.classId)
+        );
     }
 
     async test() {
