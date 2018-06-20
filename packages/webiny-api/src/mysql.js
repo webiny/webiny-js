@@ -10,7 +10,6 @@ class MySQLTable extends Table {
         this.index().primary("id");
 
         this.column("createdOn").dateTime();
-        this.column("createdOn").dateTime();
         this.column("createdBy").char(24);
         this.column("createdByClassId").varChar(100);
 
