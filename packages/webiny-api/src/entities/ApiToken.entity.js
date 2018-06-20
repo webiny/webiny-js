@@ -3,6 +3,9 @@ import Identity from "./Identity.entity";
 import { api } from "./..";
 
 class ApiToken extends Identity {
+    name: string;
+    description: string;
+    token: string;
     constructor() {
         super();
         this.attr("name").char();

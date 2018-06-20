@@ -2,6 +2,9 @@
 import { Entity } from "webiny-api";
 
 class Widget extends Entity {
+    title: string;
+    type: string;
+    data: Object;
     constructor() {
         super();
 

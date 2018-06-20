@@ -3,9 +3,12 @@ import { Entity } from "webiny-api";
 import Page from "./Page.entity";
 
 class Category extends Entity {
+    title: string;
+    slug: string;
+    url: string;
+    pages: Array<Page>;
     constructor() {
         super();
-
         this.attr("title")
             .char()
             .setValidators("required");

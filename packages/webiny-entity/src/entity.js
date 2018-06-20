@@ -22,6 +22,7 @@ class Entity {
     };
     static listeners: {};
 
+    classId: string;
     id: mixed;
     model: EntityModel;
     listeners: {};

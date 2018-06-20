@@ -13,12 +13,16 @@ class Image extends File {
     quality: number;
     presets: ImagePresets;
     processor: ImageProcessor;
-
+    preset: string;
+    width: number;
+    height: number;
+    src: string;
+    aspectRatio: number;
+    isPortrait: boolean;
+    isLandscape: boolean;
     constructor() {
         super();
-
         this.presets = {};
-
         this.attr("preset")
             .char()
             .setDefaultValue("original");
@@ -54,7 +58,7 @@ class Image extends File {
             });
     }
 
-    static async find(params: EntityFindParams & Object = {}) {
+    static async find(params: EntityFindParams & ?Object = {}) {
         if (!_.has(params, "query.preset")) {
             _.set(params, "query.preset", "original");
         }
@@ -63,7 +67,7 @@ class Image extends File {
     }
 
     // eslint-disable-next-line
-    async save(params: EntitySaveParams & Object = {}) {
+    async save(params: EntitySaveParams & ?Object = {}) {
         if (this.data) {
             const imageSize = await import("image-size");
             const { width, height } = imageSize(this.data);
@@ -74,7 +78,7 @@ class Image extends File {
         return File.prototype.save.call(this, params);
     }
 
-    async delete(params: EntityDeleteParams & Object = { permanent: true }): Promise<void> {
+    async delete(params: EntityDeleteParams & ?Object = { permanent: true }): Promise<void> {
         await File.prototype.delete.call(this, params);
         const sizes = await this.getDerivedImages();
         for (let i = 0; i < sizes.length; i++) {

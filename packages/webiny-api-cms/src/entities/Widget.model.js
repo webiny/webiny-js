@@ -3,6 +3,8 @@ import { Model, Attribute } from "webiny-model";
 
 class WidgetModel extends Model {
     id: string;
+    type: string;
+    data: Object;
     constructor() {
         super();
         this.attr("id").char();

@@ -4,6 +4,12 @@ import Page from "./Page.entity";
 import WidgetModel from "./Widget.model";
 
 class Revision extends Entity {
+    page: Page;
+    name: string;
+    slug: string;
+    settings: Object;
+    content: Array<WidgetModel>;
+    active: boolean;
     constructor() {
         super();
 
