@@ -1,13 +1,10 @@
-const path = require("path");
 const rewireReactHotLoader = require("react-app-rewire-hot-loader");
-const rewireSass = require("./utils/rewire-sass");
+const rewireWebiny = require("./rewire/webiny");
 
 /* config-overrides.js */
-module.exports = function override(config, env) {
+module.exports = (config, env) => {
     config = rewireReactHotLoader(config, env);
-    config = rewireSass(config, env);
-
-    config.module.rules[0].use.push(path.resolve("./utils/hot-accept-loader"));
+    config = rewireWebiny(config, env);
 
     return config;
 };
