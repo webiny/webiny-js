@@ -14,15 +14,7 @@ class FilesAttribute extends EntitiesAttribute {
     tags: Array<string>;
 
     constructor(name: string, attributesContainer: EntityAttributesContainer, entity: Class<File>) {
-        super(name, attributesContainer, entity, "ref", () => {
-            // $FlowIgnore
-            const classId = this.getParentModel().getParentEntity().classId;
-            // $FlowIgnore
-            const id = this.getParentModel()
-                .getAttribute("id")
-                .getStorageValue();
-            return classId + ":" + id;
-        });
+        super(name, attributesContainer, entity);
     }
 
     /**
@@ -66,13 +58,14 @@ class FilesAttribute extends EntitiesAttribute {
 
     async getValue() {
         let values = await EntitiesAttribute.prototype.getValue.call(this);
-        values.map(value => {
-            if (value instanceof this.getEntitiesClass()) {
-                if (this.storage) {
-                    value.setStorage(this.storage).setStorageFolder(this.storageFolder);
+        Array.isArray(values) &&
+            values.map(value => {
+                if (value instanceof this.getEntitiesClass()) {
+                    if (this.storage) {
+                        value.setStorage(this.storage).setStorageFolder(this.storageFolder);
+                    }
                 }
-            }
-        });
+            });
 
         return values;
     }

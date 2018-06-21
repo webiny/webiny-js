@@ -248,16 +248,18 @@ class EntityAttribute extends Attribute {
             if (entity) {
                 // If we initially had object with other data set, we must populate entity with it, otherwise
                 // just set loaded entity (because only an ID was received, without additional data).
-                if (this.value.getCurrent() instanceof Object) {
-                    entity.populate(this.value.getCurrent());
+                const current = this.value.getCurrent();
+                if (current instanceof Object) {
+                    entity.populate(current);
                 }
                 this.value.setCurrent(entity);
             }
             return this.value.getCurrent();
         }
 
-        if (this.value.getCurrent() instanceof Object) {
-            const entity = new entityClass().populate(this.value.getCurrent());
+        const current = this.value.getCurrent();
+        if (current instanceof Object) {
+            const entity = new entityClass().populate(current);
             this.value.setCurrent(entity);
         }
 
@@ -382,7 +384,7 @@ class EntityAttribute extends Attribute {
      * Validates current value - if it's not a valid ID or an instance of Entity class, an error will be thrown.
      */
     async validateType(value: mixed) {
-        if (this.isValidInstance(value)) {
+        if (this.isValidInstance((value: any))) {
             return;
         }
 

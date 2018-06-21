@@ -18,9 +18,9 @@ declare type StatementOptions = {
 };
 
 class Statement {
-    entity: Entity;
+    entity: Entity | Class<Entity>;
     options: StatementOptions;
-    constructor(options: Object = {}, entity: Entity) {
+    constructor(options: Object = {}, entity: Entity | Class<Entity>) {
         this.options = options;
         this.entity = entity;
     }

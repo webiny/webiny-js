@@ -15,9 +15,11 @@ export default (config: { entity: Class<Entity>, storage: Storage }) => {
      * @package webiny-api
      * @return {FileAttribute}
      */
+    // $FlowFixMe
     EntityAttributesContainer.prototype.file = function() {
         const parent = this.getParentModel();
-        parent.setAttribute(this.name, new FileAttribute(this.name, this, config.entity));
+        const entity: Class<File> = (config.entity: any);
+        parent.setAttribute(this.name, new FileAttribute(this.name, this, entity));
         return parent.getAttribute(this.name);
     };
 
@@ -26,9 +28,11 @@ export default (config: { entity: Class<Entity>, storage: Storage }) => {
      * @package webiny-api
      * @return {FilesAttribute}
      */
+    // $FlowFixMe
     EntityAttributesContainer.prototype.files = function() {
         const parent = this.getParentModel();
-        parent.setAttribute(this.name, new FilesAttribute(this.name, this, config.entity));
+        const entity: Class<File> = (config.entity: any);
+        parent.setAttribute(this.name, new FilesAttribute(this.name, this, entity));
         return parent.getAttribute(this.name);
     };
 };

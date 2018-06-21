@@ -8,6 +8,7 @@ export default () => {
      * @package webiny-api
      * @return {BufferAttribute}
      */
+    // $FlowFixMe
     EntityAttributesContainer.prototype.buffer = function(encoding: buffer$NonBufferEncoding) {
         const parent = this.getParentModel();
         parent.setAttribute(this.name, new BufferAttribute(this.name, this, encoding));

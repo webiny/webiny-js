@@ -56,8 +56,7 @@ class ImageAttribute extends FileAttribute {
 
         // If new value is being assigned and there is an existing file - delete the existing file after a successful save
         if (currentValue && (!newValue || currentValue.id !== newValue.id)) {
-            this.getParentModel()
-                .getParentEntity()
+            this.parentEntity
                 .on("afterSave", async () => {
                     await currentValue.delete();
                 })

@@ -13,6 +13,10 @@ export default (entityClass: Class<Entity>, schema: Schema) => {
         },
         async resolve(root, args) {
             const entity = await entityClass.findById(args.id);
+            if (!entity) {
+                throw Error(`Entity with id "${args.id}" not found.`);
+            }
+
             await entity.delete();
             return true;
         }

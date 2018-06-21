@@ -1,13 +1,12 @@
 // @flow
-import { AttributeValue } from "webiny-model";
-import type { Attribute } from "webiny-model";
-import { Entity, EntityAttribute } from "webiny-entity";
+import { AttributeValue, type Attribute } from "webiny-model";
+import { Entity, EntityModel, type EntityAttribute } from "webiny-entity";
 import _ from "lodash";
 
 class EntityAttributeValue extends AttributeValue {
     queue: Array<Function>;
     initial: ?mixed;
-    attribute: EntityAttribute;
+    parentModel: EntityModel;
     constructor(attribute: Attribute) {
         super(attribute);
         this.queue = [];
@@ -16,6 +15,8 @@ class EntityAttributeValue extends AttributeValue {
         // upon save, old entity must be removed. This is only active when auto delete option on the attribute is enabled,
         // which then represents a one to one relationship.
         this.initial = null;
+
+        this.parentModel = (this.attribute.getParentModel(): any);
     }
 
     /**
@@ -37,18 +38,18 @@ class EntityAttributeValue extends AttributeValue {
 
         // Only if we have a valid ID set, we must load linked entity.
         const initial = this.getInitial();
-        if (
-            this.attribute
-                .getParentModel()
-                .getParentEntity()
-                .isId(initial)
-        ) {
-            const entity = await this.attribute.getEntityClass().findById(initial);
-            this.setInitial(entity);
-            // If current value is not dirty, than we can set initial value as current, otherwise we
-            // assume that something else was set as current value like a new entity.
-            if (this.isClean()) {
-                this.setCurrent(entity, { skipDifferenceCheck: true });
+        if (this.parentModel.getParentEntity().isId(initial)) {
+            const attribute: EntityAttribute = (this.attribute: any);
+            const entityClass = attribute.getEntityClass();
+
+            if (entityClass) {
+                const entity = await entityClass.findById(initial);
+                this.setInitial(entity);
+                // If current value is not dirty, than we can set initial value as current, otherwise we
+                // assume that something else was set as current value like a new entity.
+                if (this.isClean()) {
+                    this.setCurrent(entity, { skipDifferenceCheck: true });
+                }
             }
         }
 
@@ -86,7 +87,8 @@ class EntityAttributeValue extends AttributeValue {
     }
 
     hasInitial() {
-        return this.initial instanceof this.attribute.getEntityClass();
+        const attribute: EntityAttribute = (this.attribute: any);
+        return this.initial instanceof attribute.getEntityClass();
     }
 
     isDirty(): boolean {

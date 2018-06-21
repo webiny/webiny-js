@@ -1,6 +1,6 @@
 // @flow
 import { EntityAttributesContainer } from "webiny-entity";
-import { Entity, Image } from "webiny-api";
+import { Entity, Image, type File } from "webiny-api";
 import ImageAttribute from "./imageAttribute";
 import type { ImageProcessor } from "../../types";
 import type { Storage } from "webiny-file-storage";
@@ -21,9 +21,12 @@ export default (config: {
      * @package webiny-api
      * @return {ImageAttribute}
      */
+    // $FlowFixMe
     EntityAttributesContainer.prototype.image = function() {
         const parent = this.getParentModel();
-        parent.setAttribute(this.name, new ImageAttribute(this.name, this, config.entity));
+        const entity: Class<File> = (config.entity: any);
+
+        parent.setAttribute(this.name, new ImageAttribute(this.name, this, entity));
         const attribute = parent.getAttribute(this.name);
         attribute.setProcessor(config.processor);
         attribute.setQuality(config.quality);
@@ -36,9 +39,12 @@ export default (config: {
      * @package webiny-api
      * @return {ImagesAttribute}
      */
+    // $FlowFixMe
     EntityAttributesContainer.prototype.images = function() {
         const parent = this.getParentModel();
-        parent.setAttribute(this.name, new ImagesAttribute(this.name, this, config.entity));
+        const entity: Class<File> = (config.entity: any);
+
+        parent.setAttribute(this.name, new ImagesAttribute(this.name, this, entity));
         const attribute = parent.getAttribute(this.name);
         attribute.setProcessor(config.processor);
         attribute.setQuality(config.quality);

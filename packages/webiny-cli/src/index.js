@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @flow
 /**
  * Webiny CLI - a command line interface for common development tasks (eg. creating a new app, entity ...).
  * Before adding new commands, check out some of the existing ones.

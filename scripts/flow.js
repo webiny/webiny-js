@@ -7,7 +7,6 @@ const chalk = require("chalk");
 const blacklist = [
     // Scripts
     "webiny-scripts",
-    "webiny-cli",
 
     // Client
     "webiny-client",
@@ -45,17 +44,25 @@ for (let i = 0; i < packages.list.length; i++) {
 }
 
 if (packages.invalid.length) {
+    // eslint-disable-next-line
     console.log(
         chalk.red(
             `Following packages (${packages.invalid.length}) are missing @flow implementation:`
         )
     );
+
+    // eslint-disable-next-line
     console.log(chalk.red("┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈"));
     for (let i = 0; i < packages.invalid.length; i++) {
         let pckg = packages.invalid[i];
+
+        // eslint-disable-next-line
         console.log(chalk.red(pckg.name));
+
+        // eslint-disable-next-line
         console.log(pckg.files);
     }
 } else {
+    // eslint-disable-next-line
     console.log(chalk.green("All packages have @flow implemented, good job!"));
 }

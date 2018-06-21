@@ -19,10 +19,12 @@ class ConsoleLog extends Log {
         let color = ConsoleLog.__getColorFromType(type);
 
         if (tags.includes("start") && tags.includes("table")) {
+            // eslint-disable-next-line
             console.log(chalk.blue(ConsoleLog.__outputHorizontalLine()));
         }
 
         if (tags.includes("sync") && tags.includes("finish")) {
+            // eslint-disable-next-line
             console.log(chalk.blue(ConsoleLog.__outputHorizontalLine()));
         }
 
@@ -31,9 +33,10 @@ class ConsoleLog extends Log {
         }
 
         // $FlowFixMe
-        console.log(chalk[color](message));
+        console.log(chalk[color](message)); // eslint-disable-line
 
         if (tags.includes("start") && tags.includes("table")) {
+            // eslint-disable-next-line
             console.log(chalk.blue(ConsoleLog.__outputHorizontalLine()));
         }
     }

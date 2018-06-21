@@ -24,7 +24,7 @@ class Entity {
     };
     classId: string;
     storageClassId: string;
-    id: mixed;
+    id: string;
     model: EntityModel;
     listeners: {};
     existing: boolean;

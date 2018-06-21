@@ -7,6 +7,7 @@ class Revision extends Entity {
     page: Page;
     name: string;
     slug: string;
+    title: string;
     settings: Object;
     content: Array<WidgetModel>;
     active: boolean;
@@ -48,9 +49,9 @@ class Revision extends Entity {
                 if (value && value !== this.active && this.isExisting()) {
                     this.on("beforeSave", async () => {
                         // Deactivate previously active revision
-                        const activeRev = await Revision.findOne({
+                        const activeRev: Revision = (await Revision.findOne({
                             query: { active: true, page: (await this.page).id }
-                        });
+                        }): any);
                         activeRev.active = false;
                         await activeRev.save();
                     }).setOnce();

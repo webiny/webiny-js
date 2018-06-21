@@ -46,7 +46,7 @@ export default async () => {
 
     await cmsPublicPolicy.save();
 
-    const defaultGroup = await Group.findOne({ query: { slug: "default" } });
+    const defaultGroup: Group = (await Group.findOne({ query: { slug: "default" } }): any);
     defaultGroup.policies = [...(await defaultGroup.policies), cmsPublicPolicy];
     await defaultGroup.save();
 

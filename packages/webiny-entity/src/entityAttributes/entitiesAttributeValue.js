@@ -1,7 +1,6 @@
 // @flow
-import { AttributeValue } from "webiny-model";
-import type { Attribute } from "webiny-model";
-import type { EntitiesAttribute } from "webiny-entity";
+import { AttributeValue, type Attribute } from "webiny-model";
+import type { EntitiesAttribute, EntityModel } from "webiny-entity";
 
 import Entity from "./../entity";
 import EntityCollection from "./../entityCollection";
@@ -11,7 +10,7 @@ class EntitiesAttributeValue extends AttributeValue {
     initial: EntityCollection;
     links: Object;
     queue: Array<Function>;
-    attribute: EntitiesAttribute;
+    parentModel: EntityModel;
     constructor(attribute: Attribute) {
         super(attribute);
 
@@ -31,6 +30,8 @@ class EntitiesAttributeValue extends AttributeValue {
         };
 
         this.queue = [];
+
+        this.parentModel = (this.attribute.getParentModel(): any);
     }
 
     /**
@@ -46,20 +47,14 @@ class EntitiesAttributeValue extends AttributeValue {
             return;
         }
 
-        const classes = this.attribute.classes;
+        const attribute: EntitiesAttribute = (this.attribute: any);
+        const classes = attribute.classes;
 
         this.state.loading = true;
 
-        if (
-            this.attribute
-                .getParentModel()
-                .getParentEntity()
-                .isExisting()
-        ) {
-            let id = await this.attribute
-                .getParentModel()
-                .getAttribute("id")
-                .getStorageValue();
+        if (this.parentModel.getParentEntity().isExisting()) {
+            const idAttribute: Attribute = (this.parentModel.getAttribute("id"): any);
+            let id = await idAttribute.getStorageValue();
 
             if (classes.using.class) {
                 this.links.initial = await classes.using.class.find({
@@ -148,10 +143,10 @@ class EntitiesAttributeValue extends AttributeValue {
         for (let i = 0; i < current.length; i++) {
             const entity = current[i];
             if (entity instanceof Entity) {
-                await entity.set(
-                    this.attribute.classes.entities.attribute,
-                    this.attribute.getParentModel().getParentEntity()
-                );
+                const attribute: EntitiesAttribute = (this.attribute: any);
+                const classes = attribute.classes;
+
+                await entity.set(classes.entities.attribute, this.parentModel.getParentEntity());
             }
         }
     }
@@ -273,14 +268,23 @@ class EntitiesAttributeValue extends AttributeValue {
             if (link && !links.includes(link)) {
                 links.push(link);
             } else {
-                const attribute = ((this.attribute: any): EntitiesAttribute);
-                const entity = new (attribute.getUsingClass())();
-                await entity.set(attribute.getUsingAttribute(), currentEntity);
-                await entity.set(
-                    attribute.getEntitiesAttribute(),
-                    attribute.getParentModel().getParentEntity()
-                );
-                links.push(entity);
+                const attr: Object = {
+                    instance: ((this.attribute: any): EntitiesAttribute)
+                };
+
+                attr.usingClass = attr.instance.getUsingClass();
+                attr.usingAttribute = attr.instance.getUsingAttribute();
+                attr.entitiesAttribute = attr.instance.getEntitiesAttribute();
+
+                if (attr.usingClass && attr.usingAttribute && attr.entitiesAttribute) {
+                    const entity = new attr.usingClass();
+                    await entity.set(attr.usingAttribute, currentEntity);
+                    await entity.set(
+                        attr.entitiesAttribute,
+                        attr.instance.getParentModel().getParentEntity()
+                    );
+                    links.push(entity);
+                }
             }
         }
 

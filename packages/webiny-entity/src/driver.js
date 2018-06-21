@@ -10,7 +10,7 @@ import type {
 } from "webiny-entity/types";
 
 class Driver {
-    connection: mixed;
+    connection: any;
 
     constructor() {
         this.connection = null;

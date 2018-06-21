@@ -30,7 +30,7 @@ export default async () => {
     await entity.save();
 
     // Automatically add this policy to default group.
-    const group = await Group.findOne({ query: { slug: "default" } });
+    const group: Group = (await Group.findOne({ query: { slug: "default" } }): any);
 
     const policies = await group.policies;
     group.policies = [...policies, entity];

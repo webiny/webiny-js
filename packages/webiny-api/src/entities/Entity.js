@@ -260,8 +260,9 @@ class Group extends Entity {
         return this.slug === "default";
     }
 
-    static async getDefaultGroup() {
-        return Group.findOne({ query: { slug: "default" } });
+    static async getDefaultGroup(): Promise<Group> {
+        const group: Group = (Group.findOne({ query: { slug: "default" } }): any);
+        return group;
     }
 }
 

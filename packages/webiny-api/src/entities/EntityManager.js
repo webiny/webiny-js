@@ -21,8 +21,8 @@ class EntityManager {
         const id = entity.constructor.classId;
         const wildcardCallbacks = this.extensions["*"] || [];
         const callbacks = this.extensions[id] || [];
-        wildcardCallbacks.map(cb => cb(entity));
-        callbacks.map(cb => cb(entity));
+        wildcardCallbacks.map(cb => cb({ id, entity }));
+        callbacks.map(cb => cb({ id, entity }));
     }
 
     registerEntity(entityClass: Class<Entity>): EntityManager {

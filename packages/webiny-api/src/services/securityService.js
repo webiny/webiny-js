@@ -1,8 +1,9 @@
 // @flow
 import { Identity } from "./../index";
 import AuthenticationError from "./AuthenticationError";
-import { Entity, Policy, api } from "./..";
+import { Entity, Policy, Group, api } from "./..";
 import type { IAuthentication, IToken } from "./../../types";
+import type { Attribute } from "webiny-model";
 import _ from "lodash";
 import type { $Request } from "express";
 
@@ -87,20 +88,25 @@ class SecurityService implements IAuthentication {
 
     setIdentity(identity: Identity): SecurityService {
         const request = api.getRequest();
-        if (request) {
-            return (request.security.identity = identity);
+        if (request && request.security) {
+            request.security.identity = identity;
         }
         return this;
     }
 
     identityIsOwner(identity: Identity, entity: Entity) {
-        const entityOwner = entity.getAttribute("owner").value.getCurrent();
+        const identityOwner: Attribute = (entity.getAttribute("owner"): any);
+        const entityOwner = identityOwner.value.getCurrent();
         return identity.id === _.get(entityOwner, "id", entityOwner);
     }
 
     identityIsInGroup(identity: Identity, entity: Entity) {
-        const identityGroups = identity.getAttribute("groups").value.getCurrent() || [];
-        const entityGroups = entity.getAttribute("groups").value.getCurrent() || [];
+        const identityGroupsAttr: Attribute = (identity.getAttribute("groups"): any);
+        const identityGroups: Array<Group> = (identityGroupsAttr.value.getCurrent() || []: any);
+
+        const entityGroupsAttr: Attribute = (entity.getAttribute("groups"): any);
+        const entityGroups: Array<Group> = (entityGroupsAttr.value.getCurrent() || []: any);
+
         for (let i = 0; i < identityGroups.length; i++) {
             let identityGroup = identityGroups[i];
             for (let j = 0; j < entityGroups.length; j++) {

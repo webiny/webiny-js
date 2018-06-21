@@ -5,13 +5,21 @@ import { Page, Revision, Widget } from "./../";
 import type { Schema } from "webiny-api";
 
 async function formatData(instance: Page | Revision) {
-    const page = await instance.toJSON("id,slug,title,content[id,type,data]");
+    const page: Page | Revision = (await instance.toJSON(
+        "id,slug,title,content[id,type,data]"
+    ): any);
 
     for (let i = 0; i < page.content.length; i++) {
+        // $FlowFixMe
         if (page.content[i].origin) {
-            const { data } = await Widget.findById(page.content[i].origin);
+            const { data }: { data: ?Widget } = (await Widget.findById(
+                page.content[i].origin
+            ): any);
+            // $FlowFixMe
             delete page.content[i].origin;
-            Object.assign(page.content[i], { data });
+            if (data) {
+                Object.assign(page.content[i], { data });
+            }
         }
     }
     return page;
@@ -37,7 +45,9 @@ export default (schema: Schema) => {
             url: { type: new GraphQLNonNull(GraphQLString) }
         },
         async resolve(root, args) {
-            const instance = await Page.findOne({ query: { slug: args.url, status: "published" } });
+            const instance: Page = (await Page.findOne({
+                query: { slug: args.url, status: "published" }
+            }): any);
             if (!instance) {
                 return Promise.reject(new Error("Page not found"));
             }
@@ -52,7 +62,7 @@ export default (schema: Schema) => {
             id: { type: new GraphQLNonNull(GraphQLString) }
         },
         async resolve(root, args) {
-            const instance = await Revision.findById(args.id);
+            const instance: Revision = (await Revision.findById(args.id): any);
             return formatData(instance);
         }
     };

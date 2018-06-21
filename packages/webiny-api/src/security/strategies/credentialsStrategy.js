@@ -39,14 +39,15 @@ export default (options: { usernameAttribute?: string } = {}) => {
             identity: Class<Identity>
         ): Promise<Identity> {
             return new Promise(async (resolve, reject) => {
-                const instance = await identity.findOne({
+                const instance: Identity = (await identity.findOne({
                     query: { [config.usernameAttribute]: args.username }
-                });
+                }): any);
 
                 if (!instance) {
                     return reject(error);
                 }
 
+                // $FlowFixMe - instance that will be validated will have "password" attribute.
                 bcrypt.compare(args.password, instance.password, (err, res) => {
                     if (err || !res) {
                         return reject(error);

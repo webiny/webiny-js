@@ -1,10 +1,10 @@
 // @flow
 import _ from "lodash";
 import mdbid from "mdbid";
-
 import type { Connection, Pool } from "mysql";
 import { Entity, Driver, QueryResult } from "webiny-entity";
 import { MySQLConnection } from "webiny-mysql-connection";
+import { Attribute } from "webiny-model";
 import type {
     EntitySaveParams,
     EntityFindParams,
@@ -106,7 +106,8 @@ class MySQLDriver extends Driver {
         try {
             await this.getConnection().query(sql);
         } catch (e) {
-            entity.id && entity.getAttribute("id").reset();
+            const idAttribute: Attribute = (entity.getAttribute("id"): any);
+            idAttribute.reset();
             throw e;
         }
 
@@ -230,12 +231,15 @@ class MySQLDriver extends Driver {
         return this.tables.naming;
     }
 
-    getTableName(entity: Entity): string {
-        const isClass = typeof entity === "function";
+    getTableName(entity: Entity | Class<Entity>): string {
         const params = {
-            classId: isClass ? entity.classId : entity.constructor.classId,
-            storageClassId: isClass ? entity.storageClassId : entity.constructor.storageClassId,
-            tableName: isClass ? entity.tableName : entity.constructor.tableName
+            classId: _.get(entity, "constructor.classId", _.get(entity, "classId")),
+            storageClassId: _.get(
+                entity,
+                "constructor.storageClassId",
+                _.get(entity, "storageClassId")
+            ),
+            tableName: _.get(entity, "constructor.tableName", _.get(entity, "tableName"))
         };
 
         const getTableName = this.getTableNaming();

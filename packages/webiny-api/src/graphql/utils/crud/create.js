@@ -18,6 +18,10 @@ export default (entityClass: Class<Entity>, schema: Schema) => {
         },
         async resolve(root, args) {
             const entity = new entityClass();
+            if (!entity) {
+                throw Error(`Entity with id "${args.id}" not found.`);
+            }
+
             try {
                 await entity.populate(args.data).save();
             } catch (e) {

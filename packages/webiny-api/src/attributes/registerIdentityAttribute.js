@@ -9,6 +9,7 @@ export default () => {
      * Identity attribute. Used to store a reference to an Identity.
      * @return {IdentityAttribute}
      */
+    // $FlowFixMe
     EntityAttributesContainer.prototype.identity = function(options: EntityAttributeOptions) {
         const model = this.getParentModel();
         model.setAttribute(

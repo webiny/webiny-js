@@ -63,6 +63,7 @@ class Image extends File {
             _.set(params, "query.preset", "original");
         }
 
+        // $FlowFixMe
         return File.find.call(this, params);
     }
 
@@ -119,9 +120,10 @@ class Image extends File {
             return this.getURL();
         }
 
-        const presetFile = await Image.findOne({
+        const presetFile: File = (await Image.findOne({
             query: { ref: this.classId + ":" + this.id, preset }
-        });
+        }): any);
+
         if (presetFile) {
             return presetFile.setStorage(this.storage).getURL();
         }
@@ -143,7 +145,7 @@ class Image extends File {
 
         presetImage.setStorage(this.storage);
         presetImage.setStorageFolder(this.storageFolder);
-        presetImage.setProcessor(this.pr);
+        presetImage.setProcessor(this.processor);
 
         presetImage.populate({
             ref: this,

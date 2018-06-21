@@ -2,6 +2,12 @@
 import Identity from "./Identity.entity";
 
 class User extends Identity {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    gravatar: string;
+    enabled: boolean;
     constructor() {
         super();
         this.attr("email")

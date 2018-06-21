@@ -11,7 +11,7 @@ class EntitiesAttribute extends Attribute {
     auto: { save: boolean, delete: boolean };
     classes: {
         parent: string,
-        entities: { class: Class<Entity>, attribute: ?string },
+        entities: { class: Class<Entity>, attribute: string },
         using: { class: ?Class<Entity> | Function, attribute: ?string }
     };
     parentEntity: Entity;
@@ -19,7 +19,7 @@ class EntitiesAttribute extends Attribute {
         name: string,
         attributesContainer: EntityAttributesContainer,
         entity: Class<Entity>,
-        attributeName: ?string
+        attributeName: string = ""
     ) {
         super(name, attributesContainer);
 

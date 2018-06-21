@@ -1,3 +1,4 @@
+// @flow
 const fs = require("fs-extra");
 const download = require("download");
 const extract = require("extract-zip");
@@ -6,14 +7,14 @@ const cli = require("./../cli");
 
 exports.command = "create <name>";
 exports.describe = "Create a new Webiny app.";
-exports.builder = yargs => {
+exports.builder = (yargs: Object) => {
     return yargs.positional("name", {
         describe: "Name of the app (also the name of the app folder).",
         type: "string"
     });
 };
 
-exports.handler = async function(argv) {
+exports.handler = async function(argv: Object) {
     const name = argv.name;
     cli.validateName(name);
 

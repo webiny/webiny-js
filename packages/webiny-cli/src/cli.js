@@ -1,3 +1,4 @@
+// @flow
 const chalk = require("chalk");
 
 module.exports = {
@@ -8,7 +9,7 @@ module.exports = {
     },
 
     // Ensure a-zA-Z0-9_ characters were used.
-    validateName(name) {
+    validateName(name: string): void {
         if (name.length < 2) {
             throw Error("Name requires at least 2 characters.");
         }
@@ -18,16 +19,20 @@ module.exports = {
         }
     },
 
-    info(message) {
+    info(message: string): void {
+        // eslint-disable-next-line
         console.log(chalk.cyan(message));
     },
-    success(message) {
+    success(message: string): void {
+        // eslint-disable-next-line
         console.log(chalk.green(message));
     },
-    warning(message) {
+    warning(message: string): void {
+        // eslint-disable-next-line
         console.log(chalk.yellow(message));
     },
-    error(message) {
+    error(message: string): void {
+        // eslint-disable-next-line
         console.log(chalk.red(message));
     }
 };

@@ -1,3 +1,4 @@
+// @flow
 const fs = require("fs-extra");
 const entity = require("./entity/entity");
 const table = require("./entity/table");
@@ -5,14 +6,14 @@ const cli = require("./../cli");
 
 exports.command = "entity <name>";
 exports.describe = "Create a new entity.";
-exports.builder = yargs => {
+exports.builder = (yargs: Object) => {
     return yargs.positional("name", {
         describe: "Name of entity.",
         type: "string"
     });
 };
 
-exports.handler = function(argv) {
+exports.handler = function(argv: Object) {
     const name = argv.name.charAt(0).toUpperCase() + argv.name.slice(1);
     cli.validateName(name);
 
