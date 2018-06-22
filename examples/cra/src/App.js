@@ -6,7 +6,7 @@ import {
     authenticationMiddleware,
     Router
 } from "webiny-client";
-import { app as adminApp } from "webiny-client-admin";
+
 import { app as cmsApp } from "webiny-client-cms/lib/admin";
 import userIdentity from "./userIdentity";
 import apiConfig from "./apiConfig";
@@ -19,6 +19,11 @@ if (!app.initialized) {
 
     app.configure(() => {
         return apiConfig(app);
+    });
+
+    app.modules.register({
+        name: "Button",
+        factory: () => import("webiny-client-ui/lib/Button")
     });
 
     app.router.configure({

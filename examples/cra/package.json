@@ -8,17 +8,24 @@
     "react-app-rewired": "^1.5.2",
     "react-dom": "^16.4.1",
     "react-hot-loader": "^4.3.3",
-    "react-scripts": "1.1.4"
+    "react-scripts": "2.0.0-next.3e165448"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
-    "test": "react-app-rewired test --env=jsdom",
-    "eject": "react-app-rewired eject"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
   },
-  "devDependencies": {
-    "node-sass": "^4.9.0",
-    "react-app-rewire-css-modules": "codebandits/react-app-rewire-css-modules",
-    "sass-loader": "^7.0.3"
+  "browserslist": {
+    "development": [
+      "last 2 chrome versions",
+      "last 2 firefox versions",
+      "last 2 edge versions"
+    ],
+    "production": [
+      ">0.25%",
+      "not op_mini all",
+      "ie 11"
+    ]
   }
 }
