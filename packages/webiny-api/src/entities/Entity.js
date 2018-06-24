@@ -30,6 +30,7 @@ class Entity extends BaseEntity {
             .entities(Group, "entity")
             .setUsing(Groups2Entities, "group");
 
+        // "savedBy" attribute - updated only on entity creation.
         this.attr("savedByClassId")
             .char()
             .setSkipOnPopulate();
