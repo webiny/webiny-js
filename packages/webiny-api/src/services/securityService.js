@@ -1,6 +1,6 @@
 // @flow
 import { Identity } from "./../index";
-import AuthenticationError from "./AuthenticationError";
+import AuthenticationError from "./../security/AuthenticationError";
 import { Entity, Policy, Group, api } from "./..";
 import type { IAuthentication, IToken } from "./../../types";
 import type { Attribute } from "webiny-model";

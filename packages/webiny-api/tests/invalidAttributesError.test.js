@@ -1,5 +1,6 @@
+// @flow
 import { assert } from "chai";
-import InvalidAttributesError from "./../src/graphql/utils/InvalidAttributesError";
+import InvalidAttributesError from "./../src/graphql/utils/crud/InvalidAttributesError";
 import { ModelError } from "webiny-model";
 
 describe("FormattedInvalidAttributesError test", function() {

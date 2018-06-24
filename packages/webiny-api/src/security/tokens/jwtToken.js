@@ -2,7 +2,7 @@
 import jwt from "jsonwebtoken";
 import type { Identity } from "./../../index";
 import type { IToken } from "../../../types";
-import AuthenticationError from "../../services/AuthenticationError";
+import AuthenticationError from "../../security/AuthenticationError";
 
 type JwtTokenConfig = {
     secret: string,

@@ -2,7 +2,7 @@
 import bcrypt from "bcryptjs";
 import { GraphQLString, GraphQLBoolean, GraphQLNonNull } from "graphql";
 import type { Identity } from "../../index";
-import AuthenticationError from "../../services/AuthenticationError";
+import AuthenticationError from "../../security/AuthenticationError";
 
 /**
  * Credentials strategy factory
