@@ -15,7 +15,7 @@ module.exports = {
 
                         context.report(
                             node,
-                            'Flow missing - add "// @flow" comment on top of the file.'
+                            'Flow missing - add "// @flow" or "// @flowIgnore" comment on top of the file.'
                         );
                     }
                 };
