@@ -1,4 +1,3 @@
-// @flow
 import { Log, Sync } from "..";
 
 describe("Log test", () => {

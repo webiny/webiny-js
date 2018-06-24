@@ -1,4 +1,3 @@
-// @flow
 import extract from "./../src/extractor/extract";
 
 import example1 from "./extract/example1";

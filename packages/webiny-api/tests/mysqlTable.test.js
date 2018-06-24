@@ -1,4 +1,3 @@
-// @flow
 import MySQLTable from "./../src/mysql";
 import { CharColumn, DateTimeColumn, TinyIntColumn } from "webiny-sql-table-mysql/src/columns";
 

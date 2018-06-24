@@ -1,4 +1,3 @@
-// @flow
 import { QueryResult } from "webiny-entity";
 import { Company, User, Issue } from "./entities/identityAttributeEntities";
 import { MemoryDriver } from "webiny-entity-memory";

@@ -1,4 +1,3 @@
-// @flow
 import fs from "fs";
 import imageSize from "image-size";
 import processorFactory from "./../src";

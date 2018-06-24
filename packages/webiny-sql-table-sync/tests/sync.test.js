@@ -1,4 +1,3 @@
-// @flow
 import sinon from "sinon";
 import { Sync } from "./..";
 import { TableA, TableB } from "./tables";

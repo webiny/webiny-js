@@ -1,4 +1,3 @@
-// @flow
 import { api } from "webiny-api";
 import User from "./entities/myUser";
 import registerIdentityAttribute from "./../src/attributes/registerIdentityAttribute";

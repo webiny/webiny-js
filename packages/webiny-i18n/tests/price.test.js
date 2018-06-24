@@ -1,4 +1,3 @@
-// @flow
 import i18n from "./../src";
 
 describe("price test", () => {
