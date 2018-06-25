@@ -1,13 +1,4 @@
-import {
-    api,
-    File,
-    Image,
-    User,
-    ApiToken,
-    JwtToken,
-    credentialsStrategy,
-    apiTokenStrategy
-} from "webiny-api";
+import { api, File, Image, User, ApiToken, JwtToken, credentialsStrategy } from "webiny-api";
 
 import { MySQLDriver } from "webiny-entity-mysql";
 import imageProcessor from "webiny-jimp";
@@ -15,8 +6,7 @@ import LocalDriver from "webiny-file-storage-local";
 import { Storage } from "webiny-file-storage";
 import addDays from "date-fns/add_days";
 import { connection } from "./database";
-import myApp from "./myApp";
-import { app as cmsApp } from "webiny-api-cms";
+import cloudApi from "./cloudApi";
 
 export default async () => {
     // Configure default storage
@@ -77,8 +67,7 @@ export default async () => {
         }
     });
 
-    api.use(myApp());
-    api.use(cmsApp({}));
+    api.use(cloudApi());
 
     return api;
 };
