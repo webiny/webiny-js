@@ -9,7 +9,7 @@
   "files": [
     "lib/"
   ],
-  "main": "lib/index.js",
+  "main": "src/index.js",
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>",
     "Sven Al Hamad <sven@webiny.com>",
