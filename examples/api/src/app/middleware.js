@@ -55,6 +55,7 @@ export default async () => {
             }
         },
         security: {
+            enabled: true,
             token: new JwtToken({ secret: "MyS3cr3tK3Y" }),
             strategies: {
                 credentials: credentialsStrategy()

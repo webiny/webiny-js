@@ -37,12 +37,16 @@ const checkScope = (selectionSet, scopesList, parentFields = "") => {
  * @param {Api} params.app
  */
 export default async (params: Object) => {
+    const security = api.services.get("security");
+    if (security.config.enabled === false) {
+        return;
+    }
+
     // Let's allow IntrospectionQuery to be accessed.
     if (_.get(params.graphql, "documentAST.definitions.0.name.value") === "IntrospectionQuery") {
         return;
     }
 
-    const security = api.services.get("security");
     const permissions = security.getIdentity(true);
 
     // If all enabled (eg. super-admin), return immediately, no need to do further checks.

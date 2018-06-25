@@ -9,6 +9,7 @@ import type { $Request } from "express";
 
 class SecurityService implements IAuthentication {
     config: {
+        enabled: boolean,
         token: IToken,
         strategies: {
             [name: string]: (req: $Request, identity: Class<Identity>) => Promise<Identity>
@@ -25,6 +26,11 @@ class SecurityService implements IAuthentication {
 
     async init() {
         if (this.initialized) {
+            return;
+        }
+
+        if (this.config.enabled === false) {
+            this.initialized = true;
             return;
         }
 
