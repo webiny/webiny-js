@@ -80,7 +80,7 @@ class File extends Entity {
         if (this.data) {
             this.ensureStorage();
 
-            let key = File.createKey(this.name);
+            let key = this.key || File.createKey(this.name);
             if (this.storageFolder !== "" && !key.startsWith(this.storageFolder + "/")) {
                 key = path.join(this.storageFolder, key);
             }
