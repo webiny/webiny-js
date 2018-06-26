@@ -1,5 +1,5 @@
 // @flow
-import { Entity } from "webiny-api";
+import { Entity } from "webiny-api/lib/entities";
 
 class Widget extends Entity {
     title: string;

@@ -1,8 +1,6 @@
 // @flow
-// Copyright (c) 2015-present, Facebook, Inc. All rights reserved.
 
 import { parseBody } from "express-graphql/dist/parseBody";
-import type { $Request } from "express";
 import type { GraphQLParams } from "express-graphql";
 import { parse } from "graphql";
 import httpError from "http-errors";
@@ -49,9 +47,9 @@ function parseGraphQLParams(
     return { query, documentAST, variables, operationName, raw };
 }
 
-export default function getGraphQLParams(request: $Request): Promise<GraphQLParams> {
-    return parseBody(request).then(bodyData => {
-        const urlData = (request.url && url.parse(request.url, true).query) || {};
+export default function getGraphQLParams(event: Object): Promise<GraphQLParams> {
+    return parseBody(event).then(bodyData => {
+        const urlData = (event.url && url.parse(event.url, true).query) || {};
         return parseGraphQLParams(urlData, bodyData);
     });
 }

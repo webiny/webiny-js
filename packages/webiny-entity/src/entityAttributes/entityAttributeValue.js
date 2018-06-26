@@ -1,6 +1,6 @@
 // @flow
 import { AttributeValue, type Attribute } from "webiny-model";
-import { Entity, EntityModel, type EntityAttribute } from "webiny-entity";
+import { Entity, EntityModel, type EntityAttribute } from "../index";
 import _ from "lodash";
 
 class EntityAttributeValue extends AttributeValue {

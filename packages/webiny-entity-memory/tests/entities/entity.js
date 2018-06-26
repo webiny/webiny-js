@@ -1,6 +1,6 @@
 import { Entity as BaseEntity } from "webiny-entity";
 
-import { MemoryDriver } from "./../..";
+import { MemoryDriver } from "./../../src";
 
 class Entity extends BaseEntity {}
 

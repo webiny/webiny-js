@@ -11,6 +11,9 @@
         "babel-preset-flow"
     ],
     "plugins": [
+        ["babel-plugin-module-resolver", {
+            "root": ["./src"]
+        }],
         ["babel-plugin-transform-object-rest-spread", { "useBuiltIns": true }],
         ["babel-plugin-transform-builtin-extend", { "globals": ["Error"] }],
         ["babel-plugin-transform-runtime"],

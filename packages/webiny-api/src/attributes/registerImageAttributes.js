@@ -1,6 +1,6 @@
 // @flow
 import { EntityAttributesContainer } from "webiny-entity";
-import { Entity, Image, type File } from "webiny-api";
+import { Entity, Image, type File } from "./../entities";
 import ImageAttribute from "./imageAttribute";
 import type { ImageProcessor } from "../../types";
 import type { Storage } from "webiny-file-storage";

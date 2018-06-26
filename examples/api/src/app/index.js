@@ -1,29 +1,12 @@
-import express from "express";
-import path from "path";
-import bodyParser from "body-parser";
-import cors from "cors";
-import setupProject from "./middleware";
+import { api } from "webiny-api";
+import config from "./../configs";
 
-export default async () => {
-    const webiny = await setupProject();
+//import { app as cmsApp } from "webiny-api-cms";
+import myApp from "./myApp";
 
-    const app = express();
+api.configure(config());
 
-    if (process.env.NODE_ENV === "development") {
-        const morgan = require("morgan");
-        app.use(morgan("tiny"));
-    }
+api.use(myApp());
+//api.use(cmsApp({}));
 
-    app.use(cors());
-    app.use("/storage", express.static(path.join(__dirname, "/../../storage")));
-    app.use(
-        "/graphql",
-        bodyParser.json({ limit: "50mb" }),
-        await webiny.middleware(({ securityMiddleware, graphqlMiddleware }) => [
-            securityMiddleware(),
-            graphqlMiddleware()
-        ])
-    );
-
-    return app;
-};
+export default api;

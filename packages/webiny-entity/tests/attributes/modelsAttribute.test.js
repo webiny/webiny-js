@@ -1,6 +1,6 @@
 import { User } from "./../entities/modelAttributeEntities";
 import sinon from "sinon";
-import { QueryResult } from "../..";
+import { QueryResult } from "../../src";
 
 const sandbox = sinon.sandbox.create();
 

@@ -4,25 +4,25 @@ import { api } from "./..";
 
 class RequestEntityPool extends EntityPool {
     getPool() {
-        const request = api.getRequest();
-        if (!request) {
+        const context = api.getContext();
+        if (!context) {
             return this.pool;
         }
 
-        if (!request.entityPool) {
-            request.entityPool = {};
+        if (!context.entityPool) {
+            context.entityPool = {};
         }
 
-        return request.entityPool;
+        return context.entityPool;
     }
 
     flush(): this {
-        const request = api.getRequest();
-        if (!request) {
+        const context = api.getContext();
+        if (!context) {
             return this;
         }
 
-        request.entityPool && delete request.entityPool;
+        context.entityPool && delete context.entityPool;
         return this;
     }
 }

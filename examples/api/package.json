@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "build": "babel src -d dist",
-    "clean":  "rimraf node_modules/webiny-* node_modules/express-graphql node_modules/graphql* node_modules/mysql node_modules/react node_modules/react-dom",
+    "build:watch": "babel src -d dist --watch",
+    "develop": "cross-env NODE_ENV=development sls offline start --require=babel-register --port 9000",
+    "develop:debug": "cross-env NODE_ENV=development DEBUG=webiny* node --inspect=9005 api/src/express --require=babel-register --port 9000",
+    "clean":  "rimraf node_modules/graphql*",
     "postinstall": "yarn clean"
   },
   "author": "",
@@ -49,6 +52,10 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-flow": "^6.23.0",
     "morgan": "^1.9.0",
+    "cross-env": "^5.1.5",
+    "serverless": "^1.27.2",
+    "serverless-offline": "^3.20.3",
+    "serverless-plugin-cloudfront-lambda-edge": "^2.0.0",
     "rimraf": "^2.6.2"
   }
 }

@@ -1,16 +1,16 @@
 // @flow
-import { Policy, Group } from "./../../";
+import { Policy, Group } from "./../../entities";
 
 export default async () => {
     const entity = new Policy();
     entity.populate({
         name: "SecurityUserAuthentication",
-        description: `Enables login for "User" identity and retrieval of current user's basic information.`,
+        description: `Enables authentication for "User" identity and retrieval of current user's basic information.`,
         slug: "security-user-authentication",
         permissions: {
             api: {
                 getIdentity: true,
-                loginSecurityUser: {
+                authenticateSecurityUser: {
                     token: true,
                     identity: {
                         id: true,

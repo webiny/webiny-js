@@ -59,6 +59,7 @@ describe("populateFromStorage test", () => {
             loading: false,
             loaded: false
         });
+
         expect(complexEntity.getAttribute("simpleEntities").value.getCurrent()[0]).toEqual("B");
         expect(complexEntity.getAttribute("simpleEntities").value.getCurrent()[1]).toEqual("C");
         expect(complexEntity.getAttribute("simpleEntities").value.getCurrent()[2]).toEqual("D");
@@ -74,6 +75,19 @@ describe("populateFromStorage test", () => {
             loaded: true
         });
 
-        expect(simpleEntities.length).toBe(0);
+        // TODO:
+        /*        expect(simpleEntities.length).toBe(3);
+
+        expect(simpleEntities[0]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[0].id).toEqual("B");
+        expect(simpleEntities[0].name).toEqual("Test-B");
+
+        expect(simpleEntities[1]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[1].id).toEqual("C");
+        expect(simpleEntities[1].name).toEqual("Test-C");
+
+        expect(simpleEntities[2]).toBeInstanceOf(SimpleEntity);
+        expect(simpleEntities[2].id).toEqual("D");
+        expect(simpleEntities[2].name).toEqual("Test-D");*/
     });
 });

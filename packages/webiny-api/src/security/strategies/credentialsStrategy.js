@@ -1,14 +1,15 @@
 // @flow
 import bcrypt from "bcryptjs";
 import { GraphQLString, GraphQLBoolean, GraphQLNonNull } from "graphql";
-import type { Identity } from "../../index";
+import type { Identity } from "../../entities";
+import type { IStrategy } from "../../../types";
 import AuthenticationError from "../../services/AuthenticationError";
 
 /**
  * Credentials strategy factory
  * @return {function(express$Request, Class<Identity>)}
  */
-export default (options: { usernameAttribute?: string } = {}) => {
+export default (options: { usernameAttribute?: string } = {}): IStrategy => {
     const error = new AuthenticationError(
         "Invalid credentials.",
         AuthenticationError.INVALID_CREDENTIALS

@@ -1,6 +1,4 @@
-import { expect } from "chai";
-
-import { Entity, EntityError } from "webiny-entity";
+import { Entity } from "../../../src/index";
 import sinon from "sinon";
 
 const sandbox = sinon.sandbox.create();
@@ -22,6 +20,6 @@ describe("dynamic entity class test", () => {
         }
 
         const main = new Main();
-        expect(main.getAttribute("entity").getEntityClass()).to.equal(C);
+        expect(main.getAttribute("entity").getEntityClass()).toEqual(C);
     });
 });

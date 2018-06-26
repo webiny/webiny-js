@@ -1,26 +1,27 @@
 // @flow
-import { Identity } from "./../index";
-import AuthenticationError from "./AuthenticationError";
-import { Entity, Policy, Group, api } from "./..";
-import type { IAuthentication, IToken } from "./../../types";
+import { api } from "./../index";
+import { Entity, Policy, Group, Identity } from "./../entities";
+import JwtToken from "./../security/tokens/jwtToken";
+import type { IToken, IStrategy } from "./../../types";
 import type { Attribute } from "webiny-model";
 import _ from "lodash";
-import type { $Request } from "express";
 
-class SecurityService implements IAuthentication {
+class SecurityService {
     config: {
         token: IToken,
-        strategies: {
-            [name: string]: (req: $Request, identity: Class<Identity>) => Promise<Identity>
-        },
         identities: Array<Object>
     };
     defaultPermissions: { api: {}, entities: {} };
     initialized: boolean;
+
     constructor(config: Object) {
         this.initialized = false;
         this.config = config;
         this.defaultPermissions = { api: {}, entities: {} };
+
+        if (!(config.token instanceof JwtToken)) {
+            config.token = new JwtToken(config.token);
+        }
     }
 
     async init() {
@@ -38,12 +39,12 @@ class SecurityService implements IAuthentication {
                     return;
                 }
 
-                const request = api.getRequest();
-                if (!request) {
+                const context = api.getContext();
+                if (!context) {
                     return;
                 }
 
-                const { identity } = request.security;
+                const { identity } = context.security;
 
                 const canExecuteOperation = await this.canExecuteOperation(
                     identity,
@@ -78,18 +79,18 @@ class SecurityService implements IAuthentication {
     }
 
     getIdentity(permissions: boolean = false) {
-        const request = api.getRequest();
-        if (!request) {
+        const context = api.getContext();
+        if (!context) {
             return null;
         }
 
-        return permissions ? request.security.permissions : request.security.identity;
+        return permissions ? context.security.permissions : context.security.identity;
     }
 
     setIdentity(identity: Identity): SecurityService {
-        const request = api.getRequest();
-        if (request && request.security) {
-            request.security.identity = identity;
+        const context = api.getContext();
+        if (context && context.security) {
+            context.security.identity = identity;
         }
         return this;
     }
@@ -170,12 +171,12 @@ class SecurityService implements IAuthentication {
     }
 
     setSuperUser(flag: boolean): SecurityService {
-        _.set(api.getRequest(), "security.superUser", flag);
+        _.set(api.getContext(), "security.superUser", flag);
         return this;
     }
 
     getSuperUser() {
-        return _.get(api.getRequest(), "security.superUser");
+        return _.get(api.getContext(), "security.superUser");
     }
 
     /**
@@ -238,20 +239,9 @@ class SecurityService implements IAuthentication {
     async authenticate(
         data: Object,
         identity: Class<Identity>,
-        strategy: string
+        strategy: IStrategy
     ): Promise<Identity> {
-        const strategyObject = this.config.strategies[strategy];
-        if (!strategyObject) {
-            return Promise.reject(
-                new AuthenticationError(
-                    `Strategy "${strategy}" not found!`,
-                    AuthenticationError.UNKNOWN_STRATEGY,
-                    { strategy }
-                )
-            );
-        }
-
-        return await strategyObject.authenticate(data, identity);
+        return await strategy.authenticate(data, identity);
     }
 }
 

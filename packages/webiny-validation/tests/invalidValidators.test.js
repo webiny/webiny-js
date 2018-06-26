@@ -1,24 +1,21 @@
 import { validation, ValidationError } from "./../src";
-import chai from "./chai";
-
-const { expect } = chai;
 
 describe("invalid validators test", () => {
-    it("must throw error if validators were not passed as a non-empty string", () => {
+    test("must throw error if validators were not passed as a non-empty string", async () => {
         return Promise.all([
-            validation.validate("123", null).should.be.rejected,
-            validation.validate("123", 123).should.be.rejected,
-            validation.validate("123", []).should.be.rejected,
-            validation.validate("123", {}, {}).should.be.rejected
+            await expect(validation.validate("123", null)).rejects,
+            await expect(validation.validate("123", 123)).rejects,
+            await expect(validation.validate("123", [])).rejects,
+            await expect(validation.validate("123", {}, {})).rejects
         ]);
     });
 
-    it("must throw error on non-existing validator", () => {
-        return validation
-            .validate("1234567890", "xyz")
-            .should.be.rejectedWith(ValidationError)
-            .then(error => {
-                expect(error.validator).to.equal("xyz");
-            });
+    test("must throw error on non-existing validator", async () => {
+        try {
+            await validation.validate("1234567890", "xyz");
+        } catch (e) {
+            expect(e).toBeInstanceOf(ValidationError);
+            expect(e.validator).toBe("xyz");
+        }
     });
 });

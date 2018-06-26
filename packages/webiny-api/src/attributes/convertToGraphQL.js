@@ -12,7 +12,7 @@ import * as attrs from "webiny-model";
 import { EntityAttribute, EntitiesAttribute, EntityModel } from "webiny-entity";
 import { ModelAttribute, ModelsAttribute } from "webiny-model";
 import type { Entity } from "webiny-entity";
-import type { AttributeToTypeParams } from "webiny-api/types";
+import type { AttributeToTypeParams } from "./../../types";
 import BufferAttribute from "./bufferAttribute";
 import PasswordAttribute from "./passwordAttribute";
 import IdentityAttribute from "./identityAttribute";
@@ -83,11 +83,8 @@ export default (params: AttributeToTypeParams) => {
             // If entity classes are defined, create a new Union type to represent these classes
             if (entityClasses.length) {
                 const typeName = parent.classId + (name.charAt(0).toUpperCase() + name.slice(1));
-                schema.addType({
-                    meta: {
-                        type: "union"
-                    },
-                    type: new GraphQLUnionType({
+                schema.addType(
+                    new GraphQLUnionType({
                         name: typeName,
                         types: () => {
                             return entityClasses.map(ec => {
@@ -108,8 +105,11 @@ export default (params: AttributeToTypeParams) => {
                         resolveType(entity) {
                             return schema.getType(entity.classId);
                         }
-                    })
-                });
+                    }),
+                    {
+                        type: "union"
+                    }
+                );
                 type = schema.getType(typeName);
             } else {
                 // Use EntityType which represents all Entities in the system

@@ -1,5 +1,5 @@
 // @flow
-import type { Entity, Schema } from "webiny-api/types";
+import type { Entity, Schema } from "./../../../types";
 import convertModelToType from "./convertModelToType";
 
 export default (entityClass: Class<Entity>, schema: Schema) => {

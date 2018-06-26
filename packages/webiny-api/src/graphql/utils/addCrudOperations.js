@@ -5,7 +5,7 @@ import addDelete from "./crud/delete";
 import addGet from "./crud/get";
 import addList from "./crud/list";
 
-import type { Entity } from "webiny-entity";
+import type { Entity } from "./../../entities";
 import type Schema from "./../Schema";
 
 export default (entityClass: Class<Entity>, schema: Schema) => {

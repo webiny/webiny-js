@@ -1,8 +1,7 @@
 // @flow
-import { Driver, QueryResult } from "webiny-entity";
+import { Entity, Driver, QueryResult } from "webiny-entity";
 import _ from "lodash";
 import mdbid from "mdbid";
-import { Entity } from "webiny-entity";
 import {
     EntitySaveParams,
     EntityFindParams,

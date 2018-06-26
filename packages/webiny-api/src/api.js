@@ -1,20 +1,19 @@
 // @flow
-import debug from "debug";
 import cls from "cls-hooked";
 import compose from "webiny-compose";
 import { ServiceManager } from "webiny-service-manager";
 import GraphQL from "./graphql/GraphQL";
 import EntityManager from "./entities/EntityManager";
-import type { $Request, $Response } from "express";
-import type { AppType, ApiRequest } from "./../types";
-import createMiddleware from "./graphql/middleware.js";
+import createHandler from "./graphql/createHandler";
 import coreApp from "./coreApp";
 import chalk from "chalk";
+import type { AppType, LambdaEvent } from "./../types";
 
 import { argv } from "yargs";
 process.env.INSTALL = JSON.stringify(argv.install || false);
 
 class Api {
+    handler: Function;
     config: Object;
     graphql: GraphQL;
     services: ServiceManager;
@@ -30,11 +29,11 @@ class Api {
         this.apps = [coreApp()];
     }
 
-    getRequest(): ?ApiRequest {
+    getContext(): ?LambdaEvent {
         if (!this.namespace) {
             return null;
         }
-        return this.namespace.get("req");
+        return this.namespace.get("context");
     }
 
     configure(config: Object) {
@@ -45,10 +44,11 @@ class Api {
         this.apps.push(app);
     }
 
-    async middleware(
-        middleware: Function => Array<Function>,
-        options: Object = {}
-    ): Promise<Function> {
+    async prepare(options: Object = {}): Promise<Function> {
+        if (this.handler) {
+            return this.handler;
+        }
+
         // Let's process all hooks, attached by all used apps. Descriptions of hooks in the following lines.
         try {
             // Used for configuring, eg. entity layer, services, graphql or some other internal config parameter.
@@ -74,37 +74,12 @@ class Api {
             process.exit();
         }
 
-        const log = debug("webiny-api");
-
         this.namespace = cls.createNamespace(Date.now().toString());
 
-        // Build request middleware.
-        const webinyMiddleware = createMiddleware(middleware);
+        // Build event handler
+        this.handler = createHandler(this.namespace, options);
 
-        // Route request.
-        return async (req: $Request, res: $Response) => {
-            log("Received new request");
-
-            this.namespace.run(async () => {
-                return (async () => {
-                    this.namespace.set("req", req);
-                    webinyMiddleware({ req, res }).catch(error => {
-                        // Execute `onUncaughtError` callback if configured
-                        if (typeof options.onUncaughtError === "function") {
-                            return options.onUncaughtError({ error, req, res });
-                        }
-
-                        if (error instanceof Error) {
-                            log(`%s`, error.stack);
-                        }
-
-                        // If no custom error handler is provided - send error response.
-                        res.statusCode = error.status || 500;
-                        res.json({ errors: [{ name: error.name, message: error.message }] });
-                    });
-                })();
-            });
-        };
+        return this.handler;
     }
 
     /**

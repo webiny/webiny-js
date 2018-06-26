@@ -2,7 +2,7 @@
   "name": "webiny-file-storage-local",
   "description": "Local file-system storage driver for webiny-file-storage library",
   "version": "0.0.0-semantically-released",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>",
     "Sven Al Hamad <sven@webiny.com>",

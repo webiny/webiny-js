@@ -1,4 +1,4 @@
-import { Entity } from "./../../";
+import { Entity } from "./../../src";
 
 class User extends Entity {
     constructor() {
