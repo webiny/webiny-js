@@ -3,7 +3,7 @@ import { Driver, QueryResult } from "webiny-entity";
 import _ from "lodash";
 import mdbid from "mdbid";
 import { Entity } from "webiny-entity";
-import {
+import type {
     EntitySaveParams,
     EntityFindParams,
     EntityDeleteParams,
