@@ -18,10 +18,6 @@ class BufferAttribute extends Attribute {
             return;
         }
 
-        if (typeof value === "string" && value.startsWith("data:")) {
-            return;
-        }
-
         this.expected("Buffer or data URI string", typeof value);
     }
 
@@ -31,6 +27,14 @@ class BufferAttribute extends Attribute {
             value = Buffer.from(value.split(",").pop(), this.encoding);
         }
         return Attribute.prototype.setValue.call(this, value);
+    }
+
+    // $FlowIgnore
+    setStorageValue(value) {
+        if (typeof value === "string") {
+            value = Buffer.from(value.split(",").pop(), this.encoding);
+        }
+        return Attribute.prototype.setStorageValue.call(this, value);
     }
 }
 
