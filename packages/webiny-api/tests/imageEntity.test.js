@@ -2,7 +2,7 @@ import fs from "fs";
 import { Image, Entity, api } from "webiny-api";
 import { Storage } from "webiny-file-storage";
 import imageProcessor from "webiny-jimp";
-import userFactory from "./utils/User.entity";
+import userFactory from "./utils/storageUserFactory";
 
 import registerIdentityAttribute from "./../src/attributes/registerIdentityAttribute";
 import registerPasswordAttribute from "./../src/attributes/registerPasswordAttribute";

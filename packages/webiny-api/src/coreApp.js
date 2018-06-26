@@ -5,7 +5,7 @@ import { GraphQLUnionType } from "graphql";
 import createLoginQueries from "./security/graphql/createLoginQueries";
 import createListEntitiesQuery from "./security/graphql/createListEntitiesQuery";
 import overrideCreateApiTokenMutation from "./security/graphql/overrideCreateApiTokenMutation";
-import convertToGraphQL from "./attributes/convertToGraphQL";
+import convertToGraphQL from "./attributes/convertAttributeToGraphQLType";
 import {
     ApiToken,
     Entity,

@@ -1,6 +1,6 @@
 import fs from "fs";
 import { Storage } from "webiny-file-storage";
-import userFactory from "./utils/User.entity";
+import userFactory from "./utils/storageUserFactory";
 import MockDriver from "./utils/storageDriverMock";
 import { MemoryDriver } from "webiny-entity-memory";
 

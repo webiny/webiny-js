@@ -10,7 +10,7 @@ import registerPasswordAttribute from "./../src/attributes/registerPasswordAttri
 import registerFileAttributes from "./../src/attributes/registerFileAttributes";
 import registerBufferAttribute from "../src/attributes/registerBufferAttribute";
 
-import userFactory from "./utils/User.entity";
+import userFactory from "./utils/storageUserFactory";
 import MockDriver from "./utils/storageDriverMock";
 
 describe("Files attribute test", () => {

@@ -1,7 +1,7 @@
 import fs from "fs";
 import { Storage } from "webiny-file-storage";
 import { MemoryDriver } from "webiny-entity-memory";
-import userFactory from "./utils/User.entity";
+import userFactory from "./utils/storageUserFactory";
 
 import registerImageAttributes from "../src/attributes/registerImageAttributes";
 import entityFactory from "./utils/Event.entity";

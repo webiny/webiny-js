@@ -10,7 +10,7 @@ import {
 import GraphQLJSON from "graphql-type-json";
 import * as attrs from "webiny-model";
 import { EntityAttribute, EntitiesAttribute, EntityModel } from "webiny-entity";
-import { ModelAttribute, ModelsAttribute } from "webiny-model";
+import { ModelAttribute, ModelsAttribute, type DateAttribute } from "webiny-model";
 import type { Entity } from "webiny-entity";
 import type { AttributeToTypeParams } from "webiny-api/types";
 import BufferAttribute from "./bufferAttribute";
@@ -116,48 +116,36 @@ export default (params: AttributeToTypeParams) => {
                 type = schema.getType("EntityType");
             }
         } else {
-            const entityClass = attr.getEntityClass();
-            if (entityClass) {
-                const entity = new entityClass();
-                const typeName = entity.classId;
+            const entityClass: Class<Entity> = (attr.getEntityClass(): any);
+            const entity = new entityClass();
+            const typeName = entity.classId;
 
-                type =
-                    schema.getType(typeName) ||
-                    convertModelToType(
-                        typeName,
-                        { type: "entity" },
-                        entity.getAttributes(),
-                        schema
-                    );
-            }
+            type =
+                schema.getType(typeName) ||
+                convertModelToType(typeName, { type: "entity" }, entity.getAttributes(), schema);
         }
     }
 
     if (attr instanceof EntitiesAttribute) {
-        const entityClass = attr.getEntitiesClass();
-        if (entityClass) {
-            const entity = new entityClass();
-
-            type = new GraphQLList(
-                schema.getType(entity.classId) ||
-                    convertModelToType(
-                        entity.classId,
-                        { type: "entity" },
-                        entity.getAttributes(),
-                        schema
-                    )
-            );
-        }
+        const entityClass: Class<Entity> = (attr.getEntitiesClass(): any);
+        const entity = new entityClass();
+        type = new GraphQLList(
+            schema.getType(entity.classId) ||
+                convertModelToType(
+                    entity.classId,
+                    { type: "entity" },
+                    entity.getAttributes(),
+                    schema
+                )
+        );
     }
 
     if (attr instanceof attrs.DateAttribute) {
         type = GraphQLString;
         resolve = (entity: Entity) => {
-            const attribute = entity.getAttribute(attr.getName());
-            if (attribute) {
-                const value = attribute.getValue();
-                return value instanceof Date ? value.toISOString() : null;
-            }
+            const attribute: DateAttribute = (entity.getAttribute(attr.getName()): any);
+            const value = attribute.getValue();
+            return value instanceof Date ? value.toISOString() : null;
         };
     }
 

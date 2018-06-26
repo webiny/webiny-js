@@ -1,4 +1,3 @@
-import { assert } from "chai";
 import InvalidAttributesError from "./../src/graphql/utils/crud/InvalidAttributesError";
 import { ModelError } from "webiny-model";
 
@@ -26,7 +25,7 @@ describe("FormattedInvalidAttributesError test", function() {
 
         const err = InvalidAttributesError.from(new ModelError("Error", "CODE", mock));
 
-        assert.deepEqual(err.data.invalidAttributes, {
+        expect(err.data.invalidAttributes).toEqual({
             name: "Value is required.",
             slug: "Value is required.",
             description: "Value is required."
@@ -78,7 +77,7 @@ describe("FormattedInvalidAttributesError test", function() {
 
         const err = InvalidAttributesError.from(new ModelError("Error", "CODE", mock));
 
-        assert.deepEqual(err.data.invalidAttributes, {
+        expect(err.data.invalidAttributes).toEqual({
             company: "Testing this message...",
             "attribute1.0.name": "Value is required.",
             "attribute1.1":

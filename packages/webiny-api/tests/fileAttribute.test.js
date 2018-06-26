@@ -9,7 +9,7 @@ import registerIdentityAttribute from "./../src/attributes/registerIdentityAttri
 import registerPasswordAttribute from "./../src/attributes/registerPasswordAttribute";
 import registerFileAttributes from "./../src/attributes/registerFileAttributes";
 import registerBufferAttribute from "../src/attributes/registerBufferAttribute";
-import userFactory from "./utils/User.entity";
+import userFactory from "./utils/storageUserFactory";
 import MockDriver from "./utils/storageDriverMock";
 
 let User;
