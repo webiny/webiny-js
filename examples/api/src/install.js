@@ -1,5 +1,10 @@
-// WIP
 require("babel-register");
 const config = require("./configs");
 const { api } = require("webiny-api");
-api.configure(config).install();
+const { default: myApp } = require("./myApp");
+const { app: cmsApp } = require("webiny-api-cms");
+
+api.configure(config())
+    .use(myApp())
+    .use(cmsApp())
+    .install();
