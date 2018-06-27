@@ -1,9 +1,9 @@
 // @flow
 import middleware from "./middleware";
 
-export default (namespace, options: Object = {}) => {
+export default (namespace: Object, options: Object = {}) => {
     // Route request.
-    return async ({ event }) => {
+    return async ({ event }: { event: Object }) => {
         // Parse event body if present
         event.body = event.body ? JSON.parse(event.body) : {};
 

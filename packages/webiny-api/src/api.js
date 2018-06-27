@@ -14,7 +14,7 @@ process.env.INSTALL = JSON.stringify(argv.install || false);
 
 class Api {
     handler: Function;
-    config: ?Object;
+    config: Object;
     graphql: GraphQL;
     services: ServiceManager;
     entities: EntityManager;
@@ -22,7 +22,7 @@ class Api {
     apps: Array<AppType>;
 
     constructor() {
-        this.config = null;
+        this.config = {};
         this.graphql = new GraphQL();
         this.services = new ServiceManager();
         this.entities = new EntityManager();
@@ -47,7 +47,7 @@ class Api {
     }
 
     async install() {
-        if (!this.config) {
+        if (Object.keys(this.config).length === 0) {
             this.log(
                 `Configuration missing, did you forget to call "api.configuration({...})"?`,
                 "error"
@@ -78,7 +78,7 @@ class Api {
             return this.handler;
         }
 
-        if (!this.config) {
+        if (Object.keys(this.config).length === 0) {
             this.log(
                 `Configuration missing, did you forget to call "api.configuration({...})"?`,
                 "error"

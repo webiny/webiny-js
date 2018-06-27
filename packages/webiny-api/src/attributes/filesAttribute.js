@@ -6,7 +6,7 @@ import {
     type EntityCollection
 } from "webiny-entity";
 import type { Storage } from "webiny-file-storage";
-import type { File } from "./../index";
+import type { File } from "./../entities/index";
 
 class FilesAttribute extends EntitiesAttribute {
     storage: Storage;
