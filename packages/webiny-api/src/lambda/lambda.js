@@ -1,11 +1,9 @@
 // @flow
 import type { Api } from "webiny-api";
 
-// TODO: odvojiti install proceduru jer ovdje se ne triggera do prvog requesta
-
-export default (app: Api) => {
+export default (api: Api) => {
     return async (event: any) => {
-        const handle = await app.prepare();
+        const handle = await api.prepare();
         const { output, statusCode } = await handle({ event });
 
         return {
