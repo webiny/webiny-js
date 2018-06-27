@@ -8,7 +8,7 @@
     "build:watch": "babel src -d dist --watch",
     "develop": "cross-env NODE_ENV=development sls offline start --require=babel-register --port 9000",
     "develop:debug": "cross-env NODE_ENV=development DEBUG=webiny* node --inspect=9005 api/src/express --require=babel-register --port 9000",
-    "clean":  "rimraf node_modules/graphql*",
+    "clean":  "rimraf node_modules/graphql* node_modules/webiny-* node_modules/mysql",
     "postinstall": "yarn clean"
   },
   "author": "",
