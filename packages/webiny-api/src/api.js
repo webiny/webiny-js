@@ -5,12 +5,8 @@ import { ServiceManager } from "webiny-service-manager";
 import GraphQL from "./graphql/GraphQL";
 import EntityManager from "./entities/EntityManager";
 import createHandler from "./graphql/createHandler";
-import coreApp from "./coreApp";
 import chalk from "chalk";
 import type { AppType, LambdaEvent } from "./../types";
-
-import { argv } from "yargs";
-process.env.INSTALL = JSON.stringify(argv.install || false);
 
 class Api {
     handler: Function;
@@ -26,7 +22,7 @@ class Api {
         this.graphql = new GraphQL();
         this.services = new ServiceManager();
         this.entities = new EntityManager();
-        this.apps = [coreApp()];
+        this.apps = [];
     }
 
     getContext(): ?LambdaEvent {
@@ -47,30 +43,20 @@ class Api {
     }
 
     async install() {
-        if (Object.keys(this.config).length === 0) {
-            this.log(
-                `Configuration missing, did you forget to call "api.configuration({...})"?`,
-                "error"
-            );
-            process.exit(1);
-        }
+        await this.init();
         // Let's process all hooks, attached by all used apps. Descriptions of hooks in the following lines.
-        try {
-            // Used for configuring, eg. entity layer, services, graphql or some other internal config parameter.
-            await this.processHooks("configure");
 
-            // Executed if installation process is running. Will be automatically started on first run.
-            this.log("Starting the installation process...", "info");
-            await this.processHooks("preInstall");
-            await this.processHooks("install");
-            await this.processHooks("postInstall");
+        // Used for configuring, eg. entity layer, services, graphql or some other internal config parameter.
+        await this.__processHooks("configure");
 
-            this.log("Installation complete!", "success");
-            process.exit(0);
-        } catch (e) {
-            this.log(`An error occurred in the "${e.hook}" process:\n${e.message}`, "error");
-            process.exit(1);
-        }
+        // Executed if installation process is running. Will be automatically started on first run.
+        this.log("Starting the installation process...", "info");
+        await this.__processHooks("preInstall");
+        await this.__processHooks("install");
+        await this.__processHooks("postInstall");
+
+        this.log("Installation complete!", "success");
+        process.exit(0);
     }
 
     async prepare(options: Object = {}): Promise<Function> {
@@ -78,27 +64,15 @@ class Api {
             return this.handler;
         }
 
-        if (Object.keys(this.config).length === 0) {
-            this.log(
-                `Configuration missing, did you forget to call "api.configuration({...})"?`,
-                "error"
-            );
-            process.exit(1);
-        }
+        await this.init();
 
-        // Let's process all hooks, attached by all used apps. Descriptions of hooks in the following lines.
-        try {
-            // Used for configuring, eg. entity layer, services, graphql or some other internal config parameter.
-            await this.processHooks("configure");
+        // Used for configuring, eg. entity layer, services, graphql or some other internal config parameter.
+        await this.__processHooks("configure");
 
-            // Once everything was configured and optionally installed, initialization of each app starts.
-            await this.processHooks("preInit");
-            await this.processHooks("init");
-            await this.processHooks("postInit");
-        } catch (e) {
-            this.log(`An error occurred in the "${e.hook}" process:\n${e.message}`, "error");
-            process.exit(1);
-        }
+        // Once everything was configured and optionally installed, initialization of each app starts.
+        await this.__processHooks("preInit");
+        await this.__processHooks("init");
+        await this.__processHooks("postInit");
 
         this.namespace = cls.createNamespace(Date.now().toString());
 
@@ -134,7 +108,27 @@ class Api {
         }
     }
 
-    async processHooks(hook: string) {
+    async init() {
+        const { default: coreApp } = await import("./coreApp");
+        this.use(coreApp());
+
+        if (Object.keys(this.config).length === 0) {
+            this.log(
+                `Configuration missing, did you forget to call "api.configuration({...})"?`,
+                "error"
+            );
+            process.exit(1);
+        }
+    }
+
+    /**
+     * Processes "configure", "install" and "init" hooks, attached from used apps.
+     * If something goes wrong, process will be terminated, with error message outputted.
+     * @param hook
+     * @returns {Promise<void>}
+     * @private
+     */
+    async __processHooks(hook: string) {
         const hooks = [];
         this.apps.forEach(app => {
             if (typeof app[hook] === "function") {
@@ -145,8 +139,8 @@ class Api {
         try {
             await compose(hooks)({ api: this });
         } catch (e) {
-            e.hook = hook;
-            throw e;
+            this.log(`An error occurred in the "${hook}" process:\n${e.stack}`, "error");
+            process.exit(1);
         }
     }
 }

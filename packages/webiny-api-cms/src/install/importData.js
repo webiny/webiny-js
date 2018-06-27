@@ -1,5 +1,5 @@
 // @flow
-import { Group, Policy } from "webiny-api";
+import { Group, Policy } from "webiny-api/lib/entities";
 import { Category } from "webiny-api-cms";
 
 export default async () => {

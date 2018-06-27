@@ -53,7 +53,7 @@ export interface IStrategy {
 
 export type AppType = {
     preInit?: Function,
-    init: Function,
+    init?: Function,
     postInit?: Function,
     install?: Function,
     preInstall?: Function,

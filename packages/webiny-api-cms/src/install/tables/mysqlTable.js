@@ -5,6 +5,6 @@ import type { MySQLDriver } from "webiny-sql-table-mysql";
 class MySQLTable extends BaseMySQLTable {}
 
 const driver: MySQLDriver = (MySQLTable.getDriver(): any);
-driver.setConnection(api.config.database.connection);
+driver.setConnection(api.config.entity.driver.getConnection().getInstance());
 
 export default MySQLTable;
