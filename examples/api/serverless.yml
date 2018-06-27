@@ -2,7 +2,7 @@ service: project-name
 
 plugins:
   - serverless-offline
-  - serverless-plugin-cloudfront-lambda-edge
+  - serverless-static
 
 custom:
   stage: ${opt:stage, self:provider.stage}
@@ -11,6 +11,9 @@ custom:
     bucketId: ${opt:bucket, ""}
   api:
     source: ${opt:source, "dist"}
+  static:
+    path: ./static
+    port: 8000
 
 provider:
   name: aws
