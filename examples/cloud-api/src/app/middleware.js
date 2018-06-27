@@ -6,8 +6,7 @@ import LocalDriver from "webiny-file-storage-local";
 import { Storage } from "webiny-file-storage";
 import addDays from "date-fns/add_days";
 import { connection } from "./database";
-import myApp from "./myApp";
-import { app as cmsApp } from "webiny-api-cms";
+import { app as cloudApi } from "webiny-cloud-api";
 
 export default async () => {
     // Configure default storage
@@ -24,15 +23,15 @@ export default async () => {
             driver: new MySQLDriver({ connection }),
             // Configure entity attributes
             attributes: ({
-                passwordAttribute,
+                /*                passwordAttribute,
                 identityAttribute,
-                bufferAttribute,
+                bufferAttribute,*/
                 fileAttributes,
                 imageAttributes
             }) => {
-                identityAttribute();
+                /*                identityAttribute();
                 passwordAttribute();
-                bufferAttribute();
+                bufferAttribute();*/
                 fileAttributes({
                     entity: File,
                     storage: new Storage(localDriver)
@@ -69,8 +68,7 @@ export default async () => {
         }
     });
 
-    api.use(myApp());
-    api.use(cmsApp({}));
+    api.use(cloudApi());
 
     return api;
 };

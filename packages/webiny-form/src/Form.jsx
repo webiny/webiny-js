@@ -76,7 +76,7 @@ class Form extends React.Component {
         }
 
         this.setState({ wasSubmitted: true });
-
+        
         return this.validate().then(valid => {
             if (valid) {
                 const model = this.__removeKeys(this.state.model);
@@ -97,7 +97,7 @@ class Form extends React.Component {
             const name = inputNames[i];
             const { validators } = this.inputs[name];
             if (_.isEmpty(validators)) {
-                return;
+                continue;
             }
 
             const hasValue = !!_.get(this.state.model, name);

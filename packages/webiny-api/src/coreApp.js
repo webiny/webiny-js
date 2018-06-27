@@ -16,7 +16,7 @@ import {
     Policy,
     Policies2Entities,
     User
-} from "./index";
+} from "./entities";
 
 // Attributes registration functions
 import registerBufferAttribute from "./attributes/registerBufferAttribute";
@@ -45,12 +45,13 @@ export default () => {
                 // Register Entity driver
                 Entity.driver = api.config.entity.driver;
 
+                registerBufferAttribute();
+                registerPasswordAttribute();
+                registerIdentityAttribute();
+
                 // Register attributes
                 api.config.entity.attributes &&
                     api.config.entity.attributes({
-                        bufferAttribute: registerBufferAttribute,
-                        passwordAttribute: registerPasswordAttribute,
-                        identityAttribute: registerIdentityAttribute,
                         fileAttributes: registerFileAttributes,
                         imageAttributes: registerImageAttributes
                     });
@@ -144,11 +145,8 @@ export default () => {
                 schema.registerEntity(Policies2Entities);
                 schema.registerEntity(User);
 
-                schema.addType({
-                    meta: {
-                        type: "union"
-                    },
-                    type: new GraphQLUnionType({
+                schema.addType(
+                    new GraphQLUnionType({
                         name: "IdentityType",
                         types: () =>
                             api.config.security.identities.map(({ identity: Identity }) => {
@@ -157,8 +155,11 @@ export default () => {
                         resolveType(identity) {
                             return schema.getType(identity.classId);
                         }
-                    })
-                });
+                    }),
+                    {
+                        type: "union"
+                    }
+                );
 
                 schema.addAttributeConverter(convertToGraphQL);
 

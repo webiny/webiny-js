@@ -1,6 +1,6 @@
 // @flow
 import jwt from "jsonwebtoken";
-import type { Identity } from "./../../index";
+import type { Identity } from "./../../entities";
 import type { IToken } from "../../../types";
 import AuthenticationError from "../../security/AuthenticationError";
 

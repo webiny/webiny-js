@@ -6,7 +6,8 @@ import { MemoryDriver } from "webiny-entity-memory";
 
 import SecurityService from "../src/services/securityService";
 import JwtToken from "../src/security/tokens/jwtToken";
-import { Entity, File, api } from "webiny-api";
+import { Entity, File } from "webiny-api/lib/entities";
+import { api } from "webiny-api";
 
 import registerIdentityAttribute from "./../src/attributes/registerIdentityAttribute";
 import registerPasswordAttribute from "./../src/attributes/registerPasswordAttribute";

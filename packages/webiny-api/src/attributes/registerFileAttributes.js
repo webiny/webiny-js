@@ -1,6 +1,6 @@
 // @flow
 import { EntityAttributesContainer } from "webiny-entity";
-import { Entity, File } from "webiny-api";
+import { Entity, File } from "./../entities";
 import type { Storage } from "webiny-file-storage";
 
 import FileAttribute from "./fileAttribute";

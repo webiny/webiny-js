@@ -3,7 +3,7 @@ import invariant from "invariant";
 import { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLNonNull } from "graphql";
 import GraphQLJSON from "graphql-type-json";
 import { ModelError } from "webiny-model";
-import { InvalidAttributesError } from "webiny-api";
+import InvalidAttributesError from "./../../graphql/utils/crud/InvalidAttributesError";
 import type Schema from "./../../graphql/Schema";
 import type { Api } from "./../..";
 
@@ -41,7 +41,7 @@ export default (api: Api, config: Object, schema: Schema) => {
                 continue;
             }
 
-            const { args } = security.config.strategies[strategy];
+            const { args } = strategy;
             schema.query[field] = {
                 type: createLoginDataForIdentity(Identity, schema),
                 args: args(),

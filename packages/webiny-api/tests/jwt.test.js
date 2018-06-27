@@ -1,4 +1,5 @@
-import { Entity, api } from "webiny-api";
+import { Entity } from "webiny-api/lib/entities";
+import { api } from "webiny-api";
 import addDays from "date-fns/add_days";
 import subDays from "date-fns/sub_days";
 import { MemoryDriver } from "webiny-entity-memory";

@@ -1,7 +1,4 @@
-import { validation, ValidationError } from "./..//src";
-import chai from "./chai";
-
-const { expect } = chai;
+import { validation, ValidationError } from "./../src";
 
 validation.setValidator("gender", value => {
     if (!value) return;
@@ -14,19 +11,19 @@ validation.setValidator("gender", value => {
 });
 
 describe("gt test", () => {
-    it("should not get triggered if an empty value was set", () => {
-        return validation.validate("", "gender").should.be.fulfilled;
+    test("should not get triggered if an empty value was set", async () => {
+        await expect(validation.validate("", "gender")).resolves;
     });
 
-    it('should return newly registered "gender" validator', () => {
-        expect(validation.getValidator("gender")).to.be.a("function");
+    test('should return newly registered "gender" validator', () => {
+        expect(validation.getValidator("gender")).toBeFunction;
     });
 
-    it("should fail - invalid gender set", () => {
-        return validation.validate("none", "gender").should.be.rejectedWith(ValidationError);
+    test("should fail - invalid gender set", async () => {
+        await expect(validation.validate("none", "gender")).rejects.toThrow(ValidationError);
     });
 
-    it("should pass - valid gender set", () => {
-        return validation.validate("female", "gender").should.become(true);
+    test("should pass - valid gender set", async () => {
+        await expect(validation.validate("female", "gender")).resolves.toBe(true);
     });
 });

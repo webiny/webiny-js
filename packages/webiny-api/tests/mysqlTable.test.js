@@ -1,7 +1,7 @@
 import MySQLTable from "./../src/mysql";
-import { CharColumn, DateTimeColumn, TinyIntColumn } from "webiny-sql-table-mysql/src/columns";
+import { CharColumn, DateTimeColumn, TinyIntColumn } from "webiny-sql-table-mysql/lib/columns";
 
-describe("ApiErrorResponse class test", function() {
+describe("MySQL table test", function() {
     test("on construct - data, message and statusCode must be correctly set", () => {
         const blankTable = new MySQLTable();
 

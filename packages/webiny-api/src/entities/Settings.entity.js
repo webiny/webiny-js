@@ -1,5 +1,5 @@
 // @flow
-import Entity from "./Entity";
+import { Entity } from "./Entity";
 
 class Settings extends Entity {
     key: string;

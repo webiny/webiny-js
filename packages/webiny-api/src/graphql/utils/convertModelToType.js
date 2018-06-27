@@ -16,9 +16,8 @@ const convertModelToType = (typeName: string, meta: Object, attributes: Object, 
         return schema.getType(typeName);
     }
 
-    schema.addType({
-        meta,
-        type: new GraphQLObjectType({
+    schema.addType(
+        new GraphQLObjectType({
             name: typeName,
             fields: () => {
                 const fields = {};
@@ -65,8 +64,9 @@ const convertModelToType = (typeName: string, meta: Object, attributes: Object, 
 
                 return fields;
             }
-        })
-    });
+        }),
+        meta
+    );
 
     return schema.getType(typeName);
 };

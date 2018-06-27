@@ -1,19 +1,18 @@
 import User from "./entities/user";
-import { expect } from "chai";
 import { EntityPoolEntry } from "../src";
 
 describe("entity pool entry test", () => {
     test("setEntity/getEntity methods must work correctly", async () => {
         const entityPoolEntry = new EntityPoolEntry();
-        expect(entityPoolEntry.getEntity()).to.be.undefined;
+        expect(entityPoolEntry.getEntity()).toBeUndefined;
         entityPoolEntry.setEntity(new User());
-        expect(entityPoolEntry.getEntity()).to.be.instanceOf(User);
+        expect(entityPoolEntry.getEntity()).toBeInstanceOf(User);
     });
 
     test("setEntity/getEntity methods must work correctly", async () => {
         const entityPoolEntry = new EntityPoolEntry();
-        expect(entityPoolEntry.getMeta().createdOn).to.be.instanceof(Date);
+        expect(entityPoolEntry.getMeta().createdOn).toBeInstanceOf(Date);
         entityPoolEntry.setMeta(null);
-        expect(entityPoolEntry.getMeta()).to.be.null;
+        expect(entityPoolEntry.getMeta()).toBe(null);
     });
 });

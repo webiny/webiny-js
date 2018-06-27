@@ -1,6 +1,6 @@
 // @flow
 import Identity from "./Identity.entity";
-import { api } from "./..";
+import { api } from "./../index";
 
 class ApiToken extends Identity {
     name: string;

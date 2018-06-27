@@ -1,12 +1,10 @@
 // @flow
-import { api } from "webiny-api";
+import { api } from "./../../index";
 import _ from "lodash";
 
-export default async (params: Object) => {
-    const { req } = params;
-
+export default async (context: Object) => {
     // Append security data to current request.
-    req.security = {
+    context.security = {
         sudo: false,
         identity: null,
         permissions: {}
@@ -14,12 +12,12 @@ export default async (params: Object) => {
 
     // Let's merge default permissions.
     const security = await api.services.get("security");
-    req.security.permissions = _.cloneDeep(security.getDefaultPermissions());
+    context.security.permissions = _.cloneDeep(security.getDefaultPermissions());
 
     const token =
         typeof api.config.security.header === "function"
-            ? api.config.security.token(req)
-            : req.get(api.config.security.header || "Authorization");
+            ? api.config.security.token(context.event)
+            : context.event.headers[api.config.security.header || "Authorization"];
 
     if (!token) {
         return;
@@ -31,7 +29,7 @@ export default async (params: Object) => {
 
         // If we have identity, let's merge its permissions and default ones.
         if (identity) {
-            req.security.identity = identity;
+            context.security.identity = identity;
 
             let identityPolicies = [];
 
@@ -47,20 +45,20 @@ export default async (params: Object) => {
             identityPolicies.forEach(policy => {
                 const policyEntitiesPermissions = _.get(policy, "permissions.entities", {});
                 for (let entityName in policyEntitiesPermissions) {
-                    if (!req.security.permissions.entities[entityName]) {
-                        req.security.permissions.entities[entityName] = [];
+                    if (!context.security.permissions.entities[entityName]) {
+                        context.security.permissions.entities[entityName] = [];
                     }
-                    req.security.permissions.entities[entityName].push(
+                    context.security.permissions.entities[entityName].push(
                         policyEntitiesPermissions[entityName]
                     );
                 }
 
                 const policyApiPermissions = _.get(policy, "permissions.api", {});
                 for (let operationName in policyApiPermissions) {
-                    if (!req.security.permissions.api[operationName]) {
-                        req.security.permissions.api[operationName] = [];
+                    if (!context.security.permissions.api[operationName]) {
+                        context.security.permissions.api[operationName] = [];
                     }
-                    req.security.permissions.api[operationName].push(
+                    context.security.permissions.api[operationName].push(
                         policyApiPermissions[operationName]
                     );
                 }

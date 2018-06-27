@@ -1,4 +1,4 @@
-import { Entity } from "webiny-api";
+import { Entity } from "webiny-api/lib/entities";
 import type { Storage } from "webiny-file-storage";
 import type { ImageProcessor } from "../../types";
 

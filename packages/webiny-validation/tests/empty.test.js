@@ -1,6 +1,5 @@
 import { validation } from "./../src";
 import "./chai";
-import { expect } from "chai";
 
 describe("empty validators test", () => {
     it("should pass - no validators sent", async () => {

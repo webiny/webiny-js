@@ -1,5 +1,5 @@
 // @flow
-import { Policy } from "./../../";
+import { Policy } from "./../../entities";
 
 export default async () => {
     const entity = new Policy();

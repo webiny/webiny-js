@@ -1,7 +1,8 @@
 import { QueryResult } from "webiny-entity";
 import { Company, User, Issue } from "./entities/identityAttributeEntities";
 import { MemoryDriver } from "webiny-entity-memory";
-import { Entity, api } from "webiny-api";
+import { Entity } from "webiny-api/lib/entities";
+import { api } from "webiny-api";
 import JwtToken from "../src/security/tokens/jwtToken";
 import registerIdentityAttribute from "./../src/attributes/registerIdentityAttribute";
 import registerPasswordAttribute from "./../src/attributes/registerPasswordAttribute";

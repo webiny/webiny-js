@@ -1,7 +1,7 @@
 // @flow
 import { EntityAttributesContainer } from "webiny-entity";
 import IdentityAttribute from "./identityAttribute";
-import { api } from "./..";
+import { api } from "webiny-api";
 import type { EntityAttributeOptions } from "webiny-entity/types";
 
 export default () => {

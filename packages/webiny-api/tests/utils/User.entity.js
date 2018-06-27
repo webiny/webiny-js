@@ -1,4 +1,4 @@
-import { Entity } from "../../src";
+import { Entity } from "../../src/entities";
 
 export default class User extends Entity {
     constructor() {

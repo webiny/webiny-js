@@ -1,5 +1,5 @@
 // @flow
-import { api } from "./../../";
+import { api } from "./../../index";
 import _ from "lodash";
 
 const checkScope = (selectionSet, scopesList, parentFields = "") => {
@@ -34,16 +34,16 @@ const checkScope = (selectionSet, scopesList, parentFields = "") => {
  * Authorization middleware.
  * Checks if request identity is authorized to execute the matched API method.
  *
- * @param {Api} params.app
+ * @param {Api} context.app
  */
-export default async (params: Object) => {
+export default async (context: Object) => {
     const security = api.services.get("security");
     if (security.config.enabled === false) {
         return;
     }
 
     // Let's allow IntrospectionQuery to be accessed.
-    if (_.get(params.graphql, "documentAST.definitions.0.name.value") === "IntrospectionQuery") {
+    if (_.get(context.graphql, "documentAST.definitions.0.name.value") === "IntrospectionQuery") {
         return;
     }
 
@@ -55,8 +55,8 @@ export default async (params: Object) => {
         return;
     }
 
-    for (let i = 0; i < params.graphql.documentAST.definitions.length; i++) {
-        let operationDefinition = params.graphql.documentAST.definitions[i];
+    for (let i = 0; i < context.graphql.documentAST.definitions.length; i++) {
+        let operationDefinition = context.graphql.documentAST.definitions[i];
 
         for (let j = 0; j < operationDefinition.selectionSet.selections.length; j++) {
             let selection = operationDefinition.selectionSet.selections[j];

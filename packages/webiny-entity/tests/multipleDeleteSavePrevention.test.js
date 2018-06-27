@@ -1,6 +1,5 @@
-import { expect } from "chai";
 import sinon from "sinon";
-import { Entity } from "./..";
+import { Entity } from "./../src";
 
 const sandbox = sinon.sandbox.create();
 
@@ -25,8 +24,8 @@ describe("multiple delete / save prevention test", async () => {
 
         await promise;
 
-        expect(user.isClean()).to.equal(true);
-        expect(save.callCount).to.equal(0);
+        expect(user.isClean()).toEqual(true);
+        expect(save.callCount).toEqual(0);
     });
 
     test("should only call delete once", async () => {
@@ -44,12 +43,12 @@ describe("multiple delete / save prevention test", async () => {
         await promise;
         await promise2;
 
-        expect(deleteOperation.callCount).to.equal(1);
+        expect(deleteOperation.callCount).toEqual(1);
 
         user.processing = "delete";
         await user.delete();
         user.processing = null;
 
-        expect(deleteOperation.callCount).to.equal(1);
+        expect(deleteOperation.callCount).toEqual(1);
     });
 });

@@ -26,8 +26,8 @@ async function formatData(instance: Page | Revision) {
 }
 
 export default (schema: Schema) => {
-    schema.addType({
-        type: new GraphQLObjectType({
+    schema.addType(
+        new GraphQLObjectType({
             name: "CmsPageData",
             description: "Data prepared for rendering on the client",
             fields: {
@@ -37,7 +37,7 @@ export default (schema: Schema) => {
                 content: { type: GraphQLJSON }
             }
         })
-    });
+    );
 
     schema.query["loadPageByUrl"] = {
         type: schema.getType("CmsPageData"),

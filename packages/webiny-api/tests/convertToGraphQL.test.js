@@ -1,7 +1,7 @@
 import { GraphQLEntityWithSameModelEntityTypes, GraphQLEntity } from "./entities/GraphQLEntity";
 import bootstrap from "./utils/bootstrap";
 import convertAttributeToGraphQLType from "./../src/attributes/convertAttributeToGraphQLType";
-import { api } from "./../src";
+import { api } from "./../lib";
 import { GraphQLList, GraphQLUnionType } from "graphql";
 
 const getField = (name, entity = "GraphQLEntity") => {

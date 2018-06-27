@@ -2,7 +2,7 @@
 import _ from "lodash";
 import { EntityAttribute, type EntityAttributesContainer } from "webiny-entity";
 import type { Storage } from "webiny-file-storage";
-import type { File } from "./../index";
+import type { File } from "./../entities";
 
 class FileAttribute extends EntityAttribute {
     storage: Storage;

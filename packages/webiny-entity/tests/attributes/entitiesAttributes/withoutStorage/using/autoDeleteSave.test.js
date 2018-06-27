@@ -1,5 +1,4 @@
 import { User, Group, UsersGroups } from "../../../../entities/entitiesUsing";
-import { expect } from "chai";
 import sinon from "sinon";
 import { QueryResult } from "../../../../../src";
 import { MainEntity } from "../../../../entities/entitiesAttributeEntities";
@@ -42,13 +41,13 @@ describe("attribute entities (using an additional aggregation class) - saving te
 
         user.groups = [{ name: "Group P" }, { name: "Group Q" }];
 
-        expect(user.getAttribute("groups").value.initial).to.have.lengthOf(0);
-        expect(user.getAttribute("groups").value.current).to.have.lengthOf(2);
-        expect(user.getAttribute("groups").value.current[0].name).to.equal("Group P");
-        expect(user.getAttribute("groups").value.current[1].name).to.equal("Group Q");
+        expect(user.getAttribute("groups").value.initial).toHaveLength(0);
+        expect(user.getAttribute("groups").value.current).toHaveLength(2);
+        expect(user.getAttribute("groups").value.current[0].name).toEqual("Group P");
+        expect(user.getAttribute("groups").value.current[1].name).toEqual("Group Q");
 
-        expect(user.getAttribute("groups").value.links.initial).to.have.lengthOf(0);
-        expect(user.getAttribute("groups").value.links.current).to.have.lengthOf(0);
+        expect(user.getAttribute("groups").value.links.initial).toHaveLength(0);
+        expect(user.getAttribute("groups").value.links.current).toHaveLength(0);
 
         let entitySave = sandbox
             .stub(user.getDriver(), "save")
@@ -81,22 +80,22 @@ describe("attribute entities (using an additional aggregation class) - saving te
 
         entitySave.restore();
 
-        expect(entitySave.callCount).to.equal(5);
+        expect(entitySave.callCount).toEqual(5);
 
-        expect(user.getAttribute("groups").value.initial).to.have.lengthOf(2);
-        expect(user.getAttribute("groups").value.initial[0].id).to.equal("P");
-        expect(user.getAttribute("groups").value.initial[1].id).to.equal("Q");
-        expect(user.getAttribute("groups").value.current).to.have.lengthOf(2);
-        expect(user.getAttribute("groups").value.current[0].id).to.equal("P");
-        expect(user.getAttribute("groups").value.current[1].id).to.equal("Q");
+        expect(user.getAttribute("groups").value.initial).toHaveLength(2);
+        expect(user.getAttribute("groups").value.initial[0].id).toEqual("P");
+        expect(user.getAttribute("groups").value.initial[1].id).toEqual("Q");
+        expect(user.getAttribute("groups").value.current).toHaveLength(2);
+        expect(user.getAttribute("groups").value.current[0].id).toEqual("P");
+        expect(user.getAttribute("groups").value.current[1].id).toEqual("Q");
 
-        expect(user.getAttribute("groups").value.links.initial).to.have.lengthOf(2);
-        expect(user.getAttribute("groups").value.links.initial[0].id).to.equal("usersGroups4th");
-        expect(user.getAttribute("groups").value.links.initial[1].id).to.equal("usersGroups5th");
+        expect(user.getAttribute("groups").value.links.initial).toHaveLength(2);
+        expect(user.getAttribute("groups").value.links.initial[0].id).toEqual("usersGroups4th");
+        expect(user.getAttribute("groups").value.links.initial[1].id).toEqual("usersGroups5th");
 
-        expect(user.getAttribute("groups").value.links.current).to.have.lengthOf(2);
-        expect(user.getAttribute("groups").value.links.current[0].id).to.equal("usersGroups4th");
-        expect(user.getAttribute("groups").value.links.current[1].id).to.equal("usersGroups5th");
+        expect(user.getAttribute("groups").value.links.current).toHaveLength(2);
+        expect(user.getAttribute("groups").value.links.current[0].id).toEqual("usersGroups4th");
+        expect(user.getAttribute("groups").value.links.current[1].id).toEqual("usersGroups5th");
 
         // Let's try to add values using push.
         const groups = await user.groups;
@@ -136,34 +135,34 @@ describe("attribute entities (using an additional aggregation class) - saving te
         await user.save();
         entitySave.restore();
 
-        expect(entitySave.callCount).to.equal(9);
+        expect(entitySave.callCount).toEqual(9);
 
-        expect(user.getAttribute("groups").value.initial).to.have.lengthOf(5);
-        expect(user.getAttribute("groups").value.initial[0].id).to.equal("P");
-        expect(user.getAttribute("groups").value.initial[1].id).to.equal("Q");
-        expect(user.getAttribute("groups").value.initial[2].id).to.equal("I");
-        expect(user.getAttribute("groups").value.initial[3].id).to.equal("J");
-        expect(user.getAttribute("groups").value.initial[4].id).to.equal("I");
-        expect(user.getAttribute("groups").value.current).to.have.lengthOf(5);
-        expect(user.getAttribute("groups").value.current[0].id).to.equal("P");
-        expect(user.getAttribute("groups").value.current[1].id).to.equal("Q");
-        expect(user.getAttribute("groups").value.current[2].id).to.equal("I");
-        expect(user.getAttribute("groups").value.current[3].id).to.equal("J");
-        expect(user.getAttribute("groups").value.current[4].id).to.equal("I");
+        expect(user.getAttribute("groups").value.initial).toHaveLength(5);
+        expect(user.getAttribute("groups").value.initial[0].id).toEqual("P");
+        expect(user.getAttribute("groups").value.initial[1].id).toEqual("Q");
+        expect(user.getAttribute("groups").value.initial[2].id).toEqual("I");
+        expect(user.getAttribute("groups").value.initial[3].id).toEqual("J");
+        expect(user.getAttribute("groups").value.initial[4].id).toEqual("I");
+        expect(user.getAttribute("groups").value.current).toHaveLength(5);
+        expect(user.getAttribute("groups").value.current[0].id).toEqual("P");
+        expect(user.getAttribute("groups").value.current[1].id).toEqual("Q");
+        expect(user.getAttribute("groups").value.current[2].id).toEqual("I");
+        expect(user.getAttribute("groups").value.current[3].id).toEqual("J");
+        expect(user.getAttribute("groups").value.current[4].id).toEqual("I");
 
-        expect(user.getAttribute("groups").value.links.initial).to.have.lengthOf(5);
-        expect(user.getAttribute("groups").value.links.initial[0].id).to.equal("usersGroups4th");
-        expect(user.getAttribute("groups").value.links.initial[1].id).to.equal("usersGroups5th");
-        expect(user.getAttribute("groups").value.links.initial[2].id).to.equal("usersGroups6th");
-        expect(user.getAttribute("groups").value.links.initial[3].id).to.equal("usersGroups7th");
-        expect(user.getAttribute("groups").value.links.initial[4].id).to.equal("usersGroups8th");
+        expect(user.getAttribute("groups").value.links.initial).toHaveLength(5);
+        expect(user.getAttribute("groups").value.links.initial[0].id).toEqual("usersGroups4th");
+        expect(user.getAttribute("groups").value.links.initial[1].id).toEqual("usersGroups5th");
+        expect(user.getAttribute("groups").value.links.initial[2].id).toEqual("usersGroups6th");
+        expect(user.getAttribute("groups").value.links.initial[3].id).toEqual("usersGroups7th");
+        expect(user.getAttribute("groups").value.links.initial[4].id).toEqual("usersGroups8th");
 
-        expect(user.getAttribute("groups").value.links.current).to.have.lengthOf(5);
-        expect(user.getAttribute("groups").value.links.current[0].id).to.equal("usersGroups4th");
-        expect(user.getAttribute("groups").value.links.current[1].id).to.equal("usersGroups5th");
-        expect(user.getAttribute("groups").value.links.current[2].id).to.equal("usersGroups6th");
-        expect(user.getAttribute("groups").value.links.current[3].id).to.equal("usersGroups7th");
-        expect(user.getAttribute("groups").value.links.current[4].id).to.equal("usersGroups8th");
+        expect(user.getAttribute("groups").value.links.current).toHaveLength(5);
+        expect(user.getAttribute("groups").value.links.current[0].id).toEqual("usersGroups4th");
+        expect(user.getAttribute("groups").value.links.current[1].id).toEqual("usersGroups5th");
+        expect(user.getAttribute("groups").value.links.current[2].id).toEqual("usersGroups6th");
+        expect(user.getAttribute("groups").value.links.current[3].id).toEqual("usersGroups7th");
+        expect(user.getAttribute("groups").value.links.current[4].id).toEqual("usersGroups8th");
 
         // Let's try to remove values using shift / pop - deletes should occur.
         groups.pop();
@@ -175,30 +174,30 @@ describe("attribute entities (using an additional aggregation class) - saving te
         entitySave = sandbox.stub(user.getDriver(), "save");
         await user.save();
 
-        expect(entitySave.callCount).to.equal(4);
-        expect(entityDelete.callCount).to.equal(2);
+        expect(entitySave.callCount).toEqual(4);
+        expect(entityDelete.callCount).toEqual(2);
 
         entitySave.restore();
         entityDelete.restore();
 
-        expect(user.getAttribute("groups").value.initial).to.have.lengthOf(3);
-        expect(user.getAttribute("groups").value.initial[0].id).to.equal("Q");
-        expect(user.getAttribute("groups").value.initial[1].id).to.equal("I");
-        expect(user.getAttribute("groups").value.initial[2].id).to.equal("J");
-        expect(user.getAttribute("groups").value.current).to.have.lengthOf(3);
-        expect(user.getAttribute("groups").value.current[0].id).to.equal("Q");
-        expect(user.getAttribute("groups").value.current[1].id).to.equal("I");
-        expect(user.getAttribute("groups").value.current[2].id).to.equal("J");
+        expect(user.getAttribute("groups").value.initial).toHaveLength(3);
+        expect(user.getAttribute("groups").value.initial[0].id).toEqual("Q");
+        expect(user.getAttribute("groups").value.initial[1].id).toEqual("I");
+        expect(user.getAttribute("groups").value.initial[2].id).toEqual("J");
+        expect(user.getAttribute("groups").value.current).toHaveLength(3);
+        expect(user.getAttribute("groups").value.current[0].id).toEqual("Q");
+        expect(user.getAttribute("groups").value.current[1].id).toEqual("I");
+        expect(user.getAttribute("groups").value.current[2].id).toEqual("J");
 
-        expect(user.getAttribute("groups").value.links.initial).to.have.lengthOf(3);
-        expect(user.getAttribute("groups").value.links.initial[0].id).to.equal("usersGroups5th");
-        expect(user.getAttribute("groups").value.links.initial[1].id).to.equal("usersGroups6th");
-        expect(user.getAttribute("groups").value.links.initial[2].id).to.equal("usersGroups7th");
+        expect(user.getAttribute("groups").value.links.initial).toHaveLength(3);
+        expect(user.getAttribute("groups").value.links.initial[0].id).toEqual("usersGroups5th");
+        expect(user.getAttribute("groups").value.links.initial[1].id).toEqual("usersGroups6th");
+        expect(user.getAttribute("groups").value.links.initial[2].id).toEqual("usersGroups7th");
 
-        expect(user.getAttribute("groups").value.links.current).to.have.lengthOf(3);
-        expect(user.getAttribute("groups").value.links.current[0].id).to.equal("usersGroups5th");
-        expect(user.getAttribute("groups").value.links.current[1].id).to.equal("usersGroups6th");
-        expect(user.getAttribute("groups").value.links.current[2].id).to.equal("usersGroups7th");
+        expect(user.getAttribute("groups").value.links.current).toHaveLength(3);
+        expect(user.getAttribute("groups").value.links.current[0].id).toEqual("usersGroups5th");
+        expect(user.getAttribute("groups").value.links.current[1].id).toEqual("usersGroups6th");
+        expect(user.getAttribute("groups").value.links.current[2].id).toEqual("usersGroups7th");
     });
 
     test("must not recreate links", async () => {
@@ -219,7 +218,7 @@ describe("attribute entities (using an additional aggregation class) - saving te
             ]
         });
 
-        expect(user.getAttribute("groups").value.dirty).to.equal(true);
+        expect(user.getAttribute("groups").value.dirty).toEqual(true);
 
         let entitySaveSpy = sandbox.spy(User.getDriver(), "save");
         let entityDeleteSpy = sandbox.spy(User.getDriver(), "delete");
@@ -253,7 +252,7 @@ describe("attribute entities (using an additional aggregation class) - saving te
 
         await user.save();
 
-        expect(entitySaveSpy.callCount).to.equal(2);
-        expect(entityDeleteSpy.callCount).to.equal(0);
+        expect(entitySaveSpy.callCount).toEqual(2);
+        expect(entityDeleteSpy.callCount).toEqual(0);
     });
 });

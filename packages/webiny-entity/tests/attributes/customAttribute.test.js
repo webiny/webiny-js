@@ -1,6 +1,6 @@
 import { Issue, User, Company } from "./../entities/customAttributeEntities";
 import sinon from "sinon";
-import { QueryResult } from "../..";
+import { QueryResult } from "../../src";
 
 const sandbox = sinon.sandbox.create();
 

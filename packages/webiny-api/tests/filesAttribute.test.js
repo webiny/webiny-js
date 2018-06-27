@@ -1,7 +1,8 @@
 import fs from "fs";
 import { Storage } from "webiny-file-storage";
 import { MemoryDriver } from "webiny-entity-memory";
-import { Entity, File, api } from "webiny-api";
+import { Entity, File } from "webiny-api/lib/entities";
+import { api } from "webiny-api";
 import SecurityService from "../src/services/securityService";
 import JwtToken from "../src/security/tokens/jwtToken";
 

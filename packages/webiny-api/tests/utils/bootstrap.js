@@ -1,5 +1,6 @@
 import { MemoryDriver } from "webiny-entity-memory";
-import { Entity, File, api } from "../../src";
+import { Entity, File } from "../../src/entities";
+import { api } from "../../lib";
 import SecurityService from "../../src/services/securityService";
 import JwtToken from "../../src/security/tokens/jwtToken";
 import User from "./User.entity";

@@ -1,5 +1,6 @@
 import fs from "fs";
-import { Image, Entity, api } from "webiny-api";
+import { Image, Entity } from "webiny-api/lib/entities";
+import { api } from "webiny-api";
 import { Storage } from "webiny-file-storage";
 import imageProcessor from "webiny-jimp";
 import userFactory from "./utils/storageUserFactory";

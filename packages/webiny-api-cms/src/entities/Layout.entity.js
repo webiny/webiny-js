@@ -1,6 +1,6 @@
 // @flow
-import { Entity } from "webiny-api";
-import WidgetModel from "./widget.model";
+import { Entity } from "webiny-api/lib/entities";
+import WidgetModel from "./Widget.model";
 
 class Layout extends Entity {
     title: string;

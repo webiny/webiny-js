@@ -1,0 +1,18 @@
+{
+  "name": "webiny-cloud-client",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "apollo-cache-inmemory": "^1.2.5",
+    "apollo-client": "^2.2.8",
+    "apollo-link": "^1.2.1",
+    "apollo-link-context": "^1.0.7",
+    "apollo-link-http": "^1.5.3",
+    "apollo-upload-client": "^8.0.0",
+    "fs-extra": "^6.0.1",
+    "glob": "^7.1.2",
+    "graphql-tag": "^2.9.2",
+    "node-fetch": "^2.1.2"
+  }
+}

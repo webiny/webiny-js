@@ -1,5 +1,5 @@
 // @flow
-import { Group } from "./../..";
+import { Group } from "./../../entities";
 
 export default async () => {
     const entity = new Group();

@@ -5,18 +5,18 @@ import type Schema from "./../../graphql/Schema";
 import type { Api } from "./../..";
 
 export default (api: Api, config: Object, schema: Schema) => {
-    schema.addType({
-        type: new GraphQLObjectType({
+    schema.addType(
+        new GraphQLObjectType({
             name: "EntityAttributesAttribute",
             fields: {
                 name: { type: GraphQLString },
                 protected: { type: GraphQLBoolean }
             }
         })
-    });
+    );
 
-    schema.addType({
-        type: new GraphQLObjectType({
+    schema.addType(
+        new GraphQLObjectType({
             name: "EntityAttributes",
             fields: {
                 name: { type: GraphQLString },
@@ -25,7 +25,7 @@ export default (api: Api, config: Object, schema: Schema) => {
                 permissions: { type: GraphQLJSON }
             }
         })
-    });
+    );
 
     schema.query["listEntities"] = {
         description: "Returns a list of all registered entities and its attributes.",

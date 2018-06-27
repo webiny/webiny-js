@@ -7,7 +7,8 @@ import registerImageAttributes from "../src/attributes/registerImageAttributes";
 import entityFactory from "./utils/Event.entity";
 import imageProcessor from "./utils/imageProcessor";
 
-import { Entity, File, Image, api } from "webiny-api";
+import { Entity, File, Image } from "webiny-api/lib/entities";
+import { api } from "webiny-api";
 import SecurityService from "../src/services/securityService";
 import JwtToken from "../src/security/tokens/jwtToken";
 

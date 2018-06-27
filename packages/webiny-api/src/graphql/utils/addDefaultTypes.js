@@ -1,15 +1,12 @@
 // @flow
 import _ from "lodash";
 import { GraphQLUnionType } from "graphql";
-import type { Schema } from "webiny-api/types";
+import type { Schema } from "./../../../types";
 
 export default (schema: Schema) => {
     // Create EntityType to represent all entities in the system
-    schema.addType({
-        meta: {
-            type: "union"
-        },
-        type: new GraphQLUnionType({
+    schema.addType(
+        new GraphQLUnionType({
             name: "EntityType",
             types: () => {
                 const attrTypes = [];
@@ -23,6 +20,9 @@ export default (schema: Schema) => {
             resolveType(entity) {
                 return schema.getType(entity.classId);
             }
-        })
-    });
+        }),
+        {
+            type: "union"
+        }
+    );
 };

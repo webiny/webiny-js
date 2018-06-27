@@ -1,7 +1,7 @@
 {
   "name": "webiny-api",
   "version": "0.0.0-semantically-released",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -22,13 +22,10 @@
     "chalk": "^2.4.1",
     "cls-hooked": "^4.2.2",
     "debug": "^3.1.0",
-    "express": "^4.16.2",
-    "express-graphql": "^0.6.12",
     "file-type": "^7.6.0",
     "fs-extra": "^5.0.0",
     "graphql": "^0.13.2",
     "graphql-type-json": "^0.2.0",
-    "http-errors": "^1.6.3",
     "image-size": "^0.6.2",
     "jsonwebtoken": "^8.2.2",
     "lodash": "^4.17.4",
@@ -39,9 +36,6 @@
     "webiny-service-manager": "0.0.0-semantically-released",
     "webiny-sql-table-mysql": "0.0.0-semantically-released",
     "webiny-sql-table-sync": "0.0.0-semantically-released"
-  },
-  "devDependencies": {
-    "supertest": "^3.0.0"
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",

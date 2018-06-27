@@ -1,5 +1,5 @@
 import { MainEntity, Entity1 } from "../../entities/entitiesAttributeEntities";
-import { EntityCollection } from "../../..";
+import { EntityCollection } from "../../../src";
 
 describe("onSet test", () => {
     beforeEach(() => MainEntity.getEntityPool().flush());

@@ -1,6 +1,5 @@
 // @flow
-import Entity from "./Entity";
-import { Policy, Policies2Entities } from "./Entity";
+import { Entity, Policy, Policies2Entities } from "./Entity";
 
 /**
  * Identity class is the base class for all identity classes.

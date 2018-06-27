@@ -22,7 +22,7 @@ export default {
             strategy: "credentials",
             query: gql`
                 query login($username: String!, $password: String!, $remember: Boolean) {
-                    me: loginSecurityUser(
+                    me: authenticateSecurityUser(
                         username: $username
                         password: $password
                         remember: $remember

@@ -1,8 +1,7 @@
-import { expect } from "chai";
 import sinon from "sinon";
 import _ from "lodash";
 import mysql from "mysql";
-import { MySQLConnection } from "..";
+import { MySQLConnection } from "../src";
 
 const sandbox = sinon.sandbox.create();
 
@@ -11,12 +10,12 @@ describe("mysql connection test", async () => {
 
     test("should correctly differentiate between instances of pool, connection", async () => {
         const instance1 = new MySQLConnection(mysql.createPool({}));
-        expect(instance1.isConnectionPool()).to.equal(true);
-        expect(instance1.isConnection()).to.equal(false);
+        expect(instance1.isConnectionPool()).toEqual(true);
+        expect(instance1.isConnection()).toEqual(false);
 
         const instance2 = new MySQLConnection(mysql.createConnection({}));
-        expect(instance2.isConnectionPool()).to.equal(false);
-        expect(instance2.isConnection()).to.equal(true);
+        expect(instance2.isConnectionPool()).toEqual(false);
+        expect(instance2.isConnection()).toEqual(true);
     });
 
     test("should not accept other than Connection / Pool instances as connection argument", async () => {
@@ -50,9 +49,9 @@ describe("mysql connection test", async () => {
 
         const results = await instance.query("INSERT INTO users ...");
 
-        expect(getConnectionStub.callCount).to.equal(1);
-        expect(releaseSpy.callCount).to.equal(1);
-        expect(results.insertId).to.equal(1);
+        expect(getConnectionStub.callCount).toEqual(1);
+        expect(releaseSpy.callCount).toEqual(1);
+        expect(results.insertId).toEqual(1);
 
         getConnectionStub.restore();
         queryWithConnectionStub.restore();
@@ -83,12 +82,12 @@ describe("mysql connection test", async () => {
             "SELECT FOUND_ROWS() as count"
         ]);
 
-        expect(queryStub.callCount).to.equal(2);
+        expect(queryStub.callCount).toEqual(2);
 
-        expect(results).to.be.lengthOf(2);
-        expect(results[0][0].id).to.be.equal(1);
-        expect(results[0][1].id).to.be.equal(2);
-        expect(results[1][0].count).to.be.equal(1);
+        expect(results).toHaveLength(2);
+        expect(results[0][0].id).toEqual(1);
+        expect(results[0][1].id).toEqual(2);
+        expect(results[1][0].count).toEqual(1);
 
         queryStub.restore();
         endConnectionStub.restore();
@@ -153,13 +152,13 @@ describe("mysql connection test", async () => {
             "SELECT FOUND_ROWS() as count"
         ]);
 
-        expect(getConnectionStub.callCount).to.equal(1);
-        expect(releaseSpy.callCount).to.equal(1);
+        expect(getConnectionStub.callCount).toEqual(1);
+        expect(releaseSpy.callCount).toEqual(1);
 
-        expect(results).to.be.lengthOf(2);
-        expect(results[0][0].id).to.be.equal(1);
-        expect(results[0][1].id).to.be.equal(2);
-        expect(results[1][0].count).to.be.equal(1);
+        expect(results).toHaveLength(2);
+        expect(results[0][0].id).toEqual(1);
+        expect(results[0][1].id).toEqual(2);
+        expect(results[1][0].count).toEqual(1);
 
         releaseSpy.restore();
         getConnectionStub.restore();
@@ -185,7 +184,7 @@ describe("mysql connection test", async () => {
         try {
             await instance.query(["SELECT * FROM users", "SELECT FOUND_ROWS() as count"]);
         } catch (e) {
-            expect(releaseSpy.callCount).to.equal(1);
+            expect(releaseSpy.callCount).toEqual(1);
             return;
         } finally {
             releaseSpy.restore();
@@ -206,7 +205,7 @@ describe("mysql connection test", async () => {
         } catch (e) {
             return;
         } finally {
-            expect(getConnectionStub.callCount).to.equal(1);
+            expect(getConnectionStub.callCount).toEqual(1);
             getConnectionStub.restore();
         }
 
@@ -234,8 +233,8 @@ describe("mysql connection test", async () => {
         } catch (e) {
             return;
         } finally {
-            expect(queryExecuted).to.equal(true);
-            expect(getConnectionStub.callCount).to.equal(1);
+            expect(queryExecuted).toEqual(true);
+            expect(getConnectionStub.callCount).toEqual(1);
             getConnectionStub.restore();
         }
 
@@ -259,9 +258,9 @@ describe("mysql connection test", async () => {
         endStub.restore();
         queryStub.restore();
 
-        expect(results.insertId).to.be.equal(1);
-        expect(queryStub.callCount).to.equal(1);
-        expect(endStub.callCount).to.equal(0);
+        expect(results.insertId).toEqual(1);
+        expect(queryStub.callCount).toEqual(1);
+        expect(endStub.callCount).toEqual(0);
     });
 
     test("should correctly more SQL queries using single connection", async () => {
@@ -289,13 +288,13 @@ describe("mysql connection test", async () => {
         endStub.restore();
         queryStub.restore();
 
-        expect(results).to.be.lengthOf(2);
-        expect(results[0][0].id).to.be.equal(1);
-        expect(results[0][1].id).to.be.equal(2);
-        expect(results[1][0].count).to.be.equal(1);
+        expect(results).toHaveLength(2);
+        expect(results[0][0].id).toEqual(1);
+        expect(results[0][1].id).toEqual(2);
+        expect(results[1][0].count).toEqual(1);
 
-        expect(queryStub.callCount).to.equal(2);
-        expect(endStub.callCount).to.equal(0);
+        expect(queryStub.callCount).toEqual(2);
+        expect(endStub.callCount).toEqual(0);
     });
 
     test("should throw an error on query error", async () => {
@@ -318,8 +317,8 @@ describe("mysql connection test", async () => {
             queryStub.restore();
             endStub.restore();
 
-            expect(queryStub.callCount).to.equal(1);
-            expect(endStub.callCount).to.equal(0);
+            expect(queryStub.callCount).toEqual(1);
+            expect(endStub.callCount).toEqual(0);
         }
 
         throw Error(`Error should've been thrown.`);

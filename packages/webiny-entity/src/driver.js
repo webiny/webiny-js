@@ -7,7 +7,7 @@ import type {
     EntityFindParams,
     EntityDeleteParams,
     EntityFindOneParams
-} from "webiny-entity/types";
+} from "../types";
 
 class Driver {
     connection: any;

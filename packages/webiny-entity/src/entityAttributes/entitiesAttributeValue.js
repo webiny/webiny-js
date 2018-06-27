@@ -1,6 +1,6 @@
 // @flow
 import { AttributeValue, type Attribute } from "webiny-model";
-import type { EntitiesAttribute, EntityModel } from "webiny-entity";
+import type { EntitiesAttribute, EntityModel } from "../index";
 
 import Entity from "./../entity";
 import EntityCollection from "./../entityCollection";
