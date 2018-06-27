@@ -1,9 +1,7 @@
 // @flow
-import { execute } from "graphql";
+import { execute, parse } from "graphql";
 import { api } from "./../index";
 import compose from "webiny-compose";
-import httpError from "http-errors";
-import getGraphQLParams from "./utils/getGraphQLParams";
 import { authorization, authentication } from "./middleware/index.js";
 
 /**
@@ -24,10 +22,6 @@ const securityMiddleware = () => {
  */
 const graphqlMiddleware = () => {
     return async (context, next) => {
-        if (!context.graphql.query) {
-            throw httpError(400, "Must provide query string.");
-        }
-
         context.output = await execute(
             api.graphql.getSchema(),
             context.graphql.documentAST,
@@ -54,7 +48,11 @@ const formatError = err => {
  */
 const middleware = [
     async (context, next) => {
-        context.graphql = await getGraphQLParams(context.event);
+        context.graphql = {
+            documentAST: parse(context.event.body.query),
+            variables: context.event.body.variables,
+            operationName: context.event.body.operationName
+        };
         next();
     },
     securityMiddleware(),
