@@ -1,3 +1,4 @@
+// @flow
 import middleware from "./middleware";
 
 export default (namespace, options: Object = {}) => {
