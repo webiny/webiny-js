@@ -25,5 +25,5 @@ provider:
 functions:
   api:
     name: '${self:service}-${self:custom.stage}-api'
-    handler: ${self:custom.api.source}/index.handler
+    handler: ${self:custom.api.source}/handler.api
     events: [ { http: 'ANY /graphql' }, { http: 'ANY /graphql/{proxy+}' } ]
