@@ -1,6 +1,6 @@
 require("babel-register");
 
 const { lambda } = require("webiny-api");
-const { default: app } = require("./app");
+const { default: api } = require("./api");
 
-module.exports.handler = lambda(app);
+module.exports.handler = lambda(api);
