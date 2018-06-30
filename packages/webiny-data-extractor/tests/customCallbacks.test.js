@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import extractor from "./../src";
+import extractor from "webiny-data-extractor";
 import mock from "./mock";
 
 const onRead = (data, key) => {
