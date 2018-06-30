@@ -1,4 +1,4 @@
-import ValidationError from "./../src/validationError";
+import { ValidationError } from "webiny-validation";
 
 describe("ValidationError class test", function() {
     it("set / get message must work correctly", () => {

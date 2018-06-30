@@ -1,4 +1,4 @@
-import { validation, ValidationError } from "./../src";
+import { validation, ValidationError } from "webiny-validation";
 
 describe("disabling error throwing test", () => {
     it("by default it must throw errors on invalid data", async () => {
@@ -11,7 +11,7 @@ describe("disabling error throwing test", () => {
 
         expect(error).toBeInstanceOf(ValidationError);
 
-        expect(error.message).toBeString();
+        expect(typeof error.message).toBe("string");
         expect(error.validator).toBe("email");
         expect(error.value).toBe("1234567890");
 

@@ -1,4 +1,4 @@
-import { validation } from "./../src";
+import { validation } from "webiny-validation";
 import "./chai";
 
 describe("url test", () => {

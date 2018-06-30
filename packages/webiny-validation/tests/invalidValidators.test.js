@@ -1,4 +1,4 @@
-import { validation, ValidationError } from "./../src";
+import { validation, ValidationError } from "webiny-validation";
 
 describe("invalid validators test", () => {
     test("must throw error if validators were not passed as a non-empty string", async () => {
