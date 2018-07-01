@@ -6,14 +6,11 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "main": "lib/index.js",
+  "main": "index.js",
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>",
     "Adrian Smijulj <adrian@webiny.com>",
     "Sven Al Hamad <sven@webiny.com>"
-  ],
-  "files": [
-    "lib/"
   ],
   "license": "MIT",
   "dependencies": {
