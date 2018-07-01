@@ -1,4 +1,4 @@
-import i18n, { defaultProcessor } from "./../src";
+import i18n, { defaultProcessor } from "webiny-i18n";
 const t = i18n.namespace("Random.Namespace");
 i18n.registerProcessor(defaultProcessor);
 

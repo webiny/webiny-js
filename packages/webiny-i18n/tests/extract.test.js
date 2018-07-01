@@ -1,9 +1,9 @@
-import extract from "./../src/extractor/extract";
+import extract from "webiny-i18n/extractor/extract";
 
 import example1 from "./extract/example1";
 import example2 from "./extract/example2";
 
-describe("extractr test", () => {
+describe("extractor test", () => {
     test("should extract sources correctly", () => {
         let extracted = extract(example1);
 

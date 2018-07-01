@@ -1,4 +1,4 @@
-import i18n from "./../src";
+import i18n from "webiny-i18n";
 
 describe("price test", () => {
     test("should output price with no formatting set", () => {

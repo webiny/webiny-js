@@ -1,4 +1,4 @@
-import i18n from "./../src";
+import i18n from "webiny-i18n";
 
 describe("locales set / get test", () => {
     beforeEach(() => i18n.clearTranslations());

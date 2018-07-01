@@ -1,4 +1,4 @@
-import i18n from "./../src";
+import i18n from "webiny-i18n";
 
 describe("time test", () => {
     // With below given format (no timezone), Date assumes passed value is in current timezone.

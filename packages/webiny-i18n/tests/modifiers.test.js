@@ -1,5 +1,5 @@
-import i18n from "./../src";
-import defaultProcessor from "./../src/processors/default";
+import i18n from "webiny-i18n";
+import defaultProcessor from "webiny-i18n/processors/default";
 
 i18n.registerProcessor(defaultProcessor);
 

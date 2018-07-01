@@ -1,4 +1,4 @@
-import i18n from "./../src";
+import i18n from "webiny-i18n";
 
 describe("number test", () => {
     test("should output number with no formatting set", () => {
