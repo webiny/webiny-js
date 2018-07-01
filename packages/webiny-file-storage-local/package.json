@@ -17,7 +17,6 @@
     "babel-runtime": "^6.26.0",
     "globby": "^7.1.1",
     "mime-types": "^2.1.17",
-    "minimatch": "^3.0.4",
     "webiny-file-storage": "0.0.0-semantically-released"
   },
   "scripts": {

@@ -14,8 +14,6 @@
   "license": "MIT",
   "dependencies": {
     "babel-runtime": "^6.26.0",
-    "lodash": "^4.17.4",
-    "sqlstring": "^2.3.0",
     "webiny-mysql-connection": "0.0.0-semantically-released",
     "webiny-sql-table": "0.0.0-semantically-released"
   },
