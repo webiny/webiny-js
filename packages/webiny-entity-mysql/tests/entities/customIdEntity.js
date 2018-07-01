@@ -1,5 +1,5 @@
 import { Entity } from "webiny-entity";
-import { MySQLDriver } from "../..";
+import { MySQLDriver } from "webiny-entity-mysql";
 import mdbid from "mdbid";
 import mysql from "mysql";
 

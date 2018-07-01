@@ -1,5 +1,5 @@
-import { Insert } from "../../src/statements";
-import { operators } from "../../src";
+import { Insert } from "webiny-entity-mysql/statements";
+import { operators } from "webiny-entity-mysql";
 
 describe("INSERT statement test", () => {
     test("should generate an INSERT statement", async () => {

@@ -1,5 +1,5 @@
-import { Select } from "../../src/statements";
-import { operators } from "../../src";
+import { Select } from "webiny-entity-mysql/statements";
+import { operators } from "webiny-entity-mysql";
 import { Entity } from "webiny-entity";
 
 describe("SELECT statement test", () => {

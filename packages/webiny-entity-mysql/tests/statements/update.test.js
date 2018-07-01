@@ -1,5 +1,5 @@
-import { Update } from "../../src/statements";
-import { operators } from "../../src";
+import { Update } from "webiny-entity-mysql/statements";
+import { operators } from "webiny-entity-mysql";
 import { Entity } from "webiny-entity";
 
 describe("UPDATE statement test", () => {

@@ -1,5 +1,5 @@
-import { Delete } from "../../src/statements";
-import { operators } from "../../src";
+import { Delete } from "webiny-entity-mysql/statements";
+import { operators } from "webiny-entity-mysql";
 import { Entity } from "webiny-entity";
 
 describe("DELETE statement test", () => {

@@ -1,5 +1,5 @@
-import { operators } from "../../src";
-import Statement from "../../src/statements/statement";
+import { operators } from "webiny-entity-mysql";
+import Statement from "webiny-entity-mysql/statements/statement";
 import { Entity } from "webiny-entity";
 
 describe("$gte operator test", () => {

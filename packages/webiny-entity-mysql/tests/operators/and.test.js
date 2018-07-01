@@ -1,5 +1,5 @@
-import Statement from "../../src/statements/statement";
-import { operators } from "../../src";
+import Statement from "webiny-entity-mysql/statements/statement";
+import { operators } from "webiny-entity-mysql";
 import { Entity } from "webiny-entity";
 
 describe("$and logical operator test", () => {
