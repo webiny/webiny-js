@@ -1,7 +1,7 @@
 import sinon from "sinon";
 import _ from "lodash";
 import mysql from "mysql";
-import { MySQLConnection } from "../src";
+import { MySQLConnection } from "webiny-mysql-connection";
 
 const sandbox = sinon.sandbox.create();
 
