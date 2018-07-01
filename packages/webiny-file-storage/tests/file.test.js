@@ -1,4 +1,4 @@
-import { Storage, StorageError, File } from "../src";
+import { Storage, StorageError, File } from "webiny-file-storage";
 import MockDriver from "./mockDriver";
 
 describe("File class test", () => {
@@ -66,7 +66,7 @@ describe("File class test", () => {
 
     test("should throw a StorageError exception", async () => {
         const file = new File("/missing/key", storage);
-        expect(file.getBody()).rejects.toThrow(StorageError);
+        return expect(file.getBody()).rejects.toThrow("File not found");
     });
 
     test("should return time modified", async () => {
@@ -100,6 +100,6 @@ describe("File class test", () => {
     test("should delete a file", async () => {
         const file = new File(file1.key, storage);
         await file.delete();
-        expect(storage.getFile(file1.key)).rejects.toThrow(StorageError);
+        return expect(storage.getFile(file1.key)).rejects.toThrow("File not found");
     });
 });

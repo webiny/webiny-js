@@ -1,15 +1,11 @@
 {
   "name": "webiny-file-storage",
   "version": "0.0.0-semantically-released",
-  "main": "lib/index.js",
+  "main": "index.js",
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>",
     "Sven Al Hamad <sven@webiny.com>",
     "Adrian Smijulj <adrian@webiny.com>"
-  ],
-  "files": [
-    "lib/",
-    "types.js"
   ],
   "repository": {
     "type": "git",
@@ -18,11 +14,6 @@
   "license": "MIT",
   "dependencies": {
     "babel-runtime": "^6.26.0"
-  },
-  "devDependencies": {
-    "chai-as-promised": "^7.1.1",
-    "fecha": "^2.3.2",
-    "sinon": "^4.2.0"
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",

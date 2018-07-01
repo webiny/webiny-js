@@ -1,4 +1,4 @@
-import Storage from "../src/storage";
+import Storage from "webiny-file-storage/storage";
 import MockDriver from "./mockDriver";
 
 describe("Storage class test", () => {
