@@ -1,6 +1,4 @@
-//@flow
-
-import { Driver } from "./../..";
+import { Driver } from "webiny-sql-table";
 import ColumnsContainer from "./customDriver/columnsContainer";
 import IndexesContainer from "./customDriver/indexesContainer";
 

@@ -1,4 +1,3 @@
-// @flow
 import Column from "./column";
 
 class IntColumn extends Column {

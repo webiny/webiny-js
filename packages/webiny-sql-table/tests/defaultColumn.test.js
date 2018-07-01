@@ -1,4 +1,4 @@
-import { Column, ColumnsContainer } from "./..";
+import { Column, ColumnsContainer } from "webiny-sql-table";
 
 const column = new Column("Column", new ColumnsContainer());
 

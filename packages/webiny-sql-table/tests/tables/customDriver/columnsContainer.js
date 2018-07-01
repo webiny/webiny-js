@@ -1,5 +1,5 @@
 // @flow
-import { ColumnsContainer as BaseColumnsContainer } from "./../../..";
+import { ColumnsContainer as BaseColumnsContainer } from "webiny-sql-table";
 import { IntColumn, CharColumn } from "./columns";
 
 class ColumnsContainer extends BaseColumnsContainer {

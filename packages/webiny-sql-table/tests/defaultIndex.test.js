@@ -1,4 +1,4 @@
-import { Index, IndexesContainer } from "./..";
+import { Index, IndexesContainer } from "webiny-sql-table";
 
 describe("default Index test", () => {
     test("getIndexesClass should return default class", async () => {

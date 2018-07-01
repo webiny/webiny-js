@@ -1,4 +1,4 @@
-import { Table } from "./..";
+import { Table } from "webiny-sql-table";
 
 const table = new Table();
 

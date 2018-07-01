@@ -1,5 +1,4 @@
-// @flow
-import { Index } from "./../../../..";
+import { Index } from "webiny-sql-table";
 
 class PrimaryIndex extends Index {
     getType() {

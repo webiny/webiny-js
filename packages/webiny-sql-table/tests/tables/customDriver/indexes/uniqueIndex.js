@@ -1,5 +1,5 @@
 // @flow
-import { Index } from "./../../../..";
+import { Index } from "webiny-sql-table";
 
 class UniqueIndex extends Index {
     getType() {

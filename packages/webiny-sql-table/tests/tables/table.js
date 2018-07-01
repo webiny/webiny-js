@@ -1,4 +1,4 @@
-import { Table as BaseTable } from "./../..";
+import { Table as BaseTable } from "webiny-sql-table";
 import CustomDriver from "./customDriver";
 
 class Table extends BaseTable {}

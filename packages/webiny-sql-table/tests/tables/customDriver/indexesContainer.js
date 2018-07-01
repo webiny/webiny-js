@@ -1,5 +1,5 @@
 // @flow
-import { IndexesContainer as BaseIndexesContainer } from "./../../..";
+import { IndexesContainer as BaseIndexesContainer } from "webiny-sql-table";
 import { PrimaryIndex, UniqueIndex } from "./indexes";
 
 class IndexesContainer extends BaseIndexesContainer {

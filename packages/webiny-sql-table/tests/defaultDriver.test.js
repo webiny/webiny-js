@@ -1,4 +1,4 @@
-import { Driver, ColumnsContainer, IndexesContainer } from "./..";
+import { Driver, ColumnsContainer, IndexesContainer } from "webiny-sql-table";
 
 describe("default Driver test", () => {
     test("getColumnsClass should return default class", async () => {
