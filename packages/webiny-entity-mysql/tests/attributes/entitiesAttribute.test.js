@@ -1,12 +1,11 @@
 import { EntityCollection } from "webiny-entity";
 import { ComplexEntity, SimpleEntity } from "./../entities/complexEntity";
 import sinon from "sinon";
-import User from "webiny-entity/tests/entities/user";
 
 const sandbox = sinon.sandbox.create();
 
 describe("entities attribute test", () => {
-    beforeEach(() => User.getEntityPool().flush());
+    beforeEach(() => ComplexEntity.getEntityPool().flush());
     afterEach(() => sandbox.restore());
 
     test("it must populate the attribute correctly", async () => {
