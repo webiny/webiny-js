@@ -13,8 +13,10 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "babel-runtime": "^6.26.0",
     "lodash": "^4.17.4"
+  },
+  "devDependencies": {
+    "babel-runtime": "^6.26.0"
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files && flow-copy-source src lib",

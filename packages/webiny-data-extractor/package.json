@@ -13,7 +13,6 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "babel-runtime": "^6.26.0",
     "lodash": "^4.17.4"
   },
   "devDependencies": {

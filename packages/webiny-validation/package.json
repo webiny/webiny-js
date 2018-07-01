@@ -13,12 +13,12 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "babel-runtime": "^6.26.0",
     "lodash": "^4.17.4"
   },
   "devDependencies": {
     "documentation": "^5.3.5",
-    "chai-as-promised": "^7.1.1"
+    "chai-as-promised": "^7.1.1",
+    "babel-runtime": "^6.26.0"
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",
