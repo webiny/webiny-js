@@ -1,5 +1,5 @@
 import { User, Size } from "./models/userModels";
-import { Model } from "../src";
+import { Model } from "webiny-model";
 
 const user = new User();
 user.populate({

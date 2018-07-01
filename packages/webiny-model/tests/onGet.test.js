@@ -1,4 +1,4 @@
-import Model from "./../src/model";
+import Model from "webiny-model/model";
 
 describe("onGet test", () => {
     test("should increment value by 2 on get", async () => {

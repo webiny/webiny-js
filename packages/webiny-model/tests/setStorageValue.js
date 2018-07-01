@@ -1,4 +1,4 @@
-import Model from "./../src/model";
+import Model from "webiny-model/model";
 
 describe("setStorageValue test", function() {
     it("should set attribute as set", async () => {

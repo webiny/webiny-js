@@ -1,4 +1,4 @@
-import ModelError from "./../src/modelError";
+import ModelError from "webiny-model/modelError";
 import ValidationTestModel from "./models/validationTestModel.js";
 
 describe("validation test", () => {

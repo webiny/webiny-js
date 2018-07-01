@@ -1,6 +1,6 @@
-import { Model, ModelAttribute } from "./../src";
-import DefaultAttributesContainer from "./../src/defaultAttributesContainer";
-import { AttributesContainer } from "../src";
+import { Model, ModelAttribute } from "webiny-model";
+import DefaultAttributesContainer from "webiny-model/defaultAttributesContainer";
+import { AttributesContainer } from "webiny-model";
 
 class DefaultAttributesContainerOverride extends DefaultAttributesContainer {
     newAttribute() {

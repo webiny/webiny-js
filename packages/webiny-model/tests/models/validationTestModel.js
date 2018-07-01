@@ -1,4 +1,4 @@
-import Model from "./../../src/model";
+import Model from "webiny-model/model";
 
 class ValidationTestModel extends Model {
     constructor() {

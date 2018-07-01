@@ -1,7 +1,7 @@
 {
   "name": "webiny-model",
   "version": "0.0.0-semantically-released",
-  "main": "lib/index.js",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -10,10 +10,6 @@
     "Pavel Denisjuk <pavel@webiny.com>",
     "Sven Al Hamad <sven@webiny.com>",
     "Adrian Smijulj <adrian@webiny.com>"
-  ],
-  "files": [
-    "lib/",
-    "types.js"
   ],
   "license": "MIT",
   "dependencies": {

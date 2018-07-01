@@ -1,4 +1,4 @@
-import Model from "./../../src/model";
+import Model from "webiny-model/model";
 
 describe("attribute models test", () => {
     const model = new Model(function() {

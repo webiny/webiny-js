@@ -1,4 +1,4 @@
-import Model from "./../src/model";
+import Model from "webiny-model/model";
 
 describe("dirty and clean test", () => {
     test("should make attributes dirty", async () => {

@@ -1,5 +1,4 @@
-// @flow
-import Model from "./../../src/model";
+import Model from "webiny-model/model";
 
 class BasicModel extends Model {
     constructor() {

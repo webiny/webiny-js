@@ -1,5 +1,4 @@
-import Model from "./../src/model";
-import sinon from "sinon";
+import Model from "webiny-model/model";
 
 describe("setDefaultValue test", () => {
     test("should set/get default values", async () => {

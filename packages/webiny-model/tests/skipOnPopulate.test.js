@@ -1,4 +1,4 @@
-import Model from "./../src/model";
+import Model from "webiny-model/model";
 
 describe("protected test", () => {
     test("should set attr1 value, but not attr2 value", async () => {

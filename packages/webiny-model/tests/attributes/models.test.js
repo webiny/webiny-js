@@ -1,5 +1,5 @@
-import ModelError from "./../../src/modelError";
-import { Model } from "../../../webiny-model/src";
+import ModelError from "webiny-model/modelError";
+import { Model } from "webiny-model";
 
 describe("attribute models test", () => {
     class Model1 extends Model {

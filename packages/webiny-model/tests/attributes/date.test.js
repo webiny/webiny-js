@@ -1,5 +1,5 @@
-import Model from "./../../src/model";
-import ModelError from "./../../src/modelError";
+import Model from "webiny-model/model";
+import ModelError from "webiny-model/modelError";
 
 const model = new Model(function() {
     this.attr("attribute").date();

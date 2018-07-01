@@ -1,5 +1,5 @@
-import ModelError from "./../../src/modelError";
-import { Model } from "../../../webiny-model/src";
+import ModelError from "webiny-model/modelError";
+import { Model } from "webiny-model";
 import complexModelsKeyValue from "./models/complexModelsKeyValue";
 
 describe("attribute models test", () => {

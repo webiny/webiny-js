@@ -1,4 +1,4 @@
-import Model from "./../src/model";
+import Model from "webiny-model/model";
 
 describe("empty validator test", () => {
     test("should validate correctly - no error should be thrown", async () => {

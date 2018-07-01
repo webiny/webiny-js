@@ -1,4 +1,4 @@
-import Model from "./../src/model";
+import Model from "webiny-model/model";
 
 describe("setOnce test", () => {
     test("shouldn't allow value change", async () => {

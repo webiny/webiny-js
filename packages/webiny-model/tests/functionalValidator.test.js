@@ -1,4 +1,4 @@
-import Model from "./../src/model";
+import Model from "webiny-model/model";
 
 describe("functional validator test", () => {
     test("should validate correctly using function as validator", async () => {
