@@ -14,7 +14,7 @@ module.exports = {
     },
     rules: {
         "flowtype/define-flow-type": 1,
-        "webiny/flow-required": 1,
+        "webiny/flow-required": 2,
         "import/no-unresolved": [2, { caseSensitive: true }]
     },
     settings: {
