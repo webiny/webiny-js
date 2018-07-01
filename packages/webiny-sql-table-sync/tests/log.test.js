@@ -1,4 +1,4 @@
-import { Log, Sync } from "..";
+import { Log, Sync } from "webiny-sql-table-sync";
 
 describe("Log test", () => {
     test("must set/get data correctly", async () => {

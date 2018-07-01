@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { Sync } from "./..";
+import { Sync } from "webiny-sql-table-sync";
 import { TableA, TableB } from "./tables";
 import _ from "lodash";
 

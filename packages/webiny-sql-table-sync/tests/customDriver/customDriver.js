@@ -1,4 +1,3 @@
-// @flow
 import { Driver } from "webiny-sql-table";
 import ColumnsContainer from "./columnsContainer";
 import IndexesContainer from "./indexesContainer";

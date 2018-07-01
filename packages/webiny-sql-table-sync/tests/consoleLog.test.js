@@ -1,7 +1,7 @@
 import sinon from "sinon";
-import { Sync } from "./..";
+import { Sync } from "webiny-sql-table-sync";
 import { TableA, TableB } from "./tables";
-import { ConsoleLog } from "..";
+import { ConsoleLog } from "webiny-sql-table-sync";
 
 const sandbox = sinon.sandbox.create();
 
