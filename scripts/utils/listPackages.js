@@ -6,16 +6,24 @@ const { join } = require("path");
 const packagesRoot = join(__dirname, "..", "..", "packages");
 
 const whitelist = [
-    "webiny-data-extractor",
-    "webiny-mysql-connection",
+    "webiny-file-storage",
+    "webiny-file-storage-local",
+    "webiny-file-storage-s3"
+    // TODO "webiny-form",
+    // "webiny-i18n",
+    // "webiny-i18n-react"
+    // "webiny-jimp",
+    // "webiny-model",
+    //  "webiny-data-extractor",
+    //  "webiny-mysql-connection",
     // TODO "webiny-react-router",
     // TODO "webiny-scripts",
-    // "webiny-service-manager",
-    "webiny-sql-table",
-    "webiny-sql-table-mysql",
-    "webiny-sql-table-sync",
+    //  "webiny-service-manager",
+    //  "webiny-sql-table",
+    //  "webiny-sql-table-mysql",
+    //  "webiny-sql-table-sync",
     // TODO "webiny-storybook-utils",
-    "webiny-validation"
+    // "webiny-validation"
 ];
 
 module.exports = () => {
