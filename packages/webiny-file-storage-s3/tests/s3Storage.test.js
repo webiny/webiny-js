@@ -2,8 +2,8 @@ import AWS from "aws-sdk";
 import s3MockResponses from "./s3MockResponses";
 import sinon from "sinon";
 import fecha from "fecha";
-import S3StorageDriver from "./../src";
-import type { S3StorageDriverConfig } from "../src";
+import S3StorageDriver from "webiny-file-storage-s3";
+import type { S3StorageDriverConfig } from "webiny-file-storage-s3";
 
 describe("S3StorageDriver class test", () => {
     afterEach(() => {
@@ -177,7 +177,7 @@ describe("S3StorageDriver class test", () => {
                 return {
                     promise: () => {
                         return new Promise(resolve => {
-                            if (params.Key == "testKey") {
+                            if (params.Key === "testKey") {
                                 resolve(true);
                             }
 
