@@ -1,2 +1,2 @@
 // @flow
-export { default } from "./src";
+export { default, ServiceManager } from "./src";
