@@ -1,7 +1,7 @@
 // @flow
 import _ from "lodash";
 import React from "react";
-// TODO: flow - not any, return react component here!
+
 const processTextPart = (part: string, values: Object, modifiers): any => {
     if (!_.startsWith(part, "{")) {
         return part;
