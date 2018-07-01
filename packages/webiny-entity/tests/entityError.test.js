@@ -1,4 +1,4 @@
-import { EntityError } from "./../src";
+import { EntityError } from "webiny-entity";
 
 describe("entity error test", () => {
     test("should set default entity error values", async () => {

@@ -1,5 +1,5 @@
 import User from "./entities/user";
-import { Entity, Driver, EntityModel, EntityAttributesContainer } from "./../src";
+import { Entity, Driver, EntityModel, EntityAttributesContainer } from "webiny-entity";
 import { BooleanAttribute } from "webiny-model";
 
 describe("toStorage test", () => {

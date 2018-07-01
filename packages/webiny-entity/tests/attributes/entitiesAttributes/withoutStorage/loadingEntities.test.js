@@ -1,5 +1,5 @@
 import { Entity1, MainEntity } from "../../../entities/entitiesAttributeEntities";
-import { QueryResult } from "../../../../src";
+import { QueryResult } from "webiny-entity";
 import sinon from "sinon";
 const sandbox = sinon.sandbox.create();
 

@@ -1,4 +1,4 @@
-import { Entity, EntityModel } from "../../src/index";
+import { Entity, EntityModel } from "webiny-entity/index";
 
 export class User extends Entity {
     constructor() {

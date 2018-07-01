@@ -1,5 +1,5 @@
 import User from "./entities/user";
-import { EntityCollection } from "./../src";
+import { EntityCollection } from "webiny-entity";
 
 const getEntities = () => [
     new User().populate({ id: "A", age: 30 }),

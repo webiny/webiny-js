@@ -1,4 +1,4 @@
-import { Entity, Driver } from "./../src";
+import { Entity, Driver } from "webiny-entity";
 import { CharAttribute, IntegerAttribute } from "webiny-model";
 
 describe("overriding ID attribute test", () => {

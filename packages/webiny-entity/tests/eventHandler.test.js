@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import { EventHandler, Entity } from "./../src";
+import { EventHandler, Entity } from "webiny-entity";
 
 class EventsEntity extends Entity {}
 

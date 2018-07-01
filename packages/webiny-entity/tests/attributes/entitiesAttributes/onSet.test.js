@@ -1,5 +1,5 @@
 import { MainEntity, Entity1 } from "../../entities/entitiesAttributeEntities";
-import { EntityCollection } from "../../../src";
+import { EntityCollection } from "webiny-entity";
 
 describe("onSet test", () => {
     beforeEach(() => MainEntity.getEntityPool().flush());

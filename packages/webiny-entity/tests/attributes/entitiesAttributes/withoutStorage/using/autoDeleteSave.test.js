@@ -1,6 +1,6 @@
 import { User, Group, UsersGroups } from "../../../../entities/entitiesUsing";
 import sinon from "sinon";
-import { QueryResult } from "../../../../../src";
+import { QueryResult } from "webiny-entity";
 import { MainEntity } from "../../../../entities/entitiesAttributeEntities";
 
 const sandbox = sinon.sandbox.create();

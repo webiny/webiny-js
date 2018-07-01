@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import { One, Two } from "../../entities/oneTwoThree";
-import { QueryResult } from "../../../src";
+import { QueryResult } from "webiny-entity";
 import sinon from "sinon";
 
 const sandbox = sinon.sandbox.create();

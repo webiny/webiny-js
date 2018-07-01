@@ -1,5 +1,5 @@
 import User from "./entities/user";
-import { QueryResult } from "./../src";
+import { QueryResult } from "webiny-entity";
 import sinon from "sinon";
 
 const sandbox = sinon.sandbox.create();

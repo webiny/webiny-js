@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import { Entity } from "./../src";
+import { Entity } from "webiny-entity";
 
 describe("ensure that static event listeners are properly registered among different classes", () => {
     test("should have listeners registered correctly", async () => {

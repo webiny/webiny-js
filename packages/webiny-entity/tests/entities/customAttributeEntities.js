@@ -1,4 +1,4 @@
-import { EntityAttribute, Entity } from "../../src/index";
+import { EntityAttribute, Entity } from "webiny-entity/index";
 import { AttributesContainer } from "webiny-model";
 import type { EntityAttributeOptions } from "../../types";
 

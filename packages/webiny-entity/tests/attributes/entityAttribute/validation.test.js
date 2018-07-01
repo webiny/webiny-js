@@ -1,5 +1,5 @@
 import { ModelError } from "webiny-model";
-import { QueryResult } from "../../../src/index";
+import { QueryResult } from "webiny-entity";
 import { User, Company } from "../../entities/userCompanyImage";
 import { One, Two } from "../../entities/oneTwoThree";
 import sinon from "sinon";

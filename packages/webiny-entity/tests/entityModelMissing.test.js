@@ -1,5 +1,5 @@
-import { Entity, Driver } from "./../src";
-import { EntityError } from "../src";
+import { Entity, Driver } from "webiny-entity";
+import { EntityError } from "webiny-entity";
 
 class ExtendedEntityDriver extends Driver {
     constructor() {

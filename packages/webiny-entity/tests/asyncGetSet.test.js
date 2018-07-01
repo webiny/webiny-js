@@ -1,6 +1,6 @@
 import { User, Image } from "./entities/userCompanyImage";
 import sinon from "sinon";
-import { QueryResult } from "./../src";
+import { QueryResult } from "webiny-entity";
 
 const sandbox = sinon.sandbox.create();
 

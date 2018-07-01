@@ -1,4 +1,4 @@
-import { Entity, Driver, EntityModel, QueryResult } from "./../src";
+import { Entity, Driver, EntityModel, QueryResult } from "webiny-entity";
 import _ from "lodash";
 
 class CustomDriver extends Driver {

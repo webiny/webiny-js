@@ -1,5 +1,5 @@
 import User from "./entities/user";
-import { Driver, Entity } from "./../src";
+import { Driver, Entity } from "webiny-entity";
 
 describe("driver override test", () => {
     test("should use basic driver", async () => {

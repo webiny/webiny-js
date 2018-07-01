@@ -1,5 +1,5 @@
 import { One, Two } from "../../entities/oneTwoThree";
-import { QueryResult } from "../../../src";
+import { QueryResult } from "webiny-entity";
 import sinon from "sinon";
 import { Entity1, MainEntity } from "../../entities/entitiesAttributeEntities";
 

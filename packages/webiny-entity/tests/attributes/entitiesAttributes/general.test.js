@@ -1,4 +1,4 @@
-import { QueryResult, EntityCollection } from "../../../src/index";
+import { QueryResult, EntityCollection } from "webiny-entity";
 import {
     MainEntity,
     Entity1,

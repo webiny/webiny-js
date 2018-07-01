@@ -1,4 +1,4 @@
-import { QueryResult } from "../../../../src";
+import { QueryResult } from "webiny-entity";
 import { MainEntity, Entity1, Entity2 } from "../../../entities/entitiesAttributeEntities";
 import sinon from "sinon";
 

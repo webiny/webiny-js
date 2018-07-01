@@ -1,5 +1,5 @@
 import User from "./entities/user";
-import { EntityPoolEntry } from "../src";
+import { EntityPoolEntry } from "webiny-entity";
 
 describe("entity pool entry test", () => {
     test("setEntity/getEntity methods must work correctly", async () => {

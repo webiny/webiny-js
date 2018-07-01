@@ -1,4 +1,4 @@
-import Entity from "./../../src/entity";
+import Entity from "webiny-entity/entity";
 
 class EntityWithoutSoftDeletes extends Entity {
     constructor() {

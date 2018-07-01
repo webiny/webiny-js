@@ -1,4 +1,4 @@
-import { Entity } from "../../../src/index";
+import { Entity } from "webiny-entity";
 import sinon from "sinon";
 
 const sandbox = sinon.sandbox.create();

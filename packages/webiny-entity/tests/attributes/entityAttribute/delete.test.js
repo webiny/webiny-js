@@ -1,4 +1,4 @@
-import { QueryResult } from "../../../src/index";
+import { QueryResult } from "webiny-entity";
 import { User, Company } from "../../entities/userCompanyImage";
 import { One } from "../../entities/oneTwoThree";
 import { ClassA } from "../../entities/abc";

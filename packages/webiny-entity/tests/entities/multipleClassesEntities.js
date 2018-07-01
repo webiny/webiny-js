@@ -1,4 +1,4 @@
-import { Entity } from "./../../src";
+import { Entity } from "webiny-entity";
 
 class Main extends Entity {
     constructor() {

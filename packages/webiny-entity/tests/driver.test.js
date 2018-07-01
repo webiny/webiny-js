@@ -1,5 +1,5 @@
 import User from "./entities/user";
-import { EntityError } from "../src";
+import { EntityError } from "webiny-entity";
 
 describe("default driver test", () => {
     test("save method should return the same user instance", async () => {

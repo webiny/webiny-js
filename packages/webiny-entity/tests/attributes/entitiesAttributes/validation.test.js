@@ -1,4 +1,4 @@
-import { QueryResult, EntityCollection } from "../../../src/index";
+import { QueryResult, EntityCollection } from "webiny-entity";
 import { ModelError } from "webiny-model";
 import { MainEntity, Entity1, Entity2 } from "../../entities/entitiesAttributeEntities";
 import sinon from "sinon";

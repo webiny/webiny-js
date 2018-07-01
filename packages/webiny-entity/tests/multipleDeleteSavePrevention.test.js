@@ -1,5 +1,5 @@
 import sinon from "sinon";
-import { Entity } from "./../src";
+import { Entity } from "webiny-entity";
 
 const sandbox = sinon.sandbox.create();
 
