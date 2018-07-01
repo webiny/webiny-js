@@ -1,12 +1,12 @@
 import { QueryResult } from "webiny-entity";
 import { Company, User, Issue } from "./entities/identityAttributeEntities";
 import { MemoryDriver } from "webiny-entity-memory";
-import { Entity } from "webiny-api/lib/entities";
+import { Entity } from "webiny-api/entities";
 import { api } from "webiny-api";
-import JwtToken from "../src/security/tokens/jwtToken";
-import registerIdentityAttribute from "./../src/attributes/registerIdentityAttribute";
-import registerPasswordAttribute from "./../src/attributes/registerPasswordAttribute";
-import SecurityService from "../src/services/securityService";
+import JwtToken from "webiny-api/security/tokens/jwtToken";
+import registerIdentityAttribute from "webiny-api/attributes/registerIdentityAttribute";
+import registerPasswordAttribute from "webiny-api/attributes/registerPasswordAttribute";
+import SecurityService from "webiny-api/services/securityService";
 
 import sinon from "sinon";
 const sandbox = sinon.sandbox.create();

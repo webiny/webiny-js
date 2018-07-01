@@ -1,7 +1,7 @@
 {
   "name": "webiny-api",
   "version": "0.0.0-semantically-released",
-  "main": "lib/index.js",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -12,10 +12,6 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "license": "MIT",
-  "files": [
-    "lib/",
-    "flow-typed/"
-  ],
   "dependencies": {
     "babel-runtime": "^6.26.0",
     "bcryptjs": "^2.4.3",
@@ -23,7 +19,6 @@
     "cls-hooked": "^4.2.2",
     "debug": "^3.1.0",
     "file-type": "^7.6.0",
-    "fs-extra": "^5.0.0",
     "graphql": "^0.13.2",
     "graphql-type-json": "^0.2.0",
     "image-size": "^0.6.2",

@@ -1,10 +1,10 @@
 import { api } from "webiny-api";
 import User from "./entities/myUser";
-import registerIdentityAttribute from "./../src/attributes/registerIdentityAttribute";
-import registerPasswordAttribute from "./../src/attributes/registerPasswordAttribute";
-import SecurityService from "../src/services/securityService";
+import registerIdentityAttribute from "webiny-api/attributes/registerIdentityAttribute";
+import registerPasswordAttribute from "webiny-api/attributes/registerPasswordAttribute";
+import SecurityService from "webiny-api/services/securityService";
 import MyUser from "./entities/myUser";
-import JwtToken from "../src/security/tokens/jwtToken";
+import JwtToken from "webiny-api/security/tokens/jwtToken";
 
 describe("Password attribute test", () => {
     beforeAll(() => {

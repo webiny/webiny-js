@@ -1,5 +1,5 @@
-import MySQLTable from "./../src/mysql";
-import { CharColumn, DateTimeColumn, TinyIntColumn } from "webiny-sql-table-mysql/lib/columns";
+import MySQLTable from "webiny-api/mysql";
+import { CharColumn, DateTimeColumn, TinyIntColumn } from "webiny-sql-table-mysql/columns";
 
 describe("MySQL table test", function() {
     test("on construct - data, message and statusCode must be correctly set", () => {

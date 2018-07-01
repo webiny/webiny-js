@@ -1,15 +1,15 @@
 import fs from "fs";
 import { Storage } from "webiny-file-storage";
 import { MemoryDriver } from "webiny-entity-memory";
-import { Entity, File } from "webiny-api/lib/entities";
+import { Entity, File } from "webiny-api/entities";
 import { api } from "webiny-api";
-import SecurityService from "../src/services/securityService";
-import JwtToken from "../src/security/tokens/jwtToken";
+import SecurityService from "webiny-api/services/securityService";
+import JwtToken from "webiny-api/security/tokens/jwtToken";
 
-import registerIdentityAttribute from "./../src/attributes/registerIdentityAttribute";
-import registerPasswordAttribute from "./../src/attributes/registerPasswordAttribute";
-import registerFileAttributes from "./../src/attributes/registerFileAttributes";
-import registerBufferAttribute from "../src/attributes/registerBufferAttribute";
+import registerIdentityAttribute from "webiny-api/attributes/registerIdentityAttribute";
+import registerPasswordAttribute from "webiny-api/attributes/registerPasswordAttribute";
+import registerFileAttributes from "webiny-api/attributes/registerFileAttributes";
+import registerBufferAttribute from "webiny-api/attributes/registerBufferAttribute";
 import userFactory from "./utils/storageUserFactory";
 import MockDriver from "./utils/storageDriverMock";
 

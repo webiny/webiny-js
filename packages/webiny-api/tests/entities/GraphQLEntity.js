@@ -1,4 +1,4 @@
-import { Entity } from "../../src/entities";
+import { Entity } from "webiny-api/entities";
 import { Model } from "webiny-model";
 
 class ModelAttrModel extends Model {}

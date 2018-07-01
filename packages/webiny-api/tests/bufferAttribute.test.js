@@ -1,11 +1,11 @@
 import { api } from "webiny-api";
 import { ModelError } from "webiny-model";
 import BufferEntity from "./entities/BufferEntity";
-import registerIdentityAttribute from "./../src/attributes/registerIdentityAttribute";
-import registerBufferAttribute from "./../src/attributes/registerBufferAttribute";
-import SecurityService from "../src/services/securityService";
+import registerIdentityAttribute from "webiny-api/attributes/registerIdentityAttribute";
+import registerBufferAttribute from "webiny-api/attributes/registerBufferAttribute";
+import SecurityService from "webiny-api/services/securityService";
 import MyUser from "./entities/myUser";
-import JwtToken from "../src/security/tokens/jwtToken";
+import JwtToken from "webiny-api/security/tokens/jwtToken";
 
 describe("Buffer attribute test", () => {
     beforeAll(() => {

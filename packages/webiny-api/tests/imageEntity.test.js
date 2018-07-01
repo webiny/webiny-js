@@ -1,19 +1,19 @@
 import fs from "fs";
-import { Image, Entity } from "webiny-api/lib/entities";
+import { Image, Entity } from "webiny-api/entities";
 import { api } from "webiny-api";
 import { Storage } from "webiny-file-storage";
 import imageProcessor from "webiny-jimp";
 import userFactory from "./utils/storageUserFactory";
 
-import registerIdentityAttribute from "./../src/attributes/registerIdentityAttribute";
-import registerPasswordAttribute from "./../src/attributes/registerPasswordAttribute";
-import registerFileAttributes from "./../src/attributes/registerFileAttributes";
-import registerBufferAttribute from "../src/attributes/registerBufferAttribute";
+import registerIdentityAttribute from "webiny-api/attributes/registerIdentityAttribute";
+import registerPasswordAttribute from "webiny-api/attributes/registerPasswordAttribute";
+import registerFileAttributes from "webiny-api/attributes/registerFileAttributes";
+import registerBufferAttribute from "webiny-api/attributes/registerBufferAttribute";
 import MockDriver from "./utils/storageDriverMock";
 
 import { MemoryDriver } from "webiny-entity-memory";
-import SecurityService from "../src/services/securityService";
-import JwtToken from "../src/security/tokens/jwtToken";
+import SecurityService from "webiny-api/services/securityService";
+import JwtToken from "webiny-api/security/tokens/jwtToken";
 
 let User;
 

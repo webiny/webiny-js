@@ -1,4 +1,4 @@
-import InvalidAttributesError from "./../src/graphql/utils/crud/InvalidAttributesError";
+import InvalidAttributesError from "webiny-api/graphql/utils/crud/InvalidAttributesError";
 import { ModelError } from "webiny-model";
 
 describe("FormattedInvalidAttributesError test", function() {

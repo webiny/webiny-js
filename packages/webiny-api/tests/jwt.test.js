@@ -1,15 +1,15 @@
-import { Entity } from "webiny-api/lib/entities";
+import { Entity } from "webiny-api/entities";
 import { api } from "webiny-api";
 import addDays from "date-fns/add_days";
 import subDays from "date-fns/sub_days";
 import { MemoryDriver } from "webiny-entity-memory";
 
 import MyUser from "./entities/myUser";
-import JwtToken from "../src/security/tokens/jwtToken";
-import AuthenticationError from "../src/security/AuthenticationError";
-import registerIdentityAttribute from "./../src/attributes/registerIdentityAttribute";
-import registerPasswordAttribute from "./../src/attributes/registerPasswordAttribute";
-import SecurityService from "../src/services/securityService";
+import JwtToken from "webiny-api/security/tokens/jwtToken";
+import AuthenticationError from "webiny-api/security/AuthenticationError";
+import registerIdentityAttribute from "webiny-api/attributes/registerIdentityAttribute";
+import registerPasswordAttribute from "webiny-api/attributes/registerPasswordAttribute";
+import SecurityService from "webiny-api/services/securityService";
 
 describe("JWT token test", () => {
     let user: MyUser = null;

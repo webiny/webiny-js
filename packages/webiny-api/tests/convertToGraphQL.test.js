@@ -1,7 +1,7 @@
 import { GraphQLEntityWithSameModelEntityTypes, GraphQLEntity } from "./entities/GraphQLEntity";
 import bootstrap from "./utils/bootstrap";
-import convertAttributeToGraphQLType from "./../src/attributes/convertAttributeToGraphQLType";
-import { api } from "./../lib";
+import convertAttributeToGraphQLType from "webiny-api/attributes/convertAttributeToGraphQLType";
+import { api } from "webiny-api";
 import { GraphQLList, GraphQLUnionType } from "graphql";
 
 const getField = (name, entity = "GraphQLEntity") => {

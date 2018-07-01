@@ -1,4 +1,4 @@
-import { Entity } from "webiny-api/lib/entities";
+import { Entity } from "webiny-api/entities";
 import type { Storage } from "webiny-file-storage";
 
 declare type Config = {

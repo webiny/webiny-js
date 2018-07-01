@@ -1,4 +1,4 @@
-import { Entity } from "../../src/entities";
+import { Entity } from "webiny-api/entities";
 
 export default class BufferEntity extends Entity {
     constructor() {
