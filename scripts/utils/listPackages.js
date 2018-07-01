@@ -7,11 +7,14 @@ const packagesRoot = join(__dirname, "..", "..", "packages");
 
 const whitelist = [
     "webiny-data-extractor",
-    "webiny-service-manager",
+    "webiny-mysql-connection",
+    // TODO "webiny-react-router",
+    // TODO "webiny-scripts",
+    // "webiny-service-manager",
     "webiny-sql-table",
     "webiny-sql-table-mysql",
     "webiny-sql-table-sync",
-    /*"webiny-storybook-utils",*/
+    // TODO "webiny-storybook-utils",
     "webiny-validation"
 ];
 

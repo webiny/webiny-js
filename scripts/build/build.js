@@ -25,7 +25,7 @@ async function buildEverything() {
     for (let i = 0; i < packages.length; i++) {
         const name = packages[i];
         // eslint-disable-next-line
-        console.log(chalk.cyan(name));
+        console.log(chalk.cyan("♦" + name));
         await asyncExecuteCommand(`babel packages/${name}/src -d ${buildPath}/${name}`);
 
         // Create (simulate) NPM packages.
