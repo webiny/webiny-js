@@ -1,4 +1,6 @@
+// @flow
 const { unlinkSync } = require("fs");
+const chalk = require("chalk");
 const listPackages = require("./../utils/listPackages");
 const {
     asyncCopyTo,
@@ -10,6 +12,11 @@ const {
 const buildPath = require("./../utils/buildPath");
 
 async function buildEverything() {
+    // eslint-disable-next-line
+    console.log(chalk.green("Build process started."));
+    // eslint-disable-next-line
+    console.log(chalk.green("Please remain patient while all packages are being built."));
+
     // Delete the folder so we always have a fresh start.
     await asyncRimRaf("build");
 
@@ -17,11 +24,16 @@ async function buildEverything() {
     const packages = listPackages();
     for (let i = 0; i < packages.length; i++) {
         const name = packages[i];
+        // eslint-disable-next-line
+        console.log(chalk.cyan(name));
         await asyncExecuteCommand(`babel packages/${name}/src -d ${buildPath}/${name}`);
 
         // Create (simulate) NPM packages.
         await prepareNpmPackage(name);
     }
+
+    // eslint-disable-next-line
+    console.log(chalk.green("Build finished!"));
 }
 
 function getTarOptions(tgzName, packageName) {
