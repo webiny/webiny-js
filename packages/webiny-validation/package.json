@@ -17,7 +17,8 @@
     "lodash": "^4.17.4"
   },
   "devDependencies": {
-    "documentation": "^5.3.5"
+    "documentation": "^5.3.5",
+    "chai-as-promised": "^7.1.1"
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",
