@@ -1,4 +1,4 @@
-import compose from "./../src";
+import compose from "webiny-compose";
 
 describe("middleware composition test", () => {
     test("should return a new function", () => {

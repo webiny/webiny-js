@@ -6,10 +6,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "files": [
-    "lib/"
-  ],
-  "main": "lib/index.js",
+  "main": "index.js",
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>",
     "Sven Al Hamad <sven@webiny.com>",
