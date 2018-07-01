@@ -1,6 +1,6 @@
 import fs from "fs";
 import imageSize from "image-size";
-import processorFactory from "./../src";
+import processorFactory from "webiny-jimp";
 
 describe("Image processor test", () => {
     let ip;
@@ -40,6 +40,6 @@ describe("Image processor test", () => {
         const transformations = [{ action: "quality", quality }];
 
         const newImage = await ip({ image: originalJPEG, transformations });
-        expect(newImage.length !== originalJPEG.length).toBeTrue();
+        expect(newImage.length !== originalJPEG.length).toBe(true);
     });
 });
