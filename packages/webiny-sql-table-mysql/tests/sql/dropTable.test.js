@@ -1,5 +1,5 @@
 import { UserTable } from "./../tables";
-import { dropTable } from "./../../src/sql";
+import { dropTable } from "webiny-sql-table-mysql/sql";
 
 describe("DROP TABLE SQL test", () => {
     test("should drop statements correctly", async () => {

@@ -1,5 +1,3 @@
-import mysql from "mysql";
-import _ from "lodash";
 import { UserTable, userTableSql, Table } from "./tables";
 import sinon from "sinon";
 

@@ -1,5 +1,5 @@
 import { UserTable } from "./../tables";
-import { truncateTable } from "./../../src/sql";
+import { truncateTable } from "webiny-sql-table-mysql/sql";
 
 describe("TRUNCATE TABLE SQL test", () => {
     test("should truncate statements correctly", async () => {

@@ -2,7 +2,7 @@ import { UserTable, userTableSql, Table } from "./tables";
 import sinon from "sinon";
 import mysql from "mysql";
 import { Table as BaseTable } from "webiny-sql-table";
-import { MySQLDriver } from "./..";
+import { MySQLDriver } from "webiny-sql-table-mysql";
 
 const sandbox = sinon.sandbox.create();
 

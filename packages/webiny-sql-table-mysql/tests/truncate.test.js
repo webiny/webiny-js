@@ -1,4 +1,4 @@
-import { UserTable, Table } from "./tables";
+import { UserTable } from "./tables";
 import sinon from "sinon";
 
 const sandbox = sinon.sandbox.create();

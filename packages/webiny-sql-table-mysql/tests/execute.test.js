@@ -1,5 +1,5 @@
 import { Table as BaseTable } from "webiny-sql-table";
-import { MySQLDriver } from "./..";
+import { MySQLDriver } from "webiny-sql-table-mysql";
 
 class ConnectionlessTable extends BaseTable {}
 

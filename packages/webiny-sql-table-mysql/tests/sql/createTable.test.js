@@ -9,7 +9,7 @@ import {
     completeTableSql
 } from "./../tables";
 
-import { createTable } from "./../../src/sql";
+import { createTable } from "webiny-sql-table-mysql/sql";
 
 describe("CREATE TABLE SQL test", () => {
     test("should create statements correctly", async () => {

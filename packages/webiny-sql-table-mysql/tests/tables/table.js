@@ -1,5 +1,5 @@
 import { Table } from "webiny-sql-table";
-import { MySQLDriver } from "./../..";
+import { MySQLDriver } from "webiny-sql-table-mysql";
 import mysql from "mysql";
 
 class MySQLTable extends Table {}
