@@ -13,7 +13,7 @@ install:
 jobs:
   include:
     - stage: test
-      script: yarn build && yarn test:build && yarn test:coverage:ci
+      script: yarn build && yarn test:build && yarn test:src:coverage:ci
     - stage: release
       if: branch = master
       script: yarn build && yarn release
