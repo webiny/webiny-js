@@ -7,12 +7,15 @@ branches:
   only:
     - master
     - development
+    - testing-improvements
 install:
   - yarn install --ignore-engines
 jobs:
   include:
+    - stage: build
+      script: yarn build
     - stage: test
-      script: yarn ci
+      script: yarn test:build && yarn test:coverage:ci
     - stage: release
       if: branch = master
       script: yarn build && yarn release

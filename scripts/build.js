@@ -1,15 +1,15 @@
 // @flow
 const { unlinkSync } = require("fs");
 const chalk = require("chalk");
-const listPackages = require("./../utils/listPackages");
+const listPackages = require("./utils/listPackages");
 const {
     asyncCopyTo,
     asyncExecuteCommand,
     asyncExtractTar,
     asyncRimRaf
-} = require("./../utils/packaging");
+} = require("./utils/packaging");
 
-const buildPath = require("./../utils/buildPath");
+const buildPath = require("./utils/buildPath");
 
 async function buildEverything() {
     // eslint-disable-next-line
