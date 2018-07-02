@@ -31,7 +31,7 @@ async function buildEverything() {
         await prepareNpmPackage(name);
 
         // eslint-disable-next-line
-        console.log(chalk.cyan("✓" + name));
+        console.log(chalk.cyan("✓ " + name));
     }
 
     // eslint-disable-next-line

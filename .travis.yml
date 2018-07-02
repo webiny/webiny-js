@@ -12,10 +12,8 @@ install:
   - yarn install --ignore-engines
 jobs:
   include:
-    - stage: build
-      script: yarn build
     - stage: test
-      script: yarn test:build && yarn test:coverage:ci
+      script: yarn build && yarn test:build && yarn test:coverage:ci
     - stage: release
       if: branch = master
       script: yarn build && yarn release
