@@ -26,6 +26,7 @@
     "babel-preset-flow": "^6.23.0",
     "babel-preset-react": "^6.24.1",
     "chalk": "^2.4.1",
+    "child-process-promise": "^2.2.1",
     "commitizen": "^2.9.6",
     "coveralls": "^3.0.0",
     "cross-env": "^5.2.0",
@@ -48,6 +49,7 @@
     "flow-typed": "^2.4.0",
     "get-stream": "^3.0.0",
     "git-log-parser": "^1.2.0",
+    "globby": "^7.0.1",
     "jest": "^23.1.0",
     "jest-extended": "^0.7.2",
     "lerna": "^2.5.1",
@@ -60,8 +62,7 @@
     "serverless-plugin-cloudfront-lambda-edge": "^2.0.0",
     "source-map-support": "^0.5.0",
     "targz": "^1.0.1",
-    "webiny-semantic-release": "^1.1.2",
-    "globby": "^7.1.1"
+    "webiny-semantic-release": "^1.1.2"
   },
   "scripts": {
     "build": "node ./scripts/build/build.js",
