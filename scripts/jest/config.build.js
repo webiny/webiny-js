@@ -13,6 +13,5 @@ listPackages().forEach(name => {
 });
 
 module.exports = Object.assign({}, baseConfig, {
-    moduleNameMapper,
-    coverageReporters: ["lcov"]
+    moduleNameMapper
 });

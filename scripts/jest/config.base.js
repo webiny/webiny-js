@@ -18,5 +18,7 @@ module.exports = {
     testRegex: `packages/(${packages.join("|")})/.*test.js$`,
 
     // "collectCoverageFrom" - transform "*.js" to "*.{js,jsx}" when ready.
-    collectCoverageFrom: [`packages/{${packages.join(",")}}/src/**/*.js`]
+    collectCoverageFrom: [`packages/{${packages.join(",")}}/src/**/*.js`],
+
+    coverageReporters: ["lcov", "html"]
 };
