@@ -1,3 +1,4 @@
+// @flow
 const baseConfig = require("./config.base");
 const listPackages = require("./../utils/listPackages");
 const buildPath = require("./../utils/buildPath");
@@ -12,5 +13,6 @@ listPackages().forEach(name => {
 });
 
 module.exports = Object.assign({}, baseConfig, {
-    moduleNameMapper
+    moduleNameMapper,
+    coverageReporters: ["lcov"]
 });
