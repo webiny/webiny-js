@@ -14,9 +14,13 @@
   },
   "license": "MIT",
   "dependencies": {
-    "babel-runtime": "^6.26.0",
-    "globby": "^7.1.1",
     "mime-types": "^2.1.17",
+    "globby": "^7.0.1"
+  },
+  "devDependencies": {
+    "babel-runtime": "^6.26.0"
+  },
+  "peerDependencies": {
     "webiny-file-storage": "0.0.0-semantically-released"
   },
   "scripts": {

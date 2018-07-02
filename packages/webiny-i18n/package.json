@@ -14,7 +14,6 @@
   "license": "MIT",
   "dependencies": {
     "accounting": "^0.4.1",
-    "babel-runtime": "^6.26.0",
     "fecha": "^2.3.3",
     "short-hash": "^1.0.0",
     "lodash": "^4.17.4"
@@ -24,6 +23,7 @@
     "build:watch": "babel src -d lib --source-maps --copy-files --watch"
   },
   "devDependencies": {
-    "glob": "^7.1.2"
+    "glob": "^7.1.2",
+    "babel-runtime": "^6.26.0"
   }
 }

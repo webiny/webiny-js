@@ -14,13 +14,15 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "aws-sdk": "^2.188.0",
-    "babel-runtime": "^6.26.0",
+    "aws-sdk": "^2.188.0"
+  },
+  "peerDependencies": {
     "webiny-file-storage": "0.0.0-semantically-released"
   },
   "devDependencies": {
     "sinon": "^4.2.0",
-    "documentation": "^5.3.5"
+    "documentation": "^5.3.5",
+    "babel-runtime": "^6.26.0"
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",

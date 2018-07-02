@@ -13,10 +13,14 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "babel-runtime": "^6.26.0",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.4"
+  },
+  "peerDependencies": {
     "webiny-validation": "0.0.0-semantically-released",
     "webiny-data-extractor": "0.0.0-semantically-released"
+  },
+  "devDependencies": {
+    "babel-runtime": "^6.26.0"
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",

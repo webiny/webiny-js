@@ -14,8 +14,7 @@
     "shortid": "^2.2.8",
     "slate": "^0.33.6",
     "slate-react": "^0.12.6",
-    "slugify": "^1.2.9",
-    "webiny-client-ui": "0.0.0-semantically-released"
+    "slugify": "^1.2.9"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -23,7 +22,8 @@
   },
   "peerDependencies": {
     "react": "^16.4.0",
-    "react-dom": "^16.4.0"
+    "react-dom": "^16.4.0",
+    "webiny-client-ui": "0.0.0-semantically-released"
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",

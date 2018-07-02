@@ -13,7 +13,7 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "license": "MIT",
-  "dependencies": {
+  "devDependencies": {
     "babel-runtime": "^6.26.0"
   },
   "scripts": {

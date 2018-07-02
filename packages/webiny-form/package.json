@@ -14,14 +14,14 @@
   "license": "MIT",
   "dependencies": {
     "invariant": "^2.2.4",
-    "lodash": "^4.17.5",
-    "webiny-validation": "0.0.0-semantically-released"
+    "lodash": "^4.17.5"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0"
   },
   "peerDependencies": {
-    "react": "^16.4.0"
+    "react": "^16.4.0",
+    "webiny-validation": "0.0.0-semantically-released"
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",

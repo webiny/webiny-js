@@ -13,8 +13,10 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "babel-runtime": "^6.26.0",
     "lodash": "^4.17.4"
+  },
+  "devDependencies": {
+    "babel-runtime": "^6.26.0"
   },
   "peerDependencies": {
     "react": "^16.4.0"

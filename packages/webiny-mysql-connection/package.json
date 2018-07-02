@@ -14,8 +14,10 @@
   "license": "MIT",
   "dependencies": {
     "debug": "^3.1.0",
-    "babel-runtime": "^6.26.0",
     "mysql": "^2.15.0"
+  },
+  "devDependencies": {
+    "babel-runtime": "^6.26.0"
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",

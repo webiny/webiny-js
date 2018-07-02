@@ -12,8 +12,9 @@
     "url": "https://github.com/webiny/webiny-js.git"
   },
   "license": "MIT",
-  "dependencies": {
-    "babel-runtime": "^6.26.0"
+  "devDependencies": {
+    "babel-runtime": "^6.26.0",
+    "globby": "^8.0.1"
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",

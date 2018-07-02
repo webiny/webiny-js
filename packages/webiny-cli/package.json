@@ -16,7 +16,6 @@
     "files": ["src/"],
     "license": "MIT",
     "dependencies": {
-        "babel-runtime": "^6.26.0",
         "chalk": "^2.4.1",
         "download": "^7.0.0",
         "extract-zip": "^1.6.7",
@@ -25,6 +24,9 @@
         "pluralize": "^7.0.0",
         "validate-npm-package-name": "^3.0.0",
         "yargs": "^11.0.0"
+    },
+    "devDependencies": {
+        "babel-runtime": "^6.26.0"
     },
     "scripts": {
         "build": "babel src -d lib --source-maps --copy-files",
