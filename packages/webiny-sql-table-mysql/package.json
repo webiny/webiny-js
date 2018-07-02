@@ -12,7 +12,7 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "license": "MIT",
-  "peerDependencies": {
+  "dependencies": {
     "webiny-mysql-connection": "0.0.0-semantically-released",
     "webiny-sql-table": "0.0.0-semantically-released"
   },

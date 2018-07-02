@@ -13,9 +13,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "lodash": "^4.17.4"
-  },
-  "peerDependencies": {
+    "lodash": "^4.17.4",
     "webiny-validation": "0.0.0-semantically-released",
     "webiny-data-extractor": "0.0.0-semantically-released"
   },

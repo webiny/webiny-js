@@ -34,16 +34,16 @@
     "react-flatpickr": "^3.6.4",
     "react-transition-group": "2.3.1",
     "select2": "^4.0.6-rc.1",
-    "simplemde": "^1.11.2"
+    "simplemde": "^1.11.2",
+    "webiny-client": "0.0.0-semantically-released",
+    "webiny-form": "0.0.0-semantically-released"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0"
   },
   "peerDependencies": {
     "react": "^16.4.0",
-    "react-dom": "^16.4.0",
-    "webiny-client": "0.0.0-semantically-released",
-    "webiny-form": "0.0.0-semantically-released"
+    "react-dom": "^16.4.0"
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",

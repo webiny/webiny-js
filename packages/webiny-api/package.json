@@ -24,9 +24,7 @@
     "jsonwebtoken": "^8.2.2",
     "lodash": "^4.17.4",
     "md5": "^2.2.1",
-    "mdbid": "^1.0.0"
-  },
-  "peerDependencies": {
+    "mdbid": "^1.0.0",
     "webiny-compose": "0.0.0-semantically-released",
     "webiny-entity": "0.0.0-semantically-released",
     "webiny-service-manager": "0.0.0-semantically-released",

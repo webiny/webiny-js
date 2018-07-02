@@ -18,15 +18,13 @@
     "lodash": "^4.17.4",
     "mdbid": "^1.0.0",
     "mysql": "^2.15.0",
-    "sqlstring": "^2.3.0"
+    "sqlstring": "^2.3.0",
+    "webiny-entity": "0.0.0-semantically-released",
+    "webiny-mysql-connection": "0.0.0-semantically-released"
   },
   "devDependencies": {
     "sinon": "^4.2.0",
     "babel-runtime": "^6.26.0"
-  },
-  "peerDependencies": {
-    "webiny-entity": "0.0.0-semantically-released",
-    "webiny-mysql-connection": "0.0.0-semantically-released"
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",

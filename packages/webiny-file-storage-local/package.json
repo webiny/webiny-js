@@ -15,13 +15,11 @@
   "license": "MIT",
   "dependencies": {
     "mime-types": "^2.1.17",
-    "globby": "^7.0.1"
+    "globby": "^7.0.1",
+    "webiny-file-storage": "0.0.0-semantically-released"
   },
   "devDependencies": {
     "babel-runtime": "^6.26.0"
-  },
-  "peerDependencies": {
-    "webiny-file-storage": "0.0.0-semantically-released"
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",

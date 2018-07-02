@@ -12,9 +12,7 @@
   "dependencies": {
     "graphql": "^0.13.2",
     "graphql-type-json": "^0.2.0",
-    "pluralize": "^7.0.0"
-  },
-  "peerDependencies": {
+    "pluralize": "^7.0.0",
     "webiny-api": "0.0.0-semantically-released"
   },
   "devDependencies": {

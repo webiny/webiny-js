@@ -18,12 +18,12 @@
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-plugin-module-resolver": "^3.1.1"
+    "babel-plugin-module-resolver": "^3.1.1",
+    "webiny-client-ui": "0.0.0-semantically-released"
   },
   "peerDependencies": {
     "react": "^16.4.0",
-    "react-dom": "^16.4.0",
-    "webiny-client-ui": "0.0.0-semantically-released"
+    "react-dom": "^16.4.0"
   },
   "scripts": {
     "build": "babel src -d lib --source-maps --copy-files",

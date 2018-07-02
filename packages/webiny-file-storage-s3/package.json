@@ -14,9 +14,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "aws-sdk": "^2.188.0"
-  },
-  "peerDependencies": {
+    "aws-sdk": "^2.188.0",
     "webiny-file-storage": "0.0.0-semantically-released"
   },
   "devDependencies": {

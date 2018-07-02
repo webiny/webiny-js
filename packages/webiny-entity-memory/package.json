@@ -14,9 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "lodash": "^4.17.4",
-    "mdbid": "^1.0.0"
-  },
-  "peerDependencies": {
+    "mdbid": "^1.0.0",
     "webiny-entity": "0.0.0-semantically-released"
   },
   "devDependencies": {

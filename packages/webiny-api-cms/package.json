@@ -8,7 +8,7 @@
   },
   "author": "Pavel Denisjuk",
   "license": "MIT",
-  "peerDependencies": {
+  "dependencies": {
     "webiny-api": "0.0.0-semantically-released"
   },
   "devDependencies": {
