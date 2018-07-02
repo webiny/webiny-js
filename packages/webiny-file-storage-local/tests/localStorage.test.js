@@ -28,13 +28,13 @@ describe("LocalStorageDriver class test", () => {
         fs.emptyDirSync(__dirname + "/storage");
     });
 
-    /*afterAll(() => {
+    afterAll(() => {
         fs.emptyDirSync(__dirname + "/storage");
         fs.removeSync(__dirname + "/storage");
-    });*/
+    });
 
     test("should return an empty list of keys", async () => {
-        // await expect(storage.getKeys("/", "**/*")).resolves.toEqual([]);
+        await expect(storage.getKeys("/", "**/*")).resolves.toEqual([]);
     });
 
     test("should store a file with date prefix", async () => {
@@ -54,9 +54,9 @@ describe("LocalStorageDriver class test", () => {
     test("should return a list of keys containing 1 key", async () => {
         await expect(storage.getKeys()).resolves.toEqual([file2.key]);
     });
-    /*
+
     test("should return a list of keys containing 2 keys", async () => {
-        await expect(storage.getKeys("/", "**!/!*")).resolves.toEqual([file1.key, file2.key]);
+        await expect(storage.getKeys("/", "**/*")).resolves.toEqual([file1.key, file2.key]);
     });
 
     test("should return a file as a string", async () => {
@@ -139,5 +139,5 @@ describe("LocalStorageDriver class test", () => {
     test("should delete a file", async () => {
         await storage.delete(file1.key);
         await expect(storage.getFile(file1.key)).rejects.toThrow();
-    });*/
+    });
 });

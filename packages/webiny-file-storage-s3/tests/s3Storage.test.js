@@ -169,7 +169,7 @@ describe("S3StorageDriver class test", () => {
     });
 
     test("should check if the given object exists", async () => {
-        const stub = sinon
+        sinon
             .stub(AWS.S3.prototype, "makeRequest")
             .withArgs("headObject")
             .callsFake((operation, params) => {
