@@ -1,5 +1,4 @@
-"use strict";
-
+// @flow
 const ncp = require("ncp").ncp;
 const path = require("path");
 const mkdirp = require("mkdirp");
@@ -23,9 +22,9 @@ function asyncCopyTo(from, to) {
     );
 }
 
-function asyncExecuteCommand(command) {
+function asyncExecuteCommand(command, options = {}) {
     return new Promise((resolve, reject) =>
-        exec(command, (error, stdout) => {
+        exec(command, options, (error, stdout) => {
             if (error) {
                 reject(error);
                 return;

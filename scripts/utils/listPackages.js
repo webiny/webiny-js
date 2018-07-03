@@ -11,7 +11,6 @@ const baseBlacklist = [
     "webiny-cloud",
     "webiny-cloud-api",
     "webiny-cloud-client",
-    "webiny-scripts",
     "webiny-storybook-utils"
 ];
 

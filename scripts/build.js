@@ -1,5 +1,5 @@
 // @flow
-const { unlinkSync } = require("fs");
+const { unlinkSync, existsSync } = require("fs");
 const chalk = require("chalk");
 const listPackages = require("./utils/listPackages");
 const {
@@ -22,17 +22,34 @@ async function buildEverything() {
 
     // Build all packages, one by one.
     const packages = listPackages();
-    for (let i = 0; i < packages.length; i++) {
-        const name = packages[i];
-        // eslint-disable-next-line
-        await asyncExecuteCommand(`babel packages/${name}/src -d ${buildPath}/${name}`);
+    await Promise.all(
+        packages.map(name => {
+            return (async () => {
+                // eslint-disable-next-line
+                await asyncExecuteCommand(
+                    `node ../../node_modules/.bin/babel src -d ../../${buildPath}/${name} --copy-files`,
+                    {
+                        cwd: `packages/${name}`
+                    }
+                );
 
-        // Create (simulate) NPM packages.
-        await prepareNpmPackage(name);
+                if (existsSync(`bin`)) {
+                    await asyncExecuteCommand(
+                        `node ../../node_modules/.bin/babel bin -d ../../${buildPath}/${name}/bin --copy-files`,
+                        {
+                            cwd: `packages/${name}`
+                        }
+                    );
+                }
 
-        // eslint-disable-next-line
-        console.log(chalk.cyan("✓ " + name));
-    }
+                // Create (simulate) NPM packages.
+                await prepareNpmPackage(name);
+
+                // eslint-disable-next-line
+                console.log(chalk.cyan("✓ " + name));
+            })();
+        })
+    );
 
     // eslint-disable-next-line
     console.log(chalk.green("Build finished!"));
