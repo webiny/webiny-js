@@ -1,6 +1,6 @@
 [ignore]
 .*/examples/.*
-.*/tests/.*
+.*/__tests__/.*
 <PROJECT_ROOT>/packages/webiny-scripts
 <PROJECT_ROOT>/scripts
 
