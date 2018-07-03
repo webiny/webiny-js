@@ -1,6 +1,6 @@
 import React from "react";
 import { inject } from "webiny-client";
-import { WidgetSettingsContainer } from "webiny-client-cms/lib/admin";
+import { WidgetSettingsContainer } from "webiny-client-cms/admin";
 
 @inject({
     modules: ["Form", "Icon"],
