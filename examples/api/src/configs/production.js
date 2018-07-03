@@ -1,6 +1,6 @@
 import mysql from "mysql";
-import { File, Image, User, ApiToken } from "webiny-api/lib/entities";
-import { createIdentity, credentialsStrategy } from "webiny-api/lib/security";
+import { File, Image, User, ApiToken } from "webiny-api/entities";
+import { createIdentity, credentialsStrategy } from "webiny-api/security";
 import { MySQLDriver } from "webiny-entity-mysql";
 import imageProcessor from "webiny-jimp";
 import LocalDriver from "webiny-file-storage-local";
