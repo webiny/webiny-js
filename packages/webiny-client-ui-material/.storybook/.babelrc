@@ -1,0 +1,26 @@
+{
+  "presets": [
+    ["babel-preset-env", {
+      "targets": {
+        "browsers": ["last 2 versions", "safari >= 7"]
+      }
+    }],
+    "babel-preset-react"
+  ],
+  "plugins": [
+    ["webiny-storybook-utils/src/babel"],
+    ["babel-plugin-lodash"],
+    ["babel-plugin-transform-class-properties"],
+    ["babel-plugin-transform-object-rest-spread", {"useBuiltIns": true}],
+    ["babel-plugin-transform-builtin-extend", {"globals": ["Error"]}],
+    ["babel-plugin-transform-runtime", {
+      "polyfill": false,
+      "regenerator": true
+    }],
+    ["babel-plugin-module-resolver", {
+      "alias": {
+        "^webiny-(.+)": "./../../build/node_modules/webiny-\\1"
+      }
+    }]
+  ]
+}
