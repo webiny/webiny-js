@@ -1,5 +1,5 @@
 {
-  "name": "webiny-cloud-api",
+  "name": "examples-cloud-api",
   "version": "0.0.0-semantically-released",
   "main": "index.js",
   "license": "MIT",
