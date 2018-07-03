@@ -1,7 +1,7 @@
 {
   "name": "webiny-cloud-api",
   "version": "0.0.0-semantically-released",
-  "main": "lib/index.js",
+  "main": "index.js",
   "license": "MIT",
   "scripts": {
     "build": "babel src -d lib",
