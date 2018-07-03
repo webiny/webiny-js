@@ -1,3 +1,4 @@
+// @flow
 import path from "path";
 import fs from "fs-extra";
 import webpack from "webpack";
@@ -115,7 +116,8 @@ export default ({ projectRoot, appRoot, urlGenerator }) => {
             alias: {
                 jquery: require.resolve("jquery/dist/jquery.slim.js")
             },
-            extensions: [".jsx", ".js", ".css", ".scss"]
+            extensions: [".jsx", ".js", ".css", ".scss"],
+            modules: ["node_modules", path.join(process.cwd(), "../../build/node_modules")]
         },
         resolveLoader: {
             modules: [__dirname + "/loaders", "node_modules"]

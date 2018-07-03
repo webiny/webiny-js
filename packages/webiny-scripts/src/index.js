@@ -1,3 +1,4 @@
+// @flow
 import findUp from "find-up";
 import fs from "fs-extra";
 
@@ -74,8 +75,10 @@ export async function developApp(projectRoot, appRoot, clean = false) {
     const webpack = await import("webpack");
     return new Promise(resolve => {
         webpack(vendorConfig).run(async function(err, stats) {
+            // eslint-disable-next-line
             if (err) console.error(err);
 
+            // eslint-disable-next-line
             console.log(stats.toString({ colors: true }));
             resolve();
         });
@@ -90,13 +93,17 @@ export async function buildApp(projectRoot, appRoot) {
     // Run vendor build, then app build
     const webpack = await import("webpack");
     webpack(vendorConfig).run(async function(err, stats) {
+        // eslint-disable-next-line
         if (err) console.error(err);
 
+        // eslint-disable-next-line
         console.log(stats.toString({ colors: true }));
 
         webpack(appConfig).run(function(err, stats) {
+            // eslint-disable-next-line
             if (err) console.error(err);
 
+            // eslint-disable-next-line
             console.log(stats.toString({ colors: true }));
         });
     });

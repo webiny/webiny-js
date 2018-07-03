@@ -37,6 +37,14 @@ export default {
                 original: "^(.*?.s?css)$",
                 replacement: "$1?"
             }
+        ],
+        [
+            "babel-plugin-module-resolver",
+            {
+                alias: {
+                    "^webiny-(.+)": __dirname + "/../../../../build/node_modules/webiny-\\1"
+                }
+            }
         ]
     ])
 };

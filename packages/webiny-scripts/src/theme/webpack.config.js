@@ -1,5 +1,6 @@
+// @flow
 const path = require("path");
-const vendor = require("webiny-client/lib/vendor");
+const vendor = require("webiny-client/vendor");
 
 module.exports = ({ themeRoot }) => {
     return {
