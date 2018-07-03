@@ -74,7 +74,7 @@
     "test:build:coverage": "yarn test:build --coverage",
     "client:watch": "lerna run --scope=webiny-{client*,form} --parallel --stream build:watch",
     "commit": "git-cz",
-    "commit:check": "yarn lint-staged && yarn test",
+    "commit:check": "yarn flow && yarn lint-staged && yarn test",
     "flow": "flow",
     "lint-staged": "lint-staged",
     "prettier": "prettier --config .prettierrc.js --write",
