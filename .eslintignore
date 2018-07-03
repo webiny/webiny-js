@@ -1,4 +1,3 @@
 examples
 **/flow-typed
-**/lib
-**/tests
+**/__tests__
