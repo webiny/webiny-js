@@ -197,12 +197,12 @@ class EntitiesAttributeValue extends AttributeValue {
         }
 
         const initialLinks = this.getInitialLinks(),
-            // $FlowIgnore
+            // $FlowFixMe
             currentLinksIds = this.getCurrentLinks().map(entity => entity.id);
 
         for (let i = 0; i < initialLinks.length; i++) {
             const initial = initialLinks[i];
-            // $FlowIgnore
+            // $FlowFixMe
             if (!currentLinksIds.includes(initial.id)) {
                 initial instanceof Entity && (await initial.delete());
             }
@@ -255,7 +255,7 @@ class EntitiesAttributeValue extends AttributeValue {
             // "for" loop used because of async operations.
             let link = null;
             for (let j = 0; j < currentLinks.length; j++) {
-                // $FlowIgnore
+                // $FlowFixMe
                 const linkedEntity = await currentLinks[j][this.attribute.getUsingAttribute()];
                 if (linkedEntity === currentEntity) {
                     link = currentLinks[j];

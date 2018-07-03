@@ -1,3 +1,4 @@
+// @flow
 import React from "react";
 import invariant from "invariant";
 import compose from "webiny-compose";
@@ -34,11 +35,11 @@ const defaultWidgetRenderMiddleware = (params: Object, next: Function) => {
  * @param config
  * @returns {Function}
  */
-export const createRenderer = config => {
+export const createRenderer = (config: Object) => {
     const widgetRender = config.widget || [];
     const widgetRenderMiddleware = compose([...widgetRender, defaultWidgetRenderMiddleware]);
 
-    return async data => {
+    return async (data: Object) => {
         const content = [];
         for (let i = 0; i < data.content.length; i++) {
             const widgetParams = {
@@ -49,7 +50,7 @@ export const createRenderer = config => {
             };
             await widgetRenderMiddleware(widgetParams);
             const { output } = widgetParams;
-            // $FlowIgnore
+            // $FlowFixMe
             content.push(React.cloneElement(output, { key: data.content[i].id }));
         }
 

@@ -247,9 +247,9 @@ class Model {
         const json = {};
         for (let name in this.getAttributes()) {
             const attribute = this.getAttribute(name);
-            // $FlowIgnore - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
+            // $FlowFixMe - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
             if (attribute.getToStorage() && attribute.value.isDirty()) {
-                // $FlowIgnore - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
+                // $FlowFixMe - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
                 json[name] = await attribute.getStorageValue();
             }
         }
@@ -269,9 +269,9 @@ class Model {
         for (name in this.getAttributes()) {
             const attribute = this.getAttribute(name);
             _.has(data, name) &&
-                // $FlowIgnore - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
+                // $FlowFixMe - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
                 attribute.getToStorage() &&
-                // $FlowIgnore - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
+                // $FlowFixMe - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
                 attribute.setStorageValue(data[name]);
         }
 

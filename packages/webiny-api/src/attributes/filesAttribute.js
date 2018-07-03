@@ -70,7 +70,7 @@ class FilesAttribute extends EntitiesAttribute {
         return values;
     }
 
-    // $FlowIgnore
+    // $FlowFixMe
     async setValue(value: Array<{}> | EntityCollection): Promise<void> {
         await EntitiesAttribute.prototype.setValue.call(this, value);
         const values = await this.getValue();

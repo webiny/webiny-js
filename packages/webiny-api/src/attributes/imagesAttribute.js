@@ -37,7 +37,7 @@ class ImagesAttribute extends FilesAttribute {
         return values;
     }
 
-    // $FlowIgnore
+    // $FlowFixMe
     async setValue(value: Array<{}> | EntityCollection): Promise<void> {
         await FilesAttribute.prototype.setValue.call(this, value);
         const values = await this.getValue();

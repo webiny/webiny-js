@@ -68,7 +68,7 @@ class FileAttribute extends EntityAttribute {
         return value;
     }
 
-    // $FlowIgnore
+    // $FlowFixMe
     setValue(value) {
         if (Array.isArray(_.get(value, "tags"))) {
             value.tags = _.uniqWith([...this.tags, ...(value.tags || [])], _.isEqual);

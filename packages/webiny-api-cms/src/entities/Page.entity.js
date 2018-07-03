@@ -69,7 +69,7 @@ class Page extends Entity {
     static async find(params: ?Object) {
         const query = Page.filters[_.get(params, "query.filter", "all")];
 
-        // $FlowIgnore
+        // $FlowFixMe
         delete params["query"]["filter"];
 
         _.merge(params, { query });

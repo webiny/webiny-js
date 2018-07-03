@@ -21,7 +21,7 @@ class BufferAttribute extends Attribute {
         this.expected("Buffer or data URI string", typeof value);
     }
 
-    // $FlowIgnore
+    // $FlowFixMe
     setValue(value) {
         if (typeof value === "string") {
             value = Buffer.from(value.split(",").pop(), this.encoding);
@@ -29,7 +29,7 @@ class BufferAttribute extends Attribute {
         return Attribute.prototype.setValue.call(this, value);
     }
 
-    // $FlowIgnore
+    // $FlowFixMe
     setStorageValue(value) {
         if (typeof value === "string") {
             value = Buffer.from(value.split(",").pop(), this.encoding);

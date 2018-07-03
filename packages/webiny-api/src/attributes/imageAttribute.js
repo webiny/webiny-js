@@ -38,7 +38,7 @@ class ImageAttribute extends FileAttribute {
         return value;
     }
 
-    // $FlowIgnore
+    // $FlowFixMe
     async setValue(value) {
         const currentValue = await this.getValue();
         await FileAttribute.prototype.setValue.call(this, value);

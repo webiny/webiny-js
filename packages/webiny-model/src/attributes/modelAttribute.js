@@ -66,9 +66,9 @@ class ModelAttribute extends Attribute {
             const json = {};
             for (let name in value.getAttributes()) {
                 const attribute = value.getAttribute(name);
-                // $FlowIgnore - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
+                // $FlowFixMe - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
                 if (attribute.getToStorage()) {
-                    // $FlowIgnore - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
+                    // $FlowFixMe - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
                     json[name] = await attribute.getStorageValue();
                 }
             }
