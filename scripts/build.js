@@ -75,14 +75,23 @@ function getTarOptions(tgzName, packageName) {
 }
 
 async function prepareNpmPackage(name) {
-    await Promise.all([
-        asyncCopyTo("LICENSE", `${buildPath}/${name}/LICENSE`),
-        asyncCopyTo(`packages/${name}/package.json`, `${buildPath}/${name}/package.json`),
-        asyncCopyTo(`packages/${name}/README.md`, `${buildPath}/${name}/README.md`)
+    try {
+        await Promise.all([
+            asyncCopyTo("LICENSE", `${buildPath}/${name}/LICENSE`),
+            asyncCopyTo(`packages/${name}/package.json`, `${buildPath}/${name}/package.json`),
 
-        // Commented out - we don't need it at the moment.
-        // asyncCopyTo(`packages/${name}/npm`, `${buildPath}/${name}`)
-    ]);
+            (async () => {
+                if (!existsSync(`packages/${name}/README.md`)) {
+                    throw Error(`Missing README.md file in "${name}" package.`);
+                }
+                await asyncCopyTo(`packages/${name}/README.md`, `${buildPath}/${name}/README.md`);
+            })()
+        ]);
+    } catch (e) {
+        // eslint-disable-next-line
+        console.log(chalk.red(e.message));
+        process.exit(1);
+    }
 
     const tgzName = (await asyncExecuteCommand(`npm pack ${buildPath}/${name}`)).trim();
     await asyncRimRaf(`${buildPath}/${name}`);
