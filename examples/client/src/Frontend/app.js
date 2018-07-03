@@ -1,7 +1,7 @@
 import React from "react";
 import { app, resolveMiddleware, renderMiddleware, Router } from "webiny-client";
 import { hot } from "react-hot-loader";
-import { app as cmsApp, routerMiddleware as cmsMiddleware } from "webiny-client-cms/lib/frontend";
+import { app as cmsApp, routerMiddleware as cmsMiddleware } from "webiny-client-cms/frontend";
 import { app as uiApp } from "webiny-client-ui";
 import apiConfig from "./../apiConfig";
 

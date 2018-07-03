@@ -7,7 +7,7 @@ import {
     Router
 } from "webiny-client";
 import { app as adminApp, Menu } from "webiny-client-admin";
-import { app as cmsAdminApp } from "webiny-client-cms/lib/admin";
+import { app as cmsAdminApp } from "webiny-client-cms/admin";
 import userIdentity from "./userIdentity";
 import apiConfig from "./../apiConfig";
 import "./app.scss";
