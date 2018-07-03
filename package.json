@@ -84,9 +84,9 @@
     "release-private:dry": "node scripts/private --preview --branch=development --require=babel-register"
   },
   "pre-commit": [
+    "flow",
     "lint-staged",
-    "test",
-    "flow"
+    "test"
   ],
   "config": {
     "commitizen": {
