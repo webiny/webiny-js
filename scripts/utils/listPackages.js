@@ -5,14 +5,7 @@ const { join } = require("path");
 // Find all folders in packages/* with package.json
 const packagesRoot = join(__dirname, "..", "..", "packages");
 
-const baseBlacklist = [
-    "webiny-client-ui-material",
-    "webiny-cli",
-    "webiny-cloud",
-    "webiny-cloud-api",
-    "webiny-cloud-client",
-    "webiny-storybook-utils"
-];
+const baseBlacklist = ["webiny-cli", "webiny-cloud", "webiny-cloud-api", "webiny-cloud-client"];
 
 module.exports = (blacklist = []) => {
     const finalBlackList = [...baseBlacklist, ...blacklist];
