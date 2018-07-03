@@ -13,7 +13,6 @@
     "webpack-visualizer-plugin": "^0.1.11"
   },
   "dependencies": {
-    "babel-plugin-module-resolver": "^3.1.1",
     "jquery": "^3.3.1"
   }
 }
