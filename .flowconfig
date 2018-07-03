@@ -1,7 +1,11 @@
 [ignore]
 .*/examples/.*
 .*/tests/.*
+<PROJECT_ROOT>/packages/webiny-scripts
+<PROJECT_ROOT>/scripts
+
 [include]
+
 [libs]
 packages/webiny-api/flow-typed/npm
 packages/webiny-client/flow-typed/npm

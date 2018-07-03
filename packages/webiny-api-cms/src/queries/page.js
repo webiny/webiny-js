@@ -2,7 +2,7 @@
 import { GraphQLNonNull, GraphQLString, GraphQLObjectType } from "graphql";
 import GraphQLJSON from "graphql-type-json";
 import { Page, Revision, Widget } from "./../";
-import type { Schema } from "webiny-api";
+import type { Schema } from "webiny-api/types";
 
 async function formatData(instance: Page | Revision) {
     const page: Page | Revision = (await instance.toJSON(

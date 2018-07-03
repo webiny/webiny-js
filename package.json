@@ -85,7 +85,8 @@
   },
   "pre-commit": [
     "lint-staged",
-    "test"
+    "test",
+    "flow"
   ],
   "config": {
     "commitizen": {

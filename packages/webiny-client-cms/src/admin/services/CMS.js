@@ -1,5 +1,6 @@
 // @flow
 import _ from "lodash";
+// $FlowFixMe
 import type { Widget, EditorWidget } from "../../index";
 
 export type WidgetGroup = {

@@ -1,7 +1,7 @@
 // @flow
 import type { Attribute } from "webiny-model";
-import type _Schema from "./graphql/Schema";
-import type { Entity as _Entity, Identity } from "./entities";
+import type _Schema from "webiny-api/graphql/Schema";
+import type { Entity as _Entity, Identity } from "webiny-api/entities";
 
 export type Schema = _Schema;
 export type Entity = _Entity;
