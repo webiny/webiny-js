@@ -1,6 +1,6 @@
 // @flow
 import _ from "lodash";
-import { Entity } from "webiny-api/lib/entities";
+import { Entity } from "webiny-api/entities";
 import Category from "./Category.entity";
 import WidgetModel from "./Widget.model";
 import Revision from "./Revision.entity";

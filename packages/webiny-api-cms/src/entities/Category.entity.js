@@ -1,5 +1,5 @@
 // @flow
-import { Entity } from "webiny-api/lib/entities";
+import { Entity } from "webiny-api/entities";
 import Page from "./Page.entity";
 
 class Category extends Entity {
