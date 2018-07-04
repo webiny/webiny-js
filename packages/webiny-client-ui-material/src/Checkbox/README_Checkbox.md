@@ -1,5 +1,5 @@
 # Checkbox
-Used to store simple `true` or `false` value into the form model.
+Stores simple `true` or `false` value into the form model.
 
 ## Import
 ```js
