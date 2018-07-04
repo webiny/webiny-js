@@ -82,7 +82,7 @@
     "release:dry": "scripts/release.js --preview --branch=development",
     "release-private": "yarn build && node scripts/private --branch=development --require=babel-register",
     "release-private:dry": "node scripts/private --preview --branch=development --require=babel-register",
-    "webiny-client-ui-material-build-storybook": "yarn build && build-storybook -c packages/webiny-client-ui-material/.storybook/ -o netlify-static"
+    "webiny-client-ui-material-build-storybook": "yarn build && lerna exec --scope=webiny-client-ui-material --stream -- build-storybook -o ../../netlify-static"
   },
   "pre-commit": [
     "flow",
