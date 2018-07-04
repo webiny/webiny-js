@@ -7,7 +7,6 @@ branches:
   only:
     - master
     - development
-    - testing-improvements
 install:
   - yarn install --ignore-engines
 jobs:
