@@ -1,7 +1,7 @@
 {
   "name": "webiny-client-ui-material",
   "version": "0.0.0-semantically-released",
-  "main": "lib/index.js",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -10,9 +10,6 @@
     "Pavel Denisjuk <pavel@webiny.com>",
     "Sven Al Hamad <sven@webiny.com>",
     "Adrian Smijulj <adrian@webiny.com>"
-  ],
-  "files": [
-    "lib/"
   ],
   "license": "MIT",
   "devDependencies": {
@@ -41,8 +38,8 @@
     "react-dom": "^16.4.0"
   },
   "scripts": {
-    "build": "babel src -d lib --source-maps --copy-files",
-    "build:watch": "babel src -d lib --source-maps --copy-files --watch",
+    "build:": "babel src -d ../../build/node_modules/webiny-client-ui-material --source-maps --copy-files",
+    "build:watch": "babel src -d ../../build/node_modules/webiny-client-ui-material --source-maps --copy-files --watch",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
