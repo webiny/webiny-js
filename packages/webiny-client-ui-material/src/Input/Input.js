@@ -2,44 +2,40 @@
 import * as React from "react";
 import { TextField, TextFieldHelperText } from "rmwc/TextField";
 import FontAwesomeIcon from "@fortawesome/react-fontawesome";
+import type { FormComponent } from "./../types";
 
-type Props = {
-    /* Floating label .*/
+type Props = FormComponent & {
+    // Component label.
     label?: string,
-    /* Is input disabled? */
+
+    // Is input disabled?
     disabled?: boolean,
-    /* Description beneath the input. */
+
+    // Description beneath the input.
     description?: string,
-    /* Placeholder is used with `fullWidth` prop instead of a `label`. `label` and `placeholder` are always mutually exclusive. */
+
+    // Placeholder is used with `fullWidth` prop instead of a `label`. `label` and `placeholder` are always mutually exclusive.
     placeholder?: string,
-    /* Converts input into a textarea with given number of rows. */
+
+    // Converts input into a text area with given number of rows.
     rows?: number,
-    /* Creates an outline around input. Ignored if `fullWidth` is true. */
+
+    // Creates an outline around input. Ignored if `fullWidth` is true.
     outlined?: boolean,
-    /* Stretches the input to fit available width. */
+
+    // Stretches the input to fit available width.
     fullWidth?: boolean,
-    /* A ref for the native input. */
+
+    // A ref for the native input.
     inputRef?: React.Ref<any>,
-    /* Provided by <Form> component. */
-    validation?: {
-        /* Is input value valid? */
-        isValid: null | boolean,
-        /* Error message if input is not valid. */
-        message: null | string,
-        /* Any validation result returned by the validator. */
-        results: mixed
-    },
-    /* A leading icon. Use `<Input.Icon/>` component. */
+
+    // A leading icon. Use `<Input.Icon/>` component.
     leadingIcon?: React.Node,
-    /* A trailing icon. Use `<Input.Icon/>` component. */
+
+    // A trailing icon. Use `<Input.Icon/>` component.
     trailingIcon?: React.Node,
-    /* Provided by <Form> component to perform validation when value has changed. */
-    validate?: () => Promise<mixed>,
-    /* Input value. */
-    value?: string,
-    /* A callback that is executed each time a value is changed. */
-    onChange?: (value: mixed) => any,
-    /* A callback that is executed when input focus is lost. */
+
+    // A callback that is executed when input focus is lost.
     onBlur?: (value: mixed) => any
 };
 
@@ -84,7 +80,7 @@ export default class Input extends React.Component<Props> {
                     fullwidth={fullWidth}
                     placeholder={placeholder}
                     disabled={disabled}
-                    value={value || ""}
+                    value={String(value)}
                     onChange={this.onChange}
                     onBlur={this.onBlur}
                     label={!placeholder && label}
