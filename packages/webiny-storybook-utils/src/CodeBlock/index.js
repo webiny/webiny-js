@@ -29,12 +29,12 @@ class CodeBlock extends React.Component<Props, State> {
     };
 
     render() {
-        const { children } = this.props;
-
-        let source = children;
-        if (typeof children !== "string") {
+        let { children: source } = this.props;
+        if (typeof source === "object") {
             // $FlowFixMe
             source = elementToString(source, { showDefaultProps: false, showFunctions: true });
+        } else {
+            source = String(source);
         }
 
         return (
