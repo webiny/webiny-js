@@ -28,7 +28,7 @@
     "react-dom": "^16.4.0"
   },
   "scripts": {
-    "build": "babel src -d lib --source-maps --copy-files",
-    "build:watch": "babel src -d lib --source-maps --copy-files --watch"
+    "build:": "babel src -d ../../build/node_modules/webiny-storybook-utils --source-maps --copy-files",
+    "build:watch": "babel src -d ../../build/node_modules/webiny-storybook-utils --source-maps --copy-files --watch"
   }
 }
