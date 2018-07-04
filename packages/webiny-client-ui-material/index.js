@@ -1,2 +1,2 @@
 // @flow
-// Does not export anything.
+// Does not export anything (for now).
