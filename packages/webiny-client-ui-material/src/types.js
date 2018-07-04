@@ -1,5 +1,5 @@
 // @flow
-export type FormComponent = {
+export type FormComponentProps = {
     validation?: {
         /* Is checkbox value valid? */
         isValid: null | boolean,

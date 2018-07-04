@@ -2,9 +2,9 @@
 import * as React from "react";
 import { TextField, TextFieldHelperText } from "rmwc/TextField";
 import FontAwesomeIcon from "@fortawesome/react-fontawesome";
-import type { FormComponent } from "./../types";
+import type { FormComponentProps } from "./../types";
 
-type Props = FormComponent & {
+type Props = FormComponentProps & {
     // Component label.
     label?: string,
 

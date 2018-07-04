@@ -3,9 +3,9 @@ import * as React from "react";
 import { Checkbox as RmwcCheckbox } from "rmwc/Checkbox";
 import { TextFieldHelperText } from "rmwc/TextField";
 import CheckboxGroup from "./CheckboxGroup";
-import type { FormComponent } from "./../types";
+import type { FormComponentProps } from "./../types";
 
-type Props = FormComponent & {
+type Props = FormComponentProps & {
     // Component label.
     label?: string,
 

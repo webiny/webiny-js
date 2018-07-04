@@ -3,9 +3,9 @@ import * as React from "react";
 import * as R from "rmwc/Button";
 import { Fab } from "rmwc/Fab";
 import FontAwesomeIcon from "@fortawesome/react-fontawesome";
-import type { FormComponent } from "./../types";
+import type { FormComponentProps } from "./../types";
 
-type Props = FormComponent & {
+type Props = FormComponentProps & {
     // Make button flat (only applicable to Primary button).
     flat?: boolean,
 

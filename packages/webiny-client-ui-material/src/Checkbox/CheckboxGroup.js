@@ -1,9 +1,9 @@
 // @flow
 import * as React from "react";
-import type { FormComponent } from "./../types";
+import type { FormComponentProps } from "./../types";
 import type Checkbox from "./Checkbox";
 
-type Props = FormComponent & {
+type Props = FormComponentProps & {
     // Form element's label.
     label?: string,
 
