@@ -3,7 +3,7 @@ import React from "react";
 import { storiesOf } from "@storybook/react";
 import Story from "webiny-storybook-utils/Story";
 import { withKnobs, boolean } from "@storybook/addon-knobs";
-import readme from "./README.md";
+import readme from "./README_Checkbox.md";
 
 import { Form } from "webiny-form";
 
@@ -13,7 +13,7 @@ import Checkbox, { PropsType } from "./Checkbox";
 const story = storiesOf("Components/Checkbox", module);
 story.addDecorator(withKnobs);
 
-story.add("all checkboxes", () => {
+story.add("simple", () => {
     const disabled = boolean("Disabled", false);
 
     return (
@@ -21,7 +21,7 @@ story.add("all checkboxes", () => {
             <Story.Readme>{readme}</Story.Readme>
             <Story.Props>{PropsType}</Story.Props>
             <Story.Sandbox>
-                <Story.Sandbox.Example title={"Simple checkbox with label and description"}>
+                <Story.Sandbox.Example title={"Simple checkbox with a label and description"}>
                     <Form>
                         {({ Bind }) => (
                             <Bind name="rememberMe">
@@ -50,8 +50,6 @@ story.add("all checkboxes", () => {
                     `}
                 </Story.Sandbox.Code>
             </Story.Sandbox>
-
-            {/* TODO: CheckboxGroup */}
         </Story>
     );
 });

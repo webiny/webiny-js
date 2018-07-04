@@ -2,32 +2,23 @@
 import * as React from "react";
 import { Checkbox as RmwcCheckbox } from "rmwc/Checkbox";
 import { TextFieldHelperText } from "rmwc/TextField";
+import CheckboxGroup from "./CheckboxGroup";
+import type { FormComponent } from "./../types";
 
-type Props = {
-    /* Floating label .*/
+type Props = FormComponent & {
+    // Component label.
     label?: string,
-    /* Is checkbox disabled? */
+
+    // Is checkbox disabled?
     disabled?: boolean,
-    /* Description beneath the checkbox. */
-    description?: string,
-    /* Provided by <Form> component. */
-    validation?: {
-        /* Is checkbox value valid? */
-        isValid: null | boolean,
-        /* Error message if checkbox is not valid. */
-        message: null | string,
-        /* Any validation result returned by the validator. */
-        results: mixed
-    },
-    /* Provided by <Form> component to perform validation when value has changed. */
-    validate?: () => Promise<mixed>,
-    /* Checkbox value. */
-    value?: string,
-    /* A callback that is executed each time a value is changed. */
-    onChange?: (value: mixed) => any
+
+    // Description beneath the checkbox.
+    description?: string
 };
 
-export default class Checkbox extends React.Component<Props> {
+class Checkbox extends React.Component<Props> {
+    static Group: Checkbox.Group = CheckboxGroup;
+
     onChange = (e: SyntheticInputEvent<HTMLInputElement>) => {
         this.props.onChange && this.props.onChange(e.target.checked);
     };
@@ -38,7 +29,7 @@ export default class Checkbox extends React.Component<Props> {
             <React.Fragment>
                 <RmwcCheckbox
                     disabled={disabled}
-                    value={value || false}
+                    checked={Boolean(value)}
                     onChange={this.onChange}
                     label={label}
                 />
@@ -55,3 +46,5 @@ export default class Checkbox extends React.Component<Props> {
         );
     }
 }
+
+export default Checkbox;
