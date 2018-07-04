@@ -3,19 +3,21 @@ import * as React from "react";
 import { Menu as BaseMenu, MenuItem, MenuAnchor } from "rmwc/Menu";
 
 type Props = {
-    /* One or more Menu.Item components. */
-    children: React.Node,
-
-    /* A handler which triggers the menu, eg. button or link. */
-    handle: React.Node
+    // One or more Menu.Item components.
+    children: React.ChildrenArray<React.Element<typeof MenuItem>>,
+    // A handler which triggers the menu, eg. button or link.
+    handle?: React.Node
 };
 
 type State = {
     menuIsOpen: boolean
 };
 
+MenuItem.displayName = "Menu.Item";
+
 class Menu extends React.Component<Props, State> {
-    static Item: typeof MenuItem;
+    static Item = MenuItem;
+
     static defaultProps = {
         handle: null
     };
@@ -43,7 +45,5 @@ class Menu extends React.Component<Props, State> {
         );
     }
 }
-
-Menu.Item = MenuItem;
 
 export default Menu;
