@@ -3,15 +3,19 @@ import * as React from "react";
 import * as R from "rmwc/Button";
 import { Fab } from "rmwc/Fab";
 import FontAwesomeIcon from "@fortawesome/react-fontawesome";
+import type { FormComponent } from "./../types";
 
-type Props = {
-    /* Make button flat (only applicable to Primary button) */
+type Props = FormComponent & {
+    // Make button flat (only applicable to Primary button).
     flat?: boolean,
-    /* Make button smaller */
+
+    // Make button smaller.
     small?: boolean,
-    /* onClick handler */
+
+    // onClick handler.
     onClick?: Function,
-    /* Label and optionally an icon (via Button.Icon component) */
+
+    // Label and optionally an icon (using Button.Icon component).
     children: React.Node
 };
 

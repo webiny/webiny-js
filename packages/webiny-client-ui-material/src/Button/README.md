@@ -8,7 +8,7 @@ Button component provides 4 commonly used button types:
 
 To create buttons with icon, use a `<Button.Icon/>` component.
 
-## Installation
+## Import
 ```js
 import Button from "webiny-client-ui-material/Button";
 ```
