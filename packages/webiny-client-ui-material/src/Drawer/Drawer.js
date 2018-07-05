@@ -3,8 +3,7 @@ import * as React from "react";
 import { Drawer as RmwcDrawer, DrawerContent, DrawerHeader } from "rmwc/Drawer";
 
 type Props = {
-    // One or more Drawer.Item components.
-    // One or more Drawer.Item components.
+    // Drawer.Header and Drawer.Content components (both can receive any React.Node as children).
     children: React.ChildrenArray<
         React.Element<typeof Drawer.Header> | React.Element<typeof Drawer.Content>
     >,

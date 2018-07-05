@@ -1,6 +1,6 @@
 # Icon
 
-Use Icon component to display a icon of choices, once the handler is triggered.
+Use `Icon` component to display an icon.
 
 ## Import
 ```js

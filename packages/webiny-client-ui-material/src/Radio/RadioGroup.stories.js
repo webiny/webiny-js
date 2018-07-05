@@ -14,7 +14,7 @@ import { PropsType } from "./RadioGroup";
 const story = storiesOf("Components/Radio", module);
 story.addDecorator(withKnobs);
 
-story.add("group", () => {
+story.add("usage", () => {
     const disabled = boolean("Disabled", false);
 
     const options = [

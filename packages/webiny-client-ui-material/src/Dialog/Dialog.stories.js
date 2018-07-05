@@ -11,7 +11,7 @@ import Dialog, { PropsType } from "./Dialog";
 const story = storiesOf("Components/Dialog", module);
 story.addDecorator(withKnobs);
 
-story.add("basic usage", () => {
+story.add("usage", () => {
     const open = boolean("Open", false);
 
     return (

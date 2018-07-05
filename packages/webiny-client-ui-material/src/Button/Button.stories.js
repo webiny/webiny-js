@@ -11,7 +11,7 @@ import Button, { PropsType } from "./Button";
 const story = storiesOf("Components/Button", module);
 story.addDecorator(withKnobs);
 
-story.add("all buttons", () => {
+story.add("usage", () => {
     const label = text("Label", "Click to proceed");
     const small = boolean("Small", false);
     const flat = boolean("Flat", false);

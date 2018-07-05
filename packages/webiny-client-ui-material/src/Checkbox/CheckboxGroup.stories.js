@@ -14,7 +14,7 @@ import { PropsType } from "./CheckboxGroup";
 const story = storiesOf("Components/Checkbox", module);
 story.addDecorator(withKnobs);
 
-story.add("group", () => {
+story.add("usage - group", () => {
     const disabled = boolean("Disabled", false);
 
     const options = [

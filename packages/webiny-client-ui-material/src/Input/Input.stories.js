@@ -13,7 +13,7 @@ import Input, { PropsType } from "./Input";
 const story = storiesOf("Components/Input", module);
 story.addDecorator(withKnobs);
 
-story.add("all inputs", () => {
+story.add("usage", () => {
     const bindProps = {
         name: "name",
         validators: ["required", "minLength:3"],

@@ -1,5 +1,5 @@
 # Checkbox
-Stores simple `true` or `false` value into the form model.
+Single `Checkbox` component can be used to store simple boolean values.
 
 ## Import
 ```js

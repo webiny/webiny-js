@@ -13,7 +13,7 @@ import Checkbox, { PropsType } from "./Checkbox";
 const story = storiesOf("Components/Checkbox", module);
 story.addDecorator(withKnobs);
 
-story.add("simple", () => {
+story.add("usage - single", () => {
     const disabled = boolean("Disabled", false);
 
     return (

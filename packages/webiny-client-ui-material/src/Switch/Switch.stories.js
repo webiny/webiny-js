@@ -13,7 +13,7 @@ import Switch, { PropsType } from "./Switch";
 const story = storiesOf("Components/Switch", module);
 story.addDecorator(withKnobs);
 
-story.add("simple", () => {
+story.add("usage", () => {
     const disabled = boolean("Disabled", false);
 
     return (

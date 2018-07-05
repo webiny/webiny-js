@@ -10,7 +10,7 @@ import Menu, { PropsType } from "./Menu";
 
 const story = storiesOf("Components/Menu", module);
 
-story.add("simple menu", () => {
+story.add("usage", () => {
     return (
         <Story>
             <Story.Readme>{readme}</Story.Readme>

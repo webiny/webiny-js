@@ -1,7 +1,7 @@
 # Input
 
-An Input component is commonly used inside a `<Form>` component which provides value, onChange callback, validation, etc.
-You can use it outside of a `<Form>` component, but then you have to handle value changes and validation (if any) on your own.
+Use `Input` component to store short string values, like first name, last name, e-mail etc.
+Additionally, with `rows` prop, it can also be turned into a text area, to store longer strings.
 
 ## Import
 ```js

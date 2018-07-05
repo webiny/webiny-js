@@ -9,7 +9,7 @@ import Icon, { PropsType } from "./Icon";
 
 const story = storiesOf("Components/Icon", module);
 
-story.add("simple icon", () => {
+story.add("usage", () => {
     return (
         <Story>
             <Story.Readme>{readme}</Story.Readme>

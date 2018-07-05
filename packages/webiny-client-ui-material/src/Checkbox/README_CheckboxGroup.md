@@ -1,6 +1,8 @@
 # Group
 
-Wrap `Checkbox` components with `Checkbox.Group` to create a set of options.
+Unlike single `Checkbox` which is used to store simple boolean values, grouping multiple `Checkbox` components
+with `Checkbox.Group` will allow you to store an array of selected values.
+
 Each `Checkbox` component must receive `value` and `onChange` callback via props.
 
 ## Import

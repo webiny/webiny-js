@@ -1,6 +1,6 @@
 # Dialog
 
-Use Dialog component to display a list of choices, once the handler is triggered.
+Use `Dialog` component to display an informative or alert message and allow users to act upon it.
 
 ## Import
 ```js

@@ -12,7 +12,7 @@ import Drawer, { PropsType } from "./Drawer";
 const story = storiesOf("Components/Drawer", module);
 story.addDecorator(withKnobs);
 
-story.add("basic usage", () => {
+story.add("usage", () => {
     const mode = selectV2("Mode", ["temporary", "persistent", "permanent"], "permanent");
     const open = boolean("Open", true);
 
