@@ -23,7 +23,7 @@ story.add("examples", () => {
                     <List>
                         <List.Item>
                             <List.Item.Graphic>
-                                <Icon use="rocket" />
+                                <Icon name="rocket" />
                             </List.Item.Graphic>
                             <List.Item.Text>
                                 Rocket
@@ -32,13 +32,13 @@ story.add("examples", () => {
                                 </List.Item.Text.Secondary>
                             </List.Item.Text>
                             <List.Item.Meta>
-                                <Icon use="info-circle" />
+                                <Icon name="info-circle" />
                             </List.Item.Meta>
                         </List.Item>
 
                         <List.Item>
                             <List.Item.Graphic>
-                                <Icon use="coffee" />
+                                <Icon name="coffee" />
                             </List.Item.Graphic>
                             <List.Item.Text>
                                 Coffee
@@ -47,12 +47,12 @@ story.add("examples", () => {
                                 </List.Item.Text.Secondary>
                             </List.Item.Text>
                             <List.Item.Meta>
-                                <Icon use="info-circle" />
+                                <Icon name="info-circle" />
                             </List.Item.Meta>
                         </List.Item>
                         <List.Item>
                             <List.Item.Graphic>
-                                <Icon use="envelope" />
+                                <Icon name="envelope" />
                             </List.Item.Graphic>
                             <List.Item.Text>
                                 E-mail
@@ -71,7 +71,7 @@ story.add("examples", () => {
                         <List>
                         <List.Item>
                             <List.Item.Graphic>
-                                <Icon use="rocket" />
+                                <Icon name="rocket" />
                             </List.Item.Graphic>
                             <List.Item.Text>
                                 Rocket
@@ -80,13 +80,13 @@ story.add("examples", () => {
                                 </List.Item.Text.Secondary>
                             </List.Item.Text>
                             <List.Item.Meta>
-                                <Icon use="info-circle" />
+                                <Icon name="info-circle" />
                             </List.Item.Meta>
                         </List.Item>
 
                         <List.Item>
                             <List.Item.Graphic>
-                                <Icon use="coffee" />
+                                <Icon name="coffee" />
                             </List.Item.Graphic>
                             <List.Item.Text>
                                 Coffee
@@ -95,12 +95,12 @@ story.add("examples", () => {
                                 </List.Item.Text.Secondary>
                             </List.Item.Text>
                             <List.Item.Meta>
-                                <Icon use="info-circle" />
+                                <Icon name="info-circle" />
                             </List.Item.Meta>
                         </List.Item>
                         <List.Item>
                             <List.Item.Graphic>
-                                <Icon use="envelope" />
+                                <Icon name="envelope" />
                             </List.Item.Graphic>
                             <List.Item.Text>
                                 E-mail
