@@ -30,7 +30,7 @@
         "moment": "^2.20.1",
         "platform": "^1.3.4",
         "react": "16.2.0",
-        "react-dom": "16.2.0",
+        "react-dom": "16.2.1",
         "react-transition-group": "^2.2.1",
         "store": "^2.0.12"
     },
