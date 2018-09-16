@@ -6,7 +6,8 @@ const packages = require("./../utils/listPackages")([
     "webiny-ui",
     "webiny-form",
     "webiny-i18n-react",
-    "webiny-react-router"
+    "webiny-react-router",
+    "webiny-storybook-utils"
 ]);
 
 module.exports = {

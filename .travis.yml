@@ -7,12 +7,14 @@ branches:
   only:
     - master
     - development
+before_install:
+  - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.9.4
 install:
   - yarn install --ignore-engines
 jobs:
   include:
     - stage: test
-      script: yarn build && yarn test:build && yarn test:src:coverage:ci
+      script: yarn build && yarn test:build && yarn test:coverage:ci
       #- stage: release
       #if: branch = master
       #script: yarn build && yarn release
