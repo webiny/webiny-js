@@ -4,7 +4,6 @@ require("dotenv").config();
 const path = require("path");
 const readPkg = require("read-pkg");
 const globby = require("globby");
-const execa = require("execa");
 
 if (argv.require) {
     if (Array.isArray(argv.require)) {
@@ -23,7 +22,6 @@ const toPublish = [
     "webiny-app",
     "webiny-app-admin",
     "webiny-app-cms",
-    "webiny-cms-editor",
     "webiny-ui",
     "webiny-compose",
     "webiny-data-extractor",
@@ -64,11 +62,12 @@ const packages = globby
 const config = {
     preview: argv.preview || false,
     branch: argv.branch || "master",
-    ci: true,
+    ci: false,
     tagFormat: pkg => pkg.name + "@v${version}",
     packages,
     plugins: [
         wsr.npmVerify(),
+        wsr.githubVerify(),
         wsr.analyzeCommits({
             isRelevant: (pkg, commit) => {
                 if (commit.message.match(/affects: ((?:.+[\n\r]?)+)/gm)) {
@@ -91,22 +90,7 @@ const config = {
             next();
         },
         wsr.npmPublish(),
-        // This following plugin is only for Webiny monorepo
-        async ({ packages, config }, next) => {
-            if (config.preview) {
-                return;
-            }
-
-            for (let i = 0; i < packages.length; i++) {
-                const pkg = packages[i];
-                if (!pkg.nextRelease || !pkg.nextRelease.gitTag) {
-                    continue;
-                }
-
-                await execa("git", ["tag", pkg.nextRelease.gitTag]);
-            }
-            next();
-        }
+        wsr.githubPublish()
     ]
 };
 
