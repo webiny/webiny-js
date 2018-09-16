@@ -85,10 +85,8 @@
     "commit:check": "yarn lint-staged",
     "lint-staged": "lint-staged",
     "prettier": "prettier --config .prettierrc.js --write",
-    "release": "scripts/release.js",
-    "release:dry": "scripts/release.js --preview --branch=development",
-    "release-private": "yarn build && node scripts/private.js --branch=material-admin --require=@babel/register",
-    "release-private:dry": "yarn release-private --preview",
+    "release": "node scripts/release.js",
+    "release:dry": "node scripts/release.js --preview",
     "webiny-ui-build-storybook": "cd packages/webiny-ui && cross-env OUT=../../netlify-static yarn build-storybook"
   },
   "pre-commit": [

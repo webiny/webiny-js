@@ -64,11 +64,11 @@ const packages = globby
 const config = {
     preview: argv.preview || false,
     branch: argv.branch || "master",
-    ci: false,
+    ci: true,
     tagFormat: pkg => pkg.name + "@v${version}",
     packages,
     plugins: [
-        wsr.npmVerify({ registry }),
+        wsr.npmVerify(),
         wsr.analyzeCommits({
             isRelevant: (pkg, commit) => {
                 if (commit.message.match(/affects: ((?:.+[\n\r]?)+)/gm)) {
