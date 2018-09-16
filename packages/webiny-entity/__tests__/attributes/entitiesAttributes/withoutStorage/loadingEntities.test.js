@@ -20,6 +20,8 @@ describe("attribute entities test", () => {
 
         expect(findSpy.getCall(0).args[0]).toEqual(Entity1);
         expect(findSpy.getCall(0).args[1]).toEqual({
+            page: 1,
+            perPage: 10,
             query: {
                 mainEntity: "A"
             }

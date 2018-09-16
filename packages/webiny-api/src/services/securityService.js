@@ -131,8 +131,7 @@ class SecurityService {
         const permissions = this.getIdentity(true);
 
         // If all enabled (eg. super-admin), return immediately, no need to do further checks.
-        const superAdminPermissions = _.get(permissions, "entities.*", []);
-        if (superAdminPermissions.includes(true)) {
+        if (_.get(permissions, "entities") === "*") {
             return true;
         }
 
@@ -141,27 +140,47 @@ class SecurityService {
             return false;
         }
 
-        // Check if operation is enabled for "other".
-        for (let i = 0; i < entityPermissions.length; i++) {
-            if (_.get(entityPermissions[i], "other.operations." + operation)) {
+        if (entityPermissions === "*") {
+            return true;
+        }
+
+        if (entityPermissions.other) {
+            if (entityPermissions.other === "*") {
+                return true;
+            }
+
+            if (
+                Array.isArray(entityPermissions.other) &&
+                entityPermissions.other.includes(operation)
+            ) {
                 return true;
             }
         }
 
         if (identity) {
             if (this.identityIsOwner(identity, entity)) {
-                for (let i = 0; i < entityPermissions.length; i++) {
-                    if (_.get(entityPermissions[i], "owner.operations." + operation)) {
-                        return true;
-                    }
+                if (entityPermissions.owner === "*") {
+                    return true;
+                }
+
+                if (
+                    Array.isArray(entityPermissions.owner) &&
+                    entityPermissions.owner.includes(operation)
+                ) {
+                    return true;
                 }
             }
 
             if (this.identityIsInGroup(identity, entity)) {
-                for (let i = 0; i < entityPermissions.length; i++) {
-                    if (_.get(entityPermissions[i], "group.operations." + operation)) {
-                        return true;
-                    }
+                if (entityPermissions.group === "*") {
+                    return true;
+                }
+
+                if (
+                    Array.isArray(entityPermissions.group) &&
+                    entityPermissions.group.includes(operation)
+                ) {
+                    return true;
                 }
             }
         }

@@ -1,2 +1,2 @@
 // @flow
-export { app, Page, Category, Revision, Layout, Widget } from "./src";
+export { app, Page, Category, Revision } from "./src";

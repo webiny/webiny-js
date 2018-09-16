@@ -1,0 +1,180 @@
+// @flow
+import React from "react";
+import ReactDOM from "react-dom";
+import styled from "react-emotion";
+import { connect } from "react-redux";
+import { compose } from "recompose";
+import _ from "lodash";
+import { Editor } from "slate-react";
+import { Value } from "slate";
+import { getPlugins } from "webiny-app/plugins";
+import { focusSlateEditor, blurSlateEditor } from "webiny-app-cms/editor/actions";
+import { withTheme } from "webiny-app-cms/editor/components";
+import { createValue } from "./index";
+
+import Menu from "./Menu";
+
+const EditorStyle = styled("div")({
+    fontSize: "1.2em",
+    lineHeight: "150%"
+});
+
+class SlateEditor extends React.Component<*, *> {
+    static defaultProps = {
+        exclude: []
+    };
+
+    plugins = [];
+    lostFocus = false;
+    editor = React.createRef();
+
+    constructor(props) {
+        super();
+
+        const value = typeof props.value === "string" ? createValue(props.value) : props.value;
+
+        this.state = {
+            showMenu: false,
+            modified: false,
+            value: Value.fromJSON(value),
+            readOnly: !props.onChange,
+            activePlugin: null
+        };
+
+        this.plugins = getPlugins("cms-slate-editor")
+            .filter(pl => !props.exclude.includes(pl.name))
+            .map(pl => pl.slate);
+    }
+
+    static getDerivedStateFromProps(props, state) {
+        if (!state.modified && !props.readOnly) {
+            // Got new editor value through props.
+            const value = typeof props.value === "string" ? createValue(props.value) : props.value;
+            return {
+                value: Value.fromJSON(value)
+            };
+        }
+
+        return null;
+    }
+
+    onChange = change => {
+        if (this.state.readOnly) {
+            return;
+        }
+
+        // Prevent `onChange` if it is a `set_value` operation.
+        // We only need to handle changes on user input.
+        if (_.get(change.operations.toJSON(), "0.type") === "set_value") {
+            return;
+        }
+
+        // In case `onBlur` happened, we need to update app state.
+        if (this.lostFocus) {
+            this.lostFocus = false;
+            this.setState({ modified: false });
+            this.props.onChange(change.value.toJSON());
+            return;
+        }
+
+        // Only update local state.
+        this.setState(state => ({
+            ...state,
+            value: change.value,
+            modified: true
+        }));
+    };
+
+    onBlur = () => {
+        // onChange will happen after onBlur and we will handle editor change there.
+        this.lostFocus = true;
+    };
+
+    onFocus = () => {
+        if (this.state.activePlugin) {
+            this.setState({ activePlugin: null });
+        }
+
+        Array.isArray(Menu.menus) && Menu.menus.forEach(cb => cb());
+    };
+
+    getMenuContainer = () => {
+        const id = "slate-menu-container";
+
+        // Get menu container
+        let menuContainer = document.getElementById(id);
+        if (!menuContainer) {
+            menuContainer = document.createElement("div");
+            menuContainer.setAttribute("id", id);
+            document.body && document.body.appendChild(menuContainer);
+        }
+
+        // Position menu container
+        const rect = this.getSelectionRect();
+        menuContainer.style.position = "absolute";
+        menuContainer.style.top = rect.top + "px";
+        menuContainer.style.left = rect.left + "px";
+        menuContainer.style.width = rect.width + "px";
+        menuContainer.style.height = rect.height + "px";
+
+        return menuContainer;
+    };
+
+    getSelectionRect = () => {
+        const native = window.getSelection();
+        if (native.type === "None") {
+            return { top: 0, left: 0, width: 0, height: 0 };
+        }
+
+        const range = native.getRangeAt(0);
+        return range.getBoundingClientRect();
+    };
+
+    renderFloatingMenu = () => {
+        const container = this.getMenuContainer();
+
+        if (container) {
+            return ReactDOM.createPortal(
+                <Menu
+                    exclude={this.props.exclude}
+                    value={this.state.value}
+                    onChange={this.onChange}
+                />,
+                container
+            );
+        }
+
+        return null;
+    };
+
+    render() {
+        return (
+            <React.Fragment>
+                <EditorStyle>
+                    {!this.state.readOnly && this.renderFloatingMenu()}
+                    <Editor
+                        ref={this.editor}
+                        onBlur={this.onBlur}
+                        onFocus={this.onFocus}
+                        readOnly={this.state.readOnly}
+                        autoCorrect={false}
+                        spellCheck={false}
+                        plugins={this.plugins}
+                        placeholder="Enter some text..."
+                        value={this.state.value}
+                        onChange={this.onChange}
+                        theme={this.props.theme}
+                    />
+                </EditorStyle>
+            </React.Fragment>
+        );
+    }
+}
+
+export default compose(
+    connect(
+        null,
+        { focusSlateEditor, blurSlateEditor }
+    ),
+    withTheme()
+)(SlateEditor);

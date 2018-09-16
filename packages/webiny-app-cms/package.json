@@ -1,0 +1,68 @@
+{
+  "name": "webiny-app-cms",
+  "version": "0.0.0-semantically-released",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "author": "Pavel Denisjuk",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/runtime": "^7.0.0",
+    "dom-to-image": "^2.6.0",
+    "dot-prop-immutable": "^1.4.0",
+    "downshift": "^2.1.1",
+    "dynamics.js": "^1.1.5",
+    "emotion": "^9.2.4",
+    "immutable": "^3.8.2",
+    "invariant": "^2.2.4",
+    "is-hotkey": "^0.1.3",
+    "lodash": "^4.17.10",
+    "lorem-ipsum": "^1.0.5",
+    "platform": "^1.3.5",
+    "re-resizable": "^4.7.1",
+    "react-color": "^2.14.1",
+    "react-dnd": "^5.0.0",
+    "react-dnd-html5-backend": "^5.0.1",
+    "react-emotion": "^9.2.4",
+    "react-error-boundary": "^1.2.3",
+    "react-infinite-scroller": "^1.1.4",
+    "react-redux": "^5.0.7",
+    "react-transition-group": "2.3.1",
+    "recompose": "^0.27.1",
+    "redux": "^4.0.0",
+    "redux-undo": "^1.0.0-beta9-9-7",
+    "reselect": "^3.0.1",
+    "slate": "^0.40.2",
+    "slate-react": "^0.18.4",
+    "shortid": "^2.2.8",
+    "slugify": "^1.2.9",
+    "webfontloader": "^1.6.28"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-flow": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/plugin-proposal-class-properties": "^7.0.0",
+    "@babel/plugin-transform-runtime": "^7.0.0",
+    "babel-plugin-emotion": "^9.2.8",
+    "babel-plugin-lodash": "^3.3.4",
+    "babel-plugin-module-resolver": "^3.1.1",
+    "babel-plugin-named-asset-import": "^1.0.0-next.3e165448",
+    "@svgr/webpack": "^2.1.1",
+    "webiny-ui": "0.0.0-semantically-released"
+  },
+  "peerDependencies": {
+    "react": "^16.4.0",
+    "react-dom": "^16.4.0"
+  },
+  "scripts": {
+    "build": "babel src types.js -d ${DEST:-build} --source-maps --copy-files --ignore types.js",
+    "flow-copy-source": "flow-copy-source src ${DEST:-build}",
+    "postbuild": "yarn flow-copy-source"
+  }
+}

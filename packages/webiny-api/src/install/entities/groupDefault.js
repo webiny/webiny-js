@@ -1,5 +1,5 @@
 // @flow
-import { Group } from "./../../entities";
+import { Group } from "webiny-api/entities";
 
 export default async () => {
     const entity = new Group();

@@ -1,7 +1,8 @@
+// @flow
 import React from "react";
 
 export default () => {
-    return async (params, next) => {
+    return async (params: Object, next: Function) => {
         const { route, match, resolve } = params;
 
         if (route.render) {
@@ -9,7 +10,8 @@ export default () => {
         }
 
         if (route.component) {
-            const component = await route.component();
+            const component =
+                typeof route.component === "function" ? await route.component() : route.component;
             params.output = React.createElement(component, { route, match, resolve });
         }
 

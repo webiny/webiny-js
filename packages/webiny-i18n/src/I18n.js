@@ -6,8 +6,6 @@ import accounting from "accounting";
 
 import type { Modifier, Processor } from "./../types";
 
-import modifiers from "./modifiers";
-
 /**
  * Main class used for all I18n needs.
  */
@@ -35,11 +33,9 @@ class I18N {
 
         /**
          * All registered modifiers.
-         * Default built-in modifiers are registered immediately below.
          * @type {{}}
          */
         this.modifiers = {};
-        this.registerModifiers(modifiers);
 
         /**
          * All registered processors.

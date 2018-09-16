@@ -1,6 +1,7 @@
 // @flow
 import { api } from "./../../index";
 import _ from "lodash";
+import mergePermissions from "./../../security/mergePermissions";
 
 export default async (context: Object) => {
     // Append security data to current request.
@@ -12,7 +13,9 @@ export default async (context: Object) => {
 
     // Let's merge default permissions.
     const security = await api.services.get("security");
-    context.security.permissions = _.cloneDeep(security.getDefaultPermissions());
+    context.security.permissions = mergePermissions(
+        [context.security.permissions].concat(_.cloneDeep(security.getDefaultPermissions()))
+    );
 
     const token =
         typeof api.config.security.header === "function"
@@ -42,27 +45,11 @@ export default async (context: Object) => {
             // Directly assigned policies.
             identityPolicies = identityPolicies.concat(await identity.policies);
 
-            identityPolicies.forEach(policy => {
-                const policyEntitiesPermissions = _.get(policy, "permissions.entities", {});
-                for (let entityName in policyEntitiesPermissions) {
-                    if (!context.security.permissions.entities[entityName]) {
-                        context.security.permissions.entities[entityName] = [];
-                    }
-                    context.security.permissions.entities[entityName].push(
-                        policyEntitiesPermissions[entityName]
-                    );
-                }
-
-                const policyApiPermissions = _.get(policy, "permissions.api", {});
-                for (let operationName in policyApiPermissions) {
-                    if (!context.security.permissions.api[operationName]) {
-                        context.security.permissions.api[operationName] = [];
-                    }
-                    context.security.permissions.api[operationName].push(
-                        policyApiPermissions[operationName]
-                    );
-                }
-            });
+            context.security.permissions = mergePermissions(
+                [context.security.permissions].concat(
+                    identityPolicies.map(policy => policy.permissions)
+                )
+            );
         }
     });
 };

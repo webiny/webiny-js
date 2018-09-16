@@ -1,0 +1,41 @@
+@import "../variables";
+
+.webiny-cms-element-button{
+  display: inline-block;
+  margin-right: 0;
+  margin-left: 0;
+  padding: 14px 20px;
+  vertical-align: top;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1;
+  border-radius: 4px;
+  will-change: opacity;
+  transition: all 0.2s;
+  cursor: pointer;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: .025em;
+  font-weight: 600;
+  box-sizing: border-box;
+  outline: none;
+  border: none;
+  width: 100%;
+  background-color: $webiny-cms-theme-surface;
+  color: $webiny-cms-theme-on-surface;
+  &:hover{
+    box-shadow: 0 7px 14px rgba(50,50,93,.1), 0 3px 6px rgba(0,0,0,.08);
+    transform: translateY(-1px);
+  }
+  &:active{
+    transform: translateY(1px);
+  }
+  &.primary{
+    background-color: $webiny-cms-theme-primary;
+    color: $webiny-cms-theme-on-primary;
+  }
+  &.secondary{
+    background-color: $webiny-cms-theme-secondary;
+    color: $webiny-cms-theme-on-secondary;
+  }
+}

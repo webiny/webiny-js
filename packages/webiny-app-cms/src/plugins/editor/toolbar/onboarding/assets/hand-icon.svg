@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg height="63px" viewBox="0 0 45 63" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <title>Shape</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="CMS-Editor-Onboarding" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="2.-Blocks" transform="translate(-1019.000000, -416.000000)" fill="#72457F" fill-rule="nonzero">
+            <g id="hand-icon" transform="translate(1005.000000, 408.000000)">
+                <path d="M26.75,32.72 L26.75,21.5 C26.75,17.36 30.11,14 34.25,14 C38.39,14 41.75,17.36 41.75,21.5 L41.75,32.72 C45.38,30.29 47.75,26.18 47.75,21.5 C47.75,14.03 41.72,8 34.25,8 C26.78,8 20.75,14.03 20.75,21.5 C20.75,26.18 23.12,30.29 26.75,32.72 Z M56.27,46.61 L42.65,39.83 C42.14,39.62 41.6,39.5 41.03,39.5 L38.75,39.5 L38.75,21.5 C38.75,19.01 36.74,17 34.25,17 C31.76,17 29.75,19.01 29.75,21.5 L29.75,53.72 L19.46,51.56 C19.22,51.53 19.01,51.47 18.74,51.47 C17.81,51.47 16.97,51.86 16.37,52.46 L14,54.86 L28.82,69.68 C29.63,70.49 30.77,71 32,71 L52.37,71 C54.62,71 56.36,69.35 56.69,67.16 L58.94,51.35 C58.97,51.14 59,50.93 59,50.75 C59,48.89 57.86,47.27 56.27,46.61 Z" id="Shape"></path>
+            </g>
+        </g>
+    </g>
+</svg>

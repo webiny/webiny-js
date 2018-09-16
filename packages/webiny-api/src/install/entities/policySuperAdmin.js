@@ -8,12 +8,8 @@ export default async () => {
         description: "Full API and entities access.",
         slug: "super-admin",
         permissions: {
-            api: {
-                "*": true
-            },
-            entities: {
-                "*": true
-            }
+            api: "*",
+            entities: "*"
         }
     });
 

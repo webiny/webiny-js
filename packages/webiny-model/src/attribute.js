@@ -9,7 +9,7 @@ class Attribute {
     attributesContainer: AttributesContainer;
     value: AttributeValue;
     once: boolean;
-    dynamic: boolean;
+    dynamic: ?Function;
     toStorage: boolean;
     toJSON: boolean;
     async: boolean;
@@ -45,7 +45,7 @@ class Attribute {
          * If true - setValue will not have any effect.
          * @var bool
          */
-        this.dynamic = false;
+        this.dynamic = null;
 
         /**
          * Marks whether or not this attribute can be stored in a storage.
@@ -269,7 +269,7 @@ class Attribute {
      * @returns {*}
      */
     getValue(): mixed | Promise<mixed> {
-        if (typeof this.dynamic === "function") {
+        if (this.dynamic) {
             return this.dynamic(...arguments);
         }
         return this.onGetCallback(this.value.getCurrent(), ...arguments);
@@ -331,12 +331,12 @@ class Attribute {
         return this.once;
     }
 
-    setDynamic(flag: boolean = true): Attribute {
-        this.dynamic = flag;
+    setDynamic(callback: Function): Attribute {
+        this.dynamic = callback;
         return this;
     }
 
-    getDynamic(): boolean {
+    getDynamic() {
         return this.dynamic;
     }
 

@@ -19,12 +19,13 @@ import operators from "./operators";
 
 declare type MySQLDriverOptions = {
     connection: Connection | Pool,
-    model: Class<MySQLModel>,
-    operators: ?{ [string]: Operator },
-    tables: {
+    model?: Class<MySQLModel>,
+    operators?: { [string]: Operator },
+    tables?: {
         prefix: string,
         naming: ?Function
-    }
+    },
+    autoIncrementIds?: boolean
 };
 
 class MySQLDriver extends Driver {
@@ -35,20 +36,18 @@ class MySQLDriver extends Driver {
         prefix: string,
         naming: ?Function
     };
-
+    autoIncrementIds: boolean;
     constructor(options: MySQLDriverOptions) {
         super();
-        this.operators = { ...operators, ...options.operators };
+        this.operators = { ...operators, ...(options.operators || {}) };
         this.connection = new MySQLConnection(options.connection);
         this.model = options.model || MySQLModel;
 
-        this.tables = _.merge(
-            {
-                prefix: "",
-                naming: null
-            },
-            options.tables
-        );
+        this.tables = {
+            prefix: "",
+            ...(options.tables || {})
+        };
+        this.autoIncrementIds = options.autoIncrementIds || false;
     }
 
     setOperator(name: string, operator: Operator) {
@@ -57,12 +56,21 @@ class MySQLDriver extends Driver {
     }
 
     onEntityConstruct(entity: Entity) {
-        entity
-            .attr("id")
-            .char()
-            .setValidators((value, attribute) =>
-                this.isId(attribute.getParentModel().getParentEntity(), value)
-            );
+        if (this.autoIncrementIds) {
+            entity
+                .attr("id")
+                .integer()
+                .setValidators((value, attribute) =>
+                    this.isId(attribute.getParentModel().getParentEntity(), value)
+                );
+        } else {
+            entity
+                .attr("id")
+                .char()
+                .setValidators((value, attribute) =>
+                    this.isId(attribute.getParentModel().getParentEntity(), value)
+                );
+        }
     }
 
     getModelClass(): Class<MySQLModel> {
@@ -92,7 +100,10 @@ class MySQLDriver extends Driver {
             return new QueryResult(true);
         }
 
-        entity.id = MySQLDriver.__generateID();
+        if (!this.autoIncrementIds) {
+            entity.id = MySQLDriver.__generateID();
+        }
+
         const data = await entity.toStorage();
         const sql = new Insert(
             {
@@ -104,7 +115,10 @@ class MySQLDriver extends Driver {
         ).generate();
 
         try {
-            await this.getConnection().query(sql);
+            const results = await this.getConnection().query(sql);
+            if (this.autoIncrementIds) {
+                entity.id = results.insertId;
+            }
         } catch (e) {
             const idAttribute: Attribute = (entity.getAttribute("id"): any);
             idAttribute.reset();
@@ -202,10 +216,13 @@ class MySQLDriver extends Driver {
 
     // eslint-disable-next-line
     isId(entity: Entity | Class<Entity>, value: mixed, options: ?Object): boolean {
+        if (this.autoIncrementIds) {
+            return typeof value === "number" && Number.isInteger(value) && value > 0;
+        }
+
         if (typeof value === "string") {
             return value.match(new RegExp("^[0-9a-fA-F]{24}$")) !== null;
         }
-
         return false;
     }
 

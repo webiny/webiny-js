@@ -1,0 +1,10 @@
+{
+  "name": "demo-theme",
+  "version": "0.0.0-semantically-released",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "babel ./src -d ../../node_modules/theme --source-maps --copy-files",
+    "build:watch": "yarn build --watch"
+  }
+}

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="75px" height="75px" viewBox="0 0 75 75" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <title>column-icon</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(-103.000000, -86.000000)" id="Column-icon">
+            <g transform="translate(65.000000, 50.000000)">
+                <g id="column-icon" transform="translate(20.000000, 20.000000)">
+                    <g id="Bounding_Boxes">
+                        <polygon id="Shape" points="0 0 110 0 110 110 0 110"></polygon>
+                    </g>
+                    <g id="Rounded" transform="translate(18.000000, 16.000000)" fill="#000000" fill-rule="nonzero">
+                        <path fill="currentColor" d="M4.41176471,75 L8.82352941,75 C11.25,75 13.2352941,72.4038462 13.2352941,69.2307692 L13.2352941,5.76923077 C13.2352941,2.59615385 11.25,0 8.82352941,0 L4.41176471,0 C1.98529412,0 0,2.59615385 0,5.76923077 L0,69.2307692 C0,72.4038462 1.98529412,75 4.41176471,75 Z M61.7647059,5.76923077 L61.7647059,69.2307692 C61.7647059,72.4038462 63.75,75 66.1764706,75 L70.5882353,75 C73.0147059,75 75,72.4038462 75,69.2307692 L75,5.76923077 C75,2.59615385 73.0147059,0 70.5882353,0 L66.1764706,0 C63.75,0 61.7647059,2.59615385 61.7647059,5.76923077 Z M22.0588235,75 L52.9411765,75 C55.3676471,75 57.3529412,72.4038462 57.3529412,69.2307692 L57.3529412,5.76923077 C57.3529412,2.59615385 55.3676471,0 52.9411765,0 L22.0588235,0 C19.6323529,0 17.6470588,2.59615385 17.6470588,5.76923077 L17.6470588,69.2307692 C17.6470588,72.4038462 19.6323529,75 22.0588235,75 Z" id="Shape"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

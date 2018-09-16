@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="670px" height="200px" viewBox="0 0 670 200" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <title>block</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="CMS-Editor-Onboarding" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" fill-opacity="0.1">
+        <g id="2.-Blocks" transform="translate(-393.000000, -189.000000)" fill="#5CC9B1" stroke="#5CC9B1" stroke-width="2">
+            <g id="Onboarding" transform="translate(320.000000, 103.000000)">
+                <g id="Hovers" transform="translate(73.000000, 86.000000)">
+                    <rect id="block" x="1" y="1" width="668" height="198" rx="2"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

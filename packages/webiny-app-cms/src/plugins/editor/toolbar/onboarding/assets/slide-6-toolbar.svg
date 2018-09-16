@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="719px" height="31px" viewBox="0 0 719 31" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <title>Edit Toolbar</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="CMS-Editor-Onboarding" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="6.-Content-Edit" transform="translate(-359.000000, -142.000000)">
+            <g id="Onboarding" transform="translate(320.000000, 103.000000)">
+                <g id="Edit-Toolbar" transform="translate(39.000000, 39.000000)">
+                    <rect id="top-toolbar-bg-copy" fill="var(--mdc-theme-surface)" x="0" y="0" width="719" height="31"></rect>
+                    <g id="Buttons" transform="translate(266.000000, 9.000000)">
+                        <rect id="back-btn-copy" fill="#D8D8D8" x="0" y="0.185185185" width="11.2695925" height="11.4814815" rx="2"></rect>
+                        <rect id="back-btn-copy-2" fill="#D8D8D8" x="25" y="0.185185185" width="11.2695925" height="11.4814815" rx="2"></rect>
+                        <rect id="back-btn-copy-3" fill="#D8D8D8" x="50" y="0.185185185" width="11.2695925" height="11.4814815" rx="2"></rect>
+                        <rect id="back-btn-copy-4" fill="#D8D8D8" x="75" y="0.185185185" width="11.2695925" height="11.4814815" rx="2"></rect>
+                        <rect id="back-btn-copy-5" fill="#D8D8D8" x="100" y="0.185185185" width="11.2695925" height="11.4814815" rx="2"></rect>
+                        <rect id="back-btn-copy-6" fill="#D8D8D8" x="125" y="0.185185185" width="11.2695925" height="11.4814815" rx="2"></rect>
+                        <rect id="back-btn-copy-7" fill="#FA5723" x="150" y="0.185185185" width="11.2695925" height="11.4814815" rx="2"></rect>
+                        <rect id="back-btn-copy-8" fill="#D8D8D8" x="175" y="0.185185185" width="11.2695925" height="11.4814815" rx="2"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

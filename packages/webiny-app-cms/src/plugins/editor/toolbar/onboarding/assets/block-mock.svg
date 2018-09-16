@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="590px" height="135px" viewBox="0 0 590 135" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <title>Block mock</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="CMS-Editor-Onboarding" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="2.-Blocks" transform="translate(-430.000000, -223.000000)" fill="#BBBDBF">
+            <g id="Onboarding" transform="translate(320.000000, 103.000000)">
+                <g id="Block-mock" transform="translate(110.000000, 120.000000)">
+                    <rect id="image" x="0" y="71" width="146" height="64" rx="2"></rect>
+                    <rect id="line-1" x="170" y="71" width="206" height="26" rx="2"></rect>
+                    <rect id="line-1-copy" x="170" y="108" width="420" height="10" rx="2"></rect>
+                    <rect id="line-1-copy-2" x="170" y="123" width="420" height="10" rx="2"></rect>
+                    <rect id="title" x="100" y="0" width="420" height="26" rx="2"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

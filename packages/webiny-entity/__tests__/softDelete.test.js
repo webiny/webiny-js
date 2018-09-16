@@ -52,7 +52,10 @@ describe("soft delete test", () => {
 
         query = sandbox.spy(EntityWithoutSoftDeletes.getDriver(), "find");
         await EntityWithoutSoftDeletes.find();
-        expect(query.getCall(0).args[1]).toEqual({});
+        expect(query.getCall(0).args[1]).toEqual({
+            page: 1,
+            perPage: 10
+        });
         query.restore();
 
         query = sandbox.spy(EntityWithoutSoftDeletes.getDriver(), "findOne");
@@ -93,6 +96,8 @@ describe("soft delete test", () => {
         query = sandbox.spy(EntityWithSoftDeletes.getDriver(), "find");
         await EntityWithSoftDeletes.find();
         expect(query.getCall(0).args[1]).toEqual({
+            page: 1,
+            perPage: 10,
             query: {
                 deleted: false
             }
@@ -141,6 +146,8 @@ describe("soft delete test", () => {
         query = sandbox.spy(EntityWithSoftDeletes.getDriver(), "find");
         await EntityWithSoftDeletes.find({ query: { deleted: true } });
         expect(query.getCall(0).args[1]).toEqual({
+            page: 1,
+            perPage: 10,
             query: {
                 deleted: true
             }

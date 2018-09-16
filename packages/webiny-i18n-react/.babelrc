@@ -1,17 +1,16 @@
 {
     "presets": [
-        ["babel-preset-env", {
+        ["@babel/preset-env", {
             "targets": {
                 "node": "8.10"
             }
         }],
-        "babel-preset-flow",
-        "babel-preset-react"
+        "@babel/preset-react",
+        "@babel/preset-flow"
     ],
     "plugins": [
-        ["babel-plugin-transform-object-rest-spread", {"useBuiltIns": true}],
-        ["babel-plugin-transform-builtin-extend", {"globals": ["Error"]}],
-        ["babel-plugin-transform-runtime"],
-        ["babel-plugin-dynamic-import-node"]
+        ["babel-plugin-lodash"],
+        ["@babel/plugin-proposal-object-rest-spread", {"useBuiltIns": true}],
+        ["@babel/plugin-transform-runtime"]
     ]
 }

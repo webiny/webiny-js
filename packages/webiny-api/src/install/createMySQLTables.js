@@ -2,11 +2,10 @@
 import { Sync, ConsoleLog } from "webiny-sql-table-sync";
 import {
     ApiTokenTable,
+    FileTable,
     Groups2Entities,
     Policies2Entities,
-    FileTable,
     GroupTable,
-    ImageTable,
     PolicyTable,
     SettingsTable,
     UserTable
@@ -15,11 +14,10 @@ import {
 export default async () => {
     const tables = [
         ApiTokenTable,
+        FileTable,
         Groups2Entities,
         Policies2Entities,
-        FileTable,
         GroupTable,
-        ImageTable,
         PolicyTable,
         SettingsTable,
         UserTable

@@ -13,14 +13,21 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@babel/runtime": "^7.0.0",
     "jimp": "^0.2.28"
   },
   "devDependencies": {
-    "image-size": "^0.6.2",
-    "babel-runtime": "^6.26.0"
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-flow": "^7.0.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/plugin-transform-runtime": "^7.0.0",
+    "image-size": "^0.6.2"
   },
   "scripts": {
-    "build": "babel src -d lib --source-maps --copy-files",
-    "build:watch": "babel src -d lib --source-maps --copy-files --watch"
+    "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
+    "flow-copy-source": "flow-copy-source src ${DEST:-build}",
+    "postbuild": "yarn flow-copy-source"
   }
 }

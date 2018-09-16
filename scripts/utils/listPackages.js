@@ -1,20 +1,20 @@
 // @flow
-const { readdirSync, existsSync } = require("fs");
-const { join } = require("path");
+const path = require("path");
+const getPackages = require("get-yarn-workspaces");
+const minimatch = require("minimatch");
 
-// Find all folders in packages/* with package.json
-const packagesRoot = join(__dirname, "..", "..", "packages");
-
-const baseBlacklist = ["webiny-cli", "webiny-cloud", "webiny-cloud-api", "webiny-cloud-client"];
+const baseBlacklist = [
+    "demo-*",
+    "webiny-cra-utils",
+    "webiny-cms-editor",
+    "webiny-cli",
+    "webiny-cloud*",
+    "webiny-ui_LEGACY"
+];
 
 module.exports = (blacklist = []) => {
     const finalBlackList = [...baseBlacklist, ...blacklist];
-    return readdirSync(packagesRoot).filter(dir => {
-        if (finalBlackList.includes(dir)) {
-            return false;
-        }
-
-        const packagePath = join(packagesRoot, dir, "package.json");
-        return existsSync(packagePath);
-    });
+    return getPackages(process.cwd()).filter(
+        p => !finalBlackList.some(s => minimatch(path.basename(p), s))
+    ).map(p => path.basename(p));
 };

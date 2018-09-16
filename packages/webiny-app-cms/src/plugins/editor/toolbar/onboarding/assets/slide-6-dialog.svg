@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="133px" height="136px" viewBox="0 0 133 136" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <title>Dialog</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <polygon id="path-1" points="9 17 14 12 9 7"></polygon>
+        <rect id="path-3" x="0" y="14" width="125" height="125" rx="2"></rect>
+        <filter x="-5.6%" y="-4.0%" width="111.2%" height="111.2%" filterUnits="objectBoundingBox" id="filter-4">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0.484693878   0 0 0 0 0.484693878   0 0 0 0 0.484693878  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="CMS-Editor-Onboarding" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="6.-Content-Edit" transform="translate(-714.000000, -178.000000)">
+            <g id="Onboarding" transform="translate(320.000000, 103.000000)">
+                <g id="Dialog" transform="translate(398.000000, 66.000000)">
+                    <g id="Icon-/-Arrow-Drop-Up-/-Filled" transform="translate(51.000000, 0.000000)">
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <g id="Mask" fill-rule="nonzero" transform="translate(11.500000, 12.000000) rotate(-90.000000) translate(-11.500000, -12.000000) "></g>
+                        <g id="✱-/-Color-/-Icons-/-White-/-Active" mask="url(#mask-2)" fill="var(--mdc-theme-surface)" fill-rule="evenodd">
+                            <rect id="Rectangle-13" x="0" y="0" width="24" height="24"></rect>
+                        </g>
+                    </g>
+                    <g id="Rectangle-2">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-4)" xlink:href="#path-3"></use>
+                        <use fill="var(--mdc-theme-surface)" fill-rule="evenodd" xlink:href="#path-3"></use>
+                    </g>
+                    <rect id="Rectangle-4" fill="#D8D8D8" x="13" y="25" width="100" height="20" rx="2"></rect>
+                    <rect id="Rectangle-4-Copy" fill="#D8D8D8" x="13" y="61" width="75" height="15" rx="2"></rect>
+                    <rect id="Rectangle-4-Copy-2" fill="#D8D8D8" x="93" y="61" width="20" height="15" rx="2"></rect>
+                    <rect id="Rectangle-4-Copy-4" fill="#D8D8D8" x="13" y="85" width="75" height="15" rx="2"></rect>
+                    <rect id="Rectangle-4-Copy-3" fill="#D8D8D8" x="93" y="85" width="20" height="15" rx="2"></rect>
+                    <rect id="Rectangle-4-Copy-6" fill="#D8D8D8" x="13" y="109" width="75" height="15" rx="2"></rect>
+                    <rect id="Rectangle-4-Copy-5" fill="#D8D8D8" x="93" y="109" width="20" height="15" rx="2"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

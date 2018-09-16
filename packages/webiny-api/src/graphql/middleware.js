@@ -1,8 +1,8 @@
 // @flow
 import { execute, parse } from "graphql";
-import { api } from "./../index";
 import compose from "webiny-compose";
 import { authorization, authentication } from "./middleware/index.js";
+import schema from "./schema";
 
 /**
  * Main middleware for executing the requested graphql operation.
@@ -23,7 +23,7 @@ const securityMiddleware = () => {
 const graphqlMiddleware = () => {
     return async (context, next) => {
         context.output = await execute(
-            api.graphql.getSchema(),
+            schema.getGraphQLSchema(),
             context.graphql.documentAST,
             null,
             context,

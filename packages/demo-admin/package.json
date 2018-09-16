@@ -1,0 +1,43 @@
+{
+  "name": "demo-admin",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "demo-theme": "0.0.0-semantically-released",
+    "react-hot-loader": "^4.3.5",
+    "webiny-app": "0.0.0-semantically-released",
+    "webiny-app-admin": "0.0.0-semantically-released",
+    "webiny-app-cms": "0.0.0-semantically-released",
+    "webiny-ui": "0.0.0-semantically-released"
+  },
+  "devDependencies": {
+    "node-sass": "^4.9.3",
+    "react-app-rewired": "^1.5.2",
+    "react-scripts": "2.0.0-next.a671462c",
+    "source-map-explorer": "^1.5.0"
+  },
+  "scripts": {
+    "analyze": "source-map-explorer build/static/js/main.*",
+    "start": "SKIP_PREFLIGHT_CHECK=true PORT=3001 react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test --env=jsdom",
+    "eject": "react-app-rewired eject"
+  },
+  "browserslist": {
+    "development": [
+      "last 2 chrome versions",
+      "last 2 firefox versions",
+      "last 2 edge versions"
+    ],
+    "production": [
+      ">0.25%",
+      "not op_mini all",
+      "ie 11"
+    ]
+  },
+  "svgo": {
+    "plugins": {
+      "removeViewBox": false
+    }
+  }
+}

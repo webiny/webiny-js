@@ -2,7 +2,7 @@
 import ColumnsContainer from "./columnsContainer";
 import IndexesContainer from "./indexesContainer";
 import Column from "./column";
-import Index from "./index";
+import Index from "./tableIndex";
 import Driver from "./driver";
 import type { CommandOptions } from "../types";
 

@@ -13,9 +13,9 @@ jobs:
   include:
     - stage: test
       script: yarn build && yarn test:build && yarn test:src:coverage:ci
-    - stage: release
-      if: branch = master
-      script: yarn build && yarn release
+      #- stage: release
+      #if: branch = master
+      #script: yarn build && yarn release
 notifications:
   slack:
     on_success: change

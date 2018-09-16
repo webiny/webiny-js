@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="75px" height="75px" viewBox="0 0 75 75" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <title>spacer-icon</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(-445.000000, -86.000000)" id="Divider-Icon">
+            <g transform="translate(406.000000, 50.000000)">
+                <g id="spacer-icon" transform="translate(20.000000, 20.000000)">
+                    <g id="Bounding_Boxes">
+                        <polygon id="Shape" points="0 0 110 0 110 110 0 110"></polygon>
+                    </g>
+                    <g id="divide-solid" transform="translate(19.000000, 16.000000)" fill="#000000" fill-rule="nonzero">
+                        <path fill="currentColor" d="M37.5,53.5714286 C31.5820312,53.5714286 26.7857143,58.3677455 26.7857143,64.2857143 C26.7857143,70.203683 31.5820312,75 37.5,75 C43.4179688,75 48.2142857,70.203683 48.2142857,64.2857143 C48.2142857,58.3677455 43.4179688,53.5714286 37.5,53.5714286 Z M37.5,21.4285714 C43.4179688,21.4285714 48.2142857,16.6322545 48.2142857,10.7142857 C48.2142857,4.79631696 43.4179688,0 37.5,0 C31.5820312,0 26.7857143,4.79631696 26.7857143,10.7142857 C26.7857143,16.6322545 31.5820312,21.4285714 37.5,21.4285714 Z M69.6428571,29.4642857 L5.35714286,29.4642857 C2.39899554,29.4642857 0,31.8632813 0,34.8214286 L0,40.1785714 C0,43.1367188 2.39899554,45.5357143 5.35714286,45.5357143 L69.6428571,45.5357143 C72.6010045,45.5357143 75,43.1367188 75,40.1785714 L75,34.8214286 C75,31.8632812 72.6010045,29.4642857 69.6428571,29.4642857 Z" id="Shape"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

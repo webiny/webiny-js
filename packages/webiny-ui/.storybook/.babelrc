@@ -1,0 +1,28 @@
+{
+  "presets": [
+    ["@babel/preset-env", {
+      "modules": false,
+      "targets": {
+        "browsers": ["last 2 versions", "safari >= 7"]
+      }
+    }],
+    "@babel/preset-react",
+    "@babel/preset-flow"
+  ],
+  "plugins": [
+    ["babel-plugin-emotion", { "autoLabel": true }],
+    ["webiny-storybook-utils/src/babel"],
+    ["babel-plugin-lodash"],
+    ["@babel/plugin-proposal-class-properties"],
+    ["@babel/plugin-proposal-object-rest-spread", {"useBuiltIns": true}],
+    ["@babel/plugin-transform-runtime"],
+    ["babel-plugin-module-resolver", {
+      "alias": {
+        "^webiny-ui/(.+)": "webiny-ui/src/\\1",
+        "^webiny-validation/(.+)": "webiny-validation/src/\\1",
+        "^webiny-form/(.+)": "webiny-form/src/\\1",
+        "^webiny-storybook-utils/(.+)": "webiny-storybook-utils/src/\\1"
+      }
+    }]
+  ]
+}

@@ -13,18 +13,12 @@ const checkScope = (selectionSet, scopesList, parentFields = "") => {
             }
 
             const fullPath = parentFields ? `${parentFields}.${fieldName}` : fieldName;
-            scopesList.forEach(scope => {
-                if (_.get(scope, fullPath)) {
-                    hasAccess = true;
-                    if (selection.selectionSet) {
-                        checkScope(selection.selectionSet, scopesList, fullPath);
-                    }
-                    return false;
-                }
-            });
-
-            if (!hasAccess) {
+            if (!_.get(scopesList, fullPath)) {
                 throw Error(`Not authorized to access "${fullPath}" field.`);
+            }
+
+            if (selection.selectionSet) {
+                checkScope(selection.selectionSet, scopesList, fullPath);
             }
         }
     });
@@ -44,14 +38,16 @@ export default async (context: Object) => {
 
     // Let's allow IntrospectionQuery to be accessed.
     if (_.get(context.graphql, "documentAST.definitions.0.name.value") === "IntrospectionQuery") {
+        if (security.config.enableGraphqlIntrospectionQuery === false) {
+            throw Error(`GraphQL introspection query not allowed.`);
+        }
         return;
     }
 
     const permissions = security.getIdentity(true);
 
     // If all enabled (eg. super-admin), return immediately, no need to do further checks.
-    const superAdminPermissions = _.get(permissions, "api.*", []);
-    if (superAdminPermissions.includes(true)) {
+    if (permissions.api && permissions.api === "*") {
         return;
     }
 
@@ -63,22 +59,13 @@ export default async (context: Object) => {
             if (selection.kind === "Field") {
                 const fieldName = selection.name.value;
 
-                const fieldScopes = _.get(permissions, `api.${fieldName}`) || [];
-
-                let hasAccess = false;
-                fieldScopes.forEach(fieldScope => {
-                    if (fieldScope === true || fieldScope instanceof Object) {
-                        hasAccess = true;
-                        return false;
-                    }
-                });
-
-                if (!hasAccess) {
+                const fieldPermissions = _.get(permissions, `api.${fieldName}`);
+                if (!(fieldPermissions === true || fieldPermissions instanceof Object)) {
                     throw Error(`Not authorized to access "${fieldName}" operation.`);
                 }
 
                 if (selection.selectionSet) {
-                    checkScope(selection.selectionSet, fieldScopes);
+                    checkScope(selection.selectionSet, fieldPermissions);
                 }
             }
         }

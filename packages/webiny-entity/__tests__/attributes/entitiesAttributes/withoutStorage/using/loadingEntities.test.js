@@ -43,6 +43,8 @@ describe("save and delete entities attribute test", () => {
 
         expect(findStub.getCall(0).args[0]).toEqual(UsersGroups);
         expect(findStub.getCall(0).args[1]).toEqual({
+            page: 1,
+            perPage: 10,
             query: {
                 user: "A"
             }

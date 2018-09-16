@@ -1,2 +1,2 @@
 // @flow
-export { Router, RouterComponent, renderMiddleware, resolveMiddleware } from "./src";
+export { renderMiddleware, RouterComponent, resolveMiddleware, Router } from "./src";

@@ -1,16 +1,16 @@
+// @flow
 import React from "react";
 import $ from "jquery";
 import parse from "url-parse";
 
-class Router extends React.Component {
-    constructor() {
-        super();
-        this.state = {
-            route: null
-        };
-    }
+class Router extends React.Component<*, *> {
+    state = {
+        route: null
+    };
 
-    componentWillMount() {
+    unlisten = null;
+
+    componentDidMount() {
         const { router } = this.props;
         const { history } = router;
 
@@ -23,11 +23,7 @@ class Router extends React.Component {
         $(document)
             .off("click", "a")
             .on("click", "a", function(e) {
-                if (
-                    this.href.startsWith("javascript:void(0)") ||
-                    this.href.endsWith("#") ||
-                    this.target === "_blank"
-                ) {
+                if (this.href.endsWith("#") || this.target === "_blank") {
                     return;
                 }
 
@@ -49,7 +45,7 @@ class Router extends React.Component {
         });
     }
 
-    componentWillReceiveProps(props) {
+    UNSAFE_componentWillReceiveProps(props: Object) {
         props.router.matchRoute(props.router.history.location.pathname).then(route => {
             if (typeof this.unlisten === "function") {
                 this.setState({ route });
@@ -58,7 +54,7 @@ class Router extends React.Component {
     }
 
     componentWillUnmount() {
-        this.unlisten();
+        this.unlisten && this.unlisten();
         this.unlisten = null;
     }
 

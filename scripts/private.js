@@ -1,11 +1,10 @@
-#!/usr/bin/env node
+// @flowIgnore
 const { argv } = require("yargs");
 require("dotenv").config();
-const fs = require("fs-extra");
 const path = require("path");
-const _ = require("lodash");
+const readPkg = require("read-pkg");
+const globby = require("globby");
 const execa = require("execa");
-const packages = require("./utils/lernaPackages");
 
 if (argv.require) {
     if (Array.isArray(argv.require)) {
@@ -21,17 +20,16 @@ const wsr = require("webiny-semantic-release");
 const registry = process.env.NPM_REGISTRY;
 
 const toPublish = [
-    //"webiny-api-cms",
     "webiny-api",
-    "webiny-client-admin",
-    //"webiny-client-cms",
-    "webiny-client-security",
-    "webiny-client-ui",
-    "webiny-client",
+    "webiny-api-cms",
+    "webiny-app",
+    "webiny-app-admin",
+    "webiny-app-cms",
+    "webiny-cms-editor",
+    "webiny-ui",
     "webiny-compose",
     "webiny-data-extractor",
     "webiny-entity-memory",
-    "webiny-entity-mongodb",
     "webiny-entity-mysql",
     "webiny-entity",
     "webiny-file-storage-local",
@@ -44,7 +42,6 @@ const toPublish = [
     "webiny-model",
     "webiny-mysql-connection",
     "webiny-react-router",
-    "webiny-scripts",
     "webiny-service-manager",
     "webiny-sql-table-mysql",
     "webiny-sql-table-sync",
@@ -52,19 +49,27 @@ const toPublish = [
     "webiny-validation"
 ];
 
+// Get packages to process
+const packages = globby
+    .sync("build/node_modules/*", { onlyDirectories: true, cwd: process.cwd() })
+    .map(dir => {
+        const pkg = readPkg.sync({ cwd: dir, normalize: false });
+        return {
+            name: pkg.name,
+            location: path.join(process.cwd(), dir),
+            package: pkg
+        };
+    })
+    .filter(pkg => !pkg.package.private && toPublish.includes(pkg.name));
+
+// Release config
 const config = {
     preview: argv.preview || false,
     branch: argv.branch || "master",
     ci: false,
     tagFormat: pkg => pkg.name + "@v${version}",
-    packages: packages().filter(pkg => toPublish.includes(pkg.name)),
+    packages,
     plugins: [
-        ({ packages }, next) => {
-            packages.map(pkg => {
-                pkg.jsonBackup = _.cloneDeep(pkg.package);
-            });
-            next();
-        },
         wsr.npmVerify({ registry }),
         wsr.analyzeCommits({
             isRelevant: (pkg, commit) => {
@@ -77,17 +82,6 @@ const config = {
             }
         }),
         wsr.releaseNotes(),
-        // Make sure "main" field does not start with `src/`
-        ({ packages, logger }, next) => {
-            packages.filter(pkg => pkg.nextRelease).map(pkg => {
-                const json = pkg.package;
-                if (json.main && (json.main.startsWith("src/") || json.main.startsWith("./src/"))) {
-                    logger.log(`Updating \`main\` field of %s`, pkg.name);
-                    json.main = json.main.replace("src/", "lib/");
-                }
-            });
-            next();
-        },
         wsr.updatePackage(),
         ({ packages }, next) => {
             packages.filter(pkg => pkg.nextRelease).map(pkg => {
@@ -99,6 +93,7 @@ const config = {
             next();
         },
         wsr.npmPublish({ registry }),
+        // This following plugin is only for Webiny monorepo
         async ({ packages, config }, next) => {
             if (config.preview) {
                 return;
@@ -110,9 +105,6 @@ const config = {
                     continue;
                 }
 
-                fs.writeJsonSync(path.join(pkg.location, "package.json"), pkg.jsonBackup, {
-                    spaces: 2
-                });
                 await execa("git", ["tag", pkg.nextRelease.gitTag]);
             }
             next();
@@ -121,6 +113,7 @@ const config = {
 };
 
 wsr.release(config).catch(e => {
+    // eslint-disable-next-line
     console.error(e);
     process.exit(1);
 });

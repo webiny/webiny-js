@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg height="288px" viewBox="0 0 642 288" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <title>Editor Mock</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <circle id="path-1" cx="606" cy="255" r="20"></circle>
+        <filter x="-12.5%" y="-10.0%" width="125.0%" height="125.0%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0.653459821   0 0 0 0 0.653459821   0 0 0 0 0.653459821  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="CMS-Editor-Onboarding" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="1.-Intro" transform="translate(-399.000000, -221.000000)">
+            <g id="Onboarding" transform="translate(320.000000, 103.000000)">
+                <g id="Editor-Mock" transform="translate(80.000000, 119.000000)">
+                    <g>
+                        <rect id="Rectangle" stroke="#D2D2D2" fill="#EEEEEE" x="-0.5" y="-0.5" width="641" height="287" rx="2"></rect>
+                        <g id="Left-Toolbar">
+                            <rect id="left-toolbar-bg" fill="var(--mdc-theme-surface)" x="0" y="0" width="18" height="286"></rect>
+                            <circle id="Oval-2" fill="#D8D8D8" cx="9" cy="38" r="5"></circle>
+                            <circle id="Oval-2-Copy" fill="#D8D8D8" cx="9" cy="243" r="5"></circle>
+                            <circle id="Oval-2-Copy-2" fill="#D8D8D8" cx="9" cy="258" r="5"></circle>
+                            <circle id="Oval-2-Copy-3" fill="#D8D8D8" cx="9" cy="273" r="5"></circle>
+                        </g>
+                        <g id="Top-Toolbar" transform="translate(2.000000, 0.000000)">
+                            <rect id="top-toolbar-bg" fill="var(--mdc-theme-surface)" x="0" y="0" width="638" height="27"></rect>
+                            <rect id="back-btn" fill="#D8D8D8" x="2" y="8" width="10" height="10" rx="2"></rect>
+                            <rect id="subtitle" fill="#D2D2D2" x="16" y="5" width="100" height="5" rx="2"></rect>
+                            <rect id="title" fill="#BBBDBF" x="16" y="12" width="150" height="10" rx="2"></rect>
+                            <rect id="dropdown-device" fill="#BBBDBF" x="289" y="6" width="60" height="15" rx="2"></rect>
+                            <rect id="dropdown-revision" fill="#BBBDBF" x="468" y="6" width="60" height="15" rx="2"></rect>
+                            <rect id="settings-icon" fill="#BBBDBF" x="533" y="6" width="15" height="15" rx="2"></rect>
+                            <rect id="additional-options" fill="#BBBDBF" x="553" y="6" width="15" height="15" rx="2"></rect>
+                            <rect id="publish-btn" fill="#FA5723" x="573" y="6" width="60" height="15" rx="2"></rect>
+                        </g>
+                        <g id="Add-Block-Fab">
+                            <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                            <use fill="#50E3C2" fill-rule="evenodd" xlink:href="#path-1"></use>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

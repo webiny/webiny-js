@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <title>Icon Bottom</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Webiny---PageEditor" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Page-editor---Blank" transform="translate(-158.000000, -276.000000)">
+            <g id="Left-menu" transform="translate(25.000000, 125.000000)">
+                <g id="dock-direction" transform="translate(12.000000, 141.000000)">
+                    <g id="Icon-Bottom" transform="translate(133.000000, 22.000000) rotate(270.000000) translate(-133.000000, -22.000000) translate(117.000000, 6.000000)">
+                        <g id="round-vertical_align_bottom-24px" transform="translate(6.676579, 7.612369)">
+                            <g id="Bounding_Boxes" transform="translate(4.187500, 0.000000)">
+                                <polygon id="Shape" points="0 0 13.7076485 0 13.7076485 12.6432899 0 12.6432899"></polygon>
+                            </g>
+                            <g id="Rounded" transform="translate(3.125000, 8.446645) rotate(90.000000) translate(-3.125000, -8.446645) translate(-4.375000, 5.946645)" fill="#757575" fill-rule="nonzero">
+                                <path d="M0,2.2653485 C0,3.39551358 0.413762019,4.32019409 0.919471154,4.32019409 L13.7920673,4.32019409 C14.2977764,4.32019409 14.7115385,3.39551358 14.7115385,2.2653485 C14.7115385,1.13518343 14.2977764,0.210502915 13.7920673,0.210502915 L0.919471154,0.210502915 C0.413762019,0.210502915 0,1.13518343 0,2.2653485 Z" id="Shape"></path>
+                            </g>
+                        </g>
+                        <g id="round-check_box_outline_blank-24px">
+                            <g id="Bounding_Boxes">
+                                <polygon id="Shape" points="0 0 32 0 32 32 0 32"></polygon>
+                            </g>
+                            <g id="Rounded" transform="translate(4.000000, 4.000000)" fill="#757575" fill-rule="nonzero">
+                                <path d="M20,21.3333333 L4,21.3333333 C3.26666667,21.3333333 2.66666667,20.7333333 2.66666667,20 L2.66666667,4 C2.66666667,3.26666667 3.26666667,2.66666667 4,2.66666667 L20,2.66666667 C20.7333333,2.66666667 21.3333333,3.26666667 21.3333333,4 L21.3333333,20 C21.3333333,20.7333333 20.7333333,21.3333333 20,21.3333333 Z M21.3333333,0 L2.66666667,0 C1.2,0 0,1.2 0,2.66666667 L0,21.3333333 C0,22.8 1.2,24 2.66666667,24 L21.3333333,24 C22.8,24 24,22.8 24,21.3333333 L24,2.66666667 C24,1.2 22.8,0 21.3333333,0 Z" id="Shape"></path>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

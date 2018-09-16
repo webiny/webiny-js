@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150px" height="116px" viewBox="0 0 150 116" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <title>Icon</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="CMS-Editor-Onboarding" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="2.-Blocks" transform="translate(-350.000000, -525.000000)">
+            <g id="Text-Block" transform="translate(320.000000, 463.000000)">
+                <g id="Icon" transform="translate(30.000000, 62.000000)">
+                    <rect id="title-gb" fill="#5CC9B1" x="100" y="0" width="50" height="18" rx="2"></rect>
+                    <text id="block" font-family="SourceSansPro-Regular, Source Sans Pro" font-size="12" font-weight="normal" fill="#FFFFFF">
+                        <tspan x="113" y="12">block</tspan>
+                    </text>
+                    <rect id="hover" stroke="#5CC9B1" stroke-width="2" fill-opacity="0.1" fill="#5CC9B1" x="1" y="17" width="148" height="98" rx="2"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

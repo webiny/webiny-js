@@ -20,6 +20,7 @@ export default (value: any, params: Array<string>) => {
     value = value + "";
 
     // Intentionally put '==' instead of '===' because passed parameter for this validator is always sent inside a string (eg. "eq:test").
+    // eslint-disable-next-line
     if (value == params[0]) {
         return;
     }

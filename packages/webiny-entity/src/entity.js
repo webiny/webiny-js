@@ -451,6 +451,25 @@ class Entity {
         }
 
         const prepared = this.__prepareParams(params);
+
+        // Prepare find-specific params: perPage and page.
+        prepared.page = Number(prepared.page);
+        if (!Number.isInteger(prepared.page) || prepared.page <= 0) {
+            prepared.page = 1;
+        }
+
+        prepared.perPage = Number(prepared.perPage);
+        if (Number.isInteger(prepared.perPage) && prepared.perPage > 0) {
+            if (prepared.perPage > 100) {
+                throw new EntityError(
+                    "Cannot query for more than 100 entities per page.",
+                    EntityError.CANNOT_QUERY_MORE_THAN_100
+                );
+            }
+        } else {
+            prepared.perPage = 10;
+        }
+
         await this.emit("query", prepared);
 
         const queryResult: QueryResult = await this.getDriver().find(this, prepared);

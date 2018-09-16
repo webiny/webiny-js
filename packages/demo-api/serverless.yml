@@ -1,0 +1,38 @@
+service: project-name
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+  - serverless-static
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+    packager: 'yarn'
+  stage: ${opt:stage, self:provider.stage}
+  region: ${opt:region, "us-east-1"}
+  client:
+    bucketId: ${opt:bucket, ""}
+  api:
+    source: ${opt:source, "src"}
+  static:
+    path: ./static
+    port: 8000
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: dev
+  region: ${self:custom.region}
+  role: ${opt:role, ""}
+
+functions:
+  api:
+    name: '${self:service}-${self:custom.stage}-api'
+    handler: ${self:custom.api.source}/handler.api
+    events: [ { http: 'ANY /graphql' }, { http: 'ANY /graphql/{proxy+}' } ]
+  files:
+    name: '${self:service}-${self:custom.stage}-files'
+    handler: ${self:custom.api.source}/handler.files
+    events: [ { http: 'ANY /files' } ]

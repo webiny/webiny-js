@@ -3,7 +3,7 @@ import { Group, Policy } from "webiny-api/entities";
 import { Category } from "webiny-api-cms";
 
 export default async () => {
-    const cmsGroup = new Group();
+    /*const cmsGroup = new Group();
     cmsGroup.populate({
         name: "CMS",
         description: "Manage CMS pages, categories, redirects etc.",
@@ -48,11 +48,11 @@ export default async () => {
 
     const defaultGroup: Group = (await Group.findOne({ query: { slug: "default" } }): any);
     defaultGroup.policies = [...(await defaultGroup.policies), cmsPublicPolicy];
-    await defaultGroup.save();
+    await defaultGroup.save()*/;
 
     const blogCategory = new Category();
     blogCategory.populate({
-        title: "Blog",
+        name: "Blog",
         slug: "blog",
         url: "/blog/"
     });

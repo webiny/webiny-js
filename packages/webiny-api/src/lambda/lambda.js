@@ -11,7 +11,7 @@ export default (api: Api) => {
             headers: {
                 "Access-Control-Allow-Origin": "*"
             },
-            body: JSON.stringify(output)
+            body: JSON.stringify(output, null, 2)
         };
     };
 };

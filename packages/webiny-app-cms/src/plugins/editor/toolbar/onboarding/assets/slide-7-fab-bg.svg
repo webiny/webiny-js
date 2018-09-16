@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="406px" height="406px" viewBox="0 0 406 406" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <title>AddFabBg</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="CMS-Editor-Onboarding" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.308649554">
+        <g id="7.-Finish" transform="translate(-784.000000, -339.000000)">
+            <g id="Onboarding" transform="translate(320.000000, 103.000000)">
+                <g id="Onboarding-Dialog">
+                    <g id="AddFabBg" style="mix-blend-mode: darken;" transform="translate(464.000000, 236.000000)">
+                        <circle id="Oval-4" fill="#5CC9B1" cx="203" cy="203" r="203"></circle>
+                        <path d="M274.75,215.875 L212.875,215.875 L212.875,277.75 C212.875,284.55625 207.30625,290.125 200.5,290.125 C193.69375,290.125 188.125,284.55625 188.125,277.75 L188.125,215.875 L126.25,215.875 C119.44375,215.875 113.875,210.30625 113.875,203.5 C113.875,196.69375 119.44375,191.125 126.25,191.125 L188.125,191.125 L188.125,129.25 C188.125,122.44375 193.69375,116.875 200.5,116.875 C207.30625,116.875 212.875,122.44375 212.875,129.25 L212.875,191.125 L274.75,191.125 C281.55625,191.125 287.125,196.69375 287.125,203.5 C287.125,210.30625 281.55625,215.875 274.75,215.875 Z" id="Shape" fill="#FFFFFF" fill-rule="nonzero"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

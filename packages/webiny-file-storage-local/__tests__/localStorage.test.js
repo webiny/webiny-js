@@ -1,40 +1,39 @@
 import path from "path";
-import fs from "fs-extra";
+import tempy from "tempy";
 
 import { Storage } from "webiny-file-storage";
 import LocalDriver from "webiny-file-storage-local";
 
 describe("LocalStorageDriver class test", () => {
     const publicUrl = "https://cdn.domain.com/";
-    const storageRoot = __dirname + "/storage";
-
-    const localDriver = new LocalDriver({
-        directory: storageRoot,
-        createDatePrefix: true,
-        publicUrl
-    });
-
-    const localDriver2 = new LocalDriver({
-        directory: storageRoot
-    });
-
-    const storage = new Storage(localDriver);
-    const storage2 = new Storage(localDriver2);
+    let storageRoot = null;
+    let localDriver = null;
+    let localDriver2 = null;
+    let storage = null;
+    let storage2 = null;
 
     const file1 = { key: "file.txt", data: { body: "test message" } };
     const file2 = { key: "file2.txt", data: { body: "test message" } };
 
     beforeAll(() => {
-        fs.emptyDirSync(__dirname + "/storage");
-    });
+        storageRoot = tempy.directory();
 
-    afterAll(() => {
-        fs.emptyDirSync(__dirname + "/storage");
-        fs.removeSync(__dirname + "/storage");
+        localDriver = new LocalDriver({
+            directory: storageRoot,
+            createDatePrefix: true,
+            publicUrl
+        });
+
+        localDriver2 = new LocalDriver({
+            directory: storageRoot
+        });
+
+        storage = new Storage(localDriver);
+        storage2 = new Storage(localDriver2);
     });
 
     test("should return an empty list of keys", async () => {
-        await expect(storage.getKeys("/", "**/*")).resolves.toEqual([]);
+        await expect(storage.getKeys("", "**/*")).resolves.toEqual([]);
     });
 
     test("should store a file with date prefix", async () => {
@@ -56,7 +55,9 @@ describe("LocalStorageDriver class test", () => {
     });
 
     test("should return a list of keys containing 2 keys", async () => {
-        await expect(storage.getKeys("/", "**/*")).resolves.toEqual([file1.key, file2.key]);
+        await expect(storage.getKeys("", "**/*")).resolves.toEqual(
+            expect.arrayContaining([file1.key, file2.key])
+        );
     });
 
     test("should return a file as a string", async () => {

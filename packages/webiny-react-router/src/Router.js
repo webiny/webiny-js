@@ -10,20 +10,12 @@ import matchPath from "./utils/matchPath";
 import generatePath from "./utils/generatePath";
 import sortRoutes from "./utils/sortRoutes";
 import parseBoolean from "./utils/parseBoolean";
+import type { Route, RouterConfig, GoToRouteOptions } from "webiny-react-router/types";
 
 const debug = debugFactory("webiny-react-router");
 
-declare type Route = {
-    name: string,
-    path: string
-} & Object;
-
 class Router {
-    config: {
-        history: any,
-        basename: string,
-        middleware: Array<Function>
-    };
+    config: RouterConfig;
     history: any;
     middleware: Function;
     routes: Array<Route>;
@@ -56,9 +48,14 @@ class Router {
         this.routes.push(route);
     }
 
-    goToRoute(name: string, params: {}) {
-        const route = name === "current" ? this.route : _.find(this.routes, { name });
-        invariant(route, `Route "${name}" does not exist!`);
+    goToRoute(options: GoToRouteOptions) {
+        const route = options.name ? _.find(this.routes, { name: options.name }) : this.route;
+        const params = options.merge
+            ? { ...this.getParams(), ...this.getQuery(), ...options.params }
+            : options.params;
+
+        options.name && invariant(route, `Route "${options.name}" does not exist!`);
+
         const path = generatePath((this.config.basename || "") + route.path, params);
 
         this.history.push(path);
@@ -125,4 +122,4 @@ class Router {
     }
 }
 
-export default Router;
+export { Router };

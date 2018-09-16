@@ -9,21 +9,24 @@ export default async () => {
         slug: "security-user-authentication",
         permissions: {
             api: {
-                getIdentity: true,
-                authenticateSecurityUser: {
-                    token: true,
-                    identity: {
-                        id: true,
-                        email: true,
-                        groups: { id: true, slug: true },
-                        gravatar: true,
-                        lastName: true,
-                        firstName: true
-                    },
-                    expiresOn: true
+                Security: {
+                    Users: {
+                        authenticate: {
+                            token: true,
+                            identity: {
+                                id: true,
+                                email: true,
+                                groups: ["id", "slug"],
+                                gravatar: true,
+                                avatar: ["src", "size", "type", "name"],
+                                lastName: true,
+                                firstName: true
+                            },
+                            expiresOn: true
+                        }
+                    }
                 }
-            },
-            entities: { SecurityUser: { other: { operations: { read: true } } } }
+            }
         }
     });
 

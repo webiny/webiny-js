@@ -1,0 +1,24 @@
+$mdc-theme-primary: #fa5723;
+$mdc-theme-on-primary: #ffffff;
+$mdc-theme-secondary: #00ccb0;
+$mdc-theme-on-secondary: #ffffff;
+$mdc-theme-surface: #ffffff;
+$mdc-theme-on-surface: #000000;
+$mdc-typography-font-family: "Source Sans Pro";
+$mdc-theme-background: #f2f2f6;
+$mdc-theme-on-background: #fa5723;
+
+@import "~material-components-web/material-components-web.scss";
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700');
+
+/*
+Fix for select box appearance. For some reason browser prefix css attributes are striped away.
+ */
+.mdc-select__native-control{
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.mdc-select--box .mdc-select__native-control{
+  padding-top: 10px;
+}

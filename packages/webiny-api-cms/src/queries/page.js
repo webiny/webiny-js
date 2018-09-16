@@ -1,7 +1,7 @@
 // @flow
 import { GraphQLNonNull, GraphQLString, GraphQLObjectType } from "graphql";
 import GraphQLJSON from "graphql-type-json";
-import { Page, Revision, Widget } from "./../";
+import { Page, Revision } from "./../";
 import type { Schema } from "webiny-api/types";
 
 async function formatData(instance: Page | Revision) {
@@ -9,19 +9,6 @@ async function formatData(instance: Page | Revision) {
         "id,slug,title,content[id,type,data]"
     ): any);
 
-    for (let i = 0; i < page.content.length; i++) {
-        // $FlowFixMe
-        if (page.content[i].origin) {
-            const { data }: { data: ?Widget } = (await Widget.findById(
-                page.content[i].origin
-            ): any);
-            // $FlowFixMe
-            delete page.content[i].origin;
-            if (data) {
-                Object.assign(page.content[i], { data });
-            }
-        }
-    }
     return page;
 }
 

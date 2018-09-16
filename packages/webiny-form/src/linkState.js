@@ -1,38 +1,41 @@
-import _ from "lodash";
+import { get, noop } from "lodash";
+import { set } from "lodash/fp";
 
 export default (component, key, callback, defaultValue = null) => {
     const getValue = key => {
-        return _.get(component.state, key, defaultValue);
+        return get(component.state, key, defaultValue);
     };
 
     return {
+        /**
+         * Current state value
+         */
         value: getValue(key),
-        onChange: (value, inlineCallback = _.noop) => {
+        /**
+         * onChange callback
+         *
+         * @param value New value to set.
+         * @param inlineCallback A callback to execute with the new and old values, after the state is updated.
+         * @returns {Promise<any>}
+         */
+        onChange: (value, inlineCallback = noop) => {
             return new Promise(resolve => {
                 const oldValue = getValue(key);
 
-                let promise = Promise.resolve(value);
                 if (callback) {
-                    promise = Promise.resolve(callback(value, oldValue)).then(newValue => {
-                        return newValue === undefined ? value : newValue;
-                    });
+                    const newValue = callback(value, oldValue);
+                    value = newValue === undefined ? value : newValue;
                 }
 
-                return promise.then(value => {
-                    component.setState(
-                        cs => {
-                            const state = _.cloneDeep(cs);
-                            _.set(state, key, value);
-                            return state;
-                        },
-                        () => {
-                            if (_.isFunction(inlineCallback)) {
-                                inlineCallback(value, oldValue);
-                            }
-                            resolve(value);
+                component.setState(
+                    state => set(key, value, state),
+                    () => {
+                        if (typeof inlineCallback === "function") {
+                            inlineCallback(value, oldValue);
                         }
-                    );
-                });
+                        resolve(value);
+                    }
+                );
             });
         }
     };

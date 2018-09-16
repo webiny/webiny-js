@@ -1,6 +1,6 @@
 // @flow
 import type Table from "./table";
-import type Index from "./index";
+import type Index from "./tableIndex";
 import _ from "lodash";
 
 class IndexesContainer {

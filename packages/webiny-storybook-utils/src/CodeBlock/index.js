@@ -5,6 +5,7 @@ import copy from "copy-to-clipboard";
 import elementToString from "react-element-to-jsx-string";
 import prettier from "prettier/standalone";
 import babylon from "prettier/parser-babylon";
+import styled from "react-emotion";
 
 type Props = {
     copy?: boolean,
@@ -16,6 +17,25 @@ type State = {
     copied: boolean
 };
 
+const CopyToClipboard = styled("div")({
+    position: "relative",
+    fontSize: 13,
+    ".container": {
+        position: "absolute",
+        top: 18,
+        right: 18
+    },
+    ".copy": {
+        cursor: "pointer",
+        ":hover": {
+            opacity: 0.75
+        }
+    },
+    ".success": {
+        color: "green"
+    }
+});
+
 class CodeBlock extends React.Component<Props, State> {
     state = { copied: false };
 
@@ -24,7 +44,7 @@ class CodeBlock extends React.Component<Props, State> {
         this.setState({ copied: true }, () => {
             setTimeout(() => {
                 this.setState({ copied: false });
-            }, 2000);
+            }, 1500);
         });
     };
 
@@ -38,18 +58,25 @@ class CodeBlock extends React.Component<Props, State> {
         }
 
         return (
-            <div>
-                {this.props.copy && (
-                    <a href={"javascript:void(0)"} onClick={() => this.copy(source)}>
-                        {this.state.copied ? "Copied!" : "Copy to clipboard"}
-                    </a>
-                )}
+            <React.Fragment>
+                <CopyToClipboard>
+                    {this.props.copy && (
+                        <div onClick={() => this.copy(source)} className="container">
+                            {this.state.copied ? (
+                                <span className="success">Copied!</span>
+                            ) : (
+                                <span className="copy">Copy</span>
+                            )}
+                        </div>
+                    )}
+                </CopyToClipboard>
+
                 <Highlight language={this.props.lang || "html"}>
                     {prettier
                         .format(source, { parser: "babylon", plugins: [babylon] })
                         .replace(">;", ">")}
                 </Highlight>
-            </div>
+            </React.Fragment>
         );
     }
 }

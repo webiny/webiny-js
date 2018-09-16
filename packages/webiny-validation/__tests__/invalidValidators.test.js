@@ -3,10 +3,10 @@ import { validation, ValidationError } from "webiny-validation";
 describe("invalid validators test", () => {
     test("must throw error if validators were not passed as a non-empty string", async () => {
         return Promise.all([
-            await expect(validation.validate("123", null)).rejects,
-            await expect(validation.validate("123", 123)).rejects,
-            await expect(validation.validate("123", [])).rejects,
-            await expect(validation.validate("123", {}, {})).rejects
+            await expect(validation.validate("123", null)).rejects.toThrow(),
+            await expect(validation.validate("123", 123)).rejects.toThrow(),
+            await expect(validation.validate("123", [])).rejects.toThrow(),
+            await expect(validation.validate("123", {}, {})).rejects.toThrow()
         ]);
     });
 

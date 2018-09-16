@@ -101,6 +101,10 @@ class LocalStorageDriver implements IFileStorageDriver {
      * @param filter    (Optional) Glob pattern to filter returned file keys
      */
     getKeys(key?: string, filter?: string): Promise<Array<string>> {
+        if (key) {
+            key = _.trimStart(key, "/");
+        }
+
         const pattern = path.join(key || "", filter || "*");
 
         const options = {

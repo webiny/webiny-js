@@ -5,14 +5,11 @@ const { join } = require("path");
 const chalk = require("chalk");
 
 const blacklist = [
-    // Scripts
-    "webiny-scripts",
-
     // Client
-    "webiny-client",
-    "webiny-client-admin",
-    "webiny-client-cms",
-    "webiny-client-ui",
+    "webiny-app",
+    "webiny-app-admin",
+    "webiny-app-cms",
+    "webiny-ui",
     "webiny-form",
     "webiny-react-router"
 ];

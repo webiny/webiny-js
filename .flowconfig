@@ -1,26 +1,80 @@
 [ignore]
 .*/examples/.*
 .*/__tests__/.*
-<PROJECT_ROOT>/packages/webiny-scripts
-<PROJECT_ROOT>/scripts
+.*.svg
+.*/scripts/.*
+.*/build/.*
+.*/packages/webiny-ui_LEGACY/.*
 
 [include]
-
+.*/node_modules/.*
 [libs]
 packages/webiny-api/flow-typed/npm
-packages/webiny-client/flow-typed/npm
-packages/webiny-client-security/flow-typed/npm
-packages/webiny-api-security/flow-typed/npm
-packages/webiny-entity-mysql/flow-typed/npm
-packages/webiny-file-storage/flow-typed
 [lints]
-
 [options]
+esproposal.class_static_fields=enable
 module.file_ext=.js
 module.file_ext=.jsx
+module.file_ext=.mjs
 module.file_ext=.md
 module.system.node.resolve_dirname=node_modules
-module.system.node.resolve_dirname=build/node_modules
-module.system.node.resolve_dirname=./src
-esproposal.class_static_fields=enable
+module.name_mapper='.*\.svg' -> 'empty/object'
+module.name_mapper='.*\.scss' -> 'empty/object'
+module.name_mapper='^webiny-\(.*\)/types$' -> '<PROJECT_ROOT>/packages/webiny-\1/types.js'
+module.name_mapper='^webiny-api/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-api/src/\1'
+module.name_mapper='^webiny-api-cms/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-api-cms/src/\1'
+module.name_mapper='^webiny-app/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-app/src/\1'
+module.name_mapper='^webiny-app-admin/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-app-admin/src/\1'
+module.name_mapper='^webiny-app-cms/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-app-cms/src/\1'
+module.name_mapper='^webiny-cms-editor/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-cms-editor/src/\1'
+module.name_mapper='^webiny-ui/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-ui/src/\1'
+module.name_mapper='^webiny-compose/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-compose/src/\1'
+module.name_mapper='^webiny-data-extractor/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-data-extractor/src/\1'
+module.name_mapper='^webiny-entity-memory/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-entity-memory/src/\1'
+module.name_mapper='^webiny-entity-mysql/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-entity-mysql/src/\1'
+module.name_mapper='^webiny-entity/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-entity/src/\1'
+module.name_mapper='^webiny-file-storage-local/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-file-storage-local/src/\1'
+module.name_mapper='^webiny-file-storage-s3/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-file-storage-s3/src/\1'
+module.name_mapper='^webiny-file-storage/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-file-storage/src/\1'
+module.name_mapper='^webiny-form/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-form/src/\1'
+module.name_mapper='^webiny-i18n-react/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-i18n-react/src/\1'
+module.name_mapper='^webiny-i18n/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-i18n/src/\1'
+module.name_mapper='^webiny-jimp/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-jimp/src/\1'
+module.name_mapper='^webiny-model/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-model/src/\1'
+module.name_mapper='^webiny-mysql-connection/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-mysql-connection/src/\1'
+module.name_mapper='^webiny-react-router/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-react-router/src/\1'
+module.name_mapper='^webiny-service-manager/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-service-manager/src/\1'
+module.name_mapper='^webiny-sql-table-mysql/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-sql-table-mysql/src/\1'
+module.name_mapper='^webiny-sql-table-sync/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-sql-table-sync/src/\1'
+module.name_mapper='^webiny-sql-table/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-sql-table/src/\1'
+module.name_mapper='^webiny-storybook-utils/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-storybook-utils/src/\1'
+module.name_mapper='^webiny-validation/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-validation/src/\1'
+
 [strict]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

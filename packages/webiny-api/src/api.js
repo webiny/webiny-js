@@ -2,8 +2,7 @@
 import cls from "cls-hooked";
 import compose from "webiny-compose";
 import { ServiceManager } from "webiny-service-manager";
-import GraphQL from "./graphql/GraphQL";
-import EntityManager from "./entities/EntityManager";
+import { schema } from "./graphql";
 import createHandler from "./graphql/createHandler";
 import chalk from "chalk";
 import type { AppType, LambdaEvent } from "./../types";
@@ -11,17 +10,13 @@ import type { AppType, LambdaEvent } from "./../types";
 class Api {
     handler: Function;
     config: Object;
-    graphql: GraphQL;
     services: ServiceManager;
-    entities: EntityManager;
     namespace: cls$Namespace;
     apps: Array<AppType>;
 
     constructor() {
         this.config = {};
-        this.graphql = new GraphQL();
         this.services = new ServiceManager();
-        this.entities = new EntityManager();
         this.apps = [];
     }
 
@@ -77,7 +72,13 @@ class Api {
         this.namespace = cls.createNamespace(Date.now().toString());
 
         // Build event handler
-        this.handler = createHandler(this.namespace, options);
+        const handler = createHandler(this.namespace, options);
+        this.handler = async args => {
+            this.__processHooks("preHandle");
+            const output = await handler(args);
+            this.__processHooks("postHandle");
+            return output;
+        };
 
         return this.handler;
     }
@@ -110,7 +111,7 @@ class Api {
 
     async init() {
         const { default: coreApp } = await import("./coreApp");
-        this.use(coreApp());
+        this.apps.unshift(coreApp());
 
         if (Object.keys(this.config).length === 0) {
             this.log(
@@ -136,8 +137,18 @@ class Api {
             }
         });
 
+        if (this.config.hooks && this.config.hooks[hook]) {
+            hooks.push(this.config.hooks[hook]);
+        }
+
+        const params: Object = { api: this };
+
+        if (hook === "init") {
+            params.schema = schema;
+        }
+
         try {
-            await compose(hooks)({ api: this });
+            await compose(hooks)(params);
         } catch (e) {
             this.log(`An error occurred in the "${hook}" process:\n${e.stack}`, "error");
             process.exit(1);

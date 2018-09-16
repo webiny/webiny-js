@@ -1,22 +1,18 @@
 {
     "presets": [
-        ["babel-preset-env", {
+        ["@babel/preset-env", {
             "targets": {
                 "browsers": ["last 2 versions", "safari >= 7"]
             }
         }],
-        "babel-preset-react"
+        "@babel/preset-react",
+        "@babel/preset-flow"
     ],
     "plugins": [
         ["babel-plugin-lodash"],
-        ["babel-plugin-transform-class-properties"],
-        ["babel-plugin-transform-object-rest-spread", {"useBuiltIns": true}],
-        ["babel-plugin-syntax-dynamic-import"],
-        ["babel-plugin-transform-builtin-extend", {"globals": ["Error"]}],
-        ["babel-plugin-transform-runtime", {
-            "polyfill": false,
-            "regenerator": true
-        }]
+        ["@babel/plugin-proposal-class-properties"],
+        ["@babel/plugin-proposal-object-rest-spread", {"useBuiltIns": true}],
+        ["@babel/plugin-transform-runtime"]
     ]
 }
 
