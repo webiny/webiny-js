@@ -52,6 +52,17 @@ class Settings extends React.Component<Props> {
                     <Tab label={"Border"}>
                         <Grid>
                             <Cell span={4}>
+                                <Typography use={"overline"}>Color</Typography>
+                            </Cell>
+                            <Cell span={8}>
+                                <ColorPicker
+                                    compact
+                                    value={borderColor}
+                                    onChange={value => this.updateSettings("borderColor", value, false)}
+                                    onChangeComplete={value => this.updateSettings("borderColor", value)}
+                                />
+                            </Cell>
+                            <Cell span={4}>
                                 <Typography use={"overline"}>Width</Typography>
                             </Cell>
                             <Cell span={8}>
@@ -92,19 +103,6 @@ class Settings extends React.Component<Props> {
                                     value={borderStyle}
                                     onChange={value => this.updateSettings("borderStyle", value)}
                                     options={["none", "solid", "dashed", "dotted"]}
-                                />
-                            </Cell>
-                        </Grid>
-                    </Tab>
-                    <Tab label={"Color"}>
-                        <Grid>
-                            <Cell span={12}>
-                                <ColorPicker
-                                    value={borderColor}
-                                    onChange={value => this.updateSettings("borderColor", value)}
-                                    onChangeComplete={value =>
-                                        this.updateSettings("borderColor", value, true)
-                                    }
                                 />
                             </Cell>
                         </Grid>
