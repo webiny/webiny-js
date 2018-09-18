@@ -15,7 +15,7 @@ import readme from "./README.md";
 import { Form } from "webiny-form";
 
 // $FlowFixMe
-import { SingleImageUpload, PropsType } from ".";
+import { SingleImageUpload, PropsType } from "./SingleImageUpload";
 
 const story = storiesOf("Components/ImageUpload", module);
 story.addDecorator(withKnobs);
@@ -43,7 +43,7 @@ story.add("Single Image Upload", () => {
                                 <Bind name="image">
                                     <SingleImageUpload
                                         cropper={{
-                                            aspectRatio: 16 / 9
+                                            aspectRatio: 1
                                         }}
                                         label="Your previously uploaded image:"
                                         disabled={disabled}
@@ -60,6 +60,9 @@ story.add("Single Image Upload", () => {
                             {({ Bind }) => (
                                 <Bind name="image">
                                      <SingleImageUpload
+                                        cropper={{
+                                            aspectRatio: 4 / 3
+                                        }}
                                         label="Your previously uploaded image:"
                                         disabled={disabled}
                                         description="This list will not be shown to other users."

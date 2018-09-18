@@ -74,6 +74,9 @@ story.add("Multi Image Upload", () => {
                                     label="Your previously uploaded images:"
                                     disabled={disabled}
                                     description="This list will not be shown to other users."
+                                    cropper={{
+                                        aspectRatio: 1
+                                    }}
                                 />
                             </Bind>
                         )}

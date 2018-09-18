@@ -3,6 +3,7 @@ import * as React from "react";
 import type { FormComponentProps } from "./../types";
 import { FileBrowser, type FileBrowserFile, type FileError } from "webiny-ui/FileBrowser";
 import { ImageCropper } from "webiny-ui/ImageCropper";
+import { ButtonPrimary, ButtonSecondary } from "webiny-ui/Button";
 import { FormElementMessage } from "webiny-ui/FormElementMessage";
 import styled from "react-emotion";
 import classNames from "classnames";
@@ -25,7 +26,7 @@ const ImageUploadWrapper = styled("div")({
     }
 });
 
-type Props = FormComponentProps & {
+export type Props = FormComponentProps & {
     // Component label.
     label?: string,
 
@@ -45,7 +46,11 @@ type Props = FormComponentProps & {
     // Uses "bytes" (https://www.npmjs.com/package/bytes) library to convert string notation to actual number.
     maxSize: string,
 
-    // By default, image cropper will be shown once an image has been selected.
+    // By default, a cropper tool will be shown when an image is selected.
+    // Set to false if there is no need for cropper to be shown. Otherwise, set true (default value) or alternatively
+    // an object containing all of the cropper related options (eg. "aspectRatio").
+    // Please check the docs of CropperJs (https://github.com/fengyuanchen/cropperjs for the list of all
+    // available options.
     cropper?: boolean | Object,
 
     // Use these to customize error messages (eg. if i18n supported is needed).
@@ -61,10 +66,13 @@ type State = {
     showCropper: boolean
 };
 
-class SingleImageUpload extends React.Component<Props, State> {
+// Do not apply cropping for following image types.
+const noCroppingTypes = ["image/svg+xml", "image/gif"];
+
+export class SingleImageUpload extends React.Component<Props, State> {
     static defaultProps = {
-        accept: ["image/jpeg", "image/png", "image/gif"],
         maxSize: "5mb",
+        accept: ["image/jpeg", "image/png", "image/gif", "image/svg+xml"],
         cropper: true,
         errorMessages: {
             maxSizeExceeded: "Max size exceeded.",
@@ -80,9 +88,12 @@ class SingleImageUpload extends React.Component<Props, State> {
 
     handleFiles = async (files: Array<FileBrowserFile>) => {
         const { onChange, cropper } = this.props;
+        const [file] = files;
         this.setState({ error: null }, () => {
-            onChange && onChange(files[0]);
-            cropper && this.setState({ showCropper: true });
+            onChange && onChange(file);
+            if (cropper && !noCroppingTypes.includes(file.type)) {
+                cropper && file.type && this.setState({ showCropper: true });
+            }
         });
     };
 
@@ -126,7 +137,8 @@ class SingleImageUpload extends React.Component<Props, State> {
                                                     src: value ? value.src : null
                                                 })}
                                             />
-                                            <button
+                                            <ButtonPrimary
+                                                label={"Crop"}
                                                 onClick={() => {
                                                     const src = getDataURL();
                                                     this.setState({ showCropper: false }, () => {
@@ -135,7 +147,16 @@ class SingleImageUpload extends React.Component<Props, State> {
                                                 }}
                                             >
                                                 Crop
-                                            </button>
+                                            </ButtonPrimary>
+
+                                            <ButtonSecondary
+                                                label={"Cancel"}
+                                                onClick={() =>
+                                                    this.setState({ showCropper: false })
+                                                }
+                                            >
+                                                Cancel
+                                            </ButtonSecondary>
                                         </React.Fragment>
                                     )}
                                 </ImageCropper>
@@ -174,5 +195,3 @@ class SingleImageUpload extends React.Component<Props, State> {
         );
     }
 }
-
-export { SingleImageUpload };

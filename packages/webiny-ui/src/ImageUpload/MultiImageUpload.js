@@ -2,6 +2,8 @@
 import * as React from "react";
 import type { FormComponentProps } from "./../types";
 import { FileBrowser, type FileBrowserFile, type FileError } from "webiny-ui/FileBrowser";
+import { ImageCropper } from "webiny-ui/ImageCropper";
+import { ButtonPrimary, ButtonSecondary } from "webiny-ui/Button";
 import { css } from "emotion";
 import classNames from "classnames";
 import { FormElementMessage } from "webiny-ui/FormElementMessage";
@@ -29,6 +31,9 @@ const imagesStyle = css({
     }
 });
 
+// Do not apply cropping for following image types.
+const noCroppingTypes = ["image/svg+xml", "image/gif"];
+
 type Props = FormComponentProps & {
     // Component label.
     label?: string,
@@ -49,6 +54,13 @@ type Props = FormComponentProps & {
     // Uses "bytes" (https://www.npmjs.com/package/bytes) library to convert string notation to actual number.
     maxSize: string,
 
+    // By default, a cropper tool will be shown when an image is selected.
+    // Set to false (default value) if there is no need for cropper to be shown. Otherwise, set true or alternatively
+    // an object containing all of the cropper related options (eg. "aspectRatio").
+    // Please check the docs of CropperJs (https://github.com/fengyuanchen/cropperjs for the list of all
+    // available options.
+    cropper?: boolean | Object,
+
     // Use these to customize error messages (eg. if i18n supported is needed).
     errorMessages: {
         maxSizeExceeded: string,
@@ -65,13 +77,15 @@ type ImageType = {
 };
 
 type State = {
-    errors: ?Array<FileError>
+    errors: ?Array<FileError>,
+    showCropper: Array<FileBrowserFile>
 };
 
 class MultiImageUpload extends React.Component<Props, State> {
     static defaultProps = {
-        accept: ["image/jpeg", "image/png", "image/gif"],
+        accept: ["image/jpeg", "image/png", "image/gif", "image/svg+xml"],
         maxSize: "5mb",
+        cropper: false,
         errorMessages: {
             maxSizeExceeded: "Max size exceeded.",
             unsupportedFileType: "Unsupported file type.",
@@ -80,7 +94,8 @@ class MultiImageUpload extends React.Component<Props, State> {
     };
 
     state = {
-        errors: null
+        errors: null,
+        showCropper: []
     };
 
     removeImage = (image: ImageType) => {
@@ -91,47 +106,57 @@ class MultiImageUpload extends React.Component<Props, State> {
 
         const images = Array.isArray(value) ? [...value] : [];
         images.splice(images.indexOf(image), 1);
-
         onChange(images);
     };
 
-    handleFiles = async (files: Array<FileBrowserFile>, append: boolean = false) => {
-        const { validate } = this.props;
+    handleFiles = async (files: Array<FileBrowserFile>, index: number = 0) => {
+        const { value, onChange, validate, cropper } = this.props;
+        this.setState({ errors: null });
+
+        const newValue = value ? [...value] : [];
+        newValue.splice(index ? index + 1 : index, 0, ...files);
+
         if (validate) {
             return validate().then(() => {
-                this.setState({ errors: null }, () => {
-                    const { value, onChange } = this.props;
-                    if (!onChange) {
-                        return;
-                    }
-
-                    if (Array.isArray(value) && append) {
-                        onChange([...value, ...files]);
-                    } else {
-                        onChange(files);
-                    }
-                });
+                onChange && onChange(newValue);
+                cropper && this.setState({ showCropper: files });
             });
         }
 
-
-        this.setState({ errors: null }, () => {
-            const { value, onChange } = this.props;
-            if (!onChange) {
-                return;
-            }
-
-            if (Array.isArray(value) && append) {
-                onChange([...value, ...files]);
-            } else {
-                onChange(files);
-            }
-        });
+        onChange && onChange(newValue);
+        cropper && this.setState({ showCropper: files });
     };
 
     handleErrors = (errors: Array<FileError>) => {
         this.setState({ errors });
     };
+
+    finishCrop({ file, index, src }: { file: FileBrowserFile, index: number, src: ?string }) {
+        const { value, onChange } = this.props;
+
+        this.setState(
+            state => {
+                state.showCropper.splice(state.showCropper.indexOf(file), 1);
+                return state;
+            },
+            () => {
+                if (!onChange) {
+                    return;
+                }
+
+                const newValue = value ? [...value] : [];
+                newValue[index].src = src;
+                onChange(newValue);
+            }
+        );
+    }
+
+    cancelCrop({ file }: { file: FileBrowserFile }) {
+        this.setState(state => {
+            state.showCropper.splice(state.showCropper.indexOf(file), 1);
+            return state;
+        });
+    }
 
     render() {
         const {
@@ -142,8 +167,11 @@ class MultiImageUpload extends React.Component<Props, State> {
             disabled,
             accept,
             maxSize,
+            cropper,
             className
         } = this.props;
+
+        const { showCropper } = this.state;
 
         return (
             <div className={classNames(imagesStyle, className)}>
@@ -154,42 +182,84 @@ class MultiImageUpload extends React.Component<Props, State> {
                 )}
 
                 <FileBrowser accept={accept} maxSize={maxSize} multiple convertToBase64>
-                    {({ browseFiles }) => (
-                        <div className={classNames({ disabled })}>
-                            <ul className="images">
-                                {Array.isArray(value) &&
-                                    value.map((file, index) => (
-                                        <li key={index}>
-                                            <Image
-                                                value={file}
-                                                removeImage={() => this.removeImage(file)}
-                                                uploadImage={() => {
-                                                    const append =
-                                                        Array.isArray(value) && value.length > 0;
-                                                    browseFiles({
-                                                        onSuccess: files =>
-                                                            this.handleFiles(files, append),
-                                                        onErrors: errors =>
-                                                            this.handleErrors(errors)
-                                                    });
-                                                }}
-                                            />
-                                        </li>
-                                    ))}
-                                <li>
-                                    <Image
-                                        uploadImage={() => {
-                                            const append = Array.isArray(value) && value.length > 0;
-                                            browseFiles({
-                                                onSuccess: files => this.handleFiles(files, append),
-                                                onErrors: errors => this.handleErrors(errors)
-                                            });
-                                        }}
-                                    />
-                                </li>
-                            </ul>
-                        </div>
-                    )}
+                    {({ browseFiles }) => {
+                        const imageCropperProps = typeof cropper === "object" ? cropper : null;
+
+                        return (
+                            <div className={classNames({ disabled })}>
+                                <ul className="images">
+                                    {Array.isArray(value) &&
+                                        value.map((file, index) => (
+                                            <li key={index}>
+                                                {Array.isArray(showCropper) &&
+                                                showCropper.includes(file) &&
+                                                !noCroppingTypes.includes(file.type) ? (
+                                                    <ImageCropper {...imageCropperProps}>
+                                                        {({ getDataURL, getImgProps }) => (
+                                                            <React.Fragment>
+                                                                <img
+                                                                    {...getImgProps({
+                                                                        src: file.src
+                                                                    })}
+                                                                />
+                                                                <ButtonPrimary
+                                                                    label={"Crop"}
+                                                                    onClick={() =>
+                                                                        this.finishCrop({
+                                                                            file,
+                                                                            index,
+                                                                            src: getDataURL()
+                                                                        })
+                                                                    }
+                                                                >
+                                                                    Crop
+                                                                </ButtonPrimary>
+
+                                                                <ButtonSecondary
+                                                                    label={"Cancel"}
+                                                                    onClick={() =>
+                                                                        this.cancelCrop({ file })
+                                                                    }
+                                                                >
+                                                                    Cancel
+                                                                </ButtonSecondary>
+                                                            </React.Fragment>
+                                                        )}
+                                                    </ImageCropper>
+                                                ) : (
+                                                    <Image
+                                                        value={file}
+                                                        removeImage={() => this.removeImage(file)}
+                                                        uploadImage={() => {
+                                                            browseFiles({
+                                                                onSuccess: files =>
+                                                                    this.handleFiles(files, index),
+                                                                onErrors: errors =>
+                                                                    this.handleErrors(errors)
+                                                            });
+                                                        }}
+                                                    />
+                                                )}
+                                            </li>
+                                        ))}
+                                    <li>
+                                        <Image
+                                            uploadImage={() => {
+                                                browseFiles({
+                                                    onSuccess: files =>
+                                                        this.handleFiles(
+                                                            files,
+                                                            Array.isArray(value) ? value.length : 0
+                                                        ),
+                                                    onErrors: errors => this.handleErrors(errors)
+                                                });
+                                            }}
+                                        />
+                                    </li>
+                                </ul>
+                            </div>
+                        );
+                    }}
                 </FileBrowser>
 
                 {validation.isValid === false && (
