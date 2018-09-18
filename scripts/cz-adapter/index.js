@@ -124,7 +124,7 @@ module.exports = {
             {
                 type: "input",
                 name: "footer",
-                message: "List any issues closed by this change:\n"
+                message: "List any issues closed by this change (for multiple issues: closes #123, fixes #534):\n"
             },
             {
                 type: "checkbox",
