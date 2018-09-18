@@ -7,7 +7,7 @@ import Settings from "../utils/PMSettings";
 import Action from "./../Action";
 
 export default {
-    name: "element-settings-margin",
+    name: "cms-element-settings-margin",
     type: "cms-element-settings",
     renderAction({ active }) {
         return (

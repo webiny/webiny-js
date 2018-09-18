@@ -39,7 +39,7 @@ export default () => {
         menu: [
             {
                 name: "ordered-list-menu-item",
-                type: "slate-menu-item",
+                type: "cms-slate-menu-item",
                 render({ MenuButton, editor }: Object) {
                     const isActive = hasBlock(editor.value, "ordered-list");
 
@@ -56,7 +56,7 @@ export default () => {
             },
             {
                 name: "unordered-list-menu-item",
-                type: "slate-menu-item",
+                type: "cms-slate-menu-item",
                 render({ MenuButton, editor }: Object) {
                     const isActive = hasBlock(editor.value, "unordered-list");
 

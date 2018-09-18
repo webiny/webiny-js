@@ -7,4 +7,4 @@ import spacer from "./spacer";
 import button from "./button";
 import card1 from "./cards/card-1";
 
-export default [row, block, column, image, ...text, spacer, button, card1];
+export default [row(), block(), column(), image(), text(), spacer(), button(), card1()];

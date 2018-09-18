@@ -2,8 +2,8 @@ import cloneDeep from "lodash/cloneDeep";
 import { createValue } from "webiny-app-cms/editor/components/Slate";
 
 export default {
-    name: "block-2",
-    type: "block",
+    name: "cms-block-2",
+    type: "cms-block",
     keywords: ["image", "columns", "product"],
     create() {
         return cloneDeep({
@@ -20,15 +20,15 @@ export default {
                                 {
                                     data: {},
                                     elements: [],
-                                    type: "image",
+                                    type: "cms-element-image",
                                     settings: {}
                                 }
                             ],
-                            type: "column",
+                            type: "cms-element-column",
                             settings: {}
                         }
                     ],
-                    type: "row",
+                    type: "cms-element-row",
                     settings: {}
                 },
                 {
@@ -44,11 +44,11 @@ export default {
                                         text: createValue("Lorem ipsum.")
                                     },
                                     elements: [],
-                                    type: "text",
+                                    type: "cms-element-text",
                                     settings: {}
                                 }
                             ],
-                            type: "column",
+                            type: "cms-element-column",
                             settings: {}
                         },
                         {
@@ -61,19 +61,19 @@ export default {
                                         text: createValue("Lorem ipsum.")
                                     },
                                     elements: [],
-                                    type: "text",
+                                    type: "cms-element-text",
                                     settings: {}
                                 }
                             ],
-                            type: "column",
+                            type: "cms-element-column",
                             settings: {}
                         }
                     ],
-                    type: "row",
+                    type: "cms-element-row",
                     settings: {}
                 }
             ],
-            type: "block",
+            type: "cms-element-block",
             settings: {}
         });
     }

@@ -27,7 +27,7 @@ const duplicate = (parent, element) => {
 };
 
 export default {
-    name: "element-settings-clone",
+    name: "cms-element-settings-clone",
     type: "cms-element-settings",
     renderAction({ parent, element }: Object) {
         return (

@@ -47,7 +47,7 @@ const Sidebar = ({ element, plugin, active, updateElement, deactivatePlugin }) =
                 <Overlay
                     onClick={() => {
                         updateElement({ element });
-                        deactivatePlugin({ name: "element-settings-advanced" });
+                        deactivatePlugin({ name: "cms-element-settings-advanced" });
                     }}
                 />
             )}

@@ -7,7 +7,7 @@ import Settings from "./Settings";
 import Action from "./../Action";
 
 export default {
-    name: "element-settings-width",
+    name: "cms-element-settings-width",
     type: "cms-element-settings",
     renderAction({ active }: { active: boolean }) {
         return (

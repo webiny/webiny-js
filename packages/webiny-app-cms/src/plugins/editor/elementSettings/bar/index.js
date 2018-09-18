@@ -13,8 +13,8 @@ onAction(DEACTIVATE_ELEMENT, {
 });
 
 export default {
-    name: "element-settings-settings-bar",
-    type: "editor-bar",
+    name: "cms-element-settings-settings-bar",
+    type: "cms-editor-bar",
     shouldRender({ state }) {
         return getActiveElement(state);
     },

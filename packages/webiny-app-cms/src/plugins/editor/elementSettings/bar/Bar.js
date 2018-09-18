@@ -16,7 +16,7 @@ const getElementActions = plugin => {
         return [];
     }
 
-    return plugin.element.settings.map(name => getPlugin(name || "element-settings-divider"));
+    return plugin.element.settings.map(name => getPlugin(name || "cms-element-settings-divider"));
 };
 
 const Bar = ({ parent, element, activePlugin, deactivateElement }) => {

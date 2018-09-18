@@ -10,7 +10,7 @@ const Divider = styled("div")({
 });
 
 export default {
-    name: "element-settings-divider",
+    name: "cms-element-settings-divider",
     type: "cms-element-settings",
     renderAction() {
         return <Divider />;

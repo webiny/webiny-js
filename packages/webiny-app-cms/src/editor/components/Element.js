@@ -226,17 +226,20 @@ class Element extends React.Component<ElementProps, ElementState> {
                                                 className={"element-holder"}
                                                 onClick={this.onClick}
                                             >
-                                                <HelpIcon
-                                                    className={"help-icon"}
-                                                    onClick={() => {
-                                                        window.open(
-                                                            "https://docs.webiny.com/some-page",
-                                                            "_blank"
-                                                        );
-                                                    }}
-                                                />
+                                                {plugin.element.help && (
+                                                    <HelpIcon
+                                                        className={"help-icon"}
+                                                        onClick={() => {
+                                                            window.open(
+                                                                plugin.element.help,
+                                                                "_blank"
+                                                            );
+                                                        }}
+                                                    />
+                                                )}
                                                 <span>
-                                                    <SettingsIcon /> {element.type}
+                                                    <SettingsIcon />{" "}
+                                                    {plugin.name.replace("cms-element-", "")}
                                                 </span>
                                             </div>
                                         </div>

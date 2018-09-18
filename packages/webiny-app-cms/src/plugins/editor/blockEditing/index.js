@@ -20,10 +20,10 @@ export default [
         }
     },
     {
-        name: "search-blocks-bar",
-        type: "editor-bar",
+        name: "cms-search-blocks-bar",
+        type: "cms-editor-bar",
         shouldRender({ state }) {
-            return getActivePlugin("editor-bar")(state) === "search-blocks-bar";
+            return getActivePlugin("cms-editor-bar")(state) === "cms-search-blocks-bar";
         },
 
         render() {

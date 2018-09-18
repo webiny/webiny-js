@@ -3,40 +3,43 @@ import styled from "react-emotion";
 import Spacer, { INIT_HEIGHT } from "./Spacer";
 import { ReactComponent as SpacerIcon } from "webiny-app-cms/editor/assets/icons/spacer-icon.svg";
 import "./actions";
+import type { ElementPluginType } from "webiny-app-cms/types";
 
-const PreviewBox = styled("div")({
-    textAlign: "center",
-    height: 50,
-    svg: {
+export default (): ElementPluginType => {
+    const PreviewBox = styled("div")({
+        textAlign: "center",
         height: 50,
-        width: 50
-    }
-});
+        svg: {
+            height: 50,
+            width: 50
+        }
+    });
 
-export default {
-    name: "spacer",
-    type: "cms-element",
-    element: {
-        title: "Spacer",
-        group: "Layout",
-        settings: ["element-settings-delete"]
-    },
-    target: ["block", "column"],
-    create(options = {}) {
-        return {
-            type: "spacer",
-            settings: { style: { height: INIT_HEIGHT } },
-            ...options
-        };
-    },
-    render(props) {
-        return <Spacer {...props} />;
-    },
-    preview() {
-        return (
-            <PreviewBox>
-                <SpacerIcon />
-            </PreviewBox>
-        );
-    }
+    return {
+        name: "cms-element-spacer",
+        type: "cms-element",
+        element: {
+            title: "Spacer",
+            group: "cms-element-group-layout",
+            settings: ["cms-element-settings-delete"]
+        },
+        target: ["cms-element-block", "cms-element-column"],
+        create(options = {}) {
+            return {
+                type: "cms-element-spacer",
+                settings: { style: { height: INIT_HEIGHT } },
+                ...options
+            };
+        },
+        render(props) {
+            return <Spacer {...props} />;
+        },
+        preview() {
+            return (
+                <PreviewBox>
+                    <SpacerIcon />
+                </PreviewBox>
+            );
+        }
+    };
 };

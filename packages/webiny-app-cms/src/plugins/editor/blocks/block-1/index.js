@@ -1,8 +1,8 @@
 import { createElement, createBlock, createRow, createColumn } from "webiny-app-cms/editor/utils";
 
 export default {
-    name: "block-1",
-    type: "block",
+    name: "cms-block-1",
+    type: "cms-block",
     keywords: ["text", "columns"],
     create() {
         return createBlock({
@@ -12,9 +12,9 @@ export default {
                         createColumn({
                             data: { width: 100 },
                             elements: [
-                                createElement("text", {
+                                createElement("cms-element-text", {
                                     content: {
-                                        typography: "headline1",
+                                        typography: "h1",
                                         lipsum: {
                                             count: 4,
                                             units: "words"
@@ -28,15 +28,15 @@ export default {
                 createRow({
                     elements: [
                         createColumn({
-                            elements: [createElement("text")],
+                            elements: [createElement("cms-element-text")],
                             data: { width: 33.33 }
                         }),
                         createColumn({
-                            elements: [createElement("text")],
+                            elements: [createElement("cms-element-text")],
                             data: { width: 33.33 }
                         }),
                         createColumn({
-                            elements: [createElement("text")],
+                            elements: [createElement("cms-element-text")],
                             data: { width: 33.33 }
                         })
                     ]
