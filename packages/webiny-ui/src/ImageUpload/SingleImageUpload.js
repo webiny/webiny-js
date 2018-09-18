@@ -26,7 +26,7 @@ const ImageUploadWrapper = styled("div")({
     }
 });
 
-export type Props = FormComponentProps & {
+type Props = FormComponentProps & {
     // Component label.
     label?: string,
 

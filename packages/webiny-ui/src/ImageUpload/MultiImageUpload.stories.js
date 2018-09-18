@@ -15,7 +15,7 @@ import readme from "./README.md";
 import { Form } from "webiny-form";
 
 // $FlowFixMe
-import { MultiImageUpload, PropsType } from ".";
+import { MultiImageUpload, PropsType } from "./MultiImageUpload";
 
 const story = storiesOf("Components/ImageUpload", module);
 story.addDecorator(withKnobs);
