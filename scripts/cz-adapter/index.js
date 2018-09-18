@@ -123,7 +123,7 @@ module.exports = {
             },
             {
                 type: "input",
-                name: "issues",
+                name: "footer",
                 message: "List any issues closed by this change:\n"
             },
             {
