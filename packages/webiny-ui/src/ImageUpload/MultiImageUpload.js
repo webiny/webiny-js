@@ -8,6 +8,7 @@ import { css } from "emotion";
 import classNames from "classnames";
 import { FormElementMessage } from "webiny-ui/FormElementMessage";
 import Image from "./Image";
+import range from "lodash/range";
 
 const imagesStyle = css({
     ".disabled": {
@@ -78,7 +79,7 @@ type ImageType = {
 
 type State = {
     errors: ?Array<FileError>,
-    showCropper: Array<FileBrowserFile>
+    showCropper: Array<number>
 };
 
 class MultiImageUpload extends React.Component<Props, State> {
@@ -114,29 +115,23 @@ class MultiImageUpload extends React.Component<Props, State> {
         this.setState({ errors: null });
 
         const newValue = value ? [...value] : [];
-        newValue.splice(index ? index + 1 : index, 0, ...files);
+        newValue.splice(index, 0, ...files);
 
-        if (validate) {
-            return validate().then(() => {
-                onChange && onChange(newValue);
-                cropper && this.setState({ showCropper: files });
-            });
-        }
-
+        validate && (await validate());
         onChange && onChange(newValue);
-        cropper && this.setState({ showCropper: files });
+        cropper && this.setState({ showCropper: range(index, index + files.length) });
     };
 
     handleErrors = (errors: Array<FileError>) => {
         this.setState({ errors });
     };
 
-    finishCrop({ file, index, src }: { file: FileBrowserFile, index: number, src: ?string }) {
+    finishCrop(index: number, src: ?string) {
         const { value, onChange } = this.props;
 
         this.setState(
             state => {
-                state.showCropper.splice(state.showCropper.indexOf(file), 1);
+                state.showCropper.splice(state.showCropper.indexOf(index), 1);
                 return state;
             },
             () => {
@@ -151,9 +146,9 @@ class MultiImageUpload extends React.Component<Props, State> {
         );
     }
 
-    cancelCrop({ file }: { file: FileBrowserFile }) {
+    cancelCrop(index: number) {
         this.setState(state => {
-            state.showCropper.splice(state.showCropper.indexOf(file), 1);
+            state.showCropper.splice(state.showCropper.indexOf(index), 1);
             return state;
         });
     }
@@ -192,7 +187,7 @@ class MultiImageUpload extends React.Component<Props, State> {
                                         value.map((file, index) => (
                                             <li key={index}>
                                                 {Array.isArray(showCropper) &&
-                                                showCropper.includes(file) &&
+                                                showCropper.includes(index) &&
                                                 !noCroppingTypes.includes(file.type) ? (
                                                     <ImageCropper {...imageCropperProps}>
                                                         {({ getDataURL, getImgProps }) => (
@@ -205,11 +200,10 @@ class MultiImageUpload extends React.Component<Props, State> {
                                                                 <ButtonPrimary
                                                                     label={"Crop"}
                                                                     onClick={() =>
-                                                                        this.finishCrop({
-                                                                            file,
+                                                                        this.finishCrop(
                                                                             index,
-                                                                            src: getDataURL()
-                                                                        })
+                                                                            getDataURL()
+                                                                        )
                                                                     }
                                                                 >
                                                                     Crop
@@ -218,7 +212,7 @@ class MultiImageUpload extends React.Component<Props, State> {
                                                                 <ButtonSecondary
                                                                     label={"Cancel"}
                                                                     onClick={() =>
-                                                                        this.cancelCrop({ file })
+                                                                        this.cancelCrop(index)
                                                                     }
                                                                 >
                                                                     Cancel
@@ -233,7 +227,10 @@ class MultiImageUpload extends React.Component<Props, State> {
                                                         uploadImage={() => {
                                                             browseFiles({
                                                                 onSuccess: files =>
-                                                                    this.handleFiles(files, index),
+                                                                    this.handleFiles(
+                                                                        files,
+                                                                        index + 1
+                                                                    ),
                                                                 onErrors: errors =>
                                                                     this.handleErrors(errors)
                                                             });
