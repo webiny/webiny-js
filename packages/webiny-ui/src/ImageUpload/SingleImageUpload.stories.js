@@ -37,17 +37,22 @@ story.add("Single Image Upload", () => {
             <StoryProps>{PropsType}</StoryProps>
             <StorySandbox>
                 <StorySandboxExample>
-                    <Form data={{ image }}>
-                        {({ Bind }) => (
-                            <Bind name="image">
-                                <SingleImageUpload
-                                    label="Your previously uploaded image:"
-                                    disabled={disabled}
-                                    description="This list will not be shown to other users."
-                                />
-                            </Bind>
-                        )}
-                    </Form>
+                    <div style={{ maxWidth: 200 }}>
+                        <Form data={{ image }}>
+                            {({ Bind }) => (
+                                <Bind name="image">
+                                    <SingleImageUpload
+                                        cropper={{
+                                            aspectRatio: 16 / 9
+                                        }}
+                                        label="Your previously uploaded image:"
+                                        disabled={disabled}
+                                        description="Image will be publicly visible."
+                                    />
+                                </Bind>
+                            )}
+                        </Form>
+                    </div>
                 </StorySandboxExample>
                 <StorySandboxCode>
                     {`

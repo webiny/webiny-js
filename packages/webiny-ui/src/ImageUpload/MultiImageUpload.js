@@ -45,7 +45,7 @@ type Props = FormComponentProps & {
     // Define a list of accepted image types.
     accept?: Array<string>,
 
-    // Define file's max allowed size (default is "2mb").
+    // Define file's max allowed size (default is "5mb").
     // Uses "bytes" (https://www.npmjs.com/package/bytes) library to convert string notation to actual number.
     maxSize: string,
 
@@ -96,6 +96,25 @@ class MultiImageUpload extends React.Component<Props, State> {
     };
 
     handleFiles = async (files: Array<FileBrowserFile>, append: boolean = false) => {
+        const { validate } = this.props;
+        if (validate) {
+            return validate().then(() => {
+                this.setState({ errors: null }, () => {
+                    const { value, onChange } = this.props;
+                    if (!onChange) {
+                        return;
+                    }
+
+                    if (Array.isArray(value) && append) {
+                        onChange([...value, ...files]);
+                    } else {
+                        onChange(files);
+                    }
+                });
+            });
+        }
+
+
         this.setState({ errors: null }, () => {
             const { value, onChange } = this.props;
             if (!onChange) {
@@ -113,6 +132,7 @@ class MultiImageUpload extends React.Component<Props, State> {
     handleErrors = (errors: Array<FileError>) => {
         this.setState({ errors });
     };
+
     render() {
         const {
             value,
@@ -127,7 +147,6 @@ class MultiImageUpload extends React.Component<Props, State> {
 
         return (
             <div className={classNames(imagesStyle, className)}>
-                {/* Ovaj container za label - isti kao i u drugim komponentama. */}
                 {label && (
                     <div className="mdc-floating-label mdc-floating-label--float-above">
                         {label}
@@ -140,7 +159,6 @@ class MultiImageUpload extends React.Component<Props, State> {
                             <ul className="images">
                                 {Array.isArray(value) &&
                                     value.map((file, index) => (
-                                        // TODO: ovdje onClick nebi trebao direkt na <img> biti ofc (ikona nekakva?)
                                         <li key={index}>
                                             <Image
                                                 value={file}
