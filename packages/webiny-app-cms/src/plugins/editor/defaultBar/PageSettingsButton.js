@@ -7,7 +7,7 @@ import { ReactComponent as SettingsIcon } from "webiny-app-cms/editor/assets/ico
 const PageSettingsButton = ({ togglePlugin }) => {
     return (
         <IconButton
-            onClick={() => togglePlugin({ name: "page-settings-bar" })}
+            onClick={() => togglePlugin({ name: "cms-page-settings-bar" })}
             icon={<SettingsIcon />}
         />
     );

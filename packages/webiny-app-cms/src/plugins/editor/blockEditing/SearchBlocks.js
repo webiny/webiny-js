@@ -1,5 +1,5 @@
 //@flow
-import React from "react";
+import * as React from "react";
 import { connect } from "react-redux";
 import { compose } from "recompose";
 import { ButtonFloating } from "webiny-ui/Button";
@@ -19,7 +19,19 @@ import { ReactComponent as AddIcon } from "webiny-app-cms/editor/assets/icons/ad
 import { ReactComponent as SearchIcon } from "webiny-app-cms/editor/assets/icons/search.svg";
 import * as Styled from "./StyledComponents";
 
-class SearchBar extends React.Component {
+type SearchBarProps = {
+    addKeyHandler: Function,
+    createBlockFromType: Function,
+    deactivatePlugin: Function,
+    removeKeyHandler: Function
+};
+
+type SearchBarState = {
+    search: string,
+    activeTab: number
+};
+
+class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
     state = {
         search: "",
         activeTab: 0
@@ -28,7 +40,7 @@ class SearchBar extends React.Component {
     componentDidMount() {
         this.props.addKeyHandler("escape", e => {
             e.preventDefault();
-            this.props.deactivatePlugin({ name: "search-blocks-bar" });
+            this.props.deactivatePlugin({ name: "cms-search-blocks-bar" });
         });
     }
 
@@ -60,7 +72,7 @@ class SearchBar extends React.Component {
         const block = plugin.create();
         block.path = "-1";
         updateChildPaths(block);
-
+        
         return (
             <Elevation z={1} key={plugin.name}>
                 <Styled.Block>
@@ -72,18 +84,18 @@ class SearchBar extends React.Component {
                                 onClick={e => {
                                     this.props.createBlockFromType({ type: plugin.name });
                                     !e.shiftKey &&
-                                        this.props.deactivatePlugin({ name: "search-blocks-bar" });
+                                        this.props.deactivatePlugin({ name: "cms-search-blocks-bar" });
                                 }}
                                 icon={<AddIcon />}
                             />
                         </Styled.AddBlock>
                     </Styled.Overlay>
                     <Styled.BlockPreview>
-                        <BlockPreviewComponent>
+                        <BlockPreview>
                             <RenderContextProvider value={{ preview: true }}>
                                 <Element element={block} />
                             </RenderContextProvider>
-                        </BlockPreviewComponent>
+                        </BlockPreview>
                     </Styled.BlockPreview>
                 </Styled.Block>
             </Elevation>
@@ -106,12 +118,12 @@ class SearchBar extends React.Component {
     };
 
     render() {
-        const plugins = getPlugins("block");
-
+        const plugins = getPlugins("cms-block");
+        
         return (
             <SecondaryLayout
                 barMiddle={this.renderSearchInput()}
-                onExited={() => this.props.deactivatePlugin({ name: "search-blocks-bar" })}
+                onExited={() => this.props.deactivatePlugin({ name: "cms-search-blocks-bar" })}
             >
                 <Elevation className={Styled.wrapper} z={1}>
                     <Tabs>
@@ -127,16 +139,38 @@ class SearchBar extends React.Component {
     }
 }
 
-class BlockPreviewComponent extends React.Component {
-    constructor(props) {
-        super(props);
+export default compose(
+    connect(
+        null,
+        {
+            deactivatePlugin,
+            createBlockFromType
+        }
+    ),
+    withKeyHandler()
+)(SearchBar);
 
-        this.state = {
-            style: ""
-        };
-    }
+
+type BlockPreviewProps = {
+    children: React.Node
+};
+
+type BlockPreviewState = {
+    style: Object
+};
+
+class BlockPreview extends React.Component<BlockPreviewProps, BlockPreviewState> {
+    state = {
+        style: {}
+    };
+
+    divElement: ?HTMLDivElement = null;
 
     componentDidMount() {
+        if (!this.divElement) {
+            return;
+        }
+
         const height = this.divElement.clientHeight;
         const width = this.divElement.clientWidth;
 
@@ -151,25 +185,14 @@ class BlockPreviewComponent extends React.Component {
             width: "100%"
         };
 
-        this.setState({ style: style });
+        this.setState({ style });
     }
 
     render() {
         return (
-            <div style={{ ...this.state.style }} ref={divElement => (this.divElement = divElement)}>
+            <div style={this.state.style} ref={divElement => (this.divElement = divElement)}>
                 {this.props.children}
             </div>
         );
     }
 }
-
-export default compose(
-    connect(
-        null,
-        {
-            deactivatePlugin,
-            createBlockFromType
-        }
-    ),
-    withKeyHandler()
-)(SearchBar);

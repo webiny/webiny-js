@@ -57,7 +57,7 @@ export default () => {
         menu: [
             {
                 name: "link-menu-item",
-                type: "slate-menu-item",
+                type: "cms-slate-menu-item",
                 render(props: Object) {
                     const { MenuButton } = props;
 

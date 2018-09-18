@@ -1,51 +1,51 @@
+// @flow
 import React from "react";
 import loremIpsum from "lorem-ipsum";
 import Text, { className } from "./Text";
 import { createValue } from "webiny-app-cms/editor/components/Slate";
-import { ReactComponent as TextIcon } from "webiny-app-cms/editor/assets/icons/round-text_format-24px.svg";
+import type { ElementPluginType } from "webiny-app-cms/types";
 
-const defaultLipsum = {
-    count: 3,
-    units: "sentences",
-    sentenceLowerBound: 5,
-    sentenceUpperBound: 15
-};
+export default (): ElementPluginType => {
+    const defaultLipsum = {
+        count: 3,
+        units: "sentences",
+        sentenceLowerBound: 5,
+        sentenceUpperBound: 15
+    };
 
-export default [
-    {
-        name: "text",
+    return {
+        name: "cms-element-text",
         type: "cms-element",
         element: {
             title: "Text",
-            group: "Text",
-            groupIcon: <TextIcon />,
+            group: "cms-element-group-text",
             settings: [
-                "element-settings-background",
+                "cms-element-settings-background",
                 "",
-                "element-settings-border",
-                "element-settings-shadow",
+                "cms-element-settings-border",
+                "cms-element-settings-shadow",
                 "",
-                "element-settings-padding",
-                "element-settings-margin",
+                "cms-element-settings-padding",
+                "cms-element-settings-margin",
                 "",
-                "element-settings-clone",
-                "element-settings-delete",
+                "cms-element-settings-clone",
+                "cms-element-settings-delete",
                 "",
-                "element-settings-advanced"
+                "cms-element-settings-advanced"
             ]
         },
-        target: ["column", "row", "list-item"],
+        target: ["cms-element-column", "cms-element-row", "cms-element-list-item"],
         create({ content = {}, ...options }) {
             const previewText = content.text || loremIpsum(content.lipsum || defaultLipsum);
 
             return {
-                type: "text",
+                type: "cms-element-text",
                 elements: [],
                 data: { text: createValue(previewText, content.typography || "paragraph") },
                 settings: {
-                  style: {
-                      padding: "20px"
-                  }
+                    style: {
+                        padding: "20px"
+                    }
                 },
                 ...options
             };
@@ -58,5 +58,5 @@ export default [
 
             return <p className={className}>{previewText}</p>;
         }
-    }
-];
+    };
+};

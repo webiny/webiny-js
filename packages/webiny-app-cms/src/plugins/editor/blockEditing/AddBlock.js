@@ -17,7 +17,7 @@ const AddBlock = ({ togglePlugin }) => {
     return (
         <BottomRight>
             <ButtonFloating
-                onClick={() => togglePlugin({ name: "search-blocks-bar" })}
+                onClick={() => togglePlugin({ name: "cms-search-blocks-bar" })}
                 icon={<AddIcon />}
             />
         </BottomRight>

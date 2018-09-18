@@ -7,7 +7,7 @@ import Settings from "./Settings";
 import Action from "./../Action";
 
 export default {
-    name: "element-settings-border",
+    name: "cms-element-settings-border",
     type: "cms-element-settings",
     renderAction({ active }: { active: boolean }) {
         return (

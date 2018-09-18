@@ -1,7 +1,6 @@
 //@flow
-import React from "react";
+import * as React from "react";
 import { connect } from "react-redux";
-import get from "lodash/get";
 import { compose } from "recompose";
 import { ButtonFloating } from "webiny-ui/Button";
 import Draggable from "webiny-app-cms/editor/components/Draggable";
@@ -14,8 +13,8 @@ import { css } from "emotion";
 import { List, ListItem, ListItemMeta } from "webiny-ui/List";
 import { Icon } from "webiny-ui/Icon";
 import { Typography } from "webiny-ui/Typography";
-
 import { ReactComponent as AddIcon } from "webiny-app-cms/editor/assets/icons/add.svg";
+import type { CmsThemeType, ElementPluginType, ElementGroupPluginType } from "webiny-app-cms/types";
 
 const ADD_ELEMENT = "add-element";
 
@@ -37,24 +36,32 @@ const categoriesList = css({
     }
 });
 
-class AddElement extends React.Component {
+type Props = {
+    dragStart: Function,
+    dragEnd: Function,
+    deactivatePlugin: Function,
+    dropElement: Function,
+    params: Object | null,
+    theme: CmsThemeType
+};
+
+type State = {
+    group: string | null
+};
+
+class AddElement extends React.Component<Props, State> {
     state = {
-        group: null,
-        groups: null
+        group: this.getGroups()[0].name
     };
 
-    componentDidMount() {
-        const groups = {};
-        Object.values(getPlugins("cms-element")).forEach(plugin => {
-            const group = get(plugin, "element.group");
-            if (!group) {
-                return;
-            }
+    getGroups(): Array<ElementGroupPluginType> {
+        return getPlugins("cms-element-group");
+    }
 
-            groups[group] = groups[group] || [];
-            groups[group].push(plugin);
-        });
-        this.setState({ groups, group: Object.keys(groups).sort()[0] });
+    getGroupElements(group: string) {
+        return getPlugins("cms-element").filter(
+            (el: ElementPluginType) => el.element.group === group
+        );
     }
 
     renderDraggable = (element, plugin) => {
@@ -128,33 +135,26 @@ class AddElement extends React.Component {
             <React.Fragment>
                 <Styled.Flex>
                     <List className={categoriesList}>
-                        {this.state.groups &&
-                            Object.keys(this.state.groups)
-                                .sort()
-                                .map(key => (
-                                    <ListItem
-                                        onClick={() => this.setState({ group: key })}
-                                        key={key}
-                                        className={key === this.state.group && "active"}
-                                    >
-                                        {key}
+                        {this.getGroups().map(plugin => (
+                            <ListItem
+                                onClick={() => this.setState({ group: plugin.name })}
+                                key={plugin.name}
+                                className={plugin.name === this.state.group && "active"}
+                            >
+                                {plugin.group.title}
 
-                                        {this.state.groups[key][0].element.groupIcon && (
-                                            <ListItemMeta>
-                                                <Icon
-                                                    icon={
-                                                        this.state.groups[key][0].element.groupIcon
-                                                    }
-                                                />
-                                            </ListItemMeta>
-                                        )}
-                                    </ListItem>
-                                ))}
+                                {plugin.group.icon && (
+                                    <ListItemMeta>
+                                        <Icon icon={plugin.group.icon} />
+                                    </ListItemMeta>
+                                )}
+                            </ListItem>
+                        ))}
                     </List>
                     <Styled.Elements>
-                        {this.state.groups &&
-                            this.state.groups[this.state.group].map(plugin => {
-                                return (params ? this["renderClickable"] : this["renderDraggable"])(
+                        {this.state.group &&
+                            this.getGroupElements(this.state.group).map(plugin => {
+                                return (params ? this.renderClickable : this.renderDraggable)(
                                     <div>
                                         <Styled.ElementBox>
                                             <Styled.ElementTitle>

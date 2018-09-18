@@ -12,7 +12,7 @@ type Props = {
     small?: boolean,
 
     // onClick handler.
-    onClick?: Function,
+    onClick?: Function | null,
 
     // Label and optionally an icon (using Button.Icon component).
     children?: React.Node,

@@ -5,65 +5,71 @@ import Block from "./Block";
 import { set } from "dot-prop-immutable";
 import { createElement, createRow, createColumn, cloneElement } from "webiny-app-cms/editor/utils";
 import { updateElement, deleteElement } from "webiny-app-cms/editor/actions";
+import type { ElementPluginType } from "webiny-app-cms/types";
 
-export default {
-    name: "block",
-    type: "cms-element",
-    element: {
-        settings: [
-            "element-settings-background",
-            "",
-            "element-settings-border",
-            "element-settings-shadow",
-            "",
-            "element-settings-padding",
-            "element-settings-margin",
-            "element-settings-width",
-            "",
-            "element-settings-clone",
-            "element-settings-delete",
-            "",
-            "element-settings-advanced"
-        ]
-    },
-    create(options = {}) {
-        return {
-            type: "block",
-            elements: [
-                createRow({
-                    elements: [createColumn({ data: { width: 100 } })]
-                })
-            ],
-            ...options
-        };
-    },
-    render(props) {
-        return <Block {...props} />;
-    },
-    // This callback is executed when another element is dropped on the drop zones with type "block"
-    onReceived({ store, source, target, position = null }) {
-        const element = source.path ? cloneElement(source) : createElement(source.type, {}, target);
+export default (): ElementPluginType => {
+    return {
+        name: "cms-element-block",
+        type: "cms-element",
+        element: {
+            name: "block",
+            settings: [
+                "cms-element-settings-background",
+                "",
+                "cms-element-settings-border",
+                "cms-element-settings-shadow",
+                "",
+                "cms-element-settings-padding",
+                "cms-element-settings-margin",
+                "cms-element-settings-width",
+                "",
+                "cms-element-settings-clone",
+                "cms-element-settings-delete",
+                "",
+                "cms-element-settings-advanced"
+            ]
+        },
+        create(options = {}) {
+            return {
+                type: "cms-element-block",
+                elements: [
+                    createRow({
+                        elements: [createColumn({ data: { width: 100 } })]
+                    })
+                ],
+                ...options
+            };
+        },
+        render(props) {
+            return <Block {...props} />;
+        },
+        // This callback is executed when another element is dropped on the drop zones with type "block"
+        onReceived({ store, source, target, position = null }) {
+            const element = source.path
+                ? cloneElement(source)
+                : createElement(source.type, {}, target);
 
-        const block = addElementToParent(element, target, position);
+            const block = addElementToParent(element, target, position);
 
-        // Dispatch update action
-        store.dispatch(updateElement({ element: block }));
+            // Dispatch update action
+            store.dispatch(updateElement({ element: block }));
 
-        // Delete exiting element
-        if (source.path) {
-            store.dispatch(deleteElement({ element: source }));
+            // Delete exiting element
+            if (source.path) {
+                store.dispatch(deleteElement({ element: source }));
+            }
+        },
+        onChildDeleted({ element }) {
+            if (element.elements.length === 0) {
+                element = set(element, "elements", [
+                    createRow({
+                        elements: [createColumn({ data: { width: 100 } })]
+                    })
+                ]);
+                dispatch(updateElement({ element }));
+            }
         }
-    },
-    onChildDeleted({ element }) {
-        if (element.elements.length === 0) {
-            element = set(element, "elements", [
-                createRow({
-                    elements: [createColumn({ data: { width: 100 } })]
-                })
-            ]);
-            dispatch(updateElement({ element }));
-        }
-    }
+    };
 };
 
 const addElementToParent = (element, parent, position) => {

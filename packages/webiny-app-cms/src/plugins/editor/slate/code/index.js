@@ -20,7 +20,7 @@ export default () => {
         menu: [
             {
                 name: "code-menu-item",
-                type: "slate-menu-item",
+                type: "cms-slate-menu-item",
                 render({
                     MenuButton,
                     editor

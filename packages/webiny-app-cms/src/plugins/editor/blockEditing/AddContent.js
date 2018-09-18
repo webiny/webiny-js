@@ -66,7 +66,7 @@ const AddContent = ({ blocks, togglePlugin }) => {
                         style={{ animation: pulse + " 3s ease infinite", margin: "0 10px" }}
                         small
                         icon={<AddIcon />}
-                        onClick={() => togglePlugin({ name: "search-blocks-bar" })}
+                        onClick={() => togglePlugin({ name: "cms-search-blocks-bar" })}
                     />
                     to start adding content
                 </AddBlockContent>

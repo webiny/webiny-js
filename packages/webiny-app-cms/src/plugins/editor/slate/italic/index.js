@@ -22,7 +22,7 @@ export default () => {
         menu: [
             {
                 name: "italic-menu-item",
-                type: "slate-menu-item",
+                type: "cms-slate-menu-item",
                 render({ MenuButton, editor }: Object) {
                     const isActive = hasMark(editor.value, mark);
 

@@ -23,8 +23,8 @@ const Header = styled("div")(() => ({
 
 const Body = styled("div")({
     padding: 20,
-    height: 'calc(100vh - 82px)',
-    overflow: 'scroll'
+    height: "calc(100vh - 82px)",
+    overflow: "scroll"
 });
 
 const CloseButton = styled("div")({
@@ -47,7 +47,7 @@ class Advanced extends React.Component {
                         <IconButton
                             onClick={() => {
                                 updateElement({ element });
-                                deactivatePlugin({ name: "element-settings-advanced" });
+                                deactivatePlugin({ name: "cms-element-settings-advanced" });
                             }}
                             icon={<CloseIcon />}
                         />
@@ -86,7 +86,9 @@ class Advanced extends React.Component {
                                         </Bind>
                                     </Cell>
                                 </Grid>
-                                {plugin && plugin.renderSidebar({ Bind, theme })}
+                                {plugin &&
+                                    typeof plugin.renderSidebar === "function" &&
+                                    plugin.renderSidebar({ Bind, theme })}
                             </React.Fragment>
                         )}
                     </Form>

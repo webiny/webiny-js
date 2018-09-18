@@ -30,7 +30,7 @@ const PageSettings = ({ deactivatePlugin }) => {
     return (
         <SecondaryLayout
             barMiddle={Title}
-            onExited={() => deactivatePlugin({ name: "page-settings-bar" })}
+            onExited={() => deactivatePlugin({ name: "cms-page-settings-bar" })}
         >
             <Wrapper>
                 <Accordion>
@@ -64,7 +64,7 @@ export default compose(
         componentDidMount() {
             this.props.addKeyHandler("escape", e => {
                 e.preventDefault();
-                this.props.deactivatePlugin({ name: "page-settings-bar" });
+                this.props.deactivatePlugin({ name: "cms-page-settings-bar" });
             });
         },
         componentWillUnmount() {

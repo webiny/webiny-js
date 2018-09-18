@@ -7,7 +7,7 @@ import Settings from "../utils/PMSettings";
 import Action from "./../Action";
 
 export default {
-    name: "element-settings-padding",
+    name: "cms-element-settings-padding",
     type: "cms-element-settings",
     renderAction({ active }) {
         return (
