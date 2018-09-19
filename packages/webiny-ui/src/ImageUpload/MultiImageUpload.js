@@ -73,7 +73,7 @@ type NewImage = { file: FileBrowserFile, cropper: boolean, done: boolean };
 
 type State = {
     errors: ?Array<FileError>,
-    newlySelectedImages: {
+    selectedImages: {
         atIndex: number,
         list: Array<NewImage>
     }
@@ -93,7 +93,7 @@ class MultiImageUpload extends React.Component<Props, State> {
 
     state = {
         errors: null,
-        newlySelectedImages: {
+        selectedImages: {
             list: [],
             atIndex: 0
         }
@@ -105,48 +105,48 @@ class MultiImageUpload extends React.Component<Props, State> {
         validate && (await validate());
     };
 
-    hasPendingNewlySelectedImages() {
-        for (let i = 0; i < this.state.newlySelectedImages.list.length; i++) {
-            if (!this.state.newlySelectedImages.list[i].done) {
+    hasPendingSelectedImages() {
+        for (let i = 0; i < this.state.selectedImages.list.length; i++) {
+            if (!this.state.selectedImages.list[i].done) {
                 return true;
             }
         }
         return false;
     }
 
-    finalizeNewlySelectedImages = async () => {
-        if (this.hasPendingNewlySelectedImages()) {
+    finalizeSelectedImages = async () => {
+        if (this.hasPendingSelectedImages()) {
             return;
         }
 
         const { value } = this.props;
-        const { newlySelectedImages } = this.state;
+        const { selectedImages } = this.state;
 
         const newValue = Array.isArray(value) ? [...value] : [];
         newValue.splice(
-            newlySelectedImages.atIndex,
+            selectedImages.atIndex,
             0,
-            ...newlySelectedImages.list.map(image => image.file)
+            ...selectedImages.list.map(image => image.file)
         );
 
         await this.onChange(newValue);
 
         this.setState({
-            newlySelectedImages: {
+            selectedImages: {
                 atIndex: 0,
                 list: []
             }
         });
     };
 
-    handleNewlySelectedImages = async (
+    handleSelectedImages = async (
         images: Array<FileBrowserFile>,
         selectedIndex: number = 0
     ) => {
         this.setState(
             {
                 errors: null,
-                newlySelectedImages: {
+                selectedImages: {
                     atIndex: selectedIndex,
                     list: images.map(file => {
                         const cropper = !noCroppingTypes.includes(file.type);
@@ -154,7 +154,7 @@ class MultiImageUpload extends React.Component<Props, State> {
                     })
                 }
             },
-            this.finalizeNewlySelectedImages
+            this.finalizeSelectedImages
         );
     };
 
@@ -168,7 +168,7 @@ class MultiImageUpload extends React.Component<Props, State> {
             image.cropper = false;
             image.done = true;
             return state;
-        }, this.finalizeNewlySelectedImages);
+        }, this.finalizeSelectedImages);
     }
 
     cancelCrop(image: NewImage) {
@@ -176,7 +176,7 @@ class MultiImageUpload extends React.Component<Props, State> {
             image.cropper = false;
             image.done = true;
             return state;
-        }, this.finalizeNewlySelectedImages);
+        }, this.finalizeSelectedImages);
     }
 
     removeImage = (image: FileBrowserFile) => {
@@ -203,7 +203,7 @@ class MultiImageUpload extends React.Component<Props, State> {
             className
         } = this.props;
 
-        const { newlySelectedImages } = this.state;
+        const { selectedImages } = this.state;
 
         return (
             <div className={classNames(imagesStyle, className)}>
@@ -218,7 +218,7 @@ class MultiImageUpload extends React.Component<Props, State> {
                         const imageCropperProps = typeof cropper === "object" ? cropper : null;
 
                         const images = Array.isArray(value) ? [...value] : [];
-                        images.splice(newlySelectedImages.atIndex, 0, ...newlySelectedImages.list);
+                        images.splice(selectedImages.atIndex, 0, ...selectedImages.list);
 
                         return (
                             <div className={classNames({ disabled })}>
@@ -260,14 +260,14 @@ class MultiImageUpload extends React.Component<Props, State> {
                                             ) : (
                                                 <Image
                                                     value={image.file || image}
-                                                    disabled={this.hasPendingNewlySelectedImages()}
+                                                    disabled={this.hasPendingSelectedImages()}
                                                     removeImage={() =>
                                                         this.removeImage(image.file || image)
                                                     }
                                                     uploadImage={() => {
                                                         browseFiles({
                                                             onSuccess: files =>
-                                                                this.handleNewlySelectedImages(
+                                                                this.handleSelectedImages(
                                                                     files,
                                                                     index + 1
                                                                 ),
@@ -281,11 +281,11 @@ class MultiImageUpload extends React.Component<Props, State> {
                                     ))}
                                     <li>
                                         <Image
-                                            disabled={newlySelectedImages.list.length > 0}
+                                            disabled={selectedImages.list.length > 0}
                                             uploadImage={() => {
                                                 browseFiles({
                                                     onSuccess: files =>
-                                                        this.handleNewlySelectedImages(
+                                                        this.handleSelectedImages(
                                                             files,
                                                             Array.isArray(value) ? value.length : 0
                                                         ),
