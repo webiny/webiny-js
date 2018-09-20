@@ -31,7 +31,6 @@ const Preview = ({ activePlugin, togglePlugin }) => {
 
     return (
         <Menu
-            onSelect={evt => togglePlugin({ name: plugins[evt.detail.index].name })}
             className={menuList}
             handle={
                 <List>
@@ -46,7 +45,9 @@ const Preview = ({ activePlugin, togglePlugin }) => {
         >
             <List>
                 {plugins.map(pl => (
-                    <ListItem key={pl.name}>{pl.renderOption()}</ListItem>
+                    <ListItem key={pl.name} onClick={() => togglePlugin({ name: pl.name })}>
+                        {pl.renderOption()}
+                    </ListItem>
                 ))}
             </List>
         </Menu>
