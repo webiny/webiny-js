@@ -33,6 +33,7 @@ export default (): ElementPluginType => {
                 "",
                 "cms-element-settings-padding",
                 "cms-element-settings-margin",
+                "cms-element-settings-align",
                 "",
                 "cms-element-settings-clone",
                 "cms-element-settings-delete",

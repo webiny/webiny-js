@@ -8,6 +8,7 @@ import shadow from "./shadow";
 import padding from "./padding";
 import margin from "./margin";
 import width from "./width";
+import align from "./align";
 import divider from "./divider";
 
 export default [
@@ -18,6 +19,7 @@ export default [
     shadow,
     padding,
     margin,
+    align,
     clone,
     deleteElement,
     advanced,
