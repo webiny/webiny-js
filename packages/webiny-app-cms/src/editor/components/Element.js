@@ -7,7 +7,7 @@ import { Transition } from "react-transition-group";
 import compose from "recompose/compose";
 import { connect } from "react-redux";
 import { getPlugin } from "webiny-app/plugins";
-import { withTheme, withRenderContext } from "webiny-app-cms/editor/components";
+import { withTheme } from "webiny-app-cms/theme";
 import {
     dragStart,
     dragEnd,
@@ -35,17 +35,17 @@ const typeStyle = css({
         color: "#fff",
         zIndex: 30,
         width: "auto",
-        ">span": {
+        "> span": {
             borderRadius: 2,
             display: "flex",
             padding: "4px 10px",
-            ">svg": {
+            "> svg": {
                 height: 13,
                 width: 13,
                 marginRight: 5
             }
         },
-        ">svg": {
+        "> svg": {
             borderRadius: 2,
             height: 13,
             padding: 4,
@@ -84,11 +84,14 @@ const ElementContainer = styled("div")(({ highlight, active, dragged }) => {
             opacity: 1
         },
         "&:hover": {
-            ">.innerWrapper>.type": {
+            "> .innerWrapper > .type": {
                 display: highlight ? "block" : "none"
             }
         },
-        ">.innerWrapper>.type": {
+        "> .innerWrapper": {
+            width: "100%"
+        },
+        "> .innerWrapper > .type": {
             display: highlight ? "block" : "none",
             width: !active ? "100%" : "100px",
             height: !active ? "100%" : "25px",
@@ -110,7 +113,7 @@ const ElementContainer = styled("div")(({ highlight, active, dragged }) => {
                 transition: "background-color 0.2s"
             },
             ".element-holder": {
-                ">span, >svg": {
+                "> span, > svg": {
                     backgroundColor: color
                 }
             }
@@ -142,7 +145,6 @@ declare type ElementProps = {
     element: ElementType,
     highlight: boolean,
     highlightElement: Function,
-    preview: boolean,
     theme: Object
 };
 
@@ -184,7 +186,7 @@ class Element extends React.Component<ElementProps, ElementState> {
     };
 
     render() {
-        const { element, highlight, active, preview, theme } = this.props;
+        const { element, highlight, active, theme } = this.props;
         const plugin = getPlugin(element.type);
 
         if (!plugin) {
@@ -246,7 +248,7 @@ class Element extends React.Component<ElementProps, ElementState> {
                                     )
                                 }
                             </Draggable>
-                            {plugin.render({ theme, element, preview })}
+                            {plugin.render({ theme, element })}
                         </div>
                     </ElementContainer>
                 )}
@@ -265,6 +267,5 @@ export default compose(
         },
         { dragStart, dragEnd, activateElement, highlightElement }
     ),
-    withRenderContext(),
     withTheme()
 )(Element);

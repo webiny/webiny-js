@@ -20,7 +20,8 @@ export type ActionOptions = {
 };
 
 export type Store = {
-    dispatch: Function
+    dispatch: Function,
+    getState: Function
 };
 
 export type State = Object;

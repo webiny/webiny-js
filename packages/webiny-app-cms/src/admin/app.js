@@ -5,7 +5,8 @@ import { i18n } from "webiny-app/i18n";
 import { addPlugin } from "webiny-app/plugins";
 import AdminLayout from "webiny-app-admin/components/Layouts/AdminLayout";
 import { Editor as CmsEditor } from "webiny-app-cms/editor";
-import editorPlugins from "webiny-app-cms/presets/editor";
+import editorPlugins from "webiny-app-cms/editor/presets/default";
+import renderPlugins from "webiny-app-cms/render/presets/default";
 import { ReactComponent as PagesIcon } from "./assets/round-ballot-24px.svg";
 import plugins from "./plugins";
 import Categories from "./views/Categories/Categories";
@@ -15,7 +16,7 @@ const t = i18n.namespace("Cms.Admin.Menu");
 export default () => {
     return (params: Object, next: Function) => {
         // CMS plugins
-        addPlugin(...editorPlugins);
+        addPlugin(...editorPlugins, ...renderPlugins);
 
         // Navigation plugin
         addPlugin({

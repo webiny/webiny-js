@@ -17,6 +17,7 @@ export type ElementType = {
     id: string,
     path: string,
     type: string,
+    elements: Array<ElementType>,
     data: Object,
     settings: Object
 };
@@ -75,4 +76,12 @@ export type ElementPluginType = {
     }) => void,
     // Executed when an immediate child element is deleted
     onChildDeleted?: ({ element: ElementType, child: ElementType }) => void
+};
+
+export type RenderElementPluginType = {
+    name: string,
+    type: string,
+    // Name of the cms-element plugin this render plugin is handling.
+    element: string,
+    render: ({ theme: CmsThemeType, element: ElementType }) => Node
 };

@@ -6,7 +6,7 @@ import { createAction, addRootReducer } from "webiny-app/redux";
 import { getPlugin } from "webiny-app/plugins";
 import { getElement, getParentElement } from "webiny-app-cms/editor/selectors";
 import { updateChildPaths } from "webiny-app-cms/editor/utils";
-import { INSERT_BLOCK } from "webiny-app-cms/plugins/editor/blockEditing/actions";
+import { INSERT_BLOCK } from "webiny-app-cms/editor/plugins/blockEditing/actions";
 
 const PREFIX = "[CMS]";
 
