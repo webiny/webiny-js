@@ -9,23 +9,36 @@ class User extends Identity {
     firstName: string;
     lastName: string;
     gravatar: string;
-    avatar: {name: string, size: number, type: string, src: string};
+    avatar: { name: string, size: number, type: string, src: string };
     enabled: boolean;
     constructor() {
         super();
         this.attr("email")
             .char()
             .setValidators("required,email")
-            .onSet(value => value.toLowerCase().trim());
+            .onSet(value => {
+                if (value !== this.email) {
+                    this.on("beforeSave", async () => {
+                        const existingUser = await User.findOne({ query: { email: value } });
+                        if (existingUser) {
+                            throw Error("User with given e-mail already exists.");
+                        }
+                    }).setOnce();
+                }
+
+                return value.toLowerCase().trim();
+            });
 
         this.attr("password")
             .password()
             .setValidators("required");
         this.attr("firstName").char();
         this.attr("lastName").char();
-        this.attr("fullName").char().setDynamic(() => {
-            return `${this.firstName} ${this.lastName}`.trim()
-        });
+        this.attr("fullName")
+            .char()
+            .setDynamic(() => {
+                return `${this.firstName} ${this.lastName}`.trim();
+            });
 
         this.attr("avatar").entity(File);
 
