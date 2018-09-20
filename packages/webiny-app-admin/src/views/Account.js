@@ -41,6 +41,7 @@ const UsersForm = props => (
                 variables: { data },
                 onSuccess: () => {
                     props.showSnackbar(t`Account information update successfully.`);
+                    app.security.refresh();
                 }
             });
         }}
