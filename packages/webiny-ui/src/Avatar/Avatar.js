@@ -4,7 +4,9 @@ import { css } from "emotion";
 import classNames from "classnames";
 const avatar = css({
     borderRadius: "50%",
-    display: "inline-block",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
     width: 32,
     height: 32,
     overflow: "hidden",
