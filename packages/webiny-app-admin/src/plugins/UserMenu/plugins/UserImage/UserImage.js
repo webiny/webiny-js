@@ -23,10 +23,15 @@ class UserAvatar extends React.Component<{}> {
 
     render() {
         const {
-            security: {
-                identity: { fullName, avatar }
-            }
+            security: { identity }
         } = app;
+
+        // When user logs out, identity becomes null.
+        if (!identity) {
+            return null;
+        }
+
+        const { fullName, avatar } = identity;
 
         if (avatar) {
             return <img src={avatar.src} alt={fullName} className={avatarMenu} />;
