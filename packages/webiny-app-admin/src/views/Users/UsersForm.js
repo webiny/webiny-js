@@ -127,6 +127,6 @@ export default compose(
         name: "SecurityUserForm",
         type: "Security.Users",
         fields:
-            "id email firstName lastName avatar { src } enabled groups { id name } policies { id name }"
+            "id email firstName lastName fullName avatar { src } enabled groups { id name } policies { id name }"
     })
 )(UsersForm);
