@@ -31,6 +31,16 @@ const linkStyles = css({
         ">.mdc-list-item__text": {
             fontWeight: "bold"
         }
+    },
+    ".mdc-list-item": {
+        height: "auto",
+        ".mdc-typography--headline6": {
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            textOverflow: "ellipsis",
+            maxWidth: 180,
+            display: "block"
+        }
     }
 });
 
