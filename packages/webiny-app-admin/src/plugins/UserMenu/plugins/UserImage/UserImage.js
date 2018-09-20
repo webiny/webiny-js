@@ -14,18 +14,25 @@ const avatarMenu = css({
     }
 });
 
-const UserAvatar = () => {
-    const {
-        security: {
-            identity: { fullName, avatar }
-        }
-    } = app;
-
-    if (avatar) {
-        return <img src={avatar.src} alt={fullName} className={avatarMenu} />;
+class UserAvatar extends React.Component<{}> {
+    componentDidMount() {
+        app.security.onIdentity(() => {
+            this.forceUpdate();
+        });
     }
 
-    return <div className={classNames(avatarMenu, "blank")} />;
-};
+    render() {
+        const {
+            security: {
+                identity: { fullName, avatar }
+            }
+        } = app;
 
+        if (avatar) {
+            return <img src={avatar.src} alt={fullName} className={avatarMenu} />;
+        }
+
+        return <div className={classNames(avatarMenu, "blank")} />;
+    }
+}
 export default UserAvatar;
