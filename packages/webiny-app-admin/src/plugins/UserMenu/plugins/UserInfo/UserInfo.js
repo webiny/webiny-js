@@ -8,8 +8,8 @@ import { Link } from "webiny-app/router";
 import classNames from "classnames";
 
 const avatarImage = css({
-    height: 40,
-    width: 40,
+    height: "40px !important",
+    width: "40px !important",
     borderRadius: "50%",
     display: "inline-block",
     "&.blank": {
@@ -51,7 +51,7 @@ class UserInfo extends React.Component<{}> {
         return (
             <Link route={"Account"} className={linkStyles}>
                 <ListItem ripple={false}>
-                    <ListItemGraphic className={avatar}>
+                    <ListItemGraphic className={avatarImage}>
                         {avatar ? (
                             <img className={avatarImage} src={avatar.src} alt={fullName} />
                         ) : (
