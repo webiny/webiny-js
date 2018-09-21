@@ -56,6 +56,8 @@
     "inquirer-maxlength-input-prompt": "^1.0.0",
     "jest": "^23.1.0",
     "jest-extended": "^0.7.2",
+    "lerna": "^3.4.0",
+    "lerna-changelog": "^0.8.0",
     "lint-staged": "^7.2.2",
     "longest": "^2.0.1",
     "minimatch": "^3.0.4",

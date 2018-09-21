@@ -1,11 +1,8 @@
 // @flowIgnore
 /* eslint-disable */
-const path = require("path");
 const execa = require("execa");
 const buildCommit = require("cz-customizable/buildCommit");
-const getPackages = require("get-yarn-workspaces");
 const chalk = require("chalk");
-const commitAnalyzer = require("@semantic-release/commit-analyzer");
 const autocomplete = require("inquirer-autocomplete-prompt");
 const maxLengthInput = require("inquirer-maxlength-input-prompt");
 const commitTypes = require("./types");
@@ -13,48 +10,8 @@ const rightPad = require("right-pad");
 const { map } = require("lodash");
 const longest = require("longest");
 
-// Create default prompter
-function makeAffectsLine({ packages = [] }) {
-    if (packages.length) {
-        return `affects: ${packages.join(", ")}`;
-    }
-}
-
-function getCommitTypeMessage(type) {
-    if (!type || type === "no") {
-        return "This commit does not indicate any release.";
-    }
-    return {
-        patch: "🛠  This commit indicates a patch release (0.0.X)",
-        minor: "✨  This commit indicates a minor release (0.X.0)",
-        major: "💥  This commit indicates a major release (X.0.0)"
-    }[type];
-}
-
-function getAllPackages() {
-    return getPackages(process.cwd()).map(dir => {
-        return {
-            name: path.basename(dir),
-            location: dir
-        };
-    });
-}
-
 function getStagedFiles() {
     return execa.sync("git", ["diff", "--cached", "--name-only"]).stdout.split("\n");
-}
-
-function getChangedPackages(stagedFiles) {
-    return getAllPackages()
-        .filter(pkg => {
-            const packagePrefix = path.relative(".", pkg.location) + path.sep;
-            for (let stagedFile of stagedFiles) {
-                if (stagedFile.indexOf(packagePrefix) === 0) {
-                    return true;
-                }
-            }
-        })
-        .map(pkg => pkg.name);
 }
 
 function formatTypes(types) {
@@ -73,8 +30,6 @@ module.exports = {
         cz.registerPrompt("maxlength-input", maxLengthInput);
 
         const stagedFiles = getStagedFiles();
-        const allPackages = getAllPackages().map(pkg => pkg.name);
-        const changedPackages = getChangedPackages(stagedFiles);
 
         const types = formatTypes(commitTypes);
 
@@ -99,11 +54,6 @@ module.exports = {
                     );
                 }
             },
-            /*{
-                type: "input",
-                name: "scope",
-                message: "Denote the scope of this change ($location, $browser, $compile, etc.):\n"
-            },*/
             {
                 type: "maxlength-input",
                 maxLength: 60,
@@ -120,41 +70,13 @@ module.exports = {
                 type: "input",
                 name: "breaking",
                 message: "List any breaking changes:\n"
-            },
-            {
-                type: "input",
-                name: "footer",
-                message: "List any issues closed by this change (for multiple issues: closes #123, fixes #534):\n"
-            },
-            {
-                type: "checkbox",
-                name: "packages",
-                default: changedPackages,
-                choices: allPackages,
-                message: `The packages that this commit has affected (${
-                    changedPackages.length
-                } detected)\n`
             }
         ]).then(async answers => {
             // Add emoji to commit message
             answers.subject = commitTypes[answers.type].emoji + "  " + answers.subject;
 
-            // Add list of affected packages
-            const affectsLine = makeAffectsLine(answers);
-            if (affectsLine) {
-                answers.body = `${affectsLine}\n` + answers.body;
-            }
-
             // Build commit message
             const message = buildCommit(answers);
-
-            // Run commit-analyzer to detect the type of this commit
-            const type = await commitAnalyzer(
-                {},
-                { commits: [{ hash: "", message }], logger: { log: () => {} } }
-            );
-
-            console.log(chalk.green(`\n${getCommitTypeMessage(type)}\n`));
             console.log("\n\nCommit message:");
             console.log(chalk.blue(`\n\n${message}\n`));
             commitCb(message);
