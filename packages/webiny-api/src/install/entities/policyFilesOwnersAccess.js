@@ -7,6 +7,7 @@ export default async () => {
         name: "FilesOwnersAccess",
         description: `Enables complete control over owned files.`,
         slug: "files-owners-access",
+        system: true,
         permissions: {
             entities: {
                 File: {

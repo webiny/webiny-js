@@ -90,6 +90,6 @@ export default compose(
     withForm({
         name: "SecurityGroupForm",
         type: "Security.Groups",
-        fields: "id name slug description policies { id name }"
+        fields: "id name slug description system policies { id name }"
     })
 )(GroupsForm);

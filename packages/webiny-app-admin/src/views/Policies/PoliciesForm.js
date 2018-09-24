@@ -154,7 +154,7 @@ export default compose(
     withForm({
         name: "SecurityPolicyForm",
         type: "Security.Policies",
-        fields: "id name slug description permissions",
+        fields: "id name slug description system permissions",
         onSuccess: data => {
             dispatch(
                 setFormData({

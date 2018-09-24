@@ -7,6 +7,7 @@ export default async () => {
         name: "SecurityFullAccess",
         description: "Full access to low-level security settings and identities management.",
         slug: "security-full-access",
+        system: true,
         permissions: {
             api: {
                 Security: {
@@ -15,6 +16,7 @@ export default async () => {
                             id: true,
                             name: true,
                             slug: true,
+                            system: true,
                             description: true,
                             policies: ["id", "name"]
                         },
@@ -22,6 +24,7 @@ export default async () => {
                             id: true,
                             name: true,
                             slug: true,
+                            system: true,
                             description: true,
                             policies: ["id", "name"]
                         },
@@ -29,17 +32,13 @@ export default async () => {
                             id: true,
                             name: true,
                             slug: true,
+                            system: true,
                             description: true,
                             policies: ["id", "name"]
                         },
                         delete: true,
                         list: {
-                            data: {
-                                id: true,
-                                name: true,
-                                description: true,
-                                createdOn: true
-                            },
+                            data: ["id", "name", "description", "createdOn", "system"],
                             meta: [
                                 "count",
                                 "totalCount",
@@ -114,9 +113,17 @@ export default async () => {
                         }
                     },
                     Policies: {
-                        one: ["id", "name", "slug", "description", "permissions", "createdOn"],
+                        one: [
+                            "id",
+                            "name",
+                            "slug",
+                            "description",
+                            "permissions",
+                            "createdOn",
+                            "security"
+                        ],
                         list: {
-                            data: ["id", "name", "description", "createdOn"],
+                            data: ["id", "name", "description", "createdOn", "system"],
                             meta: [
                                 "count",
                                 "totalCount",
@@ -129,9 +136,9 @@ export default async () => {
                                 "previousPage"
                             ]
                         },
-                        create: ["id", "name", "slug", "description", "permissions"],
+                        create: ["id", "name", "slug", "description", "permissions", "security"],
                         delete: true,
-                        update: ["id", "name", "slug", "description", "permissions"]
+                        update: ["id", "name", "slug", "description", "permissions", "security"]
                     },
                     ApiTokens: {
                         one: ["id", "name", "slug", "description", "token", "permissions"],

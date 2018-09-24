@@ -142,7 +142,7 @@ export default compose(
     withDataList({
         name: "PoliciesDataList",
         type: "Security.Policies",
-        fields: "id name description createdOn",
+        fields: "id name description system createdOn",
         sort: { savedOn: -1 }
     })
 )(PoliciesDataList);

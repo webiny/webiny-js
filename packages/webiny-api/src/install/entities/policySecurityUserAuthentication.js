@@ -7,6 +7,7 @@ export default async () => {
         name: "SecurityUserAuthentication",
         description: `Enables authentication for "User" identity and retrieval of current user's basic information.`,
         slug: "security-user-authentication",
+        system: true,
         permissions: {
             entities: {
                 SecurityUserAvatar: {

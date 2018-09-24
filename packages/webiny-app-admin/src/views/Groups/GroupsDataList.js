@@ -108,7 +108,7 @@ export default compose(
     withDataList({
         name: "GroupsDataList",
         type: "Security.Groups",
-        fields: "id name description createdOn",
+        fields: "id name description system createdOn",
         sort: { savedOn: -1 }
     })
 )(GroupsDataList);
