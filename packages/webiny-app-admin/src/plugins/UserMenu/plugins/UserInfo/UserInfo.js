@@ -53,10 +53,15 @@ class UserInfo extends React.Component<{}> {
 
     render() {
         const {
-            security: {
-                identity: { email, fullName, avatar }
-            }
+            security: { identity }
         } = app;
+
+        // When user logs out, identity becomes null.
+        if (!identity) {
+            return null;
+        }
+
+        const { email, fullName, avatar } = identity;
 
         return (
             <Link route={"Account"} className={linkStyles}>
