@@ -29,7 +29,6 @@ const GroupsDataList = (
 ) => {
     const { GroupsDataList, router } = props;
 
-    console.log(GroupsDataList);
     return (
         <DataList
             {...GroupsDataList}
