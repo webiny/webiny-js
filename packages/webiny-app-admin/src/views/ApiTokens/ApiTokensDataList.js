@@ -21,16 +21,16 @@ import {
 import { DeleteIcon } from "webiny-ui/List/DataList/icons";
 import { withSnackbar, type WithSnackbarProps } from "webiny-app-admin/components";
 
-const t = i18n.namespace("Security.ApiTokensList");
+const t = i18n.namespace("Security.ApiTokensDataList");
 
 const ApiTokensDataList = (
-    props: WithRouterProps & WithSnackbarProps & { ApiTokensList: WithDataListProps }
+    props: WithRouterProps & WithSnackbarProps & { ApiTokensDataList: WithDataListProps }
 ) => {
-    const { ApiTokensList, router } = props;
+    const { ApiTokensDataList, router } = props;
 
     return (
         <DataList
-            {...ApiTokensList}
+            {...ApiTokensDataList}
             title={t`API Tokens`}
             sorters={[
                 {
@@ -74,9 +74,9 @@ const ApiTokensDataList = (
                                         <DeleteIcon
                                             onClick={() => {
                                                 showConfirmation(() => {
-                                                    ApiTokensList.delete(item.id, {
+                                                    ApiTokensDataList.delete(item.id, {
                                                         onSuccess: () => {
-                                                            ApiTokensList.refresh();
+                                                            ApiTokensDataList.refresh();
                                                             props.showSnackbar(
                                                                 t`API token deleted.`
                                                             );
@@ -105,7 +105,7 @@ export default compose(
     withSnackbar(),
     withRouter(),
     withDataList({
-        name: "ApiTokensList",
+        name: "ApiTokensDataList",
         type: "Security.ApiTokens",
         fields: "id name description slug createdOn",
         sort: { savedOn: -1 }

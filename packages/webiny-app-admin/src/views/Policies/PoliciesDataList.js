@@ -101,31 +101,41 @@ const PoliciesDataList = (
 
                             <ListItemMeta>
                                 <ListActions>
-                                    <ConfirmationDialog>
-                                        {({ showConfirmation }) => (
-                                            <DeleteIcon
-                                                onClick={() => {
-                                                    showConfirmation(() => {
-                                                        PoliciesDataList.delete(item.id, {
-                                                            onSuccess: () => {
-                                                                PoliciesDataList.refresh();
-                                                                props.showSnackbar(
-                                                                    t`Policy {name} deleted.`({
-                                                                        name: item.name
-                                                                    })
-                                                                );
-                                                                item.id === router.getQuery().id &&
-                                                                    router.goToRoute({
-                                                                        params: { id: null },
-                                                                        merge: true
-                                                                    });
-                                                            }
+                                    {!item.system ? (
+                                        <ConfirmationDialog>
+                                            {({ showConfirmation }) => (
+                                                <DeleteIcon
+                                                    onClick={() => {
+                                                        showConfirmation(() => {
+                                                            PoliciesDataList.delete(item.id, {
+                                                                onSuccess: () => {
+                                                                    PoliciesDataList.refresh();
+                                                                    props.showSnackbar(
+                                                                        t`Policy {name} deleted.`({
+                                                                            name: item.name
+                                                                        })
+                                                                    );
+                                                                    item.id ===
+                                                                        router.getQuery().id &&
+                                                                        router.goToRoute({
+                                                                            params: { id: null },
+                                                                            merge: true
+                                                                        });
+                                                                }
+                                                            });
                                                         });
-                                                    });
-                                                }}
-                                            />
-                                        )}
-                                    </ConfirmationDialog>
+                                                    }}
+                                                />
+                                            )}
+                                        </ConfirmationDialog>
+                                    ) : (
+                                        <Tooltip
+                                            placement={"bottom"}
+                                            content={<span>{t`Cannot delete system policy.`}</span>}
+                                        >
+                                            <DeleteIcon disabled />
+                                        </Tooltip>
+                                    )}
                                 </ListActions>
                             </ListItemMeta>
                         </ListItem>
@@ -142,7 +152,7 @@ export default compose(
     withDataList({
         name: "PoliciesDataList",
         type: "Security.Policies",
-        fields: "id name description createdOn",
+        fields: "id name description system createdOn",
         sort: { savedOn: -1 }
     })
 )(PoliciesDataList);
