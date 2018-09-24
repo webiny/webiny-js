@@ -1,18 +1,7 @@
 // @flow
 import React from "react";
-import { css } from "emotion";
 import { app } from "webiny-app";
-import classNames from "classnames";
-
-const avatarMenu = css({
-    borderRadius: "50%",
-    display: "block",
-    width: 35,
-    height: 35,
-    "&.blank": {
-        backgroundColor: "lightgray"
-    }
-});
+import { Avatar } from "webiny-ui/Avatar";
 
 class UserAvatar extends React.Component<{}> {
     componentDidMount() {
@@ -33,11 +22,7 @@ class UserAvatar extends React.Component<{}> {
 
         const { fullName, avatar } = identity;
 
-        if (avatar) {
-            return <img src={avatar.src} alt={fullName} className={avatarMenu} />;
-        }
-
-        return <div className={classNames(avatarMenu, "blank")} />;
+        return <Avatar src={avatar && avatar.src} alt={fullName} fallbackText={fullName} />;
     }
 }
 export default UserAvatar;
