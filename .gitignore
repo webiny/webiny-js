@@ -12,3 +12,4 @@ yarn-error.log
 dist/
 build/
 packages/demo-api/static/
+.changelog
