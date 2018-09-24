@@ -120,7 +120,7 @@ export default async () => {
                             "description",
                             "permissions",
                             "createdOn",
-                            "security"
+                            "system"
                         ],
                         list: {
                             data: ["id", "name", "description", "createdOn", "system"],
@@ -136,9 +136,9 @@ export default async () => {
                                 "previousPage"
                             ]
                         },
-                        create: ["id", "name", "slug", "description", "permissions", "security"],
+                        create: ["id", "name", "slug", "description", "permissions", "system"],
                         delete: true,
-                        update: ["id", "name", "slug", "description", "permissions", "security"]
+                        update: ["id", "name", "slug", "description", "permissions", "system"]
                     },
                     ApiTokens: {
                         one: ["id", "name", "slug", "description", "token", "permissions"],
