@@ -21,7 +21,7 @@ type Props = {
     src: string,
 
     // "alt" text.
-    alt: string,
+    alt: ?string,
 
     // Width.
     width?: number,
