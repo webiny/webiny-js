@@ -10,6 +10,109 @@ export default async () => {
         permissions: {
             api: {
                 Security: {
+                    Groups: {
+                        create: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                            description: true,
+                            policies: ["id", "name"]
+                        },
+                        update: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                            description: true,
+                            policies: ["id", "name"]
+                        },
+                        one: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                            description: true,
+                            policies: ["id", "name"]
+                        },
+                        delete: true,
+                        list: {
+                            data: {
+                                id: true,
+                                name: true,
+                                description: true,
+                                createdOn: true
+                            },
+                            meta: [
+                                "count",
+                                "totalCount",
+                                "from",
+                                "to",
+                                "page",
+                                "totalPages",
+                                "perPage",
+                                "nextPage",
+                                "previousPage"
+                            ]
+                        }
+                    },
+                    Users: {
+                        delete: true,
+                        one: {
+                            id: true,
+                            email: true,
+                            enabled: true,
+                            firstName: true,
+                            lastName: true,
+                            fullName: true,
+                            avatar: ["id", "src", "size", "type", "name"],
+                            groups: ["id", "name"],
+                            policies: ["id", "name"]
+                        },
+                        create: {
+                            id: true,
+                            email: true,
+                            enabled: true,
+                            firstName: true,
+                            lastName: true,
+                            fullName: true,
+                            avatar: ["id", "src", "size", "type", "name"],
+                            groups: ["id", "name"],
+                            policies: ["id", "name"]
+                        },
+                        update: {
+                            id: true,
+                            email: true,
+                            enabled: true,
+                            firstName: true,
+                            lastName: true,
+                            fullName: true,
+                            avatar: ["id", "src", "size", "type", "name"],
+                            groups: ["id", "name"],
+                            policies: ["id", "name"]
+                        },
+                        list: {
+                            data: {
+                                id: true,
+                                enabled: true,
+                                name: true,
+                                email: true,
+                                firstName: true,
+                                lastName: true,
+                                fullName: true,
+                                createdOn: true,
+                                avatar: ["id", "src", "size", "type", "name"]
+                            },
+                            meta: [
+                                "count",
+                                "totalCount",
+                                "from",
+                                "to",
+                                "page",
+                                "totalPages",
+                                "perPage",
+                                "nextPage",
+                                "previousPage"
+                            ]
+                        }
+                    },
                     Policies: {
                         one: ["id", "name", "slug", "description", "permissions", "createdOn"],
                         list: {
@@ -53,6 +156,7 @@ export default async () => {
                 }
             },
             entities: {
+                SecurityUserAvatar: "*",
                 SecurityUser: "*",
                 SecurityGroup: "*",
                 SecurityPolicy: "*",

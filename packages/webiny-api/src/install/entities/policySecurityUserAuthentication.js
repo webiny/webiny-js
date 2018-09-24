@@ -8,7 +8,25 @@ export default async () => {
         description: `Enables authentication for "User" identity and retrieval of current user's basic information.`,
         slug: "security-user-authentication",
         permissions: {
+            entities: {
+                SecurityUserAvatar: {
+                    owner: "*"
+                }
+            },
             api: {
+                Me: {
+                    get: {
+                        id: true,
+                        email: true,
+                        firstName: true,
+                        lastName: true,
+                        fullName: true,
+                        avatar: ["id", "src", "size", "type", "name"]
+                    },
+                    groups: {
+                        slug: true
+                    }
+                },
                 Security: {
                     Users: {
                         authenticate: {
@@ -18,9 +36,10 @@ export default async () => {
                                 email: true,
                                 groups: ["id", "slug"],
                                 gravatar: true,
-                                avatar: ["src", "size", "type", "name"],
+                                avatar: ["id", "src", "size", "type", "name"],
                                 lastName: true,
-                                firstName: true
+                                firstName: true,
+                                fullName: true
                             },
                             expiresOn: true
                         }

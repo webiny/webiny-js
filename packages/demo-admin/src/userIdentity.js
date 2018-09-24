@@ -10,7 +10,7 @@ const fields = `
     firstName
     lastName
     fullName
-    avatar { src }
+    avatar { id src }
     groups {
         slug
     }

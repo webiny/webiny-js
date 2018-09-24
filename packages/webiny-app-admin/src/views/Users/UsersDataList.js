@@ -136,7 +136,7 @@ export default compose(
     withDataList({
         name: "UsersDataList",
         type: "Security.Users",
-        fields: "id email firstName lastName avatar { src } createdOn",
+        fields: "id email firstName lastName avatar { id src } createdOn",
         sort: { savedOn: -1 }
     })
 )(UsersDataList);

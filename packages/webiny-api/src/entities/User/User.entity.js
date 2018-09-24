@@ -3,13 +3,16 @@ import md5 from "md5";
 import Identity from "../Identity/Identity.entity";
 import File from "../File/File.entity";
 
+class UserAvatar extends File {}
+UserAvatar.classId = "SecurityUserAvatar";
+
 class User extends Identity {
     email: string;
     password: string;
     firstName: string;
     lastName: string;
     gravatar: string;
-    avatar: { name: string, size: number, type: string, src: string };
+    avatar: Promise<File>;
     enabled: boolean;
     constructor() {
         super();
@@ -40,7 +43,19 @@ class User extends Identity {
                 return `${this.firstName} ${this.lastName}`.trim();
             });
 
-        this.attr("avatar").entity(File);
+        this.attr("avatar")
+            .entity(UserAvatar)
+            .onSet(value => {
+                if (value) {
+                    this.on("afterSave", async () => {
+                        // Let's make sure assigned avatar File is actually owned by this user.
+                        const avatar = await this.avatar;
+                        avatar.owner = this;
+                        await avatar.save();
+                    }).setOnce();
+                }
+                return value;
+            });
 
         this.attr("gravatar")
             .char()

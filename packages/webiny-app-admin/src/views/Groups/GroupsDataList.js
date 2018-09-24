@@ -77,7 +77,7 @@ const GroupsDataList = (
                                                             onSuccess: () => {
                                                                 GroupsDataList.refresh();
                                                                 props.showSnackbar(
-                                                                    t`group {name} deleted.`({
+                                                                    t`Group {name} deleted.`({
                                                                         name: item.name
                                                                     })
                                                                 );
