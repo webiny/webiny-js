@@ -1,5 +1,5 @@
 // @flow
-import { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLID } from "graphql";
+import { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLID, GraphQLBoolean } from "graphql";
 import { GraphQLDateTime } from "graphql-iso-date";
 import GraphQLJSON from "graphql-type-json";
 import { Group, Policy } from "./Entity";
@@ -10,6 +10,7 @@ export const PolicyType = new GraphQLObjectType({
     name: "SecurityPolicy",
     fields: {
         id: { type: GraphQLID },
+        system: { type: GraphQLBoolean },
         name: { type: GraphQLString },
         createdOn: { type: GraphQLDateTime },
         slug: { type: GraphQLString },
@@ -30,6 +31,7 @@ export const GroupType = new GraphQLObjectType({
     name: "SecurityGroup",
     fields: {
         id: { type: GraphQLID },
+        system: { type: GraphQLBoolean },
         name: { type: GraphQLString },
         slug: { type: GraphQLString },
         createdOn: { type: GraphQLDateTime },

@@ -7,6 +7,7 @@ export default async () => {
         name: "SuperAdmin",
         description: "Full API and entities access.",
         slug: "super-admin",
+        system: true,
         permissions: {
             api: "*",
             entities: "*"

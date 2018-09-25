@@ -48,7 +48,7 @@ const UsersForm = props => {
                             <Cell span={6}>
                                 <Grid>
                                     <Cell span={12}>
-                                        <Bind name="email" validators={["required"]}>
+                                        <Bind name="email" validators={["required", "email"]}>
                                             <Input label={t`E-mail`} />
                                         </Bind>
                                     </Cell>
@@ -127,6 +127,6 @@ export default compose(
         name: "SecurityUserForm",
         type: "Security.Users",
         fields:
-            "id email firstName lastName avatar { src } enabled groups { id name } policies { id name }"
+            "id email firstName lastName fullName avatar { id src } enabled groups { id name } policies { id name }"
     })
 )(UsersForm);

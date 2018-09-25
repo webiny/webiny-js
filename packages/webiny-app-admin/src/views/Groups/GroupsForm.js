@@ -10,6 +10,7 @@ import { withSnackbar } from "webiny-app-admin/components";
 import { refreshDataList } from "webiny-app/actions";
 import compose from "recompose/compose";
 import { connect } from "react-redux";
+import PoliciesAutoComplete from "./PoliciesAutoComplete";
 
 import {
     SimpleForm,
@@ -59,6 +60,13 @@ const GroupsForm = props => {
                                     <Input label={t`Description`} rows={4} />
                                 </Bind>
                             </Cell>
+                        </Grid>{" "}
+                        <Grid>
+                            <Cell span={12}>
+                                <Bind name="policies">
+                                    <PoliciesAutoComplete label={t`Policies`} />
+                                </Bind>
+                            </Cell>
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>
@@ -82,6 +90,6 @@ export default compose(
     withForm({
         name: "SecurityGroupForm",
         type: "Security.Groups",
-        fields: "id name slug description"
+        fields: "id name slug description system policies { id name }"
     })
 )(GroupsForm);

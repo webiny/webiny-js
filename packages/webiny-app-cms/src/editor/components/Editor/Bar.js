@@ -5,7 +5,7 @@ import DefaultEditorBar from "./DefaultEditorBar";
 
 class Bar extends React.Component {
     render() {
-        const plugins = getPlugins("editor-bar");
+        const plugins = getPlugins("cms-editor-bar");
         let pluginBar = null;
 
         for (let i = 0; i < plugins.length; i++) {

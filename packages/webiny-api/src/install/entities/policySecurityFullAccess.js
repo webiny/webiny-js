@@ -7,13 +7,123 @@ export default async () => {
         name: "SecurityFullAccess",
         description: "Full access to low-level security settings and identities management.",
         slug: "security-full-access",
+        system: true,
         permissions: {
             api: {
                 Security: {
-                    Policies: {
-                        one: ["id", "name", "slug", "description", "permissions", "createdOn"],
+                    Groups: {
+                        create: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                            system: true,
+                            description: true,
+                            policies: ["id", "name"]
+                        },
+                        update: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                            system: true,
+                            description: true,
+                            policies: ["id", "name"]
+                        },
+                        one: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                            system: true,
+                            description: true,
+                            policies: ["id", "name"]
+                        },
+                        delete: true,
                         list: {
-                            data: ["id", "name", "description", "createdOn"],
+                            data: ["id", "name", "description", "createdOn", "system"],
+                            meta: [
+                                "count",
+                                "totalCount",
+                                "from",
+                                "to",
+                                "page",
+                                "totalPages",
+                                "perPage",
+                                "nextPage",
+                                "previousPage"
+                            ]
+                        }
+                    },
+                    Users: {
+                        delete: true,
+                        one: {
+                            id: true,
+                            email: true,
+                            enabled: true,
+                            firstName: true,
+                            lastName: true,
+                            fullName: true,
+                            avatar: ["id", "src", "size", "type", "name"],
+                            groups: ["id", "name"],
+                            policies: ["id", "name"]
+                        },
+                        create: {
+                            id: true,
+                            email: true,
+                            enabled: true,
+                            firstName: true,
+                            lastName: true,
+                            fullName: true,
+                            avatar: ["id", "src", "size", "type", "name"],
+                            groups: ["id", "name"],
+                            policies: ["id", "name"]
+                        },
+                        update: {
+                            id: true,
+                            email: true,
+                            enabled: true,
+                            firstName: true,
+                            lastName: true,
+                            fullName: true,
+                            avatar: ["id", "src", "size", "type", "name"],
+                            groups: ["id", "name"],
+                            policies: ["id", "name"]
+                        },
+                        list: {
+                            data: {
+                                id: true,
+                                enabled: true,
+                                name: true,
+                                email: true,
+                                firstName: true,
+                                lastName: true,
+                                fullName: true,
+                                createdOn: true,
+                                avatar: ["id", "src", "size", "type", "name"]
+                            },
+                            meta: [
+                                "count",
+                                "totalCount",
+                                "from",
+                                "to",
+                                "page",
+                                "totalPages",
+                                "perPage",
+                                "nextPage",
+                                "previousPage"
+                            ]
+                        }
+                    },
+                    Policies: {
+                        one: [
+                            "id",
+                            "name",
+                            "slug",
+                            "description",
+                            "permissions",
+                            "createdOn",
+                            "system"
+                        ],
+                        list: {
+                            data: ["id", "name", "description", "createdOn", "system"],
                             meta: [
                                 "count",
                                 "totalCount",
@@ -26,9 +136,9 @@ export default async () => {
                                 "previousPage"
                             ]
                         },
-                        create: ["id", "name", "slug", "description", "permissions"],
+                        create: ["id", "name", "slug", "description", "permissions", "system"],
                         delete: true,
-                        update: ["id", "name", "slug", "description", "permissions"]
+                        update: ["id", "name", "slug", "description", "permissions", "system"]
                     },
                     ApiTokens: {
                         one: ["id", "name", "slug", "description", "token", "permissions"],
@@ -53,6 +163,7 @@ export default async () => {
                 }
             },
             entities: {
+                SecurityUserAvatar: "*",
                 SecurityUser: "*",
                 SecurityGroup: "*",
                 SecurityPolicy: "*",

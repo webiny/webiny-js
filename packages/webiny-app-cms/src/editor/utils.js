@@ -23,15 +23,15 @@ export const updateChildPaths = element => {
 };
 
 export const createBlock = (options = {}, parent = null) => {
-    return createElement("block", options, parent);
+    return createElement("cms-element-block", options, parent);
 };
 
 export const createRow = (options = {}, parent = null) => {
-    return createElement("row", options, parent);
+    return createElement("cms-element-row", options, parent);
 };
 
 export const createColumn = (options = {}, parent = null) => {
-    return createElement("column", options, parent);
+    return createElement("cms-element-column", options, parent);
 };
 
 export const createElement = (type, options = {}, parent = null) => {
