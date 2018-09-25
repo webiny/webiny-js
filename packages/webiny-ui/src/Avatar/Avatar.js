@@ -48,7 +48,17 @@ const Avatar = (props: Props) => {
             className={classNames(avatar, className)}
             style={{ ...props.style, width, height }}
         >
-            {props.src ? <img src={src} alt={alt} /> : <div>{fallbackText}</div>}
+            {props.src ? (
+                <img src={src} alt={alt} />
+            ) : (
+                <div>
+                    {fallbackText
+                        .split(" ")
+                        .map(word => word.charAt(0))
+                        .join("")
+                        .toUpperCase()}
+                </div>
+            )}
         </div>
     );
 };
