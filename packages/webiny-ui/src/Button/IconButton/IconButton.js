@@ -16,7 +16,10 @@ type Props = FormComponentProps & {
     onClick?: Function,
 
     // Custom CSS class.
-    className?: string
+    className?: string,
+
+    // Should icon be disabled?
+    disabled?: boolean
 };
 
 /**
@@ -26,11 +29,16 @@ type Props = FormComponentProps & {
  * @constructor
  */
 const IconButton = (props: Props) => {
-    const { icon, label, onClick, className } = props;
+    const { icon, label, onClick, className, disabled } = props;
 
     return (
         <icon-button onClick={onClick}>
-            <RIconButton className={className} label={label} icon={<Icon icon={icon} />} />
+            <RIconButton
+                disabled={disabled}
+                className={className}
+                label={label}
+                icon={<Icon icon={icon} />}
+            />
         </icon-button>
     );
 };

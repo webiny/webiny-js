@@ -6,10 +6,10 @@ import { connect } from "react-redux";
 import styled from "react-emotion";
 import compose from "recompose/compose";
 import { getPlugins, getPlugin } from "webiny-app/plugins";
-import { withTheme } from "webiny-app-cms/editor/components";
+import { withTheme } from "webiny-app-cms/theme";
 import { getBlocks, getEditor, getActivePlugin } from "webiny-app-cms/editor/selectors";
 import Element from "webiny-app-cms/editor/components/Element";
-import { RenderContextProvider } from "webiny-app-cms/editor/context";
+import RenderElement from "webiny-app-cms/render/components/Element";
 
 const ContentContainer = styled("div")(({ theme }) => ({
     margin: "64px 0px 0 54px",
@@ -47,15 +47,20 @@ const renderPreview = (content, activePreview) => {
     return wrappedContent;
 };
 
-const Content = ({ blocks, theme, previewLayout, activePreview }) => {
+const Content = ({ blocks, theme, previewLayout, activePreview, renderContent }) => {
     const plugins = getPlugins("cms-editor-content");
     const layout = (previewLayout && getPlugin(previewLayout)) || null;
 
     const baseContent = (
         <React.Fragment>
-            {blocks.map(block => (
-                <Element key={block.id} element={block} />
-            ))}
+            {blocks.map(
+                block =>
+                    renderContent ? (
+                        <RenderElement key={block.id} element={block} />
+                    ) : (
+                        <Element key={block.id} element={block} />
+                    )
+            )}
         </React.Fragment>
     );
 
@@ -64,9 +69,7 @@ const Content = ({ blocks, theme, previewLayout, activePreview }) => {
     return (
         <ContentContainer theme={theme}>
             {plugins.map(plugin => React.cloneElement(plugin.render(), { key: plugin.name }))}
-            <RenderContextProvider>
-                <BaseContainer>{renderPreview(content, activePreview)}</BaseContainer>
-            </RenderContextProvider>
+            <BaseContainer>{renderPreview(content, activePreview)}</BaseContainer>
         </ContentContainer>
     );
 };
@@ -74,7 +77,8 @@ const Content = ({ blocks, theme, previewLayout, activePreview }) => {
 const stateToProps = state => ({
     blocks: getBlocks(state),
     previewLayout: getEditor(state).previewLayout,
-    activePreview: getActivePlugin("cms-editor-content-preview")(state)
+    activePreview: getActivePlugin("cms-editor-content-preview")(state),
+    renderContent: getEditor(state).ui.renderContent // TODO: remove this later
 });
 
 export default compose(

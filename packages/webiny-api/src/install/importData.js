@@ -4,7 +4,8 @@ import {
     policySecurityFullAccess,
     policySuperAdmin,
     groupDefault,
-    policySecurityUserAuthentication
+    policySecurityUserAuthentication,
+    policyFilesOwnersAccess
 } from "./entities";
 
 export default async () => {
@@ -12,5 +13,6 @@ export default async () => {
     await policySecurityFullAccess();
     await policySuperAdmin();
     await policySecurityUserAuthentication();
+    await policyFilesOwnersAccess();
     await admin();
 };

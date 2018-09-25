@@ -246,7 +246,7 @@ const Pagination = (props: Props) => {
 
     return (
         <React.Fragment>
-            {meta.totalCount &&
+            {typeof meta.totalCount !== "undefined" &&
                 meta.totalCount > 0 &&
                 meta.from &&
                 meta.to && (
