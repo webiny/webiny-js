@@ -7,7 +7,6 @@ import toolbar from "./../plugins/toolbar";
 import elementSettings from "./../plugins/elementSettings";
 import defaultBarPlugins from "./../plugins/defaultBar";
 import slateEditorPlugins from "./../plugins/slate";
-import previewPlugins from "./../plugins/preview";
 
 export default [
     contentBackground,
@@ -18,6 +17,5 @@ export default [
     ...toolbar,
     ...elementSettings,
     ...defaultBarPlugins,
-    ...slateEditorPlugins,
-    ...previewPlugins
+    ...slateEditorPlugins
 ];
