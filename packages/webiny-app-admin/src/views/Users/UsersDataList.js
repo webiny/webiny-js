@@ -25,6 +25,7 @@ import {
 } from "webiny-ui/List";
 
 import { DeleteIcon } from "webiny-ui/List/DataList/icons";
+import { Avatar } from "webiny-ui/Avatar";
 
 const t = i18n.namespace("Security.UsersDataList");
 
@@ -63,11 +64,12 @@ const UsersDataList = (
                     {data.map(item => (
                         <ListItem key={item.id} selected={router.getQuery("id") === item.id}>
                             <ListItemGraphic>
-                                <img
+                                <Avatar
+                                    width={32}
+                                    height={32}
+                                    src={item.avatar}
+                                    fallbackText={item.fullName}
                                     alt={t`User's avatar.`}
-                                    width="32"
-                                    height="32"
-                                    src={item.avatar && item.avatar.src}
                                 />
                             </ListItemGraphic>
                             <ListItemText
@@ -136,7 +138,7 @@ export default compose(
     withDataList({
         name: "UsersDataList",
         type: "Security.Users",
-        fields: "id email firstName lastName avatar { id src } createdOn",
+        fields: "id email firstName lastName fullName avatar { id src } createdOn",
         sort: { savedOn: -1 }
     })
 )(UsersDataList);
