@@ -93,6 +93,7 @@
     "test:build": "jest --config ./scripts/jest/config.build.js",
     "test:build:coverage": "yarn test:build --coverage",
     "commit": "node ./scripts/commitizen.js",
+    "commit:skip": "yarn commit --no-verify",
     "commit:check": "yarn lint-staged",
     "lint-staged": "lint-staged",
     "prettier": "prettier --config .prettierrc.js --write",

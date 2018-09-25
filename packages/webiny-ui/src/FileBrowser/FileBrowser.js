@@ -26,8 +26,6 @@ export type RenderPropParams = {
 type Props = {
     children: RenderPropParams => React.Node,
 
-    defaultSelectedFiles?: Array<Image>,
-
     // Which file types should be accepted?
     accept?: Array<string>,
 

@@ -15,7 +15,7 @@ import readme from "./README.md";
 import { Form } from "webiny-form";
 
 // $FlowFixMe
-import { MultiImageUpload, PropsType } from ".";
+import { MultiImageUpload, PropsType } from "./MultiImageUpload";
 
 const story = storiesOf("Components/ImageUpload", module);
 story.addDecorator(withKnobs);
@@ -74,6 +74,9 @@ story.add("Multi Image Upload", () => {
                                     label="Your previously uploaded images:"
                                     disabled={disabled}
                                     description="This list will not be shown to other users."
+                                    cropper={{
+                                        aspectRatio: 1
+                                    }}
                                 />
                             </Bind>
                         )}

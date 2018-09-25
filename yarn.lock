@@ -6724,7 +6724,7 @@ create-react-class@^15.5.2, create-react-class@^15.6.2:
     loose-envify "^1.3.1"
     object-assign "^4.1.1"
 
-cropperjs@^1.2.2:
+cropperjs@^1.2.2, cropperjs@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/cropperjs/-/cropperjs-1.4.1.tgz#41d9fcd87f9d9cd2e1dcf27c36680cac7a48cd6b"
 

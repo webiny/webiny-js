@@ -2,7 +2,7 @@
 import * as React from "react";
 import type { FormComponentProps } from "./../types";
 import { FileBrowser, type FileBrowserFile, type FileError } from "webiny-ui/FileBrowser";
-import {FormElementMessage} from "webiny-ui/FormElementMessage";
+import { FormElementMessage } from "webiny-ui/FormElementMessage";
 import styled from "react-emotion";
 import classNames from "classnames";
 import { ReactComponent as AddImageIcon } from "./icons/round-add_photo_alternate-24px.svg";
@@ -85,7 +85,7 @@ const ImagePreviewWrapper = styled("div")({
     justifyContent: "space-around",
     flexDirection: "column",
     boxSizing: "border-box",
-    position:'relative',
+    position: "relative",
     ">img": {
         width: "100%",
         height: "100%"
@@ -251,16 +251,11 @@ class Image extends React.Component<Props, State> {
                 </FileBrowser>
 
                 {validation.isValid === false && (
-                    <FormElementMessage error>
-                        {validation.message}
-                    </FormElementMessage>
+                    <FormElementMessage error>{validation.message}</FormElementMessage>
                 )}
 
-                {validation.isValid !== false && description && (
-                    <FormElementMessage>
-                        {description}
-                    </FormElementMessage>
-                )}
+                {validation.isValid !== false &&
+                    description && <FormElementMessage>{description}</FormElementMessage>}
 
                 {this.state.error && (
                     <FormElementMessage error>
