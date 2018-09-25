@@ -39,7 +39,7 @@ export default () => ({
         }*/
     },
     security: {
-        enabled: false,
+        enabled: true,
         token: { secret: "MyS3cr3tK3Y" },
         identities: [
             createIdentity(User, { strategy: credentialsStrategy(), type: "SecurityUsers" }),

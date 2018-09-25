@@ -38,6 +38,7 @@
     "brace": "^0.11.1",
     "bytes": "^3.0.0",
     "classnames": "^2.2.6",
+    "cropperjs": "^1.4.1",
     "downshift": "^2.1.5",
     "emotion": "^9.2.6",
     "material-components-web": "^0.39.1",

@@ -5,7 +5,7 @@ import { app } from "webiny-app";
 import { router, Router } from "webiny-app/router";
 import { app as adminApp, Theme as AdminTheme } from "webiny-app-admin";
 import { app as cmsApp } from "webiny-app-cms/admin";
-import { Theme as CmsEditorTheme } from "webiny-app-cms/editor";
+import { Theme as CmsTheme } from "webiny-app-cms/theme";
 import config from "./config";
 import myTheme from "demo-theme";
 import "./App.scss";
@@ -33,11 +33,11 @@ if (!app.initialized) {
 const App = ({ store }) => {
     return (
         <StateProvider store={store}>
-            <CmsEditorTheme theme={myTheme}>
+            <CmsTheme theme={myTheme}>
                 <AdminTheme>
                     <Router router={router} />
                 </AdminTheme>
-            </CmsEditorTheme>
+            </CmsTheme>
         </StateProvider>
     );
 };

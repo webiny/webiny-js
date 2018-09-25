@@ -93,6 +93,7 @@ export { Entity };
 class Policy extends Entity {
     name: string;
     slug: string;
+    system: boolean;
     description: string;
     permissions: Object;
     constructor() {
@@ -108,14 +109,19 @@ class Policy extends Entity {
             .char()
             .setValidators("required");
 
+        this.attr("system")
+            .boolean()
+            .onSet(value => (this.id ? this.system : value))
+            .setValue(false);
+
         this.attr("permissions")
             .object()
             .setValidators()
             .setValue({ entities: {}, api: {} });
 
         this.on("delete", async () => {
-            if (this.slug === "super-admin") {
-                throw Error("Cannot delete super admin policy.");
+            if (this.system) {
+                throw Error("Cannot delete system policy.");
             }
 
             const inUse = await Policies2Entities.count({ query: { policy: this.id } });
@@ -193,6 +199,7 @@ class Group extends Entity {
     name: string;
     slug: string;
     description: string;
+    system: boolean;
     policies: Array<Policy>;
     constructor() {
         super();
@@ -205,14 +212,18 @@ class Group extends Entity {
             .setOnce();
 
         this.attr("description").char();
+        this.attr("system")
+            .boolean()
+            .onSet(value => (this.id ? this.system : value))
+            .setValue(false);
 
         this.attr("policies")
             .entities(Policy, "entity")
             .setUsing(Policies2Entities, "policy");
 
         this.on("delete", async () => {
-            if (this.slug === "default") {
-                throw Error("Cannot delete default group.");
+            if (this.system) {
+                throw Error("Cannot delete system security group.");
             }
 
             const inUse = await Groups2Entities.count({ query: { group: this.id } });

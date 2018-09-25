@@ -21,13 +21,13 @@ const DefaultEditorBar = () => {
     return (
         <TopAppBar fixed>
             <TopAppBarSection style={{ width: "33%" }} alignStart>
-                {renderPlugins("default-bar-left")}
+                {renderPlugins("cms-default-bar-left")}
             </TopAppBarSection>
             <TopAppBarSection className={alignCenter}>
-                {renderPlugins("default-bar-center")}
+                {renderPlugins("cms-default-bar-center")}
             </TopAppBarSection>
             <TopAppBarSection style={{ width: "33%" }} alignEnd>
-                {renderPlugins("default-bar-right")}
+                {renderPlugins("cms-default-bar-right")}
             </TopAppBarSection>
         </TopAppBar>
     );

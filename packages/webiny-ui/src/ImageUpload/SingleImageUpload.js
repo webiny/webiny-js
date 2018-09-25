@@ -2,6 +2,8 @@
 import * as React from "react";
 import type { FormComponentProps } from "./../types";
 import { FileBrowser, type FileBrowserFile, type FileError } from "webiny-ui/FileBrowser";
+import { ImageCropper } from "webiny-ui/ImageCropper";
+import { ButtonPrimary, ButtonSecondary } from "webiny-ui/Button";
 import { FormElementMessage } from "webiny-ui/FormElementMessage";
 import styled from "react-emotion";
 import classNames from "classnames";
@@ -40,9 +42,16 @@ type Props = FormComponentProps & {
     // Define a list of accepted image types.
     accept?: Array<string>,
 
-    // Define file's max allowed size (default is "2mb").
+    // Define file's max allowed size (default is "5mb").
     // Uses "bytes" (https://www.npmjs.com/package/bytes) library to convert string notation to actual number.
     maxSize: string,
+
+    // By default, a cropper tool will be shown when an image is selected.
+    // Set to false if there is no need for cropper to be shown. Otherwise, set true (default value) or alternatively
+    // an object containing all of the cropper related options (eg. "aspectRatio").
+    // Please check the docs of CropperJs (https://github.com/fengyuanchen/cropperjs for the list of all
+    // available options.
+    cropper?: boolean | Object,
 
     // Use these to customize error messages (eg. if i18n supported is needed).
     errorMessages: {
@@ -53,13 +62,18 @@ type Props = FormComponentProps & {
 };
 
 type State = {
-    error: ?FileError
+    error: ?FileError,
+    fileToCrop: ?FileBrowserFile
 };
 
-class SingleImageUpload extends React.Component<Props, State> {
+// Do not apply cropping for following image types.
+const noCroppingTypes = ["image/svg+xml", "image/gif"];
+
+export class SingleImageUpload extends React.Component<Props, State> {
     static defaultProps = {
-        accept: ["image/jpeg", "image/png", "image/gif"],
         maxSize: "5mb",
+        accept: ["image/jpeg", "image/png", "image/gif", "image/svg+xml"],
+        cropper: true,
         errorMessages: {
             maxSizeExceeded: "Max size exceeded.",
             unsupportedFileType: "Unsupported file type.",
@@ -68,13 +82,19 @@ class SingleImageUpload extends React.Component<Props, State> {
     };
 
     state = {
-        error: null
+        error: null,
+        fileToCrop: null
     };
 
     handleFiles = async (files: Array<FileBrowserFile>) => {
+        const { onChange, cropper } = this.props;
+        const [file] = files;
         this.setState({ error: null }, () => {
-            const { onChange } = this.props;
-            onChange && onChange(files[0]);
+            if (cropper && !noCroppingTypes.includes(file.type)) {
+                this.setState({ fileToCrop: file });
+            } else {
+                onChange && onChange(file);
+            }
         });
     };
 
@@ -92,7 +112,8 @@ class SingleImageUpload extends React.Component<Props, State> {
             description,
             accept,
             maxSize,
-            onChange
+            onChange,
+            cropper
         } = this.props;
 
         return (
@@ -105,18 +126,66 @@ class SingleImageUpload extends React.Component<Props, State> {
                     )}
 
                 <FileBrowser convertToBase64 accept={accept} maxSize={maxSize}>
-                    {({ browseFiles }) => (
-                        <Image
-                            value={value}
-                            removeImage={onChange}
-                            uploadImage={() => {
-                                browseFiles({
-                                    onSuccess: files => this.handleFiles(files),
-                                    onErrors: errors => this.handleErrors(errors)
-                                });
-                            }}
-                        />
-                    )}
+                    {({ browseFiles }) => {
+                        if (this.state.fileToCrop) {
+                            const props = typeof cropper === "object" ? cropper : null;
+                            return (
+                                <ImageCropper {...props}>
+                                    {({ getDataURL, getImgProps }) => {
+                                        const { fileToCrop } = this.state;
+                                        return (
+                                            <React.Fragment>
+                                                <img
+                                                    {...getImgProps({
+                                                        src: fileToCrop && fileToCrop.src
+                                                    })}
+                                                />
+                                                <ButtonPrimary
+                                                    label={"Crop"}
+                                                    onClick={() => {
+                                                        const src = getDataURL();
+                                                        const { fileToCrop } = this.state;
+                                                        this.setState({ fileToCrop: null }, () => {
+                                                            onChange &&
+                                                                onChange({ ...fileToCrop, src });
+                                                        });
+                                                    }}
+                                                >
+                                                    Crop
+                                                </ButtonPrimary>
+
+                                                <ButtonSecondary
+                                                    label={"Cancel"}
+                                                    onClick={async () => {
+                                                        onChange &&
+                                                            (await onChange({
+                                                                ...this.state.fileToCrop
+                                                            }));
+                                                        this.setState({ fileToCrop: null });
+                                                    }}
+                                                >
+                                                    Cancel
+                                                </ButtonSecondary>
+                                            </React.Fragment>
+                                        );
+                                    }}
+                                </ImageCropper>
+                            );
+                        }
+
+                        return (
+                            <Image
+                                value={value}
+                                removeImage={onChange}
+                                uploadImage={() => {
+                                    browseFiles({
+                                        onSuccess: files => this.handleFiles(files),
+                                        onErrors: errors => this.handleErrors(errors)
+                                    });
+                                }}
+                            />
+                        );
+                    }}
                 </FileBrowser>
 
                 {validation.isValid === false && (
@@ -136,5 +205,3 @@ class SingleImageUpload extends React.Component<Props, State> {
         );
     }
 }
-
-export { SingleImageUpload };

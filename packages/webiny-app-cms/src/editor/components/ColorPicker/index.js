@@ -5,7 +5,7 @@ import styled from "react-emotion";
 import { css } from "emotion";
 import { ChromePicker } from "react-color";
 import { Menu } from "webiny-ui/Menu";
-import { withTheme } from "webiny-app-cms/editor/components";
+import { withTheme } from "webiny-app-cms/theme";
 import { ReactComponent as IconPalette } from "webiny-app-cms/editor/assets/icons/round-color_lens-24px.svg";
 import { Tooltip } from "webiny-ui/Tooltip";
 

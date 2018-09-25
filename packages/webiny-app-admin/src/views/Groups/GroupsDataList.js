@@ -21,6 +21,7 @@ import {
 } from "webiny-ui/List";
 
 import { DeleteIcon } from "webiny-ui/List/DataList/icons";
+import { Tooltip } from "webiny-ui/Tooltip";
 
 const t = i18n.namespace("Security.GroupsDataList");
 
@@ -29,7 +30,6 @@ const GroupsDataList = (
 ) => {
     const { GroupsDataList, router } = props;
 
-    console.log(GroupsDataList);
     return (
         <DataList
             {...GroupsDataList}
@@ -68,31 +68,41 @@ const GroupsDataList = (
 
                             <ListItemMeta>
                                 <ListActions>
-                                    <ConfirmationDialog>
-                                        {({ showConfirmation }) => (
-                                            <DeleteIcon
-                                                onClick={() => {
-                                                    showConfirmation(() => {
-                                                        GroupsDataList.delete(item.id, {
-                                                            onSuccess: () => {
-                                                                GroupsDataList.refresh();
-                                                                props.showSnackbar(
-                                                                    t`group {name} deleted.`({
-                                                                        name: item.name
-                                                                    })
-                                                                );
-                                                                item.id === router.getQuery().id &&
-                                                                    router.goToRoute({
-                                                                        params: { id: null },
-                                                                        merge: true
-                                                                    });
-                                                            }
+                                    {!item.system ? (
+                                        <ConfirmationDialog>
+                                            {({ showConfirmation }) => (
+                                                <DeleteIcon
+                                                    onClick={() => {
+                                                        showConfirmation(() => {
+                                                            GroupsDataList.delete(item.id, {
+                                                                onSuccess: () => {
+                                                                    GroupsDataList.refresh();
+                                                                    props.showSnackbar(
+                                                                        t`Group {name} deleted.`({
+                                                                            name: item.name
+                                                                        })
+                                                                    );
+                                                                    item.id ===
+                                                                        router.getQuery().id &&
+                                                                        router.goToRoute({
+                                                                            params: { id: null },
+                                                                            merge: true
+                                                                        });
+                                                                }
+                                                            });
                                                         });
-                                                    });
-                                                }}
-                                            />
-                                        )}
-                                    </ConfirmationDialog>
+                                                    }}
+                                                />
+                                            )}
+                                        </ConfirmationDialog>
+                                    ) : (
+                                        <Tooltip
+                                            placement={"bottom"}
+                                            content={<span>{t`Cannot delete system group.`}</span>}
+                                        >
+                                            <DeleteIcon disabled />
+                                        </Tooltip>
+                                    )}
                                 </ListActions>
                             </ListItemMeta>
                         </ListItem>
@@ -109,7 +119,7 @@ export default compose(
     withDataList({
         name: "GroupsDataList",
         type: "Security.Groups",
-        fields: "id name description createdOn",
+        fields: "id name description system createdOn",
         sort: { savedOn: -1 }
     })
 )(GroupsDataList);
