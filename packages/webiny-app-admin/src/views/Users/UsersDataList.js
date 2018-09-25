@@ -67,7 +67,7 @@ const UsersDataList = (
                                 <Avatar
                                     width={32}
                                     height={32}
-                                    src={item.avatar}
+                                    src={item.avatar && item.avatar.src}
                                     fallbackText={item.fullName}
                                     alt={t`User's avatar.`}
                                 />
