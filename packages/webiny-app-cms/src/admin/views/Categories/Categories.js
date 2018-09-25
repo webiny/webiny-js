@@ -1,25 +1,32 @@
 // @flow
 import * as React from "react";
-import { Elevation } from "webiny-ui/Elevation";
-import { Grid, Cell } from "webiny-ui/Grid";
+import { CompactView, LeftPanel, RightPanel } from "webiny-app-admin/components/Views/CompactView";
+import FloatingActionButton from "webiny-app-admin/components/FloatingActionButton";
 import CategoriesDataList from "./CategoriesDataList";
 import CategoriesForm from "./CategoriesForm";
+import { withRouter, type WithRouterProps } from "webiny-app/components";
 
-class Categories extends React.Component<*> {
-    render() {
-        return (
-            <Elevation z={1}>
-                <Grid>
-                    <Cell span={6}>
-                        <CategoriesDataList />
-                    </Cell>
-                    <Cell span={6}>
-                        <CategoriesForm />
-                    </Cell>
-                </Grid>
-            </Elevation>
-        );
-    }
-}
+const Categories = ({ router }: WithRouterProps) => {
+    return (
+        <React.Fragment>
+            <CompactView>
+                <LeftPanel>
+                    <CategoriesDataList />
+                </LeftPanel>
+                <RightPanel>
+                    <CategoriesForm />
+                </RightPanel>
+            </CompactView>
+            <FloatingActionButton
+                onClick={() =>
+                    router.goToRoute({
+                        params: { id: null },
+                        merge: true
+                    })
+                }
+            />
+        </React.Fragment>
+    );
+};
 
-export default Categories;
+export default withRouter()(Categories);
