@@ -8,6 +8,7 @@ import { FormElementMessage } from "webiny-ui/FormElementMessage";
 import styled from "react-emotion";
 import classNames from "classnames";
 import Image from "./Image";
+import ImageEditorDialog from "./ImageEditorDialog";
 
 const ImageUploadWrapper = styled("div")({
     position: "relative",
@@ -125,6 +126,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
                         </div>
                     )}
 
+                    <ImageEditorDialog open/>
                 <FileBrowser convertToBase64 accept={accept} maxSize={maxSize}>
                     {({ browseFiles }) => {
                         if (this.state.fileToCrop) {
