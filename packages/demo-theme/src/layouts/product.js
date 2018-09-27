@@ -16,9 +16,9 @@ const Banner100 = styled("div")({
     return null;
 };*/
 
-const Homepage = ({ children }) => {
+const Product = ({ children }) => {
     return (
-        <div className={"homepage-container"}>
+        <div className={"product-container"}>
             {/*<Menu name={"main"}>
                 {data => (
                     <ul>
@@ -33,4 +33,8 @@ const Homepage = ({ children }) => {
     )
 };
 
-export default Homepage;
+export default {
+    name: "product",
+    title: "Product",
+    component: Product,
+};

@@ -29,4 +29,8 @@ const Homepage = ({ children }) => {
     )
 };
 
-export default Homepage;
+export default {
+    name: "homepage",
+    title: "Homepage",
+    component: Homepage,
+};
