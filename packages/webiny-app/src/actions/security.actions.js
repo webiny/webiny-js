@@ -1,70 +1,59 @@
 // @flow
-import { createAction, addRootReducer } from "./../redux";
+import { createAction, addReducer, addMiddleware } from "./../redux";
 import { app } from "./..";
 const SECURITY = "[SECURITY]";
-
-// Create root state key for all security-related data
-addRootReducer("security");
 
 export const AUTH = `${SECURITY} Authenticate`;
 export const AUTH_SUCCESS = `${SECURITY} Authentication successful`;
 export const AUTH_ERROR = `${SECURITY} Authentication failed`;
 export const LOGOUT = `${SECURITY} Logout`;
 
-export const authenticationSuccess = createAction(AUTH_SUCCESS, {
-    slice: "security.authentication",
-    reducer({ action }) {
-        return {
-            error: null,
-            user: action.payload,
-            inProgress: false
-        };
-    }
+export const authenticationSuccess = createAction(AUTH_SUCCESS);
+
+addReducer([AUTH_SUCCESS], "security.authentication", (state, action) => {
+    return {
+        error: null,
+        user: action.payload,
+        inProgress: false
+    };
 });
 
-export const authenticationError = createAction(AUTH_ERROR, {
-    slice: "security.authentication",
-    reducer({ action }) {
-        return {
-            error: action.payload,
-            user: null,
-            inProgress: false
-        };
-    }
+export const authenticationError = createAction(AUTH_ERROR);
+
+addReducer([AUTH_ERROR], "security.authentication", (state, action) => {
+    return {
+        error: action.payload,
+        user: null,
+        inProgress: false
+    };
 });
 
-export const authenticate = createAction(AUTH, {
-    slice: "security.authentication.inProgress",
-    reducer() {
-        return true;
-    },
-    async middleware({ store, action, next }) {
-        next(action);
+export const authenticate = createAction(AUTH);
 
-        const security = app.security;
-        try {
-            const { identity, strategy, ...authenticationPayload } = action.payload;
-            const result = await security.login(identity, strategy, authenticationPayload);
+addReducer([AUTH], "security.authentication.inProgress", () => true);
+addMiddleware([AUTH], async ({ store, action, next }) => {
+    next(action);
 
-            if (result.token) {
-                store.dispatch(authenticationSuccess(result));
-            } else {
-                throw Error("Token not received.");
-            }
-        } catch (e) {
-            store.dispatch(authenticationError(e));
+    const security = app.security;
+    try {
+        const { identity, strategy, ...authenticationPayload } = action.payload;
+        const result = await security.login(identity, strategy, authenticationPayload);
+
+        if (result.token) {
+            store.dispatch(authenticationSuccess(result));
+        } else {
+            throw Error("Token not received.");
         }
+    } catch (e) {
+        store.dispatch(authenticationError(e));
     }
 });
 
-export const logout = createAction(LOGOUT, {
-    slice: "security.authentication.user",
-    reducer() {
-        return null;
-    },
-    async middleware({ action, next }) {
-        next(action);
+export const logout = createAction(LOGOUT);
 
-        await app.security.logout();
-    }
+addReducer([LOGOUT], "security.authentication.user", () => null);
+addMiddleware([LOGOUT], async ({ action, next }) => {
+    next(action);
+
+    await app.security.logout();
 });

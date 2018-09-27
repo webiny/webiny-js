@@ -17,9 +17,14 @@ export const getUi = state => getEditor(state).ui || {};
 export const getTmp = (state, key) => _.get(getEditor(state).tmp, key);
 
 /**
+ * Get editor `page` state
+ */
+export const getPage = (state) => getEditor(state).page;
+
+/**
  * Get editor blocks.
  */
-export const getBlocks = state => getEditor(state).blocks.present || [];
+export const getBlocks = state => getPage(state).content.present || [];
 
 /**
  * Get element.

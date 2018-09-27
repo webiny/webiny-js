@@ -1,21 +1,16 @@
 //@flow
 import React from "react";
-import { onAction } from "webiny-app/redux";
+import { addReducer } from "webiny-app/redux";
 import { DEACTIVATE_ELEMENT } from "webiny-app-cms/editor/actions";
 import { getActiveElement } from "webiny-app-cms/editor/selectors";
 import Bar from "./Bar";
 
-onAction(DEACTIVATE_ELEMENT, {
-    slice: "editor.ui.plugins.element-settings",
-    reducer() {
-        return null;
-    }
-});
+addReducer([DEACTIVATE_ELEMENT], "editor.ui.plugins.element-settings", () => null);
 
 export default {
     name: "cms-element-settings-settings-bar",
     type: "cms-editor-bar",
-    shouldRender({ state }) {
+    shouldRender({ state }: Object) {
         return getActiveElement(state);
     },
 

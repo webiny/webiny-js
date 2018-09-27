@@ -1,136 +1,56 @@
 // @flow
-import { applyMiddleware, createStore, compose, combineReducers } from "redux";
+import { applyMiddleware, createStore, compose } from "redux";
 import _ from "lodash";
-import dotProp from "dot-prop-immutable";
+import invariant from "invariant";
+import createRootReducer from "./createRootReducer";
+import createMiddleware from "./createMiddleware";
+import type {
+    MiddlewareFunction,
+    ReducerFactory,
+    Reducer,
+    Action,
+    ActionCreator,
+    ActionOptions,
+    StatePath,
+    Store
+} from "webiny-app/types";
 
-export type Action = {
-    type: string,
-    payload: Object
-};
-
-export type Slice = string | (({ action: Action }) => string);
-export type Reducer = Function;
-export type Middleware = Function;
-
-export type ActionOptions = {
-    slice?: Slice,
-    reducer?: Reducer,
-    middleware?: Middleware,
-    log?: boolean
-};
-
-export type Store = {
-    dispatch: Function,
-    getState: Function
-};
-
-export type State = Object;
-
-export type MiddlewareParams = {
-    store: Store,
-    next: Function,
-    action: Action
-};
-
-type MiddlewareFunction = MiddlewareParams => void;
-
-const wrapReducer = (type: string, slice: Slice, reducer: Reducer) => {
-    return (state: State, action: Action, key: string) => {
-        if (action.type === type) {
-            let stateKey = slice;
-            if (typeof slice === "function") {
-                stateKey = slice({ action });
-            }
-
-            // Run reducer if slice matches root reducer key
-            if (stateKey.startsWith(`${key}.`) || stateKey === key) {
-                // Remove root reducer key from stateKey
-                stateKey = stateKey.startsWith(`${key}.`)
-                    ? // eslint-disable-next-line
-                      stateKey.replace(new RegExp(`^${key}\.`), "")
-                    : null;
-
-                // Execute reducer
-                const subState = stateKey ? dotProp.get(state, stateKey) : state;
-                const result = reducer({ state: subState, root: state, action });
-                return stateKey ? dotProp.set(state, stateKey, result) : result;
-            }
-        }
-
-        return state;
-    };
-};
-
-const wrapMiddleware = (type: string, middleware: MiddlewareFunction) => {
-    return (store: Store) => (next: Function) => (action: Action) => {
-        if (action.type === type) {
-            middleware({ store, next, action });
-        } else {
-            next(action);
-        }
-    };
-};
-
-class Redux {
+export class Redux {
     store: Store;
-    middleware = [];
-    reducers = [];
-    rootReducers = {};
+    middleware: Array<{ actions: Array<string>, middleware: MiddlewareFunction }>;
+    reducers: Array<{ statePath: StatePath, reducer: Reducer, actions: Array<string> }>;
+    higherOrderReducers: Array<{
+        statePath: StatePath,
+        reducer: Reducer,
+        actions: Array<string>
+    }>;
 
-    createReducer(key: string, initialState: Object = {}) {
-        return (state: State = initialState, action: Action) => {
-            let newState = _.clone(state);
-            this.reducers.forEach(reducer => {
-                newState = reducer(newState, action, key);
-            });
+    constructor() {
+        this.reducers = [];
+        this.higherOrderReducers = [];
+        this.middleware = [];
+    }
 
-            return newState;
+    createAction(type: string, options?: ActionOptions = {}): ActionCreator {
+        return (payload?: Object = {}) => {
+            return { type, payload, meta: { log: options.log || true } };
         };
     }
 
-    on(type: string, options: ActionOptions = {}) {
-        const { slice = null, reducer = null, middleware = null } = options;
+    addReducer(actions: Array<string>, statePath: StatePath, reducer: Reducer) {
+        invariant(reducer, "Must pass a valid reducer function!");
 
-        if (slice && reducer) {
-            this.reducers.push(wrapReducer(type, slice, reducer));
-        }
-
-        if (middleware) {
-            this.middleware.push(wrapMiddleware(type, middleware));
-        }
+        this.reducers.push({ actions, statePath, reducer });
     }
 
-    action(type: string, options: ?ActionOptions = {}) {
-        let slice = null,
-            reducer = state => state,
-            middleware = null,
-            log = true;
-
-        if (options) {
-            ({ slice = null, reducer = state => state, middleware = null, log = true } = options);
-        }
-
-        if (slice && reducer) {
-            this.reducers.push(wrapReducer(type, slice, reducer));
-        }
-
-        if (middleware) {
-            this.middleware.push(wrapMiddleware(type, middleware));
-        }
-
-        // Return an action creator
-        const action = { type };
-
-        return (payload: Object = {}) => {
-            return { ...action, payload, meta: { log } };
-        };
+    addHigherOrderReducer(actions: Array<string>, statePath: StatePath, factory: ReducerFactory) {
+        this.higherOrderReducers.push({ actions, statePath, reducer: factory() });
     }
 
-    addRootReducer(key: string, reducer: Reducer) {
-        this.rootReducers[key] = reducer;
+    addMiddleware(actions: Array<string>, middleware: MiddlewareFunction) {
+        this.middleware.push({ actions, middleware });
     }
 
-    // eslint-disable-next-line
     initStore(INIT_STATE: Object = {}, middleware: Array<Function> = []) {
         // dev tool
         const reduxDevTools = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
@@ -142,8 +62,8 @@ class Redux {
             compose;
 
         this.store = createStore(
-            combineReducers(this.rootReducers),
-            composeEnhancers(applyMiddleware(...middleware, ...this.middleware))
+            createRootReducer(INIT_STATE, this),
+            composeEnhancers(applyMiddleware(...middleware, ...createMiddleware(this)))
         );
 
         this.store.dispatch({ type: "INIT" });
@@ -152,35 +72,28 @@ class Redux {
     }
 }
 
-export const redux = new Redux();
+const redux = new Redux();
 
-export const createAction = (type: string, options: ?ActionOptions) => {
-    return redux.action(type, options);
+export { redux };
+
+export const createAction = (type: string, options?: ActionOptions) => {
+    return redux.createAction(type, options);
 };
 
-export const onAction = (type: string, options: ActionOptions) => {
-    return redux.on(type, options);
+export const addReducer = (actions: Array<string>, statePath: StatePath, reducer: Reducer) => {
+    redux.addReducer(actions, statePath, reducer);
 };
 
-export const addRootReducer = (key: string, factory: ?Function) => {
-    let reducer;
-    if (typeof factory === "function") {
-        const blueprint = factory((...args) => redux.createReducer(...args));
-        const reducers = {};
-        Object.keys(blueprint).forEach(rKey => {
-            const initState = blueprint[rKey];
-            if (typeof initState === "function") {
-                reducers[rKey] = initState;
-            } else {
-                reducers[rKey] = redux.createReducer(`${key}.${rKey}`, initState);
-            }
-        });
+export const addHigherOrderReducer = (
+    actions: Array<string>,
+    statePath: StatePath,
+    factory: ReducerFactory
+) => {
+    redux.addHigherOrderReducer(actions, statePath, factory);
+};
 
-        reducer = combineReducers(reducers);
-    } else {
-        reducer = redux.createReducer(key);
-    }
-    redux.addRootReducer(key, reducer);
+export const addMiddleware = (actions: Array<string>, middleware: MiddlewareFunction) => {
+    redux.addMiddleware(actions, middleware);
 };
 
 export const dispatch = (action: Action) => {
