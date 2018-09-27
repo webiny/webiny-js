@@ -67,7 +67,7 @@ class CategoriesForm extends React.Component<*> {
                                     </Bind>
                                 </Cell>
                                 <Cell span={6}>
-                                    <Bind name="layout">
+                                    <Bind name="layout" defaultValue={""}>
                                         <Select label={t`Layout`}>
                                             {theme.layouts.map(({ name, title }) => (
                                                 <option key={name} value={name}>

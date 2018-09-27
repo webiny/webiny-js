@@ -19,7 +19,7 @@ type Props = FormComponentProps & {
     // Description beneath the input.
     description?: string,
 
-    // Placeholder is used with `fullWidth` prop instead of a `label`. `label` and `placeholder` are always mutually exclusive.
+    // Placeholder is used with `fullwidth` prop instead of a `label`. `label` and `placeholder` are always mutually exclusive.
     placeholder?: string,
 
     // Type of input ()
@@ -28,14 +28,14 @@ type Props = FormComponentProps & {
     // Converts input into a text area with given number of rows.
     rows?: number,
 
-    // Creates an outline around input. Ignored if `fullWidth` is true.
+    // Creates an outline around input. Ignored if `fullwidth` is true.
     outlined?: boolean,
 
     // Creates a box around the input.
     box?: boolean,
 
     // Stretches the input to fit available width.
-    fullWidth?: boolean,
+    fullwidth?: boolean,
 
     // A ref for the native input.
     inputRef?: React.Ref<any>,
@@ -80,7 +80,7 @@ class Input extends React.Component<Props> {
         "placeholder",
         "outlined",
         "rootProps",
-        "fullWidth",
+        "fullwidth",
         "inputRef"
     ];
 
@@ -113,6 +113,7 @@ class Input extends React.Component<Props> {
 
     render() {
         const {
+            autoFocus,
             value,
             label,
             description,
@@ -135,6 +136,7 @@ class Input extends React.Component<Props> {
             <React.Fragment>
                 <TextField
                     {...pick(props, Input.rmwcProps)}
+                    autoFocus={autoFocus}
                     textarea={Boolean(rows)}
                     box={box || (!outlined && (Boolean(leadingIcon) || Boolean(trailingIcon)))}
                     value={inputValue}
