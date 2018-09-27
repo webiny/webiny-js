@@ -175,7 +175,7 @@ story.add("usage", () => {
                     <Form>
                         {({ Bind }) => (
                             <Bind {...bindProps}>
-                                <Input placeholder={"Your name"} fullWidth disabled={disabled} />
+                                <Input placeholder={"Your name"} fullwidth disabled={disabled} />
                             </Bind>
                         )}
                     </Form>
@@ -188,7 +188,7 @@ story.add("usage", () => {
                                 name="name"
                                 validators={["required", "minLength:3"]}
                                 validationMessages={{ minLength: "Please enter more characters" }}>
-                                <Input placeholder={"Your name"} fullWidth disabled={${disabled}}/>
+                                <Input placeholder={"Your name"} fullwidth disabled={${disabled}}/>
                             </Bind>
                         )}
                     </Form>
@@ -210,7 +210,7 @@ story.add("usage", () => {
                                 </Bind>
                                 <Bind name="description">
                                     <Input
-                                        fullWidth
+                                        fullwidth
                                         rows={6}
                                         placeholder={"How's the weather today?"}
                                         description={"We actually need to know."}
@@ -236,7 +236,7 @@ story.add("usage", () => {
                                 </Bind>
                                 <Bind name="description">
                                     <Input
-                                        fullWidth
+                                        fullwidth
                                         rows={6}
                                         placeholder={"How's the weather today?"}
                                         description={"We actually need to know."}
