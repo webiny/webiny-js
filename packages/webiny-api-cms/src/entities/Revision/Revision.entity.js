@@ -29,16 +29,7 @@ class Revision extends Entity {
 
         this.attr("settings").object();
 
-        this.attr("content")
-            .object()
-            .onSet(widgets => {
-                return widgets.map(widget => {
-                    if (widget.origin) {
-                        delete widget["data"];
-                    }
-                    return widget;
-                });
-            });
+        this.attr("content").object();
 
         this.attr("active")
             .boolean()
@@ -67,7 +58,7 @@ class Revision extends Entity {
                 page.settings = this.settings;
 
                 page.content = this.content.map(block => {
-                    return block.copy();
+                    return {...block};
                 });
                 await page.save();
             }

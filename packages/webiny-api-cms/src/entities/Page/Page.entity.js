@@ -4,8 +4,6 @@ import Category from "../Category/Category.entity";
 import Revision from "../Revision/Revision.entity";
 
 class Page extends Entity {
-    static filters: Object;
-
     title: string;
     slug: string;
     settings: Object;
