@@ -142,7 +142,7 @@ class ColorPicker extends React.Component<Props, State> {
                                 style={{ backgroundColor: color }}
                                 onClick={() => {
                                     this.hidePicker();
-                                    this.props.onChange(color);
+                                    this.props.onChangeComplete(color);
                                 }}
                             />
                         </Tooltip>
@@ -156,7 +156,7 @@ class ColorPicker extends React.Component<Props, State> {
                         })}
                         onClick={() => {
                             this.hidePicker();
-                            this.props.onChange("transparent");
+                            this.props.onChangeComplete("transparent");
                         }}
                     />
                 </Tooltip>
