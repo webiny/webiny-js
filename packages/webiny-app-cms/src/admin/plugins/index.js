@@ -1,3 +1,3 @@
-import { categories, pages } from "./search";
+//import { categories, pages } from "./search";
 
-export default [ categories, pages ];
+export default [ /*categories, pages*/ ];

@@ -5,7 +5,7 @@ import {css} from "emotion";
 import { connect } from "react-redux";
 import { Input } from "webiny-ui/Input";
 import { updatePage } from "./actions";
-import { getPage } from "./selectors";
+import { getPage } from "webiny-app-cms/editor/selectors";
 import { Tooltip } from "webiny-ui/Tooltip";
 import { Typography } from "webiny-ui/Typography";
 import { ReactComponent as CloseIcon } from "webiny-app-cms/editor/assets/icons/close.svg";
