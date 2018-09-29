@@ -10,7 +10,8 @@ const avatar = css({
     width: 32,
     height: 32,
     overflow: "hidden",
-    background: "#F2F2F2",
+    background: "var(--mdc-theme-background)",
+    color: "var(--mdc-theme-text-secondary-on-background)",
     div: {
         textAlign: "center"
     }

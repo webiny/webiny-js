@@ -12,8 +12,8 @@ const avatarImage = css({
     width: "40px !important",
     borderRadius: "50%",
     display: "inline-block",
-    "&.blank": {
-        backgroundColor: "lightgray"
+    ">div": {
+        backgroundColor: "var(--mdc-theme-surface)"
     }
 });
 
