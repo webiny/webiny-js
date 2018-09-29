@@ -31,6 +31,7 @@ const Wrapper = styled("section")({
 const Logo = styled("img")({
     margin: "0 auto",
     marginBottom: 30,
+    marginTop: 30,
     width: 125
 });
 
@@ -63,6 +64,10 @@ const Title = styled("div")({
 
 const alignRight = css({
     textAlign: "right"
+});
+
+const errorMessage = css({
+   color: 'red'
 });
 
 class Login extends React.Component<any, any> {
@@ -101,15 +106,13 @@ class Login extends React.Component<any, any> {
                                             </p>
                                         </Title>
 
-                                        {authentication.error && (
-                                            <Grid>
-                                                <Cell span={12}>
+                                        <Grid>
+                                            {authentication.error && (
+                                                <Cell span={12} className={errorMessage}>
                                                     {authentication.error.message}
                                                 </Cell>
-                                            </Grid>
-                                        )}
+                                            )}
 
-                                        <Grid>
                                             <Cell span={12}>
                                                 <Bind
                                                     name="username"
