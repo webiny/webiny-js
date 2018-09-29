@@ -3,6 +3,7 @@ import React from "react";
 import type { ImageEditorTool, ImageEditor } from "./types";
 import { DrawIcon } from "./icons";
 import ReactColor from "react-color";
+import { IconButton } from "webiny-ui/Button";
 
 type Props = { imageEditor: ImageEditor, clearTool: Function };
 type State = {
@@ -133,7 +134,7 @@ class SubMenu extends React.Component<Props, State> {
 
 const tool: ImageEditorTool = {
     name: "draw",
-    icon: <DrawIcon />,
+    icon: () => <DrawIcon />,
     subMenu(props) {
         return <SubMenu {...props} />;
     },

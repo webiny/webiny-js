@@ -2,6 +2,7 @@
 import React from "react";
 import type { ImageEditorTool } from "./types";
 import { CropIcon } from "./icons";
+import { IconButton } from "webiny-ui/Button";
 
 const subMenu = ({ imageEditor, clearTool }) => {
     return (
@@ -21,6 +22,7 @@ const subMenu = ({ imageEditor, clearTool }) => {
                 onClick={() => {
                     imageEditor.stopDrawingMode();
                     clearTool();
+
                 }}
             >
                 Cancel
@@ -31,11 +33,16 @@ const subMenu = ({ imageEditor, clearTool }) => {
 
 const tool: ImageEditorTool = {
     name: "crop",
-    icon: <CropIcon />,
+    icon: ({imageEditor, enableTool}) => (
+        <IconButton
+            icon={<CropIcon/>}
+            onClick={() => {
+                enableTool();
+                imageEditor.startDrawingMode("CROPPER");
+            }}
+        />
+    ),
     subMenu,
-    onClick: imageEditor => {
-        imageEditor.startDrawingMode("CROPPER");
-    }
 };
 
 export default tool;

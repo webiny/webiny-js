@@ -2,6 +2,7 @@
 import React from "react";
 import { RotateRightIcon } from "./icons";
 import type { ImageEditorTool } from "./types";
+import { IconButton } from "webiny-ui/Button";
 
 const subMenu = ({ imageEditor, clearTool }) => {
     return (
@@ -40,7 +41,7 @@ const subMenu = ({ imageEditor, clearTool }) => {
 
 const tool: ImageEditorTool = {
     name: "rotate",
-    icon: <RotateRightIcon />,
+    icon: () => <RotateRightIcon />,
     subMenu,
     onClick: imageEditor => {
         imageEditor.startDrawingMode();

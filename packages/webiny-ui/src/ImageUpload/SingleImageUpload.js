@@ -2,8 +2,6 @@
 import * as React from "react";
 import type { FormComponentProps } from "./../types";
 import { FileBrowser, type FileBrowserFile, type FileError } from "webiny-ui/FileBrowser";
-import { ImageCropper } from "webiny-ui/ImageCropper";
-import { ButtonPrimary, ButtonSecondary } from "webiny-ui/Button";
 import { FormElementMessage } from "webiny-ui/FormElementMessage";
 import styled from "react-emotion";
 import classNames from "classnames";
@@ -64,7 +62,7 @@ type Props = FormComponentProps & {
 
 type State = {
     error: ?FileError,
-    fileToCrop: ?FileBrowserFile
+    imageToEdit: ?FileBrowserFile
 };
 
 // Do not apply cropping for following image types.
@@ -84,15 +82,16 @@ export class SingleImageUpload extends React.Component<Props, State> {
 
     state = {
         error: null,
-        fileToCrop: null
+        imageToEdit: null
     };
 
     handleFiles = async (files: Array<FileBrowserFile>) => {
         const { onChange, cropper } = this.props;
         const [file] = files;
+        console.log(file);
         this.setState({ error: null }, () => {
             if (cropper && !noCroppingTypes.includes(file.type)) {
-                this.setState({ fileToCrop: file });
+                this.setState({ imageToEdit: file });
             } else {
                 onChange && onChange(file);
             }
@@ -126,55 +125,15 @@ export class SingleImageUpload extends React.Component<Props, State> {
                         </div>
                     )}
 
-                    <ImageEditorDialog open/>
-                <FileBrowser convertToBase64 accept={accept} maxSize={maxSize}>
+                <ImageEditorDialog open={this.state.imageToEdit} image={this.state.imageToEdit} />
+                <FileBrowser
+                    accept={accept}
+                    maxSize={maxSize}
+                    onClose={() => {
+                        this.setState({ imageToEdit: null });
+                    }}
+                >
                     {({ browseFiles }) => {
-                        if (this.state.fileToCrop) {
-                            const props = typeof cropper === "object" ? cropper : null;
-                            return (
-                                <ImageCropper {...props}>
-                                    {({ getDataURL, getImgProps }) => {
-                                        const { fileToCrop } = this.state;
-                                        return (
-                                            <React.Fragment>
-                                                <img
-                                                    {...getImgProps({
-                                                        src: fileToCrop && fileToCrop.src
-                                                    })}
-                                                />
-                                                <ButtonPrimary
-                                                    label={"Crop"}
-                                                    onClick={() => {
-                                                        const src = getDataURL();
-                                                        const { fileToCrop } = this.state;
-                                                        this.setState({ fileToCrop: null }, () => {
-                                                            onChange &&
-                                                                onChange({ ...fileToCrop, src });
-                                                        });
-                                                    }}
-                                                >
-                                                    Crop
-                                                </ButtonPrimary>
-
-                                                <ButtonSecondary
-                                                    label={"Cancel"}
-                                                    onClick={async () => {
-                                                        onChange &&
-                                                            (await onChange({
-                                                                ...this.state.fileToCrop
-                                                            }));
-                                                        this.setState({ fileToCrop: null });
-                                                    }}
-                                                >
-                                                    Cancel
-                                                </ButtonSecondary>
-                                            </React.Fragment>
-                                        );
-                                    }}
-                                </ImageCropper>
-                            );
-                        }
-
                         return (
                             <Image
                                 value={value}

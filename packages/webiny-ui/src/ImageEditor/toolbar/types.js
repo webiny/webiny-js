@@ -1,11 +1,14 @@
 // @flow
 import * as React from "react";
 
-export type ImageEditor = Object;
+export type ImageEditor = {
+    removeFilter: Function,
+    applyFilter: Function,
+    on: Function
+};
 
 export type ImageEditorTool = {
     name: string,
-    icon: React.Node,
-    onClick: Function,
+    icon: ({ imageEditor: ImageEditor }) => React.Element<any>,
     subMenu?: ({ imageEditor: ImageEditor, clearTool: Function }) => React.Node
 };
