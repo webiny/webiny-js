@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import { FilterIcon } from "./icons";
+import { ReactComponent as FilterIcon } from "./icons/filter.svg";
 import { Switch } from "webiny-ui/Switch";
 import { Slider } from "webiny-ui/Slider";
 import type { ImageEditor, ImageEditorTool } from "./types";
@@ -393,73 +393,14 @@ class SubMenu extends React.Component<Props, State> {
                                         this.state.filters.pixelate.enabled &&
                                             imageEditor.applyFilter("pixelate", {
                                                 blocksize: this.state.filters.pixelate.value
-                                            })
+                                            });
                                     }, 200);
                                 }
                             );
                         }}
                     />
                 </li>
-                <li>
-                    <p>
-                        <label>
-                            <input type="checkbox" />
-                            Tint
-                        </label>
-                        <br />
-                        <label>
-                            Opacity
-                            <input
-                                type="range"
-                                min="0"
-                                value="1"
-                                max="1"
-                                step="0.1"
-                                onChange={() => {}}
-                            />
-                        </label>
-                    </p>
-                </li>
-                <li>
-                    <p>
-                        <label>
-                            <input type="checkbox" />
-                            Multiply
-                        </label>
-                    </p>
-                </li>
-                <li>
-                    <p>
-                        <label>
-                            <input type="checkbox" />
-                            Blend
-                        </label>
-                        <select name="select-blend-type">
-                            <option value="add" selected onChange={() => {}}>
-                                Add
-                            </option>
-                            <option value="diff">Diff</option>
-                            <option value="diff">Subtract</option>
-                            <option value="multiply">Multiply</option>
-                            <option value="screen">Screen</option>
-                            <option value="lighten">Lighten</option>
-                            <option value="darken">Darken</option>
-                        </select>
-                    </p>
-                </li>
-                <li>
-                    <p>
-                        <label>
-                            <input type="checkbox" />
-                            ColorFilter
-                        </label>
-                        <br />
-                        <label>
-                            Threshold
-                            <input type="range" min="0" value="45" max="255" onChange={() => {}} />
-                        </label>
-                    </p>
-                </li>
+
                 <li onClick={this.props.clearTool}>Close</li>
             </ul>
         );
@@ -468,12 +409,19 @@ class SubMenu extends React.Component<Props, State> {
 
 const tool: ImageEditorTool = {
     name: "filter",
-    icon: () => <FilterIcon />,
+    icon({ imageEditor, enableTool }) {
+        return (
+            <IconButton
+                icon={<FilterIcon />}
+                onClick={() => {
+                    enableTool();
+                    imageEditor.startDrawingMode();
+                }}
+            />
+        );
+    },
     subMenu(props) {
         return <SubMenu {...props} />;
-    },
-    onClick: imageEditor => {
-        imageEditor.startDrawingMode();
     }
 };
 

@@ -62,7 +62,10 @@ type Props = FormComponentProps & {
 
 type State = {
     error: ?FileError,
-    imageToEdit: ?FileBrowserFile
+    editor: {
+        image: ?FileBrowserFile,
+        open: boolean
+    }
 };
 
 // Do not apply cropping for following image types.
@@ -82,18 +85,20 @@ export class SingleImageUpload extends React.Component<Props, State> {
 
     state = {
         error: null,
-        imageToEdit: null
+        editor: {
+            open: false,
+            image: null
+        }
     };
 
-    handleFiles = async (files: Array<FileBrowserFile>) => {
+    handleFiles = async (images: Array<FileBrowserFile>) => {
         const { onChange, cropper } = this.props;
-        const [file] = files;
-        console.log(file);
+        const [image] = images;
         this.setState({ error: null }, () => {
-            if (cropper && !noCroppingTypes.includes(file.type)) {
-                this.setState({ imageToEdit: file });
+            if (cropper && !noCroppingTypes.includes(image.type)) {
+                this.setState({ editor: { image, open: true } });
             } else {
-                onChange && onChange(file);
+                onChange && onChange(image);
             }
         });
     };
@@ -112,8 +117,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
             description,
             accept,
             maxSize,
-            onChange,
-            cropper
+            onChange
         } = this.props;
 
         return (
@@ -125,14 +129,24 @@ export class SingleImageUpload extends React.Component<Props, State> {
                         </div>
                     )}
 
-                <ImageEditorDialog open={this.state.imageToEdit} image={this.state.imageToEdit} />
-                <FileBrowser
-                    accept={accept}
-                    maxSize={maxSize}
+                <ImageEditorDialog
+                    open={this.state.editor.open}
+                    src={this.state.editor.image && this.state.editor.image.src}
                     onClose={() => {
-                        this.setState({ imageToEdit: null });
+                        this.setState(state => {
+                            state.editor.open = false;
+                            return state;
+                        });
                     }}
-                >
+                    onAccept={async src => {
+                        onChange && (await onChange({ ...this.state.editor.image, src }));
+                        this.setState(state => {
+                            state.editor.image = null;
+                            return state;
+                        });
+                    }}
+                />
+                <FileBrowser accept={accept} maxSize={maxSize}>
                     {({ browseFiles }) => {
                         return (
                             <Image

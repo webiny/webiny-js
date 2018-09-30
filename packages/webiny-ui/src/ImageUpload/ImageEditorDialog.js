@@ -1,7 +1,6 @@
 // @flow
 import * as React from "react";
 import { ImageEditor } from "webiny-ui/ImageEditor";
-import { type FileBrowserFile } from "webiny-ui/FileBrowser";
 
 import {
     Dialog,
@@ -13,29 +12,22 @@ import {
     DialogBody
 } from "webiny-ui/Dialog";
 
-let editedSrc = "";
+// Each time ImageEditor makes a change, we store it here, so we can pass it to the onAccept callback.
+let resultSrc = "";
 
-const ImageEditorDialog = (props: Object & { image: ?FileBrowserFile }) => {
-    const { image, onAccept, onCancel, ...dialogProps } = props;
+const ImageEditorDialog = (props: Object & { src: ?string }) => {
+    const { src, onAccept, onCancel, ...dialogProps } = props;
     return (
         <Dialog {...dialogProps}>
             <DialogHeader>
                 <DialogHeaderTitle>Image Editor</DialogHeaderTitle>
             </DialogHeader>
             <DialogBody>
-                {image && (
-                    <ImageEditor
-                        src={image.src}
-                        onChange={src => {
-                            console.log(src)
-                            // editedSrc = src;
-                        }}
-                    />
-                )}
+                {src && <ImageEditor src={src} onChange={src => (resultSrc = src)} />}
             </DialogBody>
             <DialogFooter>
-                <DialogAccept onClick={() => onAccept(editedSrc)}>Save</DialogAccept>
-                <DialogCancel onClick={() => onCancel()}>Cancel</DialogCancel>
+                <DialogCancel>Cancel</DialogCancel>
+                <DialogAccept onClick={() => onAccept(resultSrc)}>Save</DialogAccept>
             </DialogFooter>
         </Dialog>
     );

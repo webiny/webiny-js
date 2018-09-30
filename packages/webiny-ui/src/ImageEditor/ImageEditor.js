@@ -40,8 +40,6 @@ const ToolOptions = styled("div")({
 });
 
 class ImageEditor extends React.Component<Props, State> {
-    imageEditor: ?TuiImageEditor = null;
-
     static defaultProps = {
         tools: ["undo", "redo", "crop", "flip", "rotate", "draw", "filter"],
         onChange: null
@@ -49,9 +47,7 @@ class ImageEditor extends React.Component<Props, State> {
 
     state = {
         imageEditor: null,
-        tool: null,
-        canUndo: false,
-        canRedo: false
+        tool: null
     };
 
     componentDidMount() {

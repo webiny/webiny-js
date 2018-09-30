@@ -1,7 +1,8 @@
 // @flow
 import React from "react";
 import type { ImageEditorTool, ImageEditor } from "./types";
-import { DrawIcon } from "./icons";
+import { ReactComponent as DrawIcon } from "./icons/draw.svg";
+
 import ReactColor from "react-color";
 import { IconButton } from "webiny-ui/Button";
 
@@ -134,12 +135,19 @@ class SubMenu extends React.Component<Props, State> {
 
 const tool: ImageEditorTool = {
     name: "draw",
-    icon: () => <DrawIcon />,
+    icon({ imageEditor, enableTool }) {
+        return (
+            <IconButton
+                icon={<DrawIcon />}
+                onClick={() => {
+                    enableTool();
+                    imageEditor.startDrawingMode("FREE_DRAWING");
+                }}
+            />
+        );
+    },
     subMenu(props) {
         return <SubMenu {...props} />;
-    },
-    onClick: imageEditor => {
-        imageEditor.startDrawingMode("FREE_DRAWING");
     }
 };
 

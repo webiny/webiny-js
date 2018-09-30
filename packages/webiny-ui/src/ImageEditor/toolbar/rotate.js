@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import { RotateRightIcon } from "./icons";
+import { ReactComponent as RotateRight } from "./icons/rotateRight.svg";
 import type { ImageEditorTool } from "./types";
 import { IconButton } from "webiny-ui/Button";
 
@@ -41,11 +41,18 @@ const subMenu = ({ imageEditor, clearTool }) => {
 
 const tool: ImageEditorTool = {
     name: "rotate",
-    icon: () => <RotateRightIcon />,
-    subMenu,
-    onClick: imageEditor => {
-        imageEditor.startDrawingMode();
-    }
+    icon({ imageEditor, enableTool }) {
+        return (
+            <IconButton
+                icon={<RotateRight />}
+                onClick={() => {
+                    enableTool();
+                    imageEditor.stopDrawingMode();
+                }}
+            />
+        );
+    },
+    subMenu
 };
 
 export default tool;

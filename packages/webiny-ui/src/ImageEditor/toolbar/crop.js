@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import type { ImageEditorTool } from "./types";
-import { CropIcon } from "./icons";
+import { ReactComponent as CropIcon } from "./icons/crop.svg";
 import { IconButton } from "webiny-ui/Button";
 
 const subMenu = ({ imageEditor, clearTool }) => {
@@ -11,7 +11,6 @@ const subMenu = ({ imageEditor, clearTool }) => {
                 onClick={() => {
                     imageEditor.crop(imageEditor.getCropzoneRect()).then(() => {
                         imageEditor.stopDrawingMode();
-                        // resizeEditor();
                         clearTool();
                     });
                 }}
@@ -22,7 +21,6 @@ const subMenu = ({ imageEditor, clearTool }) => {
                 onClick={() => {
                     imageEditor.stopDrawingMode();
                     clearTool();
-
                 }}
             >
                 Cancel
@@ -33,16 +31,18 @@ const subMenu = ({ imageEditor, clearTool }) => {
 
 const tool: ImageEditorTool = {
     name: "crop",
-    icon: ({imageEditor, enableTool}) => (
-        <IconButton
-            icon={<CropIcon/>}
-            onClick={() => {
-                enableTool();
-                imageEditor.startDrawingMode("CROPPER");
-            }}
-        />
-    ),
-    subMenu,
+    icon({ imageEditor, enableTool }) {
+        return (
+            <IconButton
+                icon={<CropIcon />}
+                onClick={() => {
+                    enableTool();
+                    imageEditor.startDrawingMode("CROPPER");
+                }}
+            />
+        );
+    },
+    subMenu
 };
 
 export default tool;

@@ -1,17 +1,8 @@
 // @flow
 import React from "react";
-import { RedoIcon as RedoIconSvg } from "./icons";
+import { ReactComponent as RedoIconSvg } from "./icons/redo.svg";
 import type { ImageEditorTool, ImageEditor } from "./types";
-import styled from "react-emotion";
-import classNames from "classnames";
 import { IconButton } from "webiny-ui/Button";
-
-const IconWrapper = styled("div")({
-    "&.disabled": {
-        opacity: 0.75,
-        pointerEvents: "none"
-    }
-});
 
 type Props = {
     imageEditor: ImageEditor
@@ -28,27 +19,30 @@ class RedoIcon extends React.Component<Props, State> {
     componentDidMount() {
         this.props.imageEditor.on({
             redoStackChanged: length => {
-                this.setState({ canRedo: length > 0 });
+                this.setState({ canRedo: length > 0 }, () => {
+                    console.log(this.state);
+                });
             }
         });
     }
 
     render() {
         return (
-            <IconWrapper className={classNames({ disabled: !this.state.canRedo })}>
-                <RedoIconSvg />
-            </IconWrapper>
+            <IconButton
+                disabled={!this.state.canRedo}
+                icon={<RedoIconSvg />}
+                onClick={() => {
+                    this.state.canRedo && this.props.imageEditor.redo();
+                }}
+            />
         );
     }
 }
 
 const tool: ImageEditorTool = {
     name: "redo",
-    icon(props) {
-        return <RedoIcon {...props} />;
-    },
-    onClick: imageEditor => {
-        imageEditor.redo();
+    icon({ imageEditor }) {
+        return <RedoIcon imageEditor={imageEditor} />;
     }
 };
 
