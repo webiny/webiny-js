@@ -45,12 +45,14 @@ type Props = FormComponentProps & {
     // Uses "bytes" (https://www.npmjs.com/package/bytes) library to convert string notation to actual number.
     maxSize: string,
 
-    // By default, a cropper tool will be shown when an image is selected.
-    // Set to false if there is no need for cropper to be shown. Otherwise, set true (default value) or alternatively
-    // an object containing all of the cropper related options (eg. "aspectRatio").
-    // Please check the docs of CropperJs (https://github.com/fengyuanchen/cropperjs for the list of all
-    // available options.
-    cropper?: boolean | Object,
+    // Set whether the image is being processed or not.
+    loading: boolean,
+
+    // By default, the editor tool will be shown when an image is selected.
+    // Set to false if there is no need for editor to be shown. Otherwise, set true (default value) or alternatively
+    // an object containing all of the image editor related options (eg. "filter").
+    // Please check the docs of ImageEditor component for the list of all available options.
+    imageEditor?: boolean | Object,
 
     // Use these to customize error messages (eg. if i18n supported is needed).
     errorMessages: {
@@ -61,21 +63,22 @@ type Props = FormComponentProps & {
 };
 
 type State = {
+    loading: boolean,
     error: ?FileError,
-    editor: {
+    imageEditor: {
         image: ?FileBrowserFile,
         open: boolean
     }
 };
 
-// Do not apply cropping for following image types.
-const noCroppingTypes = ["image/svg+xml", "image/gif"];
+// Do not apply editing for following image types.
+const noImageEditingTypes = ["image/svg+xml", "image/gif"];
 
 export class SingleImageUpload extends React.Component<Props, State> {
     static defaultProps = {
         maxSize: "5mb",
         accept: ["image/jpeg", "image/png", "image/gif", "image/svg+xml"],
-        cropper: true,
+        imageEditor: true,
         errorMessages: {
             maxSizeExceeded: "Max size exceeded.",
             unsupportedFileType: "Unsupported file type.",
@@ -84,19 +87,20 @@ export class SingleImageUpload extends React.Component<Props, State> {
     };
 
     state = {
+        loading: false,
         error: null,
-        editor: {
+        imageEditor: {
             open: false,
             image: null
         }
     };
 
     handleFiles = async (images: Array<FileBrowserFile>) => {
-        const { onChange, cropper } = this.props;
+        const { onChange, imageEditor } = this.props;
         const [image] = images;
         this.setState({ error: null }, () => {
-            if (cropper && !noCroppingTypes.includes(image.type)) {
-                this.setState({ editor: { image, open: true } });
+            if (imageEditor && !noImageEditingTypes.includes(image.type)) {
+                this.setState({ imageEditor: { image, open: true } });
             } else {
                 onChange && onChange(image);
             }
@@ -130,37 +134,41 @@ export class SingleImageUpload extends React.Component<Props, State> {
                     )}
 
                 <ImageEditorDialog
-                    open={this.state.editor.open}
-                    src={this.state.editor.image && this.state.editor.image.src}
+                    open={this.state.imageEditor.open}
+                    src={this.state.imageEditor.image && this.state.imageEditor.image.src}
                     onClose={() => {
                         this.setState(state => {
-                            state.editor.open = false;
+                            state.imageEditor.open = false;
                             return state;
                         });
                     }}
-                    onAccept={async src => {
-                        onChange && (await onChange({ ...this.state.editor.image, src }));
-                        this.setState(state => {
-                            state.editor.image = null;
-                            return state;
+                    onAccept={src => {
+                        // We wrapped everything into setTimeout - prevents dialog freeze when larger image is selected.
+                        setTimeout(() => {
+                            this.setState({ loading: true }, async () => {
+                                await onChange({ ...this.state.imageEditor.image, src });
+                                this.setState({
+                                    loading: false,
+                                    imageEditor: { image: null, open: false }
+                                });
+                            });
                         });
                     }}
                 />
                 <FileBrowser accept={accept} maxSize={maxSize}>
-                    {({ browseFiles }) => {
-                        return (
-                            <Image
-                                value={value}
-                                removeImage={onChange}
-                                uploadImage={() => {
-                                    browseFiles({
-                                        onSuccess: files => this.handleFiles(files),
-                                        onErrors: errors => this.handleErrors(errors)
-                                    });
-                                }}
-                            />
-                        );
-                    }}
+                    {({ browseFiles }) => (
+                        <Image
+                            loading={this.state.loading}
+                            value={value}
+                            removeImage={onChange}
+                            uploadImage={() => {
+                                browseFiles({
+                                    onSuccess: files => this.handleFiles(files),
+                                    onErrors: errors => this.handleErrors(errors)
+                                });
+                            }}
+                        />
+                    )}
                 </FileBrowser>
 
                 {validation.isValid === false && (

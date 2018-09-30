@@ -19,9 +19,7 @@ class UndoIcon extends React.Component<Props, State> {
     componentDidMount() {
         this.props.imageEditor.on({
             undoStackChanged: length => {
-                this.setState({ canUndo: length > 1 }, () => {
-                    console.log(this.state);
-                });
+                this.setState({ canUndo: length > 1 });
             }
         });
     }

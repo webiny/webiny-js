@@ -19,9 +19,7 @@ class RedoIcon extends React.Component<Props, State> {
     componentDidMount() {
         this.props.imageEditor.on({
             redoStackChanged: length => {
-                this.setState({ canRedo: length > 0 }, () => {
-                    console.log(this.state);
-                });
+                this.setState({ canRedo: length > 0 });
             }
         });
     }

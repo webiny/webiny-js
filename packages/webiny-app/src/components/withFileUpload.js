@@ -58,9 +58,11 @@ export const withFileUpload = (options: WithFileUploadOptions = {}): Function =>
                         if (mustUpload(file)) {
                             // Send file to server and get its path.
                             try {
-                                withFileUploadPlugin.upload(file).then(async uploadedFile => {
-                                    onChange && (await onChange(uploadedFile));
-                                });
+                                return withFileUploadPlugin
+                                    .upload(file)
+                                    .then(async uploadedFile => {
+                                        onChange && (await onChange(uploadedFile));
+                                    });
                             } catch (e) {
                                 console.warn(e);
                             }

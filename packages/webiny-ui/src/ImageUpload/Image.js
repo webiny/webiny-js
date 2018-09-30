@@ -99,14 +99,15 @@ type Props = {
     uploadImage: Function,
     value?: Object,
     removeImage?: Function,
-    disabled?: boolean
+    disabled?: boolean,
+    loading?: boolean
 };
 
 class Image extends React.Component<Props> {
     render() {
         const { value, disabled, uploadImage, removeImage } = this.props;
 
-        return (
+        const image = (
             <div className={classNames({ disabled })} style={{ height: "100%" }}>
                 {value && value.src ? (
                     <ImagePreviewWrapper>
@@ -147,6 +148,15 @@ class Image extends React.Component<Props> {
                 )}
             </div>
         );
+
+        if (this.props.loading) {
+            return (
+                <div style={{ border: "5px solid red", opacity: 0.5, pointerEvents: "none" }}>
+                    {image}
+                </div>
+            );
+        }
+        return image;
     }
 }
 
