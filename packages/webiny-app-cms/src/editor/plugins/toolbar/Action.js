@@ -5,7 +5,7 @@ import { IconButton } from "webiny-ui/Button";
 import { Tooltip } from "webiny-ui/Tooltip";
 
 const activeStyle = css({
-    '&.mdc-icon-button':{
+    "&.mdc-icon-button": {
         color: "var(--mdc-theme-primary)"
     }
 });
