@@ -150,11 +150,7 @@ class Image extends React.Component<Props> {
         );
 
         if (this.props.loading) {
-            return (
-                <div style={{ border: "5px solid red", opacity: 0.5, pointerEvents: "none" }}>
-                    {image}
-                </div>
-            );
+            return <div style={{ opacity: 0.75, pointerEvents: "none" }}>{image}</div>;
         }
         return image;
     }

@@ -7,6 +7,7 @@ import styled from "react-emotion";
 import classNames from "classnames";
 import Image from "./Image";
 import ImageEditorDialog from "./ImageEditorDialog";
+import convertToBase64 from "./convertToBase64";
 
 const ImageUploadWrapper = styled("div")({
     position: "relative",
@@ -97,11 +98,12 @@ export class SingleImageUpload extends React.Component<Props, State> {
 
     handleFiles = async (images: Array<FileBrowserFile>) => {
         const { onChange, imageEditor } = this.props;
-        const [image] = images;
-        this.setState({ error: null }, () => {
+        const image = { ...images[0] };
+        this.setState({ error: null }, async () => {
             if (imageEditor && !noImageEditingTypes.includes(image.type)) {
                 this.setState({ imageEditor: { image, open: true } });
             } else {
+                image.src = await convertToBase64(image.src);
                 onChange && onChange(image);
             }
         });
