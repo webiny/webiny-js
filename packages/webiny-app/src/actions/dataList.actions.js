@@ -1,6 +1,7 @@
 // @flow
-import { createAction, type Slice } from "./../redux";
+import { createAction, addReducer, addMiddleware } from "./../redux";
 import { typeList } from ".";
+import type { StatePath } from "webiny-app/types";
 
 const PREFIX = "[LIST]";
 
@@ -11,131 +12,127 @@ export const LIST_LOAD_SUCCESS = `${PREFIX} List Success`;
 export const LIST_LOAD_ERROR = `${PREFIX} List Error`;
 export const LIST_MULTISELECT = `${PREFIX} Multi Select`;
 
-export const listSlice: Slice = ({ action }) => {
+export const listSlice: StatePath = action => {
     return "lists." + action.payload.name;
 };
 
-export const setDataListLoading = createAction(LIST_SET_LOADING, {
-    slice: listSlice,
-    reducer: ({ state = {}, action }) => {
-        return { ...state, loading: action.payload.loading };
-    }
+export const setDataListLoading = createAction(LIST_SET_LOADING);
+
+addReducer([LIST_SET_LOADING], listSlice, (state, action) => {
+    return { ...state, loading: action.payload.loading };
 });
 
-export const loadDataList = createAction(LIST_LOAD, {
-    middleware({ store, action, next }) {
-        next(action);
+export const loadDataList = createAction(LIST_LOAD);
 
-        const { name, type, fields, page, perPage, sort, search, where } = action.payload;
-        store.dispatch(setDataListLoading({ name, loading: true }));
+addMiddleware([LIST_LOAD], ({ store, action, next }) => {
+    next(action);
 
-        store.dispatch(
-            typeList({
-                type,
-                fields,
-                page,
-                perPage,
-                sort,
-                search,
-                where,
-                onSuccess: data => {
-                    store.dispatch(setDataListLoading({ name, loading: false }));
-                    store.dispatch(
-                        loadDataListSuccess({
-                            data,
-                            params: {
-                                type,
-                                fields,
-                                page,
-                                perPage,
-                                sort,
-                                search,
-                                where
-                            },
-                            name
-                        })
-                    );
-                },
-                onError: error => {
-                    store.dispatch(setDataListLoading({ name, loading: false }));
-                    store.dispatch(loadDataListError({ error, name }));
-                }
-            })
-        );
-    }
-});
+    const { name, type, fields, page, perPage, sort, search, where } = action.payload;
+    store.dispatch(setDataListLoading({ name, loading: true }));
 
-export const loadDataListSuccess = createAction(LIST_LOAD_SUCCESS, {
-    slice: "lists",
-    reducer({ state = {}, action }) {
-        const { data, params, name } = action.payload;
-        return {
-            ...state,
-            [name]: {
-                params,
-                data,
-                error: null
+    store.dispatch(
+        typeList({
+            type,
+            fields,
+            page,
+            perPage,
+            sort,
+            search,
+            where,
+            onSuccess: data => {
+                store.dispatch(setDataListLoading({ name, loading: false }));
+                store.dispatch(
+                    loadDataListSuccess({
+                        data,
+                        params: {
+                            type,
+                            fields,
+                            page,
+                            perPage,
+                            sort,
+                            search,
+                            where
+                        },
+                        name
+                    })
+                );
+            },
+            onError: error => {
+                store.dispatch(setDataListLoading({ name, loading: false }));
+                store.dispatch(loadDataListError({ error, name }));
             }
-        };
-    }
+        })
+    );
 });
 
-export const loadDataListError = createAction(LIST_LOAD_ERROR, {
-    slice: "lists",
-    reducer({ state = {}, action }) {
-        const { error, name } = action.payload;
-        return {
-            ...state,
-            [name]: {
-                error,
-                data: null
-            }
-        };
-    }
+export const loadDataListSuccess = createAction(LIST_LOAD_SUCCESS);
+
+addReducer([LIST_LOAD_SUCCESS], "lists", (state, action) => {
+    const { data, params, name } = action.payload;
+    return {
+        ...state,
+        [name]: {
+            params,
+            data,
+            error: null
+        }
+    };
 });
 
-export const refreshDataList = createAction(LIST_REFRESH, {
-    middleware({ store, action, next }) {
-        next(action);
+export const loadDataListError = createAction(LIST_LOAD_ERROR);
 
-        const { name } = action.payload;
-        const { lists } = store.getState();
-        if (!lists || !lists[name]) {
-            return;
+addReducer([LIST_LOAD_ERROR], "lists", (state, action) => {
+    const { error, name } = action.payload;
+    return {
+        ...state,
+        [name]: {
+            error,
+            data: null
         }
-
-        store.dispatch(loadDataList({ name, ...lists[name].params }));
-    }
+    };
 });
 
-export const multiSelect = createAction(LIST_MULTISELECT, {
-    slice: listSlice,
-    reducer({ state = {}, action }) {
-        let { item: items, value } = action.payload;
-        if (!Array.isArray(items)) {
-            items = [items];
-        }
+export const refreshDataList = createAction(LIST_REFRESH);
 
-        let multiSelectedItems = [];
-        if (Array.isArray(state.multiSelectedItems)) {
-            multiSelectedItems = [...state.multiSelectedItems];
-        }
+addMiddleware([LIST_REFRESH], ({ store, action, next }) => {
+    next(action);
 
-        items.forEach(item => {
-            if (value === undefined) {
-                multiSelectedItems.includes(item)
-                    ? multiSelectedItems.splice(multiSelectedItems.indexOf(item), 1)
-                    : multiSelectedItems.push(item);
+    const { name } = action.payload;
+    const { lists } = store.getState();
+    if (!lists || !lists[name]) {
+        return;
+    }
+
+    store.dispatch(loadDataList({ name, ...lists[name].params }));
+});
+
+export const multiSelect = createAction(LIST_MULTISELECT);
+
+addReducer([LIST_MULTISELECT], listSlice, (state, action) => {
+    let { item: items, value } = action.payload;
+    if (!Array.isArray(items)) {
+        items = [items];
+    }
+
+    let multiSelectedItems = [];
+    if (Array.isArray(state.multiSelectedItems)) {
+        multiSelectedItems = [...state.multiSelectedItems];
+    }
+
+    items.forEach(item => {
+        if (value === undefined) {
+            multiSelectedItems.includes(item)
+                ? multiSelectedItems.splice(multiSelectedItems.indexOf(item), 1)
+                : multiSelectedItems.push(item);
+        } else {
+            if (value === true) {
+                !multiSelectedItems.includes(item) && multiSelectedItems.push(item);
             } else {
-                if (value === true) {
-                    !multiSelectedItems.includes(item) && multiSelectedItems.push(item);
-                } else {
-                    multiSelectedItems.includes(item) &&
-                        multiSelectedItems.splice(multiSelectedItems.indexOf(item), 1);
-                }
+                multiSelectedItems.includes(item) &&
+                multiSelectedItems.splice(multiSelectedItems.indexOf(item), 1);
             }
-        });
+        }
+    });
 
-        return { ...state, multiSelectedItems };
-    }
+    return { ...state, multiSelectedItems };
 });

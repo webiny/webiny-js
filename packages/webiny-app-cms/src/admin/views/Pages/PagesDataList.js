@@ -1,10 +1,10 @@
 // @flow
 import * as React from "react";
+import { compose } from "recompose";
 import { withDataList, withRouter } from "webiny-app/components";
 import { i18n } from "webiny-app/i18n";
-import { compose } from "recompose";
 import { withSnackbar } from "webiny-app-admin/components/withSnackbar";
-
+import { DeleteIcon } from "webiny-ui/List/DataList/icons";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import {
     DataList,
@@ -16,17 +16,16 @@ import {
     ListActions
 } from "webiny-ui/List";
 
-import { DeleteIcon } from "webiny-ui/List/DataList/icons";
 
-const t = i18n.namespace("Cms.CategoriesDataList");
+const t = i18n.namespace("Cms.PagesDataList");
 
-const CategoriesDataList = props => {
-    const { CategoriesDataList, router, showSnackbar } = props;
+const PagesDataList = props => {
+    const { PagesDataList, router, showSnackbar } = props;
 
     return (
         <DataList
-            {...CategoriesDataList}
-            title={t`CMS Categories`}
+            {...PagesDataList}
+            title={t`CMS Pages`}
             sorters={[
                 {
                     label: "Newest to oldest",
@@ -37,12 +36,12 @@ const CategoriesDataList = props => {
                     sorters: { createdOn: 1 }
                 },
                 {
-                    label: "Name A-Z",
-                    sorters: { name: 1 }
+                    label: "Title A-Z",
+                    sorters: { title: 1 }
                 },
                 {
-                    label: "Name Z-A",
-                    sorters: { name: -1 }
+                    label: "Title Z-A",
+                    sorters: { title: -1 }
                 }
             ]}
         >
@@ -55,7 +54,7 @@ const CategoriesDataList = props => {
                                     router.goToRoute({ params: { id: item.id }, merge: true })
                                 }
                             >
-                                {item.name}
+                                {item.title}
                                 <ListItemTextSecondary>{item.url}</ListItemTextSecondary>
                             </ListItemText>
 
@@ -66,12 +65,12 @@ const CategoriesDataList = props => {
                                             <DeleteIcon
                                                 onClick={() => {
                                                     showConfirmation(() => {
-                                                        CategoriesDataList.delete(item.id, {
+                                                        PagesDataList.delete(item.id, {
                                                             onSuccess: () => {
-                                                                CategoriesDataList.refresh();
+                                                                PagesDataList.refresh();
                                                                 showSnackbar(
-                                                                    t`Category {name} deleted.`({
-                                                                        name: item.name
+                                                                    t`Page {title} deleted.`({
+                                                                        name: item.title
                                                                     })
                                                                 );
                                                             }
@@ -95,9 +94,9 @@ export default compose(
     withSnackbar(),
     withRouter(),
     withDataList({
-        name: "CategoriesDataList",
-        type: "Cms.Categories",
-        fields: "id name slug url layout",
+        name: "PagesDataList",
+        type: "Cms.Pages",
+        fields: "id title slug revisions",
         sort: { savedOn: -1 }
     })
-)(CategoriesDataList);
+)(PagesDataList);

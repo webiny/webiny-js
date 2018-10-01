@@ -37,7 +37,6 @@ const release = async config => {
 
 release({
     preview: argv.preview || false,
-    registryUrl: "http://localhost:32771",
     branch: argv.branch || "master",
     packages: getPackages("build/node_modules/*"),
     plugins: [
@@ -45,10 +44,7 @@ release({
         npmVerify(),
         analyzeCommits(),
         updatePackages(),
-        // Create git tag
-        // First we publish to npm
         npmPublish(),
-        // Publish a new release to github
         githubPublish()
     ]
 });

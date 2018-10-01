@@ -13,17 +13,12 @@ import Users from "./views/Users";
 import Groups from "./views/Groups";
 import Account from "./views/Account";
 import AdminLayout from "webiny-app-admin/components/Layouts/AdminLayout";
-import { addRootReducer } from "webiny-app/redux";
 
 const t = i18n.namespace("Admin.App");
 const securityManager = "webiny-security-manager";
 
 export default () => {
     return (params: Object, next: Function) => {
-        addRootReducer("ui");
-        addRootReducer("graphql");
-        addRootReducer("lists");
-        addRootReducer("forms");
         addPlugin(...plugins);
 
         // Add menu plugin
