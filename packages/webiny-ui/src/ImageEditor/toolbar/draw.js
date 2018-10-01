@@ -89,7 +89,7 @@ class SubMenu extends React.Component<Props, State> {
                             this.setState(
                                 state => {
                                     state.brush.color = {
-                                        object: color,
+                                        object: { r, g, b, a },
                                         string
                                     };
                                     return state;
