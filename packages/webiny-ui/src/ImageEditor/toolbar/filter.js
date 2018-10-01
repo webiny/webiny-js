@@ -11,7 +11,8 @@ type State = {
 };
 
 type Props = {
-    imageEditor: ImageEditor
+    imageEditor: ImageEditor,
+    clearTool: Function
 };
 
 class SubMenu extends React.Component<Props, State> {
@@ -39,7 +40,14 @@ class SubMenu extends React.Component<Props, State> {
             pixelate: {
                 enabled: false,
                 value: 2
-            }
+            },
+            Grayscale: null,
+            Invert: null,
+            Sepia: null,
+            Sepia2: null,
+            Emboss: null,
+            Blur: null,
+            Sharpen: null
         }
     };
 

@@ -4,13 +4,14 @@ import type { ImageEditorTool } from "./types";
 import { ReactComponent as CropIcon } from "./icons/crop.svg";
 import { IconButton } from "webiny-ui/Button";
 
-const subMenu = ({ imageEditor, clearTool }) => {
+const subMenu = ({ imageEditor, clearTool, resizeCanvas }) => {
     return (
         <ul>
             <li
                 onClick={() => {
                     imageEditor.crop(imageEditor.getCropzoneRect()).then(() => {
                         imageEditor.stopDrawingMode();
+                        resizeCanvas();
                         clearTool();
                     });
                 }}

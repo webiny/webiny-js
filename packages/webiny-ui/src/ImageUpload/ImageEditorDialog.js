@@ -23,7 +23,10 @@ const ImageEditorDialog = (props: Object & { src: ?string }) => {
                 <DialogHeaderTitle>Image Editor</DialogHeaderTitle>
             </DialogHeader>
             <DialogBody>
-                {src && <ImageEditor key={src} src={src} onChange={src => (resultSrc = src)} />}
+                {src &&
+                    dialogProps.open && (
+                        <ImageEditor src={src} onChange={src => (resultSrc = src)} />
+                    )}
             </DialogBody>
             <DialogFooter>
                 <DialogCancel>Cancel</DialogCancel>

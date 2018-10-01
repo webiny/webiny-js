@@ -1,20 +1,19 @@
 // @flow
 import * as React from "react";
+import type TuiImageEditor from "tui-image-editor";
 
-export type ImageEditor = {
-    removeFilter: Function,
-    applyFilter: Function,
-    startDrawingMode: Function,
-    stopDrawingMode: Function,
-    getCropzoneRect: Function,
-    crop: Function,
-    undo: Function,
-    redo: Function,
-    on: Function
-};
+export type ImageEditor = TuiImageEditor;
 
 export type ImageEditorTool = {
     name: string,
-    icon: ({ imageEditor: ImageEditor, enableTool: Function }) => React.Element<any>,
-    subMenu?: ({ imageEditor: ImageEditor, clearTool: Function }) => React.Node
+    icon: ({
+        imageEditor: TuiImageEditor,
+        resizeCanvas: Function,
+        enableTool: Function
+    }) => React.Element<any>,
+    subMenu?: ({
+        imageEditor: TuiImageEditor,
+        resizeCanvas: Function,
+        clearTool: Function
+    }) => React.Node
 };

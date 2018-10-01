@@ -46,9 +46,6 @@ type Props = FormComponentProps & {
     // Uses "bytes" (https://www.npmjs.com/package/bytes) library to convert string notation to actual number.
     maxSize: string,
 
-    // Set whether the image is being processed or not.
-    loading: boolean,
-
     // By default, the editor tool will be shown when an image is selected.
     // Set to false if there is no need for editor to be shown. Otherwise, set true (default value) or alternatively
     // an object containing all of the image editor related options (eg. "filter").
@@ -103,7 +100,8 @@ export class SingleImageUpload extends React.Component<Props, State> {
             if (imageEditor && !noImageEditingTypes.includes(image.type)) {
                 this.setState({ imageEditor: { image, open: true } });
             } else {
-                image.src = await convertToBase64(image.src);
+                const file: File = (image.src: any);
+                image.src = await convertToBase64(file);
                 onChange && onChange(image);
             }
         });
@@ -126,6 +124,11 @@ export class SingleImageUpload extends React.Component<Props, State> {
             onChange
         } = this.props;
 
+        let imageEditorImageSrc = "";
+        if (this.state.imageEditor.image) {
+            imageEditorImageSrc = (this.state.imageEditor.image.src: any);
+        }
+
         return (
             <ImageUploadWrapper className={classNames(className)}>
                 {label &&
@@ -137,7 +140,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
 
                 <ImageEditorDialog
                     open={this.state.imageEditor.open}
-                    src={this.state.imageEditor.image && this.state.imageEditor.image.src}
+                    src={imageEditorImageSrc}
                     onClose={() => {
                         this.setState(state => {
                             state.imageEditor.open = false;
@@ -148,7 +151,8 @@ export class SingleImageUpload extends React.Component<Props, State> {
                         // We wrapped everything into setTimeout - prevents dialog freeze when larger image is selected.
                         setTimeout(() => {
                             this.setState({ loading: true }, async () => {
-                                await onChange({ ...this.state.imageEditor.image, src });
+                                onChange &&
+                                    (await onChange({ ...this.state.imageEditor.image, src }));
                                 this.setState({
                                     loading: false,
                                     imageEditor: { image: null, open: false }

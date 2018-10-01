@@ -74,7 +74,8 @@ type State = {
     loading: boolean,
     imageEditor: {
         image: ?FileBrowserFile,
-        open: boolean
+        open: boolean,
+        index: ?number
     }
 };
 
@@ -121,7 +122,8 @@ class MultiImageUpload extends React.Component<Props, State> {
                 const convertedImages = [];
                 for (let i = 0; i < images.length; i++) {
                     const image = images[i];
-                    convertedImages.push({ ...image, src: await convertToBase64(image.src) });
+                    const file: File = (image.src: any);
+                    convertedImages.push({ ...image, src: await convertToBase64(file) });
                 }
 
                 newValue.splice(selectedIndex, 0, ...convertedImages);
@@ -155,9 +157,13 @@ class MultiImageUpload extends React.Component<Props, State> {
             disabled,
             accept,
             maxSize,
-            //            // imageEditor,
             className
         } = this.props;
+
+        let imageEditorImageSrc = "";
+        if (this.state.imageEditor.image) {
+            imageEditorImageSrc = (this.state.imageEditor.image.src: any);
+        }
 
         return (
             <div className={classNames(imagesStyle, className)}>
@@ -169,7 +175,7 @@ class MultiImageUpload extends React.Component<Props, State> {
 
                 <ImageEditorDialog
                     open={this.state.imageEditor.open}
-                    src={this.state.imageEditor.image && this.state.imageEditor.image.src}
+                    src={imageEditorImageSrc}
                     onClose={() => {
                         this.setState(state => {
                             state.imageEditor.open = false;
@@ -180,13 +186,18 @@ class MultiImageUpload extends React.Component<Props, State> {
                         // We wrapped everything into setTimeout - prevents dialog freeze when larger image is selected.
                         setTimeout(() => {
                             this.setState({ loading: true }, async () => {
-                                const newValue = [...this.props.value];
-                                newValue[this.state.imageEditor.index].src = src;
+                                const newValue = Array.isArray(this.props.value)
+                                    ? [...this.props.value]
+                                    : [];
+
+                                const imageEditorImageIndex: number = (this.state.imageEditor
+                                    .index: any);
+                                newValue[imageEditorImageIndex].src = src;
 
                                 await this.onChange(newValue);
                                 this.setState({
                                     loading: false,
-                                    imageEditor: { image: null, open: false }
+                                    imageEditor: { image: null, open: false, index: null }
                                 });
                             });
                         });
@@ -212,6 +223,19 @@ class MultiImageUpload extends React.Component<Props, State> {
                                                     removeImage={() =>
                                                         this.removeImage(image.file || image)
                                                     }
+                                                    editImage={
+                                                        this.state.selectedImages[index] &&
+                                                        (() => {
+                                                            this.setState({
+                                                                imageEditor: {
+                                                                    index,
+                                                                    open: true,
+                                                                    image: this.state
+                                                                        .selectedImages[index]
+                                                                }
+                                                            });
+                                                        })
+                                                    }
                                                     uploadImage={() => {
                                                         browseFiles({
                                                             onSuccess: files =>
@@ -224,28 +248,12 @@ class MultiImageUpload extends React.Component<Props, State> {
                                                         });
                                                     }}
                                                 />
-                                                {this.state.selectedImages[index] && (
-                                                    <span
-                                                        onClick={() => {
-                                                            this.setState({
-                                                                imageEditor: {
-                                                                    index,
-                                                                    open: true,
-                                                                    image: this.state
-                                                                        .selectedImages[index]
-                                                                }
-                                                            });
-                                                        }}
-                                                    >
-                                                        edit
-                                                    </span>
-                                                )}
                                             </li>
                                         );
                                     })}
                                     <li>
                                         <Image
-                                            /*disabled={selectedImages.list.length > 0}*/
+                                            disabled={this.state.loading}
                                             uploadImage={() => {
                                                 browseFiles({
                                                     onSuccess: files =>

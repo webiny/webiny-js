@@ -4,19 +4,21 @@ import { ReactComponent as RotateRight } from "./icons/rotateRight.svg";
 import type { ImageEditorTool } from "./types";
 import { IconButton } from "webiny-ui/Button";
 
-const subMenu = ({ imageEditor, clearTool }) => {
+const subMenu = ({ imageEditor, clearTool, resizeCanvas }) => {
     return (
         <ul>
             <li
-                onClick={() => {
-                    imageEditor.rotate(30);
+                onClick={async () => {
+                    await imageEditor.rotate(30);
+                    resizeCanvas();
                 }}
             >
                 Clockwise(30)
             </li>
             <li
-                onClick={() => {
-                    imageEditor.rotate(-30);
+                onClick={async () => {
+                    await imageEditor.rotate(-30);
+                    resizeCanvas();
                 }}
             >
                 Counter-Clockwise(-30)
@@ -28,8 +30,9 @@ const subMenu = ({ imageEditor, clearTool }) => {
                         type="range"
                         min="-360"
                         max="360"
-                        onChange={e => {
-                            imageEditor.setAngle(parseInt(e.target.value, 10)).catch(() => {});
+                        onChange={async e => {
+                            await imageEditor.setAngle(parseInt(e.target.value, 10));
+                            resizeCanvas();
                         }}
                     />
                 </label>

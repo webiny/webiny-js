@@ -2,7 +2,7 @@
 import * as React from "react";
 import * as toolbar from "./toolbar";
 import TuiImageEditor from "tui-image-editor";
-import type { ImageEditorTool, ImageEditor } from "./toolbar/types";
+import type { ImageEditorTool, ImageEditor as ImageEditorType } from "./toolbar/types";
 import styled from "react-emotion";
 
 export type ToolbarTool = "undo" | "redo" | "crop" | "flip" | "rotate" | "draw" | "filter";
@@ -14,7 +14,7 @@ type Props = {
 };
 
 type State = {
-    imageEditor: ?ImageEditor,
+    imageEditor: ?ImageEditorType,
     tool: ?Object
 };
 
@@ -50,47 +50,59 @@ class ImageEditor extends React.Component<Props, State> {
         tool: null
     };
 
+    imageEditorElement: any = React.createRef();
+
     componentDidMount() {
-        this.initImageEditor();
-    }
-
-    initImageEditor() {
-        if (this.state.imageEditor) {
-            this.state.imageEditor.destroy();
-        }
-
-        const imageEditor = new TuiImageEditor(document.querySelector("#tui-image-editor"), {
+        const imageEditor = new TuiImageEditor(this.imageEditorElement, {
             cssMaxWidth: 700,
-            cssMaxHeight: 600,
+            cssMaxHeight: 400,
             selectionStyle: {
                 cornerSize: 20,
                 rotatingPointOffset: 70
             }
         });
 
-        imageEditor.clearRedoStack();
-        imageEditor.clearUndoStack();
-
         // Load image
-        imageEditor.loadImageFromFile(this.props.src);
+        imageEditor.loadImageFromFile(this.props.src).then(() => this.resizeCanvas());
+
         imageEditor.on({
             undoStackChanged: () => {
-                this.props.onChange && this.props.onChange(this.state.imageEditor.toDataURL());
+                const { onChange } = this.props;
+                onChange && onChange(imageEditor.toDataURL());
             },
             redoStackChanged: () => {
-                this.props.onChange && this.props.onChange(this.state.imageEditor.toDataURL());
+                const { onChange } = this.props;
+                onChange && onChange(imageEditor.toDataURL());
             }
         });
 
         this.setState({ imageEditor });
     }
 
+    componentWillUnmount() {
+        this.state.imageEditor && this.state.imageEditor.destroy();
+    }
+
+    resizeCanvas() {
+        const container = document.querySelector(".tui-image-editor-canvas-container");
+        if (container) {
+            const height = parseFloat(container.style.maxHeight);
+            const width = parseFloat(container.style.maxWidth);
+
+            this.imageEditorElement.style.width = width + "px";
+            this.imageEditorElement.style.height = height + "px";
+        }
+    }
+
     render() {
+        const { imageEditor } = this.state;
+        const { tools } = this.props;
+
         return (
             <React.Fragment>
-                {this.state.imageEditor && (
+                {imageEditor && (
                     <Toolbar>
-                        {this.props.tools.map(key => {
+                        {tools.map(key => {
                             const tool: ?ImageEditorTool = toolbar[key];
                             if (!tool) {
                                 return null;
@@ -99,10 +111,9 @@ class ImageEditor extends React.Component<Props, State> {
                             return (
                                 <li key={key}>
                                     {tool.icon({
-                                        imageEditor: this.state.imageEditor,
-                                        enableTool: () => {
-                                            this.setState({ tool });
-                                        }
+                                        imageEditor,
+                                        enableTool: () => this.setState({ tool }),
+                                        resizeCanvas: () => this.resizeCanvas()
                                     })}
                                 </li>
                             );
@@ -115,14 +126,13 @@ class ImageEditor extends React.Component<Props, State> {
                         <ToolOptions>
                             {this.state.tool.subMenu({
                                 imageEditor: this.state.imageEditor,
-                                clearTool: () => this.setState({ tool: null })
+                                clearTool: () => this.setState({ tool: null }),
+                                resizeCanvas: () => this.resizeCanvas()
                             })}
                         </ToolOptions>
                     )}
 
-                <div id="tui-image-editor" style={{ height: 600 }}>
-                    <canvas />
-                </div>
+                <div ref={ref => (this.imageEditorElement = ref)} style={{ margin: "0 auto" }} />
             </React.Fragment>
         );
     }
