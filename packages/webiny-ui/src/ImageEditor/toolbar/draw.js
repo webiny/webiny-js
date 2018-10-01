@@ -13,10 +13,11 @@ import styled from "react-emotion";
 type Props = { imageEditor: ImageEditor, clearTool: Function };
 type State = {
     brush: {
-        type: "free" | "line",
+        type: "FREE_DRAWING" | "LINE_DRAWING",
         color: {
             object: {},
-            string: ""
+            string: string,
+            pickerOpen: boolean
         },
         width: number
     }
@@ -43,7 +44,7 @@ const ColorPickerPopover = styled("div")({
 class SubMenu extends React.Component<Props, State> {
     state = {
         brush: {
-            type: "free",
+            type: "FREE_DRAWING",
             color: {
                 pickerOpen: false,
                 object: {
@@ -71,15 +72,16 @@ class SubMenu extends React.Component<Props, State> {
             <ul>
                 <li>
                     <Radio
-                        value={this.state.brush.type === "free"}
+                        value={this.state.brush.type === "FREE_DRAWING"}
                         label={"Free drawing"}
                         onChange={() => {
                             this.setState(
                                 state => {
-                                    state.brush.type = "free";
+                                    state.brush.type = "FREE_DRAWING";
                                     return state;
                                 },
                                 () => {
+                                    imageEditor.stopDrawingMode();
                                     const { color, width } = this.state.brush;
                                     imageEditor.startDrawingMode("FREE_DRAWING", {
                                         color: color.string,
@@ -91,15 +93,16 @@ class SubMenu extends React.Component<Props, State> {
                     />
 
                     <Radio
-                        value={this.state.brush.type === "line"}
+                        value={this.state.brush.type === "LINE_DRAWING"}
                         label={"Straight line"}
                         onChange={() => {
                             this.setState(
                                 state => {
-                                    state.brush.type = "line";
+                                    state.brush.type = "LINE_DRAWING";
                                     return state;
                                 },
                                 () => {
+                                    imageEditor.stopDrawingMode();
                                     const { color, width } = this.state.brush;
                                     imageEditor.startDrawingMode("LINE_DRAWING", {
                                         color: color.string,
@@ -150,8 +153,12 @@ class SubMenu extends React.Component<Props, State> {
                                             return state;
                                         },
                                         () => {
-                                            const { color, width } = this.state.brush;
-                                            imageEditor.setBrush({ width, color: color.string });
+                                            imageEditor.stopDrawingMode();
+                                            const { color, width, type } = this.state.brush;
+                                            imageEditor.startDrawingMode(type, {
+                                                color: color.string,
+                                                width
+                                            });
                                         }
                                     );
                                 }}
@@ -172,8 +179,12 @@ class SubMenu extends React.Component<Props, State> {
                                     return state;
                                 },
                                 () => {
-                                    const { color, width } = this.state.brush;
-                                    imageEditor.setBrush({ width, color: color.string });
+                                    imageEditor.stopDrawingMode();
+                                    const { color, width, type } = this.state.brush;
+                                    imageEditor.startDrawingMode(type, {
+                                        color: color.string,
+                                        width
+                                    });
                                 }
                             );
                         }}
