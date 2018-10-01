@@ -8,6 +8,7 @@ import { IconButton } from "webiny-ui/Button";
 import { Slider } from "webiny-ui/Slider";
 import { Radio } from "webiny-ui/Radio";
 import { Tooltip } from "webiny-ui/Tooltip";
+import styled from "react-emotion";
 
 type Props = { imageEditor: ImageEditor, clearTool: Function };
 type State = {
@@ -21,20 +22,51 @@ type State = {
     }
 };
 
+const ColorPickerIcon = styled("div")({
+    width: "36px",
+    height: "14px",
+    borderRadius: "2px"
+});
+
+const ColorPickerPopover = styled("div")({
+    position: "absolute",
+    zIndex: "2",
+    ".cover": {
+        position: "fixed",
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0
+    }
+});
+
 class SubMenu extends React.Component<Props, State> {
     state = {
         brush: {
             type: "free",
             color: {
-                object: {},
-                string: ""
+                pickerOpen: false,
+                object: {
+                    r: 255,
+                    g: 0,
+                    b: 0,
+                    a: 1
+                },
+                string: "rgba(255, 0, 0, 1)"
             },
             width: 5
         }
     };
 
+    componentDidMount() {
+        const { imageEditor } = this.props;
+        const { color, width } = this.state.brush;
+        imageEditor.setBrush({ width, color: color.string });
+    }
+
     render() {
         const { imageEditor, clearTool } = this.props;
+
         return (
             <ul>
                 <li>
@@ -79,28 +111,53 @@ class SubMenu extends React.Component<Props, State> {
                     />
                 </li>
                 <li>
-                    <ReactColor
-                        color={this.state.brush.color.object}
-                        onChange={color => {
-                            console.log(color);
-                            const { r, g, b, a } = color.rgb;
-                            const string = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
-
-                            this.setState(
-                                state => {
-                                    state.brush.color = {
-                                        object: { r, g, b, a },
-                                        string
-                                    };
-                                    return state;
-                                },
-                                () => {
-                                    const { color, width } = this.state.brush;
-                                    imageEditor.setBrush({ width, color: color.string });
-                                }
-                            );
-                        }}
+                    <ColorPickerIcon
+                        style={{ background: this.state.brush.color.string }}
+                        onClick={() =>
+                            this.setState(state => {
+                                state.brush.color.pickerOpen = true;
+                                return state;
+                            })
+                        }
                     />
+
+                    {this.state.brush.color.pickerOpen && (
+                        <ColorPickerPopover>
+                            <div
+                                className="cover"
+                                onClick={() => {
+                                    this.setState(state => {
+                                        state.brush.color.pickerOpen = false;
+                                        return state;
+                                    });
+                                }}
+                            />
+                            <ReactColor
+                                onClose
+                                color={this.state.brush.color.object}
+                                onChange={color => {
+                                    const { r, g, b, a } = color.rgb;
+                                    const string =
+                                        "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
+
+                                    this.setState(
+                                        state => {
+                                            state.brush.color = {
+                                                object: { r, g, b, a },
+                                                string,
+                                                pickerOpen: true
+                                            };
+                                            return state;
+                                        },
+                                        () => {
+                                            const { color, width } = this.state.brush;
+                                            imageEditor.setBrush({ width, color: color.string });
+                                        }
+                                    );
+                                }}
+                            />
+                        </ColorPickerPopover>
+                    )}
                 </li>
                 <li>
                     <Slider
