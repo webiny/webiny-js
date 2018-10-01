@@ -3,6 +3,7 @@ import React from "react";
 import type { ImageEditorTool } from "./types";
 import { ReactComponent as CropIcon } from "./icons/crop.svg";
 import { IconButton } from "webiny-ui/Button";
+import { Tooltip } from "webiny-ui/Tooltip";
 
 const subMenu = ({ imageEditor, clearTool, resizeCanvas }) => {
     return (
@@ -35,7 +36,11 @@ const tool: ImageEditorTool = {
     icon({ imageEditor, enableTool }) {
         return (
             <IconButton
-                icon={<CropIcon />}
+                icon={
+                    <Tooltip content={"Crop"}>
+                        <CropIcon />
+                    </Tooltip>
+                }
                 onClick={() => {
                     enableTool();
                     imageEditor.startDrawingMode("CROPPER");

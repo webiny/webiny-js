@@ -4,6 +4,7 @@ import type { ImageEditorTool } from "./types";
 import { ReactComponent as FlipIcon } from "./icons/flip.svg";
 
 import { IconButton } from "webiny-ui/Button";
+import { Tooltip } from "webiny-ui/Tooltip";
 
 const subMenu = ({ imageEditor, clearTool }) => {
     return (
@@ -21,7 +22,11 @@ const tool: ImageEditorTool = {
     icon({ imageEditor, enableTool }) {
         return (
             <IconButton
-                icon={<FlipIcon />}
+                icon={
+                    <Tooltip content={"Flip"}>
+                        <FlipIcon />
+                    </Tooltip>
+                }
                 onClick={() => {
                     enableTool();
                     imageEditor.stopDrawingMode();

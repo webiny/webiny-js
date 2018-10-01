@@ -5,6 +5,7 @@ import { Switch } from "webiny-ui/Switch";
 import { Slider } from "webiny-ui/Slider";
 import type { ImageEditor, ImageEditorTool } from "./types";
 import { IconButton } from "webiny-ui/Button";
+import { Tooltip } from "webiny-ui/Tooltip";
 
 type State = {
     filters: Object
@@ -420,7 +421,11 @@ const tool: ImageEditorTool = {
     icon({ imageEditor, enableTool }) {
         return (
             <IconButton
-                icon={<FilterIcon />}
+                icon={
+                    <Tooltip content={"Filter"}>
+                        <FilterIcon />
+                    </Tooltip>
+                }
                 onClick={() => {
                     enableTool();
                     imageEditor.startDrawingMode();

@@ -4,6 +4,7 @@ import { ReactComponent as RotateRight } from "./icons/rotateRight.svg";
 import type { ImageEditorTool } from "./types";
 import { IconButton } from "webiny-ui/Button";
 import { Slider } from "webiny-ui/Slider";
+import { Tooltip } from "webiny-ui/Tooltip";
 
 class SubMenu extends React.Component<*, { rangeInput: 0 }> {
     state = {
@@ -55,7 +56,11 @@ const tool: ImageEditorTool = {
     icon({ imageEditor, enableTool }) {
         return (
             <IconButton
-                icon={<RotateRight />}
+                icon={
+                    <Tooltip content={"Rotate"}>
+                        <RotateRight />
+                    </Tooltip>
+                }
                 onClick={() => {
                     enableTool();
                     imageEditor.stopDrawingMode();

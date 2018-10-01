@@ -3,6 +3,7 @@ import React from "react";
 import { ReactComponent as UndoIconSvg } from "./icons/undo.svg";
 import type { ImageEditorTool, ImageEditor } from "./types";
 import { IconButton } from "webiny-ui/Button";
+import { Tooltip } from "webiny-ui/Tooltip";
 
 type Props = {
     imageEditor: ImageEditor
@@ -28,7 +29,11 @@ class UndoIcon extends React.Component<Props, State> {
         return (
             <IconButton
                 disabled={!this.state.canUndo}
-                icon={<UndoIconSvg />}
+                icon={
+                    <Tooltip content={"Undo"}>
+                        <UndoIconSvg />
+                    </Tooltip>
+                }
                 onClick={() => {
                     this.state.canUndo && this.props.imageEditor.undo();
                 }}

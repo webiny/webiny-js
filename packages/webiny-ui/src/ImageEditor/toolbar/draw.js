@@ -7,6 +7,7 @@ import ReactColor from "react-color";
 import { IconButton } from "webiny-ui/Button";
 import { Slider } from "webiny-ui/Slider";
 import { Radio } from "webiny-ui/Radio";
+import { Tooltip } from "webiny-ui/Tooltip";
 
 type Props = { imageEditor: ImageEditor, clearTool: Function };
 type State = {
@@ -132,7 +133,11 @@ const tool: ImageEditorTool = {
     icon({ imageEditor, enableTool }) {
         return (
             <IconButton
-                icon={<DrawIcon />}
+                icon={
+                    <Tooltip content={"Draw"}>
+                        <DrawIcon />
+                    </Tooltip>
+                }
                 onClick={() => {
                     enableTool();
                     imageEditor.startDrawingMode("FREE_DRAWING");

@@ -3,6 +3,7 @@ import React from "react";
 import { ReactComponent as RedoIconSvg } from "./icons/redo.svg";
 import type { ImageEditorTool, ImageEditor } from "./types";
 import { IconButton } from "webiny-ui/Button";
+import { Tooltip } from "webiny-ui/Tooltip";
 
 type Props = {
     imageEditor: ImageEditor
@@ -28,7 +29,11 @@ class RedoIcon extends React.Component<Props, State> {
         return (
             <IconButton
                 disabled={!this.state.canRedo}
-                icon={<RedoIconSvg />}
+                icon={
+                    <Tooltip content={"Redo"}>
+                        <RedoIconSvg />
+                    </Tooltip>
+                }
                 onClick={() => {
                     this.state.canRedo && this.props.imageEditor.redo();
                 }}
