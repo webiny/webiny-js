@@ -16,14 +16,14 @@ import {
 let resultSrc = "";
 
 const ImageEditorDialog = (props: Object & { src: ?string }) => {
-    const { src, onAccept, onCancel, ...dialogProps } = props;
+    const { src, onAccept, ...dialogProps } = props;
     return (
         <Dialog {...dialogProps}>
             <DialogHeader>
                 <DialogHeaderTitle>Image Editor</DialogHeaderTitle>
             </DialogHeader>
             <DialogBody>
-                {src && <ImageEditor src={src} onChange={src => (resultSrc = src)} />}
+                {src && <ImageEditor key={src} src={src} onChange={src => (resultSrc = src)} />}
             </DialogBody>
             <DialogFooter>
                 <DialogCancel>Cancel</DialogCancel>

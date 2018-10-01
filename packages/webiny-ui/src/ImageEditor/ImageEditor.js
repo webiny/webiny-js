@@ -2,7 +2,7 @@
 import * as React from "react";
 import * as toolbar from "./toolbar";
 import TuiImageEditor from "tui-image-editor";
-import type { ImageEditorTool } from "./toolbar/types";
+import type { ImageEditorTool, ImageEditor } from "./toolbar/types";
 import styled from "react-emotion";
 
 export type ToolbarTool = "undo" | "redo" | "crop" | "flip" | "rotate" | "draw" | "filter";
@@ -20,7 +20,7 @@ type State = {
 
 /**
  * TODO - should add following missing tools:
- * ClearObjects, RemoveActiveObject, Shape, Icon, Text, Filters (a few missing ones here)
+ * ClearObjects, RemoveActiveObject, Shape, Icon, Text, Filters (a few missing ones here like tilt)
  */
 
 const Toolbar = styled("div")({
@@ -51,6 +51,14 @@ class ImageEditor extends React.Component<Props, State> {
     };
 
     componentDidMount() {
+        this.initImageEditor();
+    }
+
+    initImageEditor() {
+        if (this.state.imageEditor) {
+            this.state.imageEditor.destroy();
+        }
+
         const imageEditor = new TuiImageEditor(document.querySelector("#tui-image-editor"), {
             cssMaxWidth: 700,
             cssMaxHeight: 600,
@@ -59,6 +67,9 @@ class ImageEditor extends React.Component<Props, State> {
                 rotatingPointOffset: 70
             }
         });
+
+        imageEditor.clearRedoStack();
+        imageEditor.clearUndoStack();
 
         // Load image
         imageEditor.loadImageFromFile(this.props.src);
