@@ -3,44 +3,52 @@ import React from "react";
 import { ReactComponent as RotateRight } from "./icons/rotateRight.svg";
 import type { ImageEditorTool } from "./types";
 import { IconButton } from "webiny-ui/Button";
+import { Slider } from "webiny-ui/Slider";
 
-const subMenu = ({ imageEditor, clearTool, resizeCanvas }) => {
-    return (
-        <ul>
-            <li
-                onClick={async () => {
-                    await imageEditor.rotate(30);
-                    resizeCanvas();
-                }}
-            >
-                Clockwise(30)
-            </li>
-            <li
-                onClick={async () => {
-                    await imageEditor.rotate(-30);
-                    resizeCanvas();
-                }}
-            >
-                Counter-Clockwise(-30)
-            </li>
-            <li>
-                <label>
-                    Range input
-                    <input
-                        type="range"
-                        min="-360"
-                        max="360"
-                        onChange={async e => {
-                            await imageEditor.setAngle(parseInt(e.target.value, 10));
-                            resizeCanvas();
+class SubMenu extends React.Component<*, { rangeInput: 0 }> {
+    state = {
+        rangeInput: 0
+    };
+
+    render() {
+        const { imageEditor, clearTool, resizeCanvas } = this.props;
+        return (
+            <ul>
+                <li
+                    onClick={async () => {
+                        await imageEditor.rotate(30);
+                        resizeCanvas();
+                    }}
+                >
+                    Clockwise(30)
+                </li>
+                <li
+                    onClick={async () => {
+                        await imageEditor.rotate(-30);
+                        resizeCanvas();
+                    }}
+                >
+                    Counter-Clockwise(-30)
+                </li>
+                <li style={{ width: 500 }}>
+                    <Slider
+                        label={"Range Input"}
+                        value={this.state.rangeInput}
+                        min={-360}
+                        max={360}
+                        onInput={value => {
+                            this.setState({ rangeInput: value }, async () => {
+                                await imageEditor.setAngle(parseInt(value, 10));
+                                resizeCanvas();
+                            });
                         }}
                     />
-                </label>
-            </li>
-            <li onClick={clearTool}>Close</li>
-        </ul>
-    );
-};
+                </li>
+                <li onClick={clearTool}>Apply</li>
+            </ul>
+        );
+    }
+}
 
 const tool: ImageEditorTool = {
     name: "rotate",
@@ -55,7 +63,9 @@ const tool: ImageEditorTool = {
             />
         );
     },
-    subMenu
+    subMenu(props) {
+        return <SubMenu {...props} />;
+    }
 };
 
 export default tool;

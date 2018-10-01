@@ -5,6 +5,8 @@ import { ReactComponent as DrawIcon } from "./icons/draw.svg";
 
 import ReactColor from "react-color";
 import { IconButton } from "webiny-ui/Button";
+import { Slider } from "webiny-ui/Slider";
+import { Radio } from "webiny-ui/Radio";
 
 type Props = { imageEditor: ImageEditor, clearTool: Function };
 type State = {
@@ -35,55 +37,51 @@ class SubMenu extends React.Component<Props, State> {
         return (
             <ul>
                 <li>
-                    <label>
-                        <input
-                            checked={this.state.brush.type === "free"}
-                            type="radio"
-                            onChange={() => {
-                                this.setState(
-                                    state => {
-                                        state.brush.type = "free";
-                                        return state;
-                                    },
-                                    () => {
-                                        const { color, width } = this.state.brush;
-                                        imageEditor.startDrawingMode("FREE_DRAWING", {
-                                            color: color.string,
-                                            width
-                                        });
-                                    }
-                                );
-                            }}
-                        />
-                        Free drawing
-                    </label>
-                    <label>
-                        <input
-                            checked={this.state.brush.type === "line"}
-                            type="radio"
-                            onChange={() => {
-                                this.setState(
-                                    state => {
-                                        state.brush.type = "line";
-                                        return state;
-                                    },
-                                    () => {
-                                        const { color, width } = this.state.brush;
-                                        imageEditor.startDrawingMode("LINE_DRAWING", {
-                                            color: color.string,
-                                            width
-                                        });
-                                    }
-                                );
-                            }}
-                        />
-                        Straight line
-                    </label>
+                    <Radio
+                        value={this.state.brush.type === "free"}
+                        label={"Free drawing"}
+                        onChange={() => {
+                            this.setState(
+                                state => {
+                                    state.brush.type = "free";
+                                    return state;
+                                },
+                                () => {
+                                    const { color, width } = this.state.brush;
+                                    imageEditor.startDrawingMode("FREE_DRAWING", {
+                                        color: color.string,
+                                        width
+                                    });
+                                }
+                            );
+                        }}
+                    />
+
+                    <Radio
+                        value={this.state.brush.type === "line"}
+                        label={"Straight line"}
+                        onChange={() => {
+                            this.setState(
+                                state => {
+                                    state.brush.type = "line";
+                                    return state;
+                                },
+                                () => {
+                                    const { color, width } = this.state.brush;
+                                    imageEditor.startDrawingMode("LINE_DRAWING", {
+                                        color: color.string,
+                                        width
+                                    });
+                                }
+                            );
+                        }}
+                    />
                 </li>
                 <li>
                     <ReactColor
                         color={this.state.brush.color.object}
                         onChange={color => {
+                            console.log(color);
                             const { r, g, b, a } = color.rgb;
                             const string = "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
 
@@ -96,36 +94,32 @@ class SubMenu extends React.Component<Props, State> {
                                     return state;
                                 },
                                 () => {
-                                    imageEditor.setBrush({
-                                        color: string
-                                    });
+                                    const { color, width } = this.state.brush;
+                                    imageEditor.setBrush({ width, color: color.string });
                                 }
                             );
                         }}
                     />
                 </li>
                 <li>
-                    <label>
-                        Brush width
-                        <input
-                            type="range"
-                            min={5}
-                            max={30}
-                            value={this.state.brush.width}
-                            onChange={e => {
-                                const { value } = e.target;
-                                this.setState(
-                                    state => {
-                                        state.brush.width = value;
-                                        return state;
-                                    },
-                                    imageEditor.setBrush({
-                                        width: parseInt(value)
-                                    })
-                                );
-                            }}
-                        />
-                    </label>
+                    <Slider
+                        label={"Brush width"}
+                        value={this.state.brush.width}
+                        min={5}
+                        max={30}
+                        onInput={value => {
+                            this.setState(
+                                state => {
+                                    state.brush.width = parseInt(value);
+                                    return state;
+                                },
+                                () => {
+                                    const { color, width } = this.state.brush;
+                                    imageEditor.setBrush({ width, color: color.string });
+                                }
+                            );
+                        }}
+                    />
                 </li>
                 <li onClick={clearTool}>Close</li>
             </ul>
