@@ -8,7 +8,6 @@ import Divider from "./Divider";
 import Title from "./Title";
 import BackButton from "./BackButton";
 import Revisions from "./Revisions";
-import Preview from "./Preview";
 import { ReactComponent as MoreVerticalIcon } from "webiny-app-cms/editor/assets/icons/more_vert.svg";
 
 export default [
@@ -24,63 +23,63 @@ export default [
         }
     },
     {
-        name: "revisions-select",
+        name: "cms-default-bar-revisions-select",
         type: "cms-default-bar-right",
         render() {
             return <Revisions />;
         }
     },
     {
-        name: "revisions-divider",
+        name: "cms-default-bar-revisions-divider",
         type: "cms-default-bar-right",
         render() {
             return <Divider />;
         }
     },
     {
-        name: "cms-page-settings-button",
+        name: "cms-default-bar-page-settings-button",
         type: "cms-default-bar-right",
         render() {
             return <PageSettingsButton />;
         }
     },
     {
-        name: "more-actions-button",
+        name: "cms-default-bar-more-actions-button",
         type: "cms-default-bar-right",
         render() {
             return <IconButton icon={<MoreVerticalIcon />} />;
         }
     },
     {
-        name: "publish-button",
+        name: "cms-default-bar-publish-button",
         type: "cms-default-bar-right",
         render() {
             return <ButtonPrimary>Publish</ButtonPrimary>;
         }
     },
-    {
-        name: "preview-select",
+    /*{
+        name: "cms-default-bar-preview-select",
         type: "cms-default-bar-center",
         render() {
             return <Preview />;
         }
-    },
+    },*/
     {
-        name: "back-button",
+        name: "cms-default-bar-back-button",
         type: "cms-default-bar-left",
         render() {
             return <BackButton />;
         }
     },
     {
-        name: "divider",
+        name: "cms-default-bar-divider",
         type: "cms-default-bar-left",
         render() {
             return <Divider />;
         }
     },
     {
-        name: "cms-page-title",
+        name: "cms-default-bar-title",
         type: "cms-default-bar-left",
         render() {
             return <Title />;

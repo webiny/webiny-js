@@ -1,4 +1,5 @@
 // @flow
+import document from "./document";
 import row from "./row";
 import block from "./block";
 import column from "./column";
@@ -8,4 +9,4 @@ import spacer from "./spacer";
 import button from "./button";
 import card1 from "./cards/card-1";
 
-export default [row(), block(), column(), image(), text(), spacer(), button(), card1()];
+export default [document(), row(), block(), column(), image(), text(), spacer(), button(), card1()];

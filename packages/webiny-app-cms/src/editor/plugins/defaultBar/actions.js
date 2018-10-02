@@ -1,12 +1,23 @@
 // @flow
-import { createAction, addReducer } from "webiny-app/redux";
+import { createAction, addReducer, addMiddleware } from "webiny-app/redux";
+import { saveRevision } from "webiny-app-cms/editor/actions";
 const PREFIX = "[Page settings]";
 
-export const UPDATE_PAGE = `${PREFIX} Update page`;
+export const UPDATE_REVISION = `${PREFIX} Update page`;
 export const SET_PREVIEW_LAYOUT = `${PREFIX} Set preview layout page`;
 
-export const updatePage = createAction(UPDATE_PAGE);
-addReducer([UPDATE_PAGE], "editor.page", (state, action) => {
+export const updateRevision = createAction(UPDATE_REVISION);
+addMiddleware([UPDATE_REVISION], ({ store, next, action }) => {
+    next(action);
+
+    if (action.payload.history === false) {
+        return;
+    }
+
+    store.dispatch(saveRevision());
+});
+
+addReducer([UPDATE_REVISION], "editor.revision", (state, action) => {
     return { ...state, ...action.payload };
 });
 

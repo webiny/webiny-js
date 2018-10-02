@@ -8,13 +8,14 @@ export const updateChildPaths = element => {
     }
 
     if (!element.path) {
-        element.path = 0;
+        element.path = "0";
     }
 
     element.elements.forEach((el, index) => {
         if (!el.id) {
             el.id = shortid.generate();
         }
+
         el.path = element.path + "." + index;
         if (el.elements.length) {
             updateChildPaths(el);
@@ -42,6 +43,7 @@ export const createElement = (type, options = {}, parent = null) => {
         data: {},
         settings: {},
         elements: [],
+        path: "",
         ...plugin.create(options, parent)
     };
 };

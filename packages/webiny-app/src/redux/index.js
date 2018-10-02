@@ -32,8 +32,12 @@ export class Redux {
     }
 
     createAction(type: string, options?: ActionOptions = {}): ActionCreator {
-        return (payload?: Object = {}) => {
-            return { type, payload, meta: { log: options.log || true } };
+        return (payload?: Object = {}, meta: Object = {}) => {
+            return {
+                type,
+                payload,
+                meta: { log: options.hasOwnProperty("log") ? options.log : true, ...meta }
+            };
         };
     }
 

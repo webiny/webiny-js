@@ -5,11 +5,11 @@ import undoable from "redux-undo";
 import { createAction, addMiddleware, addReducer, addHigherOrderReducer } from "webiny-app/redux";
 import { getPlugin } from "webiny-app/plugins";
 import { getElement, getParentElement } from "webiny-app-cms/editor/selectors";
-import { updateChildPaths } from "webiny-app-cms/editor/utils";
-import { INSERT_BLOCK } from "webiny-app-cms/editor/plugins/blockEditing/actions";
+import { updateChildPaths, createElement } from "webiny-app-cms/editor/utils";
 
-const PREFIX = "[CMS]";
+export const PREFIX = "[CMS]";
 
+export const SET_EDITOR_DATA = `${PREFIX} Set editor data`;
 export const DRAG_START = `${PREFIX} Drag start`;
 export const DRAG_END = `${PREFIX} Drag end`;
 export const ELEMENT_DROPPED = `${PREFIX} Element dropped`;
@@ -23,8 +23,6 @@ export const DEACTIVATE_ELEMENT = `${PREFIX} Deactivate element`;
 export const UPDATE_ELEMENT = `${PREFIX} Update element`;
 export const DELETE_ELEMENT = `${PREFIX} Delete element`;
 export const SET_TMP = `${PREFIX} Set tmp`;
-// Delete block is an internal action and is not exported
-const DELETE_BLOCK = `${PREFIX} Delete block`;
 
 addReducer(["INIT"], null, state => {
     return {
@@ -38,19 +36,26 @@ addReducer(["INIT"], null, state => {
                 resizing: false
             },
             tmp: {},
-            page: {
+            revision: {
                 title: "",
                 slug: "",
                 settings: {},
-                content: []
+                content: createElement("cms-element-document")
             }
         }
     };
 });
 
-const horStatePath = "editor.page.content";
+const horStatePath = "editor.revision.content";
 addHigherOrderReducer(
-    [UPDATE_ELEMENT, DELETE_ELEMENT, INSERT_BLOCK, ELEMENT_DROPPED, "@@redux-undo/UNDO", "@@redux-undo/REDO"],
+    [
+        UPDATE_ELEMENT,
+        DELETE_ELEMENT,
+        ELEMENT_DROPPED,
+        "@@redux-undo/UNDO",
+        "@@redux-undo/REDO",
+        "@@redux-undo/INIT"
+    ],
     horStatePath,
     () => {
         return undoable(
@@ -69,7 +74,7 @@ addHigherOrderReducer(
                     : newState;
             },
             {
-                initTypes: ["@@redux-undo/INIT", "INIT"],
+                initTypes: ["@@redux-undo/INIT"],
                 filter: action => {
                     if (action.payload && action.payload.history === false) {
                         return false;
@@ -82,7 +87,28 @@ addHigherOrderReducer(
     }
 );
 
-addReducer(["@@redux-undo/UNDO", "@@redux-undo/REDO"], "editor.page.content", state => state);
+addReducer(
+    ["@@redux-undo/UNDO", "@@redux-undo/REDO", "@@redux-undo/INIT"],
+    "editor.revision.content",
+    state => state
+);
+
+addReducer(["SETUP_EDITOR"], "editor", (state = null, action) => {
+    const editorState = { ...state, ...action.payload };
+    if (!editorState.revision.content) {
+        console.log("Creating initial content");
+        editorState.revision.content = createElement("cms-element-document");
+    }
+    return editorState;
+});
+
+export const setEditorData = createAction(SET_EDITOR_DATA);
+
+addMiddleware([SET_EDITOR_DATA], ({ store, next, action}) => {
+    next(action);
+    store.dispatch({ type: "SETUP_EDITOR", payload: _.cloneDeep(action.payload) });
+    store.dispatch({ type: "@@redux-undo/INIT" });
+});
 
 export const setTmp = createAction(SET_TMP);
 addReducer([SET_TMP], "editor.tmp", (state, action) => {
@@ -109,7 +135,7 @@ addReducer([DEACTIVATE_PLUGIN], "editor.ui.plugins", (state, action) => {
     return { ...state, [plugin.type]: null };
 });
 
-export const highlightElement = createAction(HIGHLIGHT_ELEMENT);
+export const highlightElement = createAction(HIGHLIGHT_ELEMENT, { log: false });
 addReducer([HIGHLIGHT_ELEMENT], "editor.ui.highlightElement", (state, action) => {
     return action.payload.element ? action.payload.element : null;
 });
@@ -137,7 +163,16 @@ addReducer([DRAG_END], "editor.ui.dragging", () => false);
 export const updateElement = createAction(UPDATE_ELEMENT);
 addReducer(
     [UPDATE_ELEMENT],
-    action => "editor.page.content." + action.payload.element.path.replace(/\./g, ".elements."),
+    action => {
+        const { element } = action.payload;
+        if (element.type === "cms-element-document") {
+            return "editor.revision.content";
+        }
+        return (
+            "editor.revision.content." +
+            action.payload.element.path.replace(/\./g, ".elements.").slice(2)
+        );
+    },
     (state, action) => {
         const { element } = action.payload;
         updateChildPaths(element);
@@ -152,12 +187,6 @@ addMiddleware([DELETE_ELEMENT], ({ store, next, action }) => {
     store.dispatch(deactivateElement());
 
     const { element } = action.payload;
-
-    if (!element.path.includes(".")) {
-        // Deleting a top level block
-        store.dispatch(deleteBlock({ block: element.path }));
-        return;
-    }
 
     // Remove child from parent
     let parent = getParentElement(store.getState(), element.path);
@@ -196,12 +225,4 @@ addMiddleware([ELEMENT_DROPPED], ({ store, next, action }) => {
         target,
         position: action.payload.target.position
     });
-});
-
-// This action is not exported
-const deleteBlock = createAction(DELETE_BLOCK);
-addReducer([DELETE_BLOCK], "editor.page.content", (state, action) => {
-    const { block } = action.payload;
-    const index = state.findIndex(bl => bl.path === block);
-    return dotProp.delete(state, index);
 });

@@ -9,7 +9,7 @@ class Revision extends Entity {
     title: string;
     settings: Object;
     content: Object;
-    active: boolean;
+    published: boolean;
     constructor() {
         super();
 
@@ -31,18 +31,23 @@ class Revision extends Entity {
 
         this.attr("content").object();
 
-        this.attr("active")
+        this.attr("locked")
+            .boolean()
+            .setDefaultValue(false);
+
+        this.attr("published")
             .boolean()
             .setDefaultValue(false)
             .onSet(value => {
-                // Copy only if it is an existing revision
-                if (value && value !== this.active && this.isExisting()) {
+                // Deactivate previously published revision
+                if (value && value !== this.published && this.isExisting()) {
+                    this.locked = true;
                     this.on("beforeSave", async () => {
-                        // Deactivate previously active revision
+                        // Deactivate previously published revision
                         const activeRev: Revision = (await Revision.findOne({
-                            query: { active: true, page: (await this.page).id }
+                            query: { published: true, page: (await this.page).id }
                         }): any);
-                        activeRev.active = false;
+                        activeRev.published = false;
                         await activeRev.save();
                     }).setOnce();
                 }
@@ -50,15 +55,16 @@ class Revision extends Entity {
             });
 
         this.on("afterUpdate", async () => {
-            if (this.active) {
+            if (this.published) {
                 // Copy relevant data to parent Page
                 const page = await this.page;
                 page.title = this.title;
                 page.slug = this.slug;
                 page.settings = this.settings;
+                page.status = "published";
 
                 page.content = this.content.map(block => {
-                    return {...block};
+                    return { ...block };
                 });
                 await page.save();
             }

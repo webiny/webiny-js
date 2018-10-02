@@ -60,7 +60,7 @@ class AddElement extends React.Component<Props, State> {
 
     getGroupElements(group: string) {
         return getPlugins("cms-element").filter(
-            (el: ElementPluginType) => el.element.group === group
+            (el: ElementPluginType) => el.element && el.element.group === group
         );
     }
 

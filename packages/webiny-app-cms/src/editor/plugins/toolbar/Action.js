@@ -17,17 +17,25 @@ const Action = ({
     icon: React.Element<any>,
     onClick: Function,
     active?: Boolean,
-    tooltip: string
+    tooltip?: string
 }) => {
-    return (
-        <Tooltip
-            placement={"right"}
-            content={<span>{tooltip}</span>}
-            {...(active ? { visible: false } : {})}
-        >
-            <IconButton icon={icon} onClick={onClick} className={active && activeStyle} />
-        </Tooltip>
+    const iconButton = (
+        <IconButton icon={icon} onClick={onClick} className={active && activeStyle} />
     );
+
+    if (tooltip) {
+        return (
+            <Tooltip
+                placement={"right"}
+                content={<span>{tooltip}</span>}
+                {...(active ? { visible: false } : {})}
+            >
+                {iconButton}
+            </Tooltip>
+        );
+    }
+
+    return iconButton;
 };
 
 export default Action;

@@ -1,12 +1,12 @@
 import "./style/theme.scss";
 import React from "react";
-import homepageLayout from "./layouts/homepage";
-import productLayout from "./layouts/product";
+import staticLayout from "./layouts/static";
+import blogLayout from "./layouts/blog";
 
 export default {
     layouts: [
-        homepageLayout,
-        productLayout
+        staticLayout,
+        blogLayout
     ],
     fonts: {
         google: {

@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack-cli --config webpack.config.js",
-    "debug": "cross-env NODE_ENV=development SLS_DEBUG=* node --inspect=9005 `which serverless` offline start -s dev --port 9000",
-    "start": "cross-env NODE_ENV=development nodemon --exec 'sls offline start --port 9000'"
+    "debug": "cross-env NODE_ENV=development SLS_DEBUG=* node --inspect=9005 npx sls offline start -s dev --port 9000",
+    "start": "cross-env NODE_ENV=development nodemon --exec 'npx sls offline start --port 9000'"
   },
   "author": "",
   "license": "MIT",

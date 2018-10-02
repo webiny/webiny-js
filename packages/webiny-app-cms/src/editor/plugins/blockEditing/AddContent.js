@@ -5,8 +5,8 @@ import { connect } from "react-redux";
 import { Elevation } from "webiny-ui/Elevation";
 import { ButtonFloating } from "webiny-ui/Button";
 import { togglePlugin } from "webiny-app-cms/editor/actions";
+import { getContent } from "webiny-app-cms/editor/selectors";
 import { ReactComponent as AddIcon } from "webiny-app-cms/editor/assets/icons/add.svg";
-import { getBlocksCount } from "./selectors";
 
 const pulse = keyframes`
   0% {
@@ -44,8 +44,8 @@ const AddBlockContent = styled("div")({
     alignItems: "center"
 });
 
-const AddContent = ({ blocks, togglePlugin }) => {
-    if (blocks) {
+const AddContent = ({ content, togglePlugin }) => {
+    if (content.elements.length) {
         return null;
     }
 
@@ -76,6 +76,6 @@ const AddContent = ({ blocks, togglePlugin }) => {
 };
 
 export default connect(
-    state => ({ blocks: getBlocksCount(state) }),
+    state => ({ content: getContent(state) }),
     { togglePlugin }
 )(AddContent);

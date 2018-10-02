@@ -155,7 +155,6 @@ export const withDataList = (withDataListParams: WithDataListParams): Function =
                         next: this.props[propName].__loadParams
                     };
 
-                    !_.isEqual(params.prev, params.next) && console.log(params);
                     !_.isEqual(params.prev, params.next) && this.props[propName].init();
                 }
             })

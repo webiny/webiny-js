@@ -5,11 +5,11 @@ import { compose } from "recompose";
 import { ButtonFloating } from "webiny-ui/Button";
 import { Tabs, Tab } from "webiny-ui/Tabs";
 import { Icon } from "webiny-ui/Icon";
-import { deactivatePlugin } from "webiny-app-cms/editor/actions";
-import { createBlockFromType } from "./actions";
+import { deactivatePlugin, updateElement } from "webiny-app-cms/editor/actions";
+import { getContent } from "webiny-app-cms/editor/selectors";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
 import { getPlugins } from "webiny-app/plugins";
-import { updateChildPaths } from "webiny-app-cms/editor/utils";
+import { updateChildPaths, createElement } from "webiny-app-cms/editor/utils";
 import Element from "webiny-app-cms/render/components/Element";
 import { SecondaryLayout } from "webiny-app-admin/components/Views/SecondaryLayout";
 import { Elevation } from "webiny-ui/Elevation";
@@ -52,6 +52,12 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         return state.search !== this.state.search || state.activeTab !== this.state.activeTab;
     }
 
+    addBlockToContent = plugin => {
+        const { content } = this.props;
+        const element = { ...content, elements: [...content.elements, createElement(plugin.name)] };
+        this.props.updateElement({ element });
+    };
+
     renderPreview = plugin => {
         // Filter based on search query and block keywords
         let match = false;
@@ -82,7 +88,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                             <ButtonFloating
                                 label={"Click to Add"}
                                 onClick={e => {
-                                    this.props.createBlockFromType({ type: plugin.name });
+                                    this.addBlockToContent(plugin);
                                     !e.shiftKey &&
                                         this.props.deactivatePlugin({
                                             name: "cms-search-blocks-bar"
@@ -141,10 +147,10 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
 
 export default compose(
     connect(
-        null,
+        state => ({ content: getContent(state) }),
         {
             deactivatePlugin,
-            createBlockFromType
+            updateElement
         }
     ),
     withKeyHandler()

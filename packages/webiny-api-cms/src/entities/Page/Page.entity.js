@@ -15,23 +15,32 @@ class Page extends Entity {
     constructor() {
         super();
 
-        this.attr("title")
-            .char()
+        this.attr("title").char()
             .setValidators("required");
 
-        this.attr("slug")
-            .char()
-            .setValidators("required");
+        this.attr("slug").char();
 
         this.attr("settings").object();
 
-        this.attr("content").array();
+        this.attr("content").object();
 
         this.attr("activeRevision")
             .entity(Revision)
-            .setDynamic(
-                async () => await Revision.findOne({ query: { page: this.id, active: true } })
-            );
+            .setDynamic(async () => {
+                const publishedRevision = await Revision.findOne({
+                    query: { page: this.id, published: true }
+                });
+
+                if (publishedRevision) {
+                    return publishedRevision;
+                }
+
+                // Find latest revision
+                return await Revision.findOne({
+                    query: { page: this.id },
+                    sort: { createdOn: -1 }
+                });
+            });
 
         this.attr("revisions").entities(Revision);
 
@@ -49,7 +58,7 @@ class Page extends Entity {
             revision.populate({
                 page: this,
                 title: this.title,
-                slug: this.slug,
+                slug: (await this.category).url + "untitled-" + this.id,
                 name: "Revision #1",
                 active: true
             });

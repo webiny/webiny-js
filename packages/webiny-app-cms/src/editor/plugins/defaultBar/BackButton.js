@@ -12,7 +12,7 @@ const BackButton = () => {
     return (
         <IconButton
             className={backStyles}
-            onClick={() => console.log("go back :)")}
+            onClick={() => window.history.back()}
             icon={<BackIcon />}
         />
     );

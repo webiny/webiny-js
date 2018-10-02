@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "demo-theme": "0.0.0-semantically-released",
+    "react-apollo": "^2.2.4",
     "react-hot-loader": "^4.3.5",
     "webiny-app": "0.0.0-semantically-released",
     "webiny-app-admin": "0.0.0-semantically-released",

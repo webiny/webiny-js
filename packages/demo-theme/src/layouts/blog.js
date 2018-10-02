@@ -16,9 +16,9 @@ const Banner100 = styled("div")({
     return null;
 };*/
 
-const Product = ({ children }) => {
+const Blog = ({ children }) => {
     return (
-        <div className={"product-container"}>
+        <div className={"blog-page-container"}>
             {/*<Menu name={"main"}>
                 {data => (
                     <ul>
@@ -34,7 +34,7 @@ const Product = ({ children }) => {
 };
 
 export default {
-    name: "product",
-    title: "Product",
-    component: Product,
+    name: "blog",
+    title: "Blog",
+    component: Blog,
 };

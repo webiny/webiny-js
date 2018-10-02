@@ -12,9 +12,9 @@ const Banner = styled("div")({
     return null;
 };*/
 
-const Homepage = ({ children }) => {
+const Static = ({ children }) => {
     return (
-        <div className={"homepage-container"}>
+        <div className={"static-page-container"}>
             {/*<Menu name={"main"}>
                 {data => (
                     <ul>
@@ -30,7 +30,7 @@ const Homepage = ({ children }) => {
 };
 
 export default {
-    name: "homepage",
-    title: "Homepage",
-    component: Homepage,
+    name: "static",
+    title: "Static page",
+    component: Static,
 };

@@ -228,7 +228,7 @@ class Element extends React.Component<ElementProps, ElementState> {
                                                 className={"element-holder"}
                                                 onClick={this.onClick}
                                             >
-                                                {plugin.element.help && (
+                                                {plugin.element && plugin.element.help && (
                                                     <HelpIcon
                                                         className={"help-icon"}
                                                         onClick={() => {

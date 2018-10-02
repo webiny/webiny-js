@@ -19,6 +19,7 @@ export const PageType = new GraphQLObjectType({
         category: { type: schema.getType(CategoryType.name) },
         status: { type: GraphQLString },
         activeRevision: { type: schema.getType(RevisionType.name) },
+        lastRevision: { type: schema.getType(RevisionType.name) },
         revisions: { type: new GraphQLList(schema.getType(RevisionType.name)) },
     })
 });

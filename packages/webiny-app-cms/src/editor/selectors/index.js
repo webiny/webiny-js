@@ -1,5 +1,6 @@
 import { createSelector } from "reselect";
 import _ from "lodash";
+import { getPlugin } from "webiny-app/plugins";
 
 /**
  * Get entire editor state.
@@ -17,14 +18,33 @@ export const getUi = state => getEditor(state).ui || {};
 export const getTmp = (state, key) => _.get(getEditor(state).tmp, key);
 
 /**
- * Get editor `page` state
+ * Get editor `revision` state
  */
-export const getPage = (state) => getEditor(state).page;
+export const getRevision = state => getEditor(state).revision || {};
 
 /**
- * Get editor blocks.
+ * Get editor `page` state
  */
-export const getBlocks = state => getPage(state).content.present || [];
+export const getPage = state => getEditor(state).page || {};
+
+/**
+ * Get editor `revisions` state
+ */
+export const getRevisions = state => getEditor(state).revisions || [];
+
+/**
+ * Get editor content.
+ */
+export const getContent = state => {
+    const revision = getRevision(state);
+    if (revision.content && revision.content.present) {
+        return revision.content.present;
+    } else if (revision.content) {
+        return revision.content;
+    }
+
+    return getPlugin("cms-element-document").create();
+};
 
 /**
  * Get element.
@@ -33,17 +53,17 @@ export const getElement = (state, path) => {
     if (!path) {
         return null;
     }
-    const blocks = getBlocks(state);
-    return _.get(blocks, path.replace(/\./g, ".elements."));
+    const content = getContent(state);
+    return _.get(content, path.replace(/\./g, ".elements.").slice(2));
 };
 
 export const getParentElement = (state, path) => {
-    const parentPath = path
-        .split(".")
-        .slice(0, -1)
-        .join(".elements.");
-    const blocks = getBlocks(state);
-    return _.cloneDeep(_.get(blocks, parentPath));
+    const content = getContent(state);
+    const parentPaths = path.split(".").slice(0, -1);
+    if (parentPaths.length === 1) {
+        return content;
+    }
+    return _.cloneDeep(_.get(content, parentPaths.join(".elements.").slice(2)));
 };
 
 /**

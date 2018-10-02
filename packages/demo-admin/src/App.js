@@ -1,5 +1,6 @@
 import { hot } from "react-hot-loader";
 import React from "react";
+import { ApolloProvider } from "react-apollo";
 import { Provider as StateProvider } from "react-redux";
 import { app } from "webiny-app";
 import { router, Router } from "webiny-app/router";
@@ -32,13 +33,15 @@ if (!app.initialized) {
 
 const App = ({ store }) => {
     return (
-        <StateProvider store={store}>
-            <CmsTheme theme={myTheme}>
-                <AdminTheme>
-                    <Router router={router} />
-                </AdminTheme>
-            </CmsTheme>
-        </StateProvider>
+        <ApolloProvider client={app.graphql}>
+            <StateProvider store={store}>
+                <CmsTheme theme={myTheme}>
+                    <AdminTheme>
+                        <Router router={router} />
+                    </AdminTheme>
+                </CmsTheme>
+            </StateProvider>
+        </ApolloProvider>
     );
 };
 

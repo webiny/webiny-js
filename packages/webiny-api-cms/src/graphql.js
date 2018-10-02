@@ -34,7 +34,7 @@ export const createCmsField = () => {
         fields: () => ({
             Categories: createCategoryQueryField(),
             Pages: createPageQueryField(),
-            Revision: createRevisionQueryField()
+            Revisions: createRevisionQueryField()
         })
     });
 

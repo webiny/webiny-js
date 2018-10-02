@@ -10,7 +10,8 @@ class RevisionTable extends MySQLTable {
         this.column("page").char(24);
         this.column("settings").text();
         this.column("content").text();
-        this.column("active").tinyInt();
+        this.column("published").tinyInt();
+        this.column("locked").tinyInt();
     }
 }
 

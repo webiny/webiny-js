@@ -1,5 +1,5 @@
 // @flow
-import { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLList } from "graphql";
+import { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLBoolean, GraphQLList } from "graphql";
 import { GraphQLDateTime } from "graphql-iso-date";
 import GraphQLJSON from "graphql-type-json";
 import Revision from "./Revision.entity";
@@ -16,7 +16,9 @@ export const RevisionType = new GraphQLObjectType({
         slug: { type: GraphQLString },
         settings: { type: GraphQLJSON },
         content: { type: GraphQLJSON },
-        page: { type: schema.getType(PageType.name) },
+        published: { type: GraphQLBoolean},
+        locked: { type: GraphQLBoolean},
+        page: { type: schema.getType(PageType.name) }
     })
 });
 

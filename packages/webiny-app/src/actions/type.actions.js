@@ -72,7 +72,16 @@ addMiddleware([TYPE_ONE], ({ store, action, next }) => {
     );
 });
 
-const typeSave = createAction(TYPE_SAVE);
+export type TypeSave = (payload: {
+    type: string,
+    fields: string,
+    data: Object,
+    onSuccess?: Function,
+    onError?: Function,
+}) => Object;
+
+const typeSave: TypeSave = createAction(TYPE_SAVE);
+
 addMiddleware([TYPE_SAVE], ({ store, action, next }) => {
     next(action);
     if (action.payload.data.id) {
@@ -82,7 +91,9 @@ addMiddleware([TYPE_SAVE], ({ store, action, next }) => {
     }
 });
 
-const typeCreate = createAction(TYPE_CREATE);
+export type TypeCreate = TypeSave;
+
+const typeCreate: TypeCreate = createAction(TYPE_CREATE);
 addMiddleware([TYPE_CREATE], ({ store, action, next }) => {
     next(action);
     const { type, fields, onSuccess, onError, data } = action.payload;
@@ -107,7 +118,9 @@ addMiddleware([TYPE_CREATE], ({ store, action, next }) => {
     );
 });
 
-const typeUpdate = createAction(TYPE_UPDATE);
+export type TypeUpdate = TypeSave;
+
+const typeUpdate: TypeUpdate = createAction(TYPE_UPDATE);
 addMiddleware([TYPE_UPDATE], ({ store, action, next }) => {
     next(action);
     const { type, fields, onSuccess, onError, data } = action.payload;

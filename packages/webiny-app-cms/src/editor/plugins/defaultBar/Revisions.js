@@ -1,11 +1,16 @@
 //@flow
 import React from "react";
-import { Menu, MenuItem } from "webiny-ui/Menu";
+import { connect } from "react-redux";
+import { compose } from "recompose";
+import { get } from "dot-prop-immutable";
 import { css } from "emotion";
+import { withRouter } from "webiny-app/components";
+import { Menu, MenuItem } from "webiny-ui/Menu";
+import { getPage } from "webiny-app-cms/editor/selectors";
 import { ButtonDefault } from "webiny-ui/Button";
 import { Icon } from "webiny-ui/Icon";
-import { ReactComponent as DownButton } from "webiny-app-cms/editor/assets/icons/round-arrow_drop_down-24px.svg";
 import { Typography } from "webiny-ui/Typography";
+import { ReactComponent as DownButton } from "webiny-app-cms/editor/assets/icons/round-arrow_drop_down-24px.svg";
 
 const buttonStyle = css({
     "&.mdc-button": {
@@ -22,38 +27,29 @@ const menuList = css({
     }
 });
 
-const Revisions = () => {
+const Revisions = ({ page, router }: Object) => {
+    const revisions = page.revisions || [];
     return (
         <Menu
             className={menuList}
+            onSelect={evt => router.goToRoute({ params: { id: revisions[evt.detail.index].id } })}
             handle={
                 <ButtonDefault className={buttonStyle}>
                     Revisions <Icon icon={<DownButton />} />
                 </ButtonDefault>
             }
         >
-            <MenuItem>
-                <Typography use={"body2"}>Revision 5</Typography>
-                <Typography use={"caption"}>(draft)</Typography>
-            </MenuItem>
-            <MenuItem>
-                <Typography use={"body2"}>Revision 4</Typography>
-                <Typography use={"caption"}>(published)</Typography>
-            </MenuItem>
-            <MenuItem>
-                <Typography use={"body2"}>Revision 3</Typography>
-                <Typography use={"caption"}>(published)</Typography>
-            </MenuItem>
-            <MenuItem>
-                <Typography use={"body2"}>Revision 2</Typography>
-                <Typography use={"caption"}>(published)</Typography>
-            </MenuItem>
-            <MenuItem>
-                <Typography use={"body2"}>Revision 1</Typography>
-                <Typography use={"caption"}>(published)</Typography>
-            </MenuItem>
+            {revisions.map(rev => (
+                <MenuItem key={rev.id}>
+                    <Typography use={"body2"}>{rev.name}</Typography>
+                    <Typography use={"caption"}>({rev.locked ? "published" : "draft"})</Typography>
+                </MenuItem>
+            ))}
         </Menu>
     );
 };
 
-export default Revisions;
+export default compose(
+    connect(state => ({ page: getPage(state) })),
+    withRouter()
+)(Revisions);

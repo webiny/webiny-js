@@ -10,6 +10,10 @@ declare type ElementProps = {
 };
 
 const Element = ({ element, theme }: ElementProps) => {
+    if(!element) {
+        return null;
+    }
+
     const plugin = getPlugins("cms-render-element").find(pl => pl.element === element.type);
 
     if (!plugin) {

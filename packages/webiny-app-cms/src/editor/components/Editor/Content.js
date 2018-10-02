@@ -7,7 +7,7 @@ import styled from "react-emotion";
 import compose from "recompose/compose";
 import { getPlugins, getPlugin } from "webiny-app/plugins";
 import { withTheme } from "webiny-app-cms/theme";
-import { getBlocks, getEditor, getActivePlugin } from "webiny-app-cms/editor/selectors";
+import { getContent, getEditor, getActivePlugin } from "webiny-app-cms/editor/selectors";
 import Element from "webiny-app-cms/editor/components/Element";
 import RenderElement from "webiny-app-cms/render/components/Element";
 
@@ -47,38 +47,30 @@ const renderPreview = (content, activePreview) => {
     return wrappedContent;
 };
 
-const Content = ({ blocks, theme, previewLayout, activePreview, renderContent }) => {
+const Content = ({ content, theme, previewLayout, activePreview, renderContent }) => {
     const plugins = getPlugins("cms-editor-content");
     const layout = (previewLayout && getPlugin(previewLayout)) || null;
 
-    const baseContent = (
-        <React.Fragment>
-            {blocks.map(
-                block =>
-                    renderContent ? (
-                        <RenderElement key={block.id} element={block} />
-                    ) : (
-                        <Element key={block.id} element={block} />
-                    )
-            )}
-        </React.Fragment>
+    let renderedContent = renderContent ? (
+        <RenderElement element={content} />
+    ) : (
+        <Element element={content} />
     );
 
-    const content = layout ? layout.render(baseContent) : baseContent;
+    renderedContent = layout ? layout.render(renderedContent) : renderedContent;
 
     return (
         <ContentContainer theme={theme}>
             {plugins.map(plugin => React.cloneElement(plugin.render(), { key: plugin.name }))}
-            <BaseContainer>{renderPreview(content, activePreview)}</BaseContainer>
+            <BaseContainer>{renderPreview(renderedContent, activePreview)}</BaseContainer>
         </ContentContainer>
     );
 };
 
 const stateToProps = state => ({
-    blocks: getBlocks(state),
+    content: getContent(state),
     previewLayout: getEditor(state).previewLayout,
-    activePreview: getActivePlugin("cms-editor-content-preview")(state),
-    renderContent: getEditor(state).ui.renderContent // TODO: remove this later
+    activePreview: getActivePlugin("cms-editor-content-preview")(state)
 });
 
 export default compose(
