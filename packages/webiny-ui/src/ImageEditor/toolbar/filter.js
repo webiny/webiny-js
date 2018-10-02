@@ -70,8 +70,8 @@ class SubMenu extends React.Component<Props, State> {
 
     render() {
         return (
-            <ul>
-                <li>
+            <React.Fragment>
+                <div>
                     <table>
                         <tbody>
                             <tr>
@@ -114,91 +114,9 @@ class SubMenu extends React.Component<Props, State> {
                             </tr>
                         </tbody>
                     </table>
-                </li>
-                <li>
-                    <Switch
-                        label={"Remove white"}
-                        value={this.state.filters.removeWhite.enabled}
-                        onChange={() => {
-                            const { imageEditor } = this.props;
-                            this.setState(
-                                state => {
-                                    state.filters.removeWhite.enabled = !state.filters.removeWhite
-                                        .enabled;
-                                    return state;
-                                },
-                                () => {
-                                    this.state.filters.removeWhite.enabled
-                                        ? imageEditor.applyFilter("removeWhite", {
-                                              distance: this.state.filters.removeWhite.distance,
-                                              threshold: this.state.filters.removeWhite.threshold
-                                          })
-                                        : imageEditor.removeFilter("removeWhite");
-                                }
-                            );
-                        }}
-                    />
-
-                    <Slider
-                        label={"Threshold"}
-                        value={this.state.filters.removeWhite.threshold}
-                        min={0}
-                        max={255}
-                        onInput={value => {
-                            if (this.delayedChange) {
-                                clearTimeout(this.delayedChange);
-                            }
-
-                            const { imageEditor } = this.props;
-
-                            this.setState(
-                                state => {
-                                    state.filters.removeWhite.threshold = value;
-                                    return state;
-                                },
-                                () => {
-                                    this.delayedChange = setTimeout(() => {
-                                        this.state.filters.removeWhite.enabled &&
-                                            imageEditor.applyFilter("removeWhite", {
-                                                distance: this.state.filters.removeWhite.distance,
-                                                threshold: this.state.filters.removeWhite.threshold
-                                            });
-                                    }, 200);
-                                }
-                            );
-                        }}
-                    />
-
-                    <Slider
-                        label={"Distance"}
-                        value={this.state.filters.removeWhite.distance}
-                        min={0}
-                        max={255}
-                        onInput={value => {
-                            if (this.delayedChange) {
-                                clearTimeout(this.delayedChange);
-                            }
-
-                            const { imageEditor } = this.props;
-                            this.setState(
-                                state => {
-                                    state.filters.removeWhite.distance = value;
-                                    return state;
-                                },
-                                () => {
-                                    this.delayedChange = setTimeout(() => {
-                                        this.state.filters.removeWhite.enabled &&
-                                            imageEditor.applyFilter("removeWhite", {
-                                                distance: this.state.filters.removeWhite.distance,
-                                                threshold: this.state.filters.removeWhite.threshold
-                                            });
-                                    }, 200);
-                                }
-                            );
-                        }}
-                    />
-                </li>
-                <li>
+                </div>
+                
+                <div>
                     <Switch
                         label={"Brightness"}
                         value={this.state.filters.brightness.enabled}
@@ -249,8 +167,8 @@ class SubMenu extends React.Component<Props, State> {
                             );
                         }}
                     />
-                </li>
-                <li>
+                </div>
+                <div>
                     <Switch
                         label={"Noise"}
                         value={this.state.filters.noise.enabled}
@@ -300,8 +218,8 @@ class SubMenu extends React.Component<Props, State> {
                             );
                         }}
                     />
-                </li>
-                <li>
+                </div>
+                <div>
                     <Switch
                         label={"GradientTransparency"}
                         value={this.state.filters.gradientTransparency.enabled}
@@ -354,8 +272,8 @@ class SubMenu extends React.Component<Props, State> {
                             );
                         }}
                     />
-                </li>
-                <li>
+                </div>
+                <div>
                     <Switch
                         label={"Pixelate"}
                         value={this.state.filters.pixelate.enabled}
@@ -408,10 +326,8 @@ class SubMenu extends React.Component<Props, State> {
                             );
                         }}
                     />
-                </li>
-
-                <li onClick={this.props.clearTool}>Close</li>
-            </ul>
+                </div>
+            </React.Fragment>
         );
     }
 }
@@ -420,17 +336,15 @@ const tool: ImageEditorTool = {
     name: "filter",
     icon({ imageEditor, enableTool }) {
         return (
-            <IconButton
-                icon={
-                    <Tooltip content={"Filter"}>
-                        <FilterIcon />
-                    </Tooltip>
-                }
-                onClick={() => {
-                    enableTool();
-                    imageEditor.startDrawingMode();
-                }}
-            />
+            <Tooltip placement={"bottom"} content={"Filter"}>
+                <IconButton
+                    icon={<FilterIcon />}
+                    onClick={() => {
+                        enableTool();
+                        imageEditor.startDrawingMode();
+                    }}
+                />
+            </Tooltip>
         );
     },
     subMenu(props) {

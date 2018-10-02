@@ -27,17 +27,15 @@ class RedoIcon extends React.Component<Props, State> {
 
     render() {
         return (
-            <IconButton
-                disabled={!this.state.canRedo}
-                icon={
-                    <Tooltip content={"Redo"}>
-                        <RedoIconSvg />
-                    </Tooltip>
-                }
-                onClick={() => {
-                    this.state.canRedo && this.props.imageEditor.redo();
-                }}
-            />
+            <Tooltip placement={"bottom"} content={"Redo"}>
+                <IconButton
+                    disabled={!this.state.canRedo}
+                    icon={<RedoIconSvg />}
+                    onClick={() => {
+                        this.state.canRedo && this.props.imageEditor.redo();
+                    }}
+                />
+            </Tooltip>
         );
     }
 }

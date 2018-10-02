@@ -19,9 +19,6 @@ const ImageEditorDialog = (props: Object & { src: ?string }) => {
     const { src, onAccept, ...dialogProps } = props;
     return (
         <Dialog {...dialogProps}>
-            <DialogHeader>
-                <DialogHeaderTitle>Image Editor</DialogHeaderTitle>
-            </DialogHeader>
             <DialogBody>
                 {src &&
                     dialogProps.open && (

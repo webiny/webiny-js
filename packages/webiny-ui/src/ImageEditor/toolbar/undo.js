@@ -27,17 +27,15 @@ class UndoIcon extends React.Component<Props, State> {
 
     render() {
         return (
-            <IconButton
-                disabled={!this.state.canUndo}
-                icon={
-                    <Tooltip content={"Undo"}>
-                        <UndoIconSvg />
-                    </Tooltip>
-                }
-                onClick={() => {
-                    this.state.canUndo && this.props.imageEditor.undo();
-                }}
-            />
+            <Tooltip placement={"bottom"} content={"Undo"}>
+                <IconButton
+                    disabled={!this.state.canUndo}
+                    icon={<UndoIconSvg />}
+                    onClick={() => {
+                        this.state.canUndo && this.props.imageEditor.undo();
+                    }}
+                />
+            </Tooltip>
         );
     }
 }

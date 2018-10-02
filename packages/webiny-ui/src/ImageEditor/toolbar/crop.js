@@ -2,32 +2,37 @@
 import React from "react";
 import type { ImageEditorTool } from "./types";
 import { ReactComponent as CropIcon } from "./icons/crop.svg";
-import { IconButton } from "webiny-ui/Button";
+import { IconButton, ButtonDefault } from "webiny-ui/Button";
 import { Tooltip } from "webiny-ui/Tooltip";
 
 const subMenu = ({ imageEditor, clearTool, resizeCanvas }) => {
     return (
-        <ul>
-            <li
-                onClick={() => {
-                    imageEditor.crop(imageEditor.getCropzoneRect()).then(() => {
+        <React.Fragment>
+            <div>
+                Click and drag to crop a portion of the image. Hold Shift to crop a square.
+            </div>
+            <div>
+                <ButtonDefault
+                    onClick={() => {
+                        imageEditor.crop(imageEditor.getCropzoneRect()).then(() => {
+                            imageEditor.stopDrawingMode();
+                            resizeCanvas();
+                            clearTool();
+                        });
+                    }}
+                >
+                    Apply
+                </ButtonDefault>
+                <ButtonDefault
+                    onClick={() => {
                         imageEditor.stopDrawingMode();
-                        resizeCanvas();
                         clearTool();
-                    });
-                }}
-            >
-                Apply
-            </li>
-            <li
-                onClick={() => {
-                    imageEditor.stopDrawingMode();
-                    clearTool();
-                }}
-            >
-                Cancel
-            </li>
-        </ul>
+                    }}
+                >
+                    Cancel
+                </ButtonDefault>
+            </div>
+        </React.Fragment>
     );
 };
 
@@ -35,17 +40,15 @@ const tool: ImageEditorTool = {
     name: "crop",
     icon({ imageEditor, enableTool }) {
         return (
+            <Tooltip placement={"bottom"} content={"Crop"}>
             <IconButton
-                icon={
-                    <Tooltip content={"Crop"}>
-                        <CropIcon />
-                    </Tooltip>
-                }
+                icon={<CropIcon />}
                 onClick={() => {
                     enableTool();
                     imageEditor.startDrawingMode("CROPPER");
                 }}
             />
+            </Tooltip>
         );
     },
     subMenu
