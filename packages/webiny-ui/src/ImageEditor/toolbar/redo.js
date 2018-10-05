@@ -33,6 +33,8 @@ class RedoIcon extends React.Component<Props, State> {
                     icon={<RedoIconSvg />}
                     onClick={() => {
                         this.state.canRedo && this.props.imageEditor.redo();
+                        // Apparently, immediate call gets executed before the DOM has been updated.
+                        setTimeout(() => this.props.resizeCanvas());
                     }}
                 />
             </Tooltip>
@@ -42,8 +44,8 @@ class RedoIcon extends React.Component<Props, State> {
 
 const tool: ImageEditorTool = {
     name: "redo",
-    icon({ imageEditor }) {
-        return <RedoIcon imageEditor={imageEditor} />;
+    icon(props) {
+        return <RedoIcon {...props} />;
     }
 };
 

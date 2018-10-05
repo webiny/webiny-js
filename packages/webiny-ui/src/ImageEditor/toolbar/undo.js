@@ -33,6 +33,8 @@ class UndoIcon extends React.Component<Props, State> {
                     icon={<UndoIconSvg />}
                     onClick={() => {
                         this.state.canUndo && this.props.imageEditor.undo();
+                        // Apparently, immediate call gets executed before the DOM has been updated.
+                        setTimeout(() => this.props.resizeCanvas());
                     }}
                 />
             </Tooltip>
@@ -42,8 +44,8 @@ class UndoIcon extends React.Component<Props, State> {
 
 const tool: ImageEditorTool = {
     name: "undo",
-    icon({ imageEditor }) {
-        return <UndoIcon imageEditor={imageEditor} />;
+    icon(props) {
+        return <UndoIcon {...props} />;
     }
 };
 
