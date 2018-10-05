@@ -2,12 +2,12 @@
 import * as React from "react";
 import type { FormComponentProps } from "./../types";
 import { FileBrowser, type FileBrowserFile, type FileError } from "webiny-ui/FileBrowser";
-import { ImageCropper } from "webiny-ui/ImageCropper";
-import { ButtonPrimary, ButtonSecondary } from "webiny-ui/Button";
 import { css } from "emotion";
 import classNames from "classnames";
 import { FormElementMessage } from "webiny-ui/FormElementMessage";
 import Image from "./Image";
+import ImageEditorDialog from "./ImageEditorDialog";
+import convertToBase64 from "./convertToBase64";
 
 const imagesStyle = css({
     ".disabled": {
@@ -31,8 +31,8 @@ const imagesStyle = css({
     }
 });
 
-// Do not apply cropping for following image types.
-const noCroppingTypes = ["image/svg+xml", "image/gif"];
+// Do not apply editping for following image types.
+// const noImageEditorTypes = ["image/svg+xml", "image/gif"];
 
 type Props = FormComponentProps & {
     // Component label.
@@ -54,12 +54,11 @@ type Props = FormComponentProps & {
     // Uses "bytes" (https://www.npmjs.com/package/bytes) library to convert string notation to actual number.
     maxSize: string,
 
-    // By default, a cropper tool will be shown when an image is selected.
-    // Set to false (default value) if there is no need for cropper to be shown. Otherwise, set true or alternatively
-    // an object containing all of the cropper related options (eg. "aspectRatio").
-    // Please check the docs of CropperJs (https://github.com/fengyuanchen/cropperjs for the list of all
-    // available options.
-    cropper?: boolean | Object,
+    // By default, the editor tool will be shown when an image is selected.
+    // Set to false if there is no need for editor to be shown. Otherwise, set true (default value) or alternatively
+    // an object containing all of the image editor related options (eg. "filter").
+    // Please check the docs of ImageEditor component for the list of all available options.
+    editor?: boolean | Object,
 
     // Use these to customize error messages (eg. if i18n supported is needed).
     errorMessages: {
@@ -69,13 +68,14 @@ type Props = FormComponentProps & {
     }
 };
 
-type NewImage = { file: FileBrowserFile, cropper: boolean, done: boolean };
-
 type State = {
     errors: ?Array<FileError>,
-    selectedImages: {
-        atIndex: number,
-        list: Array<NewImage>
+    selectedImages: Object,
+    loading: boolean,
+    imageEditor: {
+        image: ?FileBrowserFile,
+        open: boolean,
+        index: ?number
     }
 };
 
@@ -83,7 +83,7 @@ class MultiImageUpload extends React.Component<Props, State> {
     static defaultProps = {
         accept: ["image/jpeg", "image/png", "image/gif", "image/svg+xml"],
         maxSize: "5mb",
-        cropper: false,
+        editor: false,
         errorMessages: {
             maxSizeExceeded: "Max size exceeded.",
             unsupportedFileType: "Unsupported file type.",
@@ -93,9 +93,12 @@ class MultiImageUpload extends React.Component<Props, State> {
 
     state = {
         errors: null,
-        selectedImages: {
-            list: [],
-            atIndex: 0
+        selectedImages: {},
+        loading: false,
+        imageEditor: {
+            open: false,
+            image: null,
+            index: null
         }
     };
 
@@ -105,79 +108,34 @@ class MultiImageUpload extends React.Component<Props, State> {
         validate && (await validate());
     };
 
-    hasPendingSelectedImages() {
-        for (let i = 0; i < this.state.selectedImages.list.length; i++) {
-            if (!this.state.selectedImages.list[i].done) {
-                return true;
+    handleSelectedImages = async (images: Array<FileBrowserFile>, selectedIndex: number = 0) => {
+        this.setState({ errors: null, loading: true }, async () => {
+            const selectedImages = {};
+            for (let i = 0; i < images.length; i++) {
+                const image = images[i];
+                selectedImages[selectedIndex + i] = { ...image };
             }
-        }
-        return false;
-    }
 
-    finalizeSelectedImages = async () => {
-        if (this.hasPendingSelectedImages()) {
-            return;
-        }
+            this.setState({ selectedImages }, async () => {
+                const newValue = Array.isArray(this.props.value) ? [...this.props.value] : [];
 
-        const { value } = this.props;
-        const { selectedImages } = this.state;
-
-        const newValue = Array.isArray(value) ? [...value] : [];
-        newValue.splice(
-            selectedImages.atIndex,
-            0,
-            ...selectedImages.list.map(image => image.file)
-        );
-
-        await this.onChange(newValue);
-
-        this.setState({
-            selectedImages: {
-                atIndex: 0,
-                list: []
-            }
-        });
-    };
-
-    handleSelectedImages = async (
-        images: Array<FileBrowserFile>,
-        selectedIndex: number = 0
-    ) => {
-        this.setState(
-            {
-                errors: null,
-                selectedImages: {
-                    atIndex: selectedIndex,
-                    list: images.map(file => {
-                        const cropper = !noCroppingTypes.includes(file.type);
-                        return { file, cropper, done: !cropper };
-                    })
+                const convertedImages = [];
+                for (let i = 0; i < images.length; i++) {
+                    const image = images[i];
+                    const file: File = (image.src: any);
+                    convertedImages.push({ ...image, src: await convertToBase64(file) });
                 }
-            },
-            this.finalizeSelectedImages
-        );
+
+                newValue.splice(selectedIndex, 0, ...convertedImages);
+                await this.onChange(newValue);
+                this.setState({ loading: false });
+            });
+        });
     };
 
     handleErrors = (errors: Array<FileError>) => {
         this.setState({ errors });
     };
-
-    finishCrop(image: NewImage, src: string) {
-        this.setState(state => {
-            image.file.src = src;
-            image.cropper = false;
-            image.done = true;
-            return state;
-        }, this.finalizeSelectedImages);
-    }
-
-    cancelCrop(image: NewImage) {
-        this.setState(state => {
-            image.cropper = false;
-            image.done = true;
-            return state;
-        }, this.finalizeSelectedImages);
-    }
 
     removeImage = (image: FileBrowserFile) => {
         const { value, onChange } = this.props;
@@ -199,11 +157,13 @@ class MultiImageUpload extends React.Component<Props, State> {
             disabled,
             accept,
             maxSize,
-            cropper,
             className
         } = this.props;
 
-        const { selectedImages } = this.state;
+        let imageEditorImageSrc = "";
+        if (this.state.imageEditor.image) {
+            imageEditorImageSrc = (this.state.imageEditor.image.src: any);
+        }
 
         return (
             <div className={classNames(imagesStyle, className)}>
@@ -213,56 +173,68 @@ class MultiImageUpload extends React.Component<Props, State> {
                     </div>
                 )}
 
-                <FileBrowser accept={accept} maxSize={maxSize} multiple convertToBase64>
-                    {({ browseFiles }) => {
-                        const imageCropperProps = typeof cropper === "object" ? cropper : null;
+                <ImageEditorDialog
+                    open={this.state.imageEditor.open}
+                    src={imageEditorImageSrc}
+                    onClose={() => {
+                        this.setState(state => {
+                            state.imageEditor.open = false;
+                            return state;
+                        });
+                    }}
+                    onAccept={src => {
+                        // We wrapped everything into setTimeout - prevents dialog freeze when larger image is selected.
+                        setTimeout(() => {
+                            this.setState({ loading: true }, async () => {
+                                const newValue = Array.isArray(this.props.value)
+                                    ? [...this.props.value]
+                                    : [];
 
+                                const imageEditorImageIndex: number = (this.state.imageEditor
+                                    .index: any);
+                                newValue[imageEditorImageIndex].src = src;
+
+                                await this.onChange(newValue);
+                                this.setState({
+                                    loading: false,
+                                    imageEditor: { image: null, open: false, index: null }
+                                });
+                            });
+                        });
+                    }}
+                />
+
+                <FileBrowser accept={accept} maxSize={maxSize} multiple>
+                    {({ browseFiles }) => {
                         const images = Array.isArray(value) ? [...value] : [];
-                        images.splice(selectedImages.atIndex, 0, ...selectedImages.list);
 
                         return (
                             <div className={classNames({ disabled })}>
                                 <ul className="images">
-                                    {images.map((image, index) => (
-                                        <li key={index}>
-                                            {image.cropper ? (
-                                                <ImageCropper {...imageCropperProps}>
-                                                    {({ getDataURL, getImgProps }) => (
-                                                        <React.Fragment>
-                                                            <img
-                                                                {...getImgProps({
-                                                                    src: image.file.src
-                                                                })}
-                                                            />
-                                                            <ButtonPrimary
-                                                                label={"Crop"}
-                                                                onClick={() =>
-                                                                    this.finishCrop(
-                                                                        image,
-                                                                        getDataURL() || ""
-                                                                    )
-                                                                }
-                                                            >
-                                                                Crop
-                                                            </ButtonPrimary>
-
-                                                            <ButtonSecondary
-                                                                label={"Cancel"}
-                                                                onClick={() =>
-                                                                    this.cancelCrop(image)
-                                                                }
-                                                            >
-                                                                Cancel
-                                                            </ButtonSecondary>
-                                                        </React.Fragment>
-                                                    )}
-                                                </ImageCropper>
-                                            ) : (
+                                    {images.map((image, index) => {
+                                        return (
+                                            <li key={index}>
                                                 <Image
+                                                    loading={
+                                                        this.state.selectedImages[index] &&
+                                                        this.state.loading
+                                                    }
                                                     value={image.file || image}
-                                                    disabled={this.hasPendingSelectedImages()}
                                                     removeImage={() =>
                                                         this.removeImage(image.file || image)
+                                                    }
+                                                    editImage={
+                                                        this.state.selectedImages[index] &&
+                                                        (() => {
+                                                            this.setState({
+                                                                imageEditor: {
+                                                                    index,
+                                                                    open: true,
+                                                                    image: this.state
+                                                                        .selectedImages[index]
+                                                                }
+                                                            });
+                                                        })
                                                     }
                                                     uploadImage={() => {
                                                         browseFiles({
@@ -276,12 +248,12 @@ class MultiImageUpload extends React.Component<Props, State> {
                                                         });
                                                     }}
                                                 />
-                                            )}
-                                        </li>
-                                    ))}
+                                            </li>
+                                        );
+                                    })}
                                     <li>
                                         <Image
-                                            disabled={selectedImages.list.length > 0}
+                                            disabled={this.state.loading}
                                             uploadImage={() => {
                                                 browseFiles({
                                                     onSuccess: files =>
