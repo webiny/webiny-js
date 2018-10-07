@@ -7,11 +7,11 @@ import type { FileBrowserFile } from "webiny-ui/FileBrowser";
  * Can be used for development purposes only.
  */
 
-type LocalStoragePluginConfig = {
+type DefaultWithFileUploadPlugin = {
     uri: string
 };
 
-export default (config: LocalStoragePluginConfig) => {
+export default (config: DefaultWithFileUploadPlugin) => {
     return {
         upload: async (file: FileBrowserFile) => {
             return new Promise(resolve => {

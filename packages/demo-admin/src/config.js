@@ -10,8 +10,7 @@ import {
 import userIdentity from "./userIdentity";
 
 // Plugins for "withFileUpload" HOC - used with file upload related components.
-import localStoragePlugin from "webiny-app/components/withFileUpload/localStoragePlugin";
-import webinyCloudStoragePlugin from "webiny-app/components/withFileUpload/webinyCloudStoragePlugin";
+import defaultWithFileUploadPlugin from "webiny-app/components/withFileUpload/defaultWithFileUploadPlugin";
 
 export default () => {
     // TODO
@@ -58,10 +57,13 @@ export default () => {
             }
         });
 
-        // In production, we use Webiny's "s3Plugin" plugin.
-        app.config.components.withFileUploadPlugin = webinyCloudStoragePlugin({
-            siteToken: "abc123"
-        });
+        return {
+            withFileUpload: {
+                plugin: defaultWithFileUploadPlugin({
+                    uri: "https://files.myweb.com"
+                })
+            }
+        };
     }
 
     if (process.env.NODE_ENV === "development") {
@@ -79,9 +81,12 @@ export default () => {
             }
         });
 
-        // In development, we use "localStoragePlugin" plugin.
-        app.config.components.withFileUploadPlugin = localStoragePlugin({
-            uri: "http://localhost:9000/files"
-        });
+        return {
+            withFileUpload: {
+                plugin: defaultWithFileUploadPlugin({
+                    uri: "http://localhost:9000/files"
+                })
+            }
+        };
     }
 };

@@ -2,7 +2,7 @@
 import * as React from "react";
 import { compose, withProps } from "recompose";
 import type { FileBrowserFile } from "webiny-ui/FileBrowser";
-import { app } from "webiny-app";
+import { withAppConfig } from "webiny-app/components";
 import invariant from "invariant";
 
 type WithFileUploadOptions = {
@@ -21,11 +21,14 @@ const mustUpload = (file: FileBrowserFile) => {
 export const withFileUpload = (options: WithFileUploadOptions = {}): Function => {
     return (BaseComponent: typeof React.Component) => {
         return compose(
+            withAppConfig(),
             withProps(props => {
+                console.log("dobeo ovo", props);
                 return {
                     ...props,
                     onChange: async file => {
-                        const withFileUploadPlugin = app.config.components.withFileUploadPlugin;
+                        const withFileUploadPlugin =
+                            props.config.withFileUpload && props.config.withFileUpload.plugin;
                         invariant(
                             withFileUploadPlugin,
                             `Plugin not defined for "withFileUpload component. 

@@ -5,4 +5,5 @@ export * from "./withRouter";
 
 export { withDataList } from "./withDataList";
 export { withFileUpload } from "./withFileUpload";
+export { withAppConfig } from "./withAppConfig";
 export type { WithDataListProps, SearchParams, WithDataListParams } from "./withDataList";
