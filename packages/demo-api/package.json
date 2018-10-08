@@ -17,7 +17,9 @@
     "babel-loader": "^8.0.0",
     "graphql": "^0.13.2",
     "graphql-iso-date": "^3.5.0",
-    "nodemon": "^1.18.3"
+    "nodemon": "^1.18.3",
+    "serverless-apigw-binary": "^0.4.4",
+    "serverless-apigwy-binary": "^0.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
