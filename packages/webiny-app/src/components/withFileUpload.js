@@ -23,7 +23,6 @@ export const withFileUpload = (options: WithFileUploadOptions = {}): Function =>
         return compose(
             withAppConfig(),
             withProps(props => {
-                console.log("dobeo ovo", props);
                 return {
                     ...props,
                     onChange: async file => {

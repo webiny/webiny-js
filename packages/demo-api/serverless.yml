@@ -40,11 +40,15 @@ functions:
     events: [ { http: 'ANY /graphql' }, { http: 'ANY /graphql/{proxy+}' } ]
   filesCreate:
     name: '${self:service}-${self:custom.stage}-files-create'
-    handler: ${self:custom.api.source}/handler.createFiles
+    handler: ${self:custom.api.source}/files.create
     events: [ { http: 'POST /files' } ]
+    environment:
+      PLUGIN: localStorage
   filesRead:
     name: '${self:service}-${self:custom.stage}-files-read'
-    handler: ${self:custom.api.source}/handler.readFiles
+    handler: ${self:custom.api.source}/files.read
+    environment:
+      PLUGIN: localStorage
     events:
       - http:
           path: files/{src}
