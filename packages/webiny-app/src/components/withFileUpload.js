@@ -33,27 +33,34 @@ export const withFileUpload = (options: WithFileUploadOptions = {}): Function =>
                         );
 
                         const { onChange } = props;
-                        onChange && await onChange(file);
+                        onChange && (await onChange(file));
 
                         if (options.multiple) {
-                            Array.isArray(file) &&
-                                file.forEach((current, index) => {
+                            if (Array.isArray(file)) {
+                                for (let index = 0; index < file.length; index++) {
+                                    let current = file[index];
                                     if (mustUpload(current)) {
-                                        withFileUploadPlugin.upload(current).then(async uploadedFile => {
-                                            file[index] = uploadedFile;
-                                            onChange && await onChange(file);
-                                        });
+                                        file[index] = await withFileUploadPlugin.upload(current);
+                                        onChange && (await onChange(file));
                                     }
-                                });
+                                }
+                            }
                             return;
                         }
+
+                        invariant(
+                            !Array.isArray(file),
+                            `Selected two or more files instead of one. Did you forget to set "multiple" option to true ("withFileUpload({multiple: true})")?`
+                        );
 
                         if (mustUpload(file)) {
                             // Send file to server and get its path.
                             try {
-                                withFileUploadPlugin.upload(file).then(async uploadedFile => {
-                                    onChange && await onChange(uploadedFile);
-                                });
+                                return withFileUploadPlugin
+                                    .upload(file)
+                                    .then(async uploadedFile => {
+                                        onChange && (await onChange(uploadedFile));
+                                    });
                             } catch (e) {
                                 console.warn(e);
                             }

@@ -16,28 +16,16 @@ import {
     ListActions
 } from "webiny-ui/List";
 
-import { DeleteIcon, CreateIcon } from "webiny-ui/List/DataList/icons";
+import { DeleteIcon } from "webiny-ui/List/DataList/icons";
 
 const t = i18n.namespace("Cms.CategoriesDataList");
 
 const CategoriesDataList = props => {
-    const { CategoriesDataList, router } = props;
+    const { CategoriesDataList, router, showSnackbar } = props;
 
     return (
         <DataList
             {...CategoriesDataList}
-            actions={
-                <React.Fragment>
-                    <CreateIcon
-                        onClick={() => {
-                            router.goToRoute({
-                                params: { id: null },
-                                merge: true
-                            });
-                        }}
-                    />
-                </React.Fragment>
-            }
             title={t`CMS Categories`}
             sorters={[
                 {
@@ -81,7 +69,7 @@ const CategoriesDataList = props => {
                                                         CategoriesDataList.delete(item.id, {
                                                             onSuccess: () => {
                                                                 CategoriesDataList.refresh();
-                                                                props.showSnackbar(
+                                                                showSnackbar(
                                                                     t`Category {name} deleted.`({
                                                                         name: item.name
                                                                     })

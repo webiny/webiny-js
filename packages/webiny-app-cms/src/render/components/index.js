@@ -1,0 +1,1 @@
+export { withTheme } from "./withTheme";

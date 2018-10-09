@@ -6,6 +6,8 @@ import { FormElementMessage } from "webiny-ui/FormElementMessage";
 import styled from "react-emotion";
 import classNames from "classnames";
 import Image from "./Image";
+import ImageEditorDialog from "./ImageEditorDialog";
+import convertToBase64 from "./convertToBase64";
 
 const ImageUploadWrapper = styled("div")({
     position: "relative",
@@ -40,9 +42,15 @@ type Props = FormComponentProps & {
     // Define a list of accepted image types.
     accept?: Array<string>,
 
-    // Define file's max allowed size (default is "2mb").
+    // Define file's max allowed size (default is "5mb").
     // Uses "bytes" (https://www.npmjs.com/package/bytes) library to convert string notation to actual number.
     maxSize: string,
+
+    // By default, the editor tool will be shown when an image is selected.
+    // Set to false if there is no need for editor to be shown. Otherwise, set true (default value) or alternatively
+    // an object containing all of the image editor related options (eg. "filter").
+    // Please check the docs of ImageEditor component for the list of all available options.
+    imageEditor?: boolean | Object,
 
     // Use these to customize error messages (eg. if i18n supported is needed).
     errorMessages: {
@@ -53,13 +61,22 @@ type Props = FormComponentProps & {
 };
 
 type State = {
-    error: ?FileError
+    loading: boolean,
+    error: ?FileError,
+    imageEditor: {
+        image: ?FileBrowserFile,
+        open: boolean
+    }
 };
 
-class SingleImageUpload extends React.Component<Props, State> {
+// Do not apply editing for following image types.
+const noImageEditingTypes = ["image/svg+xml", "image/gif"];
+
+export class SingleImageUpload extends React.Component<Props, State> {
     static defaultProps = {
-        accept: ["image/jpeg", "image/png", "image/gif"],
         maxSize: "5mb",
+        accept: ["image/jpeg", "image/png", "image/gif", "image/svg+xml"],
+        imageEditor: true,
         errorMessages: {
             maxSizeExceeded: "Max size exceeded.",
             unsupportedFileType: "Unsupported file type.",
@@ -68,13 +85,25 @@ class SingleImageUpload extends React.Component<Props, State> {
     };
 
     state = {
-        error: null
+        loading: false,
+        error: null,
+        imageEditor: {
+            open: false,
+            image: null
+        }
     };
 
-    handleFiles = async (files: Array<FileBrowserFile>) => {
-        this.setState({ error: null }, () => {
-            const { onChange } = this.props;
-            onChange && onChange(files[0]);
+    handleFiles = async (images: Array<FileBrowserFile>) => {
+        const { onChange, imageEditor } = this.props;
+        const image = { ...images[0] };
+        this.setState({ error: null }, async () => {
+            if (imageEditor && !noImageEditingTypes.includes(image.type)) {
+                this.setState({ imageEditor: { image, open: true } });
+            } else {
+                const file: File = (image.src: any);
+                image.src = await convertToBase64(file);
+                onChange && onChange(image);
+            }
         });
     };
 
@@ -95,6 +124,11 @@ class SingleImageUpload extends React.Component<Props, State> {
             onChange
         } = this.props;
 
+        let imageEditorImageSrc = "";
+        if (this.state.imageEditor.image) {
+            imageEditorImageSrc = (this.state.imageEditor.image.src: any);
+        }
+
         return (
             <ImageUploadWrapper className={classNames(className)}>
                 {label &&
@@ -104,9 +138,33 @@ class SingleImageUpload extends React.Component<Props, State> {
                         </div>
                     )}
 
-                <FileBrowser convertToBase64 accept={accept} maxSize={maxSize}>
+                <ImageEditorDialog
+                    open={this.state.imageEditor.open}
+                    src={imageEditorImageSrc}
+                    onClose={() => {
+                        this.setState(state => {
+                            state.imageEditor.open = false;
+                            return state;
+                        });
+                    }}
+                    onAccept={src => {
+                        // We wrapped everything into setTimeout - prevents dialog freeze when larger image is selected.
+                        setTimeout(() => {
+                            this.setState({ loading: true }, async () => {
+                                onChange &&
+                                    (await onChange({ ...this.state.imageEditor.image, src }));
+                                this.setState({
+                                    loading: false,
+                                    imageEditor: { image: null, open: false }
+                                });
+                            });
+                        });
+                    }}
+                />
+                <FileBrowser accept={accept} maxSize={maxSize}>
                     {({ browseFiles }) => (
                         <Image
+                            loading={this.state.loading}
                             value={value}
                             removeImage={onChange}
                             uploadImage={() => {
@@ -136,5 +194,3 @@ class SingleImageUpload extends React.Component<Props, State> {
         );
     }
 }
-
-export { SingleImageUpload };

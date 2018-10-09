@@ -1,31 +1,28 @@
 // @flow
 import React from "react";
-import { css } from "emotion";
 import { app } from "webiny-app";
-import classNames from "classnames";
+import { Avatar } from "webiny-ui/Avatar";
 
-const avatarMenu = css({
-    borderRadius: "50%",
-    display: "block",
-    width: 35,
-    height: 35,
-    "&.blank": {
-        backgroundColor: "lightgray"
+class UserAvatar extends React.Component<{}> {
+    componentDidMount() {
+        app.security.onIdentity(() => {
+            this.forceUpdate();
+        });
     }
-});
 
-const UserAvatar = () => {
-    const {
-        security: {
-            identity: { fullName, avatar }
+    render() {
+        const {
+            security: { identity }
+        } = app;
+
+        // When user logs out, identity becomes null.
+        if (!identity) {
+            return null;
         }
-    } = app;
 
-    if (avatar) {
-        return <img src={avatar.src} alt={fullName} className={avatarMenu} />;
+        const { fullName, avatar } = identity;
+
+        return <Avatar src={avatar && avatar.src} alt={fullName} fallbackText={fullName} />;
     }
-
-    return <div className={classNames(avatarMenu, "blank")} />;
-};
-
+}
 export default UserAvatar;

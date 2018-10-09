@@ -6,6 +6,8 @@ import { css } from "emotion";
 import classNames from "classnames";
 import { FormElementMessage } from "webiny-ui/FormElementMessage";
 import Image from "./Image";
+import ImageEditorDialog from "./ImageEditorDialog";
+import convertToBase64 from "./convertToBase64";
 
 const imagesStyle = css({
     ".disabled": {
@@ -29,6 +31,9 @@ const imagesStyle = css({
     }
 });
 
+// Do not apply editping for following image types.
+// const noImageEditorTypes = ["image/svg+xml", "image/gif"];
+
 type Props = FormComponentProps & {
     // Component label.
     label?: string,
@@ -45,9 +50,15 @@ type Props = FormComponentProps & {
     // Define a list of accepted image types.
     accept?: Array<string>,
 
-    // Define file's max allowed size (default is "2mb").
+    // Define file's max allowed size (default is "5mb").
     // Uses "bytes" (https://www.npmjs.com/package/bytes) library to convert string notation to actual number.
     maxSize: string,
+
+    // By default, the editor tool will be shown when an image is selected.
+    // Set to false if there is no need for editor to be shown. Otherwise, set true (default value) or alternatively
+    // an object containing all of the image editor related options (eg. "filter").
+    // Please check the docs of ImageEditor component for the list of all available options.
+    editor?: boolean | Object,
 
     // Use these to customize error messages (eg. if i18n supported is needed).
     errorMessages: {
@@ -57,21 +68,22 @@ type Props = FormComponentProps & {
     }
 };
 
-type ImageType = {
-    src: string | File | null,
-    name: string,
-    size: number,
-    type: string
-};
-
 type State = {
-    errors: ?Array<FileError>
+    errors: ?Array<FileError>,
+    selectedImages: Object,
+    loading: boolean,
+    imageEditor: {
+        image: ?FileBrowserFile,
+        open: boolean,
+        index: ?number
+    }
 };
 
 class MultiImageUpload extends React.Component<Props, State> {
     static defaultProps = {
-        accept: ["image/jpeg", "image/png", "image/gif"],
+        accept: ["image/jpeg", "image/png", "image/gif", "image/svg+xml"],
         maxSize: "5mb",
+        editor: false,
         errorMessages: {
             maxSizeExceeded: "Max size exceeded.",
             unsupportedFileType: "Unsupported file type.",
@@ -80,10 +92,52 @@ class MultiImageUpload extends React.Component<Props, State> {
     };
 
     state = {
-        errors: null
+        errors: null,
+        selectedImages: {},
+        loading: false,
+        imageEditor: {
+            open: false,
+            image: null,
+            index: null
+        }
     };
 
-    removeImage = (image: ImageType) => {
+    onChange = async (value: any) => {
+        const { onChange, validate } = this.props;
+        onChange && (await onChange(value));
+        validate && (await validate());
+    };
+
+    handleSelectedImages = async (images: Array<FileBrowserFile>, selectedIndex: number = 0) => {
+        this.setState({ errors: null, loading: true }, async () => {
+            const selectedImages = {};
+            for (let i = 0; i < images.length; i++) {
+                const image = images[i];
+                selectedImages[selectedIndex + i] = { ...image };
+            }
+
+            this.setState({ selectedImages }, async () => {
+                const newValue = Array.isArray(this.props.value) ? [...this.props.value] : [];
+
+                const convertedImages = [];
+                for (let i = 0; i < images.length; i++) {
+                    const image = images[i];
+                    const file: File = (image.src: any);
+                    convertedImages.push({ ...image, src: await convertToBase64(file) });
+                }
+
+                newValue.splice(selectedIndex, 0, ...convertedImages);
+                await this.onChange(newValue);
+                this.setState({ loading: false });
+            });
+        });
+    };
+
+    handleErrors = (errors: Array<FileError>) => {
+        this.setState({ errors });
+    };
+
+    removeImage = (image: FileBrowserFile) => {
         const { value, onChange } = this.props;
         if (!onChange) {
             return;
@@ -91,28 +145,9 @@ class MultiImageUpload extends React.Component<Props, State> {
 
         const images = Array.isArray(value) ? [...value] : [];
         images.splice(images.indexOf(image), 1);
-
         onChange(images);
     };
 
-    handleFiles = async (files: Array<FileBrowserFile>, append: boolean = false) => {
-        this.setState({ errors: null }, () => {
-            const { value, onChange } = this.props;
-            if (!onChange) {
-                return;
-            }
-
-            if (Array.isArray(value) && append) {
-                onChange([...value, ...files]);
-            } else {
-                onChange(files);
-            }
-        });
-    };
-
-    handleErrors = (errors: Array<FileError>) => {
-        this.setState({ errors });
-    };
     render() {
         const {
             value,
@@ -125,53 +160,116 @@ class MultiImageUpload extends React.Component<Props, State> {
             className
         } = this.props;
 
+        let imageEditorImageSrc = "";
+        if (this.state.imageEditor.image) {
+            imageEditorImageSrc = (this.state.imageEditor.image.src: any);
+        }
+
         return (
             <div className={classNames(imagesStyle, className)}>
-                {/* Ovaj container za label - isti kao i u drugim komponentama. */}
                 {label && (
                     <div className="mdc-floating-label mdc-floating-label--float-above">
                         {label}
                     </div>
                 )}
 
-                <FileBrowser accept={accept} maxSize={maxSize} multiple convertToBase64>
-                    {({ browseFiles }) => (
-                        <div className={classNames({ disabled })}>
-                            <ul className="images">
-                                {Array.isArray(value) &&
-                                    value.map((file, index) => (
-                                        // TODO: ovdje onClick nebi trebao direkt na <img> biti ofc (ikona nekakva?)
-                                        <li key={index}>
-                                            <Image
-                                                value={file}
-                                                removeImage={() => this.removeImage(file)}
-                                                uploadImage={() => {
-                                                    const append =
-                                                        Array.isArray(value) && value.length > 0;
-                                                    browseFiles({
-                                                        onSuccess: files =>
-                                                            this.handleFiles(files, append),
-                                                        onErrors: errors =>
-                                                            this.handleErrors(errors)
-                                                    });
-                                                }}
-                                            />
-                                        </li>
-                                    ))}
-                                <li>
-                                    <Image
-                                        uploadImage={() => {
-                                            const append = Array.isArray(value) && value.length > 0;
-                                            browseFiles({
-                                                onSuccess: files => this.handleFiles(files, append),
-                                                onErrors: errors => this.handleErrors(errors)
-                                            });
-                                        }}
-                                    />
-                                </li>
-                            </ul>
-                        </div>
-                    )}
+                <ImageEditorDialog
+                    open={this.state.imageEditor.open}
+                    src={imageEditorImageSrc}
+                    onClose={() => {
+                        this.setState(state => {
+                            state.imageEditor.open = false;
+                            return state;
+                        });
+                    }}
+                    onAccept={src => {
+                        // We wrapped everything into setTimeout - prevents dialog freeze when larger image is selected.
+                        setTimeout(() => {
+                            this.setState({ loading: true }, async () => {
+                                const newValue = Array.isArray(this.props.value)
+                                    ? [...this.props.value]
+                                    : [];
+
+                                const imageEditorImageIndex: number = (this.state.imageEditor
+                                    .index: any);
+                                newValue[imageEditorImageIndex].src = src;
+
+                                await this.onChange(newValue);
+                                this.setState({
+                                    loading: false,
+                                    imageEditor: { image: null, open: false, index: null }
+                                });
+                            });
+                        });
+                    }}
+                />
+
+                <FileBrowser accept={accept} maxSize={maxSize} multiple>
+                    {({ browseFiles }) => {
+                        const images = Array.isArray(value) ? [...value] : [];
+
+                        return (
+                            <div className={classNames({ disabled })}>
+                                <ul className="images">
+                                    {images.map((image, index) => {
+                                        return (
+                                            <li key={index}>
+                                                <Image
+                                                    loading={
+                                                        this.state.selectedImages[index] &&
+                                                        this.state.loading
+                                                    }
+                                                    value={image.file || image}
+                                                    removeImage={() =>
+                                                        this.removeImage(image.file || image)
+                                                    }
+                                                    editImage={
+                                                        this.state.selectedImages[index] &&
+                                                        (() => {
+                                                            this.setState({
+                                                                imageEditor: {
+                                                                    index,
+                                                                    open: true,
+                                                                    image: this.state
+                                                                        .selectedImages[index]
+                                                                }
+                                                            });
+                                                        })
+                                                    }
+                                                    uploadImage={() => {
+                                                        browseFiles({
+                                                            onSuccess: files =>
+                                                                this.handleSelectedImages(
+                                                                    files,
+                                                                    index + 1
+                                                                ),
+                                                            onErrors: errors =>
+                                                                this.handleErrors(errors)
+                                                        });
+                                                    }}
+                                                />
+                                            </li>
+                                        );
+                                    })}
+                                    <li>
+                                        <Image
+                                            disabled={this.state.loading}
+                                            uploadImage={() => {
+                                                browseFiles({
+                                                    onSuccess: files =>
+                                                        this.handleSelectedImages(
+                                                            files,
+                                                            Array.isArray(value) ? value.length : 0
+                                                        ),
+                                                    onErrors: errors => this.handleErrors(errors)
+                                                });
+                                            }}
+                                        />
+                                    </li>
+                                </ul>
+                            </div>
+                        );
+                    }}
                 </FileBrowser>
 
                 {validation.isValid === false && (

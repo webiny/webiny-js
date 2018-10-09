@@ -7,9 +7,12 @@ import {
     type WithDataListProps
 } from "webiny-app/components";
 import { i18n } from "webiny-app/i18n";
+import { app } from "webiny-app";
 import { compose } from "recompose";
 import { withSnackbar, type WithSnackbarProps } from "webiny-app-admin/components";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
+import { Tooltip } from "webiny-ui/Tooltip";
+
 import {
     DataList,
     ScrollList,
@@ -22,6 +25,7 @@ import {
 } from "webiny-ui/List";
 
 import { DeleteIcon } from "webiny-ui/List/DataList/icons";
+import { Avatar } from "webiny-ui/Avatar";
 
 const t = i18n.namespace("Security.UsersDataList");
 
@@ -29,6 +33,8 @@ const UsersDataList = (
     props: WithRouterProps & WithSnackbarProps & { UsersDataList: WithDataListProps }
 ) => {
     const { UsersDataList, router } = props;
+
+    const identity = app.security.identity;
 
     return (
         <DataList
@@ -58,11 +64,12 @@ const UsersDataList = (
                     {data.map(item => (
                         <ListItem key={item.id} selected={router.getQuery("id") === item.id}>
                             <ListItemGraphic>
-                                <img
-                                    alt={t`User's avatar.`}
-                                    width="32"
-                                    height="32"
+                                <Avatar
+                                    width={32}
+                                    height={32}
                                     src={item.avatar && item.avatar.src}
+                                    fallbackText={item.fullName}
+                                    alt={t`User's avatar.`}
                                 />
                             </ListItemGraphic>
                             <ListItemText
@@ -76,31 +83,45 @@ const UsersDataList = (
 
                             <ListItemMeta>
                                 <ListActions>
-                                    <ConfirmationDialog>
-                                        {({ showConfirmation }) => (
-                                            <DeleteIcon
-                                                onClick={() => {
-                                                    showConfirmation(() => {
-                                                        UsersDataList.delete(item.id, {
-                                                            onSuccess: () => {
-                                                                UsersDataList.refresh();
-                                                                props.showSnackbar(
-                                                                    t`user {name} deleted.`({
-                                                                        name: item.name
-                                                                    })
-                                                                );
-                                                                item.id === router.getQuery().id &&
-                                                                    router.goToRoute({
-                                                                        params: { id: null },
-                                                                        merge: true
-                                                                    });
-                                                            }
+                                    {identity && identity.id !== item.id ? (
+                                        <ConfirmationDialog>
+                                            {({ showConfirmation }) => (
+                                                <DeleteIcon
+                                                    onClick={() => {
+                                                        showConfirmation(() => {
+                                                            UsersDataList.delete(item.id, {
+                                                                onSuccess: () => {
+                                                                    UsersDataList.refresh();
+                                                                    props.showSnackbar(
+                                                                        t`user {name} deleted.`({
+                                                                            name: item.name
+                                                                        })
+                                                                    );
+                                                                    item.id ===
+                                                                        router.getQuery().id &&
+                                                                        router.goToRoute({
+                                                                            params: {
+                                                                                id: null
+                                                                            },
+                                                                            merge: true
+                                                                        });
+                                                                }
+                                                            });
                                                         });
-                                                    });
-                                                }}
-                                            />
-                                        )}
-                                    </ConfirmationDialog>
+                                                    }}
+                                                />
+                                            )}
+                                        </ConfirmationDialog>
+                                    ) : (
+                                        <Tooltip
+                                            placement={"bottom"}
+                                            content={
+                                                <span>{t`Cannot delete own user account.`}</span>
+                                            }
+                                        >
+                                            <DeleteIcon disabled />
+                                        </Tooltip>
+                                    )}
                                 </ListActions>
                             </ListItemMeta>
                         </ListItem>
@@ -117,7 +138,7 @@ export default compose(
     withDataList({
         name: "UsersDataList",
         type: "Security.Users",
-        fields: "id email firstName lastName avatar { src } createdOn",
+        fields: "id email firstName lastName fullName avatar { id src } createdOn",
         sort: { savedOn: -1 }
     })
 )(UsersDataList);

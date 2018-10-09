@@ -11,11 +11,10 @@ import {
 } from "webiny-storybook-utils/Story";
 import { withKnobs, boolean } from "@storybook/addon-knobs";
 import readme from "./README.md";
-
 import { Form } from "webiny-form";
 
 // $FlowFixMe
-import { SingleImageUpload, PropsType } from ".";
+import { SingleImageUpload, PropsType } from "./SingleImageUpload";
 
 const story = storiesOf("Components/ImageUpload", module);
 story.addDecorator(withKnobs);
@@ -37,17 +36,19 @@ story.add("Single Image Upload", () => {
             <StoryProps>{PropsType}</StoryProps>
             <StorySandbox>
                 <StorySandboxExample>
-                    <Form data={{ image }}>
-                        {({ Bind }) => (
-                            <Bind name="image">
-                                <SingleImageUpload
-                                    label="Your previously uploaded image:"
-                                    disabled={disabled}
-                                    description="This list will not be shown to other users."
-                                />
-                            </Bind>
-                        )}
-                    </Form>
+                    <div style={{ maxWidth: 200 }}>
+                        <Form data={{ image }}>
+                            {({ Bind }) => (
+                                <Bind name="image">
+                                    <SingleImageUpload
+                                        label="Your previously uploaded image:"
+                                        disabled={disabled}
+                                        description="Image will be publicly visible."
+                                    />
+                                </Bind>
+                            )}
+                        </Form>
+                    </div>
                 </StorySandboxExample>
                 <StorySandboxCode>
                     {`

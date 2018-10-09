@@ -4,6 +4,7 @@ import styled from "react-emotion";
 import classNames from "classnames";
 import { ReactComponent as AddImageIcon } from "./icons/round-add_photo_alternate-24px.svg";
 import { ReactComponent as RemoveImageIcon } from "./icons/round-close-24px.svg";
+import { ReactComponent as EditImageIcon } from "./icons/round-edit-24px.svg";
 import { Typography } from "webiny-ui/Typography";
 
 const AddImageIconWrapper = styled("div")({
@@ -55,6 +56,19 @@ const RemoveImage = styled("div")({
     }
 });
 
+const EditImage = styled("div")({
+    position: "absolute",
+    cursor: "pointer",
+    top: 10,
+    left: 10,
+    display: "none",
+    color: "white",
+    opacity: 0.5,
+    "&:hover": {
+        opacity: 0.75
+    }
+});
+
 const ImagePreviewWrapper = styled("div")({
     width: "100%",
     height: "100%",
@@ -91,22 +105,33 @@ const ImagePreviewWrapper = styled("div")({
         [RemoveImage]: {
             display: "block",
             zIndex: 2
+        },
+        [EditImage]: {
+            display: "block",
+            zIndex: 2
         }
     }
 });
 
 type Props = {
     uploadImage: Function,
-    value?: Object,
     removeImage?: Function,
-    disabled?: boolean
+    editImage?: Function,
+    value?: Object,
+    disabled?: boolean,
+    loading?: boolean,
+    placeholder: string
 };
 
 class Image extends React.Component<Props> {
-    render() {
-        const { value, disabled, uploadImage, removeImage } = this.props;
+    static defaultProps = {
+        placeholder: "Select image"
+    };
 
-        return (
+    render() {
+        const { value, disabled, uploadImage, removeImage, editImage } = this.props;
+
+        const image = (
             <div className={classNames({ disabled })} style={{ height: "100%" }}>
                 {value && value.src ? (
                     <ImagePreviewWrapper>
@@ -122,6 +147,12 @@ class Image extends React.Component<Props> {
                             <RemoveImageIcon />
                         </RemoveImage>
 
+                        {editImage && (
+                            <EditImage onClick={() => editImage && editImage(value)}>
+                                <EditImageIcon />
+                            </EditImage>
+                        )}
+
                         <AddImageWrapper
                             onClick={() => {
                                 uploadImage();
@@ -129,7 +160,7 @@ class Image extends React.Component<Props> {
                         >
                             <AddImageIconWrapper>
                                 <AddImageIcon />
-                                <Typography use={"caption"}>Select image</Typography>
+                                <Typography use={"caption"}>{this.props.placeholder}</Typography>
                             </AddImageIconWrapper>
                         </AddImageWrapper>
                     </ImagePreviewWrapper>
@@ -147,6 +178,11 @@ class Image extends React.Component<Props> {
                 )}
             </div>
         );
+
+        if (this.props.loading) {
+            return <div style={{ opacity: 0.75, pointerEvents: "none" }}>{image}</div>;
+        }
+        return image;
     }
 }
 
