@@ -1,18 +1,18 @@
 // @flow
-import type { FilesServicePlugin } from "./../types";
 import fs from "fs-extra";
 import sharp from "sharp";
-import randomString from "randomstring";
+import uniqueId from "uniqid";
 import decodeBase64Src from "./utils/decodeBase64Src";
 import mime from "mime-types";
+import sanitizeFilename from "sanitize-filename";
 
 /**
  * Saves files to local file system - suitable for local development needs.
  * @type {{create(): Promise<*>, read(*, *): Promise<*>}}
  */
 const localStoragePlugin: FilesServicePlugin = {
-    async create(data) {
-        if (!data) {
+    async create(src, options = {}) {
+        if (!src) {
             throw Error(`Cannot create image, "src" is missing.`);
         }
 
@@ -24,9 +24,21 @@ const localStoragePlugin: FilesServicePlugin = {
 
         fs.ensureDir(paths.folder);
 
-        const { buffer, type } = decodeBase64Src(data);
+        const { buffer, type } = decodeBase64Src(src);
         const extension: string = mime.extension(type);
-        const name = `${randomString.generate()}.${extension}`;
+
+        // Generate unique filename.
+        let name = options.name;
+        if (name) {
+            // Remove extension.
+            name =
+                name
+                    .split(".")
+                    .slice(0, -1)
+                    .join(".") + "_";
+        }
+        name += `${uniqueId()}.${extension}`;
+        name = sanitizeFilename(name).replace(/\s/g, "");
 
         await fs.writeFile(paths.folder + name, buffer);
 
