@@ -1,18 +1,15 @@
 // @flow
 import React from "react";
 import { ReactComponent as RedoIconSvg } from "./icons/redo.svg";
-import type { ImageEditorTool, ImageEditor } from "./types";
+import type { ImageEditorTool } from "./types";
 import { IconButton } from "webiny-ui/Button";
 import { Tooltip } from "webiny-ui/Tooltip";
 
-type Props = {
-    imageEditor: ImageEditor
-};
 type State = {
     canRedo: boolean
 };
 
-class RedoIcon extends React.Component<Props, State> {
+class RedoIcon extends React.Component<*, State> {
     state = {
         canRedo: false
     };

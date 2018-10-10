@@ -40,18 +40,18 @@ functions:
     events: [ { http: 'ANY /graphql' }, { http: 'ANY /graphql/{proxy+}' } ]
   filesCreate:
     name: '${self:service}-${self:custom.stage}-files-create'
-    handler: ${self:custom.api.source}/files.create
+    handler: ${self:custom.api.source}/files.createFile
     events: [ { http: 'POST /files' } ]
     environment:
       PLUGIN: localStorage
   filesRead:
     name: '${self:service}-${self:custom.stage}-files-read'
-    handler: ${self:custom.api.source}/files.read
+    handler: ${self:custom.api.source}/files.readFile
     environment:
       PLUGIN: localStorage
     events:
       - http:
-          path: files/{src}
+          path: files/{proxy+}
           method: get
           contentHandling: CONVERT_TO_BINARY
           request:

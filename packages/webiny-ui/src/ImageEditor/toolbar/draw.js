@@ -4,7 +4,7 @@ import type { ImageEditorTool, ImageEditor } from "./types";
 import { ReactComponent as DrawIcon } from "./icons/draw.svg";
 
 import ReactColor from "react-color";
-import { IconButton, ButtonDefault } from "webiny-ui/Button";
+import { IconButton } from "webiny-ui/Button";
 import { Slider } from "webiny-ui/Slider";
 import { Radio, RadioGroup } from "webiny-ui/Radio";
 import { Tooltip } from "webiny-ui/Tooltip";
@@ -27,8 +27,8 @@ const ColorPickerIcon = styled("div")({
     width: "36px",
     height: "18px",
     borderRadius: "2px",
-    margin: '15px 0',
-    boxSizing: 'border-box'
+    margin: "15px 0",
+    boxSizing: "border-box"
 });
 
 const ColorPickerPopover = styled("div")({
@@ -68,7 +68,7 @@ class SubMenu extends React.Component<Props, State> {
     }
 
     render() {
-        const { imageEditor, clearTool } = this.props;
+        const { imageEditor } = this.props;
 
         return (
             <React.Fragment>

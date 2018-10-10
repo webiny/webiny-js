@@ -1,5 +1,6 @@
 // @flow
 import type { FileBrowserFile } from "webiny-ui/FileBrowser";
+import type { WithFileUploadPlugin } from "./types";
 
 /**
  * A simple local storage plugin, used with "withFileUpload" HOC.
@@ -7,11 +8,13 @@ import type { FileBrowserFile } from "webiny-ui/FileBrowser";
  * Can be used for development purposes only.
  */
 
-type DefaultWithFileUploadPlugin = {
+type DefaultWithFileUploadPluginConfig = {
     uri: string
 };
 
-export default (config: DefaultWithFileUploadPlugin) => {
+const defaultWithFileUploadPlugin: (
+    config: DefaultWithFileUploadPluginConfig
+) => WithFileUploadPlugin = config => {
     return {
         upload: async (file: FileBrowserFile) => {
             return new Promise(resolve => {
@@ -26,3 +29,5 @@ export default (config: DefaultWithFileUploadPlugin) => {
         }
     };
 };
+
+export default defaultWithFileUploadPlugin;

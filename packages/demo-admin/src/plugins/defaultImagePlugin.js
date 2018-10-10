@@ -1,16 +1,24 @@
 // @flow
-import React from "react";
-import { Image } from "webiny-ui/Image";
+import React from "react"; // eslint-disable-line
+import { Image } from "webiny-ui/Image"; // eslint-disable-line
 import type { ImagePlugin } from "webiny-app/types";
 
-const defaultImagePlugin = {
+const convertTransformToQueryParams = (transform: Object): string => {
+    return Object.keys(transform)
+        .map(key => `${key}=${transform[key]}`)
+        .join("&");
+};
+
+const defaultImagePlugin: ImagePlugin = {
     name: "image-component-plugin-default",
     type: "image-component-plugin",
-    render: props => {
-        return <Image {...props} />;
-    },
-    getImageUrl() {
-        return "super url";
+    render(props) {
+        let { src, transform, ...rest } = props;
+        if (transform) {
+            src += "?" + convertTransformToQueryParams(transform);
+        }
+
+        return <Image {...rest} src={src} />;
     }
 };
 

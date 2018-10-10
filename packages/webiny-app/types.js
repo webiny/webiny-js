@@ -13,7 +13,7 @@ export type ActionOptions = {
     log?: boolean
 };
 
-export type StatePath = null | string | (action: Action) => string;
+export type StatePath = null | string | ((action: Action) => string);
 
 export type Reducer = Function;
 
@@ -35,8 +35,9 @@ export type MiddlewareParams = {
 export type MiddlewareFunction = MiddlewareParams => any;
 export type ActionCreator = (payload?: Object) => Action;
 
-// Security types
+export type { ImagePlugin, ImagePresetPlugin } from "webiny-app/components/Image";
 
+// Security types
 // TODO: decide what to do with security in general
 
 export type AuthenticationServiceConfig = {

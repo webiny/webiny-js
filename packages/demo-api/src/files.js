@@ -1,12 +1,13 @@
 // @flow
-import loadPlugin from "./files/loadPlugin";
+import create from "./files/create";
+import read from "./files/read";
 
-export async function create(event: Object) {
+export async function createFile(event: Object) {
     event.body = event.body ? JSON.parse(event.body) : {};
-    const plugin = loadPlugin();
 
     try {
-        const file = await plugin.create(event.body.src);
+        const { src, name } = event.body;
+        const file = await create(src, { name });
         return {
             statusCode: 200,
             headers: {
@@ -24,15 +25,12 @@ export async function create(event: Object) {
     }
 }
 
-export async function read(event: Object) {
+export async function readFile(event: Object) {
     event.body = event.body ? JSON.parse(event.body) : {};
-    const plugin = loadPlugin();
 
     try {
-        const { src, type } = await plugin.read(
-            event.pathParameters.src,
-            event.queryStringParameters
-        );
+        const { src, type } = await read(event.pathParameters.proxy, event.queryStringParameters);
+
         return {
             statusCode: 200,
             headers: {

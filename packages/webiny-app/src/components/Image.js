@@ -1,31 +1,36 @@
 // @flow
 import * as React from "react";
 import invariant from "invariant";
-import { getPlugins } from "webiny-app/plugins";
+import { getPlugin } from "webiny-app/plugins";
 import type { Plugin } from "webiny-app/types";
 
-export type ImageTransformation = Object;
-
-export type ImagePlugin = Plugin & {
-    render: ({ src: string }) => React.Node,
-    getImageUrl: () => string
-};
-
-export type ImagePresetPlugin = Plugin & {
-    type: "image-preset",
-    transformations: Array<ImageTransformation>
-};
-
-type Props = Object & {
+type ImageProps = Object & {
     src: string,
     plugin?: string,
     preset?: string,
-    transformations: Array<ImageTransformation>
+    transform?: Object
 };
 
-export default (props: Props) => {
-    const plugin = getPlugins(props.plugin || "default-image-plugin");
+export type ImagePlugin = Plugin & {
+    type: "image-component-plugin",
+    render: ImageProps => React.Node
+};
+
+export type ImagePresetPlugin = Plugin & {
+    type: "image-component-preset",
+    transform: Object
+};
+
+export const Image = (props: ImageProps) => {
+    const plugin: ?ImageProps = getPlugin(props.plugin || "image-component-plugin-default");
 
     invariant(plugin, "Image component plugin not defined.");
-    return plugin.render(props);
+
+    let transform = props.transform;
+    if (props.preset) {
+        const preset: ?ImagePresetPlugin = getPlugin(props.preset);
+        invariant(preset, `Preset "${props.preset}" not found.`);
+        transform = preset.transform;
+    }
+    return plugin.render({ ...props, ...{ transform } });
 };

@@ -1,9 +1,14 @@
 // @flow
-import React from "react";
+import * as React from "react";
 import { AppConfigContextProvider } from "./AppConfigContext";
 
-const AppConfig = ({ config, children }) => {
-    return <AppConfigContextProvider config={config}>{children}</AppConfigContextProvider>
+type Props = {
+    config: Object,
+    children: React.Element<any>
+};
+
+const AppConfig = ({ config, children }: Props) => {
+    return <AppConfigContextProvider config={config}>{children}</AppConfigContextProvider>;
 };
 
 export default AppConfig;

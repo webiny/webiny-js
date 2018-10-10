@@ -11,6 +11,8 @@ import { Theme as CmsTheme } from "webiny-app-cms/theme";
 import config from "./config";
 import myTheme from "demo-theme";
 import "./App.scss";
+import defaultImagePlugin from "./plugins/defaultImagePlugin";
+import { addPlugin } from "webiny-app/plugins";
 
 // CMS plugins
 
@@ -29,6 +31,15 @@ if (!app.initialized) {
         });
 
         next();
+    });
+
+    addPlugin(defaultImagePlugin);
+    addPlugin({
+        type: "image-component-transform-preset",
+        name: "image-component-preset-avatar",
+        transform: {
+            width: 48
+        }
     });
 }
 

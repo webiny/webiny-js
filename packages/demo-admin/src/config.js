@@ -9,7 +9,7 @@ import {
 } from "webiny-app/router";
 import userIdentity from "./userIdentity";
 
-// Plugins for "withFileUpload" HOC - used with file upload related components.
+// Plugins
 import defaultWithFileUploadPlugin from "webiny-app/components/withFileUpload/defaultWithFileUploadPlugin";
 
 export default () => {
@@ -60,7 +60,7 @@ export default () => {
         return {
             withFileUpload: {
                 plugin: defaultWithFileUploadPlugin({
-                    uri: "https://files.myweb.com"
+                    uri: "/files"
                 })
             }
         };
