@@ -9,9 +9,6 @@ import {
 } from "webiny-app/router";
 import userIdentity from "./userIdentity";
 
-// Plugins
-import defaultWithFileUploadPlugin from "webiny-app/components/withFileUpload/defaultWithFileUploadPlugin";
-
 export default () => {
     // TODO
     app.security.configure({
@@ -41,6 +38,17 @@ export default () => {
         ]
     });
 
+    const config: Object = {
+        components: {
+            Image: {
+                presets: {
+                    avatar: { width: 128 }
+                },
+                plugin: "image-component"
+            }
+        }
+    };
+
     // API configuration
     if (process.env.NODE_ENV === "production") {
         app.graphql.setConfig({
@@ -57,12 +65,8 @@ export default () => {
             }
         });
 
-        return {
-            withFileUpload: {
-                plugin: defaultWithFileUploadPlugin({
-                    uri: "/files"
-                })
-            }
+        config.components.withFileUpload = {
+            plugin: ["with-file-upload", { uri: "/files" }]
         };
     }
 
@@ -81,12 +85,10 @@ export default () => {
             }
         });
 
-        return {
-            withFileUpload: {
-                plugin: defaultWithFileUploadPlugin({
-                    uri: "http://localhost:9000/files"
-                })
-            }
+        config.components.withFileUpload = {
+            plugin: ["with-file-upload", { uri: "http://localhost:9000/files" }]
         };
     }
+
+    return config;
 };

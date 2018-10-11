@@ -35,7 +35,8 @@ export type MiddlewareParams = {
 export type MiddlewareFunction = MiddlewareParams => any;
 export type ActionCreator = (payload?: Object) => Action;
 
-export type { ImagePlugin, ImagePresetPlugin } from "webiny-app/components/Image";
+export type { WithFileUploadPlugin } from "webiny-app/components/withFileUpload";
+export type { ImagePlugin } from "webiny-app/components/Image";
 
 // Security types
 // TODO: decide what to do with security in general

@@ -9,9 +9,9 @@ const convertTransformToQueryParams = (transform: Object): string => {
         .join("&");
 };
 
-const defaultImagePlugin: ImagePlugin = {
-    name: "image-component-plugin-default",
-    type: "image-component-plugin",
+const imagePlugin: ImagePlugin = {
+    name: "image-component",
+    type: "image-component",
     render(props) {
         let { src, transform, ...rest } = props;
         if (transform) {
@@ -22,4 +22,4 @@ const defaultImagePlugin: ImagePlugin = {
     }
 };
 
-export default defaultImagePlugin;
+export default imagePlugin;
