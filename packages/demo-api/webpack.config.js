@@ -9,7 +9,7 @@ const config = {
     target: "node",
     // Generate sourcemaps for proper error messages
     devtool: "source-map",
-    externals: ["aws-sdk", "vertx"],
+    externals: ["aws-sdk", "vertx", 'sharp'],
     mode: slsw.lib.webpack.isLocal ? "development" : "production",
     optimization: {
         // We no not want to minimize our code.

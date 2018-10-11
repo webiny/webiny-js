@@ -1,18 +1,15 @@
 // @flow
 import React from "react";
 import { ReactComponent as UndoIconSvg } from "./icons/undo.svg";
-import type { ImageEditorTool, ImageEditor } from "./types";
+import type { ImageEditorTool } from "./types";
 import { IconButton } from "webiny-ui/Button";
 import { Tooltip } from "webiny-ui/Tooltip";
 
-type Props = {
-    imageEditor: ImageEditor
-};
 type State = {
     canUndo: boolean
 };
 
-class UndoIcon extends React.Component<Props, State> {
+class UndoIcon extends React.Component<*, State> {
     state = {
         canUndo: false
     };

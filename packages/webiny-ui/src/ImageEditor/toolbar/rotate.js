@@ -2,7 +2,7 @@
 import React from "react";
 import { ReactComponent as RotateRight } from "./icons/rotateRight.svg";
 import type { ImageEditorTool } from "./types";
-import { IconButton, ButtonDefault } from "webiny-ui/Button";
+import { IconButton } from "webiny-ui/Button";
 import { Slider } from "webiny-ui/Slider";
 import { Tooltip } from "webiny-ui/Tooltip";
 
@@ -12,10 +12,10 @@ class SubMenu extends React.Component<*, { rangeInput: 0 }> {
     };
 
     render() {
-        const { imageEditor, clearTool, resizeCanvas } = this.props;
+        const { imageEditor, resizeCanvas } = this.props;
         return (
             <React.Fragment>
-                <div style={{ width: '500px' }}>
+                <div style={{ width: "500px" }}>
                     <Slider
                         label={"Range Input"}
                         value={this.state.rangeInput}

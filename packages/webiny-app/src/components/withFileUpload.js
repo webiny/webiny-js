@@ -2,11 +2,27 @@
 import * as React from "react";
 import { compose, withProps } from "recompose";
 import type { FileBrowserFile } from "webiny-ui/FileBrowser";
-import { app } from "webiny-app";
+import { withAppConfig } from "webiny-app/components";
+import { getPlugin } from "webiny-app/plugins";
 import invariant from "invariant";
+import type { Plugin } from "webiny-app/types";
+import _ from "lodash";
 
 type WithFileUploadOptions = {
     multiple?: boolean
+};
+
+export type WithFileUploadPlugin = Plugin & {
+    type: "with-file-upload",
+    upload: (file: FileBrowserFile, options: Object) => Promise<any>
+};
+
+export type FileUploadSuccess = FileBrowserFile & {
+    // Nothing for now, probably won't be anything here.
+};
+
+export type FileUploadError = {
+    // TODO - still no unified error messaging on the API side.
 };
 
 const mustUpload = (file: FileBrowserFile) => {
@@ -21,15 +37,26 @@ const mustUpload = (file: FileBrowserFile) => {
 export const withFileUpload = (options: WithFileUploadOptions = {}): Function => {
     return (BaseComponent: typeof React.Component) => {
         return compose(
+            withAppConfig(),
             withProps(props => {
                 return {
                     ...props,
                     onChange: async file => {
-                        const withFileUploadPlugin = app.config.components.withFileUploadPlugin;
+                        const config = _.get(props.config, "components.withFileUpload");
+                        invariant(config, "withFileUpload component's configuration not found.");
+
+                        invariant(
+                            config.plugin || !Array.isArray(config.plugin),
+                            `"withFileUpload" component's plugin not set. 
+                            Please configure it properly via app config ("components.withFileUpload.plugin").`
+                        );
+
+                        const [plugin, params] = config.plugin;
+                        const withFileUploadPlugin = getPlugin(plugin);
+
                         invariant(
                             withFileUploadPlugin,
-                            `Plugin not defined for "withFileUpload component. 
-                            Make sure set the plugin in app's config ("app.config.components.withFileUploadPlugin").`
+                            `"withFileUpload" component's plugin (set to "${plugin}") not found.`
                         );
 
                         const { onChange } = props;
@@ -40,7 +67,10 @@ export const withFileUpload = (options: WithFileUploadOptions = {}): Function =>
                                 for (let index = 0; index < file.length; index++) {
                                     let current = file[index];
                                     if (mustUpload(current)) {
-                                        file[index] = await withFileUploadPlugin.upload(current);
+                                        file[index] = await withFileUploadPlugin.upload(
+                                            current,
+                                            params
+                                        );
                                         onChange && (await onChange(file));
                                     }
                                 }
@@ -57,7 +87,7 @@ export const withFileUpload = (options: WithFileUploadOptions = {}): Function =>
                             // Send file to server and get its path.
                             try {
                                 return withFileUploadPlugin
-                                    .upload(file)
+                                    .upload(file, params)
                                     .then(async uploadedFile => {
                                         onChange && (await onChange(uploadedFile));
                                     });

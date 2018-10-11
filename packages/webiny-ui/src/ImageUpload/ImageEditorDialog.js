@@ -2,15 +2,7 @@
 import * as React from "react";
 import { ImageEditor } from "webiny-ui/ImageEditor";
 
-import {
-    Dialog,
-    DialogAccept,
-    DialogCancel,
-    DialogFooter,
-    DialogHeader,
-    DialogHeaderTitle,
-    DialogBody
-} from "webiny-ui/Dialog";
+import { Dialog, DialogAccept, DialogCancel, DialogFooter, DialogBody } from "webiny-ui/Dialog";
 
 // Each time ImageEditor makes a change, we store it here, so we can pass it to the onAccept callback.
 let resultSrc = "";

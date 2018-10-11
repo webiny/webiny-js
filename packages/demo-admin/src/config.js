@@ -9,10 +9,6 @@ import {
 } from "webiny-app/router";
 import userIdentity from "./userIdentity";
 
-// Plugins for "withFileUpload" HOC - used with file upload related components.
-import localStoragePlugin from "webiny-app/components/withFileUpload/localStoragePlugin";
-import webinyCloudStoragePlugin from "webiny-app/components/withFileUpload/webinyCloudStoragePlugin";
-
 export default () => {
     // TODO
     app.security.configure({
@@ -42,6 +38,17 @@ export default () => {
         ]
     });
 
+    const config: Object = {
+        components: {
+            Image: {
+                presets: {
+                    avatar: { width: 128 }
+                },
+                plugin: "image-component"
+            }
+        }
+    };
+
     // API configuration
     if (process.env.NODE_ENV === "production") {
         app.graphql.setConfig({
@@ -58,10 +65,9 @@ export default () => {
             }
         });
 
-        // In production, we use Webiny's "s3Plugin" plugin.
-        app.config.components.withFileUploadPlugin = webinyCloudStoragePlugin({
-            siteToken: "abc123"
-        });
+        config.components.withFileUpload = {
+            plugin: ["with-file-upload", { uri: "/files" }]
+        };
     }
 
     if (process.env.NODE_ENV === "development") {
@@ -79,9 +85,10 @@ export default () => {
             }
         });
 
-        // In development, we use "localStoragePlugin" plugin.
-        app.config.components.withFileUploadPlugin = localStoragePlugin({
-            uri: "http://localhost:9000/files"
-        });
+        config.components.withFileUpload = {
+            plugin: ["with-file-upload", { uri: "http://localhost:9000/files" }]
+        };
     }
+
+    return config;
 };
