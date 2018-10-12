@@ -1,47 +1,34 @@
 import { hot } from "react-hot-loader";
 import React from "react";
-import { ApolloProvider } from "react-apollo";
-import { Provider as StateProvider } from "react-redux";
-import { app } from "webiny-app";
-import { router, Router } from "webiny-app/router";
+import { Webiny, Router } from "webiny-app";
 import { app as adminApp, Theme as AdminTheme } from "webiny-app-admin";
-import { app as cmsApp } from "webiny-app-cms/admin";
+//import { app as cmsApp } from "webiny-app-cms/admin";
 import { Theme as CmsTheme } from "webiny-app-cms/theme";
-import config from "./config";
 import myTheme from "demo-theme";
+import { Security } from "webiny-app/components";
+import Login from "webiny-app-admin/views/Login";
 import "./App.scss";
 
-// CMS plugins
+// Initialize apps
+adminApp();
+//cmsApp();
 
-if (!app.initialized) {
-    app.configure(config);
-    app.use(adminApp());
-    app.use(cmsApp());
-
-    app.use((params, next) => {
-        router.addRoute({
-            name: "Fallback",
-            path: "*",
-            render() {
-                return <span>Sorry, no route was matched!</span>;
-            }
-        });
-
-        next();
-    });
-}
-
-const App = ({ store }) => {
+const App = ({ config }) => {
     return (
-        <ApolloProvider client={app.graphql}>
-            <StateProvider store={store}>
+        <Webiny config={config}>
+            {({ router }) => (
                 <CmsTheme theme={myTheme}>
-                    <AdminTheme>
-                        <Router router={router} />
-                    </AdminTheme>
+                    <Security>
+                        {({ authenticated, notAuthenticated }) => (
+                            <React.Fragment>
+                                {authenticated(<Router router={router} />)}
+                                {notAuthenticated(<Login />)}
+                            </React.Fragment>
+                        )}
+                    </Security>
                 </CmsTheme>
-            </StateProvider>
-        </ApolloProvider>
+            )}
+        </Webiny>
     );
 };
 

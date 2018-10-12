@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import { app } from "webiny-app";
+import { withSecurity } from "webiny-app/components";
 import { graphqlQuery } from "webiny-app/actions";
 import { i18n } from "webiny-app/i18n";
 import { Form } from "webiny-form";
@@ -24,7 +24,7 @@ const t = i18n.namespace("Security.UsersForm");
 
 const UsersForm = props => (
     <Form
-        data={app.security.identity}
+        data={props.security.identity}
         onSubmit={data => {
             props.graphqlQuery({
                 query: gql`
@@ -41,7 +41,7 @@ const UsersForm = props => (
                 variables: { data },
                 onSuccess: () => {
                     props.showSnackbar(t`Account information update successfully.`);
-                    app.security.refresh();
+                    props.security.refresh();
                 }
             });
         }}
@@ -106,6 +106,7 @@ const UsersForm = props => (
 
 export default compose(
     withSnackbar(),
+    withSecurity(),
     connect(
         null,
         { graphqlQuery }

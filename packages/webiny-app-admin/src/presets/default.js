@@ -10,12 +10,12 @@ import topProgressBar from "webiny-app-admin/plugins/TopProgressBar";
 import Menu from "webiny-app-admin/plugins/Menu";
 import Logo from "webiny-app-admin/plugins/Logo";
 import UserMenu from "webiny-app-admin/plugins/UserMenu";
-import SearchBar from "webiny-app-admin/plugins/SearchBar";
+//import SearchBar from "webiny-app-admin/plugins/SearchBar";
 
 // User menu plugins
 import UserInfo from "webiny-app-admin/plugins/UserMenu/plugins/UserInfo";
 import UserImage from "webiny-app-admin/plugins/UserMenu/plugins/UserImage";
-import DarkMode from "webiny-app-admin/plugins/UserMenu/plugins/DarkMode";
+//import DarkMode from "webiny-app-admin/plugins/UserMenu/plugins/DarkMode";
 import Help from "webiny-app-admin/plugins/UserMenu/plugins/Help";
 import SendFeedback from "webiny-app-admin/plugins/UserMenu/plugins/Feedback";
 import SignOut from "webiny-app-admin/plugins/UserMenu/plugins/SignOut";
@@ -33,12 +33,12 @@ export default [
     // Header plugins
     Menu,
     Logo,
-    UserMenu,
-    SearchBar,
+    //UserMenu, TODO
+    //SearchBar, TODO
     // UserMenu plugins
     UserImage,
     UserInfo,
-    DarkMode,
+    // DarkMode,TODO
     Help,
     SendFeedback,
     createDivider(),

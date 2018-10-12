@@ -1,9 +1,7 @@
 // @flow
 import * as React from "react";
-import { dispatch } from "webiny-app/redux";
-
-import { compose, withProps } from "recompose";
-import { showSnackbar } from "webiny-app-admin/actions";
+import { withUi } from "webiny-app/components";
+import { compose, withHandlers } from "recompose";
 
 export type WithSnackbarProps = {
     showSnackbar: (message: string, options: ?Object) => void
@@ -12,10 +10,13 @@ export type WithSnackbarProps = {
 export const withSnackbar = () => {
     return (BaseComponent: React.ComponentType<*>) => {
         return compose(
-            withProps(props => {
-                return Object.assign({}, props, {
-                    showSnackbar: (message, options) => dispatch(showSnackbar({ message, options }))
-                });
+            withUi(),
+            withHandlers({
+                showSnackbar: props => (message, options) => {
+                    props.ui.setState(ui => {
+                        return { ...ui, snackbar: { message, options } };
+                    });
+                }
             })
         )(BaseComponent);
     };

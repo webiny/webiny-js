@@ -1,26 +1,29 @@
 // @flow
+import MySQLTable from "./tables/mysqlTable";
+import type { MySQLDriver } from "webiny-sql-table-mysql";
 import { Sync, ConsoleLog } from "webiny-sql-table-sync";
 import {
     ApiTokenTable,
-    FileTable,
-    Groups2Entities,
-    Policies2Entities,
     GroupTable,
-    PolicyTable,
+    Groups2EntitiesTable,
+    Roles2EntitiesTable,
+    RoleTable,
     SettingsTable,
     UserTable
 } from "./tables";
 
-export default async () => {
+export default async (config: Object) => {
+    const driver: MySQLDriver = (MySQLTable.getDriver(): any);
+    driver.setConnection(config.entity.driver.getConnection().getInstance());
+
     const tables = [
+        UserTable,
         ApiTokenTable,
-        FileTable,
-        Groups2Entities,
-        Policies2Entities,
         GroupTable,
-        PolicyTable,
+        RoleTable,
         SettingsTable,
-        UserTable
+        Groups2EntitiesTable,
+        Roles2EntitiesTable,
     ];
 
     const sync = new Sync({

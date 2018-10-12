@@ -1,17 +1,74 @@
-// @flow
-import type { Api } from "webiny-api";
+import { ApolloServer } from "apollo-server-lambda";
+import { applyMiddleware } from "graphql-middleware";
+import { prepareSchema, createGraphqlRunner } from "../graphql/schema";
+import setup from "./setup";
+import authenticate from "./authenticate";
 
-export default (api: Api) => {
-    return async (event: any) => {
-        const handle = await api.prepare();
-        const { output, statusCode } = await handle({ event });
+const setupHandler = async (config: Object) => {
+    await setup(config);
+    let { schema, context } = prepareSchema({ ...config });
 
-        return {
-            statusCode: statusCode || 200,
-            headers: {
-                "Access-Control-Allow-Origin": "*"
-            },
-            body: JSON.stringify(output, null, 2)
-        };
+    schema = config.middleware ? applyMiddleware(schema, ...config.middleware) : schema;
+
+    const apollo = new ApolloServer({
+        schema,
+        cors: {
+            origin: "*",
+            methods: "GET,HEAD,POST"
+        },
+        context: ({ event, context: { token, user } }) => {
+            let ctx = {
+                event,
+                config,
+                user,
+                token
+            };
+
+            ctx = { ...ctx, ...context(ctx) };
+
+            // Add `runQuery` function to be able to easily run queries against schemas from within a resolver
+            ctx.graphql = createGraphqlRunner(schema, ctx);
+            return ctx;
+        }
+    });
+
+    return apollo.createHandler();
+};
+
+function getErrorResponse(error: Error) {
+    return {
+        body: JSON.stringify({
+            errors: [{ code: error.code, message: error.message }]
+        }),
+        statusCode: 200,
+        headers: { "Content-Type": "application/json" }
+    };
+}
+
+export const createHandler = (config = {}) => {
+    let handler = null;
+    return async (event, context) => {
+        if (!handler) {
+            handler = await setupHandler(config);
+        }
+
+        return new Promise(async (resolve, reject) => {
+            try {
+                await authenticate(config, event, context);
+            } catch (error) {
+                return resolve(getErrorResponse(error));
+            }
+
+            handler(event, context, (error, data) => {
+                if (error) {
+                    return reject(error);
+                }
+
+                if (process.env.NODE_ENV === "development") {
+                    config.database.connection.end();
+                }
+                resolve(data);
+            });
+        });
     };
 };

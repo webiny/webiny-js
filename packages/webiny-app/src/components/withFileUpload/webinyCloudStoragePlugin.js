@@ -1,6 +1,4 @@
 // @flow
-import { dispatch } from "webiny-app/redux";
-import { typeSave } from "webiny-app/actions";
 import type { FileBrowserFile } from "webiny-ui/FileBrowser";
 
 /**

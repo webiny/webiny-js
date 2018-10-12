@@ -1,14 +1,12 @@
 //@flow
 import React from "react";
-import { connect } from "react-redux";
-import { logout } from "webiny-app/actions";
 import { ReactComponent as SignOutIcon } from "webiny-app-admin/assets/icons/round-lock_open-24px.svg";
 import { ListItem, ListItemGraphic } from "webiny-ui/List";
 import { Icon } from "webiny-ui/Icon";
 
-const SignOut = ({ logout }) => {
+const SignOut = (props) => {
     return (
-        <ListItem onClick={logout}>
+        <ListItem onClick={props.logout}>
             <ListItemGraphic>
                 <Icon icon={<SignOutIcon />} />
             </ListItemGraphic>
@@ -17,7 +15,10 @@ const SignOut = ({ logout }) => {
     );
 };
 
-export default connect(
+export default SignOut;
+// TODO: withSecurity
+
+/*export default connect(
     null,
-    { logout }
-)(SignOut);
+    { /!*logout*!/ }
+)(SignOut);*/

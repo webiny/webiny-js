@@ -1,11 +1,12 @@
 //@flow
 import React from "react";
 import { css } from "emotion";
-import { app } from "webiny-app";
+import { withSecurity } from "webiny-app/components";
 import { ListItem, ListItemGraphic } from "webiny-ui/List";
 import { Typography } from "webiny-ui/Typography";
 import { Link } from "webiny-app/router";
 import { Avatar } from "webiny-ui/Avatar";
+import type { WithSecurityProps } from "webiny-app/components";
 
 const avatarImage = css({
     height: "40px !important",
@@ -44,24 +45,26 @@ const linkStyles = css({
     }
 });
 
-class UserInfo extends React.Component<{}> {
+class UserInfo extends React.Component<WithSecurityProps> {
     componentDidMount() {
-        app.security.onIdentity(() => {
+        this.props.security.onIdentity(() => {
             this.forceUpdate();
         });
     }
 
     render() {
-        const {
-            security: { identity }
-        } = app;
+        const { security } = this.props;
 
-        // When user logs out, identity becomes null.
-        if (!identity) {
+        if (!security) {
             return null;
         }
 
-        const { email, fullName, avatar } = identity;
+        // When user logs out, identity becomes null.
+        if (!security.identity) {
+            return null;
+        }
+
+        const { email, fullName, avatar } = security.identity;
 
         return (
             <Link route={"Account"} className={linkStyles}>
@@ -81,4 +84,4 @@ class UserInfo extends React.Component<{}> {
     }
 }
 
-export default UserInfo;
+export default withSecurity()(UserInfo);

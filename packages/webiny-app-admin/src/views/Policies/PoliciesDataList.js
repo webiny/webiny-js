@@ -1,5 +1,6 @@
 // @flow
 import * as React from "react";
+import { get } from "dot-prop-immutable";
 import {
     withDataList,
     withRouter,
@@ -25,6 +26,7 @@ import {
 import { DeleteIcon } from "webiny-ui/List/DataList/icons";
 import { Checkbox } from "webiny-ui/Checkbox";
 import { ExportIcon, ImportIcon } from "./PoliciesDataList/icons";
+import { loadPolicies } from "./graphql";
 
 const t = i18n.namespace("Security.PoliciesDataList");
 
@@ -32,10 +34,14 @@ const PoliciesDataList = (
     props: WithRouterProps & WithSnackbarProps & { PoliciesDataList: WithDataListProps }
 ) => {
     const { PoliciesDataList, router } = props;
+    const data = get(PoliciesDataList, "data.Security.Policies.list.data") || [];
+    const meta = get(PoliciesDataList, "data.Security.Policies.list.meta") || {};
 
     return (
         <DataList
             {...PoliciesDataList}
+            data={data}
+            meta={meta}
             actions={
                 <React.Fragment>
                     <Tooltip content={t`Import policies.`}>
@@ -151,8 +157,7 @@ export default compose(
     withRouter(),
     withDataList({
         name: "PoliciesDataList",
-        type: "Security.Policies",
-        fields: "id name description system createdOn",
-        sort: { savedOn: -1 }
+        query: loadPolicies,
+        variables: { sort: { savedOn: -1 } }
     })
 )(PoliciesDataList);

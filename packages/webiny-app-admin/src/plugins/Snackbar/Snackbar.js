@@ -1,19 +1,15 @@
 // @flow
 import React from "react";
-import { connect } from "react-redux";
-import { compose } from "recompose";
+import { compose, withProps, withHandlers } from "recompose";
 import { Snackbar } from "webiny-ui/Snackbar";
 import _ from "lodash";
-import { hideSnackbar } from "webiny-app-admin/actions";
+import { withUi } from "webiny-app/components";
 
-const SnackbarMain = props => {
-    const message = _.get(props, "snackbar.message");
-    const action = _.get(props, "snackbar.options.action", {});
-
+const SnackbarMain = ({ message, action, hideSnackbar }) => {
     return (
         <Snackbar
             show={!!message}
-            onHide={props.hideSnackbar}
+            onHide={hideSnackbar}
             message={message}
             actionText={action.label}
             actionHandler={action.onClick}
@@ -22,10 +18,14 @@ const SnackbarMain = props => {
 };
 
 export default compose(
-    connect(
-        state => ({
-            snackbar: _.get(state, "ui.snackbar")
-        }),
-        { hideSnackbar }
-    )
+    withUi(),
+    withProps(props => ({
+        message: _.get(props.ui, "snackbar.message"),
+        action: _.get(props.ui, "snackbar.options.action", {})
+    })),
+    withHandlers({
+        hideSnackbar: props => () => {
+            props.ui.setState(ui => ({ ...ui, snackbar: null }));
+        }
+    })
 )(SnackbarMain);

@@ -1,6 +1,7 @@
 // @flow
 import * as React from "react";
 import { compose } from "recompose";
+import { get } from "dot-prop-immutable";
 import { withDataList, withRouter } from "webiny-app/components";
 import { i18n } from "webiny-app/i18n";
 import {
@@ -11,14 +12,21 @@ import {
     ListItemTextSecondary
 } from "webiny-ui/List";
 
+import { loadPages } from "./graphql/pages";
+
 const t = i18n.namespace("Cms.PagesDataList");
 
 const PagesDataList = props => {
     const { PagesDataList, router } = props;
 
+    const data = get(PagesDataList, "data.Cms.listPages.data") || [];
+    const meta = get(PagesDataList, "data.Cms.listPages.meta") || {};
+
     return (
         <DataList
             {...PagesDataList}
+            data={data}
+            meta={meta}
             title={t`CMS Pages`}
             sorters={[
                 {
@@ -39,7 +47,7 @@ const PagesDataList = props => {
                 }
             ]}
         >
-            {({ data }) => (
+            {({ data = [] }) => (
                 <List>
                     {data.map(page => (
                         <ListItem key={page.id}>
@@ -68,8 +76,9 @@ export default compose(
     withRouter(),
     withDataList({
         name: "PagesDataList",
-        type: "Cms.Pages",
-        fields: "id activeRevision { id title slug }",
-        sort: { savedOn: -1 }
+        query: loadPages,
+        variables: {
+            sort: { savedOn: -1 }
+        }
     })
 )(PagesDataList);

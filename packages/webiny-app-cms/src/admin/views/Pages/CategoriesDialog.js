@@ -1,6 +1,8 @@
 import React from "react";
 import { compose } from "recompose";
 import { css } from "emotion";
+import gql from "graphql-tag";
+import { Query } from "react-apollo";
 import { Dialog, DialogHeader, DialogHeaderTitle, DialogBody } from "webiny-ui/Dialog";
 import {
     List,
@@ -9,7 +11,6 @@ import {
     ListItemTextPrimary,
     ListItemTextSecondary
 } from "webiny-ui/List";
-import { withDataList } from "webiny-app/components";
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {
@@ -18,9 +19,22 @@ const narrowDialog = css({
     }
 });
 
+const loadCategories = gql`
+    query ListCategories($sort: JSON) {
+        Cms {
+            listCategories(sort: $sort) {
+                data {
+                    id
+                    name
+                    url
+                }
+            }
+        }
+    }
+`;
+
 class CategoriesDialog extends React.Component {
     render() {
-        const { CategoriesDataList } = this.props;
         return (
             <Dialog open={this.props.open} onClose={this.props.onClose} className={narrowDialog}>
                 <DialogHeader>
@@ -28,14 +42,33 @@ class CategoriesDialog extends React.Component {
                 </DialogHeader>
                 <DialogBody>
                     <List twoLine>
-                        {CategoriesDataList.data.map(item => (
-                            <ListItem key={item.id} onClick={() => this.props.onSelect(item)}>
-                                <ListItemText>
-                                    <ListItemTextPrimary>{item.name}</ListItemTextPrimary>
-                                    <ListItemTextSecondary>{item.url}</ListItemTextSecondary>
-                                </ListItemText>
-                            </ListItem>
-                        ))}
+                        <Query query={loadCategories} variables={{ sort: { name: 1 } }}>
+                            {({ data, loading }) => {
+                                if (loading) {
+                                    return "Loading categories...";
+                                }
+
+                                return (
+                                    <React.Fragment>
+                                        {data.Cms.listCategories.data.map(item => (
+                                            <ListItem
+                                                key={item.id}
+                                                onClick={() => this.props.onSelect(item)}
+                                            >
+                                                <ListItemText>
+                                                    <ListItemTextPrimary>
+                                                        {item.name}
+                                                    </ListItemTextPrimary>
+                                                    <ListItemTextSecondary>
+                                                        {item.url}
+                                                    </ListItemTextSecondary>
+                                                </ListItemText>
+                                            </ListItem>
+                                        ))}
+                                    </React.Fragment>
+                                );
+                            }}
+                        </Query>
                     </List>
                 </DialogBody>
             </Dialog>
@@ -43,9 +76,4 @@ class CategoriesDialog extends React.Component {
     }
 }
 
-export default withDataList({
-    name: "CategoriesDataList",
-    type: "Cms.Categories",
-    fields: "id name url",
-    sort: { name: 1 }
-})(CategoriesDialog);
+export default CategoriesDialog;

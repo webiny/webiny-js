@@ -1,18 +1,28 @@
 // @flow
-import {
-    admin,
-    policySecurityFullAccess,
-    policySuperAdmin,
-    groupDefault,
-    policySecurityUserAuthentication,
-    policyFilesOwnersAccess
-} from "./entities";
+import setupEntities from "../dataSource/setupEntities";
 
-export default async () => {
-    await groupDefault();
-    await policySecurityFullAccess();
-    await policySuperAdmin();
-    await policySecurityUserAuthentication();
-    await policyFilesOwnersAccess();
-    await admin();
+export default async (config: Object) => {
+    const { User, Role } = setupEntities({ config });
+    const user = new User();
+
+    const superAdminRole = new Role();
+    superAdminRole.populate({
+        name: "Super Admin",
+        slug: "super-admin",
+        description:
+            "This role gives super admin privileges. Be careful when assigning this role to users!",
+        scopes: ["superadmin"]
+    });
+
+    await superAdminRole.save();
+
+    user.populate({
+        firstName: "John",
+        lastName: "Doe",
+        password: "12345678",
+        email: "admin@webiny.com",
+        roles: [superAdminRole]
+    });
+
+    await user.save();
 };

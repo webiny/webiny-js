@@ -2,8 +2,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { compose, withHandlers } from "recompose";
-//import { graphql } from "react-apollo";
-import { app } from "webiny-app";
+import { graphql } from "react-apollo";
 import { CompactView, LeftPanel, RightPanel } from "webiny-app-admin/components/Views/CompactView";
 import FloatingActionButton from "webiny-app-admin/components/FloatingActionButton";
 import PagesDataList from "./PagesDataList";
@@ -13,7 +12,7 @@ import CategoriesDialog from "./CategoriesDialog";
 import { createPage } from "./graphql/pages";
 
 type Props = {
-    createPage: (category: string) => Promise<Object>
+    createPage: ({ category: string, title: string }) => Promise<Object>
 };
 
 type State = {
@@ -27,7 +26,7 @@ class Pages extends React.Component<Props, State> {
 
     onSelect = category => {
         this.closeDialog();
-        this.props.createPage(category.id);
+        this.props.createPage({ category: category.id, title: "Untitled" });
     };
 
     closeDialog = () => {
@@ -58,21 +57,16 @@ class Pages extends React.Component<Props, State> {
 
 export default compose(
     withRouter(),
-    // graphql(createPage, { name: "createPage" }), TODO: use this once mutations are in place
+    graphql(createPage, { name: "createPage" }),
     withHandlers({
-        createPage(props) {
-            return category => {
-                return app.graphql
-                    .query({ query: createPage, variables: { category, title: "Untitled" } })
-                    .then(({ data }: Object) => {
-                        const page = data.Cms.Pages.create;
-                        props.router.goToRoute({
-                            name: "Cms.Editor",
-                            params: { revision: page.activeRevision.id, page: page.id }
-                        });
+        createPage: ({ createPage }: { createPage: Function }): Function => {
+            return (category: string, title: string): Promise<any> => {
+                return createPage({ variables: { category, title } })
+                    .then((data: string) => {
+                        console.log(data, "Return value");
                     })
-                    .catch(e => {
-                        console.error(e);
+                    .catch((e: Object) => {
+                        console.error(e, "Error");
                     });
             };
         }

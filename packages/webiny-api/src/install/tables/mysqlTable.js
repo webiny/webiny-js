@@ -1,10 +1,4 @@
 // @flow
-import { MySQLTable as BaseMySQLTable, api } from "../..";
-import type { MySQLDriver } from "webiny-sql-table-mysql";
+import { MySQLTable as BaseMySQLTable } from "../..";
 
-class MySQLTable extends BaseMySQLTable {}
-
-const driver: MySQLDriver = (MySQLTable.getDriver(): any);
-driver.setConnection(api.config.entity.driver.getConnection().getInstance());
-
-export default MySQLTable;
+export default class MySQLTable extends BaseMySQLTable {}

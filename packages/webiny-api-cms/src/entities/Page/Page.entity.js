@@ -1,5 +1,5 @@
 // @flow
-import { Entity } from "webiny-api/entities";
+import { Entity } from "webiny-entity";
 import Category from "../Category/Category.entity";
 import Revision from "../Revision/Revision.entity";
 
@@ -15,7 +15,8 @@ class Page extends Entity {
     constructor() {
         super();
 
-        this.attr("title").char()
+        this.attr("title")
+            .char()
             .setValidators("required");
 
         this.attr("slug").char();

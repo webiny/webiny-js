@@ -5,23 +5,16 @@ import { List, ListItem, ListItemGraphic, ListItemMeta } from "webiny-ui/List";
 import { IconButton } from "webiny-ui/Button";
 import { Icon } from "webiny-ui/Icon";
 import { Link } from "webiny-app/router";
-import { connect } from "react-redux";
+import { compose, withProps, withHandlers } from "recompose";
 import _ from "lodash";
 import styled from "react-emotion";
 import { css } from "emotion";
 import { getPlugin, getPlugins } from "webiny-app/plugins";
+import { withUi } from "webiny-app/components";
 import { Typography } from "webiny-ui/Typography";
 import { Transition } from "react-transition-group";
 import Menu from "./Menu";
-
-import {
-    hideMenu,
-    selectAppsMenu,
-    expandAppsMenuSection,
-    collapseAppsMenuSection,
-    initSections
-} from "../menu.actions";
-
+import handlers from "./handlers";
 import utils from "./utils";
 
 import { ReactComponent as MenuIcon } from "webiny-app-admin/assets/icons/baseline-menu-24px.svg";
@@ -183,7 +176,7 @@ class Navigation extends React.Component<Props> {
     renderer = menu => {
         const props = _.clone(menu.props);
         const { appsMenu, hideMenu, showSection, hideSection } = this.props;
-
+        
         if (!utils.canAccess(/*props*/)) {
             return null;
         }
@@ -260,9 +253,7 @@ class Navigation extends React.Component<Props> {
         linkProps.children = (
             <ListItem
                 key={props.id}
-                onClick={() =>
-                    isExpanded ? hideSection({ id: props.id }) : showSection({ id: props.id })
-                }
+                onClick={() => (isExpanded ? hideSection(props.id) : showSection(props.id))}
             >
                 {level === 1 && (
                     <React.Fragment>
@@ -360,10 +351,10 @@ class Navigation extends React.Component<Props> {
         const { appsMenu, hideMenu } = this.props;
 
         return (
-            <Drawer modal={true} open={appsMenu.show} onClose={() => hideMenu()}>
+            <Drawer modal={true} open={appsMenu.show} onClose={hideMenu}>
                 <DrawerHeader className={navHeader}>
                     <MenuHeader>
-                        <IconButton icon={<MenuIcon />} onClick={() => hideMenu()} />
+                        <IconButton icon={<MenuIcon />} onClick={hideMenu} />
                         {this.renderLogo()}
                     </MenuHeader>
                 </DrawerHeader>
@@ -440,12 +431,10 @@ class Navigation extends React.Component<Props> {
     }
 }
 
-export default connect(
-    state => ({ appsMenu: selectAppsMenu(state) }),
-    {
-        hideMenu,
-        initSections,
-        showSection: expandAppsMenuSection,
-        hideSection: collapseAppsMenuSection
-    }
+export default compose(
+    withUi(),
+    withProps(({ ui }) => ({
+        appsMenu: ui.appsMenu || []
+    })),
+    withHandlers(handlers)
 )(Navigation);

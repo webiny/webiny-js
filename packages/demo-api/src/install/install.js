@@ -1,12 +1,18 @@
 // @flow
 import config from "./../configs";
-import { api } from "webiny-api";
-import { app as cmsApp } from "webiny-api-cms";
-import myApp from "./../myApp";
+import coreInstall from "webiny-api/install";
+//import cmsInstall from "webiny-api-cms/install";
 
-module.exports = () => {
-    api.configure(config())
-        .use(myApp())
-        .use(cmsApp())
-        .install();
+const installers = [coreInstall];
+
+export default async () => {
+    try {
+        for (let i = 0; i < installers.length; i++) {
+            const installer = installers[i];
+            await installer(config);
+        }
+    } catch (e) {
+        console.log(e);
+    }
+    process.exit();
 };

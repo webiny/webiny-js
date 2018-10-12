@@ -6,9 +6,9 @@ import { withTopProgressBar } from "webiny-ui/TopProgressBar/hoc";
 const TopProgressBar = () => null;
 
 export default compose(
-    connect(state => ({
+    /*connect(state => ({
         activeOperationsCount: state.graphql ? state.graphql.activeOperationsCount : 0
-    })),
+    })),*/
     withTopProgressBar(),
     lifecycle({
         componentDidMount() {

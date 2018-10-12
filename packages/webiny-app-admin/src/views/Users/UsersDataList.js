@@ -4,10 +4,11 @@ import {
     withDataList,
     withRouter,
     type WithRouterProps,
-    type WithDataListProps
+    type WithDataListProps,
+    type WithSecurityProps
 } from "webiny-app/components";
 import { i18n } from "webiny-app/i18n";
-import { app } from "webiny-app";
+import { withSecurity } from "webiny-app/components";
 import { compose } from "recompose";
 import { withSnackbar, type WithSnackbarProps } from "webiny-app-admin/components";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
@@ -30,11 +31,9 @@ import { Avatar } from "webiny-ui/Avatar";
 const t = i18n.namespace("Security.UsersDataList");
 
 const UsersDataList = (
-    props: WithRouterProps & WithSnackbarProps & { UsersDataList: WithDataListProps }
+    props: WithRouterProps & WithSnackbarProps & WithSecurityProps &{ UsersDataList: WithDataListProps }
 ) => {
-    const { UsersDataList, router } = props;
-
-    const identity = app.security.identity;
+    const { UsersDataList, router, security: { identity} } = props;
 
     return (
         <DataList
@@ -135,6 +134,7 @@ const UsersDataList = (
 export default compose(
     withSnackbar(),
     withRouter(),
+    withSecurity(),
     withDataList({
         name: "UsersDataList",
         type: "Security.Users",

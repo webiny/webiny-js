@@ -1,6 +1,5 @@
 // @flow
 import React from "react";
-import { router } from "webiny-app/router";
 import { i18n } from "webiny-app/i18n";
 import { addPlugin } from "webiny-app/plugins";
 import AdminLayout from "webiny-app-admin/components/Layouts/AdminLayout";
@@ -15,30 +14,32 @@ import Editor from "./views/Pages/Editor";
 const t = i18n.namespace("Cms.Admin.Menu");
 
 export default () => {
-    return (params: Object, next: Function) => {
-        // CMS plugins
-        addPlugin(...editorPlugins, ...renderPlugins);
+    // CMS plugins
+    addPlugin(...editorPlugins, ...renderPlugins);
 
-        // Navigation plugin
-        addPlugin({
-            name: "cms-menu",
-            type: "menu",
-            render({ Menu }) {
-                return (
-                    <Menu label={t`Content`} icon={<PagesIcon />}>
-                        <Menu label={t`Pages`}>
-                            <Menu label={t`Categories`} route="Cms.Categories" />
-                            <Menu label={t`Pages`} route="Cms.Pages" />
-                            {/*<Menu label={t`Menus`} route="Cms.Menus.List" />*/}
-                        </Menu>
+    // Navigation plugin
+    addPlugin({
+        name: "cms-menu",
+        type: "menu",
+        render({ Menu }) {
+            return (
+                <Menu label={t`Content`} icon={<PagesIcon />}>
+                    <Menu label={t`Pages`}>
+                        <Menu label={t`Categories`} route="Cms.Categories" />
+                        <Menu label={t`Pages`} route="Cms.Pages" />
+                        {/*<Menu label={t`Menus`} route="Cms.Menus.List" />*/}
                     </Menu>
-                );
-            }
-        });
+                </Menu>
+            );
+        }
+    });
 
-        addPlugin(...plugins);
+    addPlugin(...plugins);
 
-        router.addRoute({
+    addPlugin({
+        name: "route-cms-categories",
+        type: "route",
+        route: {
             name: "Cms.Categories",
             path: "/cms/categories",
             exact: true,
@@ -49,9 +50,13 @@ export default () => {
                     </AdminLayout>
                 );
             }
-        });
+        }
+    });
 
-        router.addRoute({
+    addPlugin({
+        name: "route-cms-pages",
+        type: "route",
+        route: {
             name: "Cms.Pages",
             path: "/cms/pages",
             exact: true,
@@ -62,19 +67,19 @@ export default () => {
                     </AdminLayout>
                 );
             }
-        });
+        }
+    });
 
-        router.addRoute({
+    addPlugin({
+        name: "route-cms-editor",
+        type: "route",
+        route: {
             name: "Cms.Editor",
             path: "/cms/editor/:page/:revision",
             exact: true,
             render() {
-                return (
-                    <Editor/>
-                );
+                return <Editor />;
             }
-        });
-
-        next();
-    };
+        }
+    });
 };

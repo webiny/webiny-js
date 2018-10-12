@@ -17,6 +17,9 @@ type Props = FormComponentProps & {
     // Is checkbox disabled?
     disabled?: boolean,
 
+    // Format selected item
+    formatValue: (item: Object) => { id: string, name: string } | string,
+
     // Options that will be shown.
     options: Array<{ id: string, name: string } | Object>,
 
@@ -93,6 +96,7 @@ export class AutoComplete extends React.Component<Props> {
     static defaultProps = {
         valueProp: "id",
         textProp: "name",
+        formatValue: (item: Object) => item,
         multiple: false,
         unique: true,
         showMenuOnFocus: true
@@ -102,6 +106,14 @@ export class AutoComplete extends React.Component<Props> {
      * Helps us trigger some of the downshift's methods (eg. clearSelection) and helps us to avoid adding state.
      */
     downshift: any = React.createRef();
+
+    getItemValue = (item: Object | string) => {
+        return typeof item === "string" ? item : item[this.props.valueProp];
+    };
+
+    getItemText = (item: Object | string) => {
+        return typeof item === "string" ? item : item[this.props.textProp];
+    };
 
     /**
      * Renders suggestions - based on user's input. It will try to match inputted text with available options.
@@ -127,7 +139,7 @@ export class AutoComplete extends React.Component<Props> {
             return null;
         }
 
-        const { unique, multiple, options, value, textProp, valueProp } = this.props;
+        const { unique, multiple, options, value } = this.props;
 
         const filtered = options.filter(item => {
             // We need to filter received options.
@@ -138,13 +150,13 @@ export class AutoComplete extends React.Component<Props> {
                     return true;
                 }
 
-                if (values.find(value => value[valueProp] === item[valueProp])) {
+                if (values.find(value => this.getItemValue(value) === this.getItemValue(item))) {
                     return false;
                 }
             }
 
             // 2) At the end, we want to show only options that are matched by typed text.
-            return !inputValue || item[textProp].toLowerCase().includes(inputValue.toLowerCase());
+            return !inputValue || this.getItemText(item).toLowerCase().includes(inputValue.toLowerCase());
         });
 
         if (!filtered.length) {
@@ -172,7 +184,7 @@ export class AutoComplete extends React.Component<Props> {
 
                         // Add "selected" class if the item is selected.
                         if (!this.props.multiple) {
-                            if (selectedItem && selectedItem[valueProp] === item[valueProp]) {
+                            if (selectedItem && this.getItemValue(selectedItem) === this.getItemValue(item)) {
                                 itemClassNames.selected = true;
                             }
                         }
@@ -180,14 +192,14 @@ export class AutoComplete extends React.Component<Props> {
                         // Render the item.
                         return (
                             <li
-                                key={item[valueProp]}
+                                key={this.getItemValue(item)}
                                 {...getItemProps({
                                     index,
                                     item,
                                     className: classNames(itemClassNames)
                                 })}
                             >
-                                <Typography use={"body2"}>{item[textProp]}</Typography>
+                                <Typography use={"body2"}>{this.getItemText(item)}</Typography>
                             </li>
                         );
                     })}
@@ -203,7 +215,7 @@ export class AutoComplete extends React.Component<Props> {
      * @returns {*}
      */
     renderMultipleSelection() {
-        const { valueProp, textProp, value, onChange, disabled } = this.props;
+        const { value, onChange, disabled } = this.props;
 
         return (
             <React.Fragment>
@@ -213,7 +225,7 @@ export class AutoComplete extends React.Component<Props> {
                             {value.map((item, index) => (
                                 <Chip
                                     disabled
-                                    key={`${item[valueProp]}-${index}`}
+                                    key={`${this.getItemValue(item)}-${index}`}
                                     onRemoval={() => {
                                         // On removal, let's update the value and call "onChange" callback.
                                         if (onChange) {
@@ -223,7 +235,7 @@ export class AutoComplete extends React.Component<Props> {
                                         }
                                     }}
                                 >
-                                    <ChipText>{item[textProp]}</ChipText>
+                                    <ChipText>{this.getItemText(item)}</ChipText>
                                     <ChipIcon trailing icon={<BaselineCloseIcon />} />
                                 </Chip>
                             ))}
@@ -236,11 +248,10 @@ export class AutoComplete extends React.Component<Props> {
 
     render() {
         const {
-            valueProp,
-            textProp,
             multiple,
             unique,
             showMenuOnFocus,
+            formatValue,
             value,
             onChange,
             onInput: onInputValueChange,
@@ -253,7 +264,7 @@ export class AutoComplete extends React.Component<Props> {
             className: autoCompleteStyle,
             defaultSelectedItem: multiple ? null : value,
             onInputValueChange,
-            itemToString: item => item && item[textProp],
+            itemToString: item => item && this.getItemText(item),
             onChange: selection => {
                 if (!selection || !onChange) {
                     return;
@@ -262,14 +273,14 @@ export class AutoComplete extends React.Component<Props> {
                 // If multiple, we have to manage an array of values, otherwise a single value.
                 if (multiple) {
                     if (Array.isArray(value) && value.length > 0) {
-                        onChange([...value, selection]);
+                        onChange([...value, formatValue(selection)]);
                     } else {
-                        onChange([selection]);
+                        onChange([formatValue(selection)]);
                     }
 
                     this.downshift.current.clearSelection();
                 } else {
-                    onChange && onChange(selection[valueProp]);
+                    onChange && onChange(this.getItemValue(selection));
                 }
             }
         };

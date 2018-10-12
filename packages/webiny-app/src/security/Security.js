@@ -1,167 +1,121 @@
 // @flow
-import cookies from "js-cookie";
-import _ from "lodash";
-import debugFactory from "debug";
-import invariant from "invariant";
-import { app } from "webiny-app";
-import gql from "graphql-tag";
-import type { AuthenticationServiceConfig } from "../../types";
-import SecurityError from "./SecurityError";
+import * as React from "react";
+import { compose } from "recompose";
+import { withApollo, type WithApolloClient } from "react-apollo";
+import localStorage from "store";
+import observe from "store/plugins/observe";
+import authQuery from "./defaultAuthQuery";
+const { Provider, Consumer } = React.createContext();
+localStorage.addPlugin(observe);
 
-const debug = debugFactory("webiny-app-security");
+const AUTH_TOKEN = "webiny-token";
 
-function getToken() {
-    return cookies.get(this.config.cookie);
-}
+type Props = WithApolloClient & {
+    getUser?: () => Promise<Object>,
+    getToken?: () => String,
+    setToken?: (token: String) => void
+};
 
-class Security {
-    identity: null | Object;
-    callbacks: { [event: string]: Array<Function> };
-    config: AuthenticationServiceConfig;
+type State = {
+    user: ?Object,
+    firstLoad: boolean,
+    loading: boolean
+};
 
-    configure(config: Object) {
-        const defaultConfig = {
-            header: "Authorization",
-            cookie: "webiny-token",
-            me: () => {
-                const fields = config.identities.map(({ identity, fields }) => {
-                    return `... on ${identity} {
-                        ${fields}
-                    }`;
-                });
+const SecurityProvider = ({ user, children }: Object) => {
+    return <Provider value={user}>{children}</Provider>;
+};
 
-                return gql`
-                    {
-                        Me {
-                          get {
-                            ${fields.join("\\n")}  
-                          }
-                        }   
-                    }`;
-            },
-            onLogout: () => {
-                // Override to do something
+export const SecurityConsumer = ({ children }: Object) => (
+    <Consumer>{user => React.cloneElement(children, { user })}</Consumer>
+);
+
+class Security extends React.Component<Props, State> {
+    state = {
+        user: null,
+        firstLoad: true,
+        loading: false
+    };
+
+    getToken = () => {
+        if (this.props.getToken) {
+            return this.props.getToken();
+        }
+
+        return localStorage.get(AUTH_TOKEN);
+    };
+
+    setToken = (token: string) => {
+        if (this.props.setToken) {
+            return this.props.setToken(token);
+        }
+
+        return localStorage.set(AUTH_TOKEN, token);
+    };
+
+    getUser = async () => {
+        this.setState({ loading: true });
+
+        if (this.props.getUser) {
+            const user = await this.props.getUser();
+            this.setState({ loading: false });
+            return user;
+        }
+
+        // Get user using default authentication query
+        const { data } = await this.props.client.query({ query: authQuery });
+        this.setState({ loading: false });
+        return data.security.getCurrentUser;
+    };
+
+    componentDidMount() {
+        localStorage.observe(AUTH_TOKEN, async (token: any) => {
+            if (!token) {
+                return this.setState({ user: null });
             }
-        };
-        this.config = { ...defaultConfig, ...config };
-        this.callbacks = {
-            onIdentity: []
-        };
+            const user = await this.getUser();
 
-        app.graphql.addRequestInterceptor(() => {
-            const token = getToken.call(this);
-            if (token) {
-                return {
-                    headers: {
-                        [this.config.header]: "Bearer " + token
-                    }
-                };
-            }
-
-            return {};
+            this.setState({ user, firstLoad: false });
         });
     }
 
-    async login(identity: string, strategy: string, payload: Object): Promise<{}> {
-        try {
-            const identityConfig = _.find(this.config.identities, { identity });
-            invariant(
-                identityConfig,
-                `Identity "${identity}" not found in authentication service!`
-            );
+    onToken = async (token: string) => {
+        this.setToken(token);
+        const user = await this.getUser();
+        this.setState({ user });
+    };
 
-            const strategyConfig = _.find(identityConfig.authenticate, { strategy });
-            invariant(
-                strategyConfig,
-                `Strategy "${strategy}" not found in authentication service!`
-            );
-
-            // Attempt to login
-            const { data, errors } = await app.graphql.query({
-                query: strategyConfig.query,
-                variables: payload
-            });
-
-            const me = _.get(data, "Security.Users.authenticate");
-
-            if (errors) {
-                const { message, code, data } = errors[0];
-                return Promise.reject(new SecurityError(message, code, data));
-            }
-
-            // Set token cookie
-            const expires = new Date(me.expiresOn * 1000);
-            cookies.set(this.config.cookie, me.token, { path: "/", expires });
-
-            this.identity = me.identity;
-            const { id, email } = this.identity;
-            debug(`Loaded user %o with id %o`, email, id);
-            this.callbacks.onIdentity.map(cb => cb(this.identity));
-
-            return Promise.resolve({ token: me.token, identity: this.identity });
-        } catch (e) {
-            return Promise.reject(e);
-        }
-    }
-
-    /**
-     * Authenticate user (if possible).
-     * @returns {Promise<Object>} Identity data.
-     */
-    async authenticate(): Promise<?Object> {
-        if (this.identity) {
-            return Promise.resolve(this.identity);
+    renderAuthenticated = (content: React.Node) => {
+        if (!this.state.user) {
+            return null;
         }
 
-        const token = getToken.call(this);
-        if (!token) {
-            return Promise.reject(new SecurityError("Identity token is not set!", "TOKEN_NOT_SET"));
+        return <SecurityProvider user={this.state.user}>{content}</SecurityProvider>;
+    };
+
+    renderNotAuthenticated = (content: React.Element<*>) => {
+        if (this.state.user || this.state.loading) {
+            return null;
         }
 
-        const { errors, data } = await app.graphql.query({
-            query: this.config.me()
+        return React.cloneElement(content, { onToken: this.onToken });
+    };
+
+    renderInitialLoad = (content: React.Element<*>) => {
+        if (this.state.firstLoad && this.state.loading) {
+            return content;
+        }
+
+        return null;
+    };
+
+    render() {
+        return this.props.children({
+            initialLoad: this.renderInitialLoad,
+            authenticated: this.renderAuthenticated,
+            notAuthenticated: this.renderNotAuthenticated
         });
-
-        if (errors) {
-            const { message, code, data } = errors[0];
-            return Promise.reject(new SecurityError(message, code, data));
-        }
-
-        this.identity = data.Me.get;
-        const { id, email } = this.identity;
-        debug(`Loaded user %o with id %o`, email, id);
-        this.callbacks.onIdentity.map(cb => cb(this.identity));
-
-        return Promise.resolve(this.identity);
-    }
-
-    /**
-     * Refresh user data by fetching fresh data via API.
-     *
-     * @returns {Promise<Object>}
-     */
-    refresh(): Promise<?Object> {
-        this.identity = null;
-        return this.authenticate();
-    }
-
-    async logout(): Promise<void> {
-        this.identity = null;
-        cookies.remove(this.config.cookie, { path: "/" });
-        this.callbacks.onIdentity.map(cb => cb(null));
-        this.config.onLogout && (await this.config.onLogout());
-        return Promise.resolve();
-    }
-
-    /**
-     * Add callback for when `identity` data is changed.
-     * @param callback
-     * @returns {Function} A function to remove the callback.
-     */
-    onIdentity(callback: Function): Function {
-        const length = this.callbacks.onIdentity.push(callback);
-        return () => this.callbacks.onIdentity.splice(length - 1, 1);
     }
 }
 
-export default Security;
+export default compose(withApollo)(Security);

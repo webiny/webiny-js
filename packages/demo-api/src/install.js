@@ -5,4 +5,4 @@ require("@babel/register")({
     only: [/packages/]
 });
 
-require("./install/install")();
+require("./install/install").default();

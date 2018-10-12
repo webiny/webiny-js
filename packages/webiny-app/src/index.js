@@ -1,9 +1,4 @@
 // @flow
 import "@babel/polyfill";
-import App from "./app";
-import DocumentUtils from "./utils/document";
-
-const app = new App();
-const document = new DocumentUtils();
-
-export { app, document };
+export { default as Webiny } from "./components/Webiny";
+export { Router, router } from "./router";

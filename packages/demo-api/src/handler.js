@@ -1,7 +1,10 @@
 // @flow
-const { lambda } = require("webiny-api");
-const { default: api } = require("./api");
-const { default: files } = require("./files");
+import { createHandler, dataSource as coreApi } from "webiny-api";
+export { default as files } from "./files";
+import config from "./configs";
+//import { dataSource as cmsApi } from "webiny-api-cms";
 
-module.exports.api = lambda(api);
-module.exports.files = files;
+export const api = createHandler({
+    dataSources: [coreApi],
+    ...config
+});

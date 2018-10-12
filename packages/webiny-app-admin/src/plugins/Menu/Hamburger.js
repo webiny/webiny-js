@@ -1,9 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { connect } from "react-redux";
+import { get, set } from "dot-prop-immutable";
+import { compose, withHandlers } from "recompose";
+import { withUi } from "webiny-app/components";
 import { IconButton } from "webiny-ui/Button";
 import { ReactComponent as MenuIcon } from "webiny-app-admin/assets/icons/baseline-menu-24px.svg";
-import { toggleMenu } from "./menu.actions";
 import Navigation from "./Navigation";
 
 let el = null;
@@ -20,13 +21,17 @@ const getElement = () => {
 const Hamburger = ({ toggleMenu }) => {
     return (
         <React.Fragment>
-            <IconButton icon={<MenuIcon style={{color:'white'}} />} onClick={() => toggleMenu()} />
+            <IconButton icon={<MenuIcon style={{ color: "white" }} />} onClick={toggleMenu} />
             {ReactDOM.createPortal(<Navigation />, getElement())}
         </React.Fragment>
     );
 };
 
-export default connect(
-    null,
-    { toggleMenu }
+export default compose(
+    withUi(),
+    withHandlers({
+        toggleMenu: props => () => {
+            props.ui.setState(ui => set(ui, "appsMenu.show", !(get(ui, "appsMenu.show") || false)));
+        }
+    })
 )(Hamburger);

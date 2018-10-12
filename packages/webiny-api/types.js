@@ -23,12 +23,6 @@ export type AttributeToTypeParams = {
  */
 export interface IToken {
     /**
-     * Get data to encode.
-     * @param {Identity} identity Identity instance to be encoded.
-     * @returns {Promise<Object>}
-     */
-    data(identity: Identity): Promise<Object>;
-    /**
      * Encode Identity instance.
      * @param {Identity} identity Identity instance to encode.
      * @param {number} expiresOn Seconds since epoch.

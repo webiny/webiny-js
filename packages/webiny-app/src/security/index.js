@@ -1,2 +1,2 @@
-export { default as Security } from "./Security";
-export { default as SecurityError } from "./SecurityError";
+export { default as createAuthLink } from "./createAuthLink";
+export { default as Security, SecurityConsumer } from "./Security";

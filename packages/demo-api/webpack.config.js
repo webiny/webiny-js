@@ -23,6 +23,10 @@ const config = {
     module: {
         rules: [
             {
+                test: /\.mjs$/,
+                type: 'javascript/auto',
+            },
+            {
                 test: /\.js$/,
                 loader: "babel-loader",
                 include: packages,
