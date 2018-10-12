@@ -17,7 +17,7 @@ jobs:
     - stage: test
       script: yarn build && yarn test:build && yarn test:coverage:ci
     - stage: release
-      if: branch = master
+      if: branch = master AND env(TRAVIS_PULL_REQUEST) = false
       script: yarn build && yarn release
 notifications:
   slack:
