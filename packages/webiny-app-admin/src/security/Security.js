@@ -22,12 +22,12 @@ type State = {
     loading: boolean
 };
 
-const SecurityProvider = ({ user, children }: Object) => {
-    return <Provider value={user}>{children}</Provider>;
+const SecurityProvider = ({ value, children }: Object) => {
+    return <Provider value={value}>{children}</Provider>;
 };
 
 export const SecurityConsumer = ({ children }: Object) => (
-    <Consumer>{user => React.cloneElement(children, { user })}</Consumer>
+    <Consumer>{security => React.cloneElement(children, { security })}</Consumer>
 );
 
 class Security extends React.Component<Props, State> {
@@ -65,7 +65,7 @@ class Security extends React.Component<Props, State> {
         // Get user using default authentication query
         const { data } = await this.props.client.query({ query: authQuery });
         this.setState({ loading: false });
-        return data.security.getCurrentUser;
+        return data.security.getCurrentUser.data;
     };
 
     componentDidMount() {
@@ -85,12 +85,20 @@ class Security extends React.Component<Props, State> {
         this.setState({ user });
     };
 
+    logout = () => {
+        return localStorage.remove(AUTH_TOKEN);
+    };
+
     renderAuthenticated = (content: React.Node) => {
         if (!this.state.user) {
             return null;
         }
 
-        return <SecurityProvider user={this.state.user}>{content}</SecurityProvider>;
+        return (
+            <SecurityProvider value={{ user: this.state.user, logout: this.logout }}>
+                {content}
+            </SecurityProvider>
+        );
     };
 
     renderNotAuthenticated = (content: React.Element<*>) => {

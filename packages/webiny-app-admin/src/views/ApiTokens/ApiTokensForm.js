@@ -1,18 +1,11 @@
 // @flow
 import * as React from "react";
+import { compose, mapProps } from "recompose";
 import { i18n } from "webiny-app/i18n";
-import { withForm, withRouter } from "webiny-app/components";
-import { refreshDataList } from "webiny-app/actions";
-import { withSnackbar } from "webiny-app-admin/components";
-
-import { compose } from "recompose";
-
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
 import { Form } from "webiny-form";
-import { connect } from "react-redux";
-
 import {
     SimpleForm,
     SimpleFormFooter,
@@ -21,27 +14,9 @@ import {
 
 const t = i18n.namespace("Security.ApiTokensForm");
 
-const ApiTokensForm = props => {
-    const { SecurityApiTokenForm, router, refreshDataList } = props;
-
+const ApiTokensForm = ({ data, onSubmit, invalidFields }: Object) => {
     return (
-        <Form
-            {...SecurityApiTokenForm}
-            onSubmit={data => {
-                SecurityApiTokenForm.submit({
-                    data,
-                    onSuccess: data => {
-                        props.showSnackbar(
-                            t`API token {name} saved successfully.`({
-                                name: data.name
-                            })
-                        );
-                        router.goToRoute({ params: { id: data.id }, merge: true });
-                        refreshDataList({ name: "ApiTokensDataList" });
-                    }
-                });
-            }}
-        >
+        <Form data={data} invalidFields={invalidFields} onSubmit={onSubmit}>
             {({ form, Bind }) => (
                 <SimpleForm>
                     <SimpleFormContent>
@@ -84,17 +59,4 @@ const ApiTokensForm = props => {
         </Form>
     );
 };
-
-export default compose(
-    connect(
-        null,
-        { refreshDataList }
-    ),
-    withSnackbar(),
-    withRouter(),
-    withForm({
-        name: "SecurityApiTokenForm",
-        type: "Security.ApiTokens",
-        fields: "id name slug description token permissions"
-    })
-)(ApiTokensForm);
+export default ApiTokensForm;

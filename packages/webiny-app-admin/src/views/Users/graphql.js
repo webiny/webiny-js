@@ -1,25 +1,13 @@
 import gql from "graphql-tag";
 
 const fields = `
-    id
-    name
-    slug
-    description
-    scopes
+    id email firstName lastName fullName avatar { src } enabled groups { id name } roles { id name }
 `;
 
-export const loadScopes = gql`
-    query LoadScopes {
+export const loadUsers = gql`
+    query LoadUsers($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SearchInput) {
         security {
-            scopes
-        }
-    }
-`;
-
-export const loadRoles = gql`
-    query LoadRoles($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SearchInput) {
-        security {
-            roles: listRoles(
+            users: listUsers(
                 where: $where
                 sort: $sort
                 page: $page
@@ -28,8 +16,13 @@ export const loadRoles = gql`
             ) {
                 data {
                     id
-                    name
-                    description
+                    email
+                    firstName
+                    lastName
+                    fullName
+                    avatar {
+                        src
+                    }
                     createdOn
                 }
                 meta {
@@ -46,10 +39,10 @@ export const loadRoles = gql`
     }
 `;
 
-export const loadRole = gql`
-    query LoadRole($id: ID!) {
+export const loadUser = gql`
+    query LoadUser($id: ID!) {
         security {
-            role: getRole(id: $id){
+            user: getUser(id: $id){
                 data {
                     ${fields}
                 }
@@ -62,27 +55,10 @@ export const loadRole = gql`
     }
 `;
 
-export const createRole = gql`
-    mutation CreateRole($data: RoleInput!){
+export const createUser = gql`
+    mutation CreateUser($data: UserInput!){
         security {
-            role: createRole(data: $data) {
-                data {
-                    ${fields}
-                }
-                error {
-                    code
-                    message
-                    data
-                }
-            }
-        }
-    }
-`;
-
-export const updateRole = gql`
-    mutation UpdateRole($id: ID!, $data: RoleInput!){
-        security {
-            role: updateRole(id: $id, data: $data) {
+            user: createUser(data: $data) {
                 data {
                     ${fields}
                 }
@@ -96,10 +72,27 @@ export const updateRole = gql`
     }
 `;
 
-export const deleteRole = gql`
-    mutation DeleteRole($id: ID!) {
+export const updateUser = gql`
+    mutation UpdateUser($id: ID!, $data: UserInput!){
         security {
-            deleteRole(id: $id) {
+            user: updateUser(id: $id, data: $data) {
+                data {
+                    ${fields}
+                }
+                error {
+                    code
+                    message
+                    data
+                }
+            }
+        }
+    }
+`;
+
+export const deleteUser = gql`
+    mutation DeleteUser($id: ID!) {
+        security {
+            deleteUser(id: $id) {
                 data
                 error {
                     code

@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack-cli --config webpack.config.js",
     "debug": "cross-env NODE_ENV=development SLS_DEBUG=* node --inspect=9005 npx sls offline start -s dev --port 9000",
-    "start": "cross-env NODE_ENV=development DEBUG=webiny-sql* SLS_DEBUG=* nodemon --exec 'npx sls offline start --port 9000'"
+    "start": "cross-env NODE_ENV=development DEBUG=webiny-mysql* SLS_DEBUG=* nodemon --exec 'npx sls offline start --port 9000'"
   },
   "author": "",
   "license": "MIT",

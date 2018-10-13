@@ -33,7 +33,7 @@ export default [
     // Header plugins
     Menu,
     Logo,
-    //UserMenu, TODO
+    UserMenu,
     //SearchBar, TODO
     // UserMenu plugins
     UserImage,

@@ -8,10 +8,10 @@ import { AutoComplete } from "webiny-ui/AutoComplete";
 
 let timeout: ?TimeoutID = null;
 
-const loadGroups = gql`
+const loadRoles = gql`
     {
         security {
-            listGroups(sort: { savedOn: -1 }) {
+            listRoles(sort: { savedOn: -1 }) {
                 data {
                     id
                     name
@@ -21,16 +21,13 @@ const loadGroups = gql`
     }
 `;
 
-const GroupsAutoComplete = () => {
+const RolesAutoComplete = () => {
     return (
-        <Query
-            query={loadGroups}
-            props={({ data }) => ({ groups: get(data, "security.listGroups") })}
-        >
-            {({ groups, refetch }) => (
+        <Query query={loadRoles}>
+            {({ data, refetch }) => (
                 <AutoComplete
                     multiple
-                    options={groups}
+                    options={get(data, "security.listRoles.data") || []}
                     onInput={query => {
                         timeout && clearTimeout(timeout);
                         timeout = setTimeout(
@@ -51,4 +48,4 @@ const GroupsAutoComplete = () => {
     );
 };
 
-export default GroupsAutoComplete;
+export default RolesAutoComplete;

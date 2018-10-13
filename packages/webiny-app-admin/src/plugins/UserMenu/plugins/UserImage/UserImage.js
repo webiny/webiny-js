@@ -1,28 +1,16 @@
 // @flow
 import React from "react";
 import { Avatar } from "webiny-ui/Avatar";
-import { withSecurity } from "webiny-app/components";
-import type { Security } from "webiny-app/types";
+import { withSecurity, type WithSecurityProps } from "webiny-app-admin/components";
 
-class UserAvatar extends React.Component<{ security: Security }> {
-    componentDidMount() {
-        this.props.security.onIdentity(() => {
-            this.forceUpdate();
-        });
-    }
-
+class UserAvatar extends React.Component<WithSecurityProps> {
     render() {
         const { security } = this.props;
-        if (!security) {
+        if (!security || !security.user) {
             return null;
         }
 
-        // When user logs out, identity becomes null.
-        if (!security.identity) {
-            return null;
-        }
-
-        const { fullName, avatar } = security.identity;
+        const { fullName, avatar } = security.user;
 
         return <Avatar src={avatar && avatar.src} alt={fullName} fallbackText={fullName} />;
     }

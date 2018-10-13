@@ -30,8 +30,8 @@ class Form extends React.Component {
         }
 
         // Check for validation errors
-        let validation = state.validation;
-        if (Object.keys(invalidFields).length) {
+        let validation = _.cloneDeep(state.validation);
+        if (_.isPlainObject(invalidFields) && Object.keys(invalidFields).length) {
             _.each(invalidFields, (message, name) => {
                 validation = set(
                     name,
@@ -45,7 +45,7 @@ class Form extends React.Component {
         }
 
         // Return new state only if something has changed
-        return !_.isEqual(validation, state.validation) ? validation : null;
+        return !_.isEqual(validation, state.validation) ? { validation } : null;
     }
 
     componentDidUpdate() {

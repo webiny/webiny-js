@@ -1,6 +1,5 @@
 // @flow
 import * as React from "react";
-import { get } from "dot-prop-immutable";
 import { i18n } from "webiny-app/i18n";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import { Tooltip } from "webiny-ui/Tooltip";
@@ -17,17 +16,16 @@ import {
 
 import { DeleteIcon } from "webiny-ui/List/DataList/icons";
 import { Checkbox } from "webiny-ui/Checkbox";
-import { ExportIcon, ImportIcon } from "./RolesDataList/icons";
+import { ExportIcon, ImportIcon } from "./icons";
 
 const t = i18n.namespace("Security.RolesDataList");
 
 const RolesDataList = (props: Object) => {
-    const { dataListProps, router, deleteRole } = props;
-    const { data, meta } = get(dataListProps, "data.security.roles") || { data: [], meta: {} };
+    const { dataList, router, data, meta, deleteRole } = props;
 
     return (
         <DataList
-            {...dataListProps}
+            {...dataList}
             data={data}
             meta={meta}
             actions={
@@ -42,10 +40,7 @@ const RolesDataList = (props: Object) => {
                     <Tooltip content={t`Export selected Roles.`}>
                         <ExportIcon
                             onClick={() => {
-                                console.log(
-                                    "multi selected items: ",
-                                    dataListProps.getMultiSelected()
-                                );
+                                console.log("multi selected items: ", dataList.getMultiSelected());
                             }}
                         />
                     </Tooltip>

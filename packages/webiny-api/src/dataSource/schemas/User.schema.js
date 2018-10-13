@@ -61,14 +61,14 @@ export default {
         
         # This input type is used by administrators to update other user's accounts 
         input UserInput {
-            id: ID!
             email: String
+            password: String
             firstName: String
             lastName: String
             avatar: AvatarInput
             enabled: Boolean
-            groups: [ID!]
-            roles: [ID!]
+            groups: [ID]
+            roles: [ID]
         }
         
         # This input type is used by the user who is updating his own account
@@ -79,9 +79,20 @@ export default {
             password: String
         }
         
-        type UserList {
+        type UserResponse {
+            data: User
+            error: Error
+        }
+        
+        type UserDeleteResponse {
+            data: Boolean
+            error: Error
+        }
+        
+        type UserListResponse {
             data: [User]
             meta: ListMeta
+            error: Error
         }
         
         type UserLoginResponse {
@@ -91,7 +102,7 @@ export default {
     `,
     queryFields: `
         "Get current user"
-        getCurrentUser: User
+        getCurrentUser: UserResponse
         
         "Get settings of current user"
         getCurrentUserSettings(key: String!): JSON
@@ -101,7 +112,7 @@ export default {
             id: ID 
             where: JSON
             sort: String
-        ): User
+        ): UserResponse
         
         "Get a list of users"
         listUsers(
@@ -110,7 +121,7 @@ export default {
             where: JSON
             sort: JSON
             search: SearchInput
-        ): UserList
+        ): UserListResponse
     `,
     mutationFields: `
         "Login user"
@@ -123,7 +134,7 @@ export default {
         "Update current user"
         updateCurrentUser(
             data: CurrentUserInput!
-        ): User
+        ): UserResponse
         
         "Update settings of current user"
         updateCurrentUserSettings(
@@ -133,15 +144,16 @@ export default {
         
         createUser(
             data: UserInput!
-        ): User
+        ): UserResponse
         
         updateUser(
+            id: ID!
             data: UserInput!
-        ): User
+        ): UserResponse
     
         deleteUser(
             id: ID!
-        ): Boolean
+        ): UserDeleteResponse
     `,
     queryResolvers: {
         getCurrentUser: resolveGetCurrentUser(userFetcher),

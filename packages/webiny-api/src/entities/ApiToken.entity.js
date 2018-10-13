@@ -5,30 +5,37 @@ import type { Group } from "./Group.entity";
 import type { Role } from "./Role.entity";
 import { loadEntityScopes } from "./utils";
 
-export class ApiToken extends Entity {
+export interface IApiToken {
     name: string;
-    description: string;
     token: string;
+    description: string;
     groups: Promise<Array<Group>>;
     roles: Promise<Array<Role>>;
     scopes: Promise<Array<string>>;
+    createJWT(): Promise<IApiToken>;
 }
 
-ApiToken.classId = "SecurityApiToken";
-ApiToken.storageClassId = "Security_ApiTokens";
+export function apiTokenFactory({ user = {}, config, entities }: Object): Class<IApiToken> {
+    return class extends Entity {
+        static classId = "SecurityApiToken";
+        static storageClassId = "Security_ApiTokens";
 
-export function apiTokenFactory({ user = {}, config, entities }: Object): Class<ApiToken> {
-    return class extends ApiToken {
+        name: string;
+        token: string;
+        description: string;
+        groups: Promise<Array<Group>>;
+        roles: Promise<Array<Role>>;
+        scopes: Promise<Array<string>>;
+
         constructor() {
             super();
+
             this.attr("createdBy")
                 .char()
                 .setDefaultValue(user.id);
             this.attr("name").char();
+            this.attr("token").char();
             this.attr("description").char();
-            this.attr("token")
-                .char()
-                .setValidators();
 
             this.attr("roles")
                 .entities(entities.Role, "entity")
@@ -44,16 +51,13 @@ export function apiTokenFactory({ user = {}, config, entities }: Object): Class<
                     return loadEntityScopes.call(this);
                 });
 
-            this.on("afterCreate", () => this.activate());
+            this.on("afterCreate", () => this.createJWT());
         }
 
-        async activate(): Promise<ApiToken> {
+        async createJWT(): Promise<IApiToken> {
+            // 2147483647 = maximum value of unix timestamp (year 2038).
             const token = new JwtToken({ secret: config.security.token.secret });
-            this.token = await token.encode(
-                { id: this.id, type: "token", scopes: await this.scopes },
-                // 2147483647 = maximum value of unix timestamp (year 2038).
-                2147483647
-            );
+            this.token = await token.encode({ id: this.id, type: "apiToken" }, 2147483647);
             await this.save();
             return this;
         }

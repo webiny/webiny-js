@@ -6,8 +6,8 @@ import plugins from "webiny-app-admin/presets/default";
 import { ReactComponent as SecurityIcon } from "./assets/images/icons/baseline-security-24px.svg";
 //import Login from "./views/Login";
 import Roles from "./views/Roles";
-//import ApiTokens from "./views/ApiTokens";
-//import Users from "./views/Users";
+import Users from "./views/Users";
+import ApiTokens from "./views/ApiTokens";
 //import Groups from "./views/Groups";
 //import Account from "./views/Account";
 import AdminLayout from "webiny-app-admin/components/Layouts/AdminLayout";
@@ -72,7 +72,7 @@ export default () => {
             },
             group: securityManager
         }
-    });
+    });*/
 
     addPlugin({
         name: "route-users",
@@ -110,7 +110,7 @@ export default () => {
         }
     });
 
-    addPlugin({
+    /*addPlugin({
         name: "route-account",
         type: "route",
         route: {

@@ -4,7 +4,7 @@ import ApolloClient from "apollo-client";
 import { ApolloLink } from "apollo-link";
 import { HttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import { createAuthLink } from "webiny-app/security";
+import { createAuthLink } from "webiny-app-admin/security";
 
 // Plugins for "withFileUpload" HOC - used with file upload related components.
 import localStoragePlugin from "webiny-app/components/withFileUpload/localStoragePlugin";

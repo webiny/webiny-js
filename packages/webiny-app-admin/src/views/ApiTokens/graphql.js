@@ -1,25 +1,13 @@
 import gql from "graphql-tag";
 
 const fields = `
-    id
-    name
-    slug
-    description
-    scopes
+    id token name description groups { id name } roles { id name }
 `;
 
-export const loadScopes = gql`
-    query LoadScopes {
+export const loadApiTokens = gql`
+    query LoadApiTokens($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SearchInput) {
         security {
-            scopes
-        }
-    }
-`;
-
-export const loadRoles = gql`
-    query LoadRoles($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SearchInput) {
-        security {
-            roles: listRoles(
+            tokens: listApiTokens(
                 where: $where
                 sort: $sort
                 page: $page
@@ -46,10 +34,10 @@ export const loadRoles = gql`
     }
 `;
 
-export const loadRole = gql`
-    query LoadRole($id: ID!) {
+export const loadApiToken = gql`
+    query LoadApiToken($id: ID!) {
         security {
-            role: getRole(id: $id){
+            token: getApiToken(id: $id){
                 data {
                     ${fields}
                 }
@@ -62,27 +50,10 @@ export const loadRole = gql`
     }
 `;
 
-export const createRole = gql`
-    mutation CreateRole($data: RoleInput!){
+export const createApiToken = gql`
+    mutation CreateApiToken($data: ApiTokenInput!){
         security {
-            role: createRole(data: $data) {
-                data {
-                    ${fields}
-                }
-                error {
-                    code
-                    message
-                    data
-                }
-            }
-        }
-    }
-`;
-
-export const updateRole = gql`
-    mutation UpdateRole($id: ID!, $data: RoleInput!){
-        security {
-            role: updateRole(id: $id, data: $data) {
+            token: createApiToken(data: $data) {
                 data {
                     ${fields}
                 }
@@ -96,10 +67,27 @@ export const updateRole = gql`
     }
 `;
 
-export const deleteRole = gql`
-    mutation DeleteRole($id: ID!) {
+export const updateApiToken = gql`
+    mutation UpdateApiToken($id: ID!, $data: ApiTokenInput!){
         security {
-            deleteRole(id: $id) {
+            token: updateApiToken(id: $id, data: $data) {
+                data {
+                    ${fields}
+                }
+                error {
+                    code
+                    message
+                    data
+                }
+            }
+        }
+    }
+`;
+
+export const deleteApiToken = gql`
+    mutation DeleteApiToken($id: ID!) {
+        security {
+            deleteApiToken(id: $id) {
                 data
                 error {
                     code

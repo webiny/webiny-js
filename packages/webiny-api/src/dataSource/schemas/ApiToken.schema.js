@@ -14,7 +14,7 @@ export default {
          type ApiToken {
             id: ID
             name: String
-            slug: String
+            token: String
             description: String
             createdOn: String
             groups: [Group]
@@ -24,7 +24,6 @@ export default {
     
         input ApiTokenInput {
             name: String
-            slug: String
             description: String
             groups: [String]
             roles: [String]
@@ -37,7 +36,12 @@ export default {
         }
         
         type ApiTokenResponse {
-            data: Group
+            data: ApiToken
+            error: Error
+        }
+        
+        type DeleteApiTokenResponse {
+            data: Boolean
             error: Error
         }
     `,
@@ -59,19 +63,24 @@ export default {
     mutationFields: `
         createApiToken(
             data: ApiTokenInput!
-        ): ApiToken
+        ): ApiTokenResponse
+        
+        updateApiToken(
+            id: ID!
+            data: ApiTokenInput!
+        ): ApiTokenResponse
         
         deleteApiToken(
             id: ID!
-        ): Boolean
+        ): DeleteApiTokenResponse
     `,
     queryResolvers: {
-        getGroup: resolveGet(apiTokenFetcher),
-        listGroups: resolveList(apiTokenFetcher)
+        getApiToken: resolveGet(apiTokenFetcher),
+        listApiTokens: resolveList(apiTokenFetcher)
     },
     mutationResolvers: {
-        createGroup: resolveCreate(apiTokenFetcher),
-        updateGroup: resolveUpdate(apiTokenFetcher),
-        deleteGroup: resolveDelete(apiTokenFetcher)
+        createApiToken: resolveCreate(apiTokenFetcher),
+        updateApiToken: resolveUpdate(apiTokenFetcher),
+        deleteApiToken: resolveDelete(apiTokenFetcher)
     }
 };

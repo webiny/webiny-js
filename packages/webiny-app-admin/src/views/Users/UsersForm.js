@@ -5,13 +5,8 @@ import { Form } from "webiny-form";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
-import { withForm, withRouter } from "webiny-app/components";
-import { withSnackbar } from "webiny-app-admin/components";
-import { refreshDataList } from "webiny-app/actions";
-import compose from "recompose/compose";
-import { connect } from "react-redux";
-import GroupsAutoComplete from "./GroupsAutoComplete";
-import PoliciesAutoComplete from "./PoliciesAutoComplete";
+//import GroupsAutoComplete from "./GroupsAutoComplete";
+//import RolesAutoComplete from "./RolesAutoComplete";
 import AvatarImage from "./AvatarImage";
 
 import {
@@ -23,23 +18,9 @@ import {
 
 const t = i18n.namespace("Security.UsersForm");
 
-const UsersForm = props => {
-    const { SecurityUserForm, router, refreshDataList } = props;
-
+const UsersForm = ({ onSubmit, data, invalidFields }: Object) => {
     return (
-        <Form
-            {...SecurityUserForm}
-            onSubmit={data => {
-                SecurityUserForm.submit({
-                    data,
-                    onSuccess: data => {
-                        props.showSnackbar(t`User {name} saved successfully.`({ name: data.name }));
-                        router.goToRoute({ params: { id: data.id }, merge: true });
-                        refreshDataList({ name: "UsersDataList" });
-                    }
-                });
-            }}
-        >
+        <Form invalidFields={invalidFields} data={data} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (
                 <SimpleForm>
                     <SimpleFormHeader title={data.fullName || "N/A"} />
@@ -92,17 +73,17 @@ const UsersForm = props => {
                                 </Bind>
                             </Cell>
 
-                            <Cell span={12}>
+                            {/*<Cell span={12}>
                                 <Bind name="groups">
                                     <GroupsAutoComplete label={t`Groups`} />
                                 </Bind>
-                            </Cell>
+                            </Cell>*/}
 
-                            <Cell span={12}>
-                                <Bind name="policies">
-                                    <PoliciesAutoComplete label={t`Policies`} />
+                            {/*<Cell span={12}>
+                                <Bind name="roles">
+                                    <RolesAutoComplete label={t`Roles`} />
                                 </Bind>
-                            </Cell>
+                            </Cell>*/}
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>
@@ -116,17 +97,4 @@ const UsersForm = props => {
     );
 };
 
-export default compose(
-    connect(
-        null,
-        { refreshDataList }
-    ),
-    withSnackbar(),
-    withRouter(),
-    withForm({
-        name: "SecurityUserForm",
-        type: "Security.Users",
-        fields:
-            "id email firstName lastName fullName avatar { id src } enabled groups { id name } policies { id name }"
-    })
-)(UsersForm);
+export default UsersForm;

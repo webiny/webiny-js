@@ -1,8 +1,7 @@
 // @flow
 import * as React from "react";
-import { connect } from "react-redux";
-import { compose, lifecycle, withProps } from "recompose";
-import { graphql } from "react-apollo";
+import { lifecycle, withProps, setDisplayName } from "recompose";
+import { compose, graphql } from "react-apollo";
 import _ from "lodash";
 
 import type {
@@ -19,15 +18,12 @@ import {
 
 export type { WithDataListProps, SearchParams, WithDataListParams };
 
-// For returning the same instance in connect function (returnProps).
-const emptyArray = [];
-const emptyObject = {};
-
 export const withDataList = (withDataListParams: Object): Function => {
     const propName = getPropName(withDataListParams);
 
     return (BaseComponent: typeof React.Component) => {
         return compose(
+            setDisplayName("withDataList"),
             graphql(withDataListParams.query, {
                 name: "queryData",
                 options: props => {

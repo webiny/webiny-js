@@ -1,14 +1,6 @@
 // @flow
 import * as React from "react";
-import {
-    withDataList,
-    withRouter,
-    type WithRouterProps,
-    type WithDataListProps
-} from "webiny-app/components";
 import { i18n } from "webiny-app/i18n";
-import { compose } from "recompose";
-
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import {
     DataList,
@@ -19,18 +11,15 @@ import {
     ListItemMeta
 } from "webiny-ui/List";
 import { DeleteIcon } from "webiny-ui/List/DataList/icons";
-import { withSnackbar, type WithSnackbarProps } from "webiny-app-admin/components";
 
 const t = i18n.namespace("Security.ApiTokensDataList");
 
-const ApiTokensDataList = (
-    props: WithRouterProps & WithSnackbarProps & { ApiTokensDataList: WithDataListProps }
-) => {
-    const { ApiTokensDataList, router } = props;
-
+const ApiTokensDataList = ({ deleteApiToken, dataList, data, meta, router }: Object) => {
     return (
         <DataList
-            {...ApiTokensDataList}
+            {...dataList}
+            data={data}
+            meta={meta}
             title={t`API Tokens`}
             sorters={[
                 {
@@ -59,9 +48,7 @@ const ApiTokensDataList = (
                                 onClick={() => {
                                     router.goToRoute({
                                         merge: true,
-                                        params: {
-                                            id: item.id
-                                        }
+                                        params: { id: item.id }
                                     });
                                 }}
                             >
@@ -72,23 +59,9 @@ const ApiTokensDataList = (
                                 <ConfirmationDialog>
                                     {({ showConfirmation }) => (
                                         <DeleteIcon
-                                            onClick={() => {
-                                                showConfirmation(() => {
-                                                    ApiTokensDataList.delete(item.id, {
-                                                        onSuccess: () => {
-                                                            ApiTokensDataList.refresh();
-                                                            props.showSnackbar(
-                                                                t`API token deleted.`
-                                                            );
-                                                            item.id === router.getQuery().id &&
-                                                                router.goToRoute({
-                                                                    params: { id: null },
-                                                                    merge: true
-                                                                });
-                                                        }
-                                                    });
-                                                });
-                                            }}
+                                            onClick={() =>
+                                                showConfirmation(() => deleteApiToken(item))
+                                            }
                                         />
                                     )}
                                 </ConfirmationDialog>
@@ -101,13 +74,4 @@ const ApiTokensDataList = (
     );
 };
 
-export default compose(
-    withSnackbar(),
-    withRouter(),
-    withDataList({
-        name: "ApiTokensDataList",
-        type: "Security.ApiTokens",
-        fields: "id name description slug createdOn",
-        sort: { savedOn: -1 }
-    })
-)(ApiTokensDataList);
+export default ApiTokensDataList;
