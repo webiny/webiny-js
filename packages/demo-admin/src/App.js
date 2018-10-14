@@ -25,14 +25,16 @@ const App = ({ config }) => {
         <Webiny config={config}>
             {({ router }) => (
                 <CmsTheme theme={myTheme}>
-                    <Security>
-                        {({ authenticated, notAuthenticated }) => (
-                            <React.Fragment>
-                                {authenticated(<Router router={router} />)}
-                                {notAuthenticated(<Login />)}
-                            </React.Fragment>
-                        )}
-                    </Security>
+                    <AdminTheme>
+                        <Security>
+                            {({ authenticated, notAuthenticated }) => (
+                                <React.Fragment>
+                                    {authenticated(<Router router={router} />)}
+                                    {notAuthenticated(<Login />)}
+                                </React.Fragment>
+                            )}
+                        </Security>
+                    </AdminTheme>
                 </CmsTheme>
             )}
         </Webiny>

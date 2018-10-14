@@ -6,7 +6,7 @@ import { Icon } from "webiny-ui/Icon";
 import { ReactComponent as DarkModeIcon } from "webiny-app-admin/assets/icons/round-invert_colors-24px.svg";
 import { withTheme, type WithThemeProps } from "webiny-app-admin/components";
 
-const DarkMode = ({ theme, toggleDarkMode }: WithThemeProps) => {
+const DarkMode = ({ theme: { toggleDarkMode, theme } }: { theme: WithThemeProps }) => {
     return (
         <ListItem ripple={false} onClick={() => toggleDarkMode()}>
             <ListItemGraphic>

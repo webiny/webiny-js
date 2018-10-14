@@ -14,7 +14,7 @@ import UserMenu from "webiny-app-admin/plugins/UserMenu";
 // User menu plugins
 import UserInfo from "webiny-app-admin/plugins/UserMenu/plugins/UserInfo";
 import UserImage from "webiny-app-admin/plugins/UserMenu/plugins/UserImage";
-//import DarkMode from "webiny-app-admin/plugins/UserMenu/plugins/DarkMode";
+import DarkMode from "webiny-app-admin/plugins/UserMenu/plugins/DarkMode";
 import Help from "webiny-app-admin/plugins/UserMenu/plugins/Help";
 import SendFeedback from "webiny-app-admin/plugins/UserMenu/plugins/Feedback";
 import SignOut from "webiny-app-admin/plugins/UserMenu/plugins/SignOut";
@@ -35,7 +35,7 @@ export default [
     // UserMenu plugins
     UserImage,
     UserInfo,
-    // DarkMode,TODO
+    DarkMode,
     Help,
     SendFeedback,
     createDivider(),
