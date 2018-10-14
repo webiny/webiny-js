@@ -24,23 +24,23 @@ type State = {
  */
 
 const Toolbar = styled("div")({
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'var(--mdc-theme-secondary)',
-    margin: '-20px -24px 0px -24px',
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "var(--mdc-theme-secondary)",
+    margin: "-20px -24px 0px -24px",
     padding: 2
 });
 
 const ToolOptions = styled("div")({
-    display: 'flex',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    margin:'0 -24px 10px -24px',
-    boxSizing: 'border-box',
+    display: "flex",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    margin: "0 -24px 10px -24px",
+    boxSizing: "border-box",
     padding: 10,
-    backgroundColor: 'var(--mdc-theme-background)',
-    borderTop: '1px solid var(--mdc-theme-on-background)',
+    backgroundColor: "var(--mdc-theme-background)",
+    borderTop: "1px solid var(--mdc-theme-on-background)",
     flexGrow: 1,
     flexBasis: 0
 });
@@ -128,14 +128,13 @@ class ImageEditor extends React.Component<Props, State> {
                 )}
 
                 <ToolOptions>
-                {this.state.tool &&
-                    typeof this.state.tool.subMenu === "function" && (
+                    {this.state.tool &&
+                        typeof this.state.tool.subMenu === "function" &&
                         this.state.tool.subMenu({
                             imageEditor: this.state.imageEditor,
                             clearTool: () => this.setState({ tool: null }),
                             resizeCanvas: () => this.resizeCanvas()
-                        })
-                    )}
+                        })}
                     {!this.state.tool && (
                         <React.Fragment>
                             {"Select a tool to start working on your image."}

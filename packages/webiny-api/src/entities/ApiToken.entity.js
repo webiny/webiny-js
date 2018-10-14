@@ -50,8 +50,6 @@ export function apiTokenFactory({ user = {}, config, entities }: Object): Class<
                 .setDynamic(() => {
                     return loadEntityScopes.call(this);
                 });
-
-            this.on("afterCreate", () => this.createJWT());
         }
 
         async createJWT(): Promise<IApiToken> {
@@ -60,6 +58,15 @@ export function apiTokenFactory({ user = {}, config, entities }: Object): Class<
             this.token = await token.encode({ id: this.id, type: "apiToken" }, 2147483647);
             await this.save();
             return this;
+        }
+
+        async save(...args): Promise<void> {
+            const createToken = !this.isExisting();
+            await super.save(...args);
+
+            if (createToken) {
+                await this.createJWT();
+            }
         }
     };
 }

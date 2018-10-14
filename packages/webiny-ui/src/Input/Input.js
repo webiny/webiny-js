@@ -2,7 +2,6 @@
 import * as React from "react";
 import { TextField } from "@rmwc/textfield";
 import { FormElementMessage } from "webiny-ui/FormElementMessage";
-import FontAwesomeIcon from "@fortawesome/react-fontawesome";
 import pick from "lodash/pick";
 import type { FormComponentProps } from "./../types";
 
@@ -161,12 +160,4 @@ class Input extends React.Component<Props> {
     }
 }
 
-/**
- * An icon that can be shown inside the input.
- * @param props
- * @returns {*}
- * @constructor
- */
-const InputIcon = (props: Object) => <FontAwesomeIcon style={{ fontSize: 22 }} {...props} />;
-
-export { Input, InputIcon };
+export { Input };

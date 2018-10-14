@@ -24,10 +24,6 @@ import { loginMutation } from "./Login/graphql";
 
 const t = i18n.namespace("Webiny.Admin.Login");
 
-const errorMessage = css({
-    color: 'red'
-});
-
 const Login = ({ login, error }: { login: Function, error?: Object }) => {
     return (
         <Wrapper>
@@ -109,19 +105,19 @@ export default compose(
     withState("error", "setError", null),
     withHandlers({
         login: ({ doLogin, setError, onToken }) => {
-            return async (formData) => {
+            return async formData => {
                 // Reset error
                 setError(null);
                 // Perform login
-                const res = (await doLogin({ variables: formData}));
+                const res = await doLogin({ variables: formData });
                 const { data, error } = res.data.security.loginUser;
-                if(error) {
+                if (error) {
                     return setError(error);
                 }
 
                 // Pass the token to Security
                 onToken(data.token);
-            }
+            };
         }
     })
 )(Login);

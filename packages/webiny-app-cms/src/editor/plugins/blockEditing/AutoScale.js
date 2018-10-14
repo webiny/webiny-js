@@ -16,37 +16,40 @@ export default class AutoScale extends React.Component {
          * getting dimensions of the block before the transition ends can lead to wrong dimensions.
          * The setTimeout offsets that problem.
          */
-        setTimeout(()=> {
+        setTimeout(() => {
             this.updateState();
         }, 200);
     }
 
     updateState() {
         const actualContent = this.content.current.children[0];
-        const contentSize = { width: actualContent.offsetWidth, height: actualContent.offsetHeight }
+        const contentSize = {
+            width: actualContent.offsetWidth,
+            height: actualContent.offsetHeight
+        };
 
         const { maxWidth, maxHeight } = this.props;
 
         let scaleWidth = maxWidth / contentSize.width;
         let scaleHeight = maxHeight / contentSize.height;
 
-        console.log(contentSize.width+" "+contentSize.height);
+        console.log(contentSize.width + " " + contentSize.height);
 
         let scale = scaleWidth;
-        let height = maxHeight/scaleWidth;
-        let width = maxWidth/scaleWidth;
-        if(scaleHeight<scaleWidth){
+        let height = maxHeight / scaleWidth;
+        let width = maxWidth / scaleWidth;
+        if (scaleHeight < scaleWidth) {
             scale = scaleHeight;
-            height = maxHeight/scaleHeight;
-            width = maxHeight/scaleHeight;
+            height = maxHeight / scaleHeight;
+            width = maxHeight / scaleHeight;
         }
 
-        if((width/scale)>(maxWidth/scale)){
-            width = (maxWidth/scale);
+        if (width / scale > maxWidth / scale) {
+            width = maxWidth / scale;
         }
 
-        if((height/scale)>(maxHeight/scale)){
-            height = (maxHeight/scale);
+        if (height / scale > maxHeight / scale) {
+            height = maxHeight / scale;
         }
 
         if (scale > 1) {
@@ -72,8 +75,8 @@ export default class AutoScale extends React.Component {
                     transformOrigin: "top",
                     position: "absolute",
                     top: 0,
-                    width: (width ? width+"px" : 'auto'),
-                    height: (height ? height+"px" : 'auto'),
+                    width: width ? width + "px" : "auto",
+                    height: height ? height + "px" : "auto"
                 }}
             >
                 {React.Children.only(children)}

@@ -12,38 +12,5 @@
     "Sven Al Hamad <sven@webiny.com>",
     "Adrian Smijulj <adrian@webiny.com>"
   ],
-  "license": "MIT",
-  "dependencies": {
-    "@fortawesome/fontawesome": "^1.1.5",
-    "@fortawesome/fontawesome-free-regular": "^5.0.9",
-    "@fortawesome/fontawesome-free-solid": "^5.0.9",
-    "@fortawesome/react-fontawesome": "^0.0.18",
-    "animate.css": "^3.5.2",
-    "bootstrap-sass": "^3.3.7",
-    "c3": "^0.4.18",
-    "clipboard": "^1.7.1",
-    "codemirror": "^5.33.0",
-    "codemirror-formatting": "^1.0.0",
-    "cropperjs": "^1.2.2",
-    "dynamics.js": "1.1.5",
-    "filesize": "^3.5.11",
-    "highlight.js": "^9.12.0",
-    "owl.carousel": "^2.2.0",
-    "pluralize": "^7.0.0",
-    "quill": "^1.3.4",
-    "react-custom-scrollbars": "^4.2.1",
-    "react-flatpickr": "^3.6.4",
-    "react-transition-group": "2.3.1",
-    "select2": "^4.0.6-rc.1",
-    "simplemde": "^1.11.2",
-    "webiny-app": "0.0.0-semantically-released",
-    "webiny-form": "0.0.0-semantically-released"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.0.0"
-  },
-  "peerDependencies": {
-    "react": "^16.4.0",
-    "react-dom": "^16.4.0"
-  }
+  "license": "MIT"
 }

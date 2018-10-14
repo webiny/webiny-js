@@ -1,6 +1,5 @@
 // @flow
 import * as React from "react";
-import { compose } from "recompose";
 import { get } from "dot-prop-immutable";
 import { pick } from "lodash";
 import { i18n } from "webiny-app/i18n";

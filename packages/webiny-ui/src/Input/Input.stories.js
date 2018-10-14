@@ -11,11 +11,15 @@ import {
 } from "webiny-storybook-utils/Story";
 import { withKnobs, boolean } from "@storybook/addon-knobs";
 import readme from "./../Input/README.md";
+import { ReactComponent as AutoRenewIcon } from "./svg/baseline-autorenew-24px.svg";
+import { ReactComponent as CloudDoneIcon } from "./svg/baseline-cloud_done-24px.svg";
+import { ReactComponent as BaselineDeleteIcon } from "./svg/baseline-delete-24px.svg";
+import { ReactComponent as BaselineDoneIcon } from "./svg/baseline-done-24px.svg";
 
 import { Form } from "webiny-form";
 
 // $FlowFixMe
-import { Input, InputIcon, PropsType } from "./Input";
+import { Input, PropsType } from "./Input";
 
 const story = storiesOf("Components/Input", module);
 story.addDecorator(withKnobs);
@@ -69,7 +73,7 @@ story.add("usage", () => {
                             <React.Fragment>
                                 <Bind name="phone">
                                     <Input
-                                        leadingIcon={<InputIcon icon={"phone-volume"} />}
+                                        leadingIcon={<AutoRenewIcon/>}
                                         label={"Your phone number"}
                                         description={"Please enter a real number"}
                                         disabled={disabled}
@@ -77,7 +81,7 @@ story.add("usage", () => {
                                 </Bind>
                                 <Bind name="mobile">
                                     <Input
-                                        trailingIcon={<InputIcon icon={"mobile-alt"} />}
+                                        trailingIcon={<CloudDoneIcon />}
                                         label={"Your mobile number"}
                                         description={"An SMS will be sent to this number"}
                                         disabled={disabled}
@@ -94,7 +98,7 @@ story.add("usage", () => {
                             <React.Fragment>
                                 <Bind name="phone">
                                     <Input
-                                        leadingIcon={<InputIcon icon={"phone-volume"} />}
+                                        leadingIcon={<AutoRenewIcon />}
                                         label={"Your phone number"}
                                         description={"Please enter a real number"}
                                         disabled={${disabled}}
@@ -102,7 +106,7 @@ story.add("usage", () => {
                                 </Bind>
                                 <Bind name="mobile">
                                     <Input
-                                        trailingIcon={<InputIcon icon={"mobile-alt"} />}
+                                        trailingIcon={<CloudDoneIcon />}
                                         label={"Your mobile number"}
                                         description={"An SMS will be sent to this number"}
                                         disabled={${disabled}}
@@ -122,7 +126,7 @@ story.add("usage", () => {
                                 <Bind name="phone">
                                     <Input
                                         outlined
-                                        leadingIcon={<InputIcon icon={"phone-volume"} />}
+                                        leadingIcon={<BaselineDeleteIcon />}
                                         label={"Your phone number"}
                                         description={"Please enter a real number"}
                                         disabled={disabled}
@@ -131,7 +135,7 @@ story.add("usage", () => {
                                 <Bind name="mobile">
                                     <Input
                                         outlined
-                                        trailingIcon={<InputIcon icon={"mobile-alt"} />}
+                                        trailingIcon={<BaselineDoneIcon />}
                                         label={"Your mobile number"}
                                         description={"An SMS will be sent to this number"}
                                         disabled={disabled}
@@ -149,7 +153,7 @@ story.add("usage", () => {
                                 <Bind name="phone">
                                     <Input
                                         outlined
-                                        leadingIcon={<InputIcon icon={"phone-volume"} />}
+                                        leadingIcon={<BaselineDeleteIcon />}
                                         label={"Your phone number"}
                                         description={"Please enter a real number"}
                                         disabled={${disabled}}
@@ -158,7 +162,7 @@ story.add("usage", () => {
                                 <Bind name="mobile">
                                     <Input
                                         outlined
-                                        trailingIcon={<InputIcon icon={"mobile-alt"} />}
+                                        trailingIcon={<BaselineDoneIcon />}
                                         label={"Your mobile number"}
                                         description={"An SMS will be sent to this number"}
                                         disabled={${disabled}}

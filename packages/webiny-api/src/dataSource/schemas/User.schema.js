@@ -73,6 +73,7 @@ export default {
         
         # This input type is used by the user who is updating his own account
         input CurrentUserInput {
+            email: String
             firstName: String
             lastName: String
             avatar: AvatarInput
@@ -126,8 +127,8 @@ export default {
     mutationFields: `
         "Login user"
         loginUser(
-            username: String!, 
-            password: String!, 
+            username: String! 
+            password: String! 
             remember: Boolean
         ): UserLoginResponse
         
@@ -138,7 +139,7 @@ export default {
         
         "Update settings of current user"
         updateCurrentUserSettings(
-            key: String!, 
+            key: String!
             data: JSON!
         ): JSON
         

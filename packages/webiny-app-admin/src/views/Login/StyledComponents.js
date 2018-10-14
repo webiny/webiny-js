@@ -45,3 +45,7 @@ export const Title = styled("div")({
 export const alignRight = css({
     textAlign: "right"
 });
+
+export const errorMessage = css({
+    color: "red"
+});

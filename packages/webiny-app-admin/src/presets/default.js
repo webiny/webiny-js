@@ -1,10 +1,9 @@
-//@flow
-// Layout plugins
+// @flow
+// Layout plug
 import Header from "webiny-app-admin/plugins/Header";
 import Footer from "webiny-app-admin/plugins/Footer";
 import Content from "webiny-app-admin/plugins/Content";
 import snackbar from "webiny-app-admin/plugins/Snackbar";
-import topProgressBar from "webiny-app-admin/plugins/TopProgressBar";
 
 // Header plugins
 import Menu from "webiny-app-admin/plugins/Menu";
@@ -25,8 +24,6 @@ export default [
     // Layout plugins
     Header,
     Content,
-    topProgressBar("layout"),
-    topProgressBar("empty-layout"),
     snackbar("layout"),
     snackbar("empty-layout"),
     Footer,

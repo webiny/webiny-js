@@ -74,25 +74,25 @@ export const searchWrapper = css({
     width: "100%",
     backgroundColor: "rgba(0, 0, 0, 0.1)",
     display: "flex",
-    padding: '10px 20px',
+    padding: "10px 20px",
     position: "relative",
     borderRadius: 4,
-    transition: 'background 100ms ease-in,width 100ms ease-out',
-    color: 'var(--mdc-theme-surface)',
-    border: '1px solid transparent',
-    '&.active':{
-        color: 'var(--mdc-theme-on-surface)',
-        border: '1px solid var(--mdc-theme-text-hint-on-dark)',
-        background: 'var(--mdc-theme-surface)',
-        boxShadow: '0 1px 1px var(--mdc-theme-text-hint-on-dark)',
-        'input':{
-            color: 'var(--mdc-theme-on-surface)',
+    transition: "background 100ms ease-in,width 100ms ease-out",
+    color: "var(--mdc-theme-surface)",
+    border: "1px solid transparent",
+    "&.active": {
+        color: "var(--mdc-theme-on-surface)",
+        border: "1px solid var(--mdc-theme-text-hint-on-dark)",
+        background: "var(--mdc-theme-surface)",
+        boxShadow: "0 1px 1px var(--mdc-theme-text-hint-on-dark)",
+        input: {
+            color: "var(--mdc-theme-on-surface)"
         },
-        [SearchShortcut]:{
-            display: 'none'
+        [SearchShortcut]: {
+            display: "none"
         }
     },
-    'input':{
-        color: 'var(--mdc-theme-surface)',
+    input: {
+        color: "var(--mdc-theme-surface)"
     }
 });

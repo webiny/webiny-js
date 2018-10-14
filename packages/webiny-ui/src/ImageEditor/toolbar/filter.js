@@ -115,7 +115,7 @@ class SubMenu extends React.Component<Props, State> {
                         </tbody>
                     </table>
                 </div>
-                
+
                 <div>
                     <Switch
                         label={"Brightness"}

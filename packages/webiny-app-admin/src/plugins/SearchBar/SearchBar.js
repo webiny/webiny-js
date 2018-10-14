@@ -24,7 +24,7 @@ import {
     SearchShortcut,
     icon,
     iconDown,
-    searchWrapper,
+    searchWrapper
 } from "./styled";
 
 import SearchDropdown from "./SearchDropdown";
@@ -90,7 +90,7 @@ class SearchBar extends React.Component<
         */
 
         return (
-            <Elevation className={classnames(searchWrapper, {active: this.state.active})} z={0}>
+            <Elevation className={classnames(searchWrapper, { active: this.state.active })} z={0}>
                 <SearchBarWrapper>
                     <SearchBarInputWrapper>
                         <Icon className={icon} icon={<SearchIcon />} />
@@ -98,8 +98,12 @@ class SearchBar extends React.Component<
                             value={this.state.term}
                             onChange={this.setSearchTerm}
                             onKeyDown={this.onKeyDown}
-                            onFocus={()=>{this.setState({active:true})}}
-                            onBlur={()=>{this.setState({active:false})}}
+                            onFocus={() => {
+                                this.setState({ active: true });
+                            }}
+                            onBlur={() => {
+                                this.setState({ active: false });
+                            }}
                             className="mdc-text-field__input"
                             placeholder={this.state.placeholder}
                         />

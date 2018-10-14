@@ -1,6 +1,5 @@
 // @flow
 import * as React from "react";
-import { compose, mapProps } from "recompose";
 import { i18n } from "webiny-app/i18n";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";

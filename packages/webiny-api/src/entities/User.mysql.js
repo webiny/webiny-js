@@ -16,7 +16,7 @@ class UserTable extends MySQLTable {
             .smallInt(1)
             .setDefault(1);
 
-        this.column("avatar").char(24);
+        this.column("avatar").text();
 
         this.index().unique("email");
     }

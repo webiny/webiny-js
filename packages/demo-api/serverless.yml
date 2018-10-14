@@ -3,7 +3,6 @@ service: project-name
 plugins:
   - serverless-webpack
   - serverless-offline
-  - serverless-static
   - serverless-apigw-binary
   - serverless-apigwy-binary
 
@@ -18,12 +17,8 @@ custom:
     bucketId: ${opt:bucket, ""}
   api:
     source: ${opt:source, "src"}
-  static:
-    path: ./static
-    port: 8000
   apigwBinary:
     types:
-      - 'image/jpeg'
       - '*/*'
 
 provider:

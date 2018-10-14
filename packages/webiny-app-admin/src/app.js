@@ -4,12 +4,11 @@ import { i18n } from "webiny-app/i18n";
 import { addPlugin } from "webiny-app/plugins";
 import plugins from "webiny-app-admin/presets/default";
 import { ReactComponent as SecurityIcon } from "./assets/images/icons/baseline-security-24px.svg";
-//import Login from "./views/Login";
 import Roles from "./views/Roles";
 import Users from "./views/Users";
 import ApiTokens from "./views/ApiTokens";
 //import Groups from "./views/Groups";
-//import Account from "./views/Account";
+import Account from "./views/Account";
 import AdminLayout from "webiny-app-admin/components/Layouts/AdminLayout";
 
 const t = i18n.namespace("Admin.App");
@@ -110,7 +109,7 @@ export default () => {
         }
     });
 
-    /*addPlugin({
+    addPlugin({
         name: "route-account",
         type: "route",
         route: {
@@ -126,5 +125,5 @@ export default () => {
             },
             group: securityManager
         }
-    });*/
+    });
 };

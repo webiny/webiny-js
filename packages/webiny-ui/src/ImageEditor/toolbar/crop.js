@@ -8,9 +8,7 @@ import { Tooltip } from "webiny-ui/Tooltip";
 const subMenu = ({ imageEditor, clearTool, resizeCanvas }) => {
     return (
         <React.Fragment>
-            <div>
-                Click and drag to crop a portion of the image. Hold Shift to crop a square.
-            </div>
+            <div>Click and drag to crop a portion of the image. Hold Shift to crop a square.</div>
             <div>
                 <ButtonDefault
                     onClick={() => {
@@ -41,13 +39,13 @@ const tool: ImageEditorTool = {
     icon({ imageEditor, enableTool }) {
         return (
             <Tooltip placement={"bottom"} content={"Crop"}>
-            <IconButton
-                icon={<CropIcon />}
-                onClick={() => {
-                    enableTool();
-                    imageEditor.startDrawingMode("CROPPER");
-                }}
-            />
+                <IconButton
+                    icon={<CropIcon />}
+                    onClick={() => {
+                        enableTool();
+                        imageEditor.startDrawingMode("CROPPER");
+                    }}
+                />
             </Tooltip>
         );
     },

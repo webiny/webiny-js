@@ -1,17 +1,18 @@
 // @flow
 import * as React from "react";
-import { withSecurity } from "webiny-app/components";
-import { graphqlQuery } from "webiny-app/actions";
+import gql from "graphql-tag";
+import { pick } from "lodash";
+import { get } from "dot-prop-immutable";
+import { graphql } from "react-apollo";
+import { withSecurity } from "webiny-app-admin/components";
 import { i18n } from "webiny-app/i18n";
 import { Form } from "webiny-form";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
 import { withSnackbar } from "webiny-app-admin/components";
-import compose from "recompose/compose";
+import { compose, withHandlers } from "recompose";
 import AvatarImage from "./Users/AvatarImage";
-import gql from "graphql-tag";
-import { connect } from "react-redux";
 
 import {
     SimpleForm,
@@ -22,30 +23,18 @@ import {
 
 const t = i18n.namespace("Security.UsersForm");
 
-const UsersForm = props => (
-    <Form
-        data={props.security.identity}
-        onSubmit={data => {
-            props.graphqlQuery({
-                query: gql`
-                    query updateMe($data: JSON!) {
-                        Me {
-                            update(data: $data) {
-                                ... on SecurityUser {
-                                    id
-                                }
-                            }
-                        }
-                    }
-                `,
-                variables: { data },
-                onSuccess: () => {
-                    props.showSnackbar(t`Account information update successfully.`);
-                    props.security.refresh();
-                }
-            });
-        }}
-    >
+const fields = `
+    data {
+        id email firstName lastName avatar { src } 
+    }
+    error {
+        code
+        message
+    }
+`;
+
+const UsersForm = ({ onSubmit, user }) => (
+    <Form data={user.data} onSubmit={onSubmit}>
         {({ data, form, Bind }) => (
             <SimpleForm>
                 <SimpleFormHeader title={"Account"} />
@@ -104,11 +93,49 @@ const UsersForm = props => (
     </Form>
 );
 
+const getCurrentUser = gql`
+{
+    security {
+        getCurrentUser {
+            ${fields}
+        }
+    }
+}
+`;
+
+const updateCurrentUser = gql`
+    mutation updateMe($data: CurrentUserInput!) {
+        security {
+            updateCurrentUser(data: $data) {
+               ${fields}
+            }
+        }
+    }
+`;
+
 export default compose(
     withSnackbar(),
     withSecurity(),
-    connect(
-        null,
-        { graphqlQuery }
-    )
+    graphql(getCurrentUser, {
+        props: ({ data }) => ({
+            user: get(data, "security.getCurrentUser") || { data: {} }
+        })
+    }),
+    graphql(updateCurrentUser, { name: "updateCurrentUser" }),
+    withHandlers({
+        onSubmit: ({ updateCurrentUser, showSnackbar }) => async formData => {
+            const { data: response } = await updateCurrentUser({
+                variables: { data: pick(formData, ["email", "firstName", "lastName", "avatar"]) }
+            });
+            const { error } = response.security.updateCurrentUser;
+            if (error) {
+                return showSnackbar(error.message, {
+                    dismissesOnAction: true,
+                    actionText: "Close"
+                });
+            }
+
+            showSnackbar("Account saved successfully!");
+        }
+    })
 )(UsersForm);

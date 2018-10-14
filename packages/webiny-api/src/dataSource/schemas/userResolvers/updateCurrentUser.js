@@ -1,4 +1,5 @@
 // @flow
+import { Response, ErrorResponse } from "webiny-api/graphql";
 import type { Entity } from "webiny-entity";
 type EntityFetcher = (context: Object) => Class<Entity>;
 
@@ -13,10 +14,21 @@ export default (entityFetcher: EntityFetcher) => async (
 
     const currentUser: ?Entity = await User.findById(user.id);
     if (currentUser) {
-        currentUser.populate(args.data);
-        await currentUser.save();
-        return currentUser;
+        try {
+            currentUser.populate(args.data);
+            await currentUser.save();
+            return new Response(currentUser);
+        } catch (e) {
+            return new ErrorResponse({
+                code: e.code,
+                message: e.message,
+                data: e.data || null
+            });
+        }
     }
 
-    throw Error("User not found!");
+    return new ErrorResponse({
+        code: "NOT_FOUND",
+        message: "User not found!"
+    });
 };

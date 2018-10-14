@@ -1,45 +1,25 @@
 // @flow
-import {
-    router,
-    resolveMiddleware,
-    renderMiddleware,
-    reduxMiddleware,
-    authenticationMiddleware
-} from "webiny-app/router";
-import userIdentity from "./userIdentity";
-
-// Plugins for "withFileUpload" HOC - used with file upload related components.
-import webinyCloudStoragePlugin from "webiny-app/components/withFileUpload/webinyCloudStoragePlugin";
+import { renderMiddleware } from "webiny-app/router";
+import ApolloClient from "apollo-client";
+import { ApolloLink } from "apollo-link";
+import { HttpLink } from "apollo-link-http";
+import { InMemoryCache } from "apollo-cache-inmemory";
+import { createAuthLink } from "webiny-app-admin/security";
 
 export default {
-    security: {
-        cookie: "webiny-token",
-        identities: [userIdentity],
-        onLogout() {
-            // TODO
-            router.goToRoute({ name: "Login" });
-        }
-    },
     router: {
         basename: "/admin",
         defaultRoute: "Policies",
-        middleware: [
-            authenticationMiddleware({
-                onNotAuthenticated({ route }, next) {
-                    // TODO
-                    if (route.name !== "Login") {
-                        router.goToRoute({ name: "Login" });
-                    }
-                    next();
-                }
-            }),
-            reduxMiddleware(),
-            resolveMiddleware(),
-            renderMiddleware()
-        ]
+        middleware: [renderMiddleware()]
     },
-    apolloClient: {
-        uri: "/graphql",
+    apolloClient: new ApolloClient({
+        link: ApolloLink.from([
+            createAuthLink(),
+            new HttpLink({ uri: "/graphql" })
+        ]),
+        cache: new InMemoryCache({
+            dataIdFromObject: obj => obj.id || null
+        }),
         defaultOptions: {
             watchQuery: {
                 fetchPolicy: "network-only",
@@ -50,8 +30,16 @@ export default {
                 errorPolicy: "all"
             }
         }
-    },
-    withFileUploadPlugin: webinyCloudStoragePlugin({
-        siteToken: "abc123"
-    })
+    }),
+    components: {
+        Image: {
+            presets: {
+                avatar: { width: 128 }
+            },
+            plugin: "image-component"
+        },
+        withFileUpload: {
+            plugin: ["with-file-upload", { uri: "/files" }]
+        }
+    }
 };
