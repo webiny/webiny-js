@@ -20,7 +20,10 @@ const withDeleteHandler = ({ mutation, response, snackbar }): Function => {
                         if (data) {
                             showSnackbar(snackbar(item));
                         } else {
-                            showSnackbar(error.message);
+                            showSnackbar(error.message, {
+                                dismissesOnAction: true,
+                                actionText: "Close"
+                            });
                         }
 
                         if (item.id === id) {
@@ -74,7 +77,10 @@ const withSaveHandler = ({ create, update, response, variables, snackbar }): Fun
                                     setInvalidFields(error.data.invalidAttributes);
                                     return;
                                 } else {
-                                    showSnackbar(error.message);
+                                    showSnackbar(error.message, {
+                                        dismissesOnAction: true,
+                                        actionText: "Close"
+                                    });
                                     return;
                                 }
                             }
@@ -117,14 +123,7 @@ export const withCrud = ({ list, form }: Object): Function => {
             }),
             withSaveHandler(form.save),
             mapProps((props: Object) => {
-                const {
-                    router,
-                    dataList,
-                    saveRecord,
-                    formData,
-                    invalidFields,
-                    formError
-                } = props;
+                const { router, dataList, saveRecord, formData, invalidFields, formError } = props;
 
                 return {
                     router,

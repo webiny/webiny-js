@@ -98,7 +98,7 @@
     "lint-staged": "lint-staged",
     "prettier": "prettier --config .prettierrc.js --write",
     "release": "node scripts/release",
-    "release:dry": "node scripts/release --branch=declarative-api",
+    "release:dry": "node scripts/release --preview",
     "webiny-ui-build-storybook": "cd packages/webiny-ui && cross-env OUT=../../netlify-static yarn build-storybook"
   },
   "pre-commit": [

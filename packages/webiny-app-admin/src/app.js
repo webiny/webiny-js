@@ -31,7 +31,7 @@ export default () => {
                     </Menu>
                     <Menu label={t`User Management`} group={securityManager}>
                         <Menu label={t`Groups`} route="Groups" />
-                        <Menu label={t`Policies`} route="Policies" />
+                        <Menu label={t`Roles`} route="Roles" />
                     </Menu>
                 </Menu>
             );

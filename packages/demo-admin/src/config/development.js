@@ -20,9 +20,7 @@ export default {
             createAuthLink(),
             new HttpLink({ uri: "http://localhost:9000/graphql" })
         ]),
-        cache: new InMemoryCache({
-            dataIdFromObject: obj => obj.id || null
-        }),
+        cache: new InMemoryCache(),
         defaultOptions: {
             watchQuery: {
                 fetchPolicy: "network-only",
