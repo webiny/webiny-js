@@ -1,5 +1,11 @@
 import Page from "../entities/Page/Page.entity";
-import { resolveCreate, resolveDelete, resolveGet, resolveList, resolveUpdate } from "webiny-api/graphql";
+import {
+    resolveCreate,
+    resolveDelete,
+    resolveGet,
+    resolveList,
+    resolveUpdate
+} from "webiny-api/graphql";
 
 export default {
     typeDefs: `
@@ -65,4 +71,5 @@ export default {
     mutationResolvers: {
         createPage: resolveCreate(Page),
         deletePage: resolveDelete(Page)
+    }
 };

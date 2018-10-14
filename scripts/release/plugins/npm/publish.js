@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs-extra");
 
 module.exports = () => {
-    return async ({ packages, nextRelease, logger, config }, next) => {
+    return async ({ packages, nextRelease, logger, config }, next, finish) => {
         const { registryUrl = "https://registry.npmjs.org", tag } = config;
         for (let i = 0; i < packages.length; i++) {
             const pkg = packages[i];

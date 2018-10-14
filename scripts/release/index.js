@@ -7,6 +7,7 @@ const compose = require("./utils/compose");
 const getPackages = require("./utils/getPackages");
 
 const analyzeCommits = require("./plugins/analyzeCommits");
+const verifyEnvironment = require("./plugins/verifyEnvironment");
 const githubVerify = require("./plugins/github/verify");
 const githubPublish = require("./plugins/github/publish");
 const npmVerify = require("./plugins/npm/verify");
@@ -36,10 +37,12 @@ const release = async config => {
 };
 
 release({
+    ci: true,
     preview: argv.preview || false,
     branch: argv.branch || "master",
     packages: getPackages("build/node_modules/*"),
     plugins: [
+        verifyEnvironment(),
         githubVerify(),
         npmVerify(),
         analyzeCommits(),

@@ -15,7 +15,7 @@ module.exports = (pluginConfig = {}) => {
     /**
      * Analyze commits for all packages and determine next release version
      */
-    return async (params, next) => {
+    return async (params, next, finish) => {
         const { logger, config, git } = params;
 
         const getLastRelease = getLastReleaseFactory({ logger, git });
@@ -38,7 +38,7 @@ module.exports = (pluginConfig = {}) => {
 
         if (!type) {
             logger.info(`No relevant commits indicate a release!`);
-            return next();
+            return finish();
         }
 
         let version;

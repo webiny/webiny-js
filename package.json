@@ -75,7 +75,7 @@
     "pre-commit": "^1.2.2",
     "prettier": "^1.14.2",
     "random-color": "^1.0.1",
-    "read-pkg": "^4.0.1",
+    "read-pkg": "4.0.1",
     "rimraf": "^2.6.2",
     "rxjs": "^6.3.0",
     "rxjs-compat": "^6.3.0",
@@ -98,7 +98,7 @@
     "lint-staged": "lint-staged",
     "prettier": "prettier --config .prettierrc.js --write",
     "release": "node scripts/release",
-    "release:dry": "node scripts/release --preview",
+    "release:dry": "node scripts/release --branch=declarative-api",
     "webiny-ui-build-storybook": "cd packages/webiny-ui && cross-env OUT=../../netlify-static yarn build-storybook"
   },
   "pre-commit": [
