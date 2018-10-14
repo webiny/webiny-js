@@ -4,6 +4,8 @@ plugins:
   - serverless-webpack
   - serverless-offline
   - serverless-static
+  - serverless-apigw-binary
+  - serverless-apigwy-binary
 
 custom:
   webpack:
@@ -19,6 +21,10 @@ custom:
   static:
     path: ./static
     port: 8000
+  apigwBinary:
+    types:
+      - 'image/jpeg'
+      - '*/*'
 
 provider:
   name: aws
@@ -32,7 +38,23 @@ functions:
     name: '${self:service}-${self:custom.stage}-api'
     handler: ${self:custom.api.source}/handler.api
     events: [ { http: 'ANY /graphql' }, { http: 'ANY /graphql/{proxy+}' } ]
-  files:
-    name: '${self:service}-${self:custom.stage}-files'
-    handler: ${self:custom.api.source}/handler.files
-    events: [ { http: 'ANY /files' } ]
+  filesCreate:
+    name: '${self:service}-${self:custom.stage}-files-create'
+    handler: ${self:custom.api.source}/files.createFile
+    events: [ { http: 'POST /files' } ]
+    environment:
+      PLUGIN: localStorage
+  filesRead:
+    name: '${self:service}-${self:custom.stage}-files-read'
+    handler: ${self:custom.api.source}/files.readFile
+    environment:
+      PLUGIN: localStorage
+    events:
+      - http:
+          path: files/{proxy+}
+          method: get
+          contentHandling: CONVERT_TO_BINARY
+          request:
+            parameters:
+              paths:
+                src: true

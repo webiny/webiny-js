@@ -48,13 +48,11 @@ const UsersDataList = ({ dataList, data, meta, router, security, deleteUser }: O
             ]}
         >
             {({ data }) => (
-                <ScrollList>
+                <ScrollList twoLine avatarList>
                     {data.map(item => (
                         <ListItem key={item.id} selected={router.getQuery("id") === item.id}>
                             <ListItemGraphic>
                                 <Avatar
-                                    width={32}
-                                    height={32}
                                     src={item.avatar && item.avatar.src}
                                     fallbackText={item.fullName}
                                     alt={t`User's avatar.`}

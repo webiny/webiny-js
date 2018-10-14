@@ -9,9 +9,9 @@ const webinyRadioTitle = css(
     {},
     {
         "&.mdc-text-field-helper-text": {
-            //paddingLeft: 10,
-            textTransform: "uppercase",
-            fontWeight: "bold",
+            paddingLeft: 10,
+            //textTransform: "uppercase",
+            //fontWeight: "bold",
             marginBottom: "5px"
         }
     }

@@ -16,12 +16,17 @@ import {
     LoginContent,
     Logo,
     Title,
-    Wrapper
+    Wrapper,
+    errorMessage
 } from "./Login/StyledComponents";
 import logoOrange from "./../assets/images/logo_orange.png";
 import { loginMutation } from "./Login/graphql";
 
 const t = i18n.namespace("Webiny.Admin.Login");
+
+const errorMessage = css({
+    color: 'red'
+});
 
 const Login = ({ login, error }: { login: Function, error?: Object }) => {
     return (
@@ -43,9 +48,9 @@ const Login = ({ login, error }: { login: Function, error?: Object }) => {
                                     </Title>
 
                                     {error && (
-                                        <Grid>
-                                            <Cell span={12}>{error.message}</Cell>
-                                        </Grid>
+                                        <Cell span={12} className={errorMessage}>
+                                            {error.message}
+                                        </Cell>
                                     )}
 
                                     <Grid>

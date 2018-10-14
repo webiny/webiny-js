@@ -2,15 +2,6 @@
 import { css } from "emotion";
 import styled from "react-emotion";
 
-export const searchWrapper = css({
-    width: "100%",
-    backgroundColor: "rgba(255, 255, 255, 0.35)",
-    display: "flex",
-    padding: 10,
-    position: "relative",
-    borderRadius: 2
-});
-
 export const dropdownStyle = css({
     left: 0,
     top: 47,
@@ -25,15 +16,17 @@ export const SearchBarInput = styled("input")({
     border: "none",
     outline: "none",
     backgroundColor: "transparent",
-    color: "var(--mdc-theme-surface)",
     "&.mdc-text-field__input": {
-        paddingTop: "0 !important",
-        paddingLeft: "15px !important",
+        paddingTop: "5px !important",
+        paddingLeft: "10px !important",
         borderBottom: "none !important",
         height: "25px !important",
         color: "var(--mdc-theme-surface)",
         "&::placeholder": {
             color: "var(--mdc-theme-surface) !important"
+        },
+        "&:focus::placeholder": {
+            color: "var(--mdc-theme-text-secondary-on-background) !important"
         }
     }
 });
@@ -43,7 +36,8 @@ export const SearchShortcut = styled("div")({
     color: "var(--mdc-theme-surface)",
     borderRadius: 5,
     width: 20,
-    height: 26,
+    height: 24,
+    marginTop: 1,
     textAlign: "center",
     fontSize: "12px",
     paddingTop: "3px",
@@ -67,8 +61,8 @@ export const icon = css({
     "&.mdc-button__icon": {
         width: "auto !important",
         paddingRight: 5,
-        color: "var(--mdc-theme-surface)",
-        opacity: 0.75
+        opacity: 0.75,
+        marginTop: 2
     }
 });
 
@@ -76,36 +70,29 @@ export const iconDown = css({
     cursor: "pointer"
 });
 
-export const selectIconDown = css({
-    pointerEvents: "none",
-    position: "absolute",
-    width: 24,
-    height: 24,
-    right: 19,
-    top: 1,
-    color: "var(--mdc-theme-surface)"
-});
-
-export const SelectWrapper = styled("div")({
-    position: "relative"
-});
-
-export const selectStyles = css({
-    "&.mdc-select": {
-        width: "150px !important",
-        height: 25,
-        backgroundImage: "none !important",
-        backgroundPosition: "right 8px bottom 0px",
-        borderRight: "1px solid var(--mdc-theme-surface)",
-        marginRight: 10,
-        ".mdc-select__native-control": {
-            padding: 0,
-            border: "none",
-            lineHeight: "120%",
-            color: "var(--mdc-theme-surface) !important"
+export const searchWrapper = css({
+    width: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.1)",
+    display: "flex",
+    padding: '10px 20px',
+    position: "relative",
+    borderRadius: 4,
+    transition: 'background 100ms ease-in,width 100ms ease-out',
+    color: 'var(--mdc-theme-surface)',
+    border: '1px solid transparent',
+    '&.active':{
+        color: 'var(--mdc-theme-on-surface)',
+        border: '1px solid var(--mdc-theme-text-hint-on-dark)',
+        background: 'var(--mdc-theme-surface)',
+        boxShadow: '0 1px 1px var(--mdc-theme-text-hint-on-dark)',
+        'input':{
+            color: 'var(--mdc-theme-on-surface)',
         },
-        ".mdc-line-ripple": {
-            display: "none"
+        [SearchShortcut]:{
+            display: 'none'
         }
+    },
+    'input':{
+        color: 'var(--mdc-theme-surface)',
     }
 });

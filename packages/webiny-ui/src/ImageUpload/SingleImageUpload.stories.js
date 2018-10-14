@@ -11,7 +11,6 @@ import {
 } from "webiny-storybook-utils/Story";
 import { withKnobs, boolean } from "@storybook/addon-knobs";
 import readme from "./README.md";
-
 import { Form } from "webiny-form";
 
 // $FlowFixMe
@@ -42,9 +41,6 @@ story.add("Single Image Upload", () => {
                             {({ Bind }) => (
                                 <Bind name="image">
                                     <SingleImageUpload
-                                        cropper={{
-                                            aspectRatio: 1
-                                        }}
                                         label="Your previously uploaded image:"
                                         disabled={disabled}
                                         description="Image will be publicly visible."
@@ -60,9 +56,6 @@ story.add("Single Image Upload", () => {
                             {({ Bind }) => (
                                 <Bind name="image">
                                      <SingleImageUpload
-                                        cropper={{
-                                            aspectRatio: 4 / 3
-                                        }}
                                         label="Your previously uploaded image:"
                                         disabled={disabled}
                                         description="This list will not be shown to other users."

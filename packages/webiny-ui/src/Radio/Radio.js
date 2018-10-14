@@ -1,9 +1,8 @@
 // @flow
 import * as React from "react";
 import { Radio as RmwcRadio } from "@rmwc/radio";
-import { TextFieldHelperText } from "@rmwc/textfield";
 import type { FormComponentProps } from "./../types";
-import {FormElementMessage} from "../FormElementMessage";
+import { FormElementMessage } from "../FormElementMessage";
 
 type Props = FormComponentProps & {
     // Component label.
@@ -36,16 +35,11 @@ class Radio extends React.Component<Props> {
                     label={label}
                 />
                 {validation.isValid === false && (
-                    <FormElementMessage error>
-                        {validation.message}
-                    </FormElementMessage>
+                    <FormElementMessage error>{validation.message}</FormElementMessage>
                 )}
 
-                {validation.isValid !== false && description && (
-                    <FormElementMessage>
-                        {description}
-                    </FormElementMessage>
-                )}
+                {validation.isValid !== false &&
+                    description && <FormElementMessage>{description}</FormElementMessage>}
             </React.Fragment>
         );
     }

@@ -99,7 +99,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                         </Styled.AddBlock>
                     </Styled.Overlay>
                     <Styled.BlockPreview>
-                        <AutoScale maxWidth={310}>
+                        <AutoScale maxWidth={310} maxHeight={150}>
                             <Element element={block} />
                         </AutoScale>
                     </Styled.BlockPreview>
