@@ -5,6 +5,7 @@ import Downshift from "downshift";
 import { getPlugin, getPlugins } from "webiny-app/plugins";
 import { withRouter } from "webiny-app/components";
 import type { SearchPlugin } from "webiny-app-admin/types";
+import classnames from "classnames";
 
 // UI components
 import { Icon } from "webiny-ui/Icon";
@@ -20,13 +21,10 @@ import {
     SearchBarWrapper,
     SearchBarInputWrapper,
     SearchBarInput,
-    SelectWrapper,
     SearchShortcut,
     icon,
     iconDown,
-    selectIconDown,
     searchWrapper,
-    selectStyles
 } from "./styled";
 
 import SearchDropdown from "./SearchDropdown";
@@ -38,17 +36,19 @@ class SearchBar extends React.Component<
         placeholder: string,
         term: string,
         type: string,
-        filters: Object
+        filters: Object,
+        active: boolean
     }
 > {
     plugins: Array<SearchPlugin> = getPlugins("global-search");
 
     state = {
         hasFilters: false,
-        placeholder: this.plugins[0] ? this.plugins[0].labels.search : "",
+        placeholder: this.plugins[0] ? this.plugins[0].labels.search : "Search",
         term: "",
         type: this.plugins[0] ? this.plugins[0].name : "",
-        filters: {}
+        filters: {},
+        active: false
     };
 
     onKeyDown = (e: SyntheticKeyboardEvent<HTMLInputElement>) => {
@@ -82,40 +82,24 @@ class SearchBar extends React.Component<
         });
     };
 
-    renderOptions = () => {
-        return (
-            <SelectWrapper>
-                <Select
-                    className={selectStyles}
-                    value={this.state.type}
-                    onChange={this.setSearchType}
-                >
-                    {this.plugins.map(pl => (
-                        <option key={pl.name} value={pl.name}>
-                            {pl.labels.option}
-                        </option>
-                    ))}
-                </Select>
-                <Icon className={selectIconDown + " " + iconDown + ""} icon={<DownIcon />} />
-            </SelectWrapper>
-        );
-    };
-
     render() {
+        /*
         if (!this.plugins.length) {
             return null;
         }
+        */
 
         return (
-            <Elevation className={searchWrapper} z={0}>
+            <Elevation className={classnames(searchWrapper, {active: this.state.active})} z={0}>
                 <SearchBarWrapper>
-                    {this.renderOptions()}
                     <SearchBarInputWrapper>
                         <Icon className={icon} icon={<SearchIcon />} />
                         <SearchBarInput
                             value={this.state.term}
                             onChange={this.setSearchTerm}
                             onKeyDown={this.onKeyDown}
+                            onFocus={()=>{this.setState({active:true})}}
+                            onBlur={()=>{this.setState({active:false})}}
                             className="mdc-text-field__input"
                             placeholder={this.state.placeholder}
                         />
