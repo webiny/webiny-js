@@ -1,14 +1,13 @@
-import { genericTypes, dummyResolver } from "webiny-api/graphql";
+import { dummyResolver } from "webiny-api/graphql";
+import setupEntities from "./setupEntities";
 
-import page from "./Page";
-import category from "./Category";
-import revision from "./Revision";
+import page from "./schemas/Page.schema";
+import category from "./schemas/Category.schema";
+import revision from "./schemas/Revision.schema";
 
 export default {
     namespace: "cms",
     typeDefs: `
-        ${genericTypes()}
-        
         ${revision.typeDefs}
         ${page.typeDefs}
         ${category.typeDefs}
@@ -50,5 +49,8 @@ export default {
             ...revision.mutationResolvers,
             ...category.mutationResolvers
         }
+    },
+    context: (ctx: Object) => {
+        return setupEntities(ctx);
     }
 };

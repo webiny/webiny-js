@@ -18,5 +18,16 @@ export const genericTypes = () => {
             previousPage: Int
             nextPage: Int
         }
+        
+        type DeleteResponse {
+            data: Boolean
+            error: Error
+        }
+        
+        type Error {
+            code: String
+            message: String
+            data: JSON
+        }
   `;
 };

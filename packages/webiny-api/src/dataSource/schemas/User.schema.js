@@ -85,11 +85,6 @@ export default {
             error: Error
         }
         
-        type UserDeleteResponse {
-            data: Boolean
-            error: Error
-        }
-        
         type UserListResponse {
             data: [User]
             meta: ListMeta
@@ -154,7 +149,7 @@ export default {
     
         deleteUser(
             id: ID!
-        ): UserDeleteResponse
+        ): DeleteResponse
     `,
     queryResolvers: {
         getCurrentUser: resolveGetCurrentUser(userFetcher),

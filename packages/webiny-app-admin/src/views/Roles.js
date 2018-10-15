@@ -6,7 +6,7 @@ import { get } from "dot-prop-immutable";
 import { compose } from "recompose";
 import { CompactView, LeftPanel, RightPanel } from "webiny-app-admin/components/Views/CompactView";
 import FloatingActionButton from "webiny-app-admin/components/FloatingActionButton";
-import { withCrud } from "webiny-app-admin/components";
+import { withCrud, type WithCrudProps } from "webiny-app-admin/components";
 import { i18n } from "webiny-app/i18n";
 
 import RolesDataList from "./Roles/RolesDataList";
@@ -22,12 +22,21 @@ import {
 
 const t = i18n.namespace("Security.Roles");
 
-const Roles = ({ scopes, router, crudList, crudForm }: Object) => {
+const Roles = ({
+    scopes,
+    router,
+    formProps,
+    listProps
+}: WithCrudProps & { scopes: Array<string> }) => {
     return (
         <React.Fragment>
             <CompactView>
-                <LeftPanel>{crudList(<RolesDataList />)}</LeftPanel>
-                <RightPanel>{crudForm(<RolesForm scopes={scopes} />)}</RightPanel>
+                <LeftPanel>
+                    <RolesDataList {...listProps} />
+                </LeftPanel>
+                <RightPanel>
+                    <RolesForm scopes={scopes} {...formProps} />
+                </RightPanel>
             </CompactView>
             <FloatingActionButton
                 onClick={() =>
@@ -50,7 +59,6 @@ export default compose(
                 response: data => get(data, "security.roles")
             },
             delete: {
-                name: "deleteRole",
                 mutation: deleteRole,
                 response: data => data.security.deleteRole,
                 snackbar: data => t`Role {name} deleted.`({ name: data.name })

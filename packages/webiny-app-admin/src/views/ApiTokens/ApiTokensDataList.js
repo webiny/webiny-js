@@ -1,6 +1,7 @@
 // @flow
 import * as React from "react";
 import { i18n } from "webiny-app/i18n";
+import type { WithCrudListProps } from "webiny-app-admin/components";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import {
     DataList,
@@ -14,7 +15,7 @@ import { DeleteIcon } from "webiny-ui/List/DataList/icons";
 
 const t = i18n.namespace("Security.ApiTokensDataList");
 
-const ApiTokensDataList = ({ deleteApiToken, dataList, data, meta, router }: Object) => {
+const ApiTokensDataList = ({ deleteRecord, dataList, data, meta, router }: WithCrudListProps) => {
     return (
         <DataList
             {...dataList}
@@ -60,7 +61,7 @@ const ApiTokensDataList = ({ deleteApiToken, dataList, data, meta, router }: Obj
                                     {({ showConfirmation }) => (
                                         <DeleteIcon
                                             onClick={() =>
-                                                showConfirmation(() => deleteApiToken(item))
+                                                showConfirmation(() => deleteRecord(item))
                                             }
                                         />
                                     )}

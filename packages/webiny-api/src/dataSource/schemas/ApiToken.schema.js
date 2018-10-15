@@ -39,11 +39,6 @@ export default {
             data: ApiToken
             error: Error
         }
-        
-        type DeleteApiTokenResponse {
-            data: Boolean
-            error: Error
-        }
     `,
     queryFields: `
         getApiToken(
@@ -72,7 +67,7 @@ export default {
         
         deleteApiToken(
             id: ID!
-        ): DeleteApiTokenResponse
+        ): DeleteResponse
     `,
     queryResolvers: {
         getApiToken: resolveGet(apiTokenFetcher),

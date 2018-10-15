@@ -3,7 +3,7 @@ import * as React from "react";
 import { get } from "dot-prop-immutable";
 import { pick } from "lodash";
 import { i18n } from "webiny-app/i18n";
-import { withCrud } from "webiny-app-admin/components";
+import { withCrud, type WithCrudProps } from "webiny-app-admin/components";
 import { CompactView, LeftPanel, RightPanel } from "webiny-app-admin/components/Views/CompactView";
 import FloatingActionButton from "webiny-app-admin/components/FloatingActionButton";
 import ApiTokensDataList from "./ApiTokens/ApiTokensDataList";
@@ -18,11 +18,15 @@ import {
 
 const t = i18n.namespace("Security.ApiTokens");
 
-const ApiTokens = ({ crudList, crudForm, router }: Object) => {
+const ApiTokens = ({ formProps, listProps, router }: WithCrudProps) => {
     return (
         <CompactView>
-            <LeftPanel>{crudList(<ApiTokensDataList />)}</LeftPanel>
-            <RightPanel>{crudForm(<ApiTokensForm />)}</RightPanel>
+            <LeftPanel>
+                <ApiTokensDataList {...listProps} />
+            </LeftPanel>
+            <RightPanel>
+                <ApiTokensForm {...formProps} />
+            </RightPanel>
 
             <FloatingActionButton
                 onClick={() =>
@@ -44,7 +48,6 @@ export default withCrud({
             response: data => get(data, "security.tokens")
         },
         delete: {
-            name: "deleteApiToken",
             mutation: deleteApiToken,
             response: data => data.security.deleteApiToken,
             snackbar: data => t`ApiToken {name} deleted.`({ name: data.name })

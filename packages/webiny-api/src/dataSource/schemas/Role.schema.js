@@ -38,11 +38,6 @@ export default {
             meta: ListMeta
             error: Error
         }
-        
-        type RoleDeleteResponse {
-            data: Boolean
-            error: Error
-        }
     `,
     queryFields: `
         getRole(
@@ -71,7 +66,7 @@ export default {
     
         deleteRole(
             id: ID!
-        ): RoleDeleteResponse
+        ): DeleteResponse
     `,
     queryResolvers: {
         getRole: resolveGet(roleFetcher),

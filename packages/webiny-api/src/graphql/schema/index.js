@@ -31,18 +31,12 @@ const mapSourcesToExecutableSchemas = (sources, shouldMock, options) => {
             typeDefs: `
                 scalar JSON
                 scalar DateTime
-                type Error {
-                    code: String
-                    message: String
-                    data: JSON
-                }
                 ${genericTypes()}
                 ${typeDefs}
             `,
             resolvers: {
                 JSON: GraphQLJSON,
                 DateTime: GraphQLDateTime,
-                Error: () => ({}),
                 ...mapResolvers(namespace, resolvers)
             },
             schemaDirectives

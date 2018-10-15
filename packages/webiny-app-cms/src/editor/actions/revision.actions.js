@@ -1,7 +1,6 @@
 import gql from "graphql-tag";
 import { isEqual, omit } from "lodash";
-import { createAction, addMiddleware, addReducer } from "webiny-app/redux";
-import { app } from "webiny-app";
+import { createAction, addMiddleware, addReducer } from "webiny-app-cms/editor/redux";
 import { getRevision } from "webiny-app-cms/editor/selectors";
 import { PREFIX, UPDATE_ELEMENT, DELETE_ELEMENT } from "./actions";
 
@@ -71,7 +70,8 @@ addMiddleware([SAVING_REVISION], ({ store, next, action }) => {
 
     store.dispatch(startSaving);
 
-    app.graphql
+    // TODO: pass query via action payload
+    /*app.graphql
         .query({ query, variables: { id: revision.id, data: revision } })
         .then(data => {
             store.dispatch(finishSaving);
@@ -80,5 +80,5 @@ addMiddleware([SAVING_REVISION], ({ store, next, action }) => {
         .catch(err => {
             store.dispatch(finishSaving);
             console.log(err);
-        });
+        });*/
 });

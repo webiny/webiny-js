@@ -3,8 +3,8 @@ import * as React from "react";
 import { setDisplayName, compose, withProps, mapProps, withHandlers, withState } from "recompose";
 import { graphql } from "react-apollo";
 import { omit } from "lodash";
-import { withDataList, withRouter } from "webiny-app/components";
-import { withSnackbar } from "webiny-app-admin/components";
+import { withDataList, withRouter, type WithRouterProps } from "webiny-app/components";
+import { withSnackbar, type WithSnackbarProps } from "webiny-app-admin/components";
 
 const withDeleteHandler = ({ mutation, response, snackbar }): Function => {
     return (Component: typeof React.Component) => {
@@ -122,39 +122,62 @@ export const withCrud = ({ list, form }: Object): Function => {
                 })
             }),
             withSaveHandler(form.save),
-            mapProps((props: Object) => {
-                const { router, dataList, saveRecord, formData, invalidFields, formError } = props;
+            mapProps(
+                (props: Object): WithCrudProps => {
+                    const {
+                        router,
+                        dataList,
+                        saveRecord,
+                        formData,
+                        invalidFields,
+                        formError,
+                        showSnackbar,
+                        deleteRecord
+                    } = props;
 
-                return {
-                    router,
-                    crudList: (listElement: React.Element<*>) => {
-                        const listProps = {
+                    return {
+                        router,
+                        showSnackbar,
+                        listProps: {
                             dataList: omit(dataList, ["data"]),
                             router,
-                            ...list.get.response(dataList.data)
-                        };
-
-                        if (props.deleteRecord) {
-                            listProps[list.delete.name || "deleteRecord"] = props.deleteRecord;
-                        }
-
-                        return React.cloneElement(listElement, listProps);
-                    },
-                    crudForm: (formElement: React.Element<*>) => {
-                        const formProps = {
+                            showSnackbar,
+                            ...list.get.response(dataList.data),
+                            deleteRecord
+                        },
+                        formProps: {
                             ...formData,
                             invalidFields,
-                            onSubmit: saveRecord
-                        };
-
-                        if (formError) {
-                            formProps.error = formError;
+                            onSubmit: saveRecord,
+                            router,
+                            showSnackbar,
+                            error: formError
                         }
-
-                        return React.cloneElement(formElement, formProps);
-                    }
-                };
-            })
+                    };
+                }
+            )
         )(Component);
     };
 };
+
+export type WithCrudProps = WithRouterProps &
+    WithSnackbarProps & {
+        listProps: WithCrudListProps,
+        formProps: WithCrudFormProps
+    };
+
+export type WithCrudListProps = WithRouterProps &
+    WithSnackbarProps & {
+        dataList: Object,
+        data: Array<any>,
+        meta: ?Object,
+        deleteRecord: (item: Object) => Promise<void>
+    };
+
+export type WithCrudFormProps = WithRouterProps &
+    WithSnackbarProps & {
+        invalidFields: Object,
+        onSubmit: (data: Object) => void,
+        data: Object,
+        error: Object | null
+    };

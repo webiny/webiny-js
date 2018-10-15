@@ -16,9 +16,11 @@ import {
     SimpleFormContent
 } from "webiny-app-admin/components/Views/SimpleForm";
 
+import type { WithCrudFormProps } from "webiny-app-admin/components";
+
 const t = i18n.namespace("Security.UsersForm");
 
-const UsersForm = ({ onSubmit, data, invalidFields }: Object) => {
+const UsersForm = ({ onSubmit, data, invalidFields }: WithCrudFormProps) => {
     return (
         <Form invalidFields={invalidFields} data={data} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (

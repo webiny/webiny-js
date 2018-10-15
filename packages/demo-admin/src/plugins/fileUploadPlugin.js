@@ -2,7 +2,7 @@
 import type { FileBrowserFile } from "webiny-ui/FileBrowser";
 import type { WithFileUploadPlugin } from "webiny-app/types";
 
-const withFileUploadPlugin: WithFileUploadPlugin = {
+const fileUploadPlugin: WithFileUploadPlugin = {
     type: "with-file-upload",
     name: "with-file-upload",
     upload: async (file: FileBrowserFile, config: { uri: string }) => {
@@ -18,4 +18,4 @@ const withFileUploadPlugin: WithFileUploadPlugin = {
     }
 };
 
-export default withFileUploadPlugin;
+export default fileUploadPlugin;

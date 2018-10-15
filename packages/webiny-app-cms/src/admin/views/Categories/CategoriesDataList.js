@@ -1,11 +1,9 @@
 // @flow
 import * as React from "react";
-import { withDataList, withRouter } from "webiny-app/components";
 import { i18n } from "webiny-app/i18n";
-import { compose } from "recompose";
-import { withSnackbar } from "webiny-app-admin/components/withSnackbar";
-
+import type { WithCrudListProps } from "webiny-app-admin/components";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
+import { DeleteIcon } from "webiny-ui/List/DataList/icons";
 import {
     DataList,
     List,
@@ -16,16 +14,14 @@ import {
     ListActions
 } from "webiny-ui/List";
 
-import { DeleteIcon } from "webiny-ui/List/DataList/icons";
-
 const t = i18n.namespace("Cms.CategoriesDataList");
 
-const CategoriesDataList = props => {
-    const { CategoriesDataList, router, showSnackbar } = props;
-
+const CategoriesDataList = ({ data, dataList, meta, router, deleteRecord }: WithCrudListProps) => {
     return (
         <DataList
-            {...CategoriesDataList}
+            {...dataList}
+            data={data}
+            meta={meta}
             title={t`CMS Categories`}
             sorters={[
                 {
@@ -65,18 +61,7 @@ const CategoriesDataList = props => {
                                         {({ showConfirmation }) => (
                                             <DeleteIcon
                                                 onClick={() => {
-                                                    showConfirmation(() => {
-                                                        CategoriesDataList.delete(item.id, {
-                                                            onSuccess: () => {
-                                                                CategoriesDataList.refresh();
-                                                                showSnackbar(
-                                                                    t`Category {name} deleted.`({
-                                                                        name: item.name
-                                                                    })
-                                                                );
-                                                            }
-                                                        });
-                                                    });
+                                                    showConfirmation(() => deleteRecord(item));
                                                 }}
                                             />
                                         )}
@@ -91,13 +76,4 @@ const CategoriesDataList = props => {
     );
 };
 
-export default compose(
-    withSnackbar(),
-    withRouter(),
-    withDataList({
-        name: "CategoriesDataList",
-        type: "Cms.Categories",
-        fields: "id name slug url layout",
-        sort: { savedOn: -1 }
-    })
-)(CategoriesDataList);
+export default CategoriesDataList;

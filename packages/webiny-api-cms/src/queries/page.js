@@ -1,3 +1,4 @@
+/*
 // @flow
 import { GraphQLNonNull, GraphQLString, GraphQLObjectType } from "graphql";
 import GraphQLJSON from "graphql-type-json";
@@ -54,3 +55,4 @@ export default (schema: Schema) => {
         }
     };
 };
+*/

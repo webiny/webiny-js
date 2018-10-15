@@ -1,6 +1,7 @@
 // @flow
 export { withTheme } from "./withTheme";
 export { withCrud } from "./withCrud";
+export type { WithCrudProps, WithCrudFormProps, WithCrudListProps } from "./withCrud";
 export { Security } from "./../security";
 export { withSecurity } from "./withSecurity";
 export type { WithSecurityProps } from "./withSecurity";

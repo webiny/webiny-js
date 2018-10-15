@@ -1,10 +1,11 @@
-import Revision from "../entities/Revision/Revision.entity";
 import {
     resolveDelete,
     resolveGet,
     resolveList,
     resolveUpdate
 } from "webiny-api/graphql";
+
+const revisionFetcher = ctx => ctx.cms.Revision;
 
 export default {
     typeDefs: `
@@ -29,9 +30,15 @@ export default {
             content: JSON
         }
         
-        type RevisionList {
+        type RevisionResponse {
+            data: Revision
+            error: Error
+        }
+        
+        type RevisionListResponse {
             data: [Revision]
             meta: ListMeta
+            error: Error
         }
     `,
     queryFields: `
@@ -39,7 +46,7 @@ export default {
             id: ID 
             where: JSON
             sort: String
-        ): Revision
+        ): RevisionResponse
         
         listRevisions(
             page: Int
@@ -47,28 +54,28 @@ export default {
             where: JSON
             sort: JSON
             search: SearchInput
-        ): RevisionList
+        ): RevisionListResponse
     `,
     mutationFields: `
         createRevisionFrom(
             revisionId: ID!
-        ): Revision
+        ): RevisionResponse
         
         updateRevision(
             revision: RevisionInput!
-        ): Revision
+        ): RevisionResponse
     
         deleteRevision(
             id: ID!
-        ): Boolean
+        ): DeleteResponse
     `,
     queryResolvers: {
-        getRevision: resolveGet(Revision),
-        listRevisions: resolveList(Revision)
+        getRevision: resolveGet(revisionFetcher),
+        listRevisions: resolveList(revisionFetcher)
     },
     mutationResolvers: {
         createRevisionFrom: () => ({}),
-        updateRevision: resolveUpdate(Revision),
-        deleteRevision: resolveDelete(Revision)
+        updateRevision: resolveUpdate(revisionFetcher),
+        deleteRevision: resolveDelete(revisionFetcher)
     }
 };

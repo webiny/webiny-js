@@ -5,18 +5,22 @@ import { pick } from "lodash";
 import { i18n } from "webiny-app/i18n";
 import { CompactView, LeftPanel, RightPanel } from "webiny-app-admin/components/Views/CompactView";
 import FloatingActionButton from "webiny-app-admin/components/FloatingActionButton";
-import { withCrud } from "webiny-app-admin/components";
+import { withCrud, type WithCrudProps } from "webiny-app-admin/components";
 import UsersDataList from "./Users/UsersDataList";
 import UsersForm from "./Users/UsersForm";
 import { createUser, deleteUser, loadUser, loadUsers, updateUser } from "./Users/graphql";
 
 const t = i18n.namespace("Security.Users");
 
-const Users = ({ crudList, crudForm, router }: Object) => {
+const Users = ({ formProps, listProps, router }: WithCrudProps) => {
     return (
         <CompactView>
-            <LeftPanel>{crudList(<UsersDataList />)}</LeftPanel>
-            <RightPanel>{crudForm(<UsersForm />)}</RightPanel>
+            <LeftPanel>
+                <UsersDataList {...listProps} />
+            </LeftPanel>
+            <RightPanel>
+                <UsersForm {...formProps} />
+            </RightPanel>
 
             <FloatingActionButton
                 onClick={() =>
@@ -38,7 +42,6 @@ export default withCrud({
             response: data => get(data, "security.users")
         },
         delete: {
-            name: "deleteUser",
             mutation: deleteUser,
             response: data => data.security.deleteUser,
             snackbar: data => t`User {name} deleted.`({ name: data.fullName })

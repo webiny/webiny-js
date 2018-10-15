@@ -85,3 +85,37 @@ export type RenderElementPluginType = {
     element: string,
     render: ({ theme: CmsThemeType, element: ElementType }) => Node
 };
+
+export type { Redux } from "webiny-app-cms/editor/redux";
+
+// Redux types
+export type Action = {
+    type: string,
+    payload: Object
+};
+
+export type ActionOptions = {
+    log?: boolean
+};
+
+export type StatePath = null | string | (action: Action) => string;
+
+export type Reducer = Function;
+
+export type ReducerFactory = () => Reducer;
+
+export type Store = {
+    dispatch: Function,
+    getState: Function
+};
+
+export type State = Object;
+
+export type MiddlewareParams = {
+    store: Store,
+    next: Function,
+    action: Action
+};
+
+export type MiddlewareFunction = MiddlewareParams => any;
+export type ActionCreator = (payload?: Object) => Action;

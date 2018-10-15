@@ -1,9 +1,10 @@
 // @flow
 import * as React from "react";
 import { i18n } from "webiny-app/i18n";
-import { withSecurity } from "webiny-app-admin/components";
+import { withSecurity, type WithSecurityProps } from "webiny-app-admin/components";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import { Tooltip } from "webiny-ui/Tooltip";
+import type { WithCrudListProps } from "webiny-app-admin/components";
 
 import {
     DataList,
@@ -21,7 +22,9 @@ import { Avatar } from "webiny-ui/Avatar";
 
 const t = i18n.namespace("Security.UsersDataList");
 
-const UsersDataList = ({ dataList, data, meta, router, security, deleteUser }: Object) => {
+type Props = WithCrudListProps & WithSecurityProps;
+
+const UsersDataList = ({ dataList, data, meta, router, security, deleteRecord }: Props) => {
     return (
         <DataList
             {...dataList}
@@ -74,7 +77,7 @@ const UsersDataList = ({ dataList, data, meta, router, security, deleteUser }: O
                                             {({ showConfirmation }) => (
                                                 <DeleteIcon
                                                     onClick={() =>
-                                                        showConfirmation(() => deleteUser(item))
+                                                        showConfirmation(() => deleteRecord(item))
                                                     }
                                                 />
                                             )}

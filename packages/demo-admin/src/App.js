@@ -4,21 +4,21 @@ import React from "react";
 import { Webiny, Router } from "webiny-app";
 import { addPlugin } from "webiny-app/plugins";
 import { app as adminApp, Theme as AdminTheme } from "webiny-app-admin";
-//import { app as cmsApp } from "webiny-app-cms/admin";
+import { app as cmsApp } from "webiny-app-cms/admin";
 import { Theme as CmsTheme } from "webiny-app-cms/theme";
 import myTheme from "demo-theme";
 import { Security } from "webiny-app-admin/components";
 import Login from "webiny-app-admin/views/Login";
 import "./App.scss";
 import imagePlugin from "./plugins/imagePlugin";
-import fileUploadPlugin from "./plugins/withFileUploadPlugin";
+import fileUploadPlugin from "./plugins/fileUploadPlugin";
 
 addPlugin(imagePlugin);
 addPlugin(fileUploadPlugin);
 
 // Initialize apps
 adminApp();
-//cmsApp();
+cmsApp();
 
 const App = ({ config }) => {
     return (

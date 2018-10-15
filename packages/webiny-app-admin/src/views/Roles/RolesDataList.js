@@ -1,5 +1,6 @@
 // @flow
 import * as React from "react";
+import type { WithCrudListProps } from "webiny-app-admin/components";
 import { i18n } from "webiny-app/i18n";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import { Tooltip } from "webiny-ui/Tooltip";
@@ -20,9 +21,7 @@ import { ExportIcon, ImportIcon } from "./icons";
 
 const t = i18n.namespace("Security.RolesDataList");
 
-const RolesDataList = (props: Object) => {
-    const { dataList, router, data, meta, deleteRole } = props;
-
+const RolesDataList = ({ dataList, router, data, meta, deleteRecord }: WithCrudListProps) => {
     return (
         <DataList
             {...dataList}
@@ -94,7 +93,7 @@ const RolesDataList = (props: Object) => {
                                         {({ showConfirmation }) => (
                                             <DeleteIcon
                                                 onClick={() =>
-                                                    showConfirmation(() => deleteRole(item))
+                                                    showConfirmation(() => deleteRecord(item))
                                                 }
                                             />
                                         )}

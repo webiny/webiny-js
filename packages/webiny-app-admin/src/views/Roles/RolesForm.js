@@ -6,6 +6,7 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
 import { AutoComplete } from "webiny-ui/AutoComplete";
+import type { WithCrudFormProps } from "webiny-app-admin/components";
 
 import {
     SimpleForm,
@@ -16,7 +17,12 @@ import {
 
 const t = i18n.namespace("Security.RolesForm");
 
-const RoleForm = ({ onSubmit, data, invalidFields, scopes }: Object) => {
+const RoleForm = ({
+    onSubmit,
+    data,
+    invalidFields,
+    scopes
+}: WithCrudFormProps & { scopes: Array<string> }) => {
     return (
         <Form invalidFields={invalidFields} data={data} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (

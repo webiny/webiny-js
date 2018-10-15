@@ -1,11 +1,6 @@
-import Page from "../entities/Page/Page.entity";
-import {
-    resolveCreate,
-    resolveDelete,
-    resolveGet,
-    resolveList,
-    resolveUpdate
-} from "webiny-api/graphql";
+import { resolveCreate, resolveDelete, resolveGet, resolveList } from "webiny-api/graphql";
+
+const pageFetcher = ctx => ctx.cms.Page;
 
 export default {
     typeDefs: `
@@ -35,9 +30,18 @@ export default {
             category: ID!
         }
         
-        type PageList {
+        # Response types
+        
+        type PageResponse {
+            data: Page
+            error: Error
+        }
+        
+        
+        type PageListResponse {
             data: [Page]
             meta: ListMeta
+            error: Error
         }
     `,
     queryFields: `
@@ -45,7 +49,7 @@ export default {
             id: ID 
             where: JSON
             sort: String
-        ): Page
+        ): PageResponse
         
         listPages(
             page: Int
@@ -53,23 +57,23 @@ export default {
             where: JSON
             sort: JSON
             search: SearchInput
-        ): PageList
+        ): PageListResponse
     `,
     mutationFields: `
         createPage(
             data: PageInput!
-        ): Page
+        ): PageResponse
         
         deletePage(
             id: ID!
-        ): Boolean
+        ): DeleteResponse
     `,
     queryResolvers: {
-        getPage: resolveGet(Page),
-        listPages: resolveList(Page)
+        getPage: resolveGet(pageFetcher),
+        listPages: resolveList(pageFetcher)
     },
     mutationResolvers: {
-        createPage: resolveCreate(Page),
-        deletePage: resolveDelete(Page)
+        createPage: resolveCreate(pageFetcher),
+        deletePage: resolveDelete(pageFetcher)
     }
 };
