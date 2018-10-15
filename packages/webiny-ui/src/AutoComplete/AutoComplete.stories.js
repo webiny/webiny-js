@@ -40,7 +40,7 @@ story.add("usage", () => {
             <StoryReadme>{readme}</StoryReadme>
             <StoryProps>{PropsType}</StoryProps>
             <StorySandbox>
-                <StorySandboxExample title={"Auto complete - single value"}>
+                <StorySandboxExample title={"Single value"}>
                     <Form data={{ country: { id: "italy", name: "Italy" } }}>
                         {({ Bind }) => (
                             <Bind name="country">
@@ -73,7 +73,7 @@ story.add("usage", () => {
             </StorySandbox>
 
             <StorySandbox>
-                <StorySandboxExample title={"Auto complete - multiple values"}>
+                <StorySandboxExample title={"Multiple values"}>
                     <Form
                         data={{
                             country: [{ id: "uk", name: "UK" }, { id: "italy", name: "Italy" }]
@@ -83,6 +83,45 @@ story.add("usage", () => {
                             <Bind name="country">
                                 <AutoComplete
                                     options={options}
+                                    label="Country"
+                                    multiple
+                                    disabled={disabled}
+                                    description="Choose one or more countries."
+                                />
+                            </Bind>
+                        )}
+                    </Form>
+                </StorySandboxExample>
+                <StorySandboxCode>
+                    {`
+                        <Form>
+                            {({ Bind }) => (
+                                 <Bind name="country">
+                                    <AutoComplete
+                                        options={${JSON.stringify(options)}}
+                                        label="Country"
+                                        multiple
+                                        disabled={${disabled}}
+                                        description="Choose one or more countries."
+                                    />
+                                </Bind>
+                            )}
+                        </Form>
+                    `}
+                </StorySandboxCode>
+            </StorySandbox>
+
+            <StorySandbox>
+                <StorySandboxExample title={"Multiple values - use simple strings"}>
+                    <Form
+                        data={{
+                            country: ["Italy", "France"]
+                        }}
+                    >
+                        {({ Bind }) => (
+                            <Bind name="country">
+                                <AutoComplete
+                                    options={options.map(item => item.name)}
                                     label="Country"
                                     multiple
                                     disabled={disabled}

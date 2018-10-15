@@ -10,6 +10,8 @@ import classNames from "classnames";
 import { Elevation } from "webiny-ui/Elevation";
 import { Typography } from "webiny-ui/Typography";
 
+type Option = Object | string;
+
 type Props = FormComponentProps & {
     // Component label.
     label?: string,
@@ -17,11 +19,8 @@ type Props = FormComponentProps & {
     // Is checkbox disabled?
     disabled?: boolean,
 
-    // Format selected item
-    formatValue: (item: Object) => { id: string, name: string } | string,
-
     // Options that will be shown.
-    options: Array<{ id: string, name: string } | Object>,
+    options: Array<Option>,
 
     // Description beneath the autoComplete.
     description?: string,
@@ -96,7 +95,6 @@ export class AutoComplete extends React.Component<Props> {
     static defaultProps = {
         valueProp: "id",
         textProp: "name",
-        formatValue: (item: Object) => item,
         multiple: false,
         unique: true,
         showMenuOnFocus: true
@@ -107,13 +105,25 @@ export class AutoComplete extends React.Component<Props> {
      */
     downshift: any = React.createRef();
 
-    getItemValue = (item: Object | string) => {
-        return typeof item === "string" ? item : item[this.props.valueProp];
-    };
+    /**
+     * Are we dealing with {id, name} as options or simple strings?
+     */
+    usesSimpleOptions(): boolean {
+        const { options, value } = this.props;
+        if (Array.isArray(options) && options[0] && typeof options[0] === "string") {
+            return true;
+        }
 
-    getItemText = (item: Object | string) => {
-        return typeof item === "string" ? item : item[this.props.textProp];
-    };
+        return Array.isArray(value) && value[0] && typeof value[0] === "string";
+    }
+
+    getItemValue(option: Option): string {
+        return typeof option === "string" ? option : option[this.props.valueProp];
+    }
+
+    getItemText(option: Option): string {
+        return typeof option === "string" ? option : option[this.props.textProp];
+    }
 
     /**
      * Renders suggestions - based on user's input. It will try to match inputted text with available options.
@@ -156,7 +166,13 @@ export class AutoComplete extends React.Component<Props> {
             }
 
             // 2) At the end, we want to show only options that are matched by typed text.
-            return !inputValue || this.getItemText(item).toLowerCase().includes(inputValue.toLowerCase());
+            if (!inputValue) {
+                return true;
+            }
+
+            return this.getItemText(item)
+                .toLowerCase()
+                .includes(inputValue.toLowerCase());
         });
 
         if (!filtered.length) {
@@ -175,6 +191,9 @@ export class AutoComplete extends React.Component<Props> {
             <Elevation z={1}>
                 <ul {...getMenuProps()}>
                     {filtered.map((item, index) => {
+                        const itemValue = this.getItemValue(item);
+                        const itemText = this.getItemText(item);
+
                         // Base classes.
                         const itemClassNames = {
                             [suggestionList]: true,
@@ -183,8 +202,8 @@ export class AutoComplete extends React.Component<Props> {
                         };
 
                         // Add "selected" class if the item is selected.
-                        if (!this.props.multiple) {
-                            if (selectedItem && this.getItemValue(selectedItem) === this.getItemValue(item)) {
+                        if (!multiple) {
+                            if (selectedItem && this.getItemValue(selectedItem) === itemValue) {
                                 itemClassNames.selected = true;
                             }
                         }
@@ -192,14 +211,14 @@ export class AutoComplete extends React.Component<Props> {
                         // Render the item.
                         return (
                             <li
-                                key={this.getItemValue(item)}
+                                key={itemValue}
                                 {...getItemProps({
                                     index,
                                     item,
                                     className: classNames(itemClassNames)
                                 })}
                             >
-                                <Typography use={"body2"}>{this.getItemText(item)}</Typography>
+                                <Typography use={"body2"}>{itemText}</Typography>
                             </li>
                         );
                     })}
@@ -219,29 +238,27 @@ export class AutoComplete extends React.Component<Props> {
 
         return (
             <React.Fragment>
-                {Array.isArray(value) && value.length
-                    ? (
-                        <Chips disabled={disabled}>
-                            {value.map((item, index) => (
-                                <Chip
-                                    disabled
-                                    key={`${this.getItemValue(item)}-${index}`}
-                                    onRemoval={() => {
-                                        // On removal, let's update the value and call "onChange" callback.
-                                        if (onChange) {
-                                            const newValue = [...value];
-                                            newValue.splice(index, 1);
-                                            onChange(newValue);
-                                        }
-                                    }}
-                                >
-                                    <ChipText>{this.getItemText(item)}</ChipText>
-                                    <ChipIcon trailing icon={<BaselineCloseIcon />} />
-                                </Chip>
-                            ))}
-                        </Chips>
-                    )
-                    : null}
+                {Array.isArray(value) && value.length ? (
+                    <Chips disabled={disabled}>
+                        {value.map((item, index) => (
+                            <Chip
+                                disabled
+                                key={`${this.getItemValue(item)}-${index}`}
+                                onRemoval={() => {
+                                    // On removal, let's update the value and call "onChange" callback.
+                                    if (onChange) {
+                                        const newValue = [...value];
+                                        newValue.splice(index, 1);
+                                        onChange(newValue);
+                                    }
+                                }}
+                            >
+                                <ChipText>{this.getItemText(item)}</ChipText>
+                                <ChipIcon trailing icon={<BaselineCloseIcon />} />
+                            </Chip>
+                        ))}
+                    </Chips>
+                ) : null}
             </React.Fragment>
         );
     }
@@ -251,7 +268,6 @@ export class AutoComplete extends React.Component<Props> {
             multiple,
             unique,
             showMenuOnFocus,
-            formatValue,
             value,
             onChange,
             onInput: onInputValueChange,
@@ -273,9 +289,9 @@ export class AutoComplete extends React.Component<Props> {
                 // If multiple, we have to manage an array of values, otherwise a single value.
                 if (multiple) {
                     if (Array.isArray(value) && value.length > 0) {
-                        onChange([...value, formatValue(selection)]);
+                        onChange([...value, selection]);
                     } else {
-                        onChange([formatValue(selection)]);
+                        onChange([selection]);
                     }
 
                     this.downshift.current.clearSelection();
