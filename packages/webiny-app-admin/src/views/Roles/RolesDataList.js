@@ -3,7 +3,6 @@ import * as React from "react";
 import type { WithCrudListProps } from "webiny-app-admin/components";
 import { i18n } from "webiny-app/i18n";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
-import { Tooltip } from "webiny-ui/Tooltip";
 import {
     DataList,
     ScrollList,
@@ -17,7 +16,6 @@ import {
 
 import { DeleteIcon } from "webiny-ui/List/DataList/icons";
 import { Checkbox } from "webiny-ui/Checkbox";
-import { ExportIcon, ImportIcon } from "./icons";
 
 const t = i18n.namespace("Security.RolesDataList");
 
@@ -27,24 +25,6 @@ const RolesDataList = ({ dataList, router, data, meta, deleteRecord }: WithCrudL
             {...dataList}
             data={data}
             meta={meta}
-            actions={
-                <React.Fragment>
-                    <Tooltip content={t`Import Roles.`}>
-                        <ImportIcon onClick={() => console.log("Import Roles!")} />
-                    </Tooltip>
-                </React.Fragment>
-            }
-            multiSelectActions={
-                <React.Fragment>
-                    <Tooltip content={t`Export selected Roles.`}>
-                        <ExportIcon
-                            onClick={() => {
-                                console.log("multi selected items: ", dataList.getMultiSelected());
-                            }}
-                        />
-                    </Tooltip>
-                </React.Fragment>
-            }
             title={t`Security Roles`}
             sorters={[
                 {

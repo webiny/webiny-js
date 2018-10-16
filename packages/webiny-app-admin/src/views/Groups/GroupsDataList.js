@@ -1,14 +1,7 @@
 // @flow
 import * as React from "react";
-import {
-    withDataList,
-    withRouter,
-    type WithRouterProps,
-    type WithDataListProps
-} from "webiny-app/components";
+import type { WithCrudListProps } from "webiny-app-admin/components";
 import { i18n } from "webiny-app/i18n";
-import { compose } from "recompose";
-import { withSnackbar, type WithSnackbarProps } from "webiny-app-admin/components";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import {
     DataList,
@@ -17,22 +10,21 @@ import {
     ListItemText,
     ListItemTextSecondary,
     ListItemMeta,
-    ListActions
+    ListActions,
+    ListItemGraphic
 } from "webiny-ui/List";
 
 import { DeleteIcon } from "webiny-ui/List/DataList/icons";
-import { Tooltip } from "webiny-ui/Tooltip";
+import { Checkbox } from "webiny-ui/Checkbox";
 
 const t = i18n.namespace("Security.GroupsDataList");
 
-const GroupsDataList = (
-    props: WithRouterProps & WithSnackbarProps & { GroupsDataList: WithDataListProps }
-) => {
-    const { GroupsDataList, router } = props;
-
+const GroupsDataList = ({ dataList, router, data, meta, deleteRecord }: WithCrudListProps) => {
     return (
         <DataList
-            {...GroupsDataList}
+            {...dataList}
+            data={data}
+            meta={meta}
             title={t`Security Groups`}
             sorters={[
                 {
@@ -53,10 +45,19 @@ const GroupsDataList = (
                 }
             ]}
         >
-            {({ data }) => (
+            {({ data, multiSelect, isMultiSelected }) => (
                 <ScrollList>
                     {data.map(item => (
                         <ListItem key={item.id} selected={router.getQuery("id") === item.id}>
+                            <ListItemGraphic>
+                                <Checkbox
+                                    value={isMultiSelected(item)}
+                                    onClick={() => {
+                                        multiSelect(item);
+                                    }}
+                                />
+                            </ListItemGraphic>
+
                             <ListItemText
                                 onClick={() =>
                                     router.goToRoute({ params: { id: item.id }, merge: true })
@@ -68,41 +69,15 @@ const GroupsDataList = (
 
                             <ListItemMeta>
                                 <ListActions>
-                                    {!item.system ? (
-                                        <ConfirmationDialog>
-                                            {({ showConfirmation }) => (
-                                                <DeleteIcon
-                                                    onClick={() => {
-                                                        showConfirmation(() => {
-                                                            GroupsDataList.delete(item.id, {
-                                                                onSuccess: () => {
-                                                                    GroupsDataList.refresh();
-                                                                    props.showSnackbar(
-                                                                        t`Group {name} deleted.`({
-                                                                            name: item.name
-                                                                        })
-                                                                    );
-                                                                    item.id ===
-                                                                        router.getQuery().id &&
-                                                                        router.goToRoute({
-                                                                            params: { id: null },
-                                                                            merge: true
-                                                                        });
-                                                                }
-                                                            });
-                                                        });
-                                                    }}
-                                                />
-                                            )}
-                                        </ConfirmationDialog>
-                                    ) : (
-                                        <Tooltip
-                                            placement={"bottom"}
-                                            content={<span>{t`Cannot delete system group.`}</span>}
-                                        >
-                                            <DeleteIcon disabled />
-                                        </Tooltip>
-                                    )}
+                                    <ConfirmationDialog>
+                                        {({ showConfirmation }) => (
+                                            <DeleteIcon
+                                                onClick={() =>
+                                                    showConfirmation(() => deleteRecord(item))
+                                                }
+                                            />
+                                        )}
+                                    </ConfirmationDialog>
                                 </ListActions>
                             </ListItemMeta>
                         </ListItem>
@@ -113,13 +88,4 @@ const GroupsDataList = (
     );
 };
 
-export default compose(
-    withSnackbar(),
-    withRouter(),
-    withDataList({
-        name: "GroupsDataList",
-        type: "Security.Groups",
-        fields: "id name description system createdOn",
-        sort: { savedOn: -1 }
-    })
-)(GroupsDataList);
+export default GroupsDataList;

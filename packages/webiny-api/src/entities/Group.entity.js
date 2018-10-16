@@ -30,7 +30,7 @@ export function groupFactory({ user = {}, entities }: Object) {
 
             this.attr("roles")
                 .entities(entities.Role, "entity")
-                .setUsing(entities.Groups2Entities, "group");
+                .setUsing(entities.Roles2Entities, "role");
 
             this.on("beforeCreate", async () => {
                 const existingGroup = await Group.findOne({ query: { slug: this.slug } });

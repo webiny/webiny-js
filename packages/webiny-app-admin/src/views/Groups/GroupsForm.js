@@ -5,42 +5,28 @@ import { Form } from "webiny-form";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
-import { withForm, withRouter } from "webiny-app/components";
-import { withSnackbar } from "webiny-app-admin/components";
-import { refreshDataList } from "webiny-app/actions";
-import compose from "recompose/compose";
-import { connect } from "react-redux";
-import PoliciesAutoComplete from "./PoliciesAutoComplete";
+import RolesAutoComplete from "./../Components/RolesAutoComplete";
+import type { WithCrudFormProps } from "webiny-app-admin/components";
 
 import {
     SimpleForm,
     SimpleFormFooter,
-    SimpleFormContent
+    SimpleFormContent,
+    SimpleFormHeader
 } from "webiny-app-admin/components/Views/SimpleForm";
 
 const t = i18n.namespace("Security.GroupsForm");
 
-const GroupsForm = props => {
-    const { SecurityGroupForm, router, refreshDataList } = props;
-
+const GroupForm = ({
+    onSubmit,
+    data,
+    invalidFields
+}: WithCrudFormProps & { scopes: Array<string> }) => {
     return (
-        <Form
-            {...SecurityGroupForm}
-            onSubmit={data => {
-                SecurityGroupForm.submit({
-                    data,
-                    onSuccess: data => {
-                        props.showSnackbar(
-                            t`Group {name} saved successfully.`({ name: data.name })
-                        );
-                        router.goToRoute({ params: { id: data.id }, merge: true });
-                        refreshDataList({ name: "GroupsDataList" });
-                    }
-                });
-            }}
-        >
+        <Form invalidFields={invalidFields} data={data} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (
                 <SimpleForm>
+                    <SimpleFormHeader title={data.name ? data.name : "Untitled"} />
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={6}>
@@ -60,11 +46,11 @@ const GroupsForm = props => {
                                     <Input label={t`Description`} rows={4} />
                                 </Bind>
                             </Cell>
-                        </Grid>{" "}
+                        </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name="policies">
-                                    <PoliciesAutoComplete label={t`Policies`} />
+                                <Bind name="roles">
+                                    <RolesAutoComplete label={t`Roles`} />
                                 </Bind>
                             </Cell>
                         </Grid>
@@ -80,16 +66,4 @@ const GroupsForm = props => {
     );
 };
 
-export default compose(
-    connect(
-        null,
-        { refreshDataList }
-    ),
-    withSnackbar(),
-    withRouter(),
-    withForm({
-        name: "SecurityGroupForm",
-        type: "Security.Groups",
-        fields: "id name slug description system policies { id name }"
-    })
-)(GroupsForm);
+export default GroupForm;

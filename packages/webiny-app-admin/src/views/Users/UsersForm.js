@@ -5,8 +5,8 @@ import { Form } from "webiny-form";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
-//import GroupsAutoComplete from "./GroupsAutoComplete";
-//import RolesAutoComplete from "./RolesAutoComplete";
+import GroupsAutoComplete from "./../Components/GroupsAutoComplete";
+import RolesAutoComplete from "./../Components/RolesAutoComplete";
 import AvatarImage from "./AvatarImage";
 
 import {
@@ -75,17 +75,17 @@ const UsersForm = ({ onSubmit, data, invalidFields }: WithCrudFormProps) => {
                                 </Bind>
                             </Cell>
 
-                            {/*<Cell span={12}>
+                            <Cell span={12}>
                                 <Bind name="groups">
                                     <GroupsAutoComplete label={t`Groups`} />
                                 </Bind>
-                            </Cell>*/}
+                            </Cell>
 
-                            {/*<Cell span={12}>
+                            <Cell span={12}>
                                 <Bind name="roles">
                                     <RolesAutoComplete label={t`Roles`} />
                                 </Bind>
-                            </Cell>*/}
+                            </Cell>
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>

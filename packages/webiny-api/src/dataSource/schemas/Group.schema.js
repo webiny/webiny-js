@@ -11,7 +11,7 @@ const groupFetcher = ctx => ctx.security.Group;
 
 export default {
     typeDefs: `
-         type Group {
+        type Group {
             id: ID
             name: String
             slug: String
@@ -21,10 +21,11 @@ export default {
         }
         
         input GroupInput {
+            id: ID
             name: String
             slug: String
             description: String
-            roles: [String]
+            roles: [RoleInput]
         }
         
         type GroupResponse {
@@ -56,16 +57,16 @@ export default {
     mutationFields: `
         createGroup(
             data: GroupInput!
-        ): Group
+        ): GroupResponse
         
         updateGroup(
             id: ID!
             data: GroupInput!
-        ): Group
+        ): GroupResponse
     
         deleteGroup(
             id: ID!
-        ): Boolean
+        ): DeleteResponse
     `,
     queryResolvers: {
         getGroup: resolveGet(groupFetcher),
