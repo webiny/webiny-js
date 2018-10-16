@@ -1,5 +1,4 @@
 //@flow
-import * as React from "react";
 import { getPlugins } from "webiny-app/plugins";
 import { withTheme } from "webiny-app-cms/theme";
 import type { ElementType } from "webiny-app-cms/types";
@@ -10,7 +9,7 @@ declare type ElementProps = {
 };
 
 const Element = ({ element, theme }: ElementProps) => {
-    if(!element) {
+    if (!element) {
         return null;
     }
 
@@ -19,7 +18,7 @@ const Element = ({ element, theme }: ElementProps) => {
     if (!plugin) {
         return null;
     }
-    
+
     return plugin.render({ theme, element });
 };
 

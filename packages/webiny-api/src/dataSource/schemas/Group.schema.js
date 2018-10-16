@@ -25,7 +25,7 @@ export default {
             name: String
             slug: String
             description: String
-            roles: [RoleInput]
+            roles: [ID]
         }
         
         type GroupResponse {

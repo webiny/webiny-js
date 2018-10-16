@@ -2,7 +2,6 @@
 import React from "react";
 import { connect } from "react-redux";
 import { compose } from "recompose";
-import { get } from "dot-prop-immutable";
 import { css } from "emotion";
 import { withRouter } from "webiny-app/components";
 import { Menu, MenuItem } from "webiny-ui/Menu";

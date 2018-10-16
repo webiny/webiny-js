@@ -10,7 +10,6 @@ import classnames from "classnames";
 // UI components
 import { Icon } from "webiny-ui/Icon";
 import { Elevation } from "webiny-ui/Elevation";
-import { Select } from "webiny-ui/Select";
 
 // Icons
 import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";

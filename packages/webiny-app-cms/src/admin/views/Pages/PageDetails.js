@@ -1,6 +1,5 @@
 // @flow
 import * as React from "react";
-import { compose } from "recompose";
 import gql from "graphql-tag";
 import { Query } from "react-apollo";
 // Webiny imports

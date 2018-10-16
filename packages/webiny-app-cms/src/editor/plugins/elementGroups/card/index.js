@@ -1,5 +1,4 @@
 // @flow
-import React from "react";
 import type { ElementGroupPluginType } from "webiny-app-cms/types";
 
 const cardGroup: ElementGroupPluginType = {

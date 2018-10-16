@@ -67,8 +67,8 @@ export default {
             lastName: String
             avatar: AvatarInput
             enabled: Boolean
-            groups: [GroupInput]
-            roles: [RoleInput]
+            groups: [ID]
+            roles: [ID]
         }
         
         # This input type is used by the user who is updating his own account

@@ -1,6 +1,5 @@
 // @flow
 import React from "react";
-import { compose } from "recompose";
 import { css } from "emotion";
 import gql from "graphql-tag";
 import { Query } from "react-apollo";

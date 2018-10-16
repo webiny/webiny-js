@@ -23,16 +23,6 @@ import {
 
 const t = i18n.namespace("Security.UsersForm");
 
-const fields = `
-    data {
-        id email firstName lastName avatar { src } 
-    }
-    error {
-        code
-        message
-    }
-`;
-
 const UsersForm = ({ onSubmit, user }) => (
     <Form data={user.data} onSubmit={onSubmit}>
         {({ data, form, Bind }) => (
@@ -92,6 +82,16 @@ const UsersForm = ({ onSubmit, user }) => (
         )}
     </Form>
 );
+
+const fields = `
+    data {
+        id email firstName lastName avatar { src } 
+    }
+    error {
+        code
+        message
+    }
+`;
 
 const getCurrentUser = gql`
 {

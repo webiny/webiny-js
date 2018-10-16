@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import styled from "react-emotion";
 import { connect } from "react-redux";
 import { compose } from "recompose";
-import { isEqual, get } from "lodash";
+import { get } from "lodash";
 import { Editor } from "slate-react";
 import { Value } from "slate";
 import { getPlugins } from "webiny-app/plugins";

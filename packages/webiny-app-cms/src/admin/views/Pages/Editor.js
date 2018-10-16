@@ -1,8 +1,7 @@
 // @flow
 import React from "react";
-import { merge } from "lodash";
 import { Provider } from "react-redux";
-import { compose, lifecycle } from "recompose";
+import { compose } from "recompose";
 import { Editor as CmsEditor } from "webiny-app-cms/editor";
 import { createElement } from "webiny-app-cms/editor/utils";
 import { redux } from "webiny-app-cms/editor/redux";

@@ -6,6 +6,29 @@ import { omit } from "lodash";
 import { withDataList, withRouter, type WithRouterProps } from "webiny-app/components";
 import { withSnackbar, type WithSnackbarProps } from "webiny-app-admin/components";
 
+export type WithCrudListProps = WithRouterProps &
+    WithSnackbarProps & {
+    dataList: Object,
+    data: Array<any>,
+    meta: ?Object,
+    deleteRecord: (item: Object) => Promise<void>
+};
+
+export type WithCrudFormProps = WithRouterProps &
+    WithSnackbarProps & {
+    invalidFields: Object,
+    onSubmit: (data: Object) => void,
+    data: Object,
+    error: Object | null
+};
+
+export type WithCrudProps = WithRouterProps &
+    WithSnackbarProps & {
+    listProps: WithCrudListProps,
+    formProps: WithCrudFormProps
+};
+
+
 const withDeleteHandler = ({ mutation, response, snackbar }): Function => {
     return (Component: typeof React.Component) => {
         return compose(
@@ -159,25 +182,3 @@ export const withCrud = ({ list, form }: Object): Function => {
         )(Component);
     };
 };
-
-export type WithCrudProps = WithRouterProps &
-    WithSnackbarProps & {
-        listProps: WithCrudListProps,
-        formProps: WithCrudFormProps
-    };
-
-export type WithCrudListProps = WithRouterProps &
-    WithSnackbarProps & {
-        dataList: Object,
-        data: Array<any>,
-        meta: ?Object,
-        deleteRecord: (item: Object) => Promise<void>
-    };
-
-export type WithCrudFormProps = WithRouterProps &
-    WithSnackbarProps & {
-        invalidFields: Object,
-        onSubmit: (data: Object) => void,
-        data: Object,
-        error: Object | null
-    };

@@ -4,7 +4,6 @@ import { Transition } from "react-transition-group";
 import { getPlugins, getPlugin } from "webiny-app/plugins";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
 import { css } from "emotion";
-import { clone } from "lodash";
 import { Elevation } from "webiny-ui/Elevation";
 import { hoverMenuStyle, defaultStyle, ToolbarBox, transitionStyles, Overlay } from "./styled";
 
