@@ -53,11 +53,10 @@ const RoleForm = ({
                                 <Bind name="scopes">
                                     <AutoComplete
                                         options={scopes}
-                                        label="Scopes"
+                                        label={t`Scopes`}
+                                        description={t`Choose one or more scopes.`}
                                         multiple
-                                        formatValue={item => item.id}
-                                        disabled={false}
-                                        description="Choose one or more scopes."
+                                        unique
                                     />
                                 </Bind>
                             </Cell>

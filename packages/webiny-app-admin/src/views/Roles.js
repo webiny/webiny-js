@@ -82,7 +82,7 @@ export default compose(
     }),
     graphql(loadScopes, {
         props: ({ data }) => ({
-            scopes: (get(data, "security.scopes") || []).map(s => ({ name: s, id: s }))
+            scopes: get(data, "security.scopes") || []
         })
     })
 )(Roles);
