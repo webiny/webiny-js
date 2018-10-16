@@ -1,8 +1,10 @@
 // @flow
 import React from "react";
+import { merge } from "lodash";
 import { Provider } from "react-redux";
 import { compose, lifecycle } from "recompose";
 import { Editor as CmsEditor } from "webiny-app-cms/editor";
+import { createElement } from "webiny-app-cms/editor/utils";
 import { redux } from "webiny-app-cms/editor/redux";
 import { withRouter } from "webiny-app/components";
 import { graphql, withApollo } from "react-apollo";
@@ -11,6 +13,11 @@ import { loadEditorData } from "./graphql";
 const Editor = ({ data, client }: Object) => {
     if (data.loading) {
         return <div>Loading editor...</div>;
+    }
+
+    const revision = data.cms.revision.data;
+    if (!revision.content) {
+        revision.content = createElement("cms-element-document");
     }
 
     return (
@@ -27,7 +34,7 @@ const Editor = ({ data, client }: Object) => {
                         },
                         tmp: {},
                         page: data.cms.page.data,
-                        revision: data.cms.revision.data
+                        revision
                     }
                 },
                 { client }

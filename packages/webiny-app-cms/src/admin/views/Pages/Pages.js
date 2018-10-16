@@ -4,7 +4,7 @@ import { compose, withHandlers } from "recompose";
 import { graphql } from "react-apollo";
 import { CompactView, LeftPanel, RightPanel } from "webiny-app-admin/components/Views/CompactView";
 import FloatingActionButton from "webiny-app-admin/components/FloatingActionButton";
-import { withRouter } from "webiny-app/components";
+import { withRouter, type WithRouterProps } from "webiny-app/components";
 import { withSnackbar, type WithSnackbarProps } from "webiny-app-admin/components";
 import PagesDataList from "./PagesDataList";
 import PageDetails from "./PageDetails";
@@ -62,13 +62,19 @@ export default compose(
     withHandlers({
         createPage: ({
             createMutation,
+            router,
             showSnackbar
-        }: WithSnackbarProps & { createMutation: Function }) => async (
+        }: WithSnackbarProps & WithRouterProps & { createMutation: Function }) => async (
             category: string,
             title: string
         ): Promise<any> => {
             try {
-                await createMutation({ variables: { category, title } });
+                const res = await createMutation({ variables: { category, title } });
+                const { data } = res.data.cms.page;
+                router.goToRoute({
+                    name: "Cms.Editor",
+                    params: { page: data.id, revision: data.activeRevision.id }
+                });
             } catch (e) {
                 showSnackbar(e.message);
             }
