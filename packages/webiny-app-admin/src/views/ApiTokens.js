@@ -50,7 +50,7 @@ export default withCrud({
         delete: {
             mutation: deleteApiToken,
             response: data => data.security.deleteApiToken,
-            snackbar: data => t`ApiToken {name} deleted.`({ name: data.name })
+            snackbar: data => t`API token {name} deleted.`({ name: data.name })
         }
     },
     form: {
@@ -64,14 +64,10 @@ export default withCrud({
             response: data => get(data, "security.token"),
             variables: form => {
                 return {
-                    data: {
-                        ...pick(form, ["name", "description"]),
-                        roles: (form.roles || []).map(x => x.id),
-                        groups: (form.groups || []).map(x => x.id)
-                    }
+                    data: pick(form, ["name", "description", "roles", "groups"])
                 };
             },
-            snackbar: data => t`ApiToken {name} saved successfully.`({ name: data.name })
+            snackbar: data => t`API token {name} saved successfully.`({ name: data.name })
         }
     }
 })(ApiTokens);

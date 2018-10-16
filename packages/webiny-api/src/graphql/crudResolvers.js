@@ -86,6 +86,7 @@ export const resolveCreate = (entityFetcher: EntityFetcher) => async (
     }
 
     try {
+        console.log(args.data)
         await entity.populate(args.data).save();
     } catch (e) {
         if (e instanceof ModelError && e.code === ModelError.INVALID_ATTRIBUTES) {

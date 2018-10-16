@@ -10,7 +10,7 @@ import classNames from "classnames";
 import { Elevation } from "webiny-ui/Elevation";
 import { Typography } from "webiny-ui/Typography";
 
-type Option = Object | string;
+type Option = any;
 
 type Props = FormComponentProps & {
     // Component label.
@@ -20,7 +20,7 @@ type Props = FormComponentProps & {
     disabled?: boolean,
 
     // Options that will be shown.
-    options: Array<Option>,
+    options: Array<any>,
 
     // Description beneath the autoComplete.
     description?: string,
@@ -104,18 +104,6 @@ export class AutoComplete extends React.Component<Props> {
      * Helps us trigger some of the downshift's methods (eg. clearSelection) and helps us to avoid adding state.
      */
     downshift: any = React.createRef();
-
-    /**
-     * Are we dealing with {id, name} as options or simple strings?
-     */
-    usesSimpleOptions(): boolean {
-        const { options, value } = this.props;
-        if (Array.isArray(options) && options[0] && typeof options[0] === "string") {
-            return true;
-        }
-
-        return Array.isArray(value) && value[0] && typeof value[0] === "string";
-    }
 
     getItemValue(option: Option): string {
         return typeof option === "string" ? option : option[this.props.valueProp];
