@@ -12,6 +12,7 @@ export default {
         type Revision {
             id: ID
             createdOn: DateTime
+            savedOn: DateTime
             name: String
             title: String
             slug: String
@@ -23,7 +24,6 @@ export default {
         }
         
         input RevisionInput {
-            id: ID
             title: String
             slug: String
             settings: JSON
@@ -62,7 +62,8 @@ export default {
         ): RevisionResponse
         
         updateRevision(
-            revision: RevisionInput!
+            id: ID!
+            data: RevisionInput!
         ): RevisionResponse
     
         deleteRevision(

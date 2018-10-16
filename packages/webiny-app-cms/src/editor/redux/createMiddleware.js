@@ -1,5 +1,5 @@
 // @flow
-import type { Redux, MiddlewareFunction, Store, Action } from "webiny-app/types";
+import type { Redux, MiddlewareFunction, Store, Action } from "webiny-app-cms/types";
 
 const wrapMiddleware = (types: Array<string>, middleware: MiddlewareFunction): Function => {
     return (store: Store) => (next: Function) => (action: Action) => {

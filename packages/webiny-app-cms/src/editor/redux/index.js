@@ -16,6 +16,7 @@ import type {
 } from "webiny-app-cms/types";
 
 export class Redux {
+    actionMeta: Object;
     store: Store;
     middleware: Array<{ actions: Array<string>, middleware: MiddlewareFunction }>;
     reducers: Array<{ statePath: StatePath, reducer: Reducer, actions: Array<string> }>;
@@ -29,6 +30,7 @@ export class Redux {
         this.reducers = [];
         this.higherOrderReducers = [];
         this.middleware = [];
+        this.actionMeta = {};
     }
 
     createAction(type: string, options?: ActionOptions = {}): ActionCreator {
@@ -36,7 +38,11 @@ export class Redux {
             return {
                 type,
                 payload,
-                meta: { log: options.hasOwnProperty("log") ? options.log : true, ...meta }
+                meta: {
+                    ...this.actionMeta,
+                    log: options.hasOwnProperty("log") ? options.log : true,
+                    ...meta
+                }
             };
         };
     }
@@ -55,7 +61,8 @@ export class Redux {
         this.middleware.push({ actions, middleware });
     }
 
-    initStore(INIT_STATE: Object = {}, middleware: Array<Function> = []) {
+    initStore(INIT_STATE: Object = {}, actionMeta: Object = {}) {
+        this.actionMeta = actionMeta;
         // dev tool
         const reduxDevTools = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
         const composeEnhancers =
@@ -67,7 +74,7 @@ export class Redux {
 
         this.store = createStore(
             createRootReducer(INIT_STATE, this),
-            composeEnhancers(applyMiddleware(...middleware, ...createMiddleware(this)))
+            composeEnhancers(applyMiddleware(...createMiddleware(this)))
         );
 
         return this.store;

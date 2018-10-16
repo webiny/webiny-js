@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { isEqual, omit } from "lodash";
+import { isEqual, pick } from "lodash";
 import { createAction, addMiddleware, addReducer } from "webiny-app-cms/editor/redux";
 import { getRevision } from "webiny-app-cms/editor/selectors";
 import { PREFIX, UPDATE_ELEMENT, DELETE_ELEMENT } from "./actions";
@@ -46,8 +46,8 @@ addMiddleware([SAVING_REVISION], ({ store, next, action }) => {
 
     // Construct revision payload
     const data = getRevision(store.getState());
-    const revision = omit(data, ["page"]);
-    revision.content = revision.content.present;
+    const revision = pick(data, ["title", "slug", "settings"]);
+    revision.content = data.content.present;
 
     // Check if API call is necessary
     if (!dataChanged(revision)) {
@@ -56,12 +56,16 @@ addMiddleware([SAVING_REVISION], ({ store, next, action }) => {
 
     lastSavedRevision = revision;
 
-    const query = gql`
-        query UpdateRevision($id: ID!, $data: JSON) {
-            Cms {
-                Revisions {
-                    update(id: $id, data: $data) {
+    const updateRevision = gql`
+        mutation UpdateRevision($id: ID!, $data: RevisionInput!) {
+            cms {
+                updateRevision(id: $id, data: $data) {
+                    data {
                         id
+                    }
+                    error {
+                        code
+                        message
                     }
                 }
             }
@@ -70,9 +74,8 @@ addMiddleware([SAVING_REVISION], ({ store, next, action }) => {
 
     store.dispatch(startSaving);
 
-    // TODO: pass query via action payload
-    /*app.graphql
-        .query({ query, variables: { id: revision.id, data: revision } })
+    action.meta.client
+        .mutate({ mutation: updateRevision, variables: { id: data.id, data: revision } })
         .then(data => {
             store.dispatch(finishSaving);
             return data;
@@ -80,5 +83,5 @@ addMiddleware([SAVING_REVISION], ({ store, next, action }) => {
         .catch(err => {
             store.dispatch(finishSaving);
             console.log(err);
-        });*/
+        });
 });

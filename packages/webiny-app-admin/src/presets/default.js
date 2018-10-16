@@ -9,7 +9,7 @@ import snackbar from "webiny-app-admin/plugins/Snackbar";
 import Menu from "webiny-app-admin/plugins/Menu";
 import Logo from "webiny-app-admin/plugins/Logo";
 import UserMenu from "webiny-app-admin/plugins/UserMenu";
-//import SearchBar from "webiny-app-admin/plugins/SearchBar";
+import SearchBar from "webiny-app-admin/plugins/SearchBar";
 
 // User menu plugins
 import UserInfo from "webiny-app-admin/plugins/UserMenu/plugins/UserInfo";
@@ -31,7 +31,7 @@ export default [
     Menu,
     Logo,
     UserMenu,
-    //SearchBar, TODO
+    SearchBar,
     // UserMenu plugins
     UserImage,
     UserInfo,

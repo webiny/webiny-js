@@ -20,7 +20,7 @@ const smallSelect = css({
     maxWidth: 200
 });
 
-const RevisionActions = ({ revision, router }) => {
+const PageActions = ({ revision, router }) => {
     return (
         <Grid className={listHeader}>
             <Cell span={6}>
@@ -72,4 +72,4 @@ const RevisionActions = ({ revision, router }) => {
 
 export default compose(
     withRouter()
-)(RevisionActions);
+)(PageActions);

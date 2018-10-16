@@ -5,30 +5,33 @@ import { compose, lifecycle } from "recompose";
 import { Editor as CmsEditor } from "webiny-app-cms/editor";
 import { redux } from "webiny-app-cms/editor/redux";
 import { withRouter } from "webiny-app/components";
-import { graphql } from "react-apollo";
+import { graphql, withApollo } from "react-apollo";
 import { loadEditorData } from "./graphql";
 
-const Editor = ({ data }: Object) => {
+const Editor = ({ data, client }: Object) => {
     if (data.loading) {
         return <div>Loading editor...</div>;
     }
 
     return (
         <Provider
-            store={redux.initStore({
-                editor: {
-                    ui: {
-                        activeElement: null,
-                        dragging: false,
-                        highlightElement: null,
-                        plugins: {},
-                        resizing: false
-                    },
-                    tmp: {},
-                    page: data.cms.page.data,
-                    revision: data.cms.revision.data
-                }
-            })}
+            store={redux.initStore(
+                {
+                    editor: {
+                        ui: {
+                            activeElement: null,
+                            dragging: false,
+                            highlightElement: null,
+                            plugins: {},
+                            resizing: false
+                        },
+                        tmp: {},
+                        page: data.cms.page.data,
+                        revision: data.cms.revision.data
+                    }
+                },
+                { client }
+            )}
         >
             <CmsEditor />
         </Provider>
@@ -36,6 +39,7 @@ const Editor = ({ data }: Object) => {
 };
 
 export default compose(
+    withApollo,
     withRouter(),
     graphql(loadEditorData, {
         options: ({ router }) => {

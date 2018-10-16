@@ -7,7 +7,8 @@ import { Query } from "react-apollo";
 import { withRouter } from "webiny-app/components";
 import { Tabs, Tab } from "webiny-ui/Tabs";
 import RenderElement from "webiny-app-cms/render/components/Element";
-import RevisionActions from "./RevisionActions";
+import PageActions from "./PageActions";
+import Revisions from "./Revisions";
 import type { WithRouterProps } from "webiny-app/components";
 
 const loadRevision = gql`
@@ -26,6 +27,10 @@ const loadRevision = gql`
                         revisions {
                             id
                             name
+                            title
+                            savedOn
+                            published
+                            locked
                         }
                     }
                 }
@@ -56,13 +61,14 @@ const PageDetails = ({ router }: Props) => {
                 
                 return (
                     <React.Fragment>
-                        <RevisionActions revision={revision} />
+                        <PageActions revision={revision} />
                         <Tabs>
                             <Tab label={"Page preview"}>
-                                {/*<RenderElement element={revision.content} />*/}
+                                <RenderElement element={revision.content} />
                             </Tab>
-                            <Tab label={"Stats"} />
-                            <Tab label={"Revisions"} />
+                            <Tab label={"Revisions"}>
+                                <Revisions revisions={revision.page.revisions}/>
+                            </Tab>
                         </Tabs>
                     </React.Fragment>
                 );
