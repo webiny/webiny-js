@@ -48,6 +48,15 @@ type Props = FormComponentProps & {
     // A callback that is executed when input focus is lost.
     onBlur?: (value: mixed) => any,
 
+    // A callback that is executed when key is pressed / held.
+    onKeyDown?: (value: mixed) => any,
+
+    // A callback that is executed when key is pressed / held.
+    onKeyPress?: (value: mixed) => any,
+
+    // A callback that is executed when key is released.
+    onKeyUp?: (value: mixed) => any,
+
     // CSS class name that will be added to the component.
     className?: string,
 
@@ -78,6 +87,9 @@ class Input extends React.Component<Props> {
         "disabled",
         "placeholder",
         "outlined",
+        "onKeyDown",
+        "onKeyPress",
+        "onKeyUp",
         "rootProps",
         "fullwidth",
         "inputRef"
@@ -147,14 +159,10 @@ class Input extends React.Component<Props> {
                 />
 
                 {validation.isValid === false && (
-                    <FormElementMessage error>
-                        {validation.message}
-                    </FormElementMessage>
+                    <FormElementMessage error>{validation.message}</FormElementMessage>
                 )}
                 {validation.isValid !== false &&
-                    description && (
-                        <FormElementMessage>{description}</FormElementMessage>
-                    )}
+                    description && <FormElementMessage>{description}</FormElementMessage>}
             </React.Fragment>
         );
     }
