@@ -8,7 +8,8 @@ const InnerDiv = styled("div")({
     width: 5,
     height: "100%",
     zIndex: 3,
-    borderRadius: 5
+    borderRadius: 5,
+    display: 'none'
 });
 
 const OuterDiv = styled("div")(
@@ -18,7 +19,7 @@ const OuterDiv = styled("div")(
         top: 0,
         height: "100%",
         zIndex: 10,
-        backgroundColor: "transparent"
+        backgroundColor: "transparent",
     },
     props => ({
         [props.last ? "right" : "left"]: -2,
@@ -27,7 +28,8 @@ const OuterDiv = styled("div")(
             backgroundColor: props.isOver
                 ? "var(--mdc-theme-primary)"
                 : "var(--mdc-theme-secondary)",
-            [props.last ? "right" : "left"]: -2
+            [props.last ? "right" : "left"]: -2,
+            display: props.isOver ? 'block' : 'none'
         }
     })
 );
