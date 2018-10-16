@@ -1,9 +1,9 @@
 // @flow
 import config from "./../configs";
 import coreInstall from "webiny-api/install";
-//import cmsInstall from "webiny-api-cms/install";
+import cmsInstall from "webiny-api-cms/install";
 
-const installers = [coreInstall];
+const installers = [coreInstall, cmsInstall];
 
 export default async () => {
     try {

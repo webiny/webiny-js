@@ -48,7 +48,7 @@ export default compose(
             get: {
                 query: loadGroups,
                 variables: { sort: { savedOn: -1 } },
-                response: data => get(data, "security.groups")
+                response: data => get(data, "security.groups") || { data: {} }
             },
             delete: {
                 mutation: deleteGroup,
@@ -64,7 +64,7 @@ export default compose(
             save: {
                 create: createGroup,
                 update: updateGroup,
-                response: data => data.security.group,
+                response: data => get(data, "security.group"),
                 variables: form => ({
                     data: pick(form, ["name", "slug", "description", "roles"])
                 }),

@@ -1,5 +1,5 @@
 // @flow
-import MySQLTable from "../../install/tables/mysqlTable";
+import MySQLTable from "../install/tables/mysqlTable";
 
 class RevisionTable extends MySQLTable {
     constructor() {
