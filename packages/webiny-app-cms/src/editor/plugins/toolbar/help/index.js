@@ -1,6 +1,6 @@
 //@flow
 import React from "react";
-import { dispatch } from "webiny-app/redux";
+import { dispatch } from "webiny-app-cms/editor/redux";
 import { togglePlugin } from "webiny-app-cms/editor/actions";
 import { ReactComponent as HelpIcon } from "webiny-app-cms/editor/assets/icons/help_outline.svg";
 import HelpDialog from "./HelpDialog";

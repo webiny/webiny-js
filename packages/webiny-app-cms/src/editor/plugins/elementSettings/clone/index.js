@@ -1,7 +1,7 @@
 //@flow
 import React from "react";
 import { set } from "dot-prop-immutable";
-import { dispatch } from "webiny-app/redux";
+import { dispatch } from "webiny-app-cms/editor/redux";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { cloneElement } from "webiny-app-cms/editor/utils";
 import { ReactComponent as CloneIcon } from "webiny-app-cms/editor/assets/icons/round-queue-24px.svg";

@@ -10,10 +10,8 @@ const hasMark = (value, type) => {
     return Boolean(value.activeMarks.find(mark => mark.type === type));
 };
 
-const onClickMark = (type, editor) => {
-    const { value, onChange } = editor;
-    const change = value.change().toggleMark(type);
-    onChange(change);
+const onClickMark = (type, editor, onChange) => {
+    editor.change(change => onChange(change.toggleMark(type)));
 };
 
 const mark = "bold";
@@ -30,12 +28,12 @@ export default () => {
             {
                 name: "bold-menu-item",
                 type: "cms-slate-menu-item",
-                render({ MenuButton, editor }: Object) {
+                render({ MenuButton, editor, onChange }: Object) {
                     const isActive = hasMark(editor.value, mark);
 
                     return (
                         // eslint-disable-next-line react/jsx-no-bind
-                        <MenuButton onClick={() => onClickMark(mark, editor)} active={isActive}>
+                        <MenuButton onClick={() => onClickMark(mark, editor, onChange)} active={isActive}>
                             <FormatBoldIcon />
                         </MenuButton>
                     );
@@ -47,15 +45,17 @@ export default () => {
                 name: "cms-slate-editor-bold",
                 type: "cms-slate-editor",
                 slate: {
-                    onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change) {
+                    onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change, next: Function) {
                         // Decide what to do based on the key code...
                         if (isBoldHotkey(event)) {
                             event.preventDefault();
                             change.toggleMark(mark);
                             return true;
                         }
+
+                        return next();
                     },
-                    renderMark(props: Object) {
+                    renderMark(props: Object, next: Function) {
                         if (props.mark.type === mark) {
                             return (
                                 <strong className={strongStyle} {...props.attributes}>
@@ -63,6 +63,8 @@ export default () => {
                                 </strong>
                             );
                         }
+
+                        return next();
                     }
                 }
             }

@@ -1,6 +1,6 @@
 // @flow
 import { set } from "dot-prop-immutable";
-import { createAction, addReducer, addMiddleware } from "webiny-app/redux";
+import { createAction, addReducer, addMiddleware } from "webiny-app-cms/editor/redux";
 import { getElement } from "webiny-app-cms/editor/selectors";
 import { updateElement } from "webiny-app-cms/editor/actions";
 

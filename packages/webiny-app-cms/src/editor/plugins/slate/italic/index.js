@@ -9,10 +9,8 @@ const hasMark = (value, type) => {
     return Boolean(value.activeMarks.find(mark => mark.type === type));
 };
 
-const onClickMark = (type, editor) => {
-    const { value, onChange } = editor;
-    const change = value.change().toggleMark(type);
-    onChange(change);
+const onClickMark = (type, onChange, editor) => {
+    editor.change(change => onChange(change.toggleMark(type)));
 };
 
 const mark = "italic";
@@ -23,12 +21,15 @@ export default () => {
             {
                 name: "italic-menu-item",
                 type: "cms-slate-menu-item",
-                render({ MenuButton, editor }: Object) {
+                render({ MenuButton, editor, onChange }: Object) {
                     const isActive = hasMark(editor.value, mark);
 
                     return (
                         // eslint-disable-next-line react/jsx-no-bind
-                        <MenuButton onClick={() => onClickMark(mark, editor)} active={isActive}>
+                        <MenuButton
+                            onClick={() => onClickMark(mark, onChange, editor)}
+                            active={isActive}
+                        >
                             <FormatItalicIcon />
                         </MenuButton>
                     );
@@ -40,17 +41,19 @@ export default () => {
                 name: "cms-slate-editor-italic",
                 type: "cms-slate-editor",
                 slate: {
-                    onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change) {
+                    onKeyDown(event: SyntheticKeyboardEvent<*>, change: Change, next: Function) {
                         if (isItalicHotkey(event)) {
                             event.preventDefault();
                             change.toggleMark(mark);
                             return true;
                         }
+                        return next();
                     },
-                    renderMark(props: Object) {
+                    renderMark(props: Object, next: Function) {
                         if (props.mark.type === mark) {
                             return <em {...props.attributes}>{props.children}</em>;
                         }
+                        return next();
                     }
                 }
             }

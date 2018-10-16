@@ -1,6 +1,6 @@
 //@flow
 import React from "react";
-import { dispatch } from "webiny-app/redux";
+import { dispatch } from "webiny-app-cms/editor/redux";
 import { deleteElement } from "webiny-app-cms/editor/actions";
 import { getPlugin } from "webiny-app/plugins";
 import { ReactComponent as DeleteIcon } from "webiny-app-cms/editor/assets/icons/delete.svg";

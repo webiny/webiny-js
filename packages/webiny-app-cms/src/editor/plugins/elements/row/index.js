@@ -2,7 +2,7 @@
 import React from "react";
 import styled from "react-emotion";
 import { set } from "dot-prop-immutable";
-import { dispatch } from "webiny-app/redux";
+import { dispatch } from "webiny-app-cms/editor/redux";
 import { createElement, createColumn, cloneElement } from "webiny-app-cms/editor/utils";
 import { updateElement, deleteElement } from "webiny-app-cms/editor/actions";
 import "./actions";

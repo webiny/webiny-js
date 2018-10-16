@@ -1,6 +1,6 @@
 //@flow
 import React from "react";
-import { dispatch } from "webiny-app/redux";
+import { dispatch } from "webiny-app-cms/editor/redux";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { get, set } from "dot-prop-immutable";
 import { ReactComponent as AlignCenterIcon } from "webiny-app-cms/editor/assets/icons/format_align_center.svg";

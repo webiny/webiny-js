@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import styled from "react-emotion";
 import { connect } from "react-redux";
 import { compose } from "recompose";
-import _ from "lodash";
+import { isEqual, get } from "lodash";
 import { Editor } from "slate-react";
 import { Value } from "slate";
 import { getPlugins } from "webiny-app/plugins";
@@ -25,7 +25,6 @@ class SlateEditor extends React.Component<*, *> {
     };
 
     plugins = [];
-    lostFocus = false;
     editor = React.createRef();
 
     constructor(props) {
@@ -34,8 +33,8 @@ class SlateEditor extends React.Component<*, *> {
         const value = typeof props.value === "string" ? createValue(props.value) : props.value;
 
         this.state = {
-            showMenu: false,
             modified: false,
+            showMenu: false,
             value: Value.fromJSON(value),
             readOnly: !props.onChange,
             activePlugin: null
@@ -65,15 +64,7 @@ class SlateEditor extends React.Component<*, *> {
 
         // Prevent `onChange` if it is a `set_value` operation.
         // We only need to handle changes on user input.
-        if (_.get(change.operations.toJSON(), "0.type") === "set_value") {
-            return;
-        }
-
-        // In case `onBlur` happened, we need to update app state.
-        if (this.lostFocus) {
-            this.lostFocus = false;
-            this.setState({ modified: false });
-            this.props.onChange(change.value.toJSON());
+        if (get(change.operations.toJSON(), "0.type") === "set_value") {
             return;
         }
 
@@ -86,8 +77,8 @@ class SlateEditor extends React.Component<*, *> {
     };
 
     onBlur = () => {
-        // onChange will happen after onBlur and we will handle editor change there.
-        this.lostFocus = true;
+        this.setState({ modified: false });
+        this.props.onChange(this.state.value.toJSON());
     };
 
     onFocus = () => {
@@ -139,6 +130,7 @@ class SlateEditor extends React.Component<*, *> {
                     exclude={this.props.exclude}
                     value={this.state.value}
                     onChange={this.onChange}
+                    editor={this.editor}
                 />,
                 container
             );

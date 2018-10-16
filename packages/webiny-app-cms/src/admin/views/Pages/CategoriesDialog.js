@@ -1,3 +1,4 @@
+// @flow
 import React from "react";
 import { compose } from "recompose";
 import { css } from "emotion";
@@ -21,7 +22,7 @@ const narrowDialog = css({
 
 const loadCategories = gql`
     query ListCategories($sort: JSON) {
-        Cms {
+        cms {
             listCategories(sort: $sort) {
                 data {
                     id
@@ -33,47 +34,50 @@ const loadCategories = gql`
     }
 `;
 
-class CategoriesDialog extends React.Component {
-    render() {
-        return (
-            <Dialog open={this.props.open} onClose={this.props.onClose} className={narrowDialog}>
-                <DialogHeader>
-                    <DialogHeaderTitle>Select a category</DialogHeaderTitle>
-                </DialogHeader>
-                <DialogBody>
-                    <List twoLine>
-                        <Query query={loadCategories} variables={{ sort: { name: 1 } }}>
-                            {({ data, loading }) => {
-                                if (loading) {
-                                    return "Loading categories...";
-                                }
+const CategoriesDialog = ({
+    open,
+    onClose,
+    onSelect
+}: {
+    open: boolean,
+    onClose: Function,
+    onSelect: Function
+}) => {
+    return (
+        <Dialog open={open} onClose={onClose} className={narrowDialog}>
+            <DialogHeader>
+                <DialogHeaderTitle>Select a category</DialogHeaderTitle>
+            </DialogHeader>
+            <DialogBody>
+                <List twoLine>
+                    <Query query={loadCategories} variables={{ sort: { name: 1 } }}>
+                        {({ data, loading }) => {
+                            if (loading) {
+                                return "Loading categories...";
+                            }
 
-                                return (
-                                    <React.Fragment>
-                                        {data.Cms.listCategories.data.map(item => (
-                                            <ListItem
-                                                key={item.id}
-                                                onClick={() => this.props.onSelect(item)}
-                                            >
-                                                <ListItemText>
-                                                    <ListItemTextPrimary>
-                                                        {item.name}
-                                                    </ListItemTextPrimary>
-                                                    <ListItemTextSecondary>
-                                                        {item.url}
-                                                    </ListItemTextSecondary>
-                                                </ListItemText>
-                                            </ListItem>
-                                        ))}
-                                    </React.Fragment>
-                                );
-                            }}
-                        </Query>
-                    </List>
-                </DialogBody>
-            </Dialog>
-        );
-    }
-}
+                            return (
+                                <React.Fragment>
+                                    {data.cms.listCategories.data.map(item => (
+                                        <ListItem key={item.id} onClick={() => onSelect(item)}>
+                                            <ListItemText>
+                                                <ListItemTextPrimary>
+                                                    {item.name}
+                                                </ListItemTextPrimary>
+                                                <ListItemTextSecondary>
+                                                    {item.url}
+                                                </ListItemTextSecondary>
+                                            </ListItemText>
+                                        </ListItem>
+                                    ))}
+                                </React.Fragment>
+                            );
+                        }}
+                    </Query>
+                </List>
+            </DialogBody>
+        </Dialog>
+    );
+};
 
 export default CategoriesDialog;

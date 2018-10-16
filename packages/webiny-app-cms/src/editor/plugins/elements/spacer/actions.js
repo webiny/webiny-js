@@ -1,5 +1,5 @@
 // @flow
-import { createAction, addReducer } from "webiny-app/redux";
+import { createAction, addReducer } from "webiny-app-cms/editor/redux";
 
 const PREFIX = "[Spacer]";
 

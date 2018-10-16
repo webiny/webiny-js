@@ -51,9 +51,9 @@ const dropDownDialog = css({
 const Button = styled("div")({
     padding: "1px 3px 3px 3px",
     backgroundColor: "var(--mdc-theme-on-background)",
-    fontSize: '0.8em',
+    fontSize: "0.8em",
     whiteSpace: "nowrap",
-    lineHeight: '110%'
+    lineHeight: "110%"
 });
 
 class TypographySelector extends React.Component {
@@ -73,18 +73,15 @@ class TypographySelector extends React.Component {
     }
 
     setBlock = type => {
-        const { value, onChange } = this.props.editor;
+        const { editor, onChange } = this.props;
 
-        onChange(value.change().setBlocks(type));
+        editor.change(change => onChange(change.setBlocks(type)));
     };
 
     render() {
-        const {
-            editor: { value },
-            theme
-        } = this.props;
+        const { editor, theme } = this.props;
 
-        let blockType = value.blocks.first().type;
+        let blockType = editor.value.blocks.first().type;
         const style = theme.styles[blockType] || theme.styles.paragraph;
 
         return (

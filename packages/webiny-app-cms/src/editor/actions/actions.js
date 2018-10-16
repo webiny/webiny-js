@@ -2,14 +2,13 @@ import _ from "lodash";
 import invariant from "invariant";
 import dotProp from "dot-prop-immutable";
 import undoable from "redux-undo";
-import { createAction, addMiddleware, addReducer, addHigherOrderReducer } from "webiny-app/redux";
+import { createAction, addMiddleware, addReducer, addHigherOrderReducer } from "webiny-app-cms/editor/redux";
 import { getPlugin } from "webiny-app/plugins";
 import { getElement, getParentElement } from "webiny-app-cms/editor/selectors";
 import { updateChildPaths, createElement } from "webiny-app-cms/editor/utils";
 
 export const PREFIX = "[CMS]";
 
-export const SET_EDITOR_DATA = `${PREFIX} Set editor data`;
 export const DRAG_START = `${PREFIX} Drag start`;
 export const DRAG_END = `${PREFIX} Drag end`;
 export const ELEMENT_DROPPED = `${PREFIX} Element dropped`;
@@ -23,28 +22,6 @@ export const DEACTIVATE_ELEMENT = `${PREFIX} Deactivate element`;
 export const UPDATE_ELEMENT = `${PREFIX} Update element`;
 export const DELETE_ELEMENT = `${PREFIX} Delete element`;
 export const SET_TMP = `${PREFIX} Set tmp`;
-
-addReducer(["INIT"], null, state => {
-    return {
-        ...state,
-        editor: {
-            ui: {
-                activeElement: null,
-                dragging: false,
-                highlightElement: null,
-                plugins: {},
-                resizing: false
-            },
-            tmp: {},
-            revision: {
-                title: "",
-                slug: "",
-                settings: {},
-                content: createElement("cms-element-document")
-            }
-        }
-    };
-});
 
 const horStatePath = "editor.revision.content";
 addHigherOrderReducer(
@@ -100,14 +77,6 @@ addReducer(["SETUP_EDITOR"], "editor", (state = null, action) => {
         editorState.revision.content = createElement("cms-element-document");
     }
     return editorState;
-});
-
-export const setEditorData = createAction(SET_EDITOR_DATA);
-
-addMiddleware([SET_EDITOR_DATA], ({ store, next, action}) => {
-    next(action);
-    store.dispatch({ type: "SETUP_EDITOR", payload: _.cloneDeep(action.payload) });
-    store.dispatch({ type: "@@redux-undo/INIT" });
 });
 
 export const setTmp = createAction(SET_TMP);

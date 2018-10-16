@@ -9,10 +9,11 @@ export default () => {
                 name: "cms-slate-editor-break",
                 type: "cms-slate-editor",
                 slate: {
-                    onKeyDown(e: SyntheticKeyboardEvent<*>, change: Change) {
+                    onKeyDown(e: SyntheticKeyboardEvent<*>, change: Change, next: Function) {
                         if (isHotkey("shift+enter", e)) {
                             return change.splitBlock().setBlocks("paragraph");
                         }
+                        return next();
                     }
                 }
             }

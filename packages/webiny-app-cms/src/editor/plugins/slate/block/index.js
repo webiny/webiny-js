@@ -18,16 +18,16 @@ const icons = {
 // Alignment types for faster access
 const alignments = Object.keys(icons);
 
-const setAlign = (align, blockType, editor) => {
-    const { value, onChange } = editor;
-    const change = value
-        .change()
-        .setBlocks({
-            type: blockType,
-            data: { align }
-        })
-        .focus();
-    onChange(change);
+const setAlign = (align, blockType, onChange, editor) => {
+    editor.change(change => {
+        change
+            .setBlocks({
+                type: blockType,
+                data: { align }
+            })
+            .focus();
+        onChange(change);
+    });
 };
 
 export default () => {
@@ -36,10 +36,10 @@ export default () => {
             {
                 name: "typography-menu-item",
                 type: "cms-slate-menu-item",
-                render({ MenuButton, editor }: Object) {
+                render({ MenuButton, ...props }: Object) {
                     return (
                         <MenuButton>
-                            <TypographySelector editor={editor} />
+                            <TypographySelector {...props} />
                         </MenuButton>
                     );
                 }
@@ -47,7 +47,7 @@ export default () => {
             {
                 name: "align-menu-item",
                 type: "cms-slate-menu-item",
-                render({ MenuButton, editor }: Object) {
+                render({ MenuButton, editor, onChange }: Object) {
                     const block = editor.value.blocks.first();
 
                     const align = block.data.get("align") || "left";
@@ -55,7 +55,7 @@ export default () => {
 
                     return (
                         // eslint-disable-next-line react/jsx-no-bind
-                        <MenuButton onClick={() => setAlign(nextAlign, block.type, editor)}>
+                        <MenuButton onClick={() => setAlign(nextAlign, block.type, onChange, editor)}>
                             {React.createElement(icons[align])}
                         </MenuButton>
                     );
@@ -67,7 +67,7 @@ export default () => {
                 name: "cms-slate-editor-typography",
                 type: "cms-slate-editor",
                 slate: {
-                    renderNode(props: Object) {
+                    renderNode(props: Object, next: Function) {
                         const { attributes, children, node, editor } = props;
                         let { type } = node;
 
@@ -88,6 +88,8 @@ export default () => {
 
                             return <Node {...nodeProps}>{children}</Node>;
                         }
+
+                        return next();
                     }
                 }
             }

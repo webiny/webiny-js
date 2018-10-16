@@ -1,6 +1,6 @@
 //@flow
 import React from "react";
-import { dispatch } from "webiny-app/redux";
+import { dispatch } from "webiny-app-cms/editor/redux";
 import { togglePlugin } from "webiny-app-cms/editor/actions";
 import { ReactComponent as WidthIcon } from "webiny-app-cms/editor/assets/icons/width-icon.svg";
 import Settings from "./Settings";

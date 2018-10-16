@@ -33,8 +33,6 @@ export default class AutoScale extends React.Component {
         let scaleWidth = maxWidth / contentSize.width;
         let scaleHeight = maxHeight / contentSize.height;
 
-        console.log(contentSize.width + " " + contentSize.height);
-
         let scale = scaleWidth;
         let height = maxHeight / scaleWidth;
         let width = maxWidth / scaleWidth;

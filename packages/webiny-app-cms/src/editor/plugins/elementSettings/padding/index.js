@@ -1,6 +1,6 @@
 //@flow
 import React from "react";
-import { dispatch } from "webiny-app/redux";
+import { dispatch } from "webiny-app-cms/editor/redux";
 import { togglePlugin } from "webiny-app-cms/editor/actions";
 import { ReactComponent as PaddingIcon } from "webiny-app-cms/editor/assets/icons/fullscreen_exit.svg";
 import Settings from "../utils/PMSettings";

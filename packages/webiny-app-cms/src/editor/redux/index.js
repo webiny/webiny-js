@@ -70,8 +70,6 @@ export class Redux {
             composeEnhancers(applyMiddleware(...middleware, ...createMiddleware(this)))
         );
 
-        this.store.dispatch({ type: "INIT" });
-
         return this.store;
     }
 }

@@ -1,6 +1,7 @@
 // @flow
 import * as React from "react";
 import type { Value } from "slate";
+import type { Editor } from "slate-react";
 import { ReactComponent as CodeIcon } from "webiny-app-cms/editor/assets/icons/code.svg";
 
 const MARK = "code";
@@ -9,10 +10,8 @@ const hasMark = (value: Value, type: string): boolean => {
     return Boolean(value.marks.find(mark => mark.type === type));
 };
 
-const onClickMark = (type, editor) => {
-    const { value, onChange } = editor;
-    const change = value.change().toggleMark(type);
-    onChange(change);
+const onClickMark = (type, editor, onChange) => {
+    editor.change(change => onChange(change.toggleMark(type)));
 };
 
 export default () => {
@@ -23,16 +22,21 @@ export default () => {
                 type: "cms-slate-menu-item",
                 render({
                     MenuButton,
-                    editor
+                    editor,
+                    onChange
                 }: {
                     MenuButton: React.ComponentType<*>,
-                    editor: { value: Value, onChange: Function }
+                    editor: React.ElementRef<Editor>,
+                    onChange: Function
                 }) {
                     const isActive = hasMark(editor.value, MARK);
 
                     return (
                         // eslint-disable-next-line react/jsx-no-bind
-                        <MenuButton onClick={() => onClickMark(MARK, editor)} active={isActive}>
+                        <MenuButton
+                            onClick={() => onClickMark(MARK, editor, onChange)}
+                            active={isActive}
+                        >
                             <CodeIcon />
                         </MenuButton>
                     );
@@ -44,7 +48,7 @@ export default () => {
                 name: "cms-slate-editor-code",
                 type: "cms-slate-editor",
                 slate: {
-                    renderMark(props: Object) {
+                    renderMark(props: Object, next: Function) {
                         if (props.mark.type === MARK) {
                             return (
                                 <code
@@ -55,6 +59,8 @@ export default () => {
                                 </code>
                             );
                         }
+
+                        return next();
                     }
                 }
             }

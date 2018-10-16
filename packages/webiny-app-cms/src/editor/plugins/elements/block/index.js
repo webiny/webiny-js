@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import { dispatch } from "webiny-app/redux";
+import { dispatch } from "webiny-app-cms/editor/redux";
 import Block from "./Block";
 import { set } from "dot-prop-immutable";
 import { createElement, createRow, createColumn, cloneElement } from "webiny-app-cms/editor/utils";

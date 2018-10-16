@@ -1,6 +1,5 @@
 //@flow
 import React from "react";
-import { connect } from "react-redux";
 import RenderElement from "webiny-app-cms/render/components/Element";
 import type { ElementType } from "webiny-app-cms/types";
 

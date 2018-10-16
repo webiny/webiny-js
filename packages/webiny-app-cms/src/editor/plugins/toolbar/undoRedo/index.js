@@ -1,7 +1,7 @@
 //@flow
 import platform from "platform";
 import React from "react";
-import { dispatch } from "webiny-app/redux";
+import { dispatch } from "webiny-app-cms/editor/redux";
 import { ActionCreators } from "redux-undo";
 import { ReactComponent as UndoIcon } from "webiny-app-cms/editor/assets/icons/undo-icon.svg";
 import { ReactComponent as RedoIcon } from "webiny-app-cms/editor/assets/icons/redo-icon.svg";

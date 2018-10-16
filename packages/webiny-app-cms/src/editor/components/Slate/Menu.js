@@ -4,6 +4,7 @@ import { Transition } from "react-transition-group";
 import { getPlugins, getPlugin } from "webiny-app/plugins";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
 import { css } from "emotion";
+import { clone } from "lodash";
 import { Elevation } from "webiny-ui/Elevation";
 import { hoverMenuStyle, defaultStyle, ToolbarBox, transitionStyles, Overlay } from "./styled";
 
@@ -57,7 +58,6 @@ class Menu extends React.Component<*, *> {
         }
 
         const selection = props.value.selection.toJSON();
-
         if (state.activePlugin && selection.isFocused && !state.lastSelectionWasFocused) {
             return { activePlugin: null };
         }
@@ -91,15 +91,20 @@ class Menu extends React.Component<*, *> {
 
     activatePlugin = plugin => {
         const { value } = this.props;
+        const jsonValue = {
+            selection: value.selection.toJSON(),
+            inlines: value.inlines.toJSON(),
+            marks: value.marks.toJSON(),
+            activeMarks: value.activeMarks.toJSON(),
+            blocks: value.blocks.toJSON(),
+            texts: value.texts.toJSON()
+        };
 
         this.setState({ visible: true }, () => {
             setTimeout(() => {
                 this.setState({
                     lastSelectionWasFocused: true,
-                    activePlugin: {
-                        plugin,
-                        selection: value.selection.toJSON()
-                    }
+                    activePlugin: { plugin, value: jsonValue }
                 });
             }, 100);
         });
@@ -118,7 +123,7 @@ class Menu extends React.Component<*, *> {
     };
 
     renderActivePlugin = () => {
-        const { plugin, selection } = this.state.activePlugin;
+        const { plugin, value } = this.state.activePlugin;
         const menuPlugin = getPlugin(plugin);
 
         return (
@@ -133,11 +138,9 @@ class Menu extends React.Component<*, *> {
                                 <MenuContainer closeMenu={this.deactivatePlugin}>
                                     {menuPlugin.renderMenu({
                                         closeMenu: this.deactivatePlugin,
-                                        selection,
-                                        editor: {
-                                            value: this.props.value,
-                                            onChange: this.props.onChange
-                                        }
+                                        value,
+                                        onChange: this.props.onChange,
+                                        editor: this.props.editor.current
                                     })}
                                 </MenuContainer>
                             </Elevation>
@@ -150,14 +153,16 @@ class Menu extends React.Component<*, *> {
     };
 
     renderPlugins = type => {
-        const { value, onChange, exclude } = this.props;
+        const { value, onChange, editor, exclude } = this.props;
         return getPlugins(type)
             .filter(pl => !exclude.includes(pl.name))
             .map(plugin => {
                 return React.cloneElement(
                     plugin.render({
                         MenuButton,
-                        editor: { value, onChange },
+                        value,
+                        onChange,
+                        editor: editor.current,
                         activatePlugin: this.activatePlugin
                     }),
                     {
@@ -185,14 +190,16 @@ class Menu extends React.Component<*, *> {
         return (
             <Transition in={Boolean(this.menu)} timeout={100} appear={true}>
                 {state => (
-                    <Elevation
-                        z={1}
-                        elementRef={this.menu}
-                        className={hoverMenuStyle}
-                        style={{ ...defaultStyle, ...transitionStyles[state] }}
-                    >
-                        {this.renderPlugins("cms-slate-menu-item")}
-                    </Elevation>
+                    <React.Fragment>
+                        <Elevation
+                            z={1}
+                            elementRef={this.menu}
+                            className={hoverMenuStyle}
+                            style={{ ...defaultStyle, ...transitionStyles[state] }}
+                        >
+                            {this.renderPlugins("cms-slate-menu-item")}
+                        </Elevation>
+                    </React.Fragment>
                 )}
             </Transition>
         );

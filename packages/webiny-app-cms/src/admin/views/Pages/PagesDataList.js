@@ -4,23 +4,16 @@ import { compose } from "recompose";
 import { get } from "dot-prop-immutable";
 import { withDataList, withRouter } from "webiny-app/components";
 import { i18n } from "webiny-app/i18n";
-import {
-    DataList,
-    List,
-    ListItem,
-    ListItemText,
-    ListItemTextSecondary
-} from "webiny-ui/List";
+import { DataList, List, ListItem, ListItemText, ListItemTextSecondary } from "webiny-ui/List";
 
-import { loadPages } from "./graphql/pages";
+import { loadPages } from "./graphql";
 
 const t = i18n.namespace("Cms.PagesDataList");
 
 const PagesDataList = props => {
     const { PagesDataList, router } = props;
 
-    const data = get(PagesDataList, "data.Cms.listPages.data") || [];
-    const meta = get(PagesDataList, "data.Cms.listPages.meta") || {};
+    const { data, meta } = get(PagesDataList, "data.cms.pages") || { data: [], meta: {} };
 
     return (
         <DataList

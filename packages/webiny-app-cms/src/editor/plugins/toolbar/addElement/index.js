@@ -1,6 +1,6 @@
 //@flow
 import React from "react";
-import { addReducer, dispatch } from "webiny-app/redux";
+import { addReducer, dispatch } from "webiny-app-cms/editor/redux";
 import { ELEMENT_DROPPED, togglePlugin } from "webiny-app-cms/editor/actions";
 import { ReactComponent as AddIcon } from "webiny-app-cms/editor/assets/icons/add_circle_outline.svg";
 import AddElement from "./AddElement";
