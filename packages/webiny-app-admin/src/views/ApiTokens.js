@@ -64,7 +64,11 @@ export default withCrud({
             response: data => get(data, "security.token"),
             variables: form => {
                 return {
-                    data: pick(form, ["name", "description", "roles", "groups"])
+                    data: {
+                        ...pick(form, ["name", "description"]),
+                        roles: (form.roles || []).map(x => x.id),
+                        groups: (form.groups || []).map(x => x.id)
+                    }
                 };
             },
             snackbar: data => t`API token {name} saved successfully.`({ name: data.name })

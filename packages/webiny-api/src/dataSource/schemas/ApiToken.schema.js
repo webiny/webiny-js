@@ -25,8 +25,8 @@ export default {
         input ApiTokenInput {
             name: String
             description: String
-            groups: [GroupInput]
-            roles: [RoleInput]
+            groups: [ID]
+            roles: [ID]
         }
         
         type ApiTokenListResponse {

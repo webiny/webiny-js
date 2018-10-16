@@ -59,14 +59,17 @@ export default compose(
         form: {
             get: {
                 query: loadGroup,
-                response: data => get(data, "security.group")
+                response: data => get(data, "security.group") || { data: {} }
             },
             save: {
                 create: createGroup,
                 update: updateGroup,
                 response: data => get(data, "security.group"),
                 variables: form => ({
-                    data: pick(form, ["name", "slug", "description", "roles"])
+                    data: {
+                        ...pick(form, ["name", "slug", "description"]),
+                        roles: (form.roles || []).map(x => x.id)
+                    }
                 }),
                 snackbar: data => t`Group {name} saved successfully.`({ name: data.name })
             }

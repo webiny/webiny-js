@@ -64,6 +64,7 @@ export function apiTokenFactory({ user = {}, config, entities }: Object): Class<
             const createToken = !this.isExisting();
             await super.save(...args);
 
+
             if (createToken) {
                 await this.createJWT();
             }
