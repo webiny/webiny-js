@@ -4,30 +4,33 @@ import { setDisplayName, compose, withProps, mapProps, withHandlers, withState }
 import { graphql } from "react-apollo";
 import { omit } from "lodash";
 import { withDataList, withRouter, type WithRouterProps } from "webiny-app/components";
-import { withSnackbar, type WithSnackbarProps } from "webiny-app-admin/components";
+import {
+    withSnackbar,
+    withDialog,
+    type WithDialogProps,
+    type WithSnackbarProps
+} from "webiny-app-admin/components";
 
-export type WithCrudListProps = WithRouterProps &
-    WithSnackbarProps & {
+export type WithCrudBaseProps = WithRouterProps & WithSnackbarProps & WithDialogProps;
+
+export type WithCrudListProps = WithCrudBaseProps & {
     dataList: Object,
     data: Array<any>,
     meta: ?Object,
     deleteRecord: (item: Object) => Promise<void>
 };
 
-export type WithCrudFormProps = WithRouterProps &
-    WithSnackbarProps & {
+export type WithCrudFormProps = WithCrudBaseProps & {
     invalidFields: Object,
     onSubmit: (data: Object) => void,
     data: Object,
     error: Object | null
 };
 
-export type WithCrudProps = WithRouterProps &
-    WithSnackbarProps & {
+export type WithCrudProps = WithCrudBaseProps & {
     listProps: WithCrudListProps,
     formProps: WithCrudFormProps
 };
-
 
 const withDeleteHandler = ({ mutation, response, snackbar }): Function => {
     return (Component: typeof React.Component) => {
@@ -121,6 +124,7 @@ export const withCrud = ({ list, form }: Object): Function => {
         return compose(
             setDisplayName("withCrud"),
             withSnackbar(),
+            withDialog(),
             withRouter(),
             withProps(({ router }) => ({
                 id: router.getQuery("id")
@@ -153,12 +157,14 @@ export const withCrud = ({ list, form }: Object): Function => {
                         invalidFields,
                         formError,
                         showSnackbar,
+                        showDialog,
                         deleteRecord
                     } = props;
 
                     return {
                         router,
                         showSnackbar,
+                        showDialog,
                         listProps: {
                             dataList: omit(dataList, ["data"]),
                             router,
