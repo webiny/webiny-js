@@ -38,7 +38,14 @@ const withDeleteHandler = ({ mutation, response, snackbar }): Function => {
             setDisplayName("deleteHandler"),
             graphql(mutation, { name: "deleteRecord" }),
             withHandlers({
-                deleteRecord: ({ deleteRecord, showSnackbar, router, dataList, id }: Object) => {
+                deleteRecord: ({
+                                   deleteRecord,
+                                   showSnackbar,
+                                   showDialog,
+                                   router,
+                                   dataList,
+                                   id
+                               }: Object) => {
                     return async (item: Object) => {
                         const res = await deleteRecord({ variables: { id: item.id } });
                         const { data, error } = response(res.data);
@@ -46,8 +53,8 @@ const withDeleteHandler = ({ mutation, response, snackbar }): Function => {
                         if (data) {
                             showSnackbar(snackbar(item));
                         } else {
-                            showSnackbar(error.message, {
-                                actionText: "Close"
+                            showDialog(error.message, {
+                                title: "An error occurred"
                             });
                         }
 
@@ -76,15 +83,16 @@ const withSaveHandler = ({ create, update, response, variables, snackbar }): Fun
             graphql(update, { name: "updateRecord" }),
             withHandlers({
                 saveRecord: ({
-                    createRecord,
-                    updateRecord,
-                    setInvalidFields,
-                    setFormError,
-                    showSnackbar,
-                    router,
-                    dataList,
-                    id
-                }: Object) => {
+                                 createRecord,
+                                 updateRecord,
+                                 setInvalidFields,
+                                 setFormError,
+                                 showSnackbar,
+                                 showDialog,
+                                 router,
+                                 dataList,
+                                 id
+                             }: Object) => {
                     return async (formData: Object) => {
                         // Reset errors
                         setFormError(null);
@@ -98,13 +106,13 @@ const withSaveHandler = ({ create, update, response, variables, snackbar }): Fun
                             const { data, error } = response(res.data);
                             if (error) {
                                 if (error.code === "INVALID_ATTRIBUTES") {
-                                    showSnackbar("Some of your form input is incorrect!");
+                                    showDialog("Some of your form input is incorrect!", {
+                                        title: "An error occurred"
+                                    });
                                     setInvalidFields(error.data.invalidAttributes);
                                     return;
                                 } else {
-                                    showSnackbar(error.message, {
-                                        actionText: "Close"
-                                    });
+                                    showDialog(error.message, { title: "An error occurred" });
                                     return;
                                 }
                             }
