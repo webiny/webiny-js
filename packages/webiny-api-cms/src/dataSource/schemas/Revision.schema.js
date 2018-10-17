@@ -4,6 +4,7 @@ import {
     resolveList,
     resolveUpdate
 } from "webiny-api/graphql";
+import createRevisionFrom from "./revisionResolvers/createRevisionFrom";
 
 const revisionFetcher = ctx => ctx.cms.Revision;
 
@@ -75,7 +76,7 @@ export default {
         listRevisions: resolveList(revisionFetcher)
     },
     mutationResolvers: {
-        createRevisionFrom: () => ({}),
+        createRevisionFrom: createRevisionFrom(revisionFetcher),
         updateRevision: resolveUpdate(revisionFetcher),
         deleteRevision: resolveDelete(revisionFetcher)
     }

@@ -74,7 +74,11 @@ export default {
         listApiTokens: resolveList(apiTokenFetcher)
     },
     mutationResolvers: {
-        createApiToken: resolveCreate(apiTokenFetcher),
+        createApiToken: async (...args: Array<any>) => {
+            const res = await resolveCreate(apiTokenFetcher)(...args);
+            await res.data.generateJWT();
+            return res;
+        },
         updateApiToken: resolveUpdate(apiTokenFetcher),
         deleteApiToken: resolveDelete(apiTokenFetcher)
     }
