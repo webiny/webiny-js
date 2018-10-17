@@ -42,7 +42,7 @@ export const withDataList = (withDataListParams: Object): Function => {
                 const { router, queryData } = props;
 
                 const dataListProps: Object = {
-                    data: queryData,
+                    ...withDataListParams.response(queryData),
                     init(): void {
                         this.refresh();
                     },
@@ -81,21 +81,31 @@ export const withDataList = (withDataListParams: Object): Function => {
                         const preparedParams = { ...dataListProps.__loadParams, sort };
                         this.refresh(preparedParams);
                     },
-                    multiSelect(item, value): void {
+                    multiSelect(items, value): void {
+                        if (!Array.isArray(items)) {
+                            items = [items];
+                        }
+
                         let multiSelectedItems = [...props.multiSelectedItems];
 
-                        if (value === undefined) {
-                            multiSelectedItems.includes(item)
-                                ? multiSelectedItems.splice(multiSelectedItems.indexOf(item), 1)
-                                : multiSelectedItems.push(item);
-                        } else {
-                            if (value === true) {
-                                !multiSelectedItems.includes(item) && multiSelectedItems.push(item);
+                        items.forEach(item => {
+                            if (value === undefined) {
+                                multiSelectedItems.includes(item)
+                                    ? multiSelectedItems.splice(multiSelectedItems.indexOf(item), 1)
+                                    : multiSelectedItems.push(item);
                             } else {
-                                multiSelectedItems.includes(item) &&
-                                    multiSelectedItems.splice(multiSelectedItems.indexOf(item), 1);
+                                if (value === true) {
+                                    !multiSelectedItems.includes(item) &&
+                                        multiSelectedItems.push(item);
+                                } else {
+                                    multiSelectedItems.includes(item) &&
+                                        multiSelectedItems.splice(
+                                            multiSelectedItems.indexOf(item),
+                                            1
+                                        );
+                                }
                             }
-                        }
+                        });
 
                         props.multiSelect(multiSelectedItems);
                     },
@@ -112,31 +122,20 @@ export const withDataList = (withDataListParams: Object): Function => {
                     getMultiSelected(): Array<Object> {
                         return props.multiSelectedItems;
                     },
-                    // TODO below
-                    multiSelectAll(value: ?Object): void {
-                        console.log('TODO', props)
-                        /*const { data } = returnProps[propName];
+                    multiSelectAll(value: boolean): void {
+                        const { data } = dataListProps;
                         if (Array.isArray(data)) {
-                            dispatchProps.multiSelect({
-                                ...withDataListParams,
-                                item: data,
-                                value
-                            });
+                            dataListProps.multiSelect(data, value);
                         } else {
-                            dispatchProps.multiSelect({
-                                ...withDataListParams,
-                                item: [],
-                                value
-                            });
-                        }*/
+                            dataListProps.multiSelect([], value);
+                        }
                     },
-
                     isAllMultiSelected(): boolean {
-                        console.log('TODO', props)
-                        return false;
-                        /*return (
-                            props.multiSelectedItems.length === props.multiSelectedItems.data.length
-                        );*/
+                        const { data } = dataListProps;
+
+                        return (
+                            Array.isArray(data) && props.multiSelectedItems.length === data.length
+                        );
                     },
 
                     __loadParams: prepareLoadListParams(props.router)
