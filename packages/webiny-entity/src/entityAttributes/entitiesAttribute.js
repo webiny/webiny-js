@@ -49,7 +49,7 @@ class EntitiesAttribute extends Attribute {
          */
         this.auto = { save: true, delete: true };
 
-        this.parentEntity.on("save", async () => {
+        this.parentEntity.on("__save", async () => {
             const value: EntitiesAttributeValue = (this.value: any);
 
             // If loading is in progress, wait until loaded.

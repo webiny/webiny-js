@@ -293,11 +293,11 @@ class Entity {
         const logs = _.get(this, "constructor.crud.logs");
 
         try {
-            events.save !== false && (await this.emit("save", { params }));
+            events.save !== false && (await this.emit("__save", { params }));
             if (existing) {
-                events.update !== false && (await this.emit("update", { params }));
+                events.update !== false && (await this.emit("__update", { params }));
             } else {
-                events.create !== false && (await this.emit("create", { params }));
+                events.create !== false && (await this.emit("__create", { params }));
             }
 
             params.validation !== false && (await this.validate());
