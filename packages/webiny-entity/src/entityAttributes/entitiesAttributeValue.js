@@ -220,7 +220,7 @@ class EntitiesAttributeValue extends AttributeValue {
      * Sets current links, based on initial and currently set entities.
      *
      * How links-management works?
-     * When entities are set, on "save" event, attribute will be first loaded - meaning all initial (from storage)
+     * When entities are set, on "__save" event, attribute will be first loaded - meaning all initial (from storage)
      * linked entities and its links will be loaded ("this.initial" / "this.links.initial"). After that, this method
      * will iterate over all newly set entities, and check if for each a link is already existing. If so, it will
      * use it, otherwise a new instance is created, linking parent and set entity together.
