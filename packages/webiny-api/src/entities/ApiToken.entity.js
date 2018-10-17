@@ -12,7 +12,6 @@ export interface IApiToken {
     groups: Promise<Array<Group>>;
     roles: Promise<Array<Role>>;
     scopes: Promise<Array<string>>;
-    createJWT(): Promise<IApiToken>;
 }
 
 export function apiTokenFactory({ user = {}, config, entities }: Object): Class<IApiToken> {
@@ -52,21 +51,15 @@ export function apiTokenFactory({ user = {}, config, entities }: Object): Class<
                 });
         }
 
-        async createJWT(): Promise<IApiToken> {
-            // 2147483647 = maximum value of unix timestamp (year 2038).
-            const token = new JwtToken({ secret: config.security.token.secret });
-            this.token = await token.encode({ id: this.id, type: "apiToken" }, 2147483647);
-            await this.save();
-            return this;
-        }
-
         async save(...args): Promise<void> {
             const createToken = !this.isExisting();
             await super.save(...args);
 
-
             if (createToken) {
-                await this.createJWT();
+                // 2147483647 = maximum value of unix timestamp (year 2038).
+                const token = new JwtToken({ secret: config.security.token.secret });
+                this.token = await token.encode({ id: this.id, type: "apiToken" }, 2147483647);
+                await super.save();
             }
         }
     };
