@@ -33,12 +33,12 @@ const Revision = ({ page, rev, createRevision, editRevision }: RevisionProps) =>
                 </ListItemTextSecondary>
             </ListItemText>
             <ListItemMeta>
-                <Menu handle={<IconButton icon={<MoreVerticalIcon />} />}>
+                <Menu handle={<IconButton icon={<MoreVerticalIcon />}/>}>
                     <MenuItem onClick={createRevision}>Create new</MenuItem>
                     <MenuItem onClick={editRevision}>Edit</MenuItem>
+                    <MenuDivider/>
                     <MenuItem onClick={() => {}}>Publish</MenuItem>
-                    <MenuDivider />
-                    <MenuItem onClick={() => {}}>Delete</MenuItem>
+                    {!rev.locked && <MenuItem onClick={() => {}}>Delete</MenuItem>}
                 </Menu>
             </ListItemMeta>
         </ListItem>
