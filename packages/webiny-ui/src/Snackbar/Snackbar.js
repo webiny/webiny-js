@@ -1,6 +1,7 @@
 // @flow
 import * as React from "react";
 import { Snackbar as RmwcSnackbar } from "@rmwc/snackbar";
+import { noop } from "lodash";
 
 type Props = {
     // Show the Snackbar.
@@ -45,6 +46,10 @@ type Props = {
  */
 class Snackbar extends React.Component<Props> {
     container: ?Element;
+
+    static defaultProps = {
+        actionHandler: noop
+    };
 
     constructor() {
         super();
