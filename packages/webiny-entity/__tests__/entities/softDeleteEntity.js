@@ -20,7 +20,8 @@ EntityWithSoftDeletes.classId = "EntityWithSoftDeletes";
 EntityWithSoftDeletes.crud = {
     delete: {
         soft: true
-    }
+    },
+    logs: true
 };
 
 export { EntityWithoutSoftDeletes, EntityWithSoftDeletes };
