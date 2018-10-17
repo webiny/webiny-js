@@ -44,7 +44,6 @@ const withDeleteHandler = ({ mutation, response, snackbar }): Function => {
                             showSnackbar(snackbar(item));
                         } else {
                             showSnackbar(error.message, {
-                                dismissesOnAction: true,
                                 actionText: "Close"
                             });
                         }
@@ -101,7 +100,6 @@ const withSaveHandler = ({ create, update, response, variables, snackbar }): Fun
                                     return;
                                 } else {
                                     showSnackbar(error.message, {
-                                        dismissesOnAction: true,
                                         actionText: "Close"
                                     });
                                     return;

@@ -130,7 +130,6 @@ export default compose(
             const { error } = response.security.updateCurrentUser;
             if (error) {
                 return showSnackbar(error.message, {
-                    dismissesOnAction: true,
                     actionText: "Close"
                 });
             }
