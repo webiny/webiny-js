@@ -10,12 +10,10 @@ import {
     ListItemText,
     ListItemTextSecondary,
     ListItemMeta,
-    ListActions,
-    ListItemGraphic
+    ListActions
 } from "webiny-ui/List";
 
 import { DeleteIcon } from "webiny-ui/List/DataList/icons";
-import { Checkbox } from "webiny-ui/Checkbox";
 
 const t = i18n.namespace("Security.RolesDataList");
 
@@ -45,19 +43,10 @@ const RolesDataList = ({ dataList, router, data, meta, deleteRecord }: WithCrudL
                 }
             ]}
         >
-            {({ data, multiSelect, isMultiSelected }) => (
+            {({ data }) => (
                 <ScrollList>
                     {data.map(item => (
                         <ListItem key={item.id} selected={router.getQuery("id") === item.id}>
-                            <ListItemGraphic>
-                                <Checkbox
-                                    value={isMultiSelected(item)}
-                                    onClick={() => {
-                                        multiSelect(item);
-                                    }}
-                                />
-                            </ListItemGraphic>
-
                             <ListItemText
                                 onClick={() =>
                                     router.goToRoute({ params: { id: item.id }, merge: true })

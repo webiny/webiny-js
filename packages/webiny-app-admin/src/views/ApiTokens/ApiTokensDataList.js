@@ -9,9 +9,11 @@ import {
     ListItem,
     ListItemText,
     ListItemTextSecondary,
-    ListItemMeta
+    ListItemMeta,
+    ListItemGraphic
 } from "webiny-ui/List";
 import { DeleteIcon } from "webiny-ui/List/DataList/icons";
+import { Checkbox } from "webiny-ui/Checkbox";
 
 const t = i18n.namespace("Security.ApiTokensDataList");
 
@@ -22,6 +24,15 @@ const ApiTokensDataList = ({ deleteRecord, dataList, data, meta, router }: WithC
             data={data}
             meta={meta}
             title={t`API Tokens`}
+            multiSelectActions={
+                <React.Fragment>
+                    <button
+                        onClick={() => {
+                            console.log("multi selected items: ", dataList.getMultiSelected());
+                        }}
+                    >asdads</button>
+                </React.Fragment>
+            }
             sorters={[
                 {
                     label: "Newest to oldest",
@@ -41,10 +52,18 @@ const ApiTokensDataList = ({ deleteRecord, dataList, data, meta, router }: WithC
                 }
             ]}
         >
-            {({ data }) => (
+            {({ data, isMultiSelected, multiSelect }) => (
                 <List>
                     {data.map(item => (
                         <ListItem key={item.id} selected={router.getQuery("id") === item.id}>
+                            <ListItemGraphic>
+                                <Checkbox
+                                    value={isMultiSelected(item)}
+                                    onClick={() => {
+                                        multiSelect(item);
+                                    }}
+                                />
+                            </ListItemGraphic>
                             <ListItemText
                                 onClick={() => {
                                     router.goToRoute({
