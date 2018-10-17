@@ -4,6 +4,7 @@ import Header from "webiny-app-admin/plugins/Header";
 import Footer from "webiny-app-admin/plugins/Footer";
 import Content from "webiny-app-admin/plugins/Content";
 import snackbar from "webiny-app-admin/plugins/Snackbar";
+import dialog from "webiny-app-admin/plugins/Dialog";
 
 // Header plugins
 import Menu from "webiny-app-admin/plugins/Menu";
@@ -26,6 +27,8 @@ export default [
     Content,
     snackbar("layout"),
     snackbar("empty-layout"),
+    dialog("layout"),
+    dialog("empty-layout"),
     Footer,
     // Header plugins
     Menu,
