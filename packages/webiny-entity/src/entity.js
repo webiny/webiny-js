@@ -357,6 +357,12 @@ class Entity {
 
             events.beforeDelete !== false && (await this.emit("beforeDelete", { params }));
 
+            const logs = _.get(this, "constructor.crud.logs");
+            if (logs) {
+                this.savedOn = new Date();
+                this.updatedOn = new Date();
+            }
+
             if (soft && params.permanent !== true) {
                 await this.getDriver().save(this, params);
             } else {

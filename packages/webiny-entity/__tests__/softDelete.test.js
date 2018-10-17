@@ -18,7 +18,7 @@ describe("soft delete test", () => {
         expect(entity.getAttribute("deleted")).toBeInstanceOf(BooleanAttribute);
     });
 
-    test("should have delete set to true if delete was called", async () => {
+    test("should have delete set to true if delete was called and update log attributes", async () => {
         const entity = new EntityWithSoftDeletes();
         const deleteSpy = sandbox.spy(EntityWithoutSoftDeletes.getDriver(), "delete");
 
@@ -29,6 +29,9 @@ describe("soft delete test", () => {
         await entity.delete();
         expect(entity.deleted).toEqual(true);
         expect(deleteSpy.callCount).toEqual(0);
+
+        expect(entity.savedOn !== null).toBe(true);
+        expect(entity.updatedOn !== null).toBe(true);
     });
 
     test("should permanently delete entity if 'permanent' flag was set to true", async () => {
