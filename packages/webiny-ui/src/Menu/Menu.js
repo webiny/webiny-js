@@ -1,5 +1,6 @@
 // @flow
 import * as React from "react";
+import ReactDOM from "react-dom";
 import {
     Menu as BaseMenu,
     MenuItem,
@@ -39,6 +40,18 @@ type State = {
     menuIsOpen: boolean
 };
 
+let el = null;
+const getElement = () => {
+    if (!el) {
+        el = document.createElement("div");
+        el.id = "menu-container";
+        // $FlowFixMe
+        document.body.appendChild(el);
+    }
+
+    return el;
+};
+
 /**
  * Use Menu component to display a list of choices, once the handler is triggered.
  */
@@ -52,35 +65,64 @@ class Menu extends React.Component<Props, State> {
         menuIsOpen: false
     };
 
-    render() {
-        const menuItems = Array.isArray(this.props.children);
+    anchorRef = React.createRef();
+    menuRef = React.createRef();
 
+    componentDidUpdate() {
+        if (!this.menuRef.current || !this.anchorRef.current) {
+            return;
+        }
+
+        const menu = this.menuRef.current;
+        const anchorRect = this.anchorRef.current.getBoundingClientRect();
+
+        menu.style.position = "absolute";
+        menu.style.left = anchorRect.left - 60 + "px";
+        menu.style.top = anchorRect.top + "px";
+    }
+
+    renderMenuWithPortal = () => {
+        return ReactDOM.createPortal(
+            <div ref={this.menuRef}>
+                <BaseMenu
+                    anchorCorner={this.props.anchor}
+                    open={this.state.menuIsOpen}
+                    className={this.props.className}
+                    onClose={() => this.setState({ menuIsOpen: false })}
+                    onSelect={this.props.onSelect}
+                >
+                    {this.props.children}
+                </BaseMenu>
+            </div>,
+            getElement()
+        );
+    };
+
+    renderCustomContent = () => {
         return (
-            <MenuSurfaceAnchor>
-                {menuItems ? (
-                    <BaseMenu
-                        anchorCorner={this.props.anchor}
-                        open={this.state.menuIsOpen}
-                        className={this.props.className}
-                        onClose={() => this.setState({ menuIsOpen: false })}
-                        onSelect={this.props.onSelect}
-                    >
-                        {this.props.children}
-                    </BaseMenu>
-                ) : (
-                    <MenuSurface
-                        open={this.state.menuIsOpen}
-                        onClose={() => this.setState({ menuIsOpen: false })}
-                    >
-                        {this.props.children}
-                    </MenuSurface>
-                )}
+            <MenuSurface
+                open={this.state.menuIsOpen}
+                onClose={() => this.setState({ menuIsOpen: false })}
+            >
+                {this.props.children}
+            </MenuSurface>
+        );
+    };
+
+    renderMenuContent = () => {
+        return Array.isArray(this.props.children)
+            ? this.renderMenuWithPortal()
+            : this.renderCustomContent();
+    };
+
+    render() {
+        return (
+            <MenuSurfaceAnchor elementRef={this.anchorRef}>
+                {this.renderMenuContent()}
                 {this.props.handle &&
-                    // $FlowFixMe
+                    /* $FlowFixMe */
                     React.cloneElement(this.props.handle, {
-                        onClick: () => {
-                            this.setState({ menuIsOpen: true });
-                        }
+                        onClick: () => this.setState({ menuIsOpen: true })
                     })}
             </MenuSurfaceAnchor>
         );
