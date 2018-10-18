@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import { lifecycle, withProps, setDisplayName } from "recompose";
+import { lifecycle, withProps, withState, setDisplayName } from "recompose";
 import { compose, graphql } from "react-apollo";
 import _ from "lodash";
 
@@ -24,6 +24,7 @@ export const withDataList = (withDataListParams: Object): Function => {
     return (BaseComponent: typeof React.Component) => {
         return compose(
             setDisplayName("withDataList"),
+            withState("multiSelectedItems", "multiSelect", []),
             graphql(withDataListParams.query, {
                 name: "queryData",
                 options: props => {
@@ -41,7 +42,7 @@ export const withDataList = (withDataListParams: Object): Function => {
                 const { router, queryData } = props;
 
                 const dataListProps: Object = {
-                    data: queryData,
+                    ...withDataListParams.response(queryData),
                     init(): void {
                         this.refresh();
                     },
@@ -80,46 +81,63 @@ export const withDataList = (withDataListParams: Object): Function => {
                         const preparedParams = { ...dataListProps.__loadParams, sort };
                         this.refresh(preparedParams);
                     },
-                    multiSelect(item, value): void {
-                        // TODO:
-                        //dispatchProps.multiSelect({ ...withDataListParams, item, value });
-                    },
-                    multiSelectAll(value: ?Object): void {
-                        // TODO:
-                        /*const { data } = returnProps[propName];
-                        if (Array.isArray(data)) {
-                            dispatchProps.multiSelect({
-                                ...withDataListParams,
-                                item: data,
-                                value
-                            });
-                        } else {
-                            dispatchProps.multiSelect({
-                                ...withDataListParams,
-                                item: [],
-                                value
-                            });
-                        }*/
+                    multiSelect(items, value): void {
+                        if (!Array.isArray(items)) {
+                            items = [items];
+                        }
+
+                        let multiSelectedItems = [...props.multiSelectedItems];
+
+                        items.forEach(item => {
+                            if (value === undefined) {
+                                multiSelectedItems.includes(item)
+                                    ? multiSelectedItems.splice(multiSelectedItems.indexOf(item), 1)
+                                    : multiSelectedItems.push(item);
+                            } else {
+                                if (value === true) {
+                                    !multiSelectedItems.includes(item) &&
+                                        multiSelectedItems.push(item);
+                                } else {
+                                    multiSelectedItems.includes(item) &&
+                                        multiSelectedItems.splice(
+                                            multiSelectedItems.indexOf(item),
+                                            1
+                                        );
+                                }
+                            }
+                        });
+
+                        props.multiSelect(multiSelectedItems);
                     },
                     isMultiSelected(item): boolean {
-                        if (!Array.isArray(returnProps[propName].multiSelectedItems)) {
+                        if (!Array.isArray(props.multiSelectedItems)) {
                             return false;
                         }
 
-                        return returnProps[propName].multiSelectedItems.includes(item);
-                    },
-                    isAllMultiSelected(): boolean {
-                        return (
-                            returnProps[propName].getMultiSelected().length ===
-                            returnProps[propName].data.length
-                        );
+                        return props.multiSelectedItems.includes(item);
                     },
                     isNoneMultiSelected(): boolean {
-                        return returnProps[propName].getMultiSelected().length === 0;
+                        return props.multiSelectedItems.length === 0;
                     },
                     getMultiSelected(): Array<Object> {
-                        return returnProps[propName].multiSelectedItems || [];
+                        return props.multiSelectedItems;
                     },
+                    multiSelectAll(value: boolean): void {
+                        const { data } = dataListProps;
+                        if (Array.isArray(data)) {
+                            dataListProps.multiSelect(data, value);
+                        } else {
+                            dataListProps.multiSelect([], value);
+                        }
+                    },
+                    isAllMultiSelected(): boolean {
+                        const { data } = dataListProps;
+
+                        return (
+                            Array.isArray(data) && props.multiSelectedItems.length === data.length
+                        );
+                    },
+
                     __loadParams: prepareLoadListParams(props.router)
                 };
 
