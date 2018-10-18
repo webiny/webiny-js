@@ -66,4 +66,31 @@ describe("findOne test", () => {
 
         queryStub.restore();
     });
+
+    test("findOne - make sure sorters are properly added", async () => {
+        const queryStub = sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake(() => {
+                return [[], [{ count: null }]];
+            });
+
+        await SimpleEntity.findOne({
+            query: {
+                age: { $gt: 30 }
+            },
+            search: {
+                query: "this is",
+                fields: ["name"]
+            },
+            page: 3,
+            perPage: 7,
+            sort: { createdOn: -1, id: 1 }
+        });
+
+        expect(queryStub.getCall(0).args[0]).toEqual(
+            "SELECT * FROM `SimpleEntity` WHERE (((`name` LIKE '%this is%') AND `age` > 30)) ORDER BY createdOn DESC, id ASC LIMIT 1 OFFSET 2"
+        );
+
+        queryStub.restore();
+    });
 });
