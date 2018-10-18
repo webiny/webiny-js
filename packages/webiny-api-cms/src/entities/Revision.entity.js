@@ -63,11 +63,14 @@ export const revisionFactory = ({ user, entities }: Object): Class<IRevision> =>
                         this.locked = true;
                         this.on("beforeSave", async () => {
                             // Deactivate previously published revision
-                            const activeRev: Revision = (await Revision.findOne({
+                            const publishedRev: Revision = (await Revision.findOne({
                                 query: { published: true, page: (await this.page).id }
                             }): any);
-                            activeRev.published = false;
-                            await activeRev.save();
+
+                            if (publishedRev) {
+                                publishedRev.published = false;
+                                await publishedRev.save();
+                            }
                         }).setOnce();
                     }
                     return value;
@@ -82,9 +85,7 @@ export const revisionFactory = ({ user, entities }: Object): Class<IRevision> =>
                     page.settings = this.settings;
                     page.status = "published";
 
-                    page.content = this.content.map(block => {
-                        return { ...block };
-                    });
+                    page.content = { ...this.content };
                     await page.save();
                 }
             });

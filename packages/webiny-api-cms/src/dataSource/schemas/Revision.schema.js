@@ -1,9 +1,4 @@
-import {
-    resolveDelete,
-    resolveGet,
-    resolveList,
-    resolveUpdate
-} from "webiny-api/graphql";
+import { resolveDelete, resolveGet, resolveList, resolveUpdate } from "webiny-api/graphql";
 import createRevisionFrom from "./revisionResolvers/createRevisionFrom";
 
 const revisionFetcher = ctx => ctx.cms.Revision;
@@ -66,6 +61,10 @@ export default {
             id: ID!
             data: RevisionInput!
         ): RevisionResponse
+        
+        publishRevision(
+            id: ID!
+        ): RevisionResponse
     
         deleteRevision(
             id: ID!
@@ -78,6 +77,11 @@ export default {
     mutationResolvers: {
         createRevisionFrom: createRevisionFrom(revisionFetcher),
         updateRevision: resolveUpdate(revisionFetcher),
+        publishRevision: (_, args, ctx, info) => {
+            args.data = { published: true };
+
+            return resolveUpdate(revisionFetcher)(_, args, ctx, info);
+        },
         deleteRevision: resolveDelete(revisionFetcher)
     }
 };

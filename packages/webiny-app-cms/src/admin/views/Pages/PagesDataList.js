@@ -2,22 +2,20 @@
 import * as React from "react";
 import { compose } from "recompose";
 import { get } from "dot-prop-immutable";
-import { withDataList, withRouter } from "webiny-app/components";
+import { withRouter } from "webiny-app/components";
 import { i18n } from "webiny-app/i18n";
 import { DataList, List, ListItem, ListItemText, ListItemTextSecondary } from "webiny-ui/List";
-
-import { loadPages } from "./graphql";
 
 const t = i18n.namespace("Cms.PagesDataList");
 
 const PagesDataList = props => {
-    const { PagesDataList, router } = props;
+    const { dataList, router } = props;
 
-    const { data, meta } = get(PagesDataList, "data.cms.pages") || { data: [], meta: {} };
+    const { data, meta } = get(dataList, "data.cms.pages") || { data: [], meta: {} };
 
     return (
         <DataList
-            {...PagesDataList}
+            {...dataList}
             data={data}
             meta={meta}
             title={t`CMS Pages`}
@@ -65,13 +63,4 @@ const PagesDataList = props => {
     );
 };
 
-export default compose(
-    withRouter(),
-    withDataList({
-        name: "PagesDataList",
-        query: loadPages,
-        variables: {
-            sort: { savedOn: -1 }
-        }
-    })
-)(PagesDataList);
+export default withRouter()(PagesDataList);

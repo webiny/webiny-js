@@ -11,6 +11,7 @@ import { loadRevision, loadPageRevisions } from "./graphql";
 
 type Props = WithRouterProps & {
     pageId: string,
+    refreshPages: Function,
     revision: {
         data: Object,
         loading: boolean,
@@ -34,12 +35,12 @@ const renderPlugins = (type: string, params: WithPageDetailsProps) => {
     });
 };
 
-const PageDetails = ({ router, pageId, revision, revisions }: Props) => {
+const PageDetails = ({ router, pageId, revision, revisions, refreshPages }: Props) => {
     if (!router.getQuery("revision")) {
         return <div>Select a page on the left!</div>;
     }
 
-    const details = { pageId, revision, revisions };
+    const details = { pageId, refreshPages, revision, revisions };
 
     return (
         <PageDetailsProvider value={details}>

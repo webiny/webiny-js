@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
 export const loadEditorData = gql`
-    query GetEditorData($page: ID!, $revision: ID!) {
+    query CmsGetEditorData($page: ID!, $revision: ID!) {
         cms {
             page: getPage(id: $page) {
                 data {
@@ -64,7 +64,7 @@ export const createPage = gql`
 `;
 
 export const loadPages = gql`
-    query ListPages($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SearchInput) {
+    query CmsListPages($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SearchInput) {
         cms {
             pages: listPages(where: $where, sort: $sort, page: $page, perPage: $perPage, search: $search) {
                 data {
@@ -92,7 +92,7 @@ export const loadPages = gql`
 `;
 
 export const loadRevision = gql`
-    query LoadRevision($id: ID!) {
+    query CmsLoadRevision($id: ID!) {
         cms {
             revision: getRevision(id: $id) {
                 data {
@@ -113,7 +113,7 @@ export const loadRevision = gql`
 `;
 
 export const loadPageRevisions = gql`
-    query LoadPageRevisions($id: ID!) {
+    query CmsLoadPageRevisions($id: ID!) {
         cms {
             revisions: listRevisions(where: { page: $id }, sort: { createdOn: 1 }, perPage: 100) {
                 data {

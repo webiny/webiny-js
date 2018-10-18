@@ -5,6 +5,7 @@ import { PageDetailsConsumer } from "./PageDetailsContext";
 export type WithPageDetailsProps = {
     pageDetails: {
         pageId: string,
+        refreshPages: Function,
         revision: {
             data: Object,
             loading: boolean,

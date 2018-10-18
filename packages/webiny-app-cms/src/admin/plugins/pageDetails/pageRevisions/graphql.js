@@ -19,6 +19,23 @@ export const createRevisionFrom = gql`
     }
 `;
 
+export const publishRevision = gql`
+    mutation PublishRevision($id: ID!) {
+        cms {
+            publishRevision(id: $id) {
+                data {
+                    id
+                    title
+                    slug
+                }
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
 
 export const deleteRevision = gql`
     mutation DeleteRevision($id: ID!) {
@@ -30,6 +47,16 @@ export const deleteRevision = gql`
                     message
                 }
             }
+        }
+    }
+`;
+
+export const activeRevisionFragment = gql`
+    fragment activeRevisionFragment on Page {
+        activeRevision {
+            id
+            slug
+            title
         }
     }
 `;

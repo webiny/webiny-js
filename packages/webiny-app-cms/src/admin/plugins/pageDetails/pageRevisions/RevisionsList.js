@@ -12,7 +12,7 @@ const RevisionsList = ({ pageDetails: { revisions } }: RevisionsProps) => {
     }
 
     return (
-        <List nonInteractive>
+        <List nonInteractive twoLine>
             {revisions.data.map(rev => (
                 <Revision rev={rev} key={rev.id} />
             ))}
