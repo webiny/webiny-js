@@ -90,3 +90,41 @@ export const loadPages = gql`
         }
     }
 `;
+
+export const loadRevision = gql`
+    query LoadRevision($id: ID!) {
+        cms {
+            revision: getRevision(id: $id) {
+                data {
+                    id
+                    name
+                    title
+                    slug
+                    content
+                    settings
+                }
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
+
+export const loadPageRevisions = gql`
+    query LoadPageRevisions($id: ID!) {
+        cms {
+            revisions: listRevisions(where: { page: $id }, sort: { createdOn: 1 }, perPage: 100) {
+                data {
+                    id
+                    name
+                    title
+                    savedOn
+                    published
+                    locked
+                }
+            }
+        }
+    }
+`;

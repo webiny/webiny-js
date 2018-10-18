@@ -23,13 +23,15 @@ class Tabs extends React.Component<Props, State> {
     };
 
     render() {
-        const tabs = React.Children.map(this.props.children, child => {
-            return {
-                label: child.props.label,
-                children: child.props.children,
-                icon: child.props.icon
-            };
-        });
+        const tabs = React.Children.toArray(this.props.children)
+            .filter(c => c !== null)
+            .map(child => {
+                return {
+                    label: child.props.label,
+                    children: child.props.children,
+                    icon: child.props.icon
+                };
+            });
 
         const content = (
             <TabBar

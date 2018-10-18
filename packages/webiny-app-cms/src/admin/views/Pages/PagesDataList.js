@@ -47,7 +47,7 @@ const PagesDataList = props => {
                             <ListItemText
                                 onClick={() =>
                                     router.goToRoute({
-                                        params: { id: page.activeRevision.id },
+                                        params: { id: page.id, revision: page.activeRevision.id },
                                         merge: true
                                     })
                                 }

@@ -1,79 +1,87 @@
 // @flow
 import * as React from "react";
-import gql from "graphql-tag";
-import { Query } from "react-apollo";
-// Webiny imports
+import { compose, withProps } from "recompose";
+import { graphql } from "react-apollo";
+import { getPlugins } from "webiny-app/plugins";
 import { withRouter } from "webiny-app/components";
-import { Tabs, Tab } from "webiny-ui/Tabs";
-import RenderElement from "webiny-app-cms/render/components/Element";
-import PageActions from "./PageActions";
-import Revisions from "./Revisions";
+import { type WithPageDetailsProps } from "webiny-app-cms/admin/components";
+import { PageDetailsProvider, PageDetailsConsumer } from "../../components/PageDetailsContext";
 import type { WithRouterProps } from "webiny-app/components";
+import { loadRevision, loadPageRevisions } from "./graphql";
 
-const loadRevision = gql`
-    query LoadRevision($id: ID!) {
-        cms {
-            revision: getRevision(id: $id) {
-                data {
-                    id
-                    name
-                    title
-                    slug
-                    content
-                    settings
-                    page {
-                        id
-                        revisions {
-                            id
-                            name
-                            title
-                            savedOn
-                            published
-                            locked
-                        }
-                    }
-                }
-                error {
-                    code
-                    message
-                }
-            }
-        }
+type Props = WithRouterProps & {
+    pageId: string,
+    revision: {
+        data: Object,
+        loading: boolean,
+        refetch: Function
+    },
+    revisions: {
+        data: Array<Object>,
+        loading: boolean,
+        refetch: Function
     }
-`;
+};
 
-type Props = WithRouterProps;
+const renderPlugins = (type: string, params: WithPageDetailsProps) => {
+    return getPlugins(type).map(plugin => {
+        const plContent = plugin.render(params);
+        if (plContent) {
+            return React.cloneElement(plContent, { key: plugin.name });
+        }
 
-const PageDetails = ({ router }: Props) => {
-    if (!router.getQuery("id")) {
+        return null;
+    });
+};
+
+const PageDetails = ({ router, pageId, revision, revisions }: Props) => {
+    if (!router.getQuery("revision")) {
         return <div>Select a page on the left!</div>;
     }
 
-    return (
-        <Query query={loadRevision} variables={{ id: router.getQuery("id") }}>
-            {({ data, loading }) => {
-                if (loading) {
-                    return "Loading revision...";
-                }
+    const details = { pageId, revision, revisions };
 
-                const { data: revision } = data.cms.revision;
-                
-                return (
+    return (
+        <PageDetailsProvider value={details}>
+            <PageDetailsConsumer>
+                {pageDetails => (
                     <React.Fragment>
-                        <PageActions revision={revision} />
-                        <Tabs>
-                            <Tab label={"Page preview"}>
-                                <RenderElement element={revision.content} />
-                            </Tab>
-                            <Tab label={"Revisions"}>
-                                <Revisions page={revision.page} revisions={revision.page.revisions}/>
-                            </Tab>
-                        </Tabs>
+                        {renderPlugins("cms-page-details", { pageDetails })}
                     </React.Fragment>
-                );
-            }}
-        </Query>
+                )}
+            </PageDetailsConsumer>
+        </PageDetailsProvider>
     );
 };
 
-export default withRouter()(PageDetails);
+export default compose(
+    withRouter(),
+    withProps(({ router }) => ({
+        pageId: router.getQuery("id"),
+        revisionId: router.getQuery("revision")
+    })),
+    graphql(loadRevision, {
+        skip: props => !props.revisionId,
+        options: ({ revisionId }) => ({ variables: { id: revisionId } }),
+        props: ({ data }) => {
+            return {
+                revision: {
+                    loading: data.loading,
+                    data: data.loading ? {} : data.cms.revision.data,
+                    refetch: data.refetch
+                }
+            };
+        }
+    }),
+    graphql(loadPageRevisions, {
+        skip: props => !props.pageId,
+        options: ({ pageId }) => ({ variables: { id: pageId } }),
+        props: ({ data }) => ({
+            revisions: {
+                loading: data.loading,
+                data: data.loading ? [] : data.cms.revisions.data,
+                refetch: data.refetch
+            }
+        })
+    })
+)(PageDetails);

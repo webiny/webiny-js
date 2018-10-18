@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "apollo-link-batch-http": "^1.2.3",
     "demo-theme": "0.0.0-semantically-released",
     "react-apollo": "^2.2.4",
     "react-hot-loader": "^4.3.5",

@@ -1,7 +1,9 @@
+// @flow
 import React from "react";
 import { compose } from "recompose";
 import { css } from "emotion";
-import { withRouter } from "webiny-app/components";
+import { withRouter, type WithRouterProps } from "webiny-app/components";
+import { type WithPageDetailsProps } from "webiny-app-cms/admin/components";
 import { Typography } from "webiny-ui/Typography";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Select } from "webiny-ui/Select";
@@ -20,20 +22,22 @@ const smallSelect = css({
     maxWidth: 200
 });
 
-const PageActions = ({ revision, router }) => {
+type Props = WithRouterProps & WithPageDetailsProps;
+
+const PageActions = ({ pageDetails: { revision, revisions, pageId }, router }: Props) => {
     return (
         <Grid className={listHeader}>
             <Cell span={6}>
-                <Typography use="headline5">{revision.title}</Typography>
+                <Typography use="headline5">{revision.data.title}</Typography>
             </Cell>
             <Cell span={6}>
                 {/* Revision selector */}
                 <Select
                     value={revision.id}
-                    onChange={item => router.goToRoute({ params: { revision: item.id } })}
+                    onChange={id => router.goToRoute({ params: { revision: id }, merge: true })}
                     className={smallSelect}
                 >
-                    {revision.page.revisions.map(({ id, name }) => (
+                    {revisions.data.map(({ id, name }) => (
                         <option key={id} value={id}>
                             {name}
                         </option>
@@ -50,7 +54,7 @@ const PageActions = ({ revision, router }) => {
                         onClick={() =>
                             router.goToRoute({
                                 name: "Cms.Editor",
-                                params: { page: revision.page.id, revision: revision.id }
+                                params: { page: pageId, revision: revision.id }
                             })
                         }
                     />
@@ -64,4 +68,4 @@ const PageActions = ({ revision, router }) => {
     );
 };
 
-export default compose(withRouter())(PageActions);
+export default withRouter()(PageActions);

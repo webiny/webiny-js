@@ -1,8 +1,7 @@
 // @flow
 import React from "react";
-import { compose, withHandlers } from "recompose";
+import { compose, withHandlers, withProps } from "recompose";
 import { graphql } from "react-apollo";
-import gql from "graphql-tag";
 import {
     ListItem,
     ListItemText,
@@ -15,6 +14,7 @@ import { MenuItem, Menu, MenuDivider } from "webiny-ui/Menu";
 import { withRouter } from "webiny-app/components";
 import { withSnackbar } from "webiny-app-admin/components";
 import { ReactComponent as MoreVerticalIcon } from "webiny-app-cms/admin/assets/more_vert.svg";
+import { createRevisionFrom, deleteRevision } from "./graphql";
 
 type RevisionProps = {
     page: Object,
@@ -33,10 +33,10 @@ const Revision = ({ page, rev, createRevision, editRevision }: RevisionProps) =>
                 </ListItemTextSecondary>
             </ListItemText>
             <ListItemMeta>
-                <Menu handle={<IconButton icon={<MoreVerticalIcon />}/>}>
+                <Menu handle={<IconButton icon={<MoreVerticalIcon />} />}>
                     <MenuItem onClick={createRevision}>Create new</MenuItem>
                     <MenuItem onClick={editRevision}>Edit</MenuItem>
-                    <MenuDivider/>
+                    <MenuDivider />
                     <MenuItem onClick={() => {}}>Publish</MenuItem>
                     {!rev.locked && <MenuItem onClick={() => {}}>Delete</MenuItem>}
                 </Menu>
@@ -45,31 +45,13 @@ const Revision = ({ page, rev, createRevision, editRevision }: RevisionProps) =>
     );
 };
 
-const createRevisionMutation = gql`
-    mutation CreateRevisionFrom($revisionId: ID!) {
-        cms {
-            revision: createRevisionFrom(revisionId: $revisionId) {
-                data {
-                    id
-                    page {
-                        id
-                    }
-                }
-                error {
-                    code
-                    message
-                }
-            }
-        }
-    }
-`;
-
 export default compose(
     withRouter(),
     withSnackbar(),
-    graphql(createRevisionMutation, { name: "createRevisionFrom" }),
+    graphql(createRevisionFrom, { name: "createRevisionFrom" }),
+    graphql(deleteRevision, { name: "deleteRevision" }),
     withHandlers({
-        createRevision: ({ rev, router, createRevisionFrom, showSnackbar }: Object) => async () => {
+        createRevision: ({ rev, router, pageId, createRevisionFrom, showSnackbar }: Object) => async () => {
             const { data: res } = await createRevisionFrom({ variables: { revisionId: rev.id } });
             const { data, error } = res.cms.revision;
 
@@ -79,11 +61,18 @@ export default compose(
 
             router.goToRoute({
                 name: "Cms.Editor",
-                params: { page: data.page.id, revision: data.id }
+                params: { page: pageId, revision: data.id }
             });
         },
-        editRevision: ({ page, rev, router }) => () => {
-            router.goToRoute({ name: "Cms.Editor", params: { page: page.id, revision: rev.id } });
+        editRevision: ({ rev, router, pageId }) => () => {
+            router.goToRoute({ name: "Cms.Editor", params: { page: pageId, revision: rev.id } });
+        },
+        deleteRevision: ({ rev, deleteRevision, showSnackbar }) => async () => {
+            const { data: res } = await deleteRevision({ variables: { id: rev.id } });
+            const { data, error } = res.cms.deleteRevision;
+            if (error) {
+                return showSnackbar(error.message);
+            }
         }
     })
 )(Revision);
