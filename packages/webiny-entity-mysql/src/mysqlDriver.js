@@ -178,9 +178,13 @@ class MySQLDriver extends Driver {
             table: this.getTableName(entity),
             where: options.query,
             search: options.search,
+            sort: options.sort,
+            page: options.page,
             limit: 1
         };
 
+        MySQLDriver.__preparePerPageOption(clonedOptions);
+        MySQLDriver.__preparePageOption(clonedOptions);
         MySQLDriver.__prepareQueryOption(clonedOptions);
         MySQLDriver.__prepareSearchOption(clonedOptions);
 
