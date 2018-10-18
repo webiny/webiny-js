@@ -52,7 +52,7 @@ class EntityAttribute extends Attribute {
          * validation will be called internally in the save method. Save operations will be executed starting from bottom
          * nested entities, ending with the main parent entity.
          */
-        this.parentEntity.on("beforeSave", async () => {
+        this.parentEntity.on("__beforeSave", async () => {
             const value = ((this.value: any): EntityAttributeValue);
 
             // At this point current value is an instance or is not instance. It cannot be in the 'loading' state, because that was

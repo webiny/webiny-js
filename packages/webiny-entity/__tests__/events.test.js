@@ -5,15 +5,15 @@ class Invoice extends Entity {
         super();
         this.attr("company").entity(Company);
         this.attr("isPaid").boolean();
-        this.attr("beforeSaveCalled").integer();
-        this.attr("afterSaveCalled").integer();
+        this.attr("__beforeSaveCalled").integer();
+        this.attr("__afterSaveCalled").integer();
 
-        this.on("beforeSave", () => {
-            this.beforeSaveCalled++;
+        this.on("__beforeSave", () => {
+            this.__beforeSaveCalled++;
         }).setOnce();
 
-        this.on("afterSave", () => {
-            this.afterSaveCalled++;
+        this.on("__afterSave", () => {
+            this.__afterSaveCalled++;
         });
     }
 
@@ -60,8 +60,8 @@ describe("events test", () => {
 
         expect(company1.invoicesPaidCount).toEqual(1);
         expect(company1.invoicesPaidAmount).toEqual(100);
-        expect(invoice1.afterSaveCalled).toEqual(1);
-        expect(invoice1.beforeSaveCalled).toEqual(1);
+        expect(invoice1.__afterSaveCalled).toEqual(1);
+        expect(invoice1.__beforeSaveCalled).toEqual(1);
 
         const company2 = new Company();
         company2.name = "Company";
@@ -75,8 +75,8 @@ describe("events test", () => {
         expect(company2.invoicesPaidCount).toEqual(1);
         expect(company2.invoicesPaidAmount).toEqual(200);
 
-        expect(invoice2.afterSaveCalled).toEqual(1);
-        expect(invoice2.beforeSaveCalled).toEqual(1);
+        expect(invoice2.__afterSaveCalled).toEqual(1);
+        expect(invoice2.__beforeSaveCalled).toEqual(1);
 
         const company3 = new Company();
         company3.name = "Company";
@@ -91,8 +91,8 @@ describe("events test", () => {
         expect(company2.invoicesPaidAmount).toEqual(200);
         expect(company3.invoicesPaidCount).toEqual(1);
         expect(company3.invoicesPaidAmount).toEqual(300);
-        expect(invoice3.afterSaveCalled).toEqual(1);
-        expect(invoice3.beforeSaveCalled).toEqual(1);
+        expect(invoice3.__afterSaveCalled).toEqual(1);
+        expect(invoice3.__beforeSaveCalled).toEqual(1);
 
         const invoice4 = new Invoice();
         invoice4.company = company1;
@@ -105,8 +105,8 @@ describe("events test", () => {
         expect(company2.invoicesPaidAmount).toEqual(200);
         expect(company3.invoicesPaidCount).toEqual(1);
         expect(company3.invoicesPaidAmount).toEqual(300);
-        expect(invoice4.afterSaveCalled).toEqual(1);
-        expect(invoice4.beforeSaveCalled).toEqual(1);
+        expect(invoice4.__afterSaveCalled).toEqual(1);
+        expect(invoice4.__beforeSaveCalled).toEqual(1);
 
         const invoice5 = new Invoice();
         invoice5.company = company2;
@@ -119,8 +119,8 @@ describe("events test", () => {
         expect(company2.invoicesPaidAmount).toEqual(300);
         expect(company3.invoicesPaidCount).toEqual(1);
         expect(company3.invoicesPaidAmount).toEqual(300);
-        expect(invoice5.afterSaveCalled).toEqual(1);
-        expect(invoice5.beforeSaveCalled).toEqual(1);
+        expect(invoice5.__afterSaveCalled).toEqual(1);
+        expect(invoice5.__beforeSaveCalled).toEqual(1);
 
         const invoice6 = new Invoice();
         invoice6.company = company3;
@@ -133,26 +133,26 @@ describe("events test", () => {
         expect(company2.invoicesPaidAmount).toEqual(300);
         expect(company3.invoicesPaidCount).toEqual(2);
         expect(company3.invoicesPaidAmount).toEqual(1000);
-        expect(invoice6.afterSaveCalled).toEqual(1);
-        expect(invoice6.beforeSaveCalled).toEqual(1);
+        expect(invoice6.__afterSaveCalled).toEqual(1);
+        expect(invoice6.__beforeSaveCalled).toEqual(1);
     });
 
     test("event handler should be triggered only once", async () => {
         const invoice1 = new Invoice();
         await invoice1.save();
-        expect(invoice1.beforeSaveCalled).toEqual(1);
-        expect(invoice1.afterSaveCalled).toEqual(1);
+        expect(invoice1.__beforeSaveCalled).toEqual(1);
+        expect(invoice1.__afterSaveCalled).toEqual(1);
 
         await invoice1.save();
 
-        expect(invoice1.beforeSaveCalled).toEqual(1);
-        expect(invoice1.afterSaveCalled).toEqual(2);
+        expect(invoice1.__beforeSaveCalled).toEqual(1);
+        expect(invoice1.__afterSaveCalled).toEqual(2);
 
         await invoice1.save();
         await invoice1.save();
 
-        expect(invoice1.beforeSaveCalled).toEqual(1);
-        expect(invoice1.afterSaveCalled).toEqual(4);
+        expect(invoice1.__beforeSaveCalled).toEqual(1);
+        expect(invoice1.__afterSaveCalled).toEqual(4);
     });
 
     test("should inherit static events from extended class", async () => {

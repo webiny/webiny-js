@@ -271,39 +271,47 @@ class Entity {
      * @param params
      */
     async save(params: ?Object): Promise<void> {
+        if (!params) {
+            params = {};
+        }
+        const events = params.events || {};
+        const existing = this.isExisting();
+
+        events.beforeSave !== false && (await this.emit("beforeSave", { params }));
+
+        if (existing) {
+            events.beforeUpdate !== false && (await this.emit("beforeUpdate", { params }));
+        } else {
+            events.beforeCreate !== false && (await this.emit("beforeCreate", { params }));
+        }
+
         if (this.processing) {
             return;
         }
 
         this.processing = "save";
-        const existing = this.isExisting();
         const logs = _.get(this, "constructor.crud.logs");
 
-        if (!params) {
-            params = {};
-        }
-
         try {
-            const events = params.events || {};
-            events.save !== false && (await this.emit("save", { params }));
+            events.save !== false && (await this.emit("__save", { params }));
             if (existing) {
-                events.update !== false && (await this.emit("update", { params }));
+                events.update !== false && (await this.emit("__update", { params }));
             } else {
-                events.create !== false && (await this.emit("create", { params }));
+                events.create !== false && (await this.emit("__create", { params }));
             }
 
             params.validation !== false && (await this.validate());
 
-            events.beforeSave !== false && (await this.emit("beforeSave", { params }));
+            events.__beforeSave !== false && (await this.emit("__beforeSave", { params }));
 
             if (existing) {
-                events.beforeUpdate !== false && (await this.emit("beforeUpdate", { params }));
+                events.__beforeUpdate !== false && (await this.emit("__beforeUpdate", { params }));
                 if (logs && this.isDirty()) {
                     this.savedOn = new Date();
                     this.updatedOn = new Date();
                 }
             } else {
-                events.beforeCreate !== false && (await this.emit("beforeCreate", { params }));
+                events.__beforeCreate !== false && (await this.emit("__beforeCreate", { params }));
                 if (logs && this.isDirty()) {
                     this.savedOn = new Date();
                     this.createdOn = new Date();
@@ -314,11 +322,11 @@ class Entity {
                 await this.getDriver().save(this, params);
             }
 
-            events.afterSave !== false && (await this.emit("afterSave", { params }));
+            events.__afterSave !== false && (await this.emit("__afterSave", { params }));
             if (existing) {
-                events.afterUpdate !== false && (await this.emit("afterUpdate", { params }));
+                events.__afterUpdate !== false && (await this.emit("__afterUpdate", { params }));
             } else {
-                events.afterCreate !== false && (await this.emit("afterCreate", { params }));
+                events.__afterCreate !== false && (await this.emit("__afterCreate", { params }));
             }
 
             this.setExisting();
@@ -329,6 +337,13 @@ class Entity {
             throw e;
         } finally {
             this.processing = null;
+        }
+
+        events.afterSave !== false && (await this.emit("afterSave", { params }));
+        if (existing) {
+            events.afterUpdate !== false && (await this.emit("afterUpdate", { params }));
+        } else {
+            events.afterCreate !== false && (await this.emit("afterCreate", { params }));
         }
     }
 
