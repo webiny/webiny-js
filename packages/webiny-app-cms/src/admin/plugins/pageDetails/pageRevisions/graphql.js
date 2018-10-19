@@ -55,8 +55,15 @@ export const activeRevisionFragment = gql`
     fragment activeRevisionFragment on Page {
         activeRevision {
             id
-            slug
             title
+            slug
+            createdBy {
+                firstName
+            }
+            updatedOn
+            updatedBy {
+                firstName
+            }
         }
     }
 `;

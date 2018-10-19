@@ -8,7 +8,10 @@ export default {
         type Revision {
             id: ID
             createdOn: DateTime
+            createdBy: Author
+            updatedBy: Author
             savedOn: DateTime
+            updatedOn: DateTime
             name: String
             title: String
             slug: String

@@ -1,10 +1,17 @@
 // @flow
 import * as React from "react";
-import { compose } from "recompose";
 import { get } from "dot-prop-immutable";
+import TimeAgo from "timeago-react";
 import { withRouter } from "webiny-app/components";
 import { i18n } from "webiny-app/i18n";
-import { DataList, List, ListItem, ListItemText, ListItemTextSecondary } from "webiny-ui/List";
+import {
+    DataList,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemTextSecondary,
+    ListTextOverline
+} from "webiny-ui/List";
 
 const t = i18n.namespace("Cms.PagesDataList");
 
@@ -51,8 +58,9 @@ const PagesDataList = props => {
                                 }
                             >
                                 {page.activeRevision.title}
+                                <ListTextOverline>{page.category.name}</ListTextOverline>
                                 <ListItemTextSecondary>
-                                    {page.activeRevision.slug}
+                                    Created by: {page.createdBy.firstName}. Last modified: <TimeAgo datetime={page.savedOn}/>.
                                 </ListItemTextSecondary>
                             </ListItemText>
                         </ListItem>

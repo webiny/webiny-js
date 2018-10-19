@@ -5,6 +5,8 @@ import type { IPage } from "./Page.entity";
 export interface IRevision extends Entity {
     page: Promise<IPage>;
     name: string;
+    createdBy: string;
+    updatedBy: string;
     slug: string;
     title: string;
     settings: Object;
@@ -19,6 +21,8 @@ export const revisionFactory = ({ user, entities }: Object): Class<IRevision> =>
 
         page: Promise<IPage>;
         name: string;
+        createdBy: string;
+        updatedBy: string;
         slug: string;
         title: string;
         settings: Object;
@@ -30,7 +34,11 @@ export const revisionFactory = ({ user, entities }: Object): Class<IRevision> =>
 
             this.attr("createdBy")
                 .char()
-                .setDefaultValue(user.id);
+                .setSkipOnPopulate();
+
+            this.attr("updatedBy")
+                .char()
+                .setSkipOnPopulate();
 
             this.attr("page").entity(entities.Page);
 
@@ -75,6 +83,14 @@ export const revisionFactory = ({ user, entities }: Object): Class<IRevision> =>
                     }
                     return value;
                 });
+
+            this.on("beforeCreate", () => {
+                this.createdBy = user.id;
+            });
+
+            this.on("beforeUpdate", () => {
+                this.updatedBy = user.id;
+            });
 
             this.on("afterUpdate", async () => {
                 if (this.published) {

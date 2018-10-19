@@ -9,7 +9,7 @@ import { withSnackbar, type WithSnackbarProps } from "webiny-app-admin/component
 import PagesDataList from "./PagesDataList";
 import PageDetails from "./PageDetails";
 import CategoriesDialog from "./CategoriesDialog";
-import { createPage, loadPages } from "./graphql";
+import { createPage, loadPages } from "webiny-app-cms/admin/graphql/pages";
 
 type Props = {
     createPage: (category: string, title: string) => Promise<Object>,

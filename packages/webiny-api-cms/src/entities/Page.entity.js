@@ -4,6 +4,7 @@ import type { ICategory } from "./Category.entity";
 import type { IRevision } from "./Revision.entity";
 
 export interface IPage extends Entity {
+    createdBy: string;
     title: string;
     slug: string;
     settings: Object;
@@ -12,13 +13,14 @@ export interface IPage extends Entity {
     revisions: Promise<EntityCollection>;
     category: Promise<ICategory>;
     status: "draft" | "published" | "trash";
-};
+}
 
 export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
     return class Page extends Entity {
         static classId = "CmsPage";
         static storageClassId = "Cms_Pages";
 
+        createdBy: string;
         title: string;
         slug: string;
         settings: Object;
@@ -33,9 +35,7 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
 
             const { Revision, Category } = entities;
 
-            this.attr("createdBy")
-                .char()
-                .setDefaultValue(user.id);
+            this.attr("createdBy").char();
 
             this.attr("title")
                 .char()
@@ -73,6 +73,10 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
                 .char()
                 .setValidators("in:draft:published:trash")
                 .setDefaultValue("draft");
+
+            this.on("beforeCreate", () => {
+                this.createdBy = user.id;
+            });
 
             this.on("afterCreate", async () => {
                 const revision = new Revision();

@@ -4,16 +4,10 @@ const pageFetcher = ctx => ctx.cms.Page;
 
 export default {
     typeDefs: `
-        type Author {
-            id: ID
-            email: String
-            name: String
-        }
-        
         type Page {
             id: ID
-            createdOn: DateTime
-            author: Author
+            savedOn: DateTime
+            createdBy: Author
             title: String
             slug: String
             settings: JSON
@@ -36,7 +30,6 @@ export default {
             data: Page
             error: Error
         }
-        
         
         type PageListResponse {
             data: [Page]

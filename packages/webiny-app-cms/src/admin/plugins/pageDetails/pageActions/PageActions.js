@@ -1,6 +1,5 @@
 // @flow
 import React from "react";
-import { compose } from "recompose";
 import { css } from "emotion";
 import { withRouter, type WithRouterProps } from "webiny-app/components";
 import { type WithPageDetailsProps } from "webiny-app-cms/admin/components";
@@ -54,7 +53,7 @@ const PageActions = ({ pageDetails: { revision, revisions, pageId }, router }: P
                         onClick={() =>
                             router.goToRoute({
                                 name: "Cms.Editor",
-                                params: { page: pageId, revision: revision.id }
+                                params: { page: pageId, revision: revision.data.id }
                             })
                         }
                     />

@@ -7,7 +7,8 @@ import { withRouter } from "webiny-app/components";
 import { type WithPageDetailsProps } from "webiny-app-cms/admin/components";
 import { PageDetailsProvider, PageDetailsConsumer } from "../../components/PageDetailsContext";
 import type { WithRouterProps } from "webiny-app/components";
-import { loadRevision, loadPageRevisions } from "./graphql";
+import { loadRevision, loadPageRevisions } from "webiny-app-cms/admin/graphql/pages";
+import Loader from "./Loader";
 
 type Props = WithRouterProps & {
     pageId: string,
@@ -38,6 +39,11 @@ const renderPlugins = (type: string, params: WithPageDetailsProps) => {
 const PageDetails = ({ router, pageId, revision, revisions, refreshPages }: Props) => {
     if (!router.getQuery("revision")) {
         return <div>Select a page on the left!</div>;
+    }
+
+    if (revision.loading) {
+        /* TODO: Ovo je C/P loadera od DataList komponente, treba ga sloziti da lici na taj PageDetails view */
+        return <Loader />;
     }
 
     const details = { pageId, refreshPages, revision, revisions };

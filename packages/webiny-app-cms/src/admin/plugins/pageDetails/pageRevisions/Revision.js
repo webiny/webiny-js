@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
-import { compose, withHandlers, withProps, withState } from "recompose";
-import { graphql } from "react-apollo";
+import { compose, withProps, withState } from "recompose";
+import { css } from "emotion";
 import {
     ListItem,
     ListItemText,
@@ -23,12 +23,7 @@ import { ReactComponent as LockIcon } from "webiny-app-cms/admin/assets/lock.svg
 import { ReactComponent as BeenHereIcon } from "webiny-app-cms/admin/assets/beenhere.svg";
 import { ReactComponent as GestureIcon } from "webiny-app-cms/admin/assets/gesture.svg";
 import CreateRevisionDialog from "./CreateRevisionDialog";
-import {
-    createRevisionFrom,
-    publishRevision,
-    deleteRevision,
-    activeRevisionFragment
-} from "./graphql";
+import withRevisionHandlers from "./withRevisionHandlers";
 
 type RevisionProps = WithPageDetailsProps & {
     rev: Object,
@@ -41,14 +36,25 @@ type RevisionProps = WithPageDetailsProps & {
     submitCreateRevision: Function
 };
 
+const primaryColor = css({ color: "var(--mdc-theme-primary)"});
+
 const getIcon = (rev: Object) => {
     switch (true) {
         case rev.locked && !rev.published:
-            return { icon: LockIcon, text: "This revision is locked (it has already been published)" };
+            return {
+                icon: <Icon icon={<LockIcon />} />,
+                text: "This revision is locked (it has already been published)"
+            };
         case rev.published:
-            return { icon: BeenHereIcon, text: "This revision is currently published!" };
+            return {
+                icon: <Icon icon={<BeenHereIcon />} className={primaryColor} />,
+                text: "This revision is currently published!"
+            };
         default:
-            return { icon: GestureIcon, text: "This is a draft" };
+            return {
+                icon: <Icon icon={<GestureIcon />} />,
+                text: "This is a draft"
+            };
     }
 };
 
@@ -62,7 +68,7 @@ const Revision = ({
     createRevisionDialog,
     setCreateRevisionDialog
 }: RevisionProps) => {
-    const { icon: RevIcon, text: tooltipText } = getIcon(rev);
+    const { icon, text: tooltipText } = getIcon(rev);
 
     return (
         <ConfirmationDialog
@@ -77,7 +83,7 @@ const Revision = ({
                 <ListItem style={{ overflow: "visible" }}>
                     <ListItemGraphic>
                         <Tooltip content={tooltipText} placement={"bottom"}>
-                            <Icon icon={<RevIcon />} />
+                            {icon}
                         </Tooltip>
                     </ListItemGraphic>
                     <ListItemText>
@@ -95,10 +101,10 @@ const Revision = ({
                         />
                         <Menu handle={<IconButton icon={<MoreVerticalIcon />} />}>
                             <MenuItem onClick={() => setCreateRevisionDialog(true)}>
-                                Create new
+                                New
                             </MenuItem>
                             <MenuItem onClick={editRevision}>Edit</MenuItem>
-                            <MenuItem onClick={publishRevision}>Publish</MenuItem>
+                            {!rev.published &&<MenuItem onClick={publishRevision}>Publish</MenuItem>}
                             {!rev.locked &&
                                 revision.data.id !== rev.id && (
                                     <MenuItem onClick={() => showConfirmation(deleteRevision)}>
@@ -117,72 +123,9 @@ export default compose(
     withRouter(),
     withSnackbar(),
     withPageDetails(),
-    graphql(createRevisionFrom, { name: "gqlCreate" }),
-    graphql(publishRevision, { name: "gqlPublish" }),
-    graphql(deleteRevision, { name: "gqlDelete" }),
     withProps(({ pageDetails }) => ({
         pageId: pageDetails.pageId
     })),
     withState("createRevisionDialog", "setCreateRevisionDialog", false),
-    withHandlers({
-        createRevision: ({ rev, router, pageId, gqlCreate, showSnackbar }: Object) => async (
-            formData: Object
-        ) => {
-            const { data: res } = await gqlCreate({
-                variables: { revisionId: rev.id, name: formData.name }
-            });
-            const { data, error } = res.cms.revision;
-
-            if (error) {
-                return showSnackbar(error.message);
-            }
-
-            router.goToRoute({
-                name: "Cms.Editor",
-                params: { page: pageId, revision: data.id }
-            });
-        },
-        editRevision: ({ rev, router, pageId }) => () => {
-            router.goToRoute({ name: "Cms.Editor", params: { page: pageId, revision: rev.id } });
-        },
-        publishRevision: ({ rev, pageId, gqlPublish, showSnackbar }) => async () => {
-            const { data: res } = await gqlPublish({
-                //refetchQueries: ["CmsListPages"],
-                variables: { id: rev.id },
-                update: (cache, res) => {
-                    cache.writeFragment({
-                        id: pageId,
-                        fragment: activeRevisionFragment,
-                        data: {
-                            __typename: "Page",
-                            activeRevision: {
-                                ...res.data.cms.publishRevision.data
-                            }
-                        }
-                    });
-                }
-            });
-
-            const { error } = res.cms.publishRevision;
-            if (error) {
-                return showSnackbar(error.message);
-            }
-
-            showSnackbar(
-                <span>
-                    Successfully published <strong>{rev.name}</strong>
-                </span>
-            );
-        },
-        deleteRevision: ({ rev, gqlDelete, showSnackbar }) => async () => {
-            const { data: res } = await gqlDelete({
-                refetchQueries: ["CmsLoadPageRevisions"],
-                variables: { id: rev.id }
-            });
-            const { error } = res.cms.deleteRevision;
-            if (error) {
-                return showSnackbar(error.message);
-            }
-        }
-    })
+    withRevisionHandlers
 )(Revision);

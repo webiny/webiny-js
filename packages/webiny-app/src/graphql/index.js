@@ -1,1 +1,1 @@
-export { default as createOmitTypenamLink } from "./createOmitTypenameLink";
+export { default as createOmitTypenameLink } from "./createOmitTypenameLink";

@@ -69,10 +69,26 @@ export const loadPages = gql`
             pages: listPages(where: $where, sort: $sort, page: $page, perPage: $perPage, search: $search) {
                 data {
                     id
+                    savedOn
+                    createdBy {
+                        firstName
+                        lastName
+                    }
+                    category {
+                        id
+                        name
+                    }
                     activeRevision {
                         id
                         title
                         slug
+                        createdBy {
+                            firstName
+                        }
+                        updatedOn
+                        updatedBy {
+                            firstName
+                        }
                     }
                 }
                 meta {
@@ -123,6 +139,10 @@ export const loadPageRevisions = gql`
                     savedOn
                     published
                     locked
+                    createdBy {
+                        firstName
+                        lastName
+                    }
                 }
             }
         }
