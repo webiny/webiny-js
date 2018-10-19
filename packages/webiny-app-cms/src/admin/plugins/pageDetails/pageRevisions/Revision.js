@@ -1,22 +1,28 @@
 // @flow
 import React from "react";
-import { compose, withHandlers, withProps } from "recompose";
-import gql from "graphql-tag";
+import { compose, withHandlers, withProps, withState } from "recompose";
 import { graphql } from "react-apollo";
 import {
     ListItem,
     ListItemText,
     ListItemTextPrimary,
     ListItemTextSecondary,
+    ListItemGraphic,
     ListItemMeta
 } from "webiny-ui/List";
 import { IconButton } from "webiny-ui/Button";
+import { Icon } from "webiny-ui/Icon";
 import { MenuItem, Menu, MenuDivider } from "webiny-ui/Menu";
 import { withRouter } from "webiny-app/components";
 import { withSnackbar } from "webiny-app-admin/components";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
+import { Tooltip } from "webiny-ui/Tooltip";
 import { withPageDetails, type WithPageDetailsProps } from "webiny-app-cms/admin/components";
 import { ReactComponent as MoreVerticalIcon } from "webiny-app-cms/admin/assets/more_vert.svg";
+import { ReactComponent as LockIcon } from "webiny-app-cms/admin/assets/lock.svg";
+import { ReactComponent as BeenHereIcon } from "webiny-app-cms/admin/assets/beenhere.svg";
+import { ReactComponent as GestureIcon } from "webiny-app-cms/admin/assets/gesture.svg";
+import CreateRevisionDialog from "./CreateRevisionDialog";
 import {
     createRevisionFrom,
     publishRevision,
@@ -29,17 +35,35 @@ type RevisionProps = WithPageDetailsProps & {
     createRevision: Function,
     editRevision: Function,
     deleteRevision: Function,
-    publishRevision: Function
+    publishRevision: Function,
+    createRevisionDialog: boolean,
+    setCreateRevisionDialog: Function,
+    submitCreateRevision: Function
+};
+
+const getIcon = (rev: Object) => {
+    switch (true) {
+        case rev.locked && !rev.published:
+            return { icon: LockIcon, text: "This revision is locked (it has already been published)" };
+        case rev.published:
+            return { icon: BeenHereIcon, text: "This revision is currently published!" };
+        default:
+            return { icon: GestureIcon, text: "This is a draft" };
+    }
 };
 
 const Revision = ({
     rev,
-    pageDetails: { revision },
+    pageDetails: { revision, revisions },
     createRevision,
     editRevision,
     deleteRevision,
-    publishRevision
+    publishRevision,
+    createRevisionDialog,
+    setCreateRevisionDialog
 }: RevisionProps) => {
+    const { icon: RevIcon, text: tooltipText } = getIcon(rev);
+
     return (
         <ConfirmationDialog
             title="Confirmation required!"
@@ -51,6 +75,11 @@ const Revision = ({
         >
             {({ showConfirmation }) => (
                 <ListItem style={{ overflow: "visible" }}>
+                    <ListItemGraphic>
+                        <Tooltip content={tooltipText} placement={"bottom"}>
+                            <Icon icon={<RevIcon />} />
+                        </Tooltip>
+                    </ListItemGraphic>
                     <ListItemText>
                         <ListItemTextPrimary>{rev.title}</ListItemTextPrimary>
                         <ListItemTextSecondary>
@@ -58,8 +87,16 @@ const Revision = ({
                         </ListItemTextSecondary>
                     </ListItemText>
                     <ListItemMeta>
+                        <CreateRevisionDialog
+                            open={createRevisionDialog}
+                            onClose={() => setCreateRevisionDialog(false)}
+                            onSubmit={createRevision}
+                            revisions={revisions.data}
+                        />
                         <Menu handle={<IconButton icon={<MoreVerticalIcon />} />}>
-                            <MenuItem onClick={createRevision}>Create new</MenuItem>
+                            <MenuItem onClick={() => setCreateRevisionDialog(true)}>
+                                Create new
+                            </MenuItem>
                             <MenuItem onClick={editRevision}>Edit</MenuItem>
                             <MenuItem onClick={publishRevision}>Publish</MenuItem>
                             {!rev.locked &&
@@ -86,9 +123,14 @@ export default compose(
     withProps(({ pageDetails }) => ({
         pageId: pageDetails.pageId
     })),
+    withState("createRevisionDialog", "setCreateRevisionDialog", false),
     withHandlers({
-        createRevision: ({ rev, router, pageId, gqlCreate, showSnackbar }: Object) => async () => {
-            const { data: res } = await gqlCreate({ variables: { revisionId: rev.id } });
+        createRevision: ({ rev, router, pageId, gqlCreate, showSnackbar }: Object) => async (
+            formData: Object
+        ) => {
+            const { data: res } = await gqlCreate({
+                variables: { revisionId: rev.id, name: formData.name }
+            });
             const { data, error } = res.cms.revision;
 
             if (error) {

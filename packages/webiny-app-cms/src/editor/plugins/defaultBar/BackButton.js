@@ -1,5 +1,6 @@
 //@flow
 import React from "react";
+import { withRouter, type WithRouterProps } from "webiny-app/components";
 import { IconButton } from "webiny-ui/Button";
 import { ReactComponent as BackIcon } from "webiny-app-cms/editor/assets/icons/round-arrow_back-24px.svg";
 import { css } from "emotion";
@@ -8,14 +9,19 @@ const backStyles = css({
     marginLeft: -10
 });
 
-const BackButton = () => {
+const BackButton = ({ router }: WithRouterProps) => {
+    const pagesList = {
+        id: router.getParams("page"),
+        revision: router.getParams("revision")
+    };
+
     return (
         <IconButton
             className={backStyles}
-            onClick={() => window.history.back()}
+            onClick={() => router.goToRoute({ name: "Cms.Pages", params: pagesList })}
             icon={<BackIcon />}
         />
     );
 };
 
-export default BackButton;
+export default withRouter()(BackButton);

@@ -33,7 +33,7 @@ const PageActions = ({ pageDetails: { revision, revisions, pageId }, router }: P
             <Cell span={6}>
                 {/* Revision selector */}
                 <Select
-                    value={revision.id}
+                    value={revision.data.id}
                     onChange={id => router.goToRoute({ params: { revision: id }, merge: true })}
                     className={smallSelect}
                 >

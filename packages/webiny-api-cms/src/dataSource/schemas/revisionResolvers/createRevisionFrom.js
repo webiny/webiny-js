@@ -26,10 +26,9 @@ export default (entityFetcher: EntityFetcher) => async (
     const page = await sourceRev.page;
 
     const newRevision: IRevision = (new revisionClass(): any);
-    const revCount = await revisionClass.count({ query: { page: page.id } });
     try {
         newRevision.populate({
-            name: "Revision #" + (revCount + 1),
+            name: args.name,
             slug: sourceRev.slug,
             title: sourceRev.title,
             settings: sourceRev.settings,

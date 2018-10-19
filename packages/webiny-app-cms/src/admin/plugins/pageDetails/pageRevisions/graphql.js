@@ -1,9 +1,9 @@
 import gql from "graphql-tag";
 
 export const createRevisionFrom = gql`
-    mutation CreateRevisionFrom($revisionId: ID!) {
+    mutation CreateRevisionFrom($revisionId: ID!, $name: String!) {
         cms {
-            revision: createRevisionFrom(revisionId: $revisionId) {
+            revision: createRevisionFrom(revisionId: $revisionId, name: $name) {
                 data {
                     id
                     page {

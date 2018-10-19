@@ -55,6 +55,7 @@ export default {
     mutationFields: `
         createRevisionFrom(
             revisionId: ID!
+            name: String!
         ): RevisionResponse
         
         updateRevision(

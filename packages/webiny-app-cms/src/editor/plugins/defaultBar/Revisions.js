@@ -31,7 +31,7 @@ const Revisions = ({ page, router }: Object) => {
     return (
         <Menu
             className={menuList}
-            onSelect={evt => router.goToRoute({ params: { id: revisions[evt.detail.index].id } })}
+            onSelect={evt => router.goToRoute({ params: { revision: revisions[evt.detail.index].id }, merge: true })}
             handle={
                 <ButtonDefault className={buttonStyle}>
                     Revisions <Icon icon={<DownButton />} />
