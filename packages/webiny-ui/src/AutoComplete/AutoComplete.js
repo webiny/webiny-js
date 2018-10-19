@@ -284,7 +284,7 @@ export class AutoComplete extends React.Component<Props> {
 
                     this.downshift.current.clearSelection();
                 } else {
-                    onChange && onChange(this.getItemValue(selection));
+                    onChange(this.getItemValue(selection));
                 }
             }
         };

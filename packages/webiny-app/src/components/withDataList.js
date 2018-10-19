@@ -23,7 +23,6 @@ export const withDataList = (withDataListParams: Object): Function => {
     return (BaseComponent: typeof React.Component) => {
         return compose(
             setDisplayName("withDataList"),
-            withState("multiSelectedItems", "multiSelect", []),
             graphql(withDataListParams.query, {
                 name: "queryData",
                 options: props => {
@@ -35,6 +34,7 @@ export const withDataList = (withDataListParams: Object): Function => {
                     };
                 }
             }),
+            withState("multiSelectedItems", "multiSelect", []),
             withProps(props => {
                 const returnProps = Object.assign({}, props);
                 const { router, queryData } = props;
