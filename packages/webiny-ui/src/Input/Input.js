@@ -57,6 +57,9 @@ type Props = FormComponentProps & {
     // A callback that is executed when key is released.
     onKeyUp?: (value: mixed) => any,
 
+    // A callback that is executed when input is focused.
+    onFocus?: (value: mixed) => any,
+
     // CSS class name that will be added to the component.
     className?: string,
 
@@ -90,6 +93,7 @@ class Input extends React.Component<Props> {
         "onKeyDown",
         "onKeyPress",
         "onKeyUp",
+        "onFocus",
         "rootProps",
         "fullwidth",
         "inputRef"
