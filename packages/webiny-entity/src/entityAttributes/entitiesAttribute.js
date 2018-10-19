@@ -49,7 +49,7 @@ class EntitiesAttribute extends Attribute {
          */
         this.auto = { save: true, delete: true };
 
-        this.parentEntity.on("save", async () => {
+        this.parentEntity.on("__save", async () => {
             const value: EntitiesAttributeValue = (this.value: any);
 
             // If loading is in progress, wait until loaded.
@@ -78,7 +78,7 @@ class EntitiesAttribute extends Attribute {
          * Same as in EntityAttribute, entities present here were already validated when parent entity called the validate method.
          * At this point, entities are ready to be saved (only loaded entities).
          */
-        this.parentEntity.on("afterSave", async () => {
+        this.parentEntity.on("__afterSave", async () => {
             // We don't have to do the following check here:
             // this.value.isLoading() && (await this.value.load());
 

@@ -5,13 +5,14 @@ import type { Group } from "./Group.entity";
 import type { Role } from "./Role.entity";
 import { loadEntityScopes } from "./utils";
 
-export interface IApiToken {
+export interface IApiToken extends Entity {
     name: string;
     token: string;
     description: string;
     groups: Promise<Array<Group>>;
     roles: Promise<Array<Role>>;
     scopes: Promise<Array<string>>;
+    generateJWT(): Promise<void>
 }
 
 export function apiTokenFactory({ user = {}, config, entities }: Object): Class<IApiToken> {
@@ -51,7 +52,7 @@ export function apiTokenFactory({ user = {}, config, entities }: Object): Class<
                 });
         }
 
-        async save(...args): Promise<void> {
+        /*async save(...args): Promise<void> {
             const createToken = !this.isExisting();
             await super.save(...args);
 
@@ -61,6 +62,13 @@ export function apiTokenFactory({ user = {}, config, entities }: Object): Class<
                 this.token = await token.encode({ id: this.id, type: "apiToken" }, 2147483647);
                 await super.save();
             }
+        }*/
+
+        async generateJWT(): Promise<void> {
+            // 2147483647 = maximum value of unix timestamp (year 2038).
+            const token = new JwtToken({ secret: config.security.token.secret });
+            this.token = await token.encode({ id: this.id, type: "apiToken" }, 2147483647);
+            await super.save();
         }
     };
 }

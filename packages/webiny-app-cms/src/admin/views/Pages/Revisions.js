@@ -4,14 +4,15 @@ import { List } from "webiny-ui/List";
 import Revision from "./Revision";
 
 type RevisionsProps = {
+    page: Object,
     revisions: Array<Object>
 };
 
-const Revisions = ({ revisions }: RevisionsProps) => {
+const Revisions = ({ revisions, page }: RevisionsProps) => {
     return (
         <List nonInteractive>
             {revisions.map(rev => (
-                <Revision rev={rev} key={rev.id} />
+                <Revision page={page} rev={rev} key={rev.id} />
             ))}
         </List>
     );

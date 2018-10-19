@@ -66,7 +66,7 @@ const PageDetails = ({ router }: Props) => {
                                 <RenderElement element={revision.content} />
                             </Tab>
                             <Tab label={"Revisions"}>
-                                <Revisions revisions={revision.page.revisions}/>
+                                <Revisions page={revision.page} revisions={revision.page.revisions}/>
                             </Tab>
                         </Tabs>
                     </React.Fragment>

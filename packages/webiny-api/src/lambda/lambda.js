@@ -66,6 +66,7 @@ export const createHandler = (config = {}) => {
 
                 if (process.env.NODE_ENV === "development") {
                     config.database.connection.end();
+                    data.body = JSON.stringify(JSON.parse(data.body), null, 2);
                 }
                 resolve(data);
             });
