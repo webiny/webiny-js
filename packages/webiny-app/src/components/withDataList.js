@@ -45,6 +45,9 @@ export const withDataList = (withDataListParams: Object): Function => {
                         this.refresh();
                     },
                     refresh(params): void {
+                        // Refresh multi select first.
+                        props.multiSelect([]);
+
                         if (!params) {
                             queryData.refetch(dataListProps.__loadParams);
                             return;
