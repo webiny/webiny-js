@@ -6,16 +6,15 @@ import { rolesAutoComplete } from "./graphql";
 import { compose } from "recompose";
 import { get, debounce } from "lodash";
 
-const RolesAutoComplete = props => {
-    const { rolesList, ...rest } = props;
-
+const RolesAutoComplete = ({ dataList, ...rest }) => {
     return (
         <AutoComplete
+            {...dataList}
             {...rest}
             multiple
-            options={get(rolesList, "data.security.roles.data", [])}
+            options={dataList.data}
             onInput={debounce(query => {
-                query && rolesList.setSearch({ query, fields: ["name", "description"] });
+                query && dataList.setSearch({ query, fields: ["name", "description"] });
             }, 250)}
         />
     );
@@ -23,8 +22,8 @@ const RolesAutoComplete = props => {
 
 export default compose(
     withDataList({
-        name: "rolesList",
         query: rolesAutoComplete,
-        variables: { sort: { savedOn: -1 } }
+        variables: { sort: { savedOn: -1 } },
+        response: data => get(data, "security.roles")
     })
 )(RolesAutoComplete);

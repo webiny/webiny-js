@@ -6,16 +6,15 @@ import { groupsAutoComplete } from "./graphql";
 import { compose } from "recompose";
 import { get, debounce } from "lodash";
 
-const GroupsAutoComplete = props => {
-    const { groupsList, ...rest } = props;
-
+const GroupsAutoComplete = ({ dataList, ...rest }) => {
     return (
         <AutoComplete
+            {...dataList}
             {...rest}
             multiple
-            options={get(groupsList, "data.security.groups.data", [])}
+            options={dataList.data}
             onInput={debounce(query => {
-                query && groupsList.setSearch({ query, fields: ["name", "description"] });
+                query && dataList.setSearch({ query, fields: ["name", "description"] });
             }, 250)}
         />
     );
@@ -23,8 +22,8 @@ const GroupsAutoComplete = props => {
 
 export default compose(
     withDataList({
-        name: "groupsList",
         query: groupsAutoComplete,
-        variables: { sort: { savedOn: -1 } }
+        variables: { sort: { savedOn: -1 } },
+        response: data => get(data, "security.groups")
     })
 )(GroupsAutoComplete);

@@ -20,7 +20,6 @@ export type { WithDataListProps, SearchParams, WithDataListParams };
 
 export const withDataList = (withDataListParams: Object): Function => {
     const propName = getPropName(withDataListParams);
-
     return (BaseComponent: typeof React.Component) => {
         return compose(
             setDisplayName("withDataList"),
@@ -37,7 +36,6 @@ export const withDataList = (withDataListParams: Object): Function => {
                 }
             }),
             withProps(props => {
-                const propName = withDataListParams.name;
                 const returnProps = Object.assign({}, props);
                 const { router, queryData } = props;
 

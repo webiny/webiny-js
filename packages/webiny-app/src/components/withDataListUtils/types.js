@@ -1,7 +1,6 @@
 // @flow
 export type WithDataListParams = {
     load?: boolean,
-    prop?: string,
     name: string,
     type: string,
     fields: string,

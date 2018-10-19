@@ -16,12 +16,10 @@ import {
 
 const t = i18n.namespace("Cms.CategoriesDataList");
 
-const CategoriesDataList = ({ data, dataList, meta, router, deleteRecord }: WithCrudListProps) => {
+const CategoriesDataList = ({ dataList, router, deleteRecord }: WithCrudListProps) => {
     return (
         <DataList
             {...dataList}
-            data={data}
-            meta={meta}
             title={t`CMS Categories`}
             sorters={[
                 {

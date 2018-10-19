@@ -14,8 +14,6 @@ export type WithCrudBaseProps = WithRouterProps & WithSnackbarProps & WithDialog
 
 export type WithCrudListProps = WithCrudBaseProps & {
     dataList: Object,
-    data: Array<any>,
-    meta: ?Object,
     deleteRecord: (item: Object) => Promise<void>
 };
 
@@ -166,9 +164,10 @@ export const withCrud = ({ list, form }: Object): Function => {
                         showSnackbar,
                         showDialog,
                         listProps: {
-                            ...dataList,
+                            dataList,
                             router,
                             showSnackbar,
+                            showDialog,
                             deleteRecord
                         },
                         formProps: {
@@ -177,6 +176,7 @@ export const withCrud = ({ list, form }: Object): Function => {
                             onSubmit: saveRecord,
                             router,
                             showSnackbar,
+                            showDialog,
                             error: formError
                         }
                     };

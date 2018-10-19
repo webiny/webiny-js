@@ -17,12 +17,10 @@ import { Checkbox } from "webiny-ui/Checkbox";
 
 const t = i18n.namespace("Security.ApiTokensDataList");
 
-const ApiTokensDataList = ({ deleteRecord, dataList, data, meta, router }: WithCrudListProps) => {
+const ApiTokensDataList = ({ deleteRecord, dataList, router }: WithCrudListProps) => {
     return (
         <DataList
             {...dataList}
-            data={data}
-            meta={meta}
             title={t`API Tokens`}
             multiSelectActions={
                 <React.Fragment>
