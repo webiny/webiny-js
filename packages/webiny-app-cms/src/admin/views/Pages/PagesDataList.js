@@ -1,23 +1,28 @@
 // @flow
 import * as React from "react";
-import { compose } from "recompose";
 import { get } from "dot-prop-immutable";
-import { withDataList, withRouter } from "webiny-app/components";
+import TimeAgo from "timeago-react";
+import { withRouter } from "webiny-app/components";
 import { i18n } from "webiny-app/i18n";
-import { DataList, List, ListItem, ListItemText, ListItemTextSecondary } from "webiny-ui/List";
-
-import { loadPages } from "./graphql";
+import {
+    DataList,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemTextSecondary,
+    ListTextOverline
+} from "webiny-ui/List";
 
 const t = i18n.namespace("Cms.PagesDataList");
 
 const PagesDataList = props => {
-    const { PagesDataList, router } = props;
+    const { dataList, router } = props;
 
-    const { data, meta } = get(PagesDataList, "data.cms.pages") || { data: [], meta: {} };
+    const { data, meta } = get(dataList, "data.cms.pages") || { data: [], meta: {} };
 
     return (
         <DataList
-            {...PagesDataList}
+            {...dataList}
             data={data}
             meta={meta}
             title={t`CMS Pages`}
@@ -47,14 +52,16 @@ const PagesDataList = props => {
                             <ListItemText
                                 onClick={() =>
                                     router.goToRoute({
-                                        params: { id: page.activeRevision.id },
+                                        params: { id: page.id, revision: page.activeRevision.id },
                                         merge: true
                                     })
                                 }
                             >
                                 {page.activeRevision.title}
+                                <ListTextOverline>{page.category.name}</ListTextOverline>
                                 <ListItemTextSecondary>
-                                    {page.activeRevision.slug}
+                                    Created by: {page.createdBy.firstName}. Last modified:{" "}
+                                    <TimeAgo datetime={page.activeRevision.savedOn} />.
                                 </ListItemTextSecondary>
                             </ListItemText>
                         </ListItem>
@@ -65,13 +72,4 @@ const PagesDataList = props => {
     );
 };
 
-export default compose(
-    withRouter(),
-    withDataList({
-        name: "PagesDataList",
-        query: loadPages,
-        variables: {
-            sort: { savedOn: -1 }
-        }
-    })
-)(PagesDataList);
+export default withRouter()(PagesDataList);

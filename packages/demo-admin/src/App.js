@@ -10,6 +10,7 @@ import myTheme from "demo-theme";
 import { Security } from "webiny-app-admin/components";
 import Login from "webiny-app-admin/views/Login";
 import "./App.scss";
+import config  from "./config";
 import imagePlugin from "./plugins/imagePlugin";
 import fileUploadPlugin from "./plugins/fileUploadPlugin";
 
@@ -20,7 +21,7 @@ addPlugin(fileUploadPlugin);
 adminApp();
 cmsApp();
 
-const App = ({ config }) => {
+const App = () => {
     return (
         <Webiny config={config}>
             {({ router }) => (

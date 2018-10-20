@@ -4,15 +4,16 @@ import { compose, withHandlers } from "recompose";
 import { graphql } from "react-apollo";
 import { CompactView, LeftPanel, RightPanel } from "webiny-app-admin/components/Views/CompactView";
 import FloatingActionButton from "webiny-app-admin/components/FloatingActionButton";
-import { withRouter, type WithRouterProps } from "webiny-app/components";
+import { withRouter, withDataList, type WithRouterProps } from "webiny-app/components";
 import { withSnackbar, type WithSnackbarProps } from "webiny-app-admin/components";
 import PagesDataList from "./PagesDataList";
 import PageDetails from "./PageDetails";
 import CategoriesDialog from "./CategoriesDialog";
-import { createPage } from "./graphql";
+import { createPage, loadPages } from "webiny-app-cms/admin/graphql/pages";
 
 type Props = {
-    createPage: (category: string, title: string) => Promise<Object>
+    createPage: (category: string, title: string) => Promise<Object>,
+    dataList: Object
 };
 
 type State = {
@@ -34,6 +35,7 @@ class Pages extends React.Component<Props, State> {
     };
 
     render() {
+        const { dataList } = this.props;
         return (
             <React.Fragment>
                 <CategoriesDialog
@@ -43,10 +45,10 @@ class Pages extends React.Component<Props, State> {
                 />
                 <CompactView>
                     <LeftPanel>
-                        <PagesDataList />
+                        <PagesDataList dataList={dataList}/>
                     </LeftPanel>
                     <RightPanel>
-                        <PageDetails />
+                        <PageDetails refreshPages={dataList.refresh}/>
                     </RightPanel>
                 </CompactView>
                 <FloatingActionButton onClick={this.closeDialog} />
@@ -59,6 +61,13 @@ export default compose(
     withSnackbar(),
     withRouter(),
     graphql(createPage, { name: "createMutation" }),
+    withDataList({
+        name: "dataList",
+        query: loadPages,
+        variables: {
+            sort: { savedOn: -1 }
+        }
+    }),
     withHandlers({
         createPage: ({
             createMutation,

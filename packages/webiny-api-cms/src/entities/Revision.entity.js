@@ -5,6 +5,8 @@ import type { IPage } from "./Page.entity";
 export interface IRevision extends Entity {
     page: Promise<IPage>;
     name: string;
+    createdBy: string;
+    updatedBy: string;
     slug: string;
     title: string;
     settings: Object;
@@ -19,6 +21,8 @@ export const revisionFactory = ({ user, entities }: Object): Class<IRevision> =>
 
         page: Promise<IPage>;
         name: string;
+        createdBy: string;
+        updatedBy: string;
         slug: string;
         title: string;
         settings: Object;
@@ -30,7 +34,11 @@ export const revisionFactory = ({ user, entities }: Object): Class<IRevision> =>
 
             this.attr("createdBy")
                 .char()
-                .setDefaultValue(user.id);
+                .setSkipOnPopulate();
+
+            this.attr("updatedBy")
+                .char()
+                .setSkipOnPopulate();
 
             this.attr("page").entity(entities.Page);
 
@@ -63,15 +71,26 @@ export const revisionFactory = ({ user, entities }: Object): Class<IRevision> =>
                         this.locked = true;
                         this.on("beforeSave", async () => {
                             // Deactivate previously published revision
-                            const activeRev: Revision = (await Revision.findOne({
+                            const publishedRev: Revision = (await Revision.findOne({
                                 query: { published: true, page: (await this.page).id }
                             }): any);
-                            activeRev.published = false;
-                            await activeRev.save();
+
+                            if (publishedRev) {
+                                publishedRev.published = false;
+                                await publishedRev.save();
+                            }
                         }).setOnce();
                     }
                     return value;
                 });
+
+            this.on("beforeCreate", () => {
+                this.createdBy = user.id;
+            });
+
+            this.on("beforeUpdate", () => {
+                this.updatedBy = user.id;
+            });
 
             this.on("afterUpdate", async () => {
                 if (this.published) {
@@ -82,9 +101,7 @@ export const revisionFactory = ({ user, entities }: Object): Class<IRevision> =>
                     page.settings = this.settings;
                     page.status = "published";
 
-                    page.content = this.content.map(block => {
-                        return { ...block };
-                    });
+                    page.content = { ...this.content };
                     await page.save();
                 }
             });

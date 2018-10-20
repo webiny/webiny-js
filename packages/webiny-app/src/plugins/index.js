@@ -1,11 +1,11 @@
 // @flow
+import * as React from "react";
+
 const plugins = {};
 
-export type Plugin = {
+export type Plugin = Object & {
     name: string,
-    type: string,
-    target?: Array<string>,
-    ...Object
+    type: string
 };
 
 export const addPlugin = (...args: Array<Plugin>): void => {
@@ -25,4 +25,19 @@ export const getPlugin = (name: string): ?Plugin => {
 
 export const removePlugin = (name: string): void => {
     delete plugins[name];
+};
+
+export const renderPlugins = (
+    type: string,
+    params: ?Object = null,
+    fn: string = "render"
+): Array<React.Node> => {
+    const args = params ? [params] : [];
+    return getPlugins(type).map(plugin => {
+        const content = plugin[fn].call(null, ...args);
+        if (content) {
+            return React.cloneElement(content, { key: plugin.name });
+        }
+        return null;
+    });
 };

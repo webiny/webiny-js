@@ -2493,6 +2493,10 @@
   version "1.2.0"
   resolved "http://registry.npmjs.org/@types/events/-/events-1.2.0.tgz#81a6731ce4df43619e5c8c945383b3e62a89ea86"
 
+"@types/jquery@^2.0.40":
+  version "2.0.51"
+  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-2.0.51.tgz#d0c728663de8905457a26c8891ac08ad2b3539c9"
+
 "@types/long@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/long/-/long-4.0.0.tgz#719551d2352d301ac8b81db732acb6bdc28dbdef"
@@ -3066,6 +3070,20 @@ apollo-engine-reporting@^0.0.6:
     async-retry "^1.2.1"
     graphql-extensions "^0.2.1"
     lodash "^4.17.10"
+
+apollo-link-batch-http@^1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/apollo-link-batch-http/-/apollo-link-batch-http-1.2.3.tgz#cd3bbc0489bab8164618bafbae8796e26c51c278"
+  dependencies:
+    apollo-link "^1.2.3"
+    apollo-link-batch "^1.1.4"
+    apollo-link-http-common "^0.2.5"
+
+apollo-link-batch@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/apollo-link-batch/-/apollo-link-batch-1.1.4.tgz#a2f483d5d6a9e9904210e74ab71c3d44f20ac5a7"
+  dependencies:
+    apollo-link "^1.2.3"
 
 apollo-link-context@^1.0.7:
   version "1.0.9"
@@ -6651,6 +6669,12 @@ dedent@^0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/dedent/-/dedent-0.7.0.tgz#2495ddbaf6eb874abb0e1be9df22d2e5a544326c"
 
+deep-assign@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/deep-assign/-/deep-assign-1.0.0.tgz#b092743be8427dc621ea0067cdec7e70dd19f37b"
+  dependencies:
+    is-obj "^1.0.0"
+
 deep-diff@^0.3.5:
   version "0.3.8"
   resolved "https://registry.yarnpkg.com/deep-diff/-/deep-diff-0.3.8.tgz#c01de63efb0eec9798801d40c7e0dae25b582c84"
@@ -8414,6 +8438,12 @@ fragment-cache@^0.2.1:
 fresh@0.5.2:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/fresh/-/fresh-0.5.2.tgz#3d8cadd90d976569fa835ab1f8e4b23a105605a7"
+
+from-now@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/from-now/-/from-now-1.0.2.tgz#07fe119754c0613009dc9b9365d131a7326df446"
+  dependencies:
+    deep-assign "^1.0.0"
 
 from2@^1.3.0:
   version "1.3.0"
@@ -17573,6 +17603,18 @@ through@2, "through@>=2.2.7 <3", through@^2.3.6, through@^2.3.8, through@~2.3, t
 thunky@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/thunky/-/thunky-1.0.2.tgz#a862e018e3fb1ea2ec3fce5d55605cf57f247371"
+
+timeago-react@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/timeago-react/-/timeago-react-2.0.0.tgz#01ed7cea809a0e03706c6ec5602bfd29f76d8e49"
+  dependencies:
+    timeago.js "^3.0.1"
+
+timeago.js@^3.0.1:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/timeago.js/-/timeago.js-3.0.2.tgz#32a67e7c0d887ea42ca588d3aae26f77de5e76cc"
+  dependencies:
+    "@types/jquery" "^2.0.40"
 
 timed-out@^4.0.0, timed-out@^4.0.1:
   version "4.0.1"

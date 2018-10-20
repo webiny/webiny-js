@@ -2,9 +2,10 @@
 import { renderMiddleware } from "webiny-app/router";
 import ApolloClient from "apollo-client";
 import { ApolloLink } from "apollo-link";
-import { HttpLink } from "apollo-link-http";
+import { BatchHttpLink } from "apollo-link-batch-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { createAuthLink } from "webiny-app-admin/security";
+import { createOmitTypenameLink } from "webiny-app/graphql";
 
 export default {
     router: {
@@ -14,11 +15,12 @@ export default {
     },
     apolloClient: new ApolloClient({
         link: ApolloLink.from([
+            createOmitTypenameLink(),
             createAuthLink(),
-            new HttpLink({ uri: "http://localhost:9000/graphql" })
+            new BatchHttpLink({ uri: "http://localhost:9000/graphql" })
         ]),
         cache: new InMemoryCache({
-            addTypename: false,
+            addTypename: true,
             dataIdFromObject: obj => obj.id || null
         }),
         defaultOptions: {

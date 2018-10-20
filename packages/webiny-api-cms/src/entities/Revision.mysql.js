@@ -5,6 +5,7 @@ class RevisionTable extends MySQLTable {
     constructor() {
         super();
         this.column("createdBy").char(24);
+        this.column("updatedBy").char(24);
         this.column("name").varChar(100);
         this.column("title").varChar(300);
         this.column("slug").varChar(300);

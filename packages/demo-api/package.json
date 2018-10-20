@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack-cli --config webpack.config.js",
-    "debug": "cross-env NODE_ENV=development SLS_DEBUG=* npx --node-arg=--inspect=9005 sls offline start --stage=dev --port=9000 --noTimeout --dontPrintOutput",
-    "start": "cross-env NODE_ENV=development DEBUG=webiny-mysql* npx sls offline start --port=9000 --dontPrintOutput"
+    "start": "cross-env NODE_ENV=development npx sls offline start --port=9000 --dontPrintOutput --useSeparateProcesses"
   },
   "author": "",
   "license": "MIT",
