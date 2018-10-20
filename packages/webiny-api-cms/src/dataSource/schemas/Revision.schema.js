@@ -11,7 +11,6 @@ export default {
             createdBy: Author
             updatedBy: Author
             savedOn: DateTime
-            updatedOn: DateTime
             name: String
             title: String
             slug: String

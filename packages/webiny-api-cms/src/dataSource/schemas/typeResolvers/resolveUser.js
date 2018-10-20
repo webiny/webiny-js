@@ -13,6 +13,10 @@ query GetUser($id: ID!) {
 }`;
 
 export default (attr: string) => async (parent, args, ctx) => {
+    if (!parent[attr]) {
+        return null;
+    }
+
     const { data } = await ctx.graphql({
         source: getUserQuery,
         variables: { id: parent[attr] }
