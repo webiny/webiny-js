@@ -8,7 +8,7 @@ import { IconButton } from "webiny-ui/Button";
 import { Tooltip } from "webiny-ui/Tooltip";
 import { withConfirmation, type WithConfirmationProps } from "webiny-ui/ConfirmationDialog";
 import { ReactComponent as DeleteIcon } from "webiny-app-cms/admin/assets/delete.svg";
-import { fragments, deletePage, loadPages } from "webiny-app-cms/admin/graphql/pages";
+import { fragments, deletePage } from "webiny-app-cms/admin/graphql/pages";
 
 type Props = WithConfirmationProps & {
     confirmDelete: Function
