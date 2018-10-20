@@ -55,6 +55,20 @@ class ConfirmationDialog extends React.Component<Props, State> {
         this.setState({ show: false });
     };
 
+    onAccept = async () => {
+        const { onAccept } = this.callbacks;
+        if (typeof onAccept === "function") {
+            await onAccept();
+        }
+    };
+
+    onCancel = async () => {
+        const { onCancel } = this.callbacks;
+        if (typeof onCancel === "function") {
+            await onCancel();
+        }
+    };
+
     render() {
         return (
             <React.Fragment>
@@ -64,27 +78,8 @@ class ConfirmationDialog extends React.Component<Props, State> {
                     </DialogHeader>
                     <DialogBody>{this.props.message}</DialogBody>
                     <DialogFooter>
-                        <DialogCancel
-                            onClick={async () => {
-                                const { onCancel } = this.callbacks;
-                                if (typeof onCancel === "function") {
-                                    await onCancel();
-                                }
-                            }}
-                        >
-                            Cancel
-                        </DialogCancel>
-
-                        <DialogAccept
-                            onClick={async () => {
-                                const { onAccept } = this.callbacks;
-                                if (typeof onAccept === "function") {
-                                    await onAccept();
-                                }
-                            }}
-                        >
-                            Confirm
-                        </DialogAccept>
+                        <DialogCancel onClick={this.onCancel}>Cancel</DialogCancel>
+                        <DialogAccept onClick={this.onAccept}>Confirm</DialogAccept>
                     </DialogFooter>
                 </Dialog>
                 {this.props.children({
