@@ -1,7 +1,8 @@
 // @flow
 import React from "react";
-import { compose, withProps, withState } from "recompose";
+import { compose, withProps, withState, withHandlers } from "recompose";
 import { css } from "emotion";
+import TimeAgo from "timeago-react";
 import {
     ListItem,
     ListItemText,
@@ -31,12 +32,12 @@ type RevisionProps = WithPageDetailsProps & {
     editRevision: Function,
     deleteRevision: Function,
     publishRevision: Function,
-    createRevisionDialog: boolean,
+    openDialog: boolean,
     setCreateRevisionDialog: Function,
     submitCreateRevision: Function
 };
 
-const primaryColor = css({ color: "var(--mdc-theme-primary)"});
+const primaryColor = css({ color: "var(--mdc-theme-primary)" });
 
 const getIcon = (rev: Object) => {
     switch (true) {
@@ -65,8 +66,9 @@ const Revision = ({
     editRevision,
     deleteRevision,
     publishRevision,
-    createRevisionDialog,
-    setCreateRevisionDialog
+    openDialog,
+    showDialog,
+    hideDialog
 }: RevisionProps) => {
     const { icon, text: tooltipText } = getIcon(rev);
 
@@ -89,27 +91,30 @@ const Revision = ({
                     <ListItemText>
                         <ListItemTextPrimary>{rev.title}</ListItemTextPrimary>
                         <ListItemTextSecondary>
-                            Last modified on {rev.savedOn} ({rev.name})
+                            Last modified <TimeAgo datetime={rev.savedOn} /> ({rev.name})
                         </ListItemTextSecondary>
                     </ListItemText>
                     <ListItemMeta>
                         <CreateRevisionDialog
-                            open={createRevisionDialog}
-                            onClose={() => setCreateRevisionDialog(false)}
+                            open={openDialog}
+                            onClose={hideDialog}
                             onSubmit={createRevision}
                             revisions={revisions.data}
                         />
                         <Menu handle={<IconButton icon={<MoreVerticalIcon />} />}>
-                            <MenuItem onClick={() => setCreateRevisionDialog(true)}>
-                                New
-                            </MenuItem>
+                            <MenuItem onClick={showDialog}>New</MenuItem>
                             <MenuItem onClick={editRevision}>Edit</MenuItem>
-                            {!rev.published &&<MenuItem onClick={publishRevision}>Publish</MenuItem>}
+                            {!rev.published && (
+                                <MenuItem onClick={() => publishRevision(rev)}>Publish</MenuItem>
+                            )}
                             {!rev.locked &&
                                 revision.data.id !== rev.id && (
-                                    <MenuItem onClick={() => showConfirmation(deleteRevision)}>
-                                        Delete
-                                    </MenuItem>
+                                    <React.Fragment>
+                                        <MenuDivider />
+                                        <MenuItem onClick={() => showConfirmation(deleteRevision)}>
+                                            Delete
+                                        </MenuItem>
+                                    </React.Fragment>
                                 )}
                         </Menu>
                     </ListItemMeta>
@@ -126,6 +131,10 @@ export default compose(
     withProps(({ pageDetails }) => ({
         pageId: pageDetails.pageId
     })),
-    withState("createRevisionDialog", "setCreateRevisionDialog", false),
+    withState("openDialog", "setOpenDialog", false),
+    withHandlers({
+        showDialog: ({ setOpenDialog }) => () => setOpenDialog(true),
+        hideDialog: ({ setOpenDialog }) => () => setOpenDialog(false)
+    }),
     withRevisionHandlers
 )(Revision);

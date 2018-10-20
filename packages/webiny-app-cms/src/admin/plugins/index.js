@@ -1,7 +1,7 @@
 //import { categories, pages } from "./search";
-import pageActions from "./pageDetails/pageActions";
+import header from "./pageDetails/header";
 import revisionContent from "./pageDetails/revisionContent";
 import previewContent from "./pageDetails/previewContent";
 import pageRevisions from "./pageDetails/pageRevisions";
 
-export default [pageActions, revisionContent, previewContent, pageRevisions];
+export default [...header, revisionContent, previewContent, pageRevisions];

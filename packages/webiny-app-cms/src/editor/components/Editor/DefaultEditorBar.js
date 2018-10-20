@@ -1,14 +1,8 @@
 //@flow
 import React from "react";
 import { TopAppBar, TopAppBarSection } from "webiny-ui/TopAppBar";
-import { getPlugins } from "webiny-app/plugins";
+import { renderPlugins } from "webiny-app/plugins";
 import { css } from "emotion";
-
-const renderPlugins = type => {
-    return getPlugins(type).map(plugin => {
-        return React.cloneElement(plugin.render(), { key: plugin.name });
-    });
-};
 
 const alignCenter = css({
     justifyContent: "center",

@@ -2,9 +2,8 @@
 import * as React from "react";
 import { compose, withProps } from "recompose";
 import { graphql } from "react-apollo";
-import { getPlugins } from "webiny-app/plugins";
+import { renderPlugins } from "webiny-app/plugins";
 import { withRouter } from "webiny-app/components";
-import { type WithPageDetailsProps } from "webiny-app-cms/admin/components";
 import { PageDetailsProvider, PageDetailsConsumer } from "../../components/PageDetailsContext";
 import type { WithRouterProps } from "webiny-app/components";
 import { loadRevision, loadPageRevisions } from "webiny-app-cms/admin/graphql/pages";
@@ -23,17 +22,6 @@ type Props = WithRouterProps & {
         loading: boolean,
         refetch: Function
     }
-};
-
-const renderPlugins = (type: string, params: WithPageDetailsProps) => {
-    return getPlugins(type).map(plugin => {
-        const plContent = plugin.render(params);
-        if (plContent) {
-            return React.cloneElement(plContent, { key: plugin.name });
-        }
-
-        return null;
-    });
 };
 
 const PageDetails = ({ router, pageId, revision, revisions, refreshPages }: Props) => {

@@ -60,7 +60,8 @@ const PagesDataList = props => {
                                 {page.activeRevision.title}
                                 <ListTextOverline>{page.category.name}</ListTextOverline>
                                 <ListItemTextSecondary>
-                                    Created by: {page.createdBy.firstName}. Last modified: <TimeAgo datetime={page.savedOn}/>.
+                                    Created by: {page.createdBy.firstName}. Last modified:{" "}
+                                    <TimeAgo datetime={page.activeRevision.savedOn} />.
                                 </ListItemTextSecondary>
                             </ListItemText>
                         </ListItem>

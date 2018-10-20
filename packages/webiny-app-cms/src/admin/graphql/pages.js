@@ -1,5 +1,24 @@
 import gql from "graphql-tag";
 
+export const fragments = {
+    activeRevision: gql`
+        fragment activeRevision on Page {
+            activeRevision {
+                id
+                title
+                slug
+                createdBy {
+                    firstName
+                }
+                savedOn
+                updatedBy {
+                    firstName
+                }
+            }
+        }
+    `
+};
+
 export const loadEditorData = gql`
     query CmsGetEditorData($page: ID!, $revision: ID!) {
         cms {
@@ -66,10 +85,15 @@ export const createPage = gql`
 export const loadPages = gql`
     query CmsListPages($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SearchInput) {
         cms {
-            pages: listPages(where: $where, sort: $sort, page: $page, perPage: $perPage, search: $search) {
+            pages: listPages(
+                where: $where
+                sort: $sort
+                page: $page
+                perPage: $perPage
+                search: $search
+            ) {
                 data {
                     id
-                    savedOn
                     createdBy {
                         firstName
                         lastName
@@ -78,18 +102,7 @@ export const loadPages = gql`
                         id
                         name
                     }
-                    activeRevision {
-                        id
-                        title
-                        slug
-                        createdBy {
-                            firstName
-                        }
-                        updatedOn
-                        updatedBy {
-                            firstName
-                        }
-                    }
+                    ...activeRevision
                 }
                 meta {
                     count
@@ -105,6 +118,8 @@ export const loadPages = gql`
             }
         }
     }
+
+    ${fragments.activeRevision}
 `;
 
 export const loadRevision = gql`
@@ -118,6 +133,8 @@ export const loadRevision = gql`
                     slug
                     content
                     settings
+                    published
+                    locked
                 }
                 error {
                     code
@@ -143,6 +160,71 @@ export const loadPageRevisions = gql`
                         firstName
                         lastName
                     }
+                }
+            }
+        }
+    }
+`;
+
+export const createRevisionFrom = gql`
+    mutation CreateRevisionFrom($revisionId: ID!, $name: String!) {
+        cms {
+            revision: createRevisionFrom(revisionId: $revisionId, name: $name) {
+                data {
+                    id
+                    page {
+                        id
+                    }
+                }
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
+
+export const publishRevision = gql`
+    mutation PublishRevision($id: ID!) {
+        cms {
+            publishRevision(id: $id) {
+                data {
+                    id
+                    title
+                    slug
+                }
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
+
+export const deleteRevision = gql`
+    mutation DeleteRevision($id: ID!) {
+        cms {
+            deleteRevision(id: $id) {
+                data
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
+
+export const deletePage = gql`
+    mutation DeletePage($id: ID!) {
+        cms {
+            deletePage(id: $id) {
+                data
+                error {
+                    code
+                    message
                 }
             }
         }
