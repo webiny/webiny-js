@@ -155,7 +155,7 @@ class Input extends React.Component<Props> {
                     onBlur={this.onBlur}
                     label={label}
                     withLeadingIcon={leadingIcon}
-                    placeholder={!label && placeholder}
+                    placeholder={(!label && placeholder) || undefined}
                     withTrailingIcon={trailingIcon}
                     rows={this.props.rows}
                 />
