@@ -1,3 +1,4 @@
+// @flow
 import React from "react";
 import { compose, withHandlers, withProps, withState } from "recompose";
 import withPublishRevisionHandler from "../../utils/withPublishRevisionHandler";

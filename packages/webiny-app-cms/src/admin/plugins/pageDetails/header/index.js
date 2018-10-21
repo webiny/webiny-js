@@ -10,7 +10,7 @@ import DeletePage from "./deletePage/DeletePage";
 export default ([
     {
         name: "cms-page-details-header",
-        type: "cms-page-details",
+        type: "cms-page-details-revision-content-preview",
         render(props: WithPageDetailsProps) {
             return <Header {...props} />;
         }
