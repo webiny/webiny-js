@@ -1,10 +1,18 @@
+// @flowIgnore
+const path = require("path");
 const getPackages = require("get-yarn-workspaces");
 const paths = require("react-scripts/config/paths");
 const merge = require("lodash/merge");
-const babel = require("../.babelrc");
 const packages = getPackages();
 
 let foundBabel = false;
+
+const aliases = packages.reduce((aliases, dir) => {
+    const name = path.basename(dir);
+    aliases[`^${name}/types`] = `${name}/types`;
+    aliases[`^${name}/(?!src)(.+)$`] = `${name}/src/\\1`;
+    return aliases;
+}, {});
 
 const overrideBabel = function(rules) {
     rules.forEach(rule => {
@@ -19,7 +27,8 @@ const overrideBabel = function(rules) {
                     babelrc: true,
                     cacheDirectory: false,
                     highlightCode: true,
-                    ...babel
+                    babelrcRoots: packages,
+                    plugins: [["babel-plugin-module-resolver", { alias: aliases }]]
                 })
             };
 
