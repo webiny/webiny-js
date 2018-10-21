@@ -1,6 +1,5 @@
 // @flow
 import * as React from "react";
-import { get } from "dot-prop-immutable";
 import TimeAgo from "timeago-react";
 import { withRouter } from "webiny-app/components";
 import { i18n } from "webiny-app/i18n";
