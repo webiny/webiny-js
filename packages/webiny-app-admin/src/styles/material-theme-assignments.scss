@@ -160,12 +160,9 @@ Fix the width of input components when inside grids
       border-top: 1px solid $mdc-theme-on-background;
     }
   }
-  &.mdc-dialog--open{
-    z-index: 20;
-    .mdc-dialog__backdrop{
-      opacity: 0.7;
-      background-color: var(--mdc-theme-on-surface);
-    }
+  &.mdc-dialog--open .mdc-dialog__backdrop{
+    opacity: 0.7;
+    background-color: var(--mdc-theme-on-surface);
   }
 }
 
