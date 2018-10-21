@@ -1,5 +1,6 @@
 const path = require("path");
-const paths = require("react-scripts/config/paths");
+const getPackages = require("get-yarn-workspaces");
+const packages = getPackages();
 
 module.exports = {
     presets: ["babel-preset-react-app"],
@@ -19,13 +20,7 @@ module.exports = {
         [
             "babel-plugin-module-resolver",
             {
-                alias: paths.srcPaths.reduce((alias, item) => {
-                    const pPath = item.endsWith("/src")
-                        ? item
-                            .split("/")
-                            .slice(0, -1)
-                            .join("/")
-                        : item;
+                alias: packages.reduce((alias, pPath) => {
                     const pName = path.basename(pPath);
                     alias[`^${pName}/types$`] = pName + "/types";
                     alias[`^${pName}/(?!src)(.+)$`] = pName + "/src/\\1";

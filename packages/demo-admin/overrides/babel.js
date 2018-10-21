@@ -1,4 +1,8 @@
+const getPackages = require("get-yarn-workspaces");
+const paths = require("react-scripts/config/paths");
+const merge = require("lodash/merge");
 const babel = require("../.babelrc");
+const packages = getPackages();
 
 let foundBabel = false;
 
@@ -9,11 +13,14 @@ const overrideBabel = function(rules) {
         }
 
         if (rule.hasOwnProperty("options") && rule.options.hasOwnProperty("babelrc")) {
+            rule.include = [paths.appSrc, ...packages];
             rule.options = {
-                compact: false,
-                cacheDirectory: false,
-                highlightCode: true,
-                ...babel
+                ...merge(rule.options, {
+                    babelrc: true,
+                    cacheDirectory: false,
+                    highlightCode: true,
+                    ...babel
+                })
             };
 
             foundBabel = true;
