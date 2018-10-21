@@ -1,9 +1,4 @@
 // NOTE: this file is required only for Webiny monorepo!! End-user will not need this file.
-
-const path = require("path");
-const getPackages = require("get-yarn-workspaces");
-const packages = getPackages(path.join(process.cwd(), "../../"));
-
 module.exports = {
     presets: [
         [
