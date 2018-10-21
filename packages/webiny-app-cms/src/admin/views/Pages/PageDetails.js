@@ -2,8 +2,7 @@
 import * as React from "react";
 import { compose, withProps } from "recompose";
 import { graphql } from "react-apollo";
-import { renderPlugins } from "webiny-app/plugins";
-import { withRouter } from "webiny-app/components";
+import { withRouter, Plugins } from "webiny-app/components";
 import { PageDetailsProvider, PageDetailsConsumer } from "../../components/PageDetailsContext";
 import type { WithRouterProps } from "webiny-app/components";
 import { loadRevision, loadPageRevisions } from "webiny-app-cms/admin/graphql/pages";
@@ -41,7 +40,7 @@ const PageDetails = ({ router, pageId, revision, revisions, refreshPages }: Prop
             <PageDetailsConsumer>
                 {pageDetails => (
                     <React.Fragment>
-                        {renderPlugins("cms-page-details", { pageDetails })}
+                        <Plugins type={"cms-page-details"} params={{ pageDetails }} />
                     </React.Fragment>
                 )}
             </PageDetailsConsumer>

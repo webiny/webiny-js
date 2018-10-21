@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import { renderPlugins } from "webiny-app/plugins";
+import { Plugins } from "webiny-app/components";
 import { TopAppBarPrimary, TopAppBarSection } from "webiny-ui/TopAppBar";
 import { css } from "emotion";
 
@@ -16,13 +16,13 @@ const Header = () => {
     return (
         <TopAppBarPrimary fixed>
             <TopAppBarSection className={edgeBars} alignStart>
-                {renderPlugins("header-left")}
+                <Plugins type={"header-left"} />
             </TopAppBarSection>
             <TopAppBarSection className={middleBar}>
-                {renderPlugins("header-middle")}
+                <Plugins type={"header-middle"} />
             </TopAppBarSection>
             <TopAppBarSection className={edgeBars} alignEnd>
-                {renderPlugins("header-right")}
+                <Plugins type={"header-right"} />
             </TopAppBarSection>
         </TopAppBarPrimary>
     );

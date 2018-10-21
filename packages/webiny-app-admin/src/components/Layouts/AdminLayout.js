@@ -1,9 +1,9 @@
 // @flow
 import * as React from "react";
-import { renderPlugins } from "webiny-app/plugins";
+import { Plugins } from "webiny-app/components";
 
 const AdminLayout = ({ children }: { children: React.Node }) => {
-    return <React.Fragment>{renderPlugins("layout", { content: children })}</React.Fragment>;
+    return <Plugins type={"layout"} params={{ content: children }} />;
 };
 
 export default AdminLayout;

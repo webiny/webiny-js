@@ -3,23 +3,23 @@ import * as React from "react";
 
 const plugins = {};
 
-export type Plugin = Object & {
+export type PluginType = Object & {
     name: string,
     type: string
 };
 
-export const addPlugin = (...args: Array<Plugin>): void => {
+export const addPlugin = (...args: Array<PluginType>): void => {
     args.forEach(pl => {
         plugins[pl.name] = pl;
     });
 };
 
-export const getPlugins = (type: string): Array<Plugin> => {
-    const values: Array<Plugin> = (Object.values(plugins): any);
-    return values.filter((plugin: Plugin) => (type ? plugin.type === type : true));
+export const getPlugins = (type: string): Array<PluginType> => {
+    const values: Array<PluginType> = (Object.values(plugins): any);
+    return values.filter((plugin: PluginType) => (type ? plugin.type === type : true));
 };
 
-export const getPlugin = (name: string): ?Plugin => {
+export const getPlugin = (name: string): ?PluginType => {
     return plugins[name];
 };
 
