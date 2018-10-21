@@ -18,13 +18,9 @@ const t = i18n.namespace("Cms.PagesDataList");
 const PagesDataList = props => {
     const { dataList, router } = props;
 
-    const { data, meta } = get(dataList, "data.cms.pages") || { data: [], meta: {} };
-
     return (
         <DataList
             {...dataList}
-            data={data}
-            meta={meta}
             title={t`CMS Pages`}
             sorters={[
                 {
