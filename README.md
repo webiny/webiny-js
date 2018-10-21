@@ -12,11 +12,10 @@
 #
 <p align="center">
 
-[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
-[![Known Vulnerabilities](https://snyk.io/test/github/webiny/webiny-js/badge.svg?targetFile=package.json)](https://snyk.io/test/github/webiny/webiny-js?targetFile=package.json)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
 [![Discord](https://user-images.githubusercontent.com/7288322/34429152-141689f8-ecb9-11e7-8003-b5a10a5fcb29.png)](https://discord.gg/ZuZVyc) 
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/webiny/webiny-js/blob/master/LICENSE)
+[![SemVer](http://img.shields.io/:semver-2.0.0-brightgreen.svg)](http://semver.org)
 
 | Branch | Build | Coverage |
 | :--- | :---: | :--- |
@@ -32,18 +31,26 @@ More on the `installation` process soon...
 ## About
 Webiny consists of two layers that work closely together.
 
-#### API layer
-API is implemented as an `express` middleware so you can plug it into an existing express app, spin up a new express server or even deploy it using serverless providers.
-Last year we have released a PHP version of our API framework, but as JS is constantly growing and `serverless` architecture is gaining more and more momentum we decided we have to board the train and go 100% JS. 
+### GraphQL API
+API layer works as a Lambda function with Apollo-Server handling all the GraphQL-related stuff.
+In addition to that we created a simple `data-sources` wrapper inspired by GrAMPS (and later Apollo data-sources). It helps you develop separate modules (packages) and stitch them together to build one big GraphQL service.
 
-For the past couple of months we have been working on migrating our PHP API philosophy to JS, adapting things to JS environment, writing tons of tests and so far we are very happy with the results. 
+### Client layer (SPA)
+Our client (SPA) layer is based on `create-react-app` v2 and Apollo Client. If you ever developed using those tools - you already know Webiny :)
+As our UI library we are using Material Components, and a very promising project [RMWC](https://jamesmfriedman.github.io/rmwc/) to get going with Material faster.
+You can see all the currently available components in our [storybook](https://webiny-material-storybook.netlify.com/).
 
-#### Client layer (SPA)
-Our client (SPA) layer is based on React and features over 70+ ready to use components, you can [see and try all of them here](https://www.webiny.com/docs/current/components/alert).  
+## Admin app
+We provide you with an administration app so you can kickstart your projects much faster and begin developing features for your clients right away.
+The entire admin app is based on plugins and you can customize everything. Each of the plugin is documented and has a corresponding Flow type to help you while coding.
 
 ## Project organization
-We have decided to use a `monorepo` organization with multiple `yarn` workspaces to reduce the amount of repo maintenance.
-So far it is working out pretty well but we are still testing the structure. If you have any ideas or suggestions, feel free to get in touch with us. 
+We have decided to use a `monorepo` organization and have fixed publishing (so when we publish a change, all the packages will be published using that same version).
+
+## FAQ
+### Why not microservices ?
+We are planning on going the microservices way but at this point it really is not necessary.
+The local data-sources approach is already a good separation of business logic which will make migration to microservices much easier later on.
 
 ## Contributing
 Please see our [Contributing Guideline](/CONTRIBUTING.md) which explains repo organization, linting, testing, and other steps.

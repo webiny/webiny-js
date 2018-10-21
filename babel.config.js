@@ -5,7 +5,6 @@ const packages = getPackages(path.join(process.cwd(), "packages"));
 module.exports = {
     babelrcRoots: packages,
     plugins: [
-        ["@babel/plugin-proposal-class-properties"],
         [
             "babel-plugin-module-resolver",
             {

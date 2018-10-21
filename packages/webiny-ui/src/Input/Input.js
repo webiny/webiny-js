@@ -157,9 +157,11 @@ class Input extends React.Component<Props> {
                     value={inputValue}
                     onChange={this.onChange}
                     onBlur={this.onBlur}
-                    label={!placeholder && label}
+                    label={label}
                     withLeadingIcon={leadingIcon}
+                    placeholder={(!label && placeholder) || undefined}
                     withTrailingIcon={trailingIcon}
+                    rows={this.props.rows}
                 />
 
                 {validation.isValid === false && (

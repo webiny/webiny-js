@@ -14,6 +14,10 @@ const avatar = css({
     color: "var(--mdc-theme-text-secondary-on-background)",
     div: {
         textAlign: "center"
+    },
+    'img':{
+        width: '100%',
+        height: 'auto'
     }
 });
 

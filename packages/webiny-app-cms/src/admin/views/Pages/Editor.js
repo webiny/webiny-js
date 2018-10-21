@@ -7,7 +7,7 @@ import { createElement } from "webiny-app-cms/editor/utils";
 import { redux } from "webiny-app-cms/editor/redux";
 import { withRouter } from "webiny-app/components";
 import { graphql, withApollo } from "react-apollo";
-import { loadEditorData } from "./graphql";
+import { loadEditorData } from "webiny-app-cms/admin/graphql/pages";
 
 const Editor = ({ data, client }: Object) => {
     if (data.loading) {

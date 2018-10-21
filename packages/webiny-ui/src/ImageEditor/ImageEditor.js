@@ -65,7 +65,8 @@ class ImageEditor extends React.Component<Props, State> {
             selectionStyle: {
                 cornerSize: 20,
                 rotatingPointOffset: 70
-            }
+            },
+            usageStatistics: false
         });
 
         // Load image

@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import { getPlugins } from "webiny-app/plugins";
+import { renderPlugins } from "webiny-app/plugins";
 import { TopAppBarPrimary, TopAppBarSection } from "webiny-ui/TopAppBar";
 import { css } from "emotion";
 
@@ -11,13 +11,6 @@ const middleBar = css({
 const edgeBars = css({
     width: "25%"
 });
-
-const renderPlugins = type => {
-    return getPlugins(type).map(plugin => {
-        const element = plugin.render();
-        return element && React.cloneElement(element, { key: plugin.name });
-    });
-};
 
 const Header = () => {
     return (

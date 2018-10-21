@@ -1,5 +1,8 @@
 import type { Node, ComponentType } from "react";
 import type { Store } from "webiny-app/redux";
+import type { WithPageDetailsProps } from "webiny-app-cms/admin/components";
+
+export { WithPageDetailsProps };
 
 // TODO: @pavel
 export type SearchBarPluginType = {
@@ -86,9 +89,15 @@ export type RenderElementPluginType = {
     render: ({ theme: CmsThemeType, element: ElementType }) => Node
 };
 
+export type CmsPageDetailsPluginType = {
+    name: string,
+    type: string,
+    render: (params: WithPageDetailsProps) => Node
+};
+
+// ================= Redux types ===================
 export type { Redux } from "webiny-app-cms/editor/redux";
 
-// Redux types
 export type Action = {
     type: string,
     payload: Object
