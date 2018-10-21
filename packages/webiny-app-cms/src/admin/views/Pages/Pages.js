@@ -45,10 +45,10 @@ class Pages extends React.Component<Props, State> {
                 />
                 <CompactView>
                     <LeftPanel span={4}>
-                        <PagesDataList dataList={dataList}/>
+                        <PagesDataList dataList={dataList} />
                     </LeftPanel>
                     <RightPanel span={8}>
-                        <PageDetails refreshPages={dataList.refresh}/>
+                        <PageDetails refreshPages={dataList.refresh} />
                     </RightPanel>
                 </CompactView>
                 <FloatingActionButton onClick={this.closeDialog} />
