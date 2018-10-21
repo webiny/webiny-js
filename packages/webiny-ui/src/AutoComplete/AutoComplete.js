@@ -9,8 +9,15 @@ import { css } from "emotion";
 import classNames from "classnames";
 import { Elevation } from "webiny-ui/Elevation";
 import { Typography } from "webiny-ui/Typography";
+import keycode from "keycode";
 
 type Option = any;
+type Options = Array<Option>;
+
+type RenderPropParams = {
+    renderOptions: Options => React.Node,
+    query: string
+};
 
 type Props = FormComponentProps & {
     // Component label.
@@ -21,6 +28,9 @@ type Props = FormComponentProps & {
 
     // Options that will be shown.
     options: Array<any>,
+
+    // Options that will be shown.
+    children?: RenderPropParams => Options,
 
     // Description beneath the autoComplete.
     description?: string,
@@ -46,14 +56,15 @@ type Props = FormComponentProps & {
     // Only if "multiple" is enabled - prevents from adding the same item twice.
     unique: boolean,
 
-    // If true (default value), suggestions will be shown immediately upon focusing the input.
-    showMenuOnFocus: boolean,
-
     // Callback that gets executed on change of input value.
     onInput?: Function,
 
     // Callback that gets executed when the input is focused.
     onFocus?: Function
+};
+
+type State = {
+    inputValue: string
 };
 
 const autoCompleteStyle = css({
@@ -91,13 +102,18 @@ const suggestionList = css({
     }
 });
 
-export class AutoComplete extends React.Component<Props> {
+let timeout: ?TimeoutID = null;
+
+export class AutoComplete extends React.Component<Props, State> {
     static defaultProps = {
         valueProp: "id",
         textProp: "name",
         multiple: false,
-        unique: true,
-        showMenuOnFocus: true
+        unique: true
+    };
+
+    state = {
+        inputValue: ""
     };
 
     /**
@@ -114,20 +130,20 @@ export class AutoComplete extends React.Component<Props> {
     }
 
     /**
-     * Renders suggestions - based on user's input. It will try to match inputted text with available options.
+     * Renders options - based on user's input. It will try to match inputted text with available options.
      * Optionally, if both "multiple" and "unique" props are set to true, it will also filter out items that were
      * already selected.
+     * @param options
      * @param isOpen
-     * @param inputValue
      * @param highlightedIndex
      * @param selectedItem
      * @param getMenuProps
      * @param getItemProps
      * @returns {*}
      */
-    renderSuggestions({
+    renderOptions({
+        options,
         isOpen,
-        inputValue,
         highlightedIndex,
         selectedItem,
         getMenuProps,
@@ -137,7 +153,7 @@ export class AutoComplete extends React.Component<Props> {
             return null;
         }
 
-        const { unique, multiple, options, value } = this.props;
+        const { unique, multiple, value } = this.props;
 
         const filtered = options.filter(item => {
             // We need to filter received options.
@@ -154,13 +170,13 @@ export class AutoComplete extends React.Component<Props> {
             }
 
             // 2) At the end, we want to show only options that are matched by typed text.
-            if (!inputValue) {
+            if (!this.state.inputValue) {
                 return true;
             }
 
             return this.getItemText(item)
                 .toLowerCase()
-                .includes(inputValue.toLowerCase());
+                .includes(this.state.inputValue.toLowerCase());
         });
 
         if (!filtered.length) {
@@ -216,7 +232,7 @@ export class AutoComplete extends React.Component<Props> {
     }
 
     /**
-     * If "multiple" prop is set to true, AutoComplete will add each selected item from the suggestions to the list.
+     * If "multiple" prop is set to true, AutoComplete will add each selected item from the options to the list.
      * Once added, items can also be removed by clicking on the ✕ icon. This is the method that is responsible for
      * rendering selected items (we are using already existing "Chips" component).
      * @returns {*}
@@ -253,12 +269,13 @@ export class AutoComplete extends React.Component<Props> {
 
     render() {
         const {
+            children,
+            options,
             multiple,
             unique,
-            showMenuOnFocus,
             value,
             onChange,
-            onInput: onInputValueChange,
+            onInput,
             validation = { isValid: null },
             ...otherInputProps
         } = this.props;
@@ -267,7 +284,6 @@ export class AutoComplete extends React.Component<Props> {
         const downshiftProps = {
             className: autoCompleteStyle,
             defaultSelectedItem: multiple ? null : value,
-            onInputValueChange,
             itemToString: item => item && this.getItemText(item),
             onChange: selection => {
                 if (!selection || !onChange) {
@@ -284,7 +300,7 @@ export class AutoComplete extends React.Component<Props> {
 
                     this.downshift.current.clearSelection();
                 } else {
-                    onChange && onChange(this.getItemValue(selection));
+                    onChange(this.getItemValue(selection));
                 }
             }
         };
@@ -292,27 +308,56 @@ export class AutoComplete extends React.Component<Props> {
         return (
             <div className={autoCompleteStyle}>
                 <Downshift {...downshiftProps} ref={this.downshift}>
+                    {/* "getInputProps" and "openMenu" are not needed in renderOptions method. */}
                     {({ getInputProps, openMenu, ...rest }) => (
                         <div>
                             <Input
                                 {...getInputProps({
-                                    // We want to pass whole event to Downshift.
-                                    onChangeValue: e => e,
-
-                                    // We want to pass whole event to Downshift.
-                                    onBlurValue: e => e,
-
-                                    // Pass other props as input related props.
-                                    validation,
                                     ...otherInputProps,
+                                    validation,
+                                    onChangeValue: e => e,
+                                    onBlurValue: e => e,
+                                    onKeyDown: e => {
+                                        timeout && clearTimeout(timeout);
+                                        const inputValue = e.target.value || "";
 
+                                        // If values are the same, exit, do not update current search term.
+                                        if (inputValue === this.state.inputValue) {
+                                            return;
+                                        }
+
+                                        // If user pressed 'esc', 'enter' or similar... don't do anything.
+                                        if (keycode(e).length > 1) {
+                                            return;
+                                        }
+
+                                        timeout = setTimeout(
+                                            () =>
+                                                this.setState({ inputValue }, () => {
+                                                    onInput && onInput(inputValue);
+                                                }),
+                                            300
+                                        );
+                                    },
                                     onFocus: e => {
-                                        showMenuOnFocus && openMenu();
+                                        openMenu();
                                         otherInputProps.onFocus && otherInputProps.onFocus(e);
                                     }
                                 })}
                             />
-                            {this.renderSuggestions({ ...rest, unique })}
+                            {typeof children === "function"
+                                ? children({
+                                      query: this.state.inputValue,
+                                      renderOptions: options => {
+                                          return this.renderOptions({
+                                              ...rest,
+                                              unique,
+                                              options
+                                          });
+                                      }
+                                  })
+                                : this.renderOptions({ ...rest, unique, options })}
+
                             {multiple && this.renderMultipleSelection()}
                         </div>
                     )}

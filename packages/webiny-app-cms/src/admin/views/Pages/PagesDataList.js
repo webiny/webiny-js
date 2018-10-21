@@ -1,6 +1,5 @@
 // @flow
 import * as React from "react";
-import { get } from "dot-prop-immutable";
 import TimeAgo from "timeago-react";
 import { withRouter } from "webiny-app/components";
 import { i18n } from "webiny-app/i18n";
@@ -18,13 +17,9 @@ const t = i18n.namespace("Cms.PagesDataList");
 const PagesDataList = props => {
     const { dataList, router } = props;
 
-    const { data, meta } = get(dataList, "data.cms.pages") || { data: [], meta: {} };
-
     return (
         <DataList
             {...dataList}
-            data={data}
-            meta={meta}
             title={t`CMS Pages`}
             sorters={[
                 {

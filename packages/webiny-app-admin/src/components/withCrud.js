@@ -2,7 +2,6 @@
 import * as React from "react";
 import { setDisplayName, compose, withProps, mapProps, withHandlers, withState } from "recompose";
 import { graphql } from "react-apollo";
-import { omit } from "lodash";
 import { withDataList, withRouter, type WithRouterProps } from "webiny-app/components";
 import {
     withSnackbar,
@@ -15,8 +14,6 @@ export type WithCrudBaseProps = WithRouterProps & WithSnackbarProps & WithDialog
 
 export type WithCrudListProps = WithCrudBaseProps & {
     dataList: Object,
-    data: Array<any>,
-    meta: ?Object,
     deleteRecord: (item: Object) => Promise<void>
 };
 
@@ -139,7 +136,8 @@ export const withCrud = ({ list, form }: Object): Function => {
             withDataList({
                 name: "dataList",
                 query: list.get.query,
-                variables: list.get.variables
+                variables: list.get.variables,
+                response: list.get.response
             }),
             // Delete mutation
             list.delete && withDeleteHandler(list.delete),
@@ -172,10 +170,10 @@ export const withCrud = ({ list, form }: Object): Function => {
                         showSnackbar,
                         showDialog,
                         listProps: {
-                            dataList: omit(dataList, ["data"]),
+                            dataList,
                             router,
                             showSnackbar,
-                            ...list.get.response(dataList.data),
+                            showDialog,
                             deleteRecord
                         },
                         formProps: {
@@ -184,6 +182,7 @@ export const withCrud = ({ list, form }: Object): Function => {
                             onSubmit: saveRecord,
                             router,
                             showSnackbar,
+                            showDialog,
                             error: formError
                         }
                     };

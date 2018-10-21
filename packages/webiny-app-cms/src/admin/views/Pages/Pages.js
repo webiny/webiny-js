@@ -10,6 +10,7 @@ import PagesDataList from "./PagesDataList";
 import PageDetails from "./PageDetails";
 import CategoriesDialog from "./CategoriesDialog";
 import { createPage, loadPages } from "webiny-app-cms/admin/graphql/pages";
+import { get } from "lodash";
 
 type Props = {
     createPage: (category: string, title: string) => Promise<Object>,
@@ -45,10 +46,10 @@ class Pages extends React.Component<Props, State> {
                 />
                 <CompactView>
                     <LeftPanel>
-                        <PagesDataList dataList={dataList}/>
+                        <PagesDataList dataList={dataList} />
                     </LeftPanel>
                     <RightPanel>
-                        <PageDetails refreshPages={dataList.refresh}/>
+                        <PageDetails refreshPages={dataList.refresh} />
                     </RightPanel>
                 </CompactView>
                 <FloatingActionButton onClick={this.closeDialog} />
@@ -62,8 +63,10 @@ export default compose(
     withRouter(),
     graphql(createPage, { name: "createMutation" }),
     withDataList({
-        name: "dataList",
         query: loadPages,
+        response: data => {
+            return get(data, "cms.pages", {});
+        },
         variables: {
             sort: { savedOn: -1 }
         }
