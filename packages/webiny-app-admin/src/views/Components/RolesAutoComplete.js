@@ -1,29 +1,24 @@
 // @flow
 import * as React from "react";
-import { withDataList } from "webiny-app/components";
 import { AutoComplete } from "webiny-ui/AutoComplete";
 import { rolesAutoComplete } from "./graphql";
-import { compose } from "recompose";
-import { get, debounce } from "lodash";
+import { get } from "lodash";
+import { Query } from "react-apollo";
 
-const RolesAutoComplete = ({ dataList, ...rest }) => {
-    return (
-        <AutoComplete
-            {...dataList}
-            {...rest}
-            multiple
-            options={dataList.data}
-            onInput={debounce(query => {
-                query && dataList.setSearch({ query, fields: ["name", "description"] });
-            }, 250)}
-        />
-    );
-};
+const RolesAutoComplete = (props: Object) => (
+    <AutoComplete multiple unique {...props}>
+        {({ query, renderOptions }) => (
+            <Query
+                query={rolesAutoComplete}
+                variables={{
+                    sort: { savedOn: -1 },
+                    search: { query, fields: ["name", "description"] }
+                }}
+            >
+                {({ data }) => renderOptions(get(data, "security.roles.data", []))}
+            </Query>
+        )}
+    </AutoComplete>
+);
 
-export default compose(
-    withDataList({
-        query: rolesAutoComplete,
-        variables: { sort: { savedOn: -1 } },
-        response: data => get(data, "security.roles")
-    })
-)(RolesAutoComplete);
+export default RolesAutoComplete;
