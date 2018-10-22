@@ -47,6 +47,9 @@
     "@babel/preset-flow": "^7.0.0",
     "babel-plugin-dynamic-import-node": "^2.0.0"
   },
+  "optionalDependencies": {
+    "fsevents": "^1.2.4"
+  },
   "scripts": {
     "build": "babel src types.js -d ${DEST:-build} --source-maps --copy-files --ignore types.js",
     "flow-copy-source": "flow-copy-source src ${DEST:-build}",
