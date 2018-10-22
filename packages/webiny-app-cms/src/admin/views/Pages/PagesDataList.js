@@ -9,7 +9,8 @@ import {
     ListItem,
     ListItemText,
     ListItemTextSecondary,
-    ListTextOverline
+    ListTextOverline,
+    ListItemMeta
 } from "webiny-ui/List";
 
 const t = i18n.namespace("Cms.PagesDataList");
@@ -59,6 +60,9 @@ const PagesDataList = props => {
                                     <TimeAgo datetime={page.activeRevision.savedOn} />.
                                 </ListItemTextSecondary>
                             </ListItemText>
+                            <ListItemMeta>
+                                {page.activeRevision.published ? "Published" : "Draft"}
+                            </ListItemMeta>
                         </ListItem>
                     ))}
                 </List>

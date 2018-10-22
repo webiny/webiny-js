@@ -5,14 +5,10 @@ import type { IRevision } from "./Revision.entity";
 
 export interface IPage extends Entity {
     createdBy: string;
-    title: string;
-    slug: string;
-    settings: Object;
-    content: Object;
     activeRevision: Promise<IRevision>;
     revisions: Promise<EntityCollection>;
     category: Promise<ICategory>;
-    status: "draft" | "published" | "trash";
+    status: "draft" | "published";
 }
 
 export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
@@ -21,14 +17,10 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
         static storageClassId = "Cms_Pages";
 
         createdBy: string;
-        title: string;
-        slug: string;
-        settings: Object;
-        content: Object;
         activeRevision: Promise<IRevision>;
         revisions: Promise<EntityCollection>;
         category: Promise<ICategory>;
-        status: "draft" | "published" | "trash";
+        status: "draft" | "published";
 
         constructor() {
             super();
@@ -36,14 +28,6 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
             const { Revision, Category } = entities;
 
             this.attr("createdBy").char();
-
-            this.attr("title")
-                .char()
-                .setValidators("required");
-
-            this.attr("slug").char();
-            this.attr("settings").object();
-            this.attr("content").object();
 
             this.attr("activeRevision")
                 .entity(Revision)
@@ -82,10 +66,9 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
                 const revision = new Revision();
                 revision.populate({
                     page: this,
-                    title: this.title,
+                    title: "Untitled",
                     slug: (await this.category).url + "untitled-" + this.id,
-                    name: "Revision #1",
-                    active: true
+                    name: "Revision #1"
                 });
                 await revision.save();
             }).setOnce();

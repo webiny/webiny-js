@@ -8,10 +8,6 @@ export default {
             id: ID
             savedOn: DateTime
             createdBy: Author
-            title: String
-            slug: String
-            settings: JSON
-            content: JSON
             category: Category
             status: String
             activeRevision: Revision
@@ -20,7 +16,6 @@ export default {
         }
         
         input PageInput {
-            title: String!
             category: ID!
         }
         

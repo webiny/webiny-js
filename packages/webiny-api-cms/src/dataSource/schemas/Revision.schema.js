@@ -12,6 +12,7 @@ export default {
             updatedBy: Author
             savedOn: DateTime
             name: String
+            version: Int
             title: String
             slug: String
             settings: JSON
