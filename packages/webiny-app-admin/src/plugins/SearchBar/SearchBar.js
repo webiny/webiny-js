@@ -26,27 +26,20 @@ import {
     searchWrapper
 } from "./styled";
 
-import SearchDropdown from "./SearchDropdown";
-
 class SearchBar extends React.Component<
     any,
     {
-        hasFilters: boolean,
         placeholder: string,
         term: string,
         type: string,
-        filters: Object,
         active: boolean
     }
 > {
     plugins: Array<SearchPlugin> = getPlugins("global-search");
 
     state = {
-        hasFilters: false,
-        placeholder: this.plugins[0] ? this.plugins[0].labels.search : "Search",
+        placeholder: "Search",
         term: "",
-        type: this.plugins[0] ? this.plugins[0].name : "",
-        filters: {},
         active: false
     };
 
@@ -76,57 +69,66 @@ class SearchBar extends React.Component<
 
         this.setState({
             type,
-            hasFilters: typeof plugin.renderFilters === "function",
             placeholder: plugin.labels.search
         });
     };
 
-    render() {
-        /*
-        if (!this.plugins.length) {
-            return null;
-        }
-        */
+    renderDropdown({ getMenuProps, getItemProps }) {
+        return (
+            <ul {...getMenuProps()}>
+                {this.plugins.map((item: SearchPlugin, index) => (
+                    <li
+                        {...getItemProps({
+                            index,
+                            item
+                        })}
+                        key={item.route}
+                    >
+                        {item.label}
+                    </li>
+                ))}
+            </ul>
+        );
+    }
 
+    render() {
         return (
             <Elevation className={classnames(searchWrapper, { active: this.state.active })} z={0}>
                 <SearchBarWrapper>
                     <SearchBarInputWrapper>
                         <Icon className={icon} icon={<SearchIcon />} />
-                        <SearchBarInput
-                            value={this.state.term}
-                            onChange={this.setSearchTerm}
-                            onKeyDown={this.onKeyDown}
-                            onFocus={() => {
-                                this.setState({ active: true });
-                            }}
-                            onBlur={() => {
-                                this.setState({ active: false });
-                            }}
-                            className="mdc-text-field__input"
-                            placeholder={this.state.placeholder}
-                        />
-                        <SearchShortcut>/</SearchShortcut>
-                    </SearchBarInputWrapper>
-                    {this.state.hasFilters && (
+
                         <Downshift>
-                            {({ isOpen, getToggleButtonProps }) => (
+                            {({ isOpen, openMenu, getInputProps, ...restOfDownshiftProps }) => (
                                 <div>
-                                    <Icon
+                                    <SearchBarInput
+                                        {...getInputProps({
+                                            value: this.state.term,
+                                            onChange: this.setSearchTerm,
+                                            onKeyDown: this.onKeyDown,
+                                            onFocus: () => {
+                                                this.setState({ active: true });
+                                                openMenu();
+                                            },
+                                            onBlur: () => {
+                                                this.setState({ active: false });
+                                            },
+                                            className: "mdc-text-field__input",
+                                            placeholder: this.state.placeholder
+                                        })}
+                                    />
+
+                                    {/*<Icon
                                         className={icon + " " + iconDown}
                                         icon={<DownIcon />}
                                         {...getToggleButtonProps()}
-                                    />
-                                    {isOpen && (
-                                        <SearchDropdown
-                                            plugin={getPlugin(this.state.type)}
-                                            onSearch={this.onSearch}
-                                        />
-                                    )}
+                                    />*/}
+                                    {isOpen && this.renderDropdown(restOfDownshiftProps)}
                                 </div>
                             )}
                         </Downshift>
-                    )}
+                        <SearchShortcut>/</SearchShortcut>
+                    </SearchBarInputWrapper>
                 </SearchBarWrapper>
             </Elevation>
         );
