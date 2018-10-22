@@ -15,6 +15,8 @@ class RevisionTable extends MySQLTable {
         this.column("content").text();
         this.column("published").tinyInt();
         this.column("locked").tinyInt();
+
+        this.index().unique("version", "page");
     }
 }
 
