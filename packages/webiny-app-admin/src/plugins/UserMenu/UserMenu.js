@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-import { Plugins, Plugin } from "webiny-app/components";
+import { renderPlugins, renderPlugin } from "webiny-app/plugins";
 import { Menu } from "webiny-ui/Menu";
 import { List } from "webiny-ui/List";
 import { TopAppBarActionItem } from "webiny-ui/TopAppBar";
@@ -19,12 +19,12 @@ const UserMenu = () => {
                 anchor={"topEnd"}
                 handle={
                     <menu-handle>
-                        <Plugin name={"user-menu-handle"} />
+                        {renderPlugin("user-menu-handle")}
                     </menu-handle>
                 }
             >
                 <List>
-                    <Plugins type={"header-user-menu"} />
+                    {renderPlugins("header-user-menu")}
                 </List>
             </Menu>
         </TopAppBarActionItem>

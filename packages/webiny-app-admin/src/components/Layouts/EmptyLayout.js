@@ -1,9 +1,9 @@
 // @flow
 import * as React from "react";
-import { Plugins } from "webiny-app/components";
+import { renderPlugins } from "webiny-app/plugins";
 
 const EmptyLayout = ({ children }: { children: React.Node }) => {
-    return <Plugins type={"empty-layout"} params={{ content: children }} />;
+    return <React.Fragment>{renderPlugins("empty-layout", { content: children })}</React.Fragment>;
 };
 
 export default EmptyLayout;

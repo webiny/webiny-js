@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import { css } from "emotion";
-import { Plugins } from "webiny-app/components";
+import { renderPlugins } from "webiny-app/plugins";
 import { type WithPageDetailsProps } from "webiny-app-cms/admin/components";
 import { Typography } from "webiny-ui/Typography";
 import { Grid, Cell } from "webiny-ui/Grid";
@@ -13,14 +13,17 @@ const listHeader = css({
 
 type Props = WithPageDetailsProps;
 
-const PageActions = ({ pageDetails, pageDetails: { revision } }: Props) => {
+const PageActions = ({
+    pageDetails,
+    pageDetails: { revision }
+}: Props) => {
     return (
         <Grid className={listHeader}>
             <Cell span={6}>
                 <Typography use="headline5">{revision.data.title}</Typography>
             </Cell>
             <Cell span={6}>
-                <Plugins type={"cms-page-details-header"} params={{ pageDetails }} />
+                {renderPlugins("cms-page-details-header", { pageDetails })}
             </Cell>
         </Grid>
     );
