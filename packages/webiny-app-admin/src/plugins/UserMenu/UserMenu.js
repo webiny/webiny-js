@@ -1,3 +1,4 @@
+// @flow
 import React from "react";
 import { css } from "emotion";
 import { renderPlugins, renderPlugin } from "webiny-app/plugins";
@@ -17,15 +18,9 @@ const UserMenu = () => {
             <Menu
                 className={menuDialog}
                 anchor={"topEnd"}
-                handle={
-                    <menu-handle>
-                        {renderPlugin("user-menu-handle")}
-                    </menu-handle>
-                }
+                handle={<menu-handle>{renderPlugin("user-menu-handle")}</menu-handle>}
             >
-                <List>
-                    {renderPlugins("header-user-menu")}
-                </List>
+                <List>{renderPlugins("header-user-menu")}</List>
             </Menu>
         </TopAppBarActionItem>
     );
