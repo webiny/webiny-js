@@ -5,10 +5,30 @@ import { renderPlugins } from "webiny-app/plugins";
 import { type WithPageDetailsProps } from "webiny-app-cms/admin/components";
 import { Typography } from "webiny-ui/Typography";
 import { Grid, Cell } from "webiny-ui/Grid";
+import TimeAgo from "timeago-react";
+import {ListItemTextSecondary} from "webiny-ui";
 
-const listHeader = css({
+const headerTitle = css({
     borderBottom: "1px solid var(--mdc-theme-on-background)",
-    color: "var(--mdc-theme-text-primary-on-background)"
+    color: "var(--mdc-theme-text-primary-on-background)",
+    background: 'var(--mdc-theme-surface)',
+    '.mdc-layout-grid__inner':{
+        alignItems: 'center'
+    }
+});
+
+const headerActions = css({
+    borderBottom: "1px solid var(--mdc-theme-on-background)",
+    height: 50,
+    padding: '3px 5px 0 25px',
+    background: 'var(--mdc-theme-surface)',
+    '.right':{
+        textAlign: 'right'
+    }
+});
+
+const pageVersion = css({
+    color: 'var(--mdc-theme-text-secondary-on-background)'
 });
 
 type Props = WithPageDetailsProps;
@@ -18,14 +38,22 @@ const PageActions = ({
     pageDetails: { revision }
 }: Props) => {
     return (
-        <Grid className={listHeader}>
-            <Cell span={6}>
-                <Typography use="headline5">{revision.data.title}</Typography>
-            </Cell>
-            <Cell span={6}>
-                {renderPlugins("cms-page-details-header", { pageDetails })}
-            </Cell>
-        </Grid>
+        <React.Fragment>
+            <Grid className={headerTitle}>
+                <Cell span={12}>
+                    <Typography use="headline5">{revision.data.title} <span className={pageVersion}>(v{revision.data.version})</span></Typography><br/>
+                </Cell>
+            </Grid>
+            <Grid className={headerActions}>
+                <Cell span={6}>
+                    {renderPlugins("cms-page-details-header-left", { pageDetails })}
+                </Cell>
+                <Cell span={6} className={"right"}>
+                    {renderPlugins("cms-page-details-header-right", { pageDetails })}
+                </Cell>
+
+            </Grid>
+        </React.Fragment>
     );
 };
 

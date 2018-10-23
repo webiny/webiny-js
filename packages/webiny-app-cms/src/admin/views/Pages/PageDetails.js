@@ -42,6 +42,13 @@ const EmptySelect = styled("div")({
     }
 });
 
+const DetailsContainer = styled("div")({
+    height: 'calc(100% - 50px)',
+    'nav':{
+        backgroundColor: 'var(--mdc-theme-surface)',
+    }
+});
+
 const PageDetails = ({ router, pageId, revision, revisions, refreshPages }: Props) => {
     if (!router.getQuery("revision")) {
         return (
@@ -61,15 +68,17 @@ const PageDetails = ({ router, pageId, revision, revisions, refreshPages }: Prop
     const details = { pageId, refreshPages, revision, revisions };
 
     return (
-        <PageDetailsProvider value={details}>
-            <PageDetailsConsumer>
-                {pageDetails => (
-                    <React.Fragment>
-                        {renderPlugins("cms-page-details", { pageDetails })}
-                    </React.Fragment>
-                )}
-            </PageDetailsConsumer>
-        </PageDetailsProvider>
+        <DetailsContainer>
+            <PageDetailsProvider value={details}>
+                <PageDetailsConsumer>
+                    {pageDetails => (
+                        <React.Fragment>
+                            {renderPlugins("cms-page-details", { pageDetails })}
+                        </React.Fragment>
+                    )}
+                </PageDetailsConsumer>
+            </PageDetailsProvider>
+        </DetailsContainer>
     );
 };
 
