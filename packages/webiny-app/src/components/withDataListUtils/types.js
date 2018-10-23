@@ -14,7 +14,7 @@ export type WithDataListParams = {
 export type SearchParams = {
     query: string,
     operator?: "and" | "or",
-    fields?: string
+    fields?: Array<string>
 };
 
 export type WithDataListProps = {

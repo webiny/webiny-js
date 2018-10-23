@@ -2,18 +2,19 @@
 import * as React from "react";
 import { compose } from "recompose";
 import Downshift from "downshift";
-import { getPlugin, getPlugins } from "webiny-app/plugins";
+import { getPlugins } from "webiny-app/plugins";
 import { withRouter } from "webiny-app/components";
 import type { SearchPlugin } from "webiny-app-admin/types";
 import classnames from "classnames";
+import keycode from "keycode";
 
 // UI components
 import { Icon } from "webiny-ui/Icon";
 import { Elevation } from "webiny-ui/Elevation";
+import { List, ListItem, ListItemGraphic, ListItemText, ListItemMeta } from "webiny-ui/List";
 
 // Icons
 import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
-import { ReactComponent as DownIcon } from "./icons/round-arrow_drop_down-24px.svg";
 
 // Local components
 import {
@@ -21,73 +22,58 @@ import {
     SearchBarInputWrapper,
     SearchBarInput,
     SearchShortcut,
+    searchBarDropdown,
     icon,
-    iconDown,
     searchWrapper
 } from "./styled";
 
-class SearchBar extends React.Component<
-    any,
-    {
-        placeholder: string,
-        term: string,
-        type: string,
-        active: boolean
-    }
-> {
+type State = {
+    active: boolean,
+    value: ""
+};
+
+class SearchBar extends React.Component<*, State> {
     plugins: Array<SearchPlugin> = getPlugins("global-search");
 
     state = {
-        placeholder: "Search",
-        term: "",
-        active: false
+        active: false,
+        value: "",
+        previousValue: ""
     };
 
-    onKeyDown = (e: SyntheticKeyboardEvent<HTMLInputElement>) => {
-        if (e.keyCode === 13) {
-            this.onSearch();
-        }
-    };
-
-    onSearch = () => {
-        const type: string = (this.state.type: any);
-
-        const { route }: SearchPlugin = (getPlugin(type): any);
-        this.props.router.goToRoute({
-            name: route,
-            params: { search: JSON.stringify({ query: this.state.term, fields: "name" }) }
-        });
-    };
-
-    setSearchTerm = ({ currentTarget }: SyntheticInputEvent<HTMLInputElement>) => {
-        this.setState({ term: currentTarget.value });
-    };
-
-    setSearchType = (type: string) => {
-        // We are sure we will receive a SearchPlugin here.
-        const plugin: SearchPlugin = (getPlugin(type): any);
-
-        this.setState({
-            type,
-            placeholder: plugin.labels.search
-        });
-    };
-
-    renderDropdown({ getMenuProps, getItemProps }) {
+    renderDropdown({ getMenuProps, getItemProps, selectedItem, highlightedIndex }) {
         return (
-            <ul {...getMenuProps()}>
-                {this.plugins.map((item: SearchPlugin, index) => (
-                    <li
-                        {...getItemProps({
-                            index,
-                            item
-                        })}
-                        key={item.route}
-                    >
-                        {item.label}
-                    </li>
-                ))}
-            </ul>
+            <List {...getMenuProps({ className: searchBarDropdown })}>
+                {this.plugins.map((item: SearchPlugin, index) => {
+                    // Base classes.
+                    const itemClassNames = {
+                        highlighted: highlightedIndex === index,
+                        selected: false
+                    };
+
+                    // Add "selected" class if the item is selected.
+                    if (selectedItem && selectedItem.route === item.route) {
+                        itemClassNames.selected = true;
+                    }
+
+                    console.log(itemClassNames)
+
+                    return (
+                        <ListItem
+                            {...getItemProps({
+                                index,
+                                item,
+                                className: classnames(itemClassNames)
+                            })}
+                            key={item.route}
+                        >
+                            <ListItemGraphic>></ListItemGraphic>
+                            <ListItemText>{this.state.value}</ListItemText>
+                            <ListItemMeta>in {item.label}</ListItemMeta>
+                        </ListItem>
+                    );
+                })}
+            </List>
         );
     }
 
@@ -98,14 +84,54 @@ class SearchBar extends React.Component<
                     <SearchBarInputWrapper>
                         <Icon className={icon} icon={<SearchIcon />} />
 
-                        <Downshift>
-                            {({ isOpen, openMenu, getInputProps, ...restOfDownshiftProps }) => (
+                        <Downshift itemToString={item => item && item.label}>
+                            {({
+                                selectedItem,
+                                isOpen,
+                                openMenu,
+                                closeMenu,
+                                getInputProps,
+                                ...restOfDownshiftProps
+                            }) => (
                                 <div>
                                     <SearchBarInput
                                         {...getInputProps({
-                                            value: this.state.term,
-                                            onChange: this.setSearchTerm,
-                                            onKeyDown: this.onKeyDown,
+                                            value: this.state.value,
+                                            onChange: e => {
+                                                const value = e.target.value || "";
+                                                if (this.state.value !== value) {
+                                                    this.setState({ value: value });
+                                                }
+                                            },
+                                            onKeyDown: e => {
+                                                const key = keycode(e);
+                                                if (key === "esc") {
+                                                    closeMenu();
+                                                    return;
+                                                }
+
+                                                if (key === "enter") {
+                                                    console.log(selectedItem)
+                                                    if (!selectedItem) {
+                                                        return;
+                                                    }
+
+                                                    const route = {
+                                                        name: selectedItem.route,
+                                                        merge: true,
+                                                        params: {}
+                                                    };
+
+                                                    if (this.state.value) {
+                                                        route.params.search = JSON.stringify({
+                                                            query: this.state.value,
+                                                            fields: "name"
+                                                        });
+                                                    }
+
+                                                    this.props.router.goToRoute(route);
+                                                }
+                                            },
                                             onFocus: () => {
                                                 this.setState({ active: true });
                                                 openMenu();
@@ -114,16 +140,13 @@ class SearchBar extends React.Component<
                                                 this.setState({ active: false });
                                             },
                                             className: "mdc-text-field__input",
-                                            placeholder: this.state.placeholder
+                                            placeholder: "Search..."
                                         })}
                                     />
 
-                                    {/*<Icon
-                                        className={icon + " " + iconDown}
-                                        icon={<DownIcon />}
-                                        {...getToggleButtonProps()}
-                                    />*/}
-                                    {isOpen && this.renderDropdown(restOfDownshiftProps)}
+                                    {isOpen &&
+                                        this.state.value.length > 0 &&
+                                        this.renderDropdown(restOfDownshiftProps)}
                                 </div>
                             )}
                         </Downshift>

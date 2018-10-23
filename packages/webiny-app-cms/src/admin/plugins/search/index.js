@@ -6,12 +6,18 @@ export const searchBarCategories: SearchPlugin = {
     type: "global-search",
     name: "global-search-cms-categories",
     route: "Cms.Categories",
-    label: "CMS categories"
+    label: "CMS categories",
+    search: {
+        fields: ["name"]
+    }
 };
 
 export const searchBarPages: SearchPlugin = {
     type: "global-search",
     name: "global-search-cms-pages",
     route: "Cms.Pages",
-    label: "CMS Pages"
+    label: "CMS Pages",
+    search: {
+        fields: ["title"]
+    }
 };

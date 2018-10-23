@@ -6,8 +6,12 @@ export type ContentPlugin = Plugin & {
     render: ({ content: Node }) => {}
 };
 
-export type SearchPlugin = {
+export type SearchPlugin = Plugin & {
     type: "global-search",
     label: string,
-    route: string
+    route: string,
+    search: {
+        operator?: "and" | "or",
+        fields?: Array<string>
+    }
 };

@@ -57,6 +57,22 @@ export const SearchBarInputWrapper = styled("div")({
     position: "relative"
 });
 
+export const searchBarDropdown = css({
+    position: "absolute",
+    background: "white",
+    top: 40,
+    left: 0,
+    width: "100%",
+    ".mdc-list-item": {
+        "&.selected": {
+            fontWeight: "bold"
+        },
+        "&.highlighted": {
+            backgroundColor: "var(--mdc-theme-on-background)"
+        }
+    }
+});
+
 export const icon = css({
     "&.mdc-button__icon": {
         width: "auto !important",
