@@ -1,13 +1,7 @@
 // @flow
 import React from "react";
 import { css } from "emotion";
-import {
-    Dialog,
-    DialogBody,
-    DialogFooter,
-    DialogAccept,
-    DialogCancel
-} from "webiny-ui/Dialog";
+import { Dialog, DialogBody, DialogFooter, DialogAccept, DialogCancel } from "webiny-ui/Dialog";
 import { Input } from "webiny-ui/Input";
 import { Form } from "webiny-form";
 
@@ -22,13 +16,14 @@ type Props = {
     open: boolean,
     onClose: Function,
     onSubmit: Function,
-    revisions: Array<Object>
+    revisions: Array<{ version: number }>
 };
 
 const CreateRevisionDialog = ({ open, onClose, onSubmit, revisions }: Props) => {
+    const version = Math.max(...revisions.map(r => r.version));
     return (
         <Dialog open={open} onClose={onClose} className={narrowDialog}>
-            <Form data={{ name: `Revision #${revisions.length + 1}` }} onSubmit={onSubmit}>
+            <Form data={{ name: `Revision #${version + 1}` }} onSubmit={onSubmit}>
                 {({ submit, Bind }) => (
                     <React.Fragment>
                         <DialogBody>

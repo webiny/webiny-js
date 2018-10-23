@@ -19,12 +19,10 @@ import { Checkbox } from "webiny-ui/Checkbox";
 
 const t = i18n.namespace("Security.GroupsDataList");
 
-const GroupsDataList = ({ dataList, router, data, meta, deleteRecord }: WithCrudListProps) => {
+const GroupsDataList = ({ dataList, router, deleteRecord }: WithCrudListProps) => {
     return (
         <DataList
             {...dataList}
-            data={data}
-            meta={meta}
             title={t`Security Groups`}
             sorters={[
                 {

@@ -1,30 +1,24 @@
 // @flow
 import * as React from "react";
-import { withDataList } from "webiny-app/components";
 import { AutoComplete } from "webiny-ui/AutoComplete";
 import { groupsAutoComplete } from "./graphql";
-import { compose } from "recompose";
-import { get, debounce } from "lodash";
+import { get } from "lodash";
+import { Query } from "react-apollo";
 
-const GroupsAutoComplete = props => {
-    const { groupsList, ...rest } = props;
+const GroupsAutoComplete = (props: Object) => (
+    <AutoComplete multiple unique {...props}>
+        {({ query, renderOptions }) => (
+            <Query
+                query={groupsAutoComplete}
+                variables={{
+                    sort: { savedOn: -1 },
+                    search: { query, fields: ["name", "description"] }
+                }}
+            >
+                {({ data }) => renderOptions(get(data, "security.groups.data", []))}
+            </Query>
+        )}
+    </AutoComplete>
+);
 
-    return (
-        <AutoComplete
-            {...rest}
-            multiple
-            options={get(groupsList, "data.security.groups.data", [])}
-            onInput={debounce(query => {
-                query && groupsList.setSearch({ query, fields: ["name", "description"] });
-            }, 250)}
-        />
-    );
-};
-
-export default compose(
-    withDataList({
-        name: "groupsList",
-        query: groupsAutoComplete,
-        variables: { sort: { savedOn: -1 } }
-    })
-)(GroupsAutoComplete);
+export default GroupsAutoComplete;

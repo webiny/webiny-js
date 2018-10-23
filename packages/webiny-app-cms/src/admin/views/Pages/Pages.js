@@ -10,9 +10,10 @@ import PagesDataList from "./PagesDataList";
 import PageDetails from "./PageDetails";
 import CategoriesDialog from "./CategoriesDialog";
 import { createPage, loadPages } from "webiny-app-cms/admin/graphql/pages";
+import { get } from "lodash";
 
 type Props = {
-    createPage: (category: string, title: string) => Promise<Object>,
+    createPage: (category: string) => Promise<Object>,
     dataList: Object
 };
 
@@ -27,7 +28,7 @@ class Pages extends React.Component<Props, State> {
 
     onSelect = category => {
         this.closeDialog();
-        this.props.createPage(category.id, "Untitled");
+        this.props.createPage(category.id);
     };
 
     closeDialog = () => {
@@ -45,10 +46,10 @@ class Pages extends React.Component<Props, State> {
                 />
                 <CompactView>
                     <LeftPanel>
-                        <PagesDataList dataList={dataList}/>
+                        <PagesDataList dataList={dataList} />
                     </LeftPanel>
                     <RightPanel>
-                        <PageDetails refreshPages={dataList.refresh}/>
+                        <PageDetails refreshPages={dataList.refresh} />
                     </RightPanel>
                 </CompactView>
                 <FloatingActionButton onClick={this.closeDialog} />
@@ -62,8 +63,10 @@ export default compose(
     withRouter(),
     graphql(createPage, { name: "createMutation" }),
     withDataList({
-        name: "dataList",
         query: loadPages,
+        response: data => {
+            return get(data, "cms.pages", {});
+        },
         variables: {
             sort: { savedOn: -1 }
         }
@@ -74,11 +77,10 @@ export default compose(
             router,
             showSnackbar
         }: WithSnackbarProps & WithRouterProps & { createMutation: Function }) => async (
-            category: string,
-            title: string
+            category: string
         ): Promise<any> => {
             try {
-                const res = await createMutation({ variables: { category, title } });
+                const res = await createMutation({ variables: { category } });
                 const { data } = res.data.cms.page;
                 router.goToRoute({
                     name: "Cms.Editor",
