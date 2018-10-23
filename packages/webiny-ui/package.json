@@ -41,7 +41,6 @@
     "cropperjs": "^1.4.1",
     "downshift": "^2.1.5",
     "emotion": "^9.2.6",
-    "fabric": "~1.6.7",
     "install": "^0.12.1",
     "keycode": "^2.2.0",
     "material-components-web": "^0.39.1",
