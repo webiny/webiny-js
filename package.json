@@ -17,6 +17,10 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
+  "dependencies": {
+    "react": "^16.4.0",
+    "react-dom": "^16.4.0"
+  },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
