@@ -315,8 +315,9 @@ export class AutoComplete extends React.Component<Props, State> {
                                 {...getInputProps({
                                     ...otherInputProps,
                                     validation,
-                                    onChangeValue: e => e,
-                                    onBlurValue: e => e,
+                                    rawOnChange: true,
+                                    onChange: e => e,
+                                    onBlur: e => e,
                                     onKeyDown: e => {
                                         timeout && clearTimeout(timeout);
                                         const inputValue = e.target.value || "";

@@ -6,6 +6,12 @@ import pick from "lodash/pick";
 import type { FormComponentProps } from "./../types";
 
 type Props = FormComponentProps & {
+    // If true, will pass native `event` to the `onChange` callback
+    rawOnChange: boolean,
+
+    // CSS class name that will be added to the component.
+    className?: string,
+
     // Auto-focus input
     autoFocus?: boolean,
 
@@ -46,28 +52,19 @@ type Props = FormComponentProps & {
     trailingIcon?: React.Node,
 
     // A callback that is executed when input focus is lost.
-    onBlur?: (value: mixed) => any,
+    onBlur?: (e: SyntheticInputEvent<HTMLInputElement>) => any,
 
     // A callback that is executed when key is pressed / held.
-    onKeyDown?: (value: mixed) => any,
+    onKeyDown?: (e: SyntheticInputEvent<HTMLInputElement>) => any,
 
     // A callback that is executed when key is pressed / held.
-    onKeyPress?: (value: mixed) => any,
+    onKeyPress?: (e: SyntheticInputEvent<HTMLInputElement>) => any,
 
     // A callback that is executed when key is released.
-    onKeyUp?: (value: mixed) => any,
+    onKeyUp?: (e: SyntheticInputEvent<HTMLInputElement>) => any,
 
     // A callback that is executed when input is focused.
-    onFocus?: (value: mixed) => any,
-
-    // CSS class name that will be added to the component.
-    className?: string,
-
-    // Function that will be called on the event, triggered while typing in the input.
-    onChangeValue: ?(e: SyntheticInputEvent<HTMLInputElement> | string) => mixed,
-
-    // Function that will be called on the event, triggered when blurring.
-    onBlurValue: ?(e: SyntheticInputEvent<HTMLInputElement> | string) => mixed
+    onFocus?: (e: SyntheticInputEvent<HTMLInputElement>) => any,
 };
 
 /**
@@ -76,11 +73,7 @@ type Props = FormComponentProps & {
  */
 class Input extends React.Component<Props> {
     static defaultProps = {
-        // Added because eg. in Downshift component, we need pure event, not the value.
-        onChangeValue: null,
-
-        // Added because eg. in Downshift component, we need pure event, not the value.
-        onBlurValue: null
+        rawOnChange: false
     };
 
     // Props directly passed to RMWC
@@ -100,30 +93,23 @@ class Input extends React.Component<Props> {
     ];
 
     onChange = (e: SyntheticInputEvent<HTMLInputElement>) => {
-        const value = this.props.onChangeValue ? this.props.onChangeValue(e) : e.target.value;
-        this.props.onChange && this.props.onChange(value);
+        const {onChange, rawOnChange } = this.props;
+        if(!onChange) {
+            return;
+        }
+
+        onChange(rawOnChange ? e : e.target.value);
     };
 
-    onBlur = (e: SyntheticInputEvent<HTMLInputElement>) => {
+    onBlur = async (e: SyntheticInputEvent<HTMLInputElement>) => {
         const { validate, onBlur } = this.props;
         if (validate) {
             // Since we are accessing event in an async operation, we need to persist it.
             // See https://reactjs.org/docs/events.html#event-pooling.
             e.persist();
-            return validate().then(() => {
-                if (onBlur) {
-                    const value = this.props.onBlurValue
-                        ? this.props.onBlurValue(e)
-                        : this.props.value;
-                    onBlur(value);
-                }
-            });
+            await validate();
         }
-
-        if (onBlur) {
-            const value = this.props.onBlurValue ? this.props.onBlurValue(e) : this.props.value;
-            return onBlur(value);
-        }
+        onBlur && onBlur(e);
     };
 
     render() {

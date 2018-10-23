@@ -67,7 +67,7 @@ const Title = ({
                 >
                     <PageTitle onClick={enableEdit}>{title}</PageTitle>
                 </Tooltip>
-                <PageVersion>(v{revision.version})</PageVersion>
+                <PageVersion>{`(v${revision.version})`}</PageVersion>
             </div>
         </TitleWrapper>
     );
