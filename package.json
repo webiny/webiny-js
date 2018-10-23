@@ -108,7 +108,6 @@
     "**/*.js": [
       "prettier --write",
       "eslint --fix",
-      "flow focus-check",
       "git add",
       "jest --config ./scripts/jest/config.src.js --findRelatedTests"
     ]
