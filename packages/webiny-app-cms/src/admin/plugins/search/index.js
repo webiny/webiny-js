@@ -1,8 +1,8 @@
 // @flow
-import type { SearchPlugin } from "webiny-app-admin/types";
+import type { GlobalSearch } from "webiny-app-admin/types";
 
 // Additional sections in global search.
-export const searchBarCategories: SearchPlugin = {
+export const globalSearchCategories: GlobalSearch = {
     type: "global-search",
     name: "global-search-cms-categories",
     route: "Cms.Categories",
@@ -12,7 +12,7 @@ export const searchBarCategories: SearchPlugin = {
     }
 };
 
-export const searchBarPages: SearchPlugin = {
+export const globalSearchPages: GlobalSearch = {
     type: "global-search",
     name: "global-search-cms-pages",
     route: "Cms.Pages",

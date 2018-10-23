@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "downshift": "^2.1.5",
+    "downshift": "^3.1.2",
     "emotion": "^9.2.5",
     "invariant": "^2.2.4",
     "react": "^16.4.0",

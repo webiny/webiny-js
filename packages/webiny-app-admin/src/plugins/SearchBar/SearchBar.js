@@ -4,7 +4,7 @@ import { compose } from "recompose";
 import Downshift from "downshift";
 import { getPlugins } from "webiny-app/plugins";
 import { withRouter } from "webiny-app/components";
-import type { SearchPlugin } from "webiny-app-admin/types";
+import type { GlobalSearch } from "webiny-app-admin/types";
 import classnames from "classnames";
 import keycode from "keycode";
 
@@ -29,22 +29,85 @@ import {
 
 type State = {
     active: boolean,
-    value: ""
+    searchTerm: { previous: string, current: string },
+    plugins: {
+        list: Array<GlobalSearch>,
+        initial: ?GlobalSearch
+    }
 };
 
 class SearchBar extends React.Component<*, State> {
-    plugins: Array<SearchPlugin> = getPlugins("global-search");
-
     state = {
         active: false,
-        value: "",
-        previousValue: ""
+        searchTerm: {
+            previous: "",
+            current: ""
+        },
+        plugins: {
+            // List of all registered "global-search" plugins.
+            list: getPlugins("global-search"),
+            // Initial plugin - set by examining current route and its query params (on construct).
+            initial: undefined
+        }
     };
+
+    /**
+     * Helps us trigger some of the downshift's methods (eg. clearSelection) and helps us to avoid adding state.
+     */
+    downshift: any = React.createRef();
+
+    /**
+     * Let's check if current route is defined in one of the registered plugins.
+     * If so, then check current route query for search term and set it as default value of search input.
+     * @param props
+     */
+    constructor(props) {
+        super();
+        this.state.plugins.initial = this.state.plugins.list.find(
+            p => p.route === props.router.route.name
+        );
+
+        if (this.state.plugins.initial) {
+            try {
+                this.state.searchTerm.current = JSON.parse(props.router.getQuery().search).query;
+                this.state.searchTerm.previous = this.state.searchTerm.current;
+            } catch (e) {
+                // Do nothing.
+            }
+        }
+    }
+
+    submitSearchTerm(selectedItem) {
+        this.setState(
+            state => {
+                state.searchTerm.previous = state.searchTerm.current;
+                return state;
+            },
+            () => {
+                const route = {
+                    name: selectedItem.route,
+                    params: {}
+                };
+
+                if (this.state.searchTerm.current) {
+                    route.params.search = JSON.stringify({
+                        query: this.state.searchTerm.current,
+                        ...selectedItem.search
+                    });
+                }
+
+                this.props.router.goToRoute(route);
+                this.downshift.current.setHighlightedIndex(
+                    this.state.plugins.list.indexOf(selectedItem)
+                );
+            }
+        );
+    }
 
     renderDropdown({ getMenuProps, getItemProps, selectedItem, highlightedIndex }) {
         return (
             <List {...getMenuProps({ className: searchBarDropdown })}>
-                {this.plugins.map((item: SearchPlugin, index) => {
+                {this.state.plugins.list.map((item: GlobalSearch, index) => {
                     // Base classes.
                     const itemClassNames = {
                         highlighted: highlightedIndex === index,
@@ -56,19 +119,19 @@ class SearchBar extends React.Component<*, State> {
                         itemClassNames.selected = true;
                     }
 
-                    console.log(itemClassNames)
-
                     return (
                         <ListItem
+                            key={item.route}
                             {...getItemProps({
                                 index,
                                 item,
                                 className: classnames(itemClassNames)
                             })}
-                            key={item.route}
                         >
-                            <ListItemGraphic>></ListItemGraphic>
-                            <ListItemText>{this.state.value}</ListItemText>
+                            <ListItemGraphic>➡</ListItemGraphic>
+                            <ListItemText>
+                                {this.state.searchTerm.current || "Search for all..."}
+                            </ListItemText>
                             <ListItemMeta>in {item.label}</ListItemMeta>
                         </ListItem>
                     );
@@ -84,71 +147,75 @@ class SearchBar extends React.Component<*, State> {
                     <SearchBarInputWrapper>
                         <Icon className={icon} icon={<SearchIcon />} />
 
-                        <Downshift itemToString={item => item && item.label}>
-                            {({
-                                selectedItem,
-                                isOpen,
-                                openMenu,
-                                closeMenu,
-                                getInputProps,
-                                ...restOfDownshiftProps
-                            }) => (
-                                <div>
-                                    <SearchBarInput
-                                        {...getInputProps({
-                                            value: this.state.value,
-                                            onChange: e => {
-                                                const value = e.target.value || "";
-                                                if (this.state.value !== value) {
-                                                    this.setState({ value: value });
-                                                }
-                                            },
-                                            onKeyDown: e => {
-                                                const key = keycode(e);
-                                                if (key === "esc") {
-                                                    closeMenu();
-                                                    return;
-                                                }
+                        <Downshift
+                            ref={this.downshift}
+                            initialValue={this.state.searchTerm.current}
+                            initialSelectedItem={this.state.plugins.initial}
+                            itemToString={item => item && item.label}
+                            onSelect={selectedItem => this.submitSearchTerm(selectedItem)}
+                        >
+                            {downshift => {
+                                const {
+                                    selectedItem,
+                                    isOpen,
+                                    openMenu,
+                                    closeMenu,
+                                    getInputProps
+                                } = downshift;
 
-                                                if (key === "enter") {
-                                                    console.log(selectedItem)
-                                                    if (!selectedItem) {
-                                                        return;
-                                                    }
-
-                                                    const route = {
-                                                        name: selectedItem.route,
-                                                        merge: true,
-                                                        params: {}
-                                                    };
-
-                                                    if (this.state.value) {
-                                                        route.params.search = JSON.stringify({
-                                                            query: this.state.value,
-                                                            fields: "name"
+                                return (
+                                    <div>
+                                        <SearchBarInput
+                                            {...getInputProps({
+                                                value: this.state.searchTerm.current,
+                                                onChange: e => {
+                                                    const value = e.target.value || "";
+                                                    if (this.state.searchTerm.current !== value) {
+                                                        this.setState(state => {
+                                                            state.searchTerm.current = value;
+                                                            return state;
                                                         });
                                                     }
+                                                },
+                                                onKeyUp: e => {
+                                                    switch (keycode(e)) {
+                                                        case "esc":
+                                                            // Just bring back previous search term.
+                                                            this.setState(state => {
+                                                                state.searchTerm.current =
+                                                                    state.searchTerm.previous;
+                                                                return state;
+                                                            }, closeMenu);
+                                                            break;
+                                                        case "enter":
+                                                            if (selectedItem) {
+                                                                closeMenu();
+                                                                this.submitSearchTerm(selectedItem);
+                                                            }
+                                                            break;
+                                                    }
+                                                },
+                                                onFocus: () => {
+                                                    this.setState({ active: true });
+                                                    openMenu();
+                                                },
+                                                onBlur: () => {
+                                                    this.setState(state => {
+                                                        state.searchTerm.current =
+                                                            state.searchTerm.previous;
+                                                        state.active = false;
+                                                        return state;
+                                                    });
+                                                },
+                                                className: "mdc-text-field__input",
+                                                placeholder: "Search..."
+                                            })}
+                                        />
 
-                                                    this.props.router.goToRoute(route);
-                                                }
-                                            },
-                                            onFocus: () => {
-                                                this.setState({ active: true });
-                                                openMenu();
-                                            },
-                                            onBlur: () => {
-                                                this.setState({ active: false });
-                                            },
-                                            className: "mdc-text-field__input",
-                                            placeholder: "Search..."
-                                        })}
-                                    />
-
-                                    {isOpen &&
-                                        this.state.value.length > 0 &&
-                                        this.renderDropdown(restOfDownshiftProps)}
-                                </div>
-                            )}
+                                        {isOpen && this.renderDropdown(downshift)}
+                                    </div>
+                                );
+                            }}
                         </Downshift>
                         <SearchShortcut>/</SearchShortcut>
                     </SearchBarInputWrapper>

@@ -1,5 +1,5 @@
 // @flow
-import { searchBarCategories, searchBarPages } from "./search";
+import { globalSearchCategories, globalSearchPages } from "./search";
 import header from "./pageDetails/header";
 import revisionContent from "./pageDetails/revisionContent";
 import previewContent from "./pageDetails/previewContent";
@@ -10,6 +10,6 @@ export default [
     revisionContent,
     previewContent,
     pageRevisions,
-    searchBarCategories,
-    searchBarPages
+    globalSearchCategories,
+    globalSearchPages
 ];

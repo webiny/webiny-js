@@ -6,12 +6,15 @@ export type ContentPlugin = PluginType & {
     render: ({ content: Node }) => {}
 };
 
-export type SearchPlugin = PluginType & {
-    type: "global-search",
+export type GlobalSearch = PluginType & {
     label: string,
     route: string,
     search: {
         operator?: "and" | "or",
         fields?: Array<string>
     }
+};
+
+export type HeaderMiddlePlugin = PluginType & {
+    render: ({ content: Node }) => {}
 };
