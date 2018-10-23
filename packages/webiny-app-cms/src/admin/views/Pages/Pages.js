@@ -13,7 +13,7 @@ import { createPage, loadPages } from "webiny-app-cms/admin/graphql/pages";
 import { get } from "lodash";
 
 type Props = {
-    createPage: (category: string, title: string) => Promise<Object>,
+    createPage: (category: string) => Promise<Object>,
     dataList: Object
 };
 
@@ -28,7 +28,7 @@ class Pages extends React.Component<Props, State> {
 
     onSelect = category => {
         this.closeDialog();
-        this.props.createPage(category.id, "Untitled");
+        this.props.createPage(category.id);
     };
 
     closeDialog = () => {
@@ -77,11 +77,10 @@ export default compose(
             router,
             showSnackbar
         }: WithSnackbarProps & WithRouterProps & { createMutation: Function }) => async (
-            category: string,
-            title: string
+            category: string
         ): Promise<any> => {
             try {
-                const res = await createMutation({ variables: { category, title } });
+                const res = await createMutation({ variables: { category } });
                 const { data } = res.data.cms.page;
                 router.goToRoute({
                     name: "Cms.Editor",

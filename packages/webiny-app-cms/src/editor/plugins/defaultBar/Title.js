@@ -61,7 +61,7 @@ const Title = ({ revision, page, updateRevision, editTitle, setEdit }: Props) =>
                         {revision.title || "Untitled"}
                     </PageTitle>
                 </Tooltip>
-                <PageVersion>({revision.name})</PageVersion>
+                <PageVersion>(v{revision.version})</PageVersion>
             </div>
         </TitleWrapper>
     );

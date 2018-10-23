@@ -5,6 +5,7 @@ import type { IPage } from "./Page.entity";
 export interface IRevision extends Entity {
     page: Promise<IPage>;
     name: string;
+    version: number;
     createdBy: string;
     updatedBy: string;
     slug: string;
@@ -21,6 +22,7 @@ export const revisionFactory = ({ user, entities }: Object): Class<IRevision> =>
 
         page: Promise<IPage>;
         name: string;
+        version: number;
         createdBy: string;
         updatedBy: string;
         slug: string;
@@ -45,6 +47,8 @@ export const revisionFactory = ({ user, entities }: Object): Class<IRevision> =>
             this.attr("name")
                 .char()
                 .setValidators("required");
+
+            this.attr("version").integer();
 
             this.attr("title")
                 .char()
@@ -84,8 +88,16 @@ export const revisionFactory = ({ user, entities }: Object): Class<IRevision> =>
                     return value;
                 });
 
-            this.on("beforeCreate", () => {
+            this.on("beforeCreate", async () => {
                 this.createdBy = user.id;
+                if (!this.version) {
+                    const latestRev: Revision = (await Revision.findOne({
+                        query: { page: (await this.page).id },
+                        sort: { version: -1 }
+                    }): any);
+
+                    this.version = latestRev ? latestRev.version + 1 : 1;
+                }
             });
 
             this.on("beforeUpdate", () => {
@@ -94,14 +106,8 @@ export const revisionFactory = ({ user, entities }: Object): Class<IRevision> =>
 
             this.on("afterUpdate", async () => {
                 if (this.published) {
-                    // Copy relevant data to parent Page
                     const page = await this.page;
-                    page.title = this.title;
-                    page.slug = this.slug;
-                    page.settings = this.settings;
                     page.status = "published";
-
-                    page.content = { ...this.content };
                     await page.save();
                 }
             });
