@@ -5,8 +5,11 @@ export const fragments = {
         fragment activeRevision on Page {
             activeRevision {
                 id
+                name
+                version
                 title
                 slug
+                published
                 createdBy {
                     firstName
                 }
@@ -34,6 +37,7 @@ export const loadEditorData = gql`
                     revisions {
                         id
                         name
+                        version
                         published
                         locked
                     }
@@ -47,6 +51,7 @@ export const loadEditorData = gql`
                 data {
                     id
                     name
+                    version
                     published
                     locked
                     title
@@ -64,9 +69,9 @@ export const loadEditorData = gql`
 `;
 
 export const createPage = gql`
-    mutation CreatePage($category: ID!, $title: String!) {
+    mutation CreatePage($category: ID!) {
         cms {
-            page: createPage(data: { category: $category, title: $title }) {
+            page: createPage(data: { category: $category }) {
                 data {
                     id
                     activeRevision {
@@ -129,6 +134,7 @@ export const loadRevision = gql`
                 data {
                     id
                     name
+                    version
                     title
                     slug
                     content
@@ -152,6 +158,7 @@ export const loadPageRevisions = gql`
                 data {
                     id
                     name
+                    version
                     title
                     savedOn
                     published
@@ -193,6 +200,7 @@ export const publishRevision = gql`
                     id
                     title
                     slug
+                    published
                 }
                 error {
                     code

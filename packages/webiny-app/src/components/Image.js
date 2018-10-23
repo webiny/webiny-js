@@ -2,7 +2,7 @@
 import * as React from "react";
 import invariant from "invariant";
 import { getPlugin } from "webiny-app/plugins";
-import type { Plugin } from "webiny-app/types";
+import type { PluginType } from "webiny-app/types";
 import _ from "lodash";
 import { withAppConfig } from "webiny-app/components/withAppConfig";
 
@@ -13,7 +13,7 @@ type ImageProps = Object & {
     transform?: Object
 };
 
-export type ImagePlugin = Plugin & {
+export type ImagePlugin = PluginType & {
     type: "image-component",
     render: ImageProps => React.Node
 };

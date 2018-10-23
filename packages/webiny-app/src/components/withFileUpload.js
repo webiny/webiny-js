@@ -5,14 +5,14 @@ import type { FileBrowserFile } from "webiny-ui/FileBrowser";
 import { withConfig } from "webiny-app/components";
 import { getPlugin } from "webiny-app/plugins";
 import invariant from "invariant";
-import type { Plugin } from "webiny-app/types";
+import type { PluginType } from "webiny-app/types";
 import _ from "lodash";
 
 type WithFileUploadOptions = {
     multiple?: boolean
 };
 
-export type WithFileUploadPlugin = Plugin & {
+export type WithFileUploadPlugin = PluginType & {
     type: "with-file-upload",
     upload: (file: FileBrowserFile, options: Object) => Promise<any>
 };

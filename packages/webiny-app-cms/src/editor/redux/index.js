@@ -72,10 +72,14 @@ export class Redux {
                 })) ||
             compose;
 
+        this.store = null;
+
         this.store = createStore(
             createRootReducer(INIT_STATE, this),
             composeEnhancers(applyMiddleware(...createMiddleware(this)))
         );
+
+        this.store.dispatch({ type: "@@redux-undo/INIT" });
 
         return this.store;
     }

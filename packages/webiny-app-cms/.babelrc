@@ -6,7 +6,7 @@
             }
         }],
         "@babel/preset-react",
-        "@babel/preset-flow",
+        "@babel/preset-flow"
     ],
     "plugins": [
         ["babel-plugin-emotion", { "autoLabel": true }],

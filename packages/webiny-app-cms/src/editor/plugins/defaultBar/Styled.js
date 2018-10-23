@@ -14,12 +14,6 @@ export const TitleInputWrapper = styled("div")({
     }
 });
 
-export const resetBtn = css({
-    position: 'absolute !important',
-    right: -5,
-    top: -5
-});
-
 export const TitleWrapper = styled("div")({
     height: 50,
     display: "flex",
