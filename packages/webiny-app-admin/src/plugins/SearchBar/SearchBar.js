@@ -3,7 +3,7 @@ import * as React from "react";
 import { compose } from "recompose";
 import Downshift from "downshift";
 import { getPlugins } from "webiny-app/plugins";
-import { withRouter } from "webiny-app/components";
+import { withRouter, withKeyHandler } from "webiny-app/components";
 import type { GlobalSearch } from "webiny-app-admin/types";
 import classnames from "classnames";
 import keycode from "keycode";
@@ -20,8 +20,8 @@ import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
 import {
     SearchBarWrapper,
     SearchBarInputWrapper,
-    SearchBarInput,
     SearchShortcut,
+    searchBarInput,
     searchBarDropdown,
     icon,
     searchWrapper
@@ -57,6 +57,11 @@ class SearchBar extends React.Component<*, State> {
     downshift: any = React.createRef();
 
     /**
+     * At some point we must programmatically focus the input.
+     */
+    input: any = React.createRef();
+
+    /**
      * Let's check if current route is defined in one of the registered plugins.
      * If so, then check current route query for search term and set it as default value of search input.
      * @param props
@@ -77,6 +82,30 @@ class SearchBar extends React.Component<*, State> {
         }
     }
 
+    componentDidMount() {
+        const { addKeyHandler } = this.props;
+        addKeyHandler("/", e => {
+            e.preventDefault();
+            this.input.current.focus();
+        });
+    }
+
+    componentWillUnmount() {
+        this.props.removeKeyHandler("/");
+    }
+
+    /**
+     * Higlights the item via downshift. We automatically highlight previously searched item - better UX.
+     */
+    setHighlightedDropdownItem(selectedItem) {
+        this.downshift.current.setHighlightedIndex(this.state.plugins.list.indexOf(selectedItem));
+    }
+
+    /**
+     * Re-routes to given route (provided by the plugin) with needed search query params.
+     * It also manages previous and current search terms and automatically highlighted item in dropdown.
+     * @param selectedItem
+     */
     submitSearchTerm(selectedItem) {
         this.setState(
             state => {
@@ -97,13 +126,20 @@ class SearchBar extends React.Component<*, State> {
                 }
 
                 this.props.router.goToRoute(route);
-                this.downshift.current.setHighlightedIndex(
-                    this.state.plugins.list.indexOf(selectedItem)
-                );
+                this.setHighlightedDropdownItem(selectedItem);
             }
         );
     }
 
+    /**
+     * Renders options - basically a menu with different modules that can be searched. These are provided
+     * by registered plugins ("global-search" type).
+     * @param getMenuProps
+     * @param getItemProps
+     * @param selectedItem
+     * @param highlightedIndex
+     * @returns {*}
+     */
     renderDropdown({ getMenuProps, getItemProps, selectedItem, highlightedIndex }) {
         return (
             <List {...getMenuProps({ className: searchBarDropdown })}>
@@ -165,8 +201,14 @@ class SearchBar extends React.Component<*, State> {
 
                                 return (
                                     <div>
-                                        <SearchBarInput
+                                        <input
                                             {...getInputProps({
+                                                placeholder: "Search...",
+                                                className: classnames(
+                                                    "mdc-text-field__input",
+                                                    searchBarInput
+                                                ),
+                                                ref: this.input,
                                                 value: this.state.searchTerm.current,
                                                 onChange: e => {
                                                     const value = e.target.value || "";
@@ -196,8 +238,12 @@ class SearchBar extends React.Component<*, State> {
                                                     }
                                                 },
                                                 onFocus: () => {
-                                                    this.setState({ active: true });
-                                                    openMenu();
+                                                    this.setState({ active: true }, () => {
+                                                        this.setHighlightedDropdownItem(
+                                                            selectedItem
+                                                        );
+                                                        openMenu();
+                                                    });
                                                 },
                                                 onBlur: () => {
                                                     this.setState(state => {
@@ -206,9 +252,7 @@ class SearchBar extends React.Component<*, State> {
                                                         state.active = false;
                                                         return state;
                                                     });
-                                                },
-                                                className: "mdc-text-field__input",
-                                                placeholder: "Search..."
+                                                }
                                             })}
                                         />
 
@@ -225,4 +269,7 @@ class SearchBar extends React.Component<*, State> {
     }
 }
 
-export default compose(withRouter())(SearchBar);
+export default compose(
+    withRouter(),
+    withKeyHandler()
+)(SearchBar);

@@ -2,35 +2,6 @@
 import { css } from "emotion";
 import styled from "react-emotion";
 
-export const dropdownStyle = css({
-    left: 0,
-    top: 47,
-    position: "absolute",
-    zIndex: "2",
-    width: "100%",
-    color: "var(--mdc-theme-on-surface)"
-});
-
-export const SearchBarInput = styled("input")({
-    width: "100%",
-    border: "none",
-    outline: "none",
-    backgroundColor: "transparent",
-    "&.mdc-text-field__input": {
-        paddingTop: "5px !important",
-        paddingLeft: "10px !important",
-        borderBottom: "none !important",
-        height: "25px !important",
-        color: "var(--mdc-theme-surface)",
-        "&::placeholder": {
-            color: "var(--mdc-theme-surface) !important"
-        },
-        "&:focus::placeholder": {
-            color: "var(--mdc-theme-text-secondary-on-background) !important"
-        }
-    }
-});
-
 export const SearchShortcut = styled("div")({
     border: "1px solid var(--mdc-theme-surface)",
     color: "var(--mdc-theme-surface)",
@@ -57,12 +28,34 @@ export const SearchBarInputWrapper = styled("div")({
     position: "relative"
 });
 
+export const searchBarInput = css({
+    width: "100%",
+    border: "none",
+    outline: "none",
+    backgroundColor: "transparent",
+    "&.mdc-text-field__input": {
+        paddingTop: "5px !important",
+        paddingLeft: "10px !important",
+        borderBottom: "none !important",
+        height: "25px !important",
+        color: "var(--mdc-theme-surface)",
+        "&::placeholder": {
+            color: "var(--mdc-theme-surface) !important"
+        },
+        "&:focus::placeholder": {
+            color: "var(--mdc-theme-text-secondary-on-background) !important"
+        }
+    }
+});
+
 export const searchBarDropdown = css({
     position: "absolute",
     background: "white",
-    top: 40,
     left: 0,
     width: "100%",
+    top: 47,
+    zIndex: "2",
+    color: "var(--mdc-theme-on-surface)",
     ".mdc-list-item": {
         "&.selected": {
             fontWeight: "bold"

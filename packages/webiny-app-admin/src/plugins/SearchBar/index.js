@@ -18,6 +18,6 @@ export const globalSearchUsers: GlobalSearch = {
     route: "Users",
     label: "Users",
     search: {
-        fields: ["firstName", "lastName"]
+        fields: ["firstName", "lastName", "email"]
     }
 };
