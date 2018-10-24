@@ -38,6 +38,28 @@ describe("count test", () => {
         queryStub.restore();
     });
 
+    test("must generate correct query - custom query and values must be accepted", async () => {
+        const queryStub = sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake(() => {
+                return [[], [{ count: null }]];
+            });
+
+        await SimpleEntity.count({
+            sql: {
+                query: "SELECT COUNT(*) FROM `SimpleEntity` WHERE age > ? OR type = ?",
+                values: [20, "developer"]
+            },
+            groupBy: ["something"]
+        });
+
+        expect(queryStub.getCall(0).args[0]).toEqual(
+            "SELECT COUNT(*) FROM `SimpleEntity` WHERE age > 20 OR type = 'developer'"
+        );
+
+        queryStub.restore();
+    });
+
     test("should count entities", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
             return [{ count: 1 }];

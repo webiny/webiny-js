@@ -41,6 +41,30 @@ describe("find test", () => {
         queryStub.restore();
     });
 
+    test("find - must accept given passed custom query and variables", async () => {
+        const queryStub = sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake(() => {
+                return [[], [{ count: null }]];
+            });
+
+        // Left "groupBy", just to make sure it's totally ignored.
+        await SimpleEntity.find({
+            sql: {
+                query: "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE age > ? OR type = ?",
+                values: [20, "developer"]
+            },
+            groupBy: ["something"]
+        });
+
+        expect(queryStub.getCall(0).args[0]).toEqual([
+            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE age > 20 OR type = 'developer'",
+            "SELECT FOUND_ROWS() as count"
+        ]);
+
+        queryStub.restore();
+    });
+
     test("should find entities and total count", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => [
             [

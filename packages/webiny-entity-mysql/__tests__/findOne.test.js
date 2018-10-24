@@ -36,6 +36,28 @@ describe("findOne test", () => {
         queryStub.restore();
     });
 
+    test("findOne - must accept custom query and values", async () => {
+        const queryStub = sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake(() => {
+                return [[], [{ count: null }]];
+            });
+
+        await SimpleEntity.findOne({
+            groupBy: ["something"],
+            sql: {
+                query: "SELECT * FROM `SimpleEntity` WHERE age > ? OR type = ? LIMIT 1",
+                values: [20, "developer"]
+            }
+        });
+
+        expect(queryStub.getCall(0).args[0]).toEqual(
+            "SELECT * FROM `SimpleEntity` WHERE age > 20 OR type = 'developer' LIMIT 1"
+        );
+
+        queryStub.restore();
+    });
+
     test("findOne - should find previously inserted entity", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
             return [

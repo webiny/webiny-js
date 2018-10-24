@@ -180,6 +180,7 @@ class MySQLDriver extends Driver {
             search: options.search,
             groupBy: options.groupBy,
             sort: options.sort,
+            sql: options.sql,
             page: options.page,
             limit: 1
         };
