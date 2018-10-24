@@ -228,21 +228,10 @@ class Form extends React.Component {
             }
         }
 
-        // Create an onChange callback
-        const changeCallback = (value, oldValue) => {
-            const { props: inputProps } = this.inputs[name];
-
-            // Bind onChange callback params (we do it here because later we no longer have access to these values)
-            if (_.isFunction(afterChange)) {
-                afterChange = afterChange.bind(null, { value, oldValue, props: inputProps });
-            }
-        };
-
         // Assign value and onChange props
         const ls = linkState(
             this,
             name === "*" ? "data" : "data." + name,
-            changeCallback,
             defaultValue
         );
 
@@ -250,12 +239,12 @@ class Form extends React.Component {
             // When linkState is done processing the value change...
             return ls.onChange(newValue, cb).then(value => {
                 // call the Form onChange with updated data
-                if (_.isFunction(this.props.onChange)) {
+                if (typeof this.props.onChange === "function") {
                     this.props.onChange({ ...this.state.data }, this);
                 }
 
                 // Execute onAfterChange
-                afterChange && afterChange();
+                afterChange && afterChange(value);
 
                 return value;
             });

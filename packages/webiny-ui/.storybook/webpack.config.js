@@ -8,6 +8,11 @@ module.exports = (config, env, defaultConfig) => {
         exclude: /node_modules/,
         use: ["@svgr/webpack"]
     });
+    // Remove last 2 rules related to `scss` files
+    defaultConfig.module.rules.pop();
+    defaultConfig.module.rules.pop();
+
+    // Add our own scss rule
     defaultConfig.module.rules.push({
         test: /\.scss$/,
         include: [__dirname + "/../src", /webiny-/],
@@ -22,10 +27,6 @@ module.exports = (config, env, defaultConfig) => {
             }
         ]
     });
-
-    defaultConfig.module.rules = defaultConfig.module.rules.filter(
-        r => r !== null && r !== undefined
-    );
 
     return defaultConfig;
 };

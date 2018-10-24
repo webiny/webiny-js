@@ -31,7 +31,7 @@ const CategoriesForm = ({
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={6}>
-                                <Bind name="name">
+                                <Bind name="name" validators={["required"]}>
                                     <Input label={t`Name`} />
                                 </Bind>
                             </Cell>
