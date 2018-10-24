@@ -27,7 +27,12 @@ export default (entityFetcher: EntityFetcher) => async (
         query,
         page: args.page,
         perPage: args.perPage,
-        sort: args.sort
+        sort: {
+            published: -1,
+            version: -1,
+            ...(args.sort || {})
+        },
+        groupBy: ["parent"]
     });
 
     const meta = data.getParams();

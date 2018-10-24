@@ -75,7 +75,7 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
 
             this.attr("locked")
                 .boolean()
-                .skipOnPopulate()
+                .setSkipOnPopulate()
                 .setDefaultValue(false);
 
             this.attr("published")

@@ -18,6 +18,8 @@ class PageTable extends MySQLTable {
         this.column("locked").tinyInt();
 
         this.index().unique("version", "parent");
+        this.index().key("published", "version");
+        this.index().key("parent");
     }
 }
 
