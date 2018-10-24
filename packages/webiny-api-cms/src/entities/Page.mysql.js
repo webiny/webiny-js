@@ -20,6 +20,7 @@ class PageTable extends MySQLTable {
         this.index().unique("version", "parent");
         this.index().key("published", "version");
         this.index().key("parent");
+        this.index().fullText("title");
     }
 }
 

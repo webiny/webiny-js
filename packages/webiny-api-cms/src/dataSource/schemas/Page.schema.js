@@ -58,7 +58,7 @@ export default {
             perPage: Int
             where: JSON
             sort: JSON
-            search: SearchInput
+            search: String
         ): PageListResponse
     `,
     mutationFields: `

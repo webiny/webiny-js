@@ -1,6 +1,5 @@
 // @flow
 import type { Entity, EntityCollection } from "webiny-entity";
-import parseBoolean from "webiny-api/graphql/parseBoolean";
 import { ListResponse } from "webiny-api/graphql/responses";
 
 type EntityFetcher = (context: Object) => Class<Entity>;
@@ -12,32 +11,40 @@ export default (entityFetcher: EntityFetcher) => async (
 ) => {
     const entityClass = entityFetcher(context);
 
-    parseBoolean(args);
+    const { page = 1, perPage = 10, sort = null, search = null } = args;
+    const variables = [];
 
-    const query = { ...args.where };
-    if (args.search && args.search.query) {
-        query.$search = {
-            query: args.search.query,
-            columns: args.search.fields,
-            operator: args.search.operator || "or"
-        };
+    let where = "WHERE 1=1";
+    if (search) {
+        where += ` AND MATCH (title) AGAINST (? IN BOOLEAN MODE)`;
+        variables.push(search);
     }
 
-    const data: EntityCollection<Entity> = await entityClass.find({
-        query,
-        page: args.page,
-        perPage: args.perPage,
-        sort: {
-            published: -1,
-            version: -1,
-            ...(args.sort || {})
-        },
-        groupBy: ["parent"]
-    });
+    let orderBy = "";
+    if (sort) {
+        orderBy =
+            "ORDER BY " +
+            Object.keys(sort)
+                .map(key => `${key} ${sort[key] > 0 ? "ASC" : "DESC"}`)
+                .join(", ");
+    }
 
-    const meta = data.getParams();
-    meta.count = data.length;
-    meta.totalCount = data.getMeta().totalCount;
+    const sql = {
+        query: `SELECT SQL_CALC_FOUND_ROWS * FROM (
+          SELECT * FROM ${entityClass.storageClassId} ORDER BY published DESC, version DESC
+        ) as p ${where} GROUP BY parent ${orderBy} LIMIT ? OFFSET ?`,
+        values: [...variables, perPage, (page - 1) * perPage]
+    };
+
+    const data: EntityCollection<Entity> = await entityClass.find({ sql });
+
+    const meta: Object = {
+        page,
+        perPage,
+        count: data.length,
+        totalCount: data.getMeta().totalCount
+    };
+
     meta.totalPages = Math.ceil(meta.totalCount / meta.perPage);
     meta.to = (meta.page - 1) * meta.perPage + meta.count;
     meta.from = meta.to - meta.count + 1;
