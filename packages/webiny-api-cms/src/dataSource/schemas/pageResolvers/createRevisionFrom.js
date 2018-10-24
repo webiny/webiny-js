@@ -1,6 +1,6 @@
 // @flow
 import type { Entity } from "webiny-entity";
-import type { IRevision } from "../../../entities/Revision.entity";
+import type { IPage } from "../../../entities/Page.entity";
 import { ErrorResponse, Response } from "webiny-api/graphql";
 
 type EntityFetcher = (context: Object) => Class<Entity>;
@@ -16,24 +16,22 @@ export default (entityFetcher: EntityFetcher) => async (
     args: Object,
     context: Object
 ) => {
-    const revisionClass = entityFetcher(context);
+    const pageClass = entityFetcher(context);
 
-    const sourceRev: IRevision = (await revisionClass.findById(args.revisionId): any);
+    const sourceRev: IPage = (await pageClass.findById(args.revision): any);
     if (!sourceRev) {
-        return notFound(args.revisionId);
+        return notFound(args.revision);
     }
 
-    const page = await sourceRev.page;
-
-    const newRevision: IRevision = (new revisionClass(): any);
+    const newRevision: IPage = (new pageClass(): any);
     try {
         newRevision.populate({
-            name: args.name,
             slug: sourceRev.slug,
             title: sourceRev.title,
             settings: sourceRev.settings,
             content: sourceRev.content,
-            page
+            category: await sourceRev.category,
+            parent: sourceRev.parent
         });
         await newRevision.save();
     } catch (e) {

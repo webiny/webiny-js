@@ -11,6 +11,7 @@
   "dependencies": {
     "@babel/runtime": "^7.0.0",
     "graphql-iso-date": "^3.5.0",
+    "mdbid": "^1.0.0",
     "webiny-api": "0.0.0-semantically-released"
   },
   "devDependencies": {
