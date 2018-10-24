@@ -48,11 +48,18 @@ function getErrorResponse(error: Error) {
 export const createHandler = (config = {}) => {
     let handler = null;
     return async (event, context) => {
-        if (!handler) {
-            handler = await setupHandler(config);
-        }
-
         return new Promise(async (resolve, reject) => {
+            if (!handler) {
+                try {
+                    handler = await setupHandler(config);
+                } catch (e) {
+                    if (process.env.NODE_ENV === "development") {
+                        console.log(e);
+                    }
+                    return resolve(getErrorResponse(e));
+                }
+            }
+
             try {
                 await authenticate(config, event, context);
             } catch (error) {
