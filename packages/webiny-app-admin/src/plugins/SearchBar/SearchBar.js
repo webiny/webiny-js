@@ -158,6 +158,7 @@ class SearchBar extends React.Component<*, State> {
                                                 ),
                                                 ref: this.input,
                                                 value: this.state.searchTerm.current,
+                                                onClick: openMenu,
                                                 onBlur: () => {
                                                     this.cancelSearchTerm();
                                                     this.setState({ active: false });
