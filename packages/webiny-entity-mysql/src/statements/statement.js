@@ -15,7 +15,8 @@ declare type StatementOptions = {
     sort?: string,
     where?: Object,
     columns?: Array<string>,
-    onDuplicateKeyUpdate?: boolean
+    onDuplicateKeyUpdate?: boolean,
+    sql: { query: string, values: any }
 };
 
 class Statement {
