@@ -32,9 +32,82 @@ type State = {
     searchTerm: { previous: string, current: string },
     plugins: {
         list: Array<GlobalSearch>,
-        initial: ?GlobalSearch
+        current: ?GlobalSearch
     }
 };
+
+/**
+ * Renders options - basically a menu with different modules that can be searched. These are provided
+ * by registered plugins ("global-search" type).
+ * @param getMenuProps
+ * @param getItemProps
+ * @param selectedItem
+ * @param highlightedIndex
+ * @returns {*}
+ */
+class SearchBarDropdownMenu extends React.Component<*> {
+    componentDidMount() {
+        const {
+            context: {
+                downshift: { current: downshift },
+                state: { plugins }
+            }
+        } = this.props;
+
+        downshift.selectItem(plugins.current);
+        downshift.setHighlightedIndex(plugins.list.indexOf(plugins.current));
+        downshift.openMenu();
+    }
+
+    render() {
+        const {
+            context: {
+                downshift: { current: downshift },
+                submitSearchTerm,
+                state: { plugins, searchTerm }
+            }
+        } = this.props;
+
+        const {
+            getMenuProps,
+            getItemProps,
+            state: { selectedItem, highlightedIndex }
+        } = downshift;
+
+        return (
+            <List {...getMenuProps({ className: searchBarDropdown })}>
+                {plugins.list.map((item: GlobalSearch, index) => {
+                    // Base classes.
+                    const itemClassNames = {
+                        highlighted: highlightedIndex === index,
+                        selected: false
+                    };
+
+                    // Add "selected" class if the item is selected.
+                    if (selectedItem && selectedItem === item) {
+                        itemClassNames.selected = true;
+                    }
+
+                    return (
+                        <ListItem
+                            key={item.route}
+                            {...getItemProps({
+                                index,
+                                item,
+                                className: classnames(itemClassNames),
+                                onClick: () => submitSearchTerm(item)
+                            })}
+                        >
+                            <ListItemGraphic>➡</ListItemGraphic>
+                            <ListItemText>{searchTerm.current || "Search for all..."}</ListItemText>
+                            <ListItemMeta>in {item.label}</ListItemMeta>
+                        </ListItem>
+                    );
+                })}
+            </List>
+        );
+    }
+}
 
 class SearchBar extends React.Component<*, State> {
     state = {
@@ -46,8 +119,8 @@ class SearchBar extends React.Component<*, State> {
         plugins: {
             // List of all registered "global-search" plugins.
             list: getPlugins("global-search"),
-            // Initial plugin - set by examining current route and its query params (on construct).
-            initial: undefined
+            // Current plugin - set by examining current route and its query params (on construct).
+            current: undefined
         }
     };
 
@@ -68,11 +141,11 @@ class SearchBar extends React.Component<*, State> {
      */
     constructor(props) {
         super();
-        this.state.plugins.initial = this.state.plugins.list.find(
+        this.state.plugins.current = this.state.plugins.list.find(
             p => p.route === props.router.route.name
         );
 
-        if (this.state.plugins.initial) {
+        if (this.state.plugins.current) {
             try {
                 this.state.searchTerm.current = JSON.parse(props.router.getQuery().search).query;
                 this.state.searchTerm.previous = this.state.searchTerm.current;
@@ -95,86 +168,41 @@ class SearchBar extends React.Component<*, State> {
     }
 
     /**
-     * Higlights the item via downshift. We automatically highlight previously searched item - better UX.
-     */
-    setHighlightedDropdownItem(selectedItem) {
-        this.downshift.current.setHighlightedIndex(this.state.plugins.list.indexOf(selectedItem));
-    }
-
-    /**
      * Re-routes to given route (provided by the plugin) with needed search query params.
      * It also manages previous and current search terms and automatically highlighted item in dropdown.
-     * @param selectedItem
+     * @param plugin
      */
-    submitSearchTerm(selectedItem) {
+    submitSearchTerm = plugin => {
         this.setState(
             state => {
                 state.searchTerm.previous = state.searchTerm.current;
+                state.plugins.current = plugin;
                 return state;
             },
             () => {
                 const route = {
-                    name: selectedItem.route,
+                    name: plugin.route,
                     params: {}
                 };
 
                 if (this.state.searchTerm.current) {
                     route.params.search = JSON.stringify({
                         query: this.state.searchTerm.current,
-                        ...selectedItem.search
+                        ...plugin.search
                     });
                 }
 
                 this.props.router.goToRoute(route);
-                this.setHighlightedDropdownItem(selectedItem);
             }
         );
-    }
+    };
 
-    /**
-     * Renders options - basically a menu with different modules that can be searched. These are provided
-     * by registered plugins ("global-search" type).
-     * @param getMenuProps
-     * @param getItemProps
-     * @param selectedItem
-     * @param highlightedIndex
-     * @returns {*}
-     */
-    renderDropdown({ getMenuProps, getItemProps, selectedItem, highlightedIndex }) {
-        return (
-            <List {...getMenuProps({ className: searchBarDropdown })}>
-                {this.state.plugins.list.map((item: GlobalSearch, index) => {
-                    // Base classes.
-                    const itemClassNames = {
-                        highlighted: highlightedIndex === index,
-                        selected: false
-                    };
-
-                    // Add "selected" class if the item is selected.
-                    if (selectedItem && selectedItem.route === item.route) {
-                        itemClassNames.selected = true;
-                    }
-
-                    return (
-                        <ListItem
-                            key={item.route}
-                            {...getItemProps({
-                                index,
-                                item,
-                                className: classnames(itemClassNames)
-                            })}
-                        >
-                            <ListItemGraphic>➡</ListItemGraphic>
-                            <ListItemText>
-                                {this.state.searchTerm.current || "Search for all..."}
-                            </ListItemText>
-                            <ListItemMeta>in {item.label}</ListItemMeta>
-                        </ListItem>
-                    );
-                })}
-            </List>
-        );
-    }
+    cancelSearchTerm = () => {
+        this.setState(state => {
+            state.searchTerm.current = state.searchTerm.previous;
+            return state;
+        });
+    };
 
     render() {
         return (
@@ -183,21 +211,15 @@ class SearchBar extends React.Component<*, State> {
                     <SearchBarInputWrapper>
                         <Icon className={icon} icon={<SearchIcon />} />
 
-                        <Downshift
-                            ref={this.downshift}
-                            initialValue={this.state.searchTerm.current}
-                            initialSelectedItem={this.state.plugins.initial}
-                            itemToString={item => item && item.label}
-                            onSelect={selectedItem => this.submitSearchTerm(selectedItem)}
-                        >
-                            {downshift => {
+                        <Downshift ref={this.downshift} itemToString={item => item && item.label}>
+                            {downshiftProps => {
                                 const {
                                     selectedItem,
                                     isOpen,
                                     openMenu,
                                     closeMenu,
                                     getInputProps
-                                } = downshift;
+                                } = downshiftProps;
 
                                 return (
                                     <div>
@@ -210,53 +232,40 @@ class SearchBar extends React.Component<*, State> {
                                                 ),
                                                 ref: this.input,
                                                 value: this.state.searchTerm.current,
+                                                onBlur: () => {
+                                                    this.cancelSearchTerm();
+                                                    this.setState({ active: false });
+                                                },
+                                                onFocus: () => {
+                                                    this.setState({ active: true });
+                                                    openMenu();
+                                                },
                                                 onChange: e => {
                                                     const value = e.target.value || "";
-                                                    if (this.state.searchTerm.current !== value) {
-                                                        this.setState(state => {
-                                                            state.searchTerm.current = value;
-                                                            return state;
-                                                        });
-                                                    }
+                                                    this.setState(state => {
+                                                        state.searchTerm.current = value;
+                                                        return state;
+                                                    });
                                                 },
                                                 onKeyUp: e => {
                                                     switch (keycode(e)) {
                                                         case "esc":
-                                                            // Just bring back previous search term.
-                                                            this.setState(state => {
-                                                                state.searchTerm.current =
-                                                                    state.searchTerm.previous;
-                                                                return state;
-                                                            }, closeMenu);
+                                                            e.preventDefault();
+                                                            this.cancelSearchTerm();
+                                                            closeMenu();
                                                             break;
                                                         case "enter":
+                                                            e.preventDefault();
                                                             if (selectedItem) {
                                                                 closeMenu();
                                                                 this.submitSearchTerm(selectedItem);
                                                             }
                                                             break;
                                                     }
-                                                },
-                                                onFocus: () => {
-                                                    this.setState({ active: true }, () => {
-                                                        this.setHighlightedDropdownItem(
-                                                            selectedItem
-                                                        );
-                                                        openMenu();
-                                                    });
-                                                },
-                                                onBlur: () => {
-                                                    this.setState(state => {
-                                                        state.searchTerm.current =
-                                                            state.searchTerm.previous;
-                                                        state.active = false;
-                                                        return state;
-                                                    });
                                                 }
                                             })}
                                         />
-
-                                        {isOpen && this.renderDropdown(downshift)}
+                                        {isOpen && <SearchBarDropdownMenu context={this} />}
                                     </div>
                                 );
                             }}
