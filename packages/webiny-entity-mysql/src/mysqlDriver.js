@@ -100,7 +100,7 @@ class MySQLDriver extends Driver {
             return new QueryResult(true);
         }
 
-        if (!this.autoIncrementIds) {
+        if (!this.autoIncrementIds && !entity.id) {
             entity.id = MySQLDriver.__generateID();
         }
 
