@@ -178,6 +178,7 @@ class MySQLDriver extends Driver {
             table: this.getTableName(entity),
             where: options.query,
             search: options.search,
+            groupBy: options.groupBy,
             sort: options.sort,
             page: options.page,
             limit: 1

@@ -12,6 +12,7 @@ class Select extends Statement {
         output += this.getColumns(options);
         output += ` FROM \`${options.table}\``;
         output += this.getWhere(options);
+        output += this.getGroup(options);
         output += this.getOrder(options);
         output += this.getLimit(options);
         output += this.getOffset(options);

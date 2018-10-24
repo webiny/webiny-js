@@ -24,6 +24,23 @@ describe("find test", () => {
         queryStub.restore();
     });
 
+    test("find - must generate correct query - must have GROUP BY included", async () => {
+        const queryStub = sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake(() => {
+                return [[], [{ count: null }]];
+            });
+
+        await SimpleEntity.find({ groupBy: ["something"] });
+
+        expect(queryStub.getCall(0).args[0]).toEqual([
+            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` GROUP BY something LIMIT 10",
+            "SELECT FOUND_ROWS() as count"
+        ]);
+
+        queryStub.restore();
+    });
+
     test("should find entities and total count", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => [
             [

@@ -20,6 +20,22 @@ describe("findOne test", () => {
         queryStub.restore();
     });
 
+    test("findOne must generate correct query - must have GROUP BY included", async () => {
+        const queryStub = sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake(() => {
+                return [[], [{ count: null }]];
+            });
+
+        await SimpleEntity.findOne({ groupBy: ["something"] });
+
+        expect(queryStub.getCall(0).args[0]).toEqual(
+            "SELECT * FROM `SimpleEntity` GROUP BY something LIMIT 1"
+        );
+
+        queryStub.restore();
+    });
+
     test("findOne - should find previously inserted entity", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
             return [
