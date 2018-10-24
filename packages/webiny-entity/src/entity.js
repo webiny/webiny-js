@@ -437,7 +437,7 @@ class Entity {
      * Finds one entity matched by given query parameters.
      * @param params
      */
-    static async findOne(params: ?Object): Promise<null | Entity> {
+    static async findOne(params: ?Object): Promise<null | $Subtype<Entity>> {
         if (!params) {
             params = {};
         }
@@ -454,7 +454,9 @@ class Entity {
                 return pooled;
             }
 
-            const entity = new this().setExisting().populateFromStorage(((result: any): Object));
+            const entity: $Subtype<Entity> = new this()
+                .setExisting()
+                .populateFromStorage(((result: any): Object));
             await entity.emit("read", { params });
             this.getEntityPool().add(entity);
             return entity;
@@ -466,7 +468,7 @@ class Entity {
      * Finds one or more entities matched by given query parameters.
      * @param params
      */
-    static async find(params: ?Object): Promise<EntityCollection> {
+    static async find(params: ?Object): Promise<EntityCollection<$Subtype<Entity>>> {
         if (!params) {
             params = {};
         }
