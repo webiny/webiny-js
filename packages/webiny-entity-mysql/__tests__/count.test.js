@@ -22,6 +22,22 @@ describe("count test", () => {
         queryStub.restore();
     });
 
+    test("must generate correct query - must have GROUP BY included", async () => {
+        const queryStub = sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake(() => {
+                return [[], [{ count: null }]];
+            });
+
+        await SimpleEntity.count({ groupBy: ["something"] });
+
+        expect(queryStub.getCall(0).args[0]).toEqual(
+            "SELECT COUNT(*) AS count FROM `SimpleEntity` GROUP BY something"
+        );
+
+        queryStub.restore();
+    });
+
     test("should count entities", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query").callsFake(() => {
             return [{ count: 1 }];
