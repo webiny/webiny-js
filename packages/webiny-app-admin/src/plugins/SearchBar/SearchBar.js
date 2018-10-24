@@ -11,7 +11,7 @@ import keycode from "keycode";
 // UI components
 import { Icon } from "webiny-ui/Icon";
 import { Elevation } from "webiny-ui/Elevation";
-import { List, ListItem, ListItemGraphic, ListItemText, ListItemMeta } from "webiny-ui/List";
+import SearchBarDropdown from "./SearchBarDropdown";
 
 // Icons
 import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
@@ -22,7 +22,6 @@ import {
     SearchBarInputWrapper,
     SearchShortcut,
     searchBarInput,
-    searchBarDropdown,
     icon,
     searchWrapper
 } from "./styled";
@@ -35,79 +34,6 @@ type State = {
         current: ?GlobalSearch
     }
 };
-
-/**
- * Renders options - basically a menu with different modules that can be searched. These are provided
- * by registered plugins ("global-search" type).
- * @param getMenuProps
- * @param getItemProps
- * @param selectedItem
- * @param highlightedIndex
- * @returns {*}
- */
-class SearchBarDropdownMenu extends React.Component<*> {
-    componentDidMount() {
-        const {
-            context: {
-                downshift: { current: downshift },
-                state: { plugins }
-            }
-        } = this.props;
-
-        downshift.selectItem(plugins.current);
-        downshift.setHighlightedIndex(plugins.list.indexOf(plugins.current));
-        downshift.openMenu();
-    }
-
-    render() {
-        const {
-            context: {
-                downshift: { current: downshift },
-                submitSearchTerm,
-                state: { plugins, searchTerm }
-            }
-        } = this.props;
-
-        const {
-            getMenuProps,
-            getItemProps,
-            state: { selectedItem, highlightedIndex }
-        } = downshift;
-
-        return (
-            <List {...getMenuProps({ className: searchBarDropdown })}>
-                {plugins.list.map((item: GlobalSearch, index) => {
-                    // Base classes.
-                    const itemClassNames = {
-                        highlighted: highlightedIndex === index,
-                        selected: false
-                    };
-
-                    // Add "selected" class if the item is selected.
-                    if (selectedItem && selectedItem === item) {
-                        itemClassNames.selected = true;
-                    }
-
-                    return (
-                        <ListItem
-                            key={item.route}
-                            {...getItemProps({
-                                index,
-                                item,
-                                className: classnames(itemClassNames),
-                                onClick: () => submitSearchTerm(item)
-                            })}
-                        >
-                            <ListItemGraphic>➡</ListItemGraphic>
-                            <ListItemText>{searchTerm.current || "Search for all..."}</ListItemText>
-                            <ListItemMeta>in {item.label}</ListItemMeta>
-                        </ListItem>
-                    );
-                })}
-            </List>
-        );
-    }
-}
 
 class SearchBar extends React.Component<*, State> {
     state = {
@@ -265,7 +191,7 @@ class SearchBar extends React.Component<*, State> {
                                                 }
                                             })}
                                         />
-                                        {isOpen && <SearchBarDropdownMenu context={this} />}
+                                        {isOpen && <SearchBarDropdown context={this} />}
                                     </div>
                                 );
                             }}
