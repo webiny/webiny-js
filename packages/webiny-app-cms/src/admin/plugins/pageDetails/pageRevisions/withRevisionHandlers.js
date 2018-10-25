@@ -9,11 +9,9 @@ export default compose(
     graphql(deleteRevision, { name: "gqlDelete" }),
     withPublishRevisionHandler("publishRevision"),
     withHandlers({
-        createRevision: ({ rev, router, pageId, gqlCreate, showSnackbar }: Object) => async (
-            formData: Object
-        ) => {
+        createRevision: ({ rev, router, gqlCreate, showSnackbar }: Object) => async () => {
             const { data: res } = await gqlCreate({
-                variables: { revisionId: rev.id, name: formData.name }
+                variables: { revision: rev.id }
             });
             const { data, error } = res.cms.revision;
 
@@ -21,15 +19,18 @@ export default compose(
                 return showSnackbar(error.message);
             }
 
-            router.goToRoute({
-                name: "Cms.Editor",
-                params: { page: pageId, revision: data.id }
-            });
+            router.goToRoute({ name: "Cms.Editor", params: { id: data.id } });
         },
-        editRevision: ({ rev, router, pageId }) => () => {
-            router.goToRoute({ name: "Cms.Editor", params: { page: pageId, revision: rev.id } });
+        editRevision: ({ rev, router }) => () => {
+            router.goToRoute({ name: "Cms.Editor", params: { id: rev.id } });
         },
-        deleteRevision: ({ rev, gqlDelete, showSnackbar }) => async () => {
+        deleteRevision: ({
+            rev,
+            pageDetails: { page, revisions },
+            gqlDelete,
+            showSnackbar,
+            router
+        }) => async () => {
             const { data: res } = await gqlDelete({
                 refetchQueries: ["CmsLoadPageRevisions"],
                 variables: { id: rev.id }
@@ -37,6 +38,10 @@ export default compose(
             const { error } = res.cms.deleteRevision;
             if (error) {
                 return showSnackbar(error.message);
+            }
+
+            if (rev.id === page.id) {
+                router.goToRoute({ params: { id: null } });
             }
         }
     })

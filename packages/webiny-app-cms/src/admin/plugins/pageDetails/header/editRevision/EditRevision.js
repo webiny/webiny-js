@@ -7,7 +7,7 @@ import { ReactComponent as EditIcon } from "webiny-app-cms/admin/assets/edit.svg
 
 type Props = WithPageDetailsProps & WithRouterProps;
 
-const EditRevision = ({ pageDetails: { pageId, revision }, router }: Props) => {
+const EditRevision = ({ pageDetails: { page }, router }: Props) => {
     return (
         <Tooltip content={"Edit"} placement={"top"}>
             <IconButton
@@ -15,7 +15,7 @@ const EditRevision = ({ pageDetails: { pageId, revision }, router }: Props) => {
                 onClick={() =>
                     router.goToRoute({
                         name: "Cms.Editor",
-                        params: { page: pageId, revision: revision.data.id }
+                        params: { id: page.id }
                     })
                 }
             />

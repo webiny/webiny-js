@@ -10,7 +10,7 @@ export default ({
     render({ pageDetails }: WithPageDetailsProps) {
         return (
             <Tab label={"Page preview"}>
-                <RenderElement element={pageDetails.revision.data.content} />
+                <RenderElement element={pageDetails.page.content} />
             </Tab>
         );
     }

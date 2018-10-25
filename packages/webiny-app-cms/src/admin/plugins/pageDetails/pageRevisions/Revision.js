@@ -23,7 +23,6 @@ import { ReactComponent as MoreVerticalIcon } from "webiny-app-cms/admin/assets/
 import { ReactComponent as LockIcon } from "webiny-app-cms/admin/assets/lock.svg";
 import { ReactComponent as BeenHereIcon } from "webiny-app-cms/admin/assets/beenhere.svg";
 import { ReactComponent as GestureIcon } from "webiny-app-cms/admin/assets/gesture.svg";
-import CreateRevisionDialog from "./CreateRevisionDialog";
 import withRevisionHandlers from "./withRevisionHandlers";
 
 type RevisionProps = WithPageDetailsProps & {
@@ -32,8 +31,6 @@ type RevisionProps = WithPageDetailsProps & {
     editRevision: Function,
     deleteRevision: Function,
     publishRevision: Function,
-    openDialog: boolean,
-    setCreateRevisionDialog: Function,
     submitCreateRevision: Function
 };
 
@@ -61,25 +58,18 @@ const getIcon = (rev: Object) => {
 
 const Revision = ({
     rev,
-    pageDetails: { revision, revisions },
+    pageDetails: { page },
     createRevision,
     editRevision,
     deleteRevision,
-    publishRevision,
-    openDialog,
-    showDialog,
-    hideDialog
+    publishRevision
 }: RevisionProps) => {
     const { icon, text: tooltipText } = getIcon(rev);
 
     return (
         <ConfirmationDialog
             title="Confirmation required!"
-            message={
-                <span>
-                    Are you sure you want to delete <strong>{rev.name}</strong>?
-                </span>
-            }
+            message={<span>Are you sure you want to delete this revision?</span>}
         >
             {({ showConfirmation }) => (
                 <ListItem style={{ overflow: "visible" }}>
@@ -91,31 +81,24 @@ const Revision = ({
                     <ListItemText>
                         <ListItemTextPrimary>{rev.title}</ListItemTextPrimary>
                         <ListItemTextSecondary>
-                            Last modified <TimeAgo datetime={rev.savedOn} /> ({rev.name}) v{rev.version}
+                            Last modified <TimeAgo datetime={rev.savedOn} /> (#{rev.version})
                         </ListItemTextSecondary>
                     </ListItemText>
                     <ListItemMeta>
-                        <CreateRevisionDialog
-                            open={openDialog}
-                            onClose={hideDialog}
-                            onSubmit={createRevision}
-                            revisions={revisions.data}
-                        />
                         <Menu handle={<IconButton icon={<MoreVerticalIcon />} />}>
-                            <MenuItem onClick={showDialog}>New</MenuItem>
+                            <MenuItem onClick={createRevision}>New</MenuItem>
                             <MenuItem onClick={editRevision}>Edit</MenuItem>
                             {!rev.published && (
                                 <MenuItem onClick={() => publishRevision(rev)}>Publish</MenuItem>
                             )}
-                            {!rev.locked &&
-                                revision.data.id !== rev.id && (
-                                    <React.Fragment>
-                                        <MenuDivider />
-                                        <MenuItem onClick={() => showConfirmation(deleteRevision)}>
-                                            Delete
-                                        </MenuItem>
-                                    </React.Fragment>
-                                )}
+                            {!rev.locked && (
+                                <React.Fragment>
+                                    <MenuDivider />
+                                    <MenuItem onClick={() => showConfirmation(deleteRevision)}>
+                                        Delete
+                                    </MenuItem>
+                                </React.Fragment>
+                            )}
                         </Menu>
                     </ListItemMeta>
                 </ListItem>
@@ -128,13 +111,5 @@ export default compose(
     withRouter(),
     withSnackbar(),
     withPageDetails(),
-    withProps(({ pageDetails }) => ({
-        pageId: pageDetails.pageId
-    })),
-    withState("openDialog", "setOpenDialog", false),
-    withHandlers({
-        showDialog: ({ setOpenDialog }) => () => setOpenDialog(true),
-        hideDialog: ({ setOpenDialog }) => () => setOpenDialog(false)
-    }),
     withRevisionHandlers
 )(Revision);

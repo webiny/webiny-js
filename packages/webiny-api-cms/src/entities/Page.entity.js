@@ -73,6 +73,12 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
 
             this.attr("parent").char();
 
+            this.attr("revisions")
+                .entities(Page)
+                .setDynamic(() => {
+                    return Page.find({ query: { parent: this.parent }, sort: { version: -1 } });
+                });
+
             this.attr("locked")
                 .boolean()
                 .setSkipOnPopulate()

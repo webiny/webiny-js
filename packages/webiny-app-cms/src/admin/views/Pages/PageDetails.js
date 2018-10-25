@@ -6,35 +6,26 @@ import { renderPlugins } from "webiny-app/plugins";
 import { withRouter } from "webiny-app/components";
 import { PageDetailsProvider, PageDetailsConsumer } from "../../components/PageDetailsContext";
 import type { WithRouterProps } from "webiny-app/components";
-import { loadRevision, loadPageRevisions } from "webiny-app-cms/admin/graphql/pages";
 import Loader from "./Loader";
+import { getPage } from "webiny-app-cms/admin/graphql/pages";
 
 type Props = WithRouterProps & {
     pageId: string,
-    refreshPages: Function,
-    revision: {
-        data: Object,
-        loading: boolean,
-        refetch: Function
-    },
-    revisions: {
-        data: Array<Object>,
-        loading: boolean,
-        refetch: Function
-    }
+    page: Object,
+    loading: boolean
 };
 
-const PageDetails = ({ router, pageId, revision, revisions, refreshPages }: Props) => {
-    if (!router.getQuery("revision")) {
+const PageDetails = ({ router, page, loading }: Props) => {
+    if (!router.getQuery("id")) {
         return <div>Select a page on the left!</div>;
     }
 
-    if (revision.loading) {
+    if (loading) {
         /* TODO: Ovo je C/P loadera od DataList komponente, treba ga sloziti da lici na taj PageDetails view */
         return <Loader />;
     }
 
-    const details = { pageId, refreshPages, revision, revisions };
+    const details = { page, loading };
 
     return (
         <PageDetailsProvider value={details}>
@@ -52,31 +43,16 @@ const PageDetails = ({ router, pageId, revision, revisions, refreshPages }: Prop
 export default compose(
     withRouter(),
     withProps(({ router }) => ({
-        pageId: router.getQuery("id"),
-        revisionId: router.getQuery("revision")
+        pageId: router.getQuery("id")
     })),
-    graphql(loadRevision, {
-        skip: props => !props.revisionId,
-        options: ({ revisionId }) => ({ variables: { id: revisionId } }),
-        props: ({ data }) => {
-            return {
-                revision: {
-                    loading: data.loading,
-                    data: data.loading ? {} : data.cms.revision.data,
-                    refetch: data.refetch
-                }
-            };
-        }
-    }),
-    graphql(loadPageRevisions, {
+    graphql(getPage, {
         skip: props => !props.pageId,
         options: ({ pageId }) => ({ variables: { id: pageId } }),
-        props: ({ data }) => ({
-            revisions: {
+        props: ({ data }) => {
+            return {
                 loading: data.loading,
-                data: data.loading ? [] : data.cms.revisions.data,
-                refetch: data.refetch
-            }
-        })
+                page: data.loading ? {} : data.cms.page.data
+            };
+        }
     })
 )(PageDetails);

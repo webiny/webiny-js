@@ -3,44 +3,34 @@ import _ from "lodash";
 import { getPlugin } from "webiny-app/plugins";
 
 /**
- * Get entire editor state.
- */
-export const getEditor = state => state.editor || {};
-
-/**
  * Get editor `ui` state
  */
-export const getUi = state => getEditor(state).ui || {};
+export const getUi = state => state.ui || {};
 
 /**
  * Get editor `tmp` state
  */
-export const getTmp = (state, key) => _.get(getEditor(state).tmp, key);
-
-/**
- * Get editor `revision` state
- */
-export const getRevision = state => getEditor(state).revision || {};
+export const getTmp = (state, key) => _.get(state.tmp, key);
 
 /**
  * Get editor `page` state
  */
-export const getPage = state => getEditor(state).page || {};
+export const getPage = state => state.page || {};
 
 /**
  * Get editor `revisions` state
  */
-export const getRevisions = state => getEditor(state).revisions || [];
+export const getRevisions = state => state.revisions || [];
 
 /**
  * Get editor content.
  */
 export const getContent = state => {
-    const revision = getRevision(state);
-    if (revision.content && revision.content.present) {
-        return revision.content.present;
-    } else if (revision.content) {
-        return revision.content;
+    const page = getPage(state);
+    if (page.content && page.content.present) {
+        return page.content.present;
+    } else if (page.content) {
+        return page.content;
     }
 
     return getPlugin("cms-element-document").create();

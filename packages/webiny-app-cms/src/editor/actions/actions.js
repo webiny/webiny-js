@@ -23,7 +23,7 @@ export const UPDATE_ELEMENT = `${PREFIX} Update element`;
 export const DELETE_ELEMENT = `${PREFIX} Delete element`;
 export const SET_TMP = `${PREFIX} Set tmp`;
 
-const horStatePath = "editor.revision.content";
+const horStatePath = "page.content";
 addHigherOrderReducer(
     [
         UPDATE_ELEMENT,
@@ -66,7 +66,7 @@ addHigherOrderReducer(
 
 addReducer(
     ["@@redux-undo/UNDO", "@@redux-undo/REDO", "@@redux-undo/INIT"],
-    "editor.revision.content",
+    "page.content",
     state => state
 );
 
@@ -80,12 +80,12 @@ addReducer(["SETUP_EDITOR"], "editor", (state = null, action) => {
 });
 
 export const setTmp = createAction(SET_TMP);
-addReducer([SET_TMP], "editor.tmp", (state, action) => {
+addReducer([SET_TMP], "tmp", (state, action) => {
     return dotProp.set(state, action.payload.key, action.payload.value);
 });
 
 export const togglePlugin = createAction(TOGGLE_PLUGIN);
-addReducer([TOGGLE_PLUGIN], "editor.ui.plugins", (state, action) => {
+addReducer([TOGGLE_PLUGIN], "ui.plugins", (state, action) => {
     const { name, params } = action.payload;
 
     const plugin = getPlugin(name);
@@ -98,36 +98,36 @@ addReducer([TOGGLE_PLUGIN], "editor.ui.plugins", (state, action) => {
 });
 
 export const deactivatePlugin = createAction(DEACTIVATE_PLUGIN);
-addReducer([DEACTIVATE_PLUGIN], "editor.ui.plugins", (state, action) => {
+addReducer([DEACTIVATE_PLUGIN], "ui.plugins", (state, action) => {
     const { name } = action.payload;
     const plugin = getPlugin(name);
     return { ...state, [plugin.type]: null };
 });
 
 export const highlightElement = createAction(HIGHLIGHT_ELEMENT, { log: false });
-addReducer([HIGHLIGHT_ELEMENT], "editor.ui.highlightElement", (state, action) => {
+addReducer([HIGHLIGHT_ELEMENT], "ui.highlightElement", (state, action) => {
     return action.payload.element ? action.payload.element : null;
 });
 
 export const activateElement = createAction(ACTIVATE_ELEMENT);
-addReducer([ACTIVATE_ELEMENT], "editor.ui.activeElement", (state, action) => {
+addReducer([ACTIVATE_ELEMENT], "ui.activeElement", (state, action) => {
     return action.payload.element;
 });
 
 export const deactivateElement = createAction(DEACTIVATE_ELEMENT);
-addReducer([DEACTIVATE_ELEMENT], "editor.ui.activeElement", () => null);
+addReducer([DEACTIVATE_ELEMENT], "ui.activeElement", () => null);
 
 export const focusSlateEditor = createAction(FOCUS_SLATE_EDITOR);
-addReducer([FOCUS_SLATE_EDITOR], "editor.ui.slateFocused", () => true);
+addReducer([FOCUS_SLATE_EDITOR], "ui.slateFocused", () => true);
 
 export const blurSlateEditor = createAction(BLUR_SLATE_EDITOR);
-addReducer([BLUR_SLATE_EDITOR], "editor.ui.slateFocused", () => false);
+addReducer([BLUR_SLATE_EDITOR], "ui.slateFocused", () => false);
 
 export const dragStart = createAction(DRAG_START);
-addReducer([DRAG_START], "editor.ui.dragging", () => true);
+addReducer([DRAG_START], "ui.dragging", () => true);
 
 export const dragEnd = createAction(DRAG_END);
-addReducer([DRAG_END], "editor.ui.dragging", () => false);
+addReducer([DRAG_END], "ui.dragging", () => false);
 
 export const updateElement = createAction(UPDATE_ELEMENT);
 addReducer(
@@ -135,10 +135,10 @@ addReducer(
     action => {
         const { element } = action.payload;
         if (element.type === "cms-element-document") {
-            return "editor.revision.content";
+            return "page.content";
         }
         return (
-            "editor.revision.content." +
+            "page.content." +
             action.payload.element.path.replace(/\./g, ".elements.").slice(2)
         );
     },

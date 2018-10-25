@@ -36,13 +36,13 @@ export default (entityFetcher: EntityFetcher) => async (
         values: [...variables, perPage, (page - 1) * perPage]
     };
 
-    const data: EntityCollection<Entity> = await entityClass.find({ sql });
+    const pages: EntityCollection<Entity> = await entityClass.find({ sql });
 
     const meta: Object = {
         page,
         perPage,
-        count: data.length,
-        totalCount: data.getMeta().totalCount
+        count: pages.length,
+        totalCount: pages.getMeta().totalCount
     };
 
     meta.totalPages = Math.ceil(meta.totalCount / meta.perPage);
@@ -51,5 +51,5 @@ export default (entityFetcher: EntityFetcher) => async (
     meta.nextPage = meta.page < meta.totalPages ? meta.page + 1 : null;
     meta.previousPage = meta.page === 1 ? null : meta.page - 1;
 
-    return new ListResponse(data, meta);
+    return new ListResponse(pages, meta);
 };

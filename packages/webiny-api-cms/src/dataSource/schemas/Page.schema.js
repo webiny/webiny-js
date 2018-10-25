@@ -20,6 +20,7 @@ export default {
             published: Boolean
             locked: Boolean
             parent: ID
+            revisions: [Page]
         }
         
         input UpdatePageInput {
@@ -34,7 +35,6 @@ export default {
         }
         
         # Response types
-        
         type PageResponse {
             data: Page
             error: Error
@@ -56,7 +56,6 @@ export default {
         listPages(
             page: Int
             perPage: Int
-            where: JSON
             sort: JSON
             search: String
         ): PageListResponse
