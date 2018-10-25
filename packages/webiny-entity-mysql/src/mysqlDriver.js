@@ -101,7 +101,14 @@ class MySQLDriver extends Driver {
         }
 
         if (!this.autoIncrementIds) {
-            entity.id = MySQLDriver.__generateID();
+            // If ID was assigned manually, just check if it's valid.
+            if (entity.id) {
+                if (!this.isId(entity, entity.id)) {
+                    throw Error(`You have assigned an invalid id (${entity.id})`);
+                }
+            } else {
+                entity.id = MySQLDriver.__generateID();
+            }
         }
 
         const data = await entity.toStorage();
