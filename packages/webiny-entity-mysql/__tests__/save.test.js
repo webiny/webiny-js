@@ -47,6 +47,18 @@ describe("save test", () => {
             });
 
         const simpleEntity = new SimpleEntity();
+
+        simpleEntity.id = "123";
+        let error = null;
+        try {
+            await simpleEntity.save();
+        } catch (e) {
+            error = e;
+        }
+
+        expect(error !== null).toBeTrue();
+        expect(error.message).toBe("You have assigned an invalid id (123)");
+
         simpleEntity.id = "aaaaaaaaaabbbbbbbbbbcccc";
         await simpleEntity.save();
 
