@@ -1,3 +1,4 @@
+// @flow
 import { ApolloServer } from "apollo-server-lambda";
 import { applyMiddleware } from "graphql-middleware";
 import { prepareSchema, createGraphqlRunner } from "../graphql/schema";
@@ -49,7 +50,17 @@ export const createHandler = (config = {}) => {
     let handler = null;
     return async (event, context) => {
         if (!handler) {
-            handler = await setupHandler(config);
+            try {
+                handler = await setupHandler(config);
+            } catch (e) {
+                [
+                    "An error occurred while trying to setup a webiny-api lambda handler:",
+                    e,
+                    e.stack
+                ].forEach(item => console.log("\x1b[31m%s\x1b[0m", item)); // eslint-disable-line
+
+                throw e;
+            }
         }
 
         return new Promise(async (resolve, reject) => {

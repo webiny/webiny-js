@@ -5,6 +5,7 @@ import resolveUser from "./schemas/typeResolvers/resolveUser";
 import page from "./schemas/Page.schema";
 import category from "./schemas/Category.schema";
 import revision from "./schemas/Revision.schema";
+import menu from "./schemas/Menu.schema";
 
 export default {
     namespace: "cms",
@@ -19,17 +20,20 @@ export default {
         ${revision.typeDefs}
         ${page.typeDefs}
         ${category.typeDefs}
+        ${menu.typeDefs}
         
         type CmsQuery {
             ${page.queryFields}
             ${revision.queryFields}
             ${category.queryFields}
+            ${menu.queryFields}
         }
         
         type CmsMutation {
             ${page.mutationFields}
             ${revision.mutationFields}
             ${category.mutationFields}
+            ${menu.mutationFields}
         }
         
         type Query {
@@ -50,14 +54,20 @@ export default {
         CmsQuery: {
             ...page.queryResolvers,
             ...revision.queryResolvers,
-            ...category.queryResolvers
+            ...category.queryResolvers,
+            ...menu.queryResolvers
         },
         CmsMutation: {
             ...page.mutationResolvers,
             ...revision.mutationResolvers,
-            ...category.mutationResolvers
+            ...category.mutationResolvers,
+            ...menu.mutationResolvers
         },
         Revision: {
+            createdBy: resolveUser("createdBy"),
+            updatedBy: resolveUser("updatedBy")
+        },
+        Menu: {
             createdBy: resolveUser("createdBy"),
             updatedBy: resolveUser("updatedBy")
         },

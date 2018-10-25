@@ -1,9 +1,9 @@
 // @flow
 import { Sync, ConsoleLog } from "webiny-sql-table-sync";
-import { CategoryTable, PageTable, RevisionTable } from "./tables";
+import { CategoryTable, PageTable, RevisionTable, MenuTable } from "./tables";
 
 export default async () => {
-    const tables = [CategoryTable, PageTable, RevisionTable];
+    const tables = [CategoryTable, PageTable, RevisionTable, MenuTable];
 
     const sync = new Sync({
         tables,
