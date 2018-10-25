@@ -50,6 +50,10 @@ class EntitiesAttribute extends Attribute {
         this.auto = { save: true, delete: true };
 
         this.parentEntity.on("__save", async () => {
+            if (this.getDynamic()) {
+                return;
+            }
+
             const value: EntitiesAttributeValue = (this.value: any);
 
             // If loading is in progress, wait until loaded.
@@ -79,6 +83,10 @@ class EntitiesAttribute extends Attribute {
          * At this point, entities are ready to be saved (only loaded entities).
          */
         this.parentEntity.on("__afterSave", async () => {
+            if (this.getDynamic()) {
+                return;
+            }
+
             // We don't have to do the following check here:
             // this.value.isLoading() && (await this.value.load());
 
@@ -121,6 +129,10 @@ class EntitiesAttribute extends Attribute {
         });
 
         this.parentEntity.on("delete", async () => {
+            if (this.getDynamic()) {
+                return;
+            }
+
             const value: EntitiesAttributeValue = (this.value: any);
 
             if (this.getAutoDelete()) {
@@ -138,6 +150,10 @@ class EntitiesAttribute extends Attribute {
         });
 
         this.parentEntity.on("beforeDelete", async () => {
+            if (this.getDynamic()) {
+                return;
+            }
+
             const value: EntitiesAttributeValue = (this.value: any);
 
             if (this.getAutoDelete()) {
