@@ -5,9 +5,6 @@ class ClassADynamic extends Entity {
         super();
         this.attr("name").char();
         this.attr("classBDynamic").entity(ClassBDynamic);
-        this.attr("classBDynamic")
-            .entity(ClassBDynamic)
-            .setDynamic(() => null);
     }
 }
 
@@ -18,9 +15,6 @@ class ClassBDynamic extends Entity {
         super();
         this.attr("name").char();
         this.attr("classCDynamic").entity(ClassCDynamic);
-        this.attr("classCDynamic")
-            .entity(ClassCDynamic)
-            .setDynamic(() => null);
     }
 }
 
