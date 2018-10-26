@@ -5,18 +5,18 @@ class EntityPoolEntry {
     entity: Entity;
     meta: Object;
 
-    constructor(entity: Entity) {
+    constructor(entity: $Subtype<Entity>) {
         this.entity = entity;
         this.meta = {
             createdOn: new Date()
         };
     }
 
-    getEntity(): Entity {
+    getEntity(): $Subtype<Entity> {
         return this.entity;
     }
 
-    setEntity(entity: Entity): this {
+    setEntity(entity: $Subtype<Entity>): this {
         this.entity = entity;
         return this;
     }

@@ -35,7 +35,7 @@ const OuterDiv = styled("div")(
     })
 );
 
-const Horizontal = ({ below, onDrop, isVisible, type }) => {
+const Horizontal = ({ below, onDrop, isVisible, type }: Object) => {
     return (
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>
             {({ isOver }) => (

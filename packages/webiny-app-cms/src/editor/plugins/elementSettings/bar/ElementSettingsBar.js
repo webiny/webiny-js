@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { compose, lifecycle } from "recompose";
+import { compose, lifecycle, onlyUpdateForKeys } from "recompose";
 import { TopAppBarSecondary, TopAppBarSection } from "webiny-ui/TopAppBar";
 import { ButtonDefault, ButtonIcon } from "webiny-ui/Button";
 import { deactivateElement } from "webiny-app-cms/editor/actions";
@@ -12,14 +12,16 @@ import Menu from "./components/Menu";
 import { ReactComponent as NavigateBeforeIcon } from "webiny-app-cms/editor/assets/icons/navigate_before.svg";
 
 const getElementActions = plugin => {
-    if (!plugin.element.settings) {
+    if (!plugin.settings) {
         return [];
     }
 
-    return plugin.element.settings.map(name => getPlugin(name || "cms-element-settings-divider"));
+    const actions = plugin.settings.map(name => getPlugin(name || "cms-element-settings-divider"));
+
+    return [...actions, getPlugin("cms-element-settings-save")];
 };
 
-const Bar = ({ parent, element, activePlugin, deactivateElement }) => {
+const ElementSettingsBar = ({ parent, element, activePlugin, deactivateElement }) => {
     const plugin = getPlugin(element.type);
     const actions = getElementActions(plugin);
 
@@ -70,7 +72,6 @@ const Bar = ({ parent, element, activePlugin, deactivateElement }) => {
 };
 
 export default compose(
-    withKeyHandler(),
     withActiveElement(),
     connect(
         state => ({
@@ -78,6 +79,8 @@ export default compose(
         }),
         { deactivateElement }
     ),
+    onlyUpdateForKeys(["element", "activePlugin"]),
+    withKeyHandler(),
     lifecycle({
         componentDidMount() {
             const { addKeyHandler, deactivateElement } = this.props;
@@ -90,4 +93,4 @@ export default compose(
             this.props.removeKeyHandler("escape");
         }
     })
-)(Bar);
+)(ElementSettingsBar);

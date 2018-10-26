@@ -15,12 +15,12 @@ type Props = WithPageDetailsProps;
 
 const PageActions = ({
     pageDetails,
-    pageDetails: { revision }
+    pageDetails: { page }
 }: Props) => {
     return (
         <Grid className={listHeader}>
             <Cell span={6}>
-                <Typography use="headline5">{revision.data.title}</Typography>
+                <Typography use="headline5">{page.title}</Typography>
             </Cell>
             <Cell span={6}>
                 {renderPlugins("cms-page-details-header", { pageDetails })}

@@ -11,14 +11,14 @@ class EntitiesAttribute extends Attribute {
     auto: { save: boolean, delete: boolean };
     classes: {
         parent: string,
-        entities: { class: Class<Entity>, attribute: string },
-        using: { class: ?Class<Entity> | Function, attribute: ?string }
+        entities: { class: Class<$Subtype<Entity>>, attribute: string },
+        using: { class: ?Class<$Subtype<Entity>> | Function, attribute: ?string }
     };
     parentEntity: Entity;
     constructor(
         name: string,
         attributesContainer: EntityAttributesContainer,
-        entity: Class<Entity>,
+        entity: Class<$Subtype<Entity>>,
         attributeName: string = ""
     ) {
         super(name, attributesContainer);
@@ -304,7 +304,7 @@ class EntitiesAttribute extends Attribute {
         this.expected("instance of Array or EntityCollection", typeof value);
     }
 
-    async getValidationValue(): Promise<EntityCollection> {
+    async getValidationValue(): Promise<EntityCollection<$Subtype<Entity>>> {
         await this.normalizeSetValues();
         const value = ((this.value: any): EntitiesAttributeValue);
         return this.getUsingClass() ? value.getCurrentLinks() : value.getCurrent();
@@ -374,7 +374,7 @@ class EntitiesAttribute extends Attribute {
     }
 
     async getJSONValue(): Promise<?Array<mixed>> {
-        const value: EntityCollection = await (this.getValue(): any);
+        const value: EntityCollection<Entity> = await (this.getValue(): any);
         if (value instanceof EntityCollection) {
             return value.toJSON();
         }

@@ -1,113 +1,48 @@
 import gql from "graphql-tag";
 
-export const fragments = {
-    activeRevision: gql`
-        fragment activeRevision on Page {
-            activeRevision {
-                id
-                name
-                version
-                title
-                slug
-                published
-                createdBy {
-                    firstName
-                }
-                savedOn
-                updatedBy {
-                    firstName
-                }
-            }
-        }
-    `
-};
+const error = `
+error {
+    code
+    message
+}`;
 
-export const loadEditorData = gql`
-    query CmsGetEditorData($page: ID!, $revision: ID!) {
-        cms {
-            page: getPage(id: $page) {
-                data {
-                    id
-                    status
-                    category {
-                        id
-                        name
-                        url
-                    }
-                    revisions {
-                        id
-                        name
-                        version
-                        published
-                        locked
-                    }
-                }
-                error {
-                    code
-                    message
-                }
-            }
-            revision: getRevision(id: $revision) {
-                data {
-                    id
-                    name
-                    version
-                    published
-                    locked
-                    title
-                    slug
-                    content
-                    settings
-                }
-                error {
-                    code
-                    message
-                }
-            }
-        }
-    }
+const sharedFields = `
+    id
+    title
+    slug
+    version
+    parent
+    published
+    locked
+    savedOn
 `;
 
 export const createPage = gql`
-    mutation CreatePage($category: ID!) {
+    mutation CmsCreatePage($category: ID!) {
         cms {
             page: createPage(data: { category: $category }) {
                 data {
                     id
-                    activeRevision {
-                        id
-                    }
                 }
-                error {
-                    code
-                    message
-                }
+                ${error}
             }
         }
     }
 `;
 
-export const loadPages = gql`
-    query CmsListPages($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SearchInput) {
+export const listPages = gql`
+    query CmsListPages($sort: JSON, $page: Int, $perPage: Int, $search: String) {
         cms {
-            pages: listPages(
-                where: $where
-                sort: $sort
-                page: $page
-                perPage: $perPage
-                search: $search
-            ) {
+            pages: listPages(sort: $sort, page: $page, perPage: $perPage, search: $search) {
                 data {
-                    id
+                    ${sharedFields}
+                    category {
+                        name
+                    }
                     createdBy {
                         firstName
                         lastName
                     }
-                    category {
-                        id
-                        name
-                    }
-                    ...activeRevision
                 }
                 meta {
                     count
@@ -123,103 +58,58 @@ export const loadPages = gql`
             }
         }
     }
-
-    ${fragments.activeRevision}
 `;
 
-export const loadRevision = gql`
-    query CmsLoadRevision($id: ID!) {
+export const getPage = gql`
+    query CmsGetPage($id: ID!) {
         cms {
-            revision: getRevision(id: $id) {
+            page: getPage(id: $id) {
                 data {
-                    id
-                    name
-                    version
-                    title
-                    slug
+                    ${sharedFields}
                     content
                     settings
-                    published
-                    locked
-                }
-                error {
-                    code
-                    message
-                }
-            }
-        }
-    }
-`;
-
-export const loadPageRevisions = gql`
-    query CmsLoadPageRevisions($id: ID!) {
-        cms {
-            revisions: listRevisions(where: { page: $id }, sort: { createdOn: 1 }, perPage: 100) {
-                data {
-                    id
-                    name
-                    version
-                    title
-                    savedOn
-                    published
-                    locked
-                    createdBy {
-                        firstName
-                        lastName
+                    revisions {
+                        ${sharedFields}
                     }
                 }
+                ${error}
             }
         }
     }
 `;
 
 export const createRevisionFrom = gql`
-    mutation CreateRevisionFrom($revisionId: ID!, $name: String!) {
+    mutation CmsCreateRevisionFrom($revision: ID!) {
         cms {
-            revision: createRevisionFrom(revisionId: $revisionId, name: $name) {
+            revision: createRevisionFrom(revision: $revision) {
                 data {
                     id
-                    page {
-                        id
-                    }
                 }
-                error {
-                    code
-                    message
-                }
+                ${error}
             }
         }
     }
 `;
 
 export const publishRevision = gql`
-    mutation PublishRevision($id: ID!) {
+    mutation CmsPublishRevision($id: ID!) {
         cms {
             publishRevision(id: $id) {
                 data {
-                    id
-                    title
-                    slug
-                    published
+                    ${sharedFields}
                 }
-                error {
-                    code
-                    message
-                }
+                ${error}
             }
         }
     }
 `;
 
 export const deleteRevision = gql`
-    mutation DeleteRevision($id: ID!) {
+    mutation CmsDeleteRevision($id: ID!) {
         cms {
             deleteRevision(id: $id) {
                 data
-                error {
-                    code
-                    message
-                }
+                ${error}
             }
         }
     }
@@ -230,10 +120,40 @@ export const deletePage = gql`
         cms {
             deletePage(id: $id) {
                 data
-                error {
-                    code
-                    message
+                ${error}
+            }
+        }
+    }
+`;
+
+const elementFields = `
+id
+name
+type
+content
+keywords
+`;
+
+export const listElements = gql`
+    query CmsListElements {
+        cms {
+            elements: listElements {
+                data {
+                    ${elementFields}
                 }
+            }
+        }
+    }
+`;
+
+export const createElement = gql`
+    mutation CmsCreateElement($data: ElementInput!) {
+        cms {
+            element: createElement(data: $data) {
+                data {
+                    ${elementFields}
+                }
+                ${error}
             }
         }
     }

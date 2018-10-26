@@ -4,7 +4,7 @@ import EntityAttributesContainer from "./entityAttributesContainer";
 import type Entity from "./entity";
 
 class EntityModel extends Model {
-    parentEntity: Entity;
+    parentEntity: $Subtype<Entity>;
     constructor(params: ?Object) {
         super();
         if (params && typeof params === "object") {
@@ -12,12 +12,12 @@ class EntityModel extends Model {
         }
     }
 
-    setParentEntity(parentEntity: Entity): this {
+    setParentEntity(parentEntity: $Subtype<Entity>): this {
         this.parentEntity = parentEntity;
         return this;
     }
 
-    getParentEntity(): Entity {
+    getParentEntity(): $Subtype<Entity> {
         return this.parentEntity;
     }
 

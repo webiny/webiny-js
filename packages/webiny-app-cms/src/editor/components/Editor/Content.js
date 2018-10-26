@@ -7,7 +7,7 @@ import styled from "react-emotion";
 import compose from "recompose/compose";
 import { getPlugins, getPlugin } from "webiny-app/plugins";
 import { withTheme } from "webiny-app-cms/theme";
-import { getContent, getEditor, getActivePlugin } from "webiny-app-cms/editor/selectors";
+import { getContent, getActivePlugin } from "webiny-app-cms/editor/selectors";
 import Element from "webiny-app-cms/editor/components/Element";
 import RenderElement from "webiny-app-cms/render/components/Element";
 
@@ -69,7 +69,7 @@ const Content = ({ content, theme, previewLayout, activePreview, renderContent }
 
 const stateToProps = state => ({
     content: getContent(state),
-    previewLayout: getEditor(state).previewLayout,
+    previewLayout: state.previewLayout,
     activePreview: getActivePlugin("cms-editor-content-preview")(state)
 });
 

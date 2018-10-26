@@ -10,6 +10,7 @@ import margin from "./margin";
 import width from "./width";
 import align from "./align";
 import divider from "./divider";
+import save from "./save";
 
 export default [
     bar,
@@ -23,5 +24,6 @@ export default [
     clone,
     deleteElement,
     advanced,
-    width
+    width,
+    save
 ];

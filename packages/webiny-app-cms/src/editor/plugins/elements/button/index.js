@@ -13,24 +13,27 @@ export default (): ElementPluginType => {
         {
             name: "cms-element-button",
             type: "cms-element",
-            element: {
+            toolbar: {
                 title: "Button",
                 group: "cms-element-group-text",
-                settings: [
-                    "cms-element-settings-background",
-                    "",
-                    "cms-element-settings-border",
-                    "cms-element-settings-shadow",
-                    "",
-                    "cms-element-settings-padding",
-                    "cms-element-settings-margin",
-                    "",
-                    "cms-element-settings-clone",
-                    "cms-element-settings-delete",
-                    "",
-                    "cms-element-settings-advanced"
-                ]
+                preview() {
+                    return <button className={"webiny-cms-element-button"}>Click me</button>;
+                }
             },
+            settings: [
+                "cms-element-settings-background",
+                "",
+                "cms-element-settings-border",
+                "cms-element-settings-shadow",
+                "",
+                "cms-element-settings-padding",
+                "cms-element-settings-margin",
+                "",
+                "cms-element-settings-clone",
+                "cms-element-settings-delete",
+                "",
+                "cms-element-settings-advanced"
+            ],
             target: ["cms-element-column", "cms-element-row"],
             create(options) {
                 return {
@@ -42,9 +45,6 @@ export default (): ElementPluginType => {
             },
             render(props) {
                 return <Button {...props} />;
-            },
-            preview() {
-                return <button className={"webiny-cms-element-button"}>Click me</button>;
             }
         },
         {

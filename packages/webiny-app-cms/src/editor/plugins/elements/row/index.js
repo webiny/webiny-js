@@ -23,24 +23,32 @@ export default (): ElementPluginType => {
     return {
         name: "cms-element-row",
         type: "cms-element",
-        element: {
+        toolbar: {
             title: "Row",
             group: "cms-element-group-layout",
-            settings: [
-                "cms-element-settings-background",
-                "",
-                "cms-element-settings-border",
-                "cms-element-settings-shadow",
-                "",
-                "cms-element-settings-padding",
-                "cms-element-settings-margin",
-                "",
-                "cms-element-settings-clone",
-                "cms-element-settings-delete",
-                "",
-                "cms-element-settings-advanced"
-            ]
+            // Render element preview
+            preview() {
+                return (
+                    <PreviewBox>
+                        <RowIcon />
+                    </PreviewBox>
+                );
+            }
         },
+        settings: [
+            "cms-element-settings-background",
+            "",
+            "cms-element-settings-border",
+            "cms-element-settings-shadow",
+            "",
+            "cms-element-settings-padding",
+            "cms-element-settings-margin",
+            "",
+            "cms-element-settings-clone",
+            "cms-element-settings-delete",
+            "",
+            "cms-element-settings-advanced"
+        ],
         // Target drop zones that will accept this type
         target: ["cms-element-block", "cms-element-column"],
         // This function is called when `createElement` is called for this plugin
@@ -68,15 +76,6 @@ export default (): ElementPluginType => {
         // Render element in editor
         render(props) {
             return <Row {...props} />;
-        },
-
-        // Render element preview
-        preview() {
-            return (
-                <PreviewBox>
-                    <RowIcon />
-                </PreviewBox>
-            );
         },
 
         // This callback is executed when another element is dropped on the drop zones with type "row"

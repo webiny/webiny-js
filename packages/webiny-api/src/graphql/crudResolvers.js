@@ -54,7 +54,7 @@ export const resolveList = (entityFetcher: EntityFetcher) => async (
         };
     }
 
-    const data: EntityCollection = await entityClass.find({
+    const data: EntityCollection<Entity> = await entityClass.find({
         query,
         page: args.page,
         perPage: args.perPage,

@@ -22,25 +22,32 @@ export default (): ElementPluginType => {
     return {
         name: "cms-element-column",
         type: "cms-element",
-        element: {
+        toolbar: {
             title: "Column",
             group: "cms-element-group-layout",
-            settings: [
-                "cms-element-settings-background",
-                "",
-                "cms-element-settings-border",
-                "cms-element-settings-shadow",
-                "",
-                "cms-element-settings-padding",
-                "cms-element-settings-margin",
-                "cms-element-settings-align",
-                "",
-                "cms-element-settings-clone",
-                "cms-element-settings-delete",
-                "",
-                "cms-element-settings-advanced"
-            ]
+            preview() {
+                return (
+                    <PreviewBox>
+                        <ColumnIcon />
+                    </PreviewBox>
+                );
+            }
         },
+        settings: [
+            "cms-element-settings-background",
+            "",
+            "cms-element-settings-border",
+            "cms-element-settings-shadow",
+            "",
+            "cms-element-settings-padding",
+            "cms-element-settings-margin",
+            "cms-element-settings-align",
+            "",
+            "cms-element-settings-clone",
+            "cms-element-settings-delete",
+            "",
+            "cms-element-settings-advanced"
+        ],
         target: ["cms-element-row"],
         create(options = {}) {
             return {
@@ -55,13 +62,6 @@ export default (): ElementPluginType => {
         },
         render(props) {
             return <Column {...props} />;
-        },
-        preview() {
-            return (
-                <PreviewBox>
-                    <ColumnIcon />
-                </PreviewBox>
-            );
         },
         canDelete({ parent }) {
             return parent.elements.length > 1;

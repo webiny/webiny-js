@@ -1,8 +1,8 @@
 // @flow
 import setupEntities from "../dataSource/setupEntities";
 
-export default async (config: Object) => {
-    const { User, Role } = setupEntities({ config });
+export default async (context: Object) => {
+    const { User, Role } = setupEntities(context);
     const user = new User();
 
     const superAdminRole = new Role();
@@ -25,4 +25,5 @@ export default async (config: Object) => {
     });
 
     await user.save();
+    context.user = user;
 };

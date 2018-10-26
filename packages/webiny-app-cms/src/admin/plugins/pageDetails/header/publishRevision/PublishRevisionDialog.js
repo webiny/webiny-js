@@ -45,7 +45,7 @@ const PublishRevisionDialog = ({ open, onClose, onSubmit, revisions, selected }:
                                 <Select label={"Revision to publish"}>
                                     {revisions.filter(r => !r.published).map(rev => (
                                         <option key={rev.id} value={rev.id}>
-                                            {rev.title} ({rev.name})
+                                            {rev.title} (#{rev.version})
                                         </option>
                                     ))}
                                 </Select>

@@ -6,7 +6,7 @@ import { ReactComponent as AddIcon } from "webiny-app-cms/editor/assets/icons/ad
 import AddElement from "./AddElement";
 import Action from "../Action";
 
-addReducer([ELEMENT_DROPPED], "editor.ui.activeElement", () => null);
+addReducer([ELEMENT_DROPPED], "ui.activeElement", () => null);
 
 export default {
     name: "cms-toolbar-add-element",
