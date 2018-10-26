@@ -1,4 +1,5 @@
 import { User, Group, UsersGroups } from "../../../../entities/entitiesUsing";
+import { UserDynamic } from "../../../../entities/entitiesUsingDynamic";
 import sinon from "sinon";
 import { QueryResult } from "webiny-entity";
 import { MainEntity } from "../../../../entities/entitiesAttributeEntities";
@@ -254,5 +255,47 @@ describe("attribute entities (using an additional aggregation class) - saving te
 
         expect(entitySaveSpy.callCount).toEqual(2);
         expect(entityDeleteSpy.callCount).toEqual(0);
+    });
+
+    test("should not save/delete dynamic attributes", async () => {
+        let entityFindById = sandbox
+            .stub(UserDynamic.getDriver(), "findOne")
+            .callsFake(() => new QueryResult({ id: "A" }));
+
+        const user = await UserDynamic.findById(123);
+        entityFindById.restore();
+
+        let entitySave = sandbox
+            .stub(user.getDriver(), "save")
+            .onCall(0)
+            .callsFake(() => {
+                return new QueryResult();
+            })
+            .onCall(1)
+            .callsFake(() => {
+                return new QueryResult();
+            });
+        await user.save();
+        expect(entitySave.callCount).toEqual(0);
+
+        user.name = "now it should save because of this dirty attribute";
+        await user.save();
+        entitySave.restore();
+        expect(entitySave.callCount).toEqual(1);
+
+        let entityDelete = sandbox
+            .stub(user.getDriver(), "delete")
+            .onCall(0)
+            .callsFake(() => {
+                return new QueryResult();
+            })
+            .onCall(1)
+            .callsFake(() => {
+                return new QueryResult();
+            });
+
+        await user.delete();
+        entityDelete.restore();
+        expect(entityDelete.callCount).toEqual(1);
     });
 });

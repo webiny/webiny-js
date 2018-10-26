@@ -31,7 +31,9 @@ export default (entityFetcher: EntityFetcher) => async (
 
     const sql = {
         query: `SELECT SQL_CALC_FOUND_ROWS * FROM (
-          SELECT * FROM ${entityClass.storageClassId} ORDER BY published DESC, version DESC
+          SELECT * FROM ${
+              entityClass.storageClassId
+          } WHERE deleted = 0 ORDER BY published DESC, version DESC
         ) as p ${where} GROUP BY parent ${orderBy} LIMIT ? OFFSET ?`,
         values: [...variables, perPage, (page - 1) * perPage]
     };
