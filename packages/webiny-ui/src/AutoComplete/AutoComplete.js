@@ -23,7 +23,7 @@ type Props = FormComponentProps & {
     // Component label.
     label?: string,
 
-    // Is checkbox disabled?
+    // Is component disabled?
     disabled?: boolean,
 
     // Options that will be shown.
