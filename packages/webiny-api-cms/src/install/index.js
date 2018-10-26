@@ -2,7 +2,7 @@
 import createMySQLTables from "./createMySQLTables";
 import importData from "./importData";
 
-export default async (config: Object) => {
+export default async (context: Object) => {
     await createMySQLTables();
-    await importData(config);
+    await importData(context);
 };

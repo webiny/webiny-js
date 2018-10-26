@@ -7,21 +7,34 @@ let listener = false;
 const filter = ["TEXTAREA", "INPUT"];
 
 const setupListener = () => {
-    if (!listener) {
-        document.body &&
-            document.body.addEventListener("keydown", e => {
-                // We ignore all keyboard events coming from within `slateEditor` element and inputs.
-                if (e.srcElement.dataset.slateEditor || filter.includes(e.srcElement.nodeName)) {
-                    return;
-                }
+    if (!listener && document.body) {
+        document.body.addEventListener("keydown", e => {
+            // We ignore all keyboard events coming from within `slateEditor` element and inputs.
+            if (e.srcElement.dataset.slateEditor || filter.includes(e.srcElement.nodeName)) {
+                return;
+            }
 
-                let matchedKey = Object.keys(keyStack).find(key => isHotkey(key, e));
+            let matchedKey = Object.keys(keyStack).find(key => isHotkey(key, e));
 
-                if (matchedKey && keyStack[matchedKey].length > 0) {
-                    const item = keyStack[matchedKey][0];
-                    item.handler(e);
-                }
-            });
+            if (matchedKey && keyStack[matchedKey].length > 0) {
+                const item = keyStack[matchedKey][0];
+                item.handler(e);
+            }
+        });
+
+        document.body.addEventListener("keyup", e => {
+            // We ignore all keyboard events coming from within `slateEditor` element and inputs.
+            if (e.srcElement.dataset.slateEditor || filter.includes(e.srcElement.nodeName)) {
+                return;
+            }
+
+            let matchedKey = Object.keys(keyStack).find(key => isHotkey(key, e));
+
+            if (matchedKey && keyStack[matchedKey].length > 0) {
+                const item = keyStack[matchedKey][0];
+                item.handler(e);
+            }
+        });
         listener = true;
     }
 };

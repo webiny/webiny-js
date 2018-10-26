@@ -125,3 +125,36 @@ export const deletePage = gql`
         }
     }
 `;
+
+const elementFields = `
+id
+name
+type
+content
+keywords
+`;
+
+export const listElements = gql`
+    query CmsListElements {
+        cms {
+            elements: listElements {
+                data {
+                    ${elementFields}
+                }
+            }
+        }
+    }
+`;
+
+export const createElement = gql`
+    mutation CmsCreateElement($data: ElementInput!) {
+        cms {
+            element: createElement(data: $data) {
+                data {
+                    ${elementFields}
+                }
+                ${error}
+            }
+        }
+    }
+`;

@@ -115,7 +115,7 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
                 }
 
                 this.createdBy = user.id;
-                this.title = "Untitled";
+                this.title = this.title || "Untitled";
                 this.slug = (await this.category).url + "untitled-" + this.id;
                 this.version = await this.getNextVersion();
             });

@@ -1,0 +1,79 @@
+// @flow
+import React from "react";
+import { css } from "emotion";
+import { compose, withProps } from "recompose";
+import {
+    Dialog,
+    DialogHeader,
+    DialogHeaderTitle,
+    DialogBody,
+    DialogFooter,
+    DialogAccept,
+    DialogCancel
+} from "webiny-ui/Dialog";
+import { Input } from "webiny-ui/Input";
+import { Form } from "webiny-form";
+
+const narrowDialog = css({
+    ".mdc-dialog__surface": {
+        width: 600,
+        minWidth: 600
+    }
+});
+
+type Props = {
+    open: boolean,
+    onClose: Function,
+    onSubmit: Function,
+    element: Object
+};
+
+const removeIdsAndPaths = el => {
+    delete el.id;
+    delete el.path;
+
+    el.elements.forEach(el => {
+        delete el.id;
+        delete el.path;
+        if (el.elements.length) {
+            removeIdsAndPaths(el);
+        }
+    });
+};
+
+const SaveDialog = ({ open, onClose, onSubmit, element }: Props) => {
+    return (
+        <Dialog open={open} onClose={onClose} className={narrowDialog}>
+            <Form
+                onSubmit={data => {
+                    removeIdsAndPaths(data.content);
+                    onSubmit(data);
+                }}
+                data={{
+                    type: element.type === "cms-element-block" ? "block" : "element",
+                    content: element,
+                    group: "cms-element-group-saved"
+                }}
+            >
+                {({ submit, Bind }) => (
+                    <React.Fragment>
+                        <DialogHeader>
+                            <DialogHeaderTitle>Save element</DialogHeaderTitle>
+                        </DialogHeader>
+                        <DialogBody>
+                            <Bind name={"name"} validators={"required"}>
+                                <Input label={"Name"} />
+                            </Bind>
+                        </DialogBody>
+                        <DialogFooter>
+                            <DialogCancel>Cancel</DialogCancel>
+                            <DialogAccept onClick={submit}>Save</DialogAccept>
+                        </DialogFooter>
+                    </React.Fragment>
+                )}
+            </Form>
+        </Dialog>
+    );
+};
+
+export default SaveDialog;

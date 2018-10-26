@@ -16,10 +16,12 @@ const getElementActions = plugin => {
         return [];
     }
 
-    return plugin.element.settings.map(name => getPlugin(name || "cms-element-settings-divider"));
+    const actions = plugin.element.settings.map(name => getPlugin(name || "cms-element-settings-divider"));
+
+    return [...actions, getPlugin("cms-element-settings-save")];
 };
 
-const Bar = ({ parent, element, activePlugin, deactivateElement }) => {
+const ElementSettingsBar = ({ parent, element, activePlugin, deactivateElement }) => {
     const plugin = getPlugin(element.type);
     const actions = getElementActions(plugin);
 
@@ -90,4 +92,4 @@ export default compose(
             this.props.removeKeyHandler("escape");
         }
     })
-)(Bar);
+)(ElementSettingsBar);

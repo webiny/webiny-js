@@ -8,9 +8,13 @@ import { redux } from "webiny-app-cms/editor/redux";
 import { withRouter } from "webiny-app/components";
 import { graphql, withApollo } from "react-apollo";
 import { getPage } from "webiny-app-cms/admin/graphql/pages";
+import { withSavedElements } from "webiny-app-cms/admin/components";
+import Snackbar from "webiny-app-admin/plugins/Snackbar/Snackbar";
 
-const Editor = ({ data, client }: Object) => {
-    if (data.loading) {
+let store = null;
+
+const Editor = ({ data, client, elements }: Object) => {
+    if (data.loading || !Array.isArray(elements)) {
         return <div>Loading editor...</div>;
     }
 
@@ -19,32 +23,40 @@ const Editor = ({ data, client }: Object) => {
         page.content = createElement("cms-element-document");
     }
 
-    return (
-        <Provider
-            store={redux.initStore(
-                {
-                    ui: {
-                        activeElement: null,
-                        dragging: false,
-                        highlightElement: null,
-                        plugins: {},
-                        resizing: false
-                    },
-                    tmp: {},
-                    page,
-                    revisions
+    if (!store) {
+        store = redux.initStore(
+            {
+                ui: {
+                    activeElement: null,
+                    dragging: false,
+                    highlightElement: null,
+                    plugins: {},
+                    resizing: false
                 },
-                { client }
-            )}
-        >
-            <CmsEditor />
-        </Provider>
+                tmp: {},
+                page,
+                revisions
+            },
+            { client }
+        );
+    }
+
+    return (
+        <React.Fragment>
+            <Provider store={store}>
+                <CmsEditor />
+            </Provider>
+            <div style={{ zIndex: 10, position: "absolute" }}>
+                <Snackbar />
+            </div>
+        </React.Fragment>
     );
 };
 
 export default compose(
     withApollo,
     withRouter(),
+    withSavedElements,
     graphql(getPage, {
         options: ({ router }) => {
             const { id } = router.getParams();

@@ -137,7 +137,6 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                             <Styled.BlockList>{plugins.map(this.renderPreview)}</Styled.BlockList>
                         </Tab>
                         <Tab label={"Saved"} />
-                        <Tab label={"Global"} />
                     </Tabs>
                 </Elevation>
             </SecondaryLayout>
