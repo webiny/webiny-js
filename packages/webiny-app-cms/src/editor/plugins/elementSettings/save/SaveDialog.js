@@ -12,6 +12,8 @@ import {
     DialogCancel
 } from "webiny-ui/Dialog";
 import { Input } from "webiny-ui/Input";
+import { Tags } from "webiny-ui/Tags";
+import { Grid, Cell } from "webiny-ui/Grid";
 import { Form } from "webiny-form";
 
 const narrowDialog = css({
@@ -42,6 +44,7 @@ const removeIdsAndPaths = el => {
 };
 
 const SaveDialog = ({ open, onClose, onSubmit, element }: Props) => {
+    const type = element.type === "cms-element-block" ? "block" : "element";
     return (
         <Dialog open={open} onClose={onClose} className={narrowDialog}>
             <Form
@@ -50,20 +53,35 @@ const SaveDialog = ({ open, onClose, onSubmit, element }: Props) => {
                     onSubmit(data);
                 }}
                 data={{
-                    type: element.type === "cms-element-block" ? "block" : "element",
-                    content: element,
-                    group: "cms-element-group-saved"
+                    type,
+                    content: element
                 }}
             >
-                {({ submit, Bind }) => (
+                {({ data, submit, Bind }) => (
                     <React.Fragment>
                         <DialogHeader>
-                            <DialogHeaderTitle>Save element</DialogHeaderTitle>
+                            <DialogHeaderTitle>Save {type}</DialogHeaderTitle>
                         </DialogHeader>
                         <DialogBody>
-                            <Bind name={"name"} validators={"required"}>
-                                <Input label={"Name"} />
-                            </Bind>
+                            <Grid>
+                                <Cell span={12}>
+                                    <Bind name={"name"} validators={"required"}>
+                                        <Input label={"Name"} />
+                                    </Bind>
+                                </Cell>
+                            </Grid>
+                            {data.type === "block" && (
+                                <Grid>
+                                    <Cell span={12}>
+                                        <Bind name="keywords">
+                                            <Tags
+                                                label="Keywords"
+                                                description="Enter search keywords"
+                                            />
+                                        </Bind>
+                                    </Cell>
+                                </Grid>
+                            )}
                         </DialogBody>
                         <DialogFooter>
                             <DialogCancel>Cancel</DialogCancel>

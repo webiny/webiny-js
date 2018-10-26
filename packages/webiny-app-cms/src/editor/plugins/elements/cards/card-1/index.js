@@ -21,24 +21,31 @@ export default (): ElementPluginType => {
     return {
         name: "cms-element-card-1",
         type: "cms-element",
-        element: {
+        toolbar: {
             title: "Card 1",
             group: "cms-element-group-card",
-            settings: [
-                "cms-element-settings-background",
-                "",
-                "cms-element-settings-border",
-                "cms-element-settings-shadow",
-                "",
-                "cms-element-settings-padding",
-                "cms-element-settings-margin",
-                "",
-                "cms-element-settings-clone",
-                "cms-element-settings-delete",
-                "",
-                "cms-element-settings-advanced"
-            ]
+            preview() {
+                return (
+                    <PreviewBox>
+                        <ColumnIcon />
+                    </PreviewBox>
+                );
+            }
         },
+        settings: [
+            "cms-element-settings-background",
+            "",
+            "cms-element-settings-border",
+            "cms-element-settings-shadow",
+            "",
+            "cms-element-settings-padding",
+            "cms-element-settings-margin",
+            "",
+            "cms-element-settings-clone",
+            "cms-element-settings-delete",
+            "",
+            "cms-element-settings-advanced"
+        ],
         target: ["cms-element-column"],
         create(options = {}) {
             return {
@@ -98,13 +105,6 @@ export default (): ElementPluginType => {
         },
         render(props) {
             return <Card {...props} />;
-        },
-        preview() {
-            return (
-                <PreviewBox>
-                    <ColumnIcon />
-                </PreviewBox>
-            );
         },
         onReceived({ store, source, target, position = null }) {
             let element = source.path ? cloneElement(source) : createElement(source.type, {}, target);

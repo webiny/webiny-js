@@ -56,7 +56,7 @@ const Editor = ({ data, client, elements }: Object) => {
 export default compose(
     withApollo,
     withRouter(),
-    withSavedElements,
+    withSavedElements(),
     graphql(getPage, {
         options: ({ router }) => {
             const { id } = router.getParams();

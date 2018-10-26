@@ -49,7 +49,7 @@ export const AddBlock = styled("div")({
     width: 300,
     margin: 5,
     textAlign: "center",
-    marginTop: 45
+    //marginTop: 45
 });
 
 export const Overlay = styled("div")({
@@ -57,10 +57,10 @@ export const Overlay = styled("div")({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    top: 0,
+    top: 42,
     left: 0,
     width: "100%",
-    height: "100%",
+    height: "calc(100% - 42px)",
     zIndex: 10,
     opacity: 0,
     transform: "scale(0.9)",

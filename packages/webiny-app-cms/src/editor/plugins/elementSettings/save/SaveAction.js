@@ -4,7 +4,7 @@ import { graphql } from "react-apollo";
 import SaveDialog from "./SaveDialog";
 import { withSnackbar } from "webiny-app-admin/components";
 import { withKeyHandler, withActiveElement } from "webiny-app-cms/editor/components";
-import { createElementPlugin } from "webiny-app-cms/admin/components";
+import { createElementPlugin, createBlockPlugin } from "webiny-app-cms/admin/components";
 import { createElement } from "webiny-app-cms/admin/graphql/pages";
 
 type Props = {
@@ -51,11 +51,16 @@ export default compose(
             hideDialog();
             const { data: res } = await createElement({ variables: { data: formData } });
             const { data } = res.cms.element;
-            createElementPlugin(data);
+            if (data.type === "block") {
+                createBlockPlugin(data);
+            } else {
+                createElementPlugin(data);
+            }
 
             showSnackbar(
                 <span>
-                    Element <strong>{data.name}</strong> saved!
+                    {formData.type[0].toUpperCase() + formData.type.slice(1)}{" "}
+                    <strong>{data.name}</strong> saved!
                 </span>
             );
         }
@@ -64,7 +69,7 @@ export default compose(
     lifecycle({
         componentDidUpdate() {
             if (this.props.isDialogOpened) {
-                // Need this to maintain the key press stack, as Material is handling ESC by itself.
+                // Need to add dummy listeners, as Material is handling ESC by itself.
                 this.props.addKeyHandler("escape", () => {});
             } else {
                 this.props.removeKeyHandler("escape");

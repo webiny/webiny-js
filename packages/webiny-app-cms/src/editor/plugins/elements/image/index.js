@@ -18,37 +18,37 @@ export default (): ElementPluginType => {
     return {
         name: "cms-element-image",
         type: "cms-element",
-        element: {
+        toolbar: {
             title: "Image",
             group: "cms-element-group-image",
-            settings: [
-                "cms-element-settings-background",
-                "",
-                "cms-element-settings-border",
-                "cms-element-settings-shadow",
-                "",
-                "cms-element-settings-padding",
-                "cms-element-settings-margin",
-                "",
-                "cms-element-settings-clone",
-                "cms-element-settings-delete",
-                "",
-                "cms-element-settings-advanced"
-            ]
+            preview() {
+                return (
+                    <PreviewBox>
+                        <ImageIcon />
+                    </PreviewBox>
+                );
+            }
         },
+        settings: [
+            "cms-element-settings-background",
+            "",
+            "cms-element-settings-border",
+            "cms-element-settings-shadow",
+            "",
+            "cms-element-settings-padding",
+            "cms-element-settings-margin",
+            "",
+            "cms-element-settings-clone",
+            "cms-element-settings-delete",
+            "",
+            "cms-element-settings-advanced"
+        ],
         target: ["cms-element-column", "cms-element-row"],
         create(options) {
             return { type: "cms-element-image", elements: [], ...options };
         },
         render(props) {
             return <Image {...props} />;
-        },
-        preview() {
-            return (
-                <PreviewBox>
-                    <ImageIcon />
-                </PreviewBox>
-            );
         }
     };
 };
