@@ -2,7 +2,7 @@
 import _ from "lodash";
 import mdbid from "mdbid";
 import type { Connection, Pool } from "mysql";
-import { Entity, Driver, QueryResult } from "webiny-entity";
+import { Entity, Driver, QueryResult, createPaginationMeta } from "webiny-entity";
 import { MySQLConnection } from "webiny-mysql-connection";
 import { Attribute } from "webiny-model";
 import type {
@@ -173,7 +173,13 @@ class MySQLDriver extends Driver {
         const sql = new Select(clonedOptions, entity).generate();
         const results = await this.getConnection().query([sql, "SELECT FOUND_ROWS() as count"]);
 
-        return new QueryResult(results[0], { totalCount: results[1][0].count });
+        const meta = createPaginationMeta({
+            totalCount: results[1][0].count,
+            page: options.page,
+            perPage: options.perPage
+        });
+
+        return new QueryResult(results[0], meta);
     }
 
     async findOne(

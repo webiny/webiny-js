@@ -1,5 +1,6 @@
 // @flow
 import type { Entity, EntityCollection } from "webiny-entity";
+import { createPaginationMeta } from "webiny-entity";
 import { ListResponse } from "webiny-api/graphql/responses";
 
 type EntityFetcher = (context: Object) => Class<Entity>;
@@ -39,19 +40,12 @@ export default (entityFetcher: EntityFetcher) => async (
     };
 
     const pages: EntityCollection<Entity> = await entityClass.find({ sql });
-
-    const meta: Object = {
-        page,
-        perPage,
-        count: pages.length,
-        totalCount: pages.getMeta().totalCount
-    };
-
-    meta.totalPages = Math.ceil(meta.totalCount / meta.perPage);
-    meta.to = (meta.page - 1) * meta.perPage + meta.count;
-    meta.from = meta.to - meta.count + 1;
-    meta.nextPage = meta.page < meta.totalPages ? meta.page + 1 : null;
-    meta.previousPage = meta.page === 1 ? null : meta.page - 1;
-
-    return new ListResponse(pages, meta);
+    return new ListResponse(
+        pages,
+        createPaginationMeta({
+            page,
+            perPage,
+            totalCount: pages.getMeta().totalCount
+        })
+    );
 };

@@ -26,9 +26,7 @@ export const loadGroups = gql`
                     createdOn
                 }
                 meta {
-                    count
                     totalCount
-                    totalPages
                     to
                     from
                     nextPage
