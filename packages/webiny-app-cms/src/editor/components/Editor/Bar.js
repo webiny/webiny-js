@@ -10,7 +10,7 @@ class Bar extends React.Component {
 
         for (let i = 0; i < plugins.length; i++) {
             const plugin = plugins[i];
-            if (plugin.shouldRender({ state: this.props.state })) {
+            if (plugin.shouldRender()) {
                 pluginBar = plugin.render();
                 break;
             }
@@ -25,6 +25,4 @@ class Bar extends React.Component {
     }
 }
 
-const stateToProps = state => ({ state });
-
-export default connect(stateToProps)(Bar);
+export default Bar;

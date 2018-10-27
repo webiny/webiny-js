@@ -62,13 +62,6 @@ export const getParentElement = (state, path) => {
 export const getActiveElementPath = state => getUi(state).activeElement;
 
 /**
- * Get active preview plugin.
- * This is used to render editor content using a custom wrapper.
- * For example: to simulate different device sizes.
- */
-export const getActivePreview = state => getUi(state).preview;
-
-/**
  * Get editor plugins (this mostly contains UI state).
  */
 export const getPlugins = state => getUi(state).plugins || {};

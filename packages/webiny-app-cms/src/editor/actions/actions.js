@@ -104,7 +104,7 @@ addReducer([DEACTIVATE_PLUGIN], "ui.plugins", (state, action) => {
     return { ...state, [plugin.type]: null };
 });
 
-export const highlightElement = createAction(HIGHLIGHT_ELEMENT, { log: false });
+export const highlightElement = createAction(HIGHLIGHT_ELEMENT, { log: true });
 addReducer([HIGHLIGHT_ELEMENT], "ui.highlightElement", (state, action) => {
     return action.payload.element ? action.payload.element : null;
 });
