@@ -1,3 +1,4 @@
+// @flow
 import gql from "graphql-tag";
 
 const error = `
@@ -45,13 +46,9 @@ export const listPages = gql`
                     }
                 }
                 meta {
-                    count
                     totalCount
-                    from
                     to
-                    page
-                    totalPages
-                    perPage
+                    from
                     nextPage
                     previousPage
                 }

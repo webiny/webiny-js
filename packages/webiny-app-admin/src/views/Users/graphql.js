@@ -1,3 +1,4 @@
+// @flow
 import gql from "graphql-tag";
 
 const fields = `
@@ -26,9 +27,7 @@ export const loadUsers = gql`
                     createdOn
                 }
                 meta {
-                    count
                     totalCount
-                    totalPages
                     to
                     from
                     nextPage
