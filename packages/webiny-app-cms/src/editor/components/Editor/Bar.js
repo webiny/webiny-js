@@ -1,6 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
+import { isEqual, pick } from "lodash";
 import { getPlugins } from "webiny-app/plugins";
+import { getUi } from "webiny-app-cms/editor/selectors";
 import DefaultEditorBar from "./DefaultEditorBar";
 
 class Bar extends React.Component {
@@ -25,4 +27,15 @@ class Bar extends React.Component {
     }
 }
 
-export default Bar;
+const pickKeys = ["activeElement", "plugins"];
+
+const stateToProps = state => {
+    return { ...pick(getUi(state), pickKeys) };
+};
+
+export default connect(
+    stateToProps,
+    null,
+    null,
+    { areStatePropsEqual: (state, prevState) => isEqual(state, prevState) }
+)(Bar);

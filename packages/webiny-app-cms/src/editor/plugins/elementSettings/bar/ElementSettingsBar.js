@@ -72,13 +72,13 @@ const ElementSettingsBar = ({ parent, element, activePlugin, deactivateElement }
 };
 
 export default compose(
-    withActiveElement(),
     connect(
         state => ({
             activePlugin: getActivePlugin("cms-element-settings")(state)
         }),
         { deactivateElement }
     ),
+    withActiveElement(),
     onlyUpdateForKeys(["element", "activePlugin"]),
     withKeyHandler(),
     lifecycle({

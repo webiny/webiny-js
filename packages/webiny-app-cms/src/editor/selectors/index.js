@@ -122,8 +122,6 @@ export const getElementProps = (state, { element }) => {
 
     return {
         active,
-        highlight: highlight && !dragging && !resizing,
-        isResizing: resizing,
-        isDragging: dragging
+        highlight: highlight && !dragging && !resizing
     };
 };

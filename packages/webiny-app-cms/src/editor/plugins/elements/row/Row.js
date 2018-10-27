@@ -42,7 +42,7 @@ const Row = ({
     const row = React.createRef();
 
     return (
-        <ElementStyle element={rowElement} style={{zIndex: 20, position: 'relative'}}>
+        <ElementStyle element={rowElement} style={{ zIndex: 20, position: "relative" }}>
             <div ref={row} className={innerElement}>
                 {elements.map((element, index) => (
                     <ColumnContainer
@@ -60,6 +60,10 @@ const Row = ({
                                         updateElement({ element: rowElement });
                                     }}
                                     onResize={diff => {
+                                        if (!row.current) {
+                                            return;
+                                        }
+
                                         const change = (diff / row.current.offsetWidth) * 100;
                                         resizeRowColumn({ row: path, column: index, change });
                                     }}
