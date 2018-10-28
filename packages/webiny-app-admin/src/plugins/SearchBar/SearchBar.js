@@ -132,75 +132,83 @@ class SearchBar extends React.Component<*, State> {
 
     render() {
         return (
-            <Elevation className={classnames(searchWrapper, { active: this.state.active })} z={0}>
-                <SearchBarWrapper>
-                    <SearchBarInputWrapper>
-                        <Icon className={icon} icon={<SearchIcon />} />
+            <Downshift ref={this.downshift} itemToString={item => item && item.label}>
+                {downshiftProps => {
+                    const {
+                        selectedItem,
+                        isOpen,
+                        openMenu,
+                        closeMenu,
+                        getInputProps
+                    } = downshiftProps;
 
-                        <Downshift ref={this.downshift} itemToString={item => item && item.label}>
-                            {downshiftProps => {
-                                const {
-                                    selectedItem,
-                                    isOpen,
-                                    openMenu,
-                                    closeMenu,
-                                    getInputProps
-                                } = downshiftProps;
+                    return (
+                        <div style={{ width: "100%" }}>
+                            <Elevation
+                                className={classnames(searchWrapper, { active: this.state.active })}
+                                z={0}
+                            >
+                                <SearchBarWrapper>
+                                    <SearchBarInputWrapper>
+                                        <Icon className={icon} icon={<SearchIcon />} />
 
-                                return (
-                                    <div>
-                                        <input
-                                            {...getInputProps({
-                                                placeholder: "Search...",
-                                                className: classnames(
-                                                    "mdc-text-field__input",
-                                                    searchBarInput
-                                                ),
-                                                ref: this.input,
-                                                value: this.state.searchTerm.current,
-                                                onClick: openMenu,
-                                                onBlur: () => {
-                                                    this.cancelSearchTerm();
-                                                    this.setState({ active: false });
-                                                },
-                                                onFocus: () => {
-                                                    this.setState({ active: true });
-                                                    openMenu();
-                                                },
-                                                onChange: e => {
-                                                    const value = e.target.value || "";
-                                                    this.setState(state => {
-                                                        state.searchTerm.current = value;
-                                                        return state;
-                                                    });
-                                                },
-                                                onKeyUp: e => {
-                                                    switch (keycode(e)) {
-                                                        case "esc":
-                                                            e.preventDefault();
-                                                            this.cancelSearchTerm();
-                                                            closeMenu();
-                                                            break;
-                                                        case "enter":
-                                                            e.preventDefault();
-                                                            if (selectedItem) {
+                                        <React.Fragment>
+                                            <input
+                                                {...getInputProps({
+                                                    placeholder: "Search...",
+                                                    className: classnames(
+                                                        "mdc-text-field__input",
+                                                        searchBarInput
+                                                    ),
+                                                    ref: this.input,
+                                                    value: this.state.searchTerm.current,
+                                                    onClick: openMenu,
+                                                    onBlur: () => {
+                                                        this.cancelSearchTerm();
+                                                        this.setState({ active: false });
+                                                    },
+                                                    onFocus: () => {
+                                                        this.setState({ active: true });
+                                                        openMenu();
+                                                    },
+                                                    onChange: e => {
+                                                        const value = e.target.value || "";
+                                                        this.setState(state => {
+                                                            state.searchTerm.current = value;
+                                                            return state;
+                                                        });
+                                                    },
+                                                    onKeyUp: e => {
+                                                        switch (keycode(e)) {
+                                                            case "esc":
+                                                                e.preventDefault();
+                                                                this.cancelSearchTerm();
                                                                 closeMenu();
-                                                                this.submitSearchTerm(selectedItem);
-                                                            }
-                                                            break;
+                                                                break;
+                                                            case "enter":
+                                                                e.preventDefault();
+                                                                if (selectedItem) {
+                                                                    closeMenu();
+                                                                    this.submitSearchTerm(
+                                                                        selectedItem
+                                                                    );
+                                                                }
+                                                                break;
+                                                        }
                                                     }
-                                                }
-                                            })}
-                                        />
-                                        {isOpen && <SearchBarDropdown context={this} />}
-                                    </div>
-                                );
-                            }}
-                        </Downshift>
-                        <SearchShortcut>/</SearchShortcut>
-                    </SearchBarInputWrapper>
-                </SearchBarWrapper>
-            </Elevation>
+                                                })}
+                                            />
+                                        </React.Fragment>
+
+                                        <SearchShortcut>/</SearchShortcut>
+                                    </SearchBarInputWrapper>
+                                </SearchBarWrapper>
+                                {isOpen && <SearchBarDropdown context={this} />}
+                            </Elevation>
+                        </div>
+                    );
+                }}
+            </Downshift>
         );
     }
 }

@@ -51,17 +51,21 @@ export const searchBarInput = css({
 export const searchBarDropdown = css({
     position: "absolute",
     background: "white",
-    left: 0,
-    width: "100%",
-    top: 47,
+    left: -1,
+    width: "calc(100% + 2px)",
+    top: 45,
     zIndex: "2",
     color: "var(--mdc-theme-on-surface)",
-    ".mdc-list-item": {
-        "&.selected": {
-            fontWeight: "bold"
-        },
-        "&.highlighted": {
-            backgroundColor: "var(--mdc-theme-on-background)"
+    borderRadius: "0 0 5px 5px",
+    ".mdc-list": {
+        padding: 0,
+        ".mdc-list-item": {
+            "&.selected": {
+                fontWeight: "bold"
+            },
+            "&.highlighted": {
+                backgroundColor: "var(--mdc-theme-on-background)"
+            }
         }
     }
 });
@@ -75,8 +79,9 @@ export const icon = css({
     }
 });
 
-export const iconDown = css({
-    cursor: "pointer"
+export const iconSearchType = css({
+    cursor: "pointer",
+    paddingLeft: 5
 });
 
 export const searchWrapper = css({
