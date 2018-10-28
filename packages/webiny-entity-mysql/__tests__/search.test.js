@@ -21,10 +21,10 @@ describe("search test", () => {
             }
         });
 
-        expect(queryStub.getCall(0).args[0]).toEqual([
-            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE ((`name` LIKE '%this is%' OR `slug` LIKE '%this is%')) LIMIT 10",
-            "SELECT FOUND_ROWS() as count"
-        ]);
+        expect(queryStub.getCall(0).args[0]).toEqual(
+            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE ((`name` LIKE '%this is%' OR `slug` LIKE '%this is%')) LIMIT 10"
+        );
+        expect(queryStub.getCall(1).args[0]).toEqual("SELECT FOUND_ROWS() as count");
 
         queryStub.restore();
     });
@@ -44,10 +44,11 @@ describe("search test", () => {
             }
         });
 
-        expect(queryStub.getCall(0).args[0]).toEqual([
-            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE ((`name` LIKE '%this is%' AND `slug` LIKE '%this is%')) LIMIT 10",
-            "SELECT FOUND_ROWS() as count"
-        ]);
+        expect(queryStub.getCall(0).args[0]).toEqual(
+            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE ((`name` LIKE '%this is%' AND `slug` LIKE '%this is%')) LIMIT 10"
+        );
+
+        expect(queryStub.getCall(1).args[0]).toEqual("SELECT FOUND_ROWS() as count");
 
         queryStub.restore();
     });
@@ -66,10 +67,10 @@ describe("search test", () => {
             }
         });
 
-        expect(queryStub.getCall(0).args[0]).toEqual([
-            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE ((`name` LIKE '%this is%')) LIMIT 10",
-            "SELECT FOUND_ROWS() as count"
-        ]);
+        expect(queryStub.getCall(0).args[0]).toEqual(
+            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE ((`name` LIKE '%this is%')) LIMIT 10"
+        );
+        expect(queryStub.getCall(1).args[0]).toEqual("SELECT FOUND_ROWS() as count");
 
         queryStub.restore();
     });
@@ -93,10 +94,10 @@ describe("search test", () => {
             }
         });
 
-        expect(queryStub.getCall(0).args[0]).toEqual([
-            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE (((`name` LIKE '%this is%' OR `slug` LIKE '%this is%') AND `age` > 30 AND `country` = 'HR')) LIMIT 10",
-            "SELECT FOUND_ROWS() as count"
-        ]);
+        expect(queryStub.getCall(0).args[0]).toEqual(
+            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE (((`name` LIKE '%this is%' OR `slug` LIKE '%this is%') AND `age` > 30 AND `country` = 'HR')) LIMIT 10"
+        );
+        expect(queryStub.getCall(1).args[0]).toEqual("SELECT FOUND_ROWS() as count");
 
         queryStub.restore();
     });
@@ -120,9 +121,9 @@ describe("search test", () => {
             }
         });
 
-        expect(queryStub.getCall(0).args[0]).toEqual([
-            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE (((`name` LIKE '%this is%' OR `slug` LIKE '%this is%') AND `age` <= 30)) ORDER BY createdOn DESC, id ASC LIMIT 7 OFFSET 14",
-            "SELECT FOUND_ROWS() as count"
-        ]);
+        expect(queryStub.getCall(0).args[0]).toEqual(
+            "SELECT SQL_CALC_FOUND_ROWS * FROM `SimpleEntity` WHERE (((`name` LIKE '%this is%' OR `slug` LIKE '%this is%') AND `age` <= 30)) ORDER BY createdOn DESC, id ASC LIMIT 7 OFFSET 14"
+        );
+        expect(queryStub.getCall(1).args[0]).toEqual("SELECT FOUND_ROWS() as count");
     });
 });

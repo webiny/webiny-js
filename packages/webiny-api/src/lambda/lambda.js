@@ -1,3 +1,4 @@
+// @flow
 import { ApolloServer } from "apollo-server-lambda";
 import { applyMiddleware } from "graphql-middleware";
 import { prepareSchema, createGraphqlRunner } from "../graphql/schema";
@@ -45,16 +46,16 @@ function getErrorResponse(error: Error) {
     };
 }
 
-export const createHandler = (config = {}) => {
+export const createHandler = (config: Object = {}) => {
     let handler = null;
     return async (event, context) => {
-        return new Promise(async (resolve, reject) => {
+        const response = await new Promise(async (resolve, reject) => {
             if (!handler) {
                 try {
                     handler = await setupHandler(config);
                 } catch (e) {
                     if (process.env.NODE_ENV === "development") {
-                        console.log(e);
+                        console.log(e); // eslint-disable-line
                     }
                     return resolve(getErrorResponse(e));
                 }
@@ -72,11 +73,20 @@ export const createHandler = (config = {}) => {
                 }
 
                 if (process.env.NODE_ENV === "development") {
-                    config.database.connection.end();
                     data.body = JSON.stringify(JSON.parse(data.body), null, 2);
                 }
+
                 resolve(data);
             });
         });
+
+        // From the docs of "serverless-mysql":
+        // Once you’ve run all your queries and your serverless function is ready to return data,
+        // call the end() method to perform connection management tasks. This will do things like
+        // check the current number of connections, clean up zombies, or even disconnect if there
+        // are too many connections being used.
+        await config.entity.driver.getConnection().end();
+
+        return response;
     };
 };

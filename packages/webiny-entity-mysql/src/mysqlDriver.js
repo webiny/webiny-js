@@ -1,10 +1,10 @@
 // @flow
 import _ from "lodash";
 import mdbid from "mdbid";
-import type { Connection, Pool } from "mysql";
 import { Entity, Driver, QueryResult, createPaginationMeta } from "webiny-entity";
-import { MySQLConnection } from "webiny-mysql-connection";
 import { Attribute } from "webiny-model";
+import mysql from "serverless-mysql";
+
 import type {
     EntitySaveParams,
     EntityFindParams,
@@ -18,7 +18,7 @@ import { MySQLModel } from "./model";
 import operators from "./operators";
 
 declare type MySQLDriverOptions = {
-    connection: Connection | Pool,
+    mysql: Object,
     model?: Class<MySQLModel>,
     operators?: { [string]: Operator },
     tables?: {
@@ -29,7 +29,7 @@ declare type MySQLDriverOptions = {
 };
 
 class MySQLDriver extends Driver {
-    connection: MySQLConnection;
+    mysql: Object;
     model: Class<MySQLModel>;
     operators: { [string]: Operator };
     tables: {
@@ -40,7 +40,7 @@ class MySQLDriver extends Driver {
     constructor(options: MySQLDriverOptions) {
         super();
         this.operators = { ...operators, ...(options.operators || {}) };
-        this.connection = new MySQLConnection(options.connection);
+        this.connection = mysql({ config: options.mysql });
         this.model = options.model || MySQLModel;
 
         this.tables = {
@@ -171,15 +171,16 @@ class MySQLDriver extends Driver {
         clonedOptions.calculateFoundRows = true;
 
         const sql = new Select(clonedOptions, entity).generate();
-        const results = await this.getConnection().query([sql, "SELECT FOUND_ROWS() as count"]);
+        const results = await this.getConnection().query(sql);
+        const totalCount = await this.getConnection().query("SELECT FOUND_ROWS() as count");
 
         const meta = createPaginationMeta({
-            totalCount: results[1][0].count,
+            totalCount,
             page: options.page,
             perPage: options.perPage
         });
 
-        return new QueryResult(results[0], meta);
+        return new QueryResult(results, meta);
     }
 
     async findOne(
@@ -245,7 +246,7 @@ class MySQLDriver extends Driver {
         return false;
     }
 
-    getConnection(): MySQLConnection {
+    getConnection() {
         return this.connection;
     }
 
@@ -293,7 +294,7 @@ class MySQLDriver extends Driver {
     }
 
     async test() {
-        await this.getConnection().test();
+        await this.getConnection().query("SELECT version()");
         return true;
     }
 
