@@ -3,7 +3,6 @@ import _ from "lodash";
 import mdbid from "mdbid";
 import { Entity, Driver, QueryResult, createPaginationMeta } from "webiny-entity";
 import { Attribute } from "webiny-model";
-import mysql from "serverless-mysql";
 
 import type {
     EntitySaveParams,
@@ -18,7 +17,7 @@ import { MySQLModel } from "./model";
 import operators from "./operators";
 
 declare type MySQLDriverOptions = {
-    mysql: Object,
+    connection: Object,
     model?: Class<MySQLModel>,
     operators?: { [string]: Operator },
     tables?: {
@@ -29,7 +28,7 @@ declare type MySQLDriverOptions = {
 };
 
 class MySQLDriver extends Driver {
-    mysql: Object;
+    connection: Object;
     model: Class<MySQLModel>;
     operators: { [string]: Operator };
     tables: {
@@ -40,7 +39,7 @@ class MySQLDriver extends Driver {
     constructor(options: MySQLDriverOptions) {
         super();
         this.operators = { ...operators, ...(options.operators || {}) };
-        this.connection = mysql({ config: options.mysql });
+        this.connection = options.connection;
         this.model = options.model || MySQLModel;
 
         this.tables = {

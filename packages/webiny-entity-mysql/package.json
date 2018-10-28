@@ -20,9 +20,11 @@
     "mdbid": "^1.0.0",
     "mysql": "^2.15.0",
     "sqlstring": "^2.3.0",
-    "serverless-mysql": "^1.1.0",
     "webiny-entity": "0.0.0-semantically-released",
     "webiny-mysql-connection": "0.0.0-semantically-released"
+  },
+  "peerDependencies": {
+    "serverless-mysql": "^1.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
