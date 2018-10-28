@@ -107,7 +107,9 @@ const withSaveHandler = ({ create, update, response, variables, snackbar }): Fun
                                     setInvalidFields(error.data.invalidAttributes);
                                     return;
                                 } else {
-                                    showDialog(error.message, { title: "Something unexpected happened" });
+                                    showDialog(error.message, {
+                                        title: "Something unexpected happened"
+                                    });
                                     return;
                                 }
                             }

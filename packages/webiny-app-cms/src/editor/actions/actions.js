@@ -2,7 +2,12 @@ import _ from "lodash";
 import invariant from "invariant";
 import dotProp from "dot-prop-immutable";
 import undoable from "redux-undo";
-import { createAction, addMiddleware, addReducer, addHigherOrderReducer } from "webiny-app-cms/editor/redux";
+import {
+    createAction,
+    addMiddleware,
+    addReducer,
+    addHigherOrderReducer
+} from "webiny-app-cms/editor/redux";
 import { getPlugin } from "webiny-app/plugins";
 import { getElement, getParentElement } from "webiny-app-cms/editor/selectors";
 import { updateChildPaths, createElement } from "webiny-app-cms/editor/utils";
@@ -137,10 +142,7 @@ addReducer(
         if (element.type === "cms-element-document") {
             return "page.content";
         }
-        return (
-            "page.content." +
-            action.payload.element.path.replace(/\./g, ".elements.").slice(2)
-        );
+        return "page.content." + action.payload.element.path.replace(/\./g, ".elements.").slice(2);
     },
     (state, action) => {
         const { element } = action.payload;

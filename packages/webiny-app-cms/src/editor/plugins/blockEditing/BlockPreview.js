@@ -30,9 +30,9 @@ class BlockPreview extends React.Component {
                                 onClick={e => {
                                     addBlockToContent(plugin);
                                     !e.shiftKey &&
-                                    deactivatePlugin({
-                                        name: "cms-search-blocks-bar"
-                                    });
+                                        deactivatePlugin({
+                                            name: "cms-search-blocks-bar"
+                                        });
                                 }}
                                 icon={<AddIcon />}
                             />

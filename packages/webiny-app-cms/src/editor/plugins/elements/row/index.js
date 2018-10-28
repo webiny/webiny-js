@@ -80,7 +80,9 @@ export default (): ElementPluginType => {
 
         // This callback is executed when another element is dropped on the drop zones with type "row"
         onReceived({ source, target, position = null }) {
-            let element = source.path ? cloneElement(source) : createElement(source.type, {}, target);
+            let element = source.path
+                ? cloneElement(source)
+                : createElement(source.type, {}, target);
 
             if (element.type !== "column") {
                 element = createColumn({ elements: [element] });

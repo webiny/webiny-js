@@ -232,10 +232,7 @@ class Element extends React.Component<ElementProps, ElementState> {
                                                     <HelpIcon
                                                         className={"help-icon"}
                                                         onClick={() => {
-                                                            window.open(
-                                                                plugin.help,
-                                                                "_blank"
-                                                            );
+                                                            window.open(plugin.help, "_blank");
                                                         }}
                                                     />
                                                 )}

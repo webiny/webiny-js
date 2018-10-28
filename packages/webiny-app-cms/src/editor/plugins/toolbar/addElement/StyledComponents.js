@@ -48,7 +48,7 @@ export const AddBlock = styled("div")({
     display: "none",
     width: 300,
     margin: 5,
-    textAlign: "center",
+    textAlign: "center"
     //marginTop: 45
 });
 
