@@ -15,7 +15,7 @@
   "devDependencies": {
     "node-sass": "^4.9.3",
     "react-app-rewired": "^1.5.2",
-    "react-scripts": "2.0.0-next.a671462c",
+    "react-scripts": "^2.0.5",
     "source-map-explorer": "^1.5.0"
   },
   "scripts": {

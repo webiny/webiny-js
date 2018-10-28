@@ -50,24 +50,24 @@ export type ElementGroupPluginType = {
 export type ElementPluginType = {
     name: string,
     type: string,
-    element: {
+    toolbar: {
         // Element name (used by the editor).
         name: string,
         // Element title in the toolbar.
         title?: string,
         // Element group this element belongs to.
         group?: string,
-        // Array of element settings plugin names.
-        settings?: Array<string>,
-        // Help link
-        help?: string
+        // A function to render an element preview in the toolbar.
+        preview?: () => Node
     },
+    // Help link
+    help?: string,
+    // Array of element settings plugin names.
+    settings?: Array<string>,
     // A function to create an element data structure.
     create: ({ options: Object }) => Object,
     // A function to render an element in the editor.
     render: ({ theme: CmsThemeType, element: ElementType, preview: boolean }) => Node,
-    // A function to render an element preview in the toolbar.
-    preview?: () => Node,
     // A function to check if an element can be deleted.
     canDelete: ({ parent, element}) => boolean,
     // Executed when another element is dropped on the drop zones of current element.

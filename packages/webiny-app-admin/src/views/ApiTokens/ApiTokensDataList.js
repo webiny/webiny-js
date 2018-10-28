@@ -15,12 +15,10 @@ import { DeleteIcon } from "webiny-ui/List/DataList/icons";
 
 const t = i18n.namespace("Security.ApiTokensDataList");
 
-const ApiTokensDataList = ({ deleteRecord, dataList, data, meta, router }: WithCrudListProps) => {
+const ApiTokensDataList = ({ deleteRecord, dataList, router }: WithCrudListProps) => {
     return (
         <DataList
             {...dataList}
-            data={data}
-            meta={meta}
             title={t`API Tokens`}
             sorters={[
                 {

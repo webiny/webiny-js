@@ -16,24 +16,29 @@ export default (): ElementPluginType => {
     return {
         name: "cms-element-text",
         type: "cms-element",
-        element: {
+        toolbar: {
             title: "Text",
             group: "cms-element-group-text",
-            settings: [
-                "cms-element-settings-background",
-                "",
-                "cms-element-settings-border",
-                "cms-element-settings-shadow",
-                "",
-                "cms-element-settings-padding",
-                "cms-element-settings-margin",
-                "",
-                "cms-element-settings-clone",
-                "cms-element-settings-delete",
-                "",
-                "cms-element-settings-advanced"
-            ]
+            preview() {
+                const previewText = loremIpsum(defaultLipsum);
+
+                return <p className={className}>{previewText}</p>;
+            }
         },
+        settings: [
+            "cms-element-settings-background",
+            "",
+            "cms-element-settings-border",
+            "cms-element-settings-shadow",
+            "",
+            "cms-element-settings-padding",
+            "cms-element-settings-margin",
+            "",
+            "cms-element-settings-clone",
+            "cms-element-settings-delete",
+            "",
+            "cms-element-settings-advanced"
+        ],
         target: ["cms-element-column", "cms-element-row", "cms-element-list-item"],
         create({ content = {}, ...options }) {
             const previewText = content.text || loremIpsum(content.lipsum || defaultLipsum);
@@ -52,11 +57,6 @@ export default (): ElementPluginType => {
         },
         render(props) {
             return <Text {...props} />;
-        },
-        preview() {
-            const previewText = loremIpsum(defaultLipsum);
-
-            return <p className={className}>{previewText}</p>;
         }
     };
 };

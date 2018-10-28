@@ -8,4 +8,4 @@ import type { WithDataListParams } from "./types";
  * @returns {*}
  */
 export default (withDataListParams: WithDataListParams): string =>
-    withDataListParams.prop || withDataListParams.name;
+    withDataListParams.name || "dataList";

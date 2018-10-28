@@ -16,5 +16,5 @@ export type FormComponentProps = {
     value?: any,
 
     /* A callback that is executed each time a value is changed. */
-    onChange?: (any) => void
+    onChange?: (value: any) => void
 };

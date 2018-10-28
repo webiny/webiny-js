@@ -22,7 +22,7 @@ const CategoriesForm = ({
     data,
     invalidFields,
     onSubmit,
-    theme,
+    theme
 }: WithCrudFormProps & WithThemeProps) => {
     return (
         <Form data={data || {}} invalidFields={invalidFields} onSubmit={onSubmit}>
@@ -31,7 +31,7 @@ const CategoriesForm = ({
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={6}>
-                                <Bind name="name">
+                                <Bind name="name" validators={["required"]}>
                                     <Input label={t`Name`} />
                                 </Bind>
                             </Cell>

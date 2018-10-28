@@ -12,7 +12,7 @@ class EntityPool {
         return this.pool;
     }
 
-    add(entity: Entity): this {
+    add(entity: $Subtype<Entity>): this {
         if (!this.getPool()[entity.constructor.name]) {
             this.getPool()[entity.constructor.name] = {};
         }
@@ -21,7 +21,7 @@ class EntityPool {
         return this;
     }
 
-    has(entity: Class<Entity> | Entity, id: ?mixed): boolean {
+    has(entity: Class<$Subtype<Entity>> | Entity, id: ?mixed): boolean {
         const entityClass = entity.getClassName();
         if (!this.getPool()[entityClass]) {
             return false;
@@ -31,7 +31,7 @@ class EntityPool {
         return typeof this.getPool()[entityClass][entityId] !== "undefined";
     }
 
-    remove(entity: Entity): this {
+    remove(entity: $Subtype<Entity>): this {
         if (!this.getPool()[entity.constructor.name]) {
             return this;
         }
@@ -40,7 +40,7 @@ class EntityPool {
         return this;
     }
 
-    get(entity: Class<Entity> | Entity, id: ?mixed): ?Entity {
+    get(entity: Class<$Subtype<Entity>> | Entity, id: ?mixed): ?Entity {
         const entityClass = entity.getClassName();
         if (!this.getPool()[entityClass]) {
             return undefined;

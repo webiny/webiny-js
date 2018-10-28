@@ -2,7 +2,7 @@
 import _ from "lodash";
 import mdbid from "mdbid";
 import type { Connection, Pool } from "mysql";
-import { Entity, Driver, QueryResult } from "webiny-entity";
+import { Entity, Driver, QueryResult, createPaginationMeta } from "webiny-entity";
 import { MySQLConnection } from "webiny-mysql-connection";
 import { Attribute } from "webiny-model";
 import type {
@@ -101,7 +101,14 @@ class MySQLDriver extends Driver {
         }
 
         if (!this.autoIncrementIds) {
-            entity.id = MySQLDriver.__generateID();
+            // If ID was assigned manually, just check if it's valid.
+            if (entity.id) {
+                if (!this.isId(entity, entity.id)) {
+                    throw Error(`You have assigned an invalid id (${entity.id})`);
+                }
+            } else {
+                entity.id = MySQLDriver.__generateID();
+            }
         }
 
         const data = await entity.toStorage();
@@ -166,7 +173,13 @@ class MySQLDriver extends Driver {
         const sql = new Select(clonedOptions, entity).generate();
         const results = await this.getConnection().query([sql, "SELECT FOUND_ROWS() as count"]);
 
-        return new QueryResult(results[0], { totalCount: results[1][0].count });
+        const meta = createPaginationMeta({
+            totalCount: results[1][0].count,
+            page: options.page,
+            perPage: options.perPage
+        });
+
+        return new QueryResult(results[0], meta);
     }
 
     async findOne(
@@ -178,7 +191,9 @@ class MySQLDriver extends Driver {
             table: this.getTableName(entity),
             where: options.query,
             search: options.search,
+            groupBy: options.groupBy,
             sort: options.sort,
+            sql: options.sql,
             page: options.page,
             limit: 1
         };

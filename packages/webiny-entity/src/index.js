@@ -5,6 +5,7 @@ export { default as EntityModel } from "./entityModel";
 export { default as EntityPool } from "./entityPool";
 export { default as EntityPoolEntry } from "./entityPoolEntry";
 export { default as EntityCollection } from "./entityCollection";
+export { default as createPaginationMeta } from "./createPaginationMeta";
 export { default as EntityAttributesContainer } from "./entityAttributesContainer";
 export { default as QueryResult } from "./queryResult";
 export { default as Driver } from "./driver";

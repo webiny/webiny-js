@@ -39,6 +39,49 @@ describe("save test", () => {
         queryStub.restore();
     });
 
+    test("must generate correct query - use manually assigned ID (works only when not in autoIncrement mode)", async () => {
+        const queryStub = sandbox
+            .stub(SimpleEntity.getDriver().getConnection(), "query")
+            .callsFake(() => {
+                return [[], [{ count: null }]];
+            });
+
+        const simpleEntity = new SimpleEntity();
+
+        simpleEntity.id = "123";
+        let error = null;
+        try {
+            await simpleEntity.save();
+        } catch (e) {
+            error = e;
+        }
+
+        expect(error !== null).toBeTrue();
+        expect(error.message).toBe("You have assigned an invalid id (123)");
+
+        simpleEntity.id = "aaaaaaaaaabbbbbbbbbbcccc";
+        await simpleEntity.save();
+
+        // 'slug' and 'enabled' have default value set, that's why they are present in following statement.
+        expect(queryStub.getCall(0).args[0]).toEqual(
+            "INSERT INTO `SimpleEntity` (`id`, `slug`, `enabled`) VALUES ('aaaaaaaaaabbbbbbbbbbcccc', '', 1)"
+        );
+
+        simpleEntity.name = "test case";
+        simpleEntity.slug = "testCase";
+        simpleEntity.enabled = false;
+        simpleEntity.tags = ["test1", "test2"];
+
+        await simpleEntity.save();
+        expect(queryStub.getCall(1).args[0]).toEqual(
+            "UPDATE `SimpleEntity` SET `name` = 'test case', `slug` = 'testCase', `enabled` = 0, `tags` = '[\\\"test1\\\",\\\"test2\\\"]' WHERE (`id` = '" +
+                simpleEntity.id +
+                "') LIMIT 1"
+        );
+
+        queryStub.restore();
+    });
+
     test("should save new entity into database and entity should receive an integer ID", async () => {
         sandbox.stub(SimpleEntity.getDriver().getConnection(), "query");
 

@@ -41,12 +41,6 @@ describe("EntityCollection test", () => {
         expect(collection.getParams().a).toEqual(123);
     });
 
-    test("setTotalCount/getTotalCount methods must work correctly", async () => {
-        const collection = new EntityCollection();
-        collection.setTotalCount(444);
-        expect(collection.getTotalCount()).toEqual(444);
-    });
-
     test("setMeta/getMeta methods must work correctly", async () => {
         const collection = new EntityCollection();
         collection.setMeta({ a: 123 });

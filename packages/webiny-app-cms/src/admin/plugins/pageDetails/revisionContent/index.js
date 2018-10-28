@@ -8,6 +8,14 @@ export default ({
     name: "cms-page-details-revision-content",
     type: "cms-page-details",
     render({ pageDetails }: WithPageDetailsProps) {
-        return <Tabs>{renderPlugins("cms-page-details-revision-content", { pageDetails })}</Tabs>;
+        return (
+            <Tabs>
+                {renderPlugins(
+                    "cms-page-details-revision-content",
+                    { pageDetails },
+                    { wrapper: false }
+                )}
+            </Tabs>
+        );
     }
 }: CmsPageDetailsPluginType);

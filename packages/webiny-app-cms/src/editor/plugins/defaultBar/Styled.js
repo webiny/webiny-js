@@ -4,20 +4,14 @@ import { css } from "emotion";
 export const TitleInputWrapper = styled("div")({
     width: "100%",
     display: "flex",
-    alignItems: 'center',
-    position: 'relative',
+    alignItems: "center",
+    position: "relative",
     "> .mdc-text-field--upgraded": {
         height: 35,
         marginTop: "0 !important",
         paddingLeft: 10,
         paddingRight: 40
     }
-});
-
-export const resetBtn = css({
-    position: 'absolute !important',
-    right: -5,
-    top: -5
 });
 
 export const TitleWrapper = styled("div")({
@@ -35,17 +29,17 @@ export const TitleWrapper = styled("div")({
 export const PageTitle = styled("div")({
     border: "1px solid transparent",
     fontSize: 20,
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    width: '100%',
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    width: "100%",
     "&:hover": {
         border: "1px solid var(--mdc-theme-on-background)"
     }
 });
 
 export const pageTitleWrapper = css({
-    maxWidth: 'calc(100% - 50px)'
+    maxWidth: "calc(100% - 50px)"
 });
 
 export const PageVersion = styled("span")({

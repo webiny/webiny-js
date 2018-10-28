@@ -1,3 +1,4 @@
+// @flow
 import gql from "graphql-tag";
 
 const fields = `
@@ -9,7 +10,13 @@ const fields = `
 `;
 
 export const loadCategories = gql`
-    query LoadCategories($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SearchInput) {
+    query LoadCategories(
+        $where: JSON
+        $sort: JSON
+        $page: Int
+        $perPage: Int
+        $search: SearchInput
+    ) {
         cms {
             categories: listCategories(
                 where: $where
@@ -26,9 +33,7 @@ export const loadCategories = gql`
                     createdOn
                 }
                 meta {
-                    count
                     totalCount
-                    totalPages
                     to
                     from
                     nextPage

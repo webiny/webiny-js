@@ -5,13 +5,21 @@ import type { CmsPageDetailsPluginType, WithPageDetailsProps } from "webiny-app-
 import { Tab } from "webiny-ui/Tabs";
 import RenderElement from "webiny-app-cms/render/components/Element";
 import styled from "react-emotion";
+import { Elevation } from "webiny-ui/Elevation";
 
 const RenderBlock = styled("div")({
     position: "relative",
     zIndex: 0,
-    backgroundColor: 'var(--mdc-theme-background)',
-    height: '100%',
-    overflow: 'scroll'
+    backgroundColor: "var(--mdc-theme-background)",
+    height: "100%",
+    overflow: "scroll",
+    padding: 25
+});
+
+const PageInnerWrapper = styled("div")({
+    overflow: "scroll",
+    height: "calc(100vh - 265px)",
+    position: "relative"
 });
 
 export default ([
@@ -22,7 +30,11 @@ export default ([
             return (
                 <Tab label={"Page preview"}>
                     <RenderBlock>
-                        {renderPlugins("cms-page-details-revision-content-preview", { pageDetails })}
+                        <Elevation z={2}>
+                            {renderPlugins("cms-page-details-revision-content-preview", {
+                                pageDetails
+                            })}
+                        </Elevation>
                     </RenderBlock>
                 </Tab>
             );
@@ -32,7 +44,11 @@ export default ([
         name: "cms-page-details-revision-render",
         type: "cms-page-details-revision-content-preview",
         render({ pageDetails }: WithPageDetailsProps) {
-            return <RenderElement element={pageDetails.revision.data.content} />;
+            return (
+                <PageInnerWrapper>
+                    <RenderElement element={pageDetails.page.content} />
+                </PageInnerWrapper>
+            );
         }
     }
 ]: Array<CmsPageDetailsPluginType>);

@@ -9,11 +9,10 @@ import {
     type SelectedEventDetailT
 } from "@rmwc/menu";
 import type { CustomEventT } from "@rmwc/base";
-import { List } from "webiny-ui/List";
 
 type Props = {
     // One or more MenuItem components.
-    children: React.ChildrenArray<React.Element<typeof MenuItem> | React.Element<typeof List>>,
+    children: React.Node,
 
     // A handler which triggers the menu, eg. button or link.
     handle?: React.Node,

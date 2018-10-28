@@ -1,3 +1,4 @@
+// @flow
 import gql from "graphql-tag";
 
 const fields = `
@@ -5,7 +6,13 @@ const fields = `
 `;
 
 export const loadApiTokens = gql`
-    query LoadApiTokens($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: SearchInput) {
+    query LoadApiTokens(
+        $where: JSON
+        $sort: JSON
+        $page: Int
+        $perPage: Int
+        $search: SearchInput
+    ) {
         security {
             tokens: listApiTokens(
                 where: $where
@@ -21,9 +28,7 @@ export const loadApiTokens = gql`
                     createdOn
                 }
                 meta {
-                    count
                     totalCount
-                    totalPages
                     to
                     from
                     nextPage

@@ -24,12 +24,10 @@ const t = i18n.namespace("Security.UsersDataList");
 
 type Props = WithCrudListProps & WithSecurityProps;
 
-const UsersDataList = ({ dataList, data, meta, router, security, deleteRecord }: Props) => {
+const UsersDataList = ({ dataList, router, security, deleteRecord }: Props) => {
     return (
         <DataList
             {...dataList}
-            data={data}
-            meta={meta}
             title={t`Security Users`}
             sorters={[
                 {
@@ -42,11 +40,11 @@ const UsersDataList = ({ dataList, data, meta, router, security, deleteRecord }:
                 },
                 {
                     label: "Name A-Z",
-                    sorters: { name: 1 }
+                    sorters: { lastName: 1 }
                 },
                 {
                     label: "Name Z-A",
-                    sorters: { name: -1 }
+                    sorters: { lastName: -1 }
                 }
             ]}
         >

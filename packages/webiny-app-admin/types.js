@@ -1,12 +1,12 @@
 // @flow
 import type { Node, ComponentType } from "react";
-import type { Plugin } from "webiny-app/types";
+import type { PluginType } from "webiny-app/types";
 
-export type ContentPlugin = Plugin & {
+export type ContentPlugin = PluginType & {
     render: ({ content: Node }) => {}
 };
 
-export type SearchPlugin = Plugin & {
+export type SearchPlugin = PluginType & {
     labels: {
         option: string,
         search: string

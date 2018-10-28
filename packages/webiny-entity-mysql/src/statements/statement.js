@@ -11,10 +11,12 @@ declare type StatementOptions = {
     data: Object,
     limit?: number,
     offset?: number,
+    groupBy?: Array<string>,
     sort?: string,
     where?: Object,
     columns?: Array<string>,
-    onDuplicateKeyUpdate?: boolean
+    onDuplicateKeyUpdate?: boolean,
+    sql: { query: string, values: any }
 };
 
 class Statement {
@@ -45,6 +47,14 @@ class Statement {
         }
 
         return " WHERE " + this.process({ $and: options.where });
+    }
+
+    getGroup(options: StatementOptions): string {
+        if (!(Array.isArray(options.groupBy) && options.groupBy.length > 0)) {
+            return "";
+        }
+
+        return " GROUP BY " + options.groupBy.join(", ");
     }
 
     getOrder(options: StatementOptions): string {

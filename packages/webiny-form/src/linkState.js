@@ -1,7 +1,7 @@
 import { get, noop } from "lodash";
 import { set } from "lodash/fp";
 
-export default (component, key, callback, defaultValue = null) => {
+export default (component, key, defaultValue = null) => {
     const getValue = key => {
         return get(component.state, key, defaultValue);
     };
@@ -20,18 +20,11 @@ export default (component, key, callback, defaultValue = null) => {
          */
         onChange: (value, inlineCallback = noop) => {
             return new Promise(resolve => {
-                const oldValue = getValue(key);
-
-                if (callback) {
-                    const newValue = callback(value, oldValue);
-                    value = newValue === undefined ? value : newValue;
-                }
-
                 component.setState(
                     state => set(key, value, state),
                     () => {
                         if (typeof inlineCallback === "function") {
-                            inlineCallback(value, oldValue);
+                            inlineCallback(value);
                         }
                         resolve(value);
                     }

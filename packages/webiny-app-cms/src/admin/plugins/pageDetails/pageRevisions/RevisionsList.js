@@ -18,15 +18,11 @@ const listWrapper = css({
     }
 });
 
-const RevisionsList = ({ pageDetails: { revisions } }: RevisionsProps) => {
-    if (revisions.loading) {
-        return "Loading revisions...";
-    }
-
+const RevisionsList = ({ pageDetails: { page } }: RevisionsProps) => {
     return (
         <Elevation className={listWrapper} z={2}>
             <List nonInteractive twoLine>
-                {revisions.data.map(rev => (
+                {page.revisions.map(rev => (
                     <Revision rev={rev} key={rev.id} />
                 ))}
             </List>

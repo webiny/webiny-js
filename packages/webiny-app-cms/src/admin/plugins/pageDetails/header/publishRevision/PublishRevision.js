@@ -8,9 +8,9 @@ import { IconButton } from "webiny-ui/Button";
 import { Tooltip } from "webiny-ui/Tooltip";
 import { ReactComponent as PublishIcon } from "webiny-app-cms/admin/assets/round-publish-24px.svg";
 
-function getPublishSuggestion(revision, revisions) {
-    if (!revision.published) {
-        return revision.id;
+function getPublishSuggestion(page, revisions) {
+    if (!page.published) {
+        return page.id;
     }
 
     if (revisions[0]) {
@@ -53,12 +53,11 @@ const PublishRevision = ({
 };
 
 export default compose(
-    withProps(({ pageDetails: { pageId, revision, revisions } }) => {
-        const publishableRevisions = getPublishableRevisions(revisions.data);
+    withProps(({ pageDetails: { page } }) => {
+        const publishableRevisions = getPublishableRevisions(page.revisions);
         return {
-            pageId,
             publishableRevisions,
-            publishSuggestion: getPublishSuggestion(revision.data, publishableRevisions)
+            publishSuggestion: getPublishSuggestion(page, publishableRevisions)
         };
     }),
     withPublishRevisionHandler("publish"),

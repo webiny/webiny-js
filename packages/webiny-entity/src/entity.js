@@ -3,6 +3,7 @@ import _ from "lodash";
 import { Attribute } from "webiny-model";
 import Driver from "./driver";
 import EntityPool from "./entityPool";
+import createPaginationMeta from "./createPaginationMeta";
 import EventHandler from "./eventHandler";
 import EntityCollection from "./entityCollection";
 import EntityModel from "./entityModel";
@@ -229,7 +230,7 @@ class Entity {
      * Used when populating entity with data from storage.
      * @param data
      */
-    populateFromStorage(data: Object): this {
+    populateFromStorage(data: Object): Entity {
         this.getModel().populateFromStorage(data);
         return this;
     }
@@ -437,7 +438,7 @@ class Entity {
      * Finds one entity matched by given query parameters.
      * @param params
      */
-    static async findOne(params: ?Object): Promise<null | Entity> {
+    static async findOne(params: ?Object): Promise<null | $Subtype<Entity>> {
         if (!params) {
             params = {};
         }
@@ -454,7 +455,9 @@ class Entity {
                 return pooled;
             }
 
-            const entity = new this().setExisting().populateFromStorage(((result: any): Object));
+            const entity: $Subtype<Entity> = new this()
+                .setExisting()
+                .populateFromStorage(((result: any): Object));
             await entity.emit("read", { params });
             this.getEntityPool().add(entity);
             return entity;
@@ -466,7 +469,7 @@ class Entity {
      * Finds one or more entities matched by given query parameters.
      * @param params
      */
-    static async find(params: ?Object): Promise<EntityCollection> {
+    static async find(params: ?Object): Promise<EntityCollection<$Subtype<Entity>>> {
         if (!params) {
             params = {};
         }
@@ -494,9 +497,11 @@ class Entity {
         await this.emit("query", prepared);
 
         const queryResult: QueryResult = await this.getDriver().find(this, prepared);
+
         const entityCollection = new EntityCollection()
             .setParams(prepared)
-            .setMeta(queryResult.getMeta());
+            .setMeta({ ...createPaginationMeta(), ...queryResult.getMeta() });
+
         const result: Array<Object> = (queryResult.getResult(): any);
         if (result instanceof Array) {
             for (let i = 0; i < result.length; i++) {

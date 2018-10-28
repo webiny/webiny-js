@@ -25,25 +25,12 @@ const DeletePage = ({ confirmDelete }: Props) => {
 export default compose(
     withRouter(),
     withApollo,
-    withProps(({ pageDetails, client }) => {
-        // Get current page title from cache - no need to do an API call for a small piece of data.
-        try {
-            const data = client.readFragment({
-                id: pageDetails.pageId,
-                fragment: fragments.activeRevision
-            });
-
-            return { pageTitle: data ? data.activeRevision.title : "" };
-        } catch (e) {
-            return { pageTitle: "" };
-        }
-    }),
-    withConfirmation(({ pageTitle }) => ({
+    withConfirmation(({ pageDetails: { page } }) => ({
         title: "Delete page",
         message: (
             <p>
                 You are about to delete the entire page and all of its revisions! <br />
-                Are you sure you want to permanently delete the page <strong>{pageTitle}</strong>?
+                Are you sure you want to permanently delete the page <strong>{page.title}</strong>?
             </p>
         )
     })),
@@ -53,7 +40,7 @@ export default compose(
     withHandlers({
         confirmDelete: ({
             client,
-            pageTitle,
+            pageDetails: { page },
             router,
             showConfirmation,
             deletePage,
@@ -63,7 +50,7 @@ export default compose(
         }) => () => {
             showConfirmation(async () => {
                 const { data: res } = await deletePage({
-                    variables: { id: pageDetails.pageId },
+                    variables: { id: page.id },
                     refetchQueries: ["CmsListPages"]
                 });
                 const { error } = dot.get(res, "cms.deletePage");
@@ -75,7 +62,7 @@ export default compose(
                     <span>
                         The page{" "}
                         <strong>
-                            {pageTitle.substr(0, 20)}
+                            {page.title.substr(0, 20)}
                             ...
                         </strong>{" "}
                         was deleted successfully!

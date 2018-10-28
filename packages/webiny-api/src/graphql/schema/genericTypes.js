@@ -8,7 +8,6 @@ export const genericTypes = () => {
         }
         
         type ListMeta {
-            count: Int
             totalCount: Int
             totalPages: Int
             page: Int

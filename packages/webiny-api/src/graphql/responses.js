@@ -1,5 +1,5 @@
 // @flow
-import type { EntityCollection } from "webiny-entity";
+import type { Entity, EntityCollection } from "webiny-entity";
 
 type ErrorResponseParams = {
     code?: string,
@@ -59,10 +59,10 @@ export class Response {
 }
 
 export class ListResponse {
-    data: EntityCollection | Array<any>;
+    data: EntityCollection<Entity> | Array<any>;
     meta: Object;
     error: null;
-    constructor(data: EntityCollection | Array<any>, meta: Object) {
+    constructor(data: EntityCollection<Entity> | Array<any>, meta: Object) {
         this.data = data;
         this.meta = meta;
         this.error = null;
