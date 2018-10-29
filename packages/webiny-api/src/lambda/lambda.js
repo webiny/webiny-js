@@ -36,7 +36,7 @@ const setupHandler = async (config: Object) => {
     return apollo.createHandler();
 };
 
-function getErrorResponse(error: Error) {
+function getErrorResponse(error: Error & Object) {
     return {
         body: JSON.stringify({
             errors: [{ code: error.code, message: error.message }]
@@ -48,7 +48,15 @@ function getErrorResponse(error: Error) {
 
 export const createHandler = (config: Object = {}) => {
     let handler = null;
-    return async (event, context) => {
+    return async (event: Object, context: Object) => {
+        // This config flag was set because of following issue.
+        // Normally, Lambda waits for node's event loop to finish before returning anything via callback.
+        // Since the MySQL connection is still running, that would never happen, and nothing would be returned.
+        // With this flag set to false, the callback will be immediately called, without waiting for node's
+        // event loop to be cleared.
+        // See https://www.jeremydaly.com/reuse-database-connections-aws-lambda/ for more details.
+        context.callbackWaitsForEmptyEventLoop = false;
+
         const response = await new Promise(async (resolve, reject) => {
             if (!handler) {
                 try {
