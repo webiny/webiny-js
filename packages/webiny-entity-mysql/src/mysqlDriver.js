@@ -174,7 +174,7 @@ class MySQLDriver extends Driver {
         const totalCount = await this.getConnection().query("SELECT FOUND_ROWS() as count");
 
         const meta = createPaginationMeta({
-            totalCount,
+            totalCount: totalCount[0].count,
             page: options.page,
             perPage: options.perPage
         });
