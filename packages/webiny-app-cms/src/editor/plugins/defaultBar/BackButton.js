@@ -11,7 +11,7 @@ const backStyles = css({
 
 const BackButton = ({ router }: WithRouterProps) => {
     const pagesList = {
-        id: router.getParams("id"),
+        id: router.getParams("id")
     };
 
     return (

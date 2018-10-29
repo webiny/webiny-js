@@ -107,7 +107,9 @@ export default (): ElementPluginType => {
             return <Card {...props} />;
         },
         onReceived({ store, source, target, position = null }) {
-            let element = source.path ? cloneElement(source) : createElement(source.type, {}, target);
+            let element = source.path
+                ? cloneElement(source)
+                : createElement(source.type, {}, target);
 
             target = addElementToParent(element, target, position);
             store.dispatch(updateElement({ element: target }));

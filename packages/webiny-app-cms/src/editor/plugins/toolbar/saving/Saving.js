@@ -3,14 +3,25 @@ import React from "react";
 import { connect } from "react-redux";
 import { getUi } from "webiny-app-cms/editor/selectors";
 import { IconButton } from "webiny-ui/Button";
-import { ReactComponent as SaveIcon } from "webiny-app-cms/editor/assets/icons/round-save-24px.svg";
+import { Tooltip } from "webiny-ui/Tooltip";
+
+import { ReactComponent as SaveIcon } from "webiny-app-cms/editor/assets/icons/baseline-cloud_upload-24px.svg";
+import { ReactComponent as SavedIcon } from "webiny-app-cms/editor/assets/icons/baseline-cloud_done-24px.svg";
 
 const Saving = ({ saving }: { saving: boolean }) => {
     if (!saving) {
-        return null;
+        return (
+            <Tooltip placement={"right"} content={<span>{"All changes saved"}</span>}>
+                <IconButton icon={<SavedIcon />} />
+            </Tooltip>
+        );
     }
 
-    return <IconButton icon={<SaveIcon />} />;
+    return (
+        <Tooltip placement={"right"} content={<span>{"Saving changes ..."}</span>}>
+            <IconButton icon={<SaveIcon />} />
+        </Tooltip>
+    );
 };
 
 export default connect(state => ({ saving: getUi(state).saving || false }))(Saving);

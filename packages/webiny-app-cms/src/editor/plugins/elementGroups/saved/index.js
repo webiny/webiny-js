@@ -9,6 +9,6 @@ export default ({
     group: {
         name: "saved",
         title: "Saved",
-        icon: <SavedIcon/>
+        icon: <SavedIcon />
     }
 }: ElementGroupPluginType);

@@ -81,7 +81,8 @@ const Revision = ({
                     <ListItemText>
                         <ListItemTextPrimary>{rev.title}</ListItemTextPrimary>
                         <ListItemTextSecondary>
-                            Last modified <TimeAgo datetime={rev.savedOn} /> (#{rev.version})
+                            Last modified <TimeAgo datetime={rev.savedOn} /> (#
+                            {rev.version})
                         </ListItemTextSecondary>
                     </ListItemText>
                     <ListItemMeta>

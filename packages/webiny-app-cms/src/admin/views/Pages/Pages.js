@@ -45,10 +45,10 @@ class Pages extends React.Component<Props, State> {
                     onSelect={this.onSelect}
                 />
                 <CompactView>
-                    <LeftPanel>
+                    <LeftPanel span={4}>
                         <PagesDataList dataList={dataList} />
                     </LeftPanel>
-                    <RightPanel>
+                    <RightPanel span={8}>
                         <PageDetails refreshPages={dataList.refresh} />
                     </RightPanel>
                 </CompactView>

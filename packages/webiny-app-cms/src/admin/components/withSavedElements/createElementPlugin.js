@@ -29,7 +29,7 @@ export default (el: Element) => {
         target: rootPlugin.target,
         toolbar: {
             title() {
-                return <Title title={el.name} onDelete={() => {}}/>;
+                return <Title title={el.name} onDelete={() => {}} />;
             },
             group: "cms-element-group-saved",
             preview() {

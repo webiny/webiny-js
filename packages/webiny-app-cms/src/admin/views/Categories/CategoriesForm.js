@@ -22,7 +22,7 @@ const CategoriesForm = ({
     data,
     invalidFields,
     onSubmit,
-    theme,
+    theme
 }: WithCrudFormProps & WithThemeProps) => {
     return (
         <Form data={data || {}} invalidFields={invalidFields} onSubmit={onSubmit}>
