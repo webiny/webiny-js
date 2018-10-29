@@ -40,7 +40,7 @@ const CompactView = (props: {
 
 const LeftPanel = (props: Props) => {
     return (
-        <Cell className={leftPanel} span={(props.span ? props.span : 5)}>
+        <Cell className={leftPanel} span={props.span ? props.span : 5}>
             {props.children}
         </Cell>
     );
@@ -49,7 +49,7 @@ const LeftPanel = (props: Props) => {
 const RightPanel = (props: Props) => {
     const { children, ...rest } = props;
     return (
-        <Cell span={(props.span ? props.span : 7)} {...rest}>
+        <Cell span={props.span ? props.span : 7} {...rest}>
             <RightPanelWrapper>{children}</RightPanelWrapper>
         </Cell>
     );

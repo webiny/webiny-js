@@ -14,7 +14,7 @@ import {
 
 export default async (config: Object) => {
     const driver: MySQLDriver = (MySQLTable.getDriver(): any);
-    driver.setConnection(config.entity.driver.getConnection().getInstance());
+    driver.setConnection(config.entity.driver.getConnection());
 
     const tables = [
         UserTable,
@@ -23,7 +23,7 @@ export default async (config: Object) => {
         RoleTable,
         SettingsTable,
         Groups2EntitiesTable,
-        Roles2EntitiesTable,
+        Roles2EntitiesTable
     ];
 
     const sync = new Sync({

@@ -133,28 +133,29 @@ describe("entities attribute test", () => {
             .onCall(1)
             .callsFake(() => {
                 return [
-                    [
-                        {
-                            id: 2,
-                            name: "This is a test B",
-                            slug: "thisIsATestB",
-                            enabled: 1
-                        },
-                        {
-                            id: 3,
-                            name: "This is a test C",
-                            slug: "thisIsATestC",
-                            enabled: 1
-                        },
-                        {
-                            id: 4,
-                            name: "This is a test D",
-                            slug: "thisIsATestD",
-                            enabled: 1
-                        }
-                    ],
-                    [{ count: 3 }]
+                    {
+                        id: 2,
+                        name: "This is a test B",
+                        slug: "thisIsATestB",
+                        enabled: 1
+                    },
+                    {
+                        id: 3,
+                        name: "This is a test C",
+                        slug: "thisIsATestC",
+                        enabled: 1
+                    },
+                    {
+                        id: 4,
+                        name: "This is a test D",
+                        slug: "thisIsATestD",
+                        enabled: 1
+                    }
                 ];
+            })
+            .onCall(2)
+            .callsFake(() => {
+                return [{ count: 3 }];
             });
 
         const entity = await ComplexEntity.findOne();

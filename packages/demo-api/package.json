@@ -20,6 +20,7 @@
     "mime-types": "^2.1.20",
     "nodemon": "^1.18.3",
     "sanitize-filename": "^1.6.1",
+    "serverless-mysql": "^1.1.0",
     "serverless-apigw-binary": "^0.4.4",
     "serverless-apigwy-binary": "^0.1.0",
     "sharp": "^0.21.0",
