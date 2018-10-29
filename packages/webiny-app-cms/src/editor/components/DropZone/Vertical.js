@@ -1,7 +1,8 @@
 //@flow
 import React from "react";
-import Droppable from "./../Droppable";
+import { pure } from "recompose";
 import styled from "react-emotion";
+import Droppable from "./../Droppable";
 
 const InnerDiv = styled("div")({
     position: "absolute",
@@ -9,32 +10,42 @@ const InnerDiv = styled("div")({
     height: "100%",
     zIndex: 3,
     borderRadius: 5,
-    display: 'none'
+    display: "none"
 });
 
-const OuterDiv = styled("div")(
-    {
-        position: "absolute",
-        width: "30%",
-        top: 0,
-        height: "100%",
-        zIndex: 10,
-        backgroundColor: "transparent",
-    },
-    props => ({
-        [props.last ? "right" : "left"]: -2,
-        textAlign: props.last ? "right" : "left",
-        [InnerDiv]: {
-            backgroundColor: props.isOver
-                ? "var(--mdc-theme-primary)"
-                : "var(--mdc-theme-secondary)",
+const OuterDiv = pure(
+    styled("div")(
+        {
+            position: "absolute",
+            width: "30%",
+            top: 0,
+            height: "100%",
+            zIndex: 10,
+            backgroundColor: "transparent"
+        },
+        props => ({
             [props.last ? "right" : "left"]: -2,
-            display: props.isOver ? 'block' : 'none'
-        }
-    })
+            textAlign: props.last ? "right" : "left",
+            [InnerDiv]: {
+                backgroundColor: props.isOver
+                    ? "var(--mdc-theme-primary)"
+                    : "var(--mdc-theme-secondary)",
+                [props.last ? "right" : "left"]: -2,
+                display: props.isOver ? "block" : "none"
+            }
+        })
+    )
 );
 
-const Vertical = ({ last, onDrop, isVisible, type }) => {
+type Props = {
+    type: string,
+    onDrop: Function,
+    last: boolean,
+    isVisible: boolean
+};
+
+
+const Vertical = pure(({ last, onDrop, isVisible, type }: Props) => {
     return (
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>
             {({ isOver }) => (
@@ -44,6 +55,6 @@ const Vertical = ({ last, onDrop, isVisible, type }) => {
             )}
         </Droppable>
     );
-};
+});
 
 export default Vertical;

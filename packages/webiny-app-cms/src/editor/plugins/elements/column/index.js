@@ -2,6 +2,7 @@
 import React from "react";
 import styled from "react-emotion";
 import { set } from "dot-prop-immutable";
+import { redux } from "webiny-app-cms/editor/redux";
 import Column from "./Column";
 import { createElement, createColumn, cloneElement } from "webiny-app-cms/editor/utils";
 import { updateElement, deleteElement } from "webiny-app-cms/editor/actions";
@@ -63,17 +64,19 @@ export default (): ElementPluginType => {
         render(props) {
             return <Column {...props} />;
         },
-        canDelete({ parent }) {
+        canDelete({ element }) {
+            const parent = getParentElement(redux.store.getState(), element.path);
             return parent.elements.length > 1;
         },
-        onReceived({ store, source, target, position = null }) {
+        onReceived({ source, target, position = null }) {
             const droppedOnCenter = position === null;
+            const store = redux.store;
 
             let row = getParentElement(store.getState(), target.path);
             const targetIndex = row.elements.findIndex(el => el.id === target.id);
 
             // Dropped a column onto a center drop zone
-            if (source.type === "column" && droppedOnCenter) {
+            if (source.type === "cms-element-column" && droppedOnCenter) {
                 // Split target column in half
                 row.elements[targetIndex].data.width /= 2;
                 // Create a new column with half of the original target width

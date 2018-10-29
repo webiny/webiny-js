@@ -27,15 +27,8 @@ class Bar extends React.Component {
     }
 }
 
-const pickKeys = ["activeElement", "plugins"];
-
 const stateToProps = state => {
-    return { ...pick(getUi(state), pickKeys) };
+    return { ...getUi(state) };
 };
 
-export default connect(
-    stateToProps,
-    null,
-    null,
-    { areStatePropsEqual: (state, prevState) => isEqual(state, prevState) }
-)(Bar);
+export default connect(stateToProps)(Bar);

@@ -1,8 +1,7 @@
 //@flow
 import * as React from "react";
-import shortid from "shortid";
 import { Transition } from "react-transition-group";
-import compose from "recompose/compose";
+import { compose, pure, withHandlers, withProps, withState } from "recompose";
 import { connect } from "react-redux";
 import isEqual from "lodash/isEqual";
 import { getPlugin } from "webiny-app/plugins";
@@ -22,111 +21,53 @@ import { defaultStyle, ElementContainer, transitionStyles, typeStyle } from "./E
 
 declare type ElementProps = {
     active: boolean,
-    activateElement: Function,
     dragStart: Function,
     dragEnd: Function,
     element: ElementType,
     highlight: boolean,
-    highlightElement: Function,
-    theme: Object
+    theme: Object,
+    onClick: Function,
+    onMouseOver: Function,
+    openHelp: Function,
+    renderDraggable: Function,
+    plugin: Object,
+    beginDrag: Function,
+    endDrag: Function,
+    dragging: boolean
 };
 
-declare type ElementState = {
-    id: string,
-    dragged: boolean,
-    overlay: boolean
-};
-
-class Element extends React.Component<ElementProps, ElementState> {
-    state = {
-        id: shortid.generate(),
-        dragged: false,
-        overlay: false
-    };
-
-    _isMounted = false;
-
-    componentDidMount() {
-        this._isMounted = true;
-    }
-
-    componentWillUnmount() {
-        this._isMounted = false;
-    }
-
-    onClick = () => {
-        if (!this.props.active) {
-            this.props.activateElement({ element: this.props.element.path });
-        }
-    };
-
-    onMouseOver = e => {
-        e.stopPropagation();
-        const { element, highlight, highlightElement } = this.props;
-        if (!highlight) {
-            highlightElement({ element: element.id });
-        }
-    };
-
-    render() {
-        const { element, highlight, active, theme } = this.props;
-        const plugin = getPlugin(element.type);
-
+const Element = pure(
+    ({
+        plugin,
+        renderDraggable,
+        element,
+        highlight,
+        active,
+        theme,
+        onMouseOver,
+        beginDrag,
+        endDrag
+    }: ElementProps) => {
         if (!plugin) {
             return null;
         }
-
         return (
             <Transition in={true} timeout={250} appear={true}>
                 {state => (
                     <ElementContainer
-                        id={this.state.id}
-                        onMouseOver={this.onMouseOver}
+                        id={element.id}
+                        onMouseOver={onMouseOver}
                         highlight={highlight}
                         active={active}
-                        dragged={this.state.dragged}
                         style={{ ...defaultStyle, ...transitionStyles[state] }}
                     >
                         <div className={"innerWrapper"}>
                             <Draggable
                                 target={plugin.target}
-                                beginDrag={() => {
-                                    const data = { type: element.type, path: element.path };
-                                    setTimeout(() => {
-                                        this.setState({ dragged: true });
-                                        this.props.dragStart({ element: data });
-                                    });
-                                    return { ...data, target: plugin.target };
-                                }}
-                                endDrag={(props, monitor) => {
-                                    this._isMounted && this.setState({ dragged: false });
-                                    this.props.dragEnd({ element: monitor.getItem() });
-                                }}
+                                beginDrag={beginDrag}
+                                endDrag={endDrag}
                             >
-                                {({ connectDragSource }) =>
-                                    connectDragSource(
-                                        <div className={"type " + typeStyle}>
-                                            <div className="background" onClick={this.onClick} />
-                                            <div
-                                                className={"element-holder"}
-                                                onClick={this.onClick}
-                                            >
-                                                {plugin.help && (
-                                                    <HelpIcon
-                                                        className={"help-icon"}
-                                                        onClick={() => {
-                                                            window.open(plugin.help, "_blank");
-                                                        }}
-                                                    />
-                                                )}
-                                                <span>
-                                                    <SettingsIcon />{" "}
-                                                    {plugin.name.replace("cms-element-", "")}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )
-                                }
+                                {renderDraggable}
                             </Draggable>
                             {plugin.render({ theme, element })}
                         </div>
@@ -135,19 +76,74 @@ class Element extends React.Component<ElementProps, ElementState> {
             </Transition>
         );
     }
-}
+);
 
 export default compose(
     connect(
         (state, props) => {
             return {
                 ...getElementProps(state, props),
-                element: props.element
+                element: state.elements[props.id]
             };
         },
         { dragStart, dragEnd, activateElement, highlightElement },
         null,
-        { areStatePropsEqual: (state, prevState) => isEqual(state, prevState) }
+        {
+            areStatePropsEqual: (state, prevState) => {
+                return isEqual(state, prevState);
+            }
+        }
     ),
-    withTheme()
+    withTheme(),
+    withProps(({ element }) => ({
+        plugin: getPlugin(element.type)
+    })),
+    withHandlers({
+        beginDrag: ({ plugin, element, dragStart }) => () => {
+            const data = { type: element.type, path: element.path };
+            setTimeout(() => {
+                dragStart({ element: data });
+            });
+            return { ...data, target: plugin.target };
+        },
+        endDrag: ({ dragEnd }) => (props, monitor) => {
+            dragEnd({ element: monitor.getItem() });
+        },
+        openHelp: ({ plugin }) => () => {
+            window.open(plugin.help, "_blank");
+        },
+        onClick: ({ element, active, activateElement }) => () => {
+            if (element.type === "cms-element-document") {
+                return;
+            }
+            if (!active) {
+                activateElement({ element: element.id });
+            }
+        },
+        onMouseOver: ({ element, highlight, highlightElement }) => e => {
+            if (element.type === "cms-element-document") {
+                return;
+            }
+
+            e.stopPropagation();
+            if (!highlight) {
+                highlightElement({ element: element.id });
+            }
+        }
+    }),
+    withHandlers({
+        renderDraggable: ({ plugin, onClick, openHelp }) => ({ connectDragSource }) => {
+            return connectDragSource(
+                <div className={"type " + typeStyle}>
+                    <div className="background" onClick={onClick} />
+                    <div className={"element-holder"} onClick={onClick}>
+                        {plugin.help && <HelpIcon className={"help-icon"} onClick={openHelp} />}
+                        <span>
+                            <SettingsIcon /> {plugin.name.replace("cms-element-", "")}
+                        </span>
+                    </div>
+                </div>
+            );
+        }
+    })
 )(Element);

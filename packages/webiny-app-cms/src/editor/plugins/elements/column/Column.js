@@ -3,12 +3,13 @@ import React from "react";
 import styled from "react-emotion";
 import { css } from "emotion";
 import { connect } from "react-redux";
+import { compose, withHandlers, pure } from "recompose";
 import { IconButton } from "webiny-ui/Button";
-import Element from "webiny-app-cms/editor/components/Element";
 import ElementStyle from "webiny-app-cms/render/components/ElementStyle";
 import DropZone from "webiny-app-cms/editor/components/DropZone";
 import { ReactComponent as AddCircleOutline } from "webiny-app-cms/editor/assets/icons/baseline-add_circle-24px.svg";
 import { dropElement, togglePlugin } from "webiny-app-cms/editor/actions";
+import ColumnChild from "./ColumnChild";
 
 const ColumnContainer = styled("div")({
     position: "relative",
@@ -16,7 +17,7 @@ const ColumnContainer = styled("div")({
     boxSizing: "border-box",
     height: "100%",
     width: "100%",
-    zIndex: 20,
+    zIndex: 20
 });
 
 const addIcon = css({
@@ -30,57 +31,50 @@ const addIcon = css({
     }
 });
 
-const Column = ({ element, dropElement, togglePlugin }) => {
+const Column = pure(({ element, dropElement, togglePlugin }) => {
     const { id, path, type, elements } = element;
 
     return (
         <ColumnContainer>
             <ElementStyle element={element} className={"test-inner"} style={{ height: "100%" }}>
                 {!elements.length && (
-                    <DropZone.Center
-                        element={element}
-                        type={type}
-                        onDrop={source =>
-                            dropElement({ source, target: { id, path, type, position: null } })
-                        }
-                    >
+                    <DropZone.Center id={id} type={type} onDrop={dropElement}>
                         <IconButton
                             className={addIcon + " addIcon"}
                             icon={<AddCircleOutline />}
-                            onClick={() =>
-                                togglePlugin({ name: "cms-toolbar-add-element", params: { id, path, type } })
-                            }
+                            onClick={togglePlugin}
                         />
                     </DropZone.Center>
                 )}
-                {elements.map((element, index) => (
-                    <React.Fragment key={element.id}>
-                        <DropZone.Above
-                            type={type}
-                            onDrop={source =>
-                                dropElement({ source, target: { id, path, type, position: index } })
-                            }
-                        />
-                        <Element element={element} />
-                        {index === elements.length - 1 && (
-                            <DropZone.Below
-                                type={type}
-                                onDrop={source =>
-                                    dropElement({
-                                        source,
-                                        target: { id, path, type, position: elements.length }
-                                    })
-                                }
-                            />
-                        )}
-                    </React.Fragment>
+                {elements.map((childId, index) => (
+                    <ColumnChild
+                        key={childId}
+                        id={childId}
+                        index={index}
+                        count={elements.length}
+                        last={index === elements.length - 1}
+                        target={{ id, path, type }}
+                    />
                 ))}
             </ElementStyle>
         </ColumnContainer>
     );
-};
+});
 
-export default connect(
-    null,
-    { dropElement, togglePlugin }
+export default compose(
+    connect(
+        null,
+        { dropElement, togglePlugin }
+    ),
+    withHandlers({
+        togglePlugin: ({ togglePlugin, element: { id, path, type } }) => () => {
+            togglePlugin({
+                name: "cms-toolbar-add-element",
+                params: { id, path, type }
+            });
+        },
+        dropElement: ({ dropElement, element: { id, path, type } }) => (source: Object) => {
+            dropElement({ source, target: { id, path, type, position: null } });
+        }
+    })
 )(Column);

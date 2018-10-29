@@ -39,12 +39,16 @@ export const getContent = state => {
 /**
  * Get element.
  */
-export const getElement = (state, path) => {
+export const getElementByPath = (state, path) => {
     if (!path) {
         return null;
     }
     const content = getContent(state);
     return _.get(content, path.replace(/\./g, ".elements.").slice(2));
+};
+
+export const getElementById = (state, id) => {
+    return state.elements[id];
 };
 
 export const getParentElement = (state, path) => {
@@ -53,13 +57,14 @@ export const getParentElement = (state, path) => {
     if (parentPaths.length === 1) {
         return content;
     }
-    return _.cloneDeep(_.get(content, parentPaths.join(".elements.").slice(2)));
+    
+    return _.get(content, parentPaths.join(".elements.").slice(2));
 };
 
 /**
  * Get active element path.
  */
-export const getActiveElementPath = state => getUi(state).activeElement;
+export const getActiveElementId = state => getUi(state).activeElement;
 
 /**
  * Get editor plugins (this mostly contains UI state).
@@ -100,9 +105,9 @@ export const getActivePluginParams = type => {
  */
 export const getActiveElement = createSelector(
     state => state,
-    getActiveElementPath,
-    (state, elementPath) => {
-        return getElement(state, elementPath);
+    getActiveElementId,
+    (state, elementId) => {
+        return getElementById(state, elementId);
     }
 );
 
@@ -114,11 +119,12 @@ export const getIsDragging = state => getUi(state).dragging;
 /**
  * Get <Element> props.
  */
-export const getElementProps = (state, { element }) => {
+export const getElementProps = (state, { id }) => {
     const { activeElement, highlightElement, resizing, dragging } = getUi(state);
+    const element = state.elements[id];
 
-    const active = activeElement && activeElement === element.path;
-    const highlight = active || (highlightElement && highlightElement === element.id);
+    const active = activeElement && activeElement === element.id;
+    const highlight = active || (highlightElement && highlightElement === id);
 
     return {
         active,

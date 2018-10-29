@@ -12,6 +12,7 @@ import { withSavedElements } from "webiny-app-cms/admin/components";
 import Snackbar from "webiny-app-admin/plugins/Snackbar/Snackbar";
 
 let store = null;
+let lastPage = null;
 
 const Editor = ({ data, client, elements }: Object) => {
     if (data.loading || !Array.isArray(elements)) {
@@ -23,7 +24,8 @@ const Editor = ({ data, client, elements }: Object) => {
         page.content = createElement("cms-element-document");
     }
 
-    if (!store) {
+    if (!store || lastPage !== page.id) {
+        lastPage = page.id;
         store = redux.initStore(
             {
                 ui: {

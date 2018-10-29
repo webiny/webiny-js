@@ -34,8 +34,8 @@ const Block = pure(({ element, dropElement }) => {
                                         Add an element here
                                     </DropZone.Center>
                                 )}
-                                {elements.map((element, index) => (
-                                    <React.Fragment key={element.id}>
+                                {elements.map((childId, index) => (
+                                    <React.Fragment key={childId}>
                                         <DropZone.Above
                                             type={type}
                                             onDrop={source =>
@@ -45,7 +45,7 @@ const Block = pure(({ element, dropElement }) => {
                                                 })
                                             }
                                         />
-                                        <Element key={element.id} element={element} />
+                                        <Element key={childId} id={childId} />
                                         {index === elements.length - 1 && (
                                             <DropZone.Below
                                                 type={type}

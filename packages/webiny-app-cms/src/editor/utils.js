@@ -1,5 +1,7 @@
 import shortid from "shortid";
 import _ from "lodash";
+import { redux } from "webiny-app-cms/editor/redux";
+import { getElementByPath as selectElementByPath } from "./selectors";
 import { getPlugin } from "webiny-app/plugins";
 
 export const updateChildPaths = element => {

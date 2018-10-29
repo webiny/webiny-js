@@ -1,5 +1,6 @@
 import styled from "react-emotion";
 import { css } from "emotion";
+import { pure } from "recompose";
 
 export const typeStyle = css({
     position: "relative",
@@ -38,69 +39,71 @@ export const typeStyle = css({
     }
 });
 
-export const ElementContainer = styled("div")(({ highlight, active, dragged }) => {
-    const color = active ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)";
+export const ElementContainer = pure(
+    styled("div")(({ highlight, active, dragged }) => {
+        const color = active ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)";
 
-    return {
-        position: "relative",
-        flex: "100%",
-        padding: 0,
-        opacity: dragged ? 0.3 : 1,
-        borderRadius: 2,
-        boxSizing: "border-box",
-        transition: "all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)",
-        "&::after": {
-            content: "''",
-            position: "absolute",
-            zIndex: "-1",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            boxShadow: highlight ? "inset 0px 0px 0px 2px " + color : "none",
+        return {
+            position: "relative",
+            flex: "100%",
+            padding: 0,
+            opacity: dragged ? 0.3 : 1,
+            borderRadius: 2,
+            boxSizing: "border-box",
             transition: "all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)",
-            opacity: highlight ? 1 : 0
-        },
-        "&:hover::after": {
-            opacity: 1
-        },
-        "&:hover": {
-            "> .innerWrapper > .type": {
-                display: highlight ? "block" : "none"
-            }
-        },
-        "> .innerWrapper": {
-            width: "100%"
-        },
-        "> .innerWrapper > .type": {
-            display: highlight ? "block" : "none",
-            width: !active ? "100%" : "100px",
-            height: !active ? "100%" : "25px",
-            [!active ? "left" : "right"]: 0,
-            position: "absolute",
-            top: 0,
-            zIndex: 10,
-            transition: "background-color 0.2s",
-            ".background": {
-                pointerEvents: highlight ? "auto" : "none",
-                display: !active ? "block" : "none",
+            "&::after": {
+                content: "''",
                 position: "absolute",
-                backgroundColor: active ? "rgba(250, 87, 35, 1)" : "rgba(0, 204, 176, 0.1)",
-                width: "100%",
-                height: "100%",
-                cursor: "pointer",
+                zIndex: "-1",
                 top: 0,
                 left: 0,
-                transition: "background-color 0.2s"
+                width: "100%",
+                height: "100%",
+                boxShadow: highlight ? "inset 0px 0px 0px 2px " + color : "none",
+                transition: "all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)",
+                opacity: highlight ? 1 : 0
             },
-            ".element-holder": {
-                "> span, > svg": {
-                    backgroundColor: color
+            "&:hover::after": {
+                opacity: 1
+            },
+            "&:hover": {
+                "> .innerWrapper > .type": {
+                    display: highlight ? "block" : "none"
+                }
+            },
+            "> .innerWrapper": {
+                width: "100%"
+            },
+            "> .innerWrapper > .type": {
+                display: highlight ? "block" : "none",
+                width: !active ? "100%" : "100px",
+                height: !active ? "100%" : "25px",
+                [!active ? "left" : "right"]: 0,
+                position: "absolute",
+                top: 0,
+                zIndex: 10,
+                transition: "background-color 0.2s",
+                ".background": {
+                    pointerEvents: highlight ? "auto" : "none",
+                    display: !active ? "block" : "none",
+                    position: "absolute",
+                    backgroundColor: active ? "rgba(250, 87, 35, 1)" : "rgba(0, 204, 176, 0.1)",
+                    width: "100%",
+                    height: "100%",
+                    cursor: "pointer",
+                    top: 0,
+                    left: 0,
+                    transition: "background-color 0.2s"
+                },
+                ".element-holder": {
+                    "> span, > svg": {
+                        backgroundColor: color
+                    }
                 }
             }
-        }
-    };
-});
+        };
+    })
+);
 
 export const defaultStyle = {
     opacity: 0,

@@ -2,6 +2,7 @@
 import React from "react";
 import styled, { keyframes } from "react-emotion";
 import { connect } from "react-redux";
+import { pure } from "recompose";
 import { Elevation } from "webiny-ui/Elevation";
 import { ButtonFloating } from "webiny-ui/Button";
 import { togglePlugin } from "webiny-app-cms/editor/actions";
@@ -44,8 +45,8 @@ const AddBlockContent = styled("div")({
     alignItems: "center"
 });
 
-const AddContent = ({ content, togglePlugin }) => {
-    if (content.elements.length) {
+const AddContent = pure(({ count, togglePlugin }) => {
+    if (count) {
         return null;
     }
 
@@ -73,9 +74,9 @@ const AddContent = ({ content, togglePlugin }) => {
             </Elevation>
         </AddBlockContainer>
     );
-};
+});
 
 export default connect(
-    state => ({ content: getContent(state) }),
+    state => ({ count: getContent(state).elements.length }),
     { togglePlugin }
 )(AddContent);

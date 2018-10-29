@@ -1,13 +1,17 @@
 //@flow
 import React from "react";
 import { set } from "dot-prop-immutable";
-import { dispatch } from "webiny-app-cms/editor/redux";
+import { redux } from "webiny-app-cms/editor/redux";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { cloneElement } from "webiny-app-cms/editor/utils";
+import { getElementByPath } from "webiny-app-cms/editor/selectors";
 import { ReactComponent as CloneIcon } from "webiny-app-cms/editor/assets/icons/round-queue-24px.svg";
 import Action from "../Action";
 
-const duplicate = (parent, element) => {
+const duplicate = (parentPath, elementPath) => {
+    const state = redux.store.getState();
+    const parent = getElementByPath(state, parentPath);
+    const element = getElementByPath(state, elementPath);
     const position = parent.elements.findIndex(el => el.id === element.id) + 1;
 
     const newElement = set(parent, "elements", [
@@ -15,7 +19,7 @@ const duplicate = (parent, element) => {
         cloneElement(element),
         ...(position < parent.elements.length ? parent.elements.slice(position) : [])
     ]);
-    return dispatch(updateElement({ element: newElement }));
+    return redux.store.dispatch(updateElement({ element: newElement }));
 };
 
 export default {
@@ -25,7 +29,7 @@ export default {
         return (
             <Action
                 tooltip={"Clone element"}
-                onClick={() => duplicate(parent, element)}
+                onClick={() => duplicate(parent.path, element.path)}
                 icon={<CloneIcon />}
             />
         );
