@@ -6,7 +6,7 @@ import { redux } from "webiny-app-cms/editor/redux";
 import Column from "./Column";
 import { createElement, createColumn, cloneElement } from "webiny-app-cms/editor/utils";
 import { updateElement, deleteElement } from "webiny-app-cms/editor/actions";
-import { getParentElement } from "webiny-app-cms/editor/selectors";
+import { getParentElementWithChildren } from "webiny-app-cms/editor/selectors";
 import { ReactComponent as ColumnIcon } from "webiny-app-cms/editor/assets/icons/column-icon.svg";
 import type { ElementPluginType } from "webiny-app-cms/types";
 
@@ -65,14 +65,14 @@ export default (): ElementPluginType => {
             return <Column {...props} />;
         },
         canDelete({ element }) {
-            const parent = getParentElement(redux.store.getState(), element.path);
+            const parent = getParentElementWithChildren(redux.store.getState(), element.id);
             return parent.elements.length > 1;
         },
         onReceived({ source, target, position = null }) {
             const droppedOnCenter = position === null;
             const store = redux.store;
 
-            let row = getParentElement(store.getState(), target.path);
+            let row = getParentElementWithChildren(store.getState(), target.id);
             const targetIndex = row.elements.findIndex(el => el.id === target.id);
 
             // Dropped a column onto a center drop zone

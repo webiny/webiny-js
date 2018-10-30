@@ -71,7 +71,8 @@ const SlideControl = styled("div")({
 });
 
 type Props = {
-    showOnboarding: boolean
+    showOnboarding: boolean,
+    deactivatePlugin: Function
 };
 
 type State = {

@@ -1,9 +1,8 @@
 import React from "react";
-import { redux } from "webiny-app-cms/editor/redux";
+import { get } from "dot-prop-immutable";
 import AddBlock from "./AddBlock";
 import AddContent from "./AddContent";
 import SearchBlocks from "./SearchBlocks";
-import { getActivePlugin } from "webiny-app-cms/editor/selectors";
 
 export default [
     {
@@ -23,8 +22,8 @@ export default [
     {
         name: "cms-search-blocks-bar",
         type: "cms-editor-bar",
-        shouldRender() {
-            return getActivePlugin("cms-editor-bar")(redux.store.getState()) === "cms-search-blocks-bar";
+        shouldRender({ plugins }) {
+            return get(plugins, "cms-editor-bar.active") === "cms-search-blocks-bar";
         },
 
         render() {

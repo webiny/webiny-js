@@ -10,7 +10,7 @@ import {
     addHigherOrderReducer
 } from "webiny-app-cms/editor/redux";
 import { getPlugin } from "webiny-app/plugins";
-import { getElementByPath, getParentElement } from "webiny-app-cms/editor/selectors";
+import { getElementWithChildren, getParentElementWithChildren } from "webiny-app-cms/editor/selectors";
 import { updateChildPaths } from "webiny-app-cms/editor/utils";
 
 export const PREFIX = "[CMS]";
@@ -165,7 +165,7 @@ addMiddleware([DELETE_ELEMENT], ({ store, next, action }) => {
     const state = store.getState();
 
     let { element } = action.payload;
-    let parent = getParentElement(state, element.path);
+    let parent = getParentElementWithChildren(state, element.id);
 
     // Remove child from parent
     const index = parent.elements.findIndex(el => el.id === element.id);
@@ -184,7 +184,7 @@ addMiddleware([ELEMENT_DROPPED], ({ store, next, action }) => {
     next(action);
 
     const state = store.getState();
-    const target = getElementByPath(state, action.payload.target.path);
+    const target = getElementWithChildren(state, action.payload.target.id);
     const plugin = getPlugin(target.type);
 
     invariant(
@@ -194,7 +194,7 @@ addMiddleware([ELEMENT_DROPPED], ({ store, next, action }) => {
 
     let { source } = action.payload;
     if (source.path) {
-        source = getElementByPath(state, source.path);
+        source = getElementWithChildren(state, source.id);
     }
 
     getPlugin(target.type).onReceived({
