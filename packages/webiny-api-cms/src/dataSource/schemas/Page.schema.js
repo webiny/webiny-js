@@ -1,4 +1,10 @@
-import { resolveCreate, resolveUpdate, resolveDelete, resolveGet, resolveList } from "webiny-api/graphql";
+import {
+    resolveCreate,
+    resolveUpdate,
+    resolveDelete,
+    resolveGet,
+    resolveList
+} from "webiny-api/graphql";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
 import listPages from "./pageResolvers/listPages";
 

@@ -10,35 +10,35 @@ import DeletePage from "./deletePage/DeletePage";
 export default ([
     {
         name: "cms-page-details-header",
-        type: "cms-page-details",
+        type: "cms-page-details-revision-content-preview",
         render(props: WithPageDetailsProps) {
             return <Header {...props} />;
         }
     },
     {
         name: "cms-page-details-revision-selector",
-        type: "cms-page-details-header",
+        type: "cms-page-details-header-left",
         render(props: WithPageDetailsProps) {
             return <RevisionSelector {...props} />;
         }
     },
     {
         name: "cms-page-details-header-publish",
-        type: "cms-page-details-header",
+        type: "cms-page-details-header-right",
         render(props: WithPageDetailsProps) {
             return <PublishRevision {...props} />;
         }
     },
     {
         name: "cms-page-details-header-edit",
-        type: "cms-page-details-header",
+        type: "cms-page-details-header-right",
         render(props: WithPageDetailsProps) {
             return <EditRevision {...props} />;
         }
     },
     {
         name: "cms-page-details-header-delete",
-        type: "cms-page-details-header",
+        type: "cms-page-details-header-right",
         render(props: WithPageDetailsProps) {
             return <DeletePage {...props} />;
         }

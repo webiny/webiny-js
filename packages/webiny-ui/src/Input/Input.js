@@ -64,7 +64,7 @@ type Props = FormComponentProps & {
     onKeyUp?: (e: SyntheticInputEvent<HTMLInputElement>) => any,
 
     // A callback that is executed when input is focused.
-    onFocus?: (e: SyntheticInputEvent<HTMLInputElement>) => any,
+    onFocus?: (e: SyntheticInputEvent<HTMLInputElement>) => any
 };
 
 /**
@@ -93,8 +93,8 @@ class Input extends React.Component<Props> {
     ];
 
     onChange = (e: SyntheticInputEvent<HTMLInputElement>) => {
-        const {onChange, rawOnChange } = this.props;
-        if(!onChange) {
+        const { onChange, rawOnChange } = this.props;
+        if (!onChange) {
             return;
         }
 

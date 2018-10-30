@@ -14,7 +14,7 @@ export const withSavedElements = () =>
 
             const elements = get(data, "cms.elements.data");
             elements.forEach(el => {
-                if(el.type === "element") {
+                if (el.type === "element") {
                     createElementPlugin(el);
                 } else {
                     createBlockPlugin(el);

@@ -1,3 +1,4 @@
+// @flow
 import React from "react";
 import { compose, withHandlers, withProps, withState } from "recompose";
 import withPublishRevisionHandler from "../../utils/withPublishRevisionHandler";
@@ -5,7 +6,7 @@ import PublishRevisionDialog from "./PublishRevisionDialog";
 import { type WithPageDetailsProps } from "webiny-app-cms/admin/components";
 import { IconButton } from "webiny-ui/Button";
 import { Tooltip } from "webiny-ui/Tooltip";
-import { ReactComponent as PublishIcon } from "webiny-app-cms/admin/assets/visibility.svg";
+import { ReactComponent as PublishIcon } from "webiny-app-cms/admin/assets/round-publish-24px.svg";
 
 function getPublishSuggestion(page, revisions) {
     if (!page.published) {

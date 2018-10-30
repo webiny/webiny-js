@@ -229,11 +229,7 @@ class Form extends React.Component {
         }
 
         // Assign value and onChange props
-        const ls = linkState(
-            this,
-            name === "*" ? "data" : "data." + name,
-            defaultValue
-        );
+        const ls = linkState(this, name === "*" ? "data" : "data." + name, defaultValue);
 
         const onChange = (newValue, cb) => {
             // When linkState is done processing the value change...
