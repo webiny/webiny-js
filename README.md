@@ -17,10 +17,10 @@
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/webiny/webiny-js/blob/master/LICENSE)
 [![SemVer](http://img.shields.io/:semver-2.0.0-brightgreen.svg)](http://semver.org)
 
-| Branch | Build | Coverage |
-| :--- | :---: | :--- |
-| master (latest release) | [![Build Status](https://travis-ci.org/Webiny/webiny-js.svg?branch=master)](https://travis-ci.org/Webiny/webiny-js) | [![Coverage Status](https://coveralls.io/repos/github/Webiny/webiny-js/badge.svg?branch=master)](https://coveralls.io/github/Webiny/webiny-js?branch=master) |
-| development (active development) | [![Build Status](https://travis-ci.org/Webiny/webiny-js.svg?branch=development)](https://travis-ci.org/Webiny/webiny-js) | [![Coverage Status](https://coveralls.io/repos/github/Webiny/webiny-js/badge.svg?branch=development)](https://coveralls.io/github/Webiny/webiny-js?branch=development) |
+| Branch | Build |
+| :--- | :---: |
+| master (latest release) | [![Build Status](https://travis-ci.org/Webiny/webiny-js.svg?branch=master)](https://travis-ci.org/Webiny/webiny-js) |
+| development (active development) | [![Build Status](https://travis-ci.org/Webiny/webiny-js.svg?branch=development)](https://travis-ci.org/Webiny/webiny-js) |
 </p>
 
 Webiny is an open-source platform created for building modern web apps.
