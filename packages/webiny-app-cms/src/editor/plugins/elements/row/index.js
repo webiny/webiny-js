@@ -84,7 +84,7 @@ export default (): ElementPluginType => {
                 ? cloneElement(source)
                 : createElement(source.type, {}, target);
 
-            if (element.type !== "column") {
+            if (element.type !== "cms-element-column") {
                 element = createColumn({ elements: [element] });
             }
 

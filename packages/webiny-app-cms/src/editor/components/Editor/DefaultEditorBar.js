@@ -1,5 +1,6 @@
 //@flow
 import React from "react";
+import { pure } from "recompose";
 import { TopAppBar, TopAppBarSection } from "webiny-ui/TopAppBar";
 import { renderPlugins } from "webiny-app/plugins";
 //import { css } from "emotion";
@@ -13,7 +14,7 @@ const alignCenter = css({
 });
 */
 
-const DefaultEditorBar = () => {
+const DefaultEditorBar = pure(() => {
     return (
         <TopAppBar fixed>
             <TopAppBarSection style={{ width: "50%" }} alignStart>
@@ -29,6 +30,6 @@ const DefaultEditorBar = () => {
             </TopAppBarSection>
         </TopAppBar>
     );
-};
+});
 
 export default DefaultEditorBar;

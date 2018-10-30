@@ -21,7 +21,7 @@ const getElementActions = plugin => {
     return [...actions, getPlugin("cms-element-settings-save")];
 };
 
-const ElementSettingsBar = ({ parent, element, activePlugin, deactivateElement }) => {
+const ElementSettingsBar = ({ element, activePlugin, deactivateElement }) => {
     const plugin = getPlugin(element.type);
     const actions = getElementActions(plugin);
 
@@ -44,7 +44,7 @@ const ElementSettingsBar = ({ parent, element, activePlugin, deactivateElement }
 
                         return (
                             <div key={plugin.name + "-" + index} style={{ position: "relative" }}>
-                                {plugin.renderAction({ parent, element, active })}
+                                {plugin.renderAction({ element, active })}
                                 {typeof plugin.renderMenu === "function" && (
                                     <Menu plugin={plugin} active={active} />
                                 )}
@@ -72,13 +72,13 @@ const ElementSettingsBar = ({ parent, element, activePlugin, deactivateElement }
 };
 
 export default compose(
-    withActiveElement(),
     connect(
         state => ({
             activePlugin: getActivePlugin("cms-element-settings")(state)
         }),
         { deactivateElement }
     ),
+    withActiveElement(),
     onlyUpdateForKeys(["element", "activePlugin"]),
     withKeyHandler(),
     lifecycle({

@@ -1,21 +1,15 @@
 //@flow
 import React from "react";
-import styled from "react-emotion";
 import { css } from "emotion";
 import { connect } from "react-redux";
-import Element from "webiny-app-cms/editor/components/Element";
-import DropZone from "webiny-app-cms/editor/components/DropZone";
-import Resizer from "webiny-app-cms/editor/components/Resizer";
+import { set } from "dot-prop-immutable";
+import omit from "lodash/omit";
+import { compose, withHandlers, withProps, withState, pure } from "recompose";
 import ElementStyle from "webiny-app-cms/render/components/ElementStyle";
-import ResizeHandle from "./ResizeHandle";
-import { dropElement, updateElement } from "webiny-app-cms/editor/actions";
-import { getIsDragging } from "webiny-app-cms/editor/selectors";
-import { resizeRowColumn, resizeStart, resizeStop } from "./actions";
-
-const ColumnContainer = styled("div")({
-    position: "relative",
-    display: "flex"
-});
+import { updateElement } from "webiny-app-cms/editor/actions";
+import { getElementById } from "webiny-app-cms/editor/selectors";
+import RowChild from "./RowChild";
+import { resizeStart, resizeStop } from "./actions";
 
 const innerElement = css({
     position: "relative",
@@ -29,78 +23,115 @@ const innerElement = css({
     }
 });
 
-const Row = ({
-    element: rowElement,
-    isDragging,
-    dropElement,
-    updateElement,
-    resizeRowColumn,
-    resizeStart,
-    resizeStop
-}) => {
-    const { path, type, elements } = rowElement;
-    const row = React.createRef();
+const Row = pure(
+    ({
+        element,
+        childElements,
+        getRef,
+        onResizeStart,
+        onResizeStop,
+        onResize,
+        width,
+        resizing
+    }) => {
+        const { id, path, type } = element;
+        const ref = getRef();
 
-    return (
-        <ElementStyle element={rowElement} style={{zIndex: 20, position: 'relative'}}>
-            <div ref={row} className={innerElement}>
-                {elements.map((element, index) => (
-                    <ColumnContainer
-                        data-type="row-column-container"
-                        key={element.id}
-                        style={{ width: (element.data.width || 100) + "%" }}
-                    >
-                        {index > 0 &&
-                            !isDragging && (
-                                <Resizer
-                                    axis={"x"}
-                                    onResizeStart={() => resizeStart()}
-                                    onResizeStop={() => {
-                                        resizeStop();
-                                        updateElement({ element: rowElement });
-                                    }}
-                                    onResize={diff => {
-                                        const change = (diff / row.current.offsetWidth) * 100;
-                                        resizeRowColumn({ row: path, column: index, change });
-                                    }}
-                                >
-                                    {resizeProps => (
-                                        <ResizeHandle
-                                            {...resizeProps}
-                                            leftWidth={elements[index - 1].data.width}
-                                            rightWidth={element.data.width}
-                                        />
-                                    )}
-                                </Resizer>
-                            )}
-                        <DropZone.Left
-                            type={type}
-                            onDrop={source =>
-                                dropElement({ source, target: { path, type, position: index } })
+        return (
+            <ElementStyle element={element} style={{ zIndex: 20, position: "relative" }}>
+                <div ref={ref} className={innerElement}>
+                    {childElements.map((element, index) => {
+                        const last = index === childElements.length - 1;
+                        let leftElement = index > 0 && childElements[index - 1];
+                        if (resizing) {
+                            if (resizing.left.id === element.id) {
+                                element = set(element, "data.width", width.left);
                             }
-                        />
-                        <Element element={element} />
-                        {index === elements.length - 1 && (
-                            <DropZone.Right
-                                type={type}
-                                onDrop={source =>
-                                    dropElement({
-                                        source,
-                                        target: { path, type, position: elements.length }
-                                    })
-                                }
-                            />
-                        )}
-                    </ColumnContainer>
-                ))}
-            </div>
-        </ElementStyle>
-    );
-};
 
-export default connect(
-    state => ({
-        isDragging: getIsDragging(state)
+                            if (resizing.right.id === element.id) {
+                                element = set(element, "data.width", width.right);
+                                leftElement = set(leftElement, "data.width", width.left);
+                            }
+                        }
+                        return (
+                            <RowChild
+                                key={element.id}
+                                element={element}
+                                index={index}
+                                leftElement={leftElement}
+                                count={childElements.length}
+                                last={last}
+                                target={{ id, path, type }}
+                                onResizeStart={onResizeStart}
+                                onResizeStop={onResizeStop}
+                                onResize={onResize}
+                            />
+                        );
+                    })}
+                </div>
+            </ElementStyle>
+        );
+    }
+);
+
+export default compose(
+    connect(
+        (state, props) => ({
+            childElements: props.element.elements.map(id =>
+                omit(getElementById(state, id), ["elements"])
+            )
+        }),
+        { updateElement, resizeStart, resizeStop }
+    ),
+    withState("resizing", "setResizing", false),
+    withState("width", "setWidth", null),
+    withHandlers(() => {
+        const rowRef = React.createRef();
+        return {
+            getRef: () => () => rowRef
+        };
     }),
-    { dropElement, updateElement, resizeRowColumn, resizeStart, resizeStop }
+    withHandlers({
+        onResizeStart: ({ setResizing, setWidth, resizeStart }) => (leftElement, rightElement) => {
+            resizeStart();
+            setResizing({ left: leftElement, right: rightElement });
+            setWidth({ left: leftElement.data.width, right: rightElement.data.width });
+        },
+        onResizeStop: ({
+            resizeStop,
+            updateElement,
+            setResizing,
+            setWidth,
+            resizing,
+            width
+        }) => () => {
+            const { left, right } = resizing;
+            setResizing(false);
+            updateElement({ element: set(left, "data.width", width.left) });
+            updateElement({ element: set(right, "data.width", width.right) });
+            setWidth(null);
+            resizeStop();
+        },
+        onResize: ({ getRef, width, setWidth }) => diff => {
+            const change = parseFloat(((diff / getRef().current.offsetWidth) * 100).toFixed(2));
+
+            const totalWidth = width.left + width.right;
+
+            // Apply the change
+            let rightWidth = width.right + change;
+            let leftWidth = totalWidth - rightWidth;
+
+            if (rightWidth < 10) {
+                rightWidth = 10;
+                leftWidth = totalWidth - rightWidth;
+            }
+
+            if (leftWidth < 10) {
+                leftWidth = 10;
+                rightWidth = totalWidth - leftWidth;
+            }
+
+            setWidth({ left: leftWidth, right: rightWidth });
+        }
+    })
 )(Row);

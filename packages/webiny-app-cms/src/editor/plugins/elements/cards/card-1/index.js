@@ -2,6 +2,7 @@
 import React from "react";
 import styled from "react-emotion";
 import { set } from "dot-prop-immutable";
+import { redux } from "webiny-app-cms/editor/redux";
 import Card from "./Card";
 import { ReactComponent as ColumnIcon } from "webiny-app-cms/editor/assets/icons/column-icon.svg";
 import { createElement, cloneElement } from "webiny-app-cms/editor/utils";
@@ -106,10 +107,9 @@ export default (): ElementPluginType => {
         render(props) {
             return <Card {...props} />;
         },
-        onReceived({ store, source, target, position = null }) {
-            let element = source.path
-                ? cloneElement(source)
-                : createElement(source.type, {}, target);
+        onReceived({ source, target, position = null }) {
+            const { store } = redux;
+            let element = source.path ? cloneElement(source) : createElement(source.type, {}, target);
 
             target = addElementToParent(element, target, position);
             store.dispatch(updateElement({ element: target }));

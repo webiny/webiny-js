@@ -9,14 +9,14 @@ import Action from "../Action";
 export default {
     name: "cms-element-settings-delete",
     type: "cms-element-settings",
-    renderAction({ parent, element }: Object) {
+    renderAction({ element }: Object) {
         const plugin = getPlugin(element.type);
         if (!plugin) {
             return null;
         }
 
         if (typeof plugin.canDelete === "function") {
-            if (!plugin.canDelete({ parent, element })) {
+            if (!plugin.canDelete({ element })) {
                 return null;
             }
         }

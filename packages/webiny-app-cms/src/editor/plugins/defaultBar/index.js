@@ -1,5 +1,6 @@
 //@flow
 import React from "react";
+import { redux } from "webiny-app-cms/editor/redux";
 import { IconButton, ButtonPrimary } from "webiny-ui/Button";
 import { getActivePlugin } from "webiny-app-cms/editor/selectors";
 import PageSettings from "./PageSettings";
@@ -14,8 +15,8 @@ export default [
     {
         name: "cms-page-settings-bar",
         type: "cms-editor-bar",
-        shouldRender({ state }: { state: Object }) {
-            return getActivePlugin("cms-editor-bar")(state) === "cms-page-settings-bar";
+        shouldRender() {
+            return getActivePlugin("cms-editor-bar")(redux.store.getState()) === "cms-page-settings-bar";
         },
 
         render() {

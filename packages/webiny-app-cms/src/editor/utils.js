@@ -11,16 +11,17 @@ export const updateChildPaths = element => {
         element.path = "0";
     }
 
-    element.elements.forEach((el, index) => {
-        if (!el.id) {
-            el.id = shortid.generate();
-        }
+    element.elements &&
+        element.elements.forEach((el, index) => {
+            if (!el.id) {
+                el.id = shortid.generate();
+            }
 
-        el.path = element.path + "." + index;
-        if (el.elements.length) {
-            updateChildPaths(el);
-        }
-    });
+            el.path = element.path + "." + index;
+            if (el.elements.length) {
+                updateChildPaths(el);
+            }
+        });
 };
 
 export const createBlock = (options = {}, parent = null) => {

@@ -2,6 +2,7 @@
 import React from "react";
 import { css } from "emotion";
 import styled from "react-emotion";
+import { pure } from "recompose";
 import { connect } from "react-redux";
 import Element from "webiny-app-cms/editor/components/Element";
 import ElementStyle from "webiny-app-cms/render/components/ElementStyle";
@@ -12,14 +13,14 @@ const BlockContainer = styled("div")({
     position: "relative",
     color: "#666",
     padding: 5,
-    boxSizing: "border-box",
+    boxSizing: "border-box"
 });
 
-const Block = ({ element, dropElement }) => {
+const Block = pure(({ element, dropElement }) => {
     const { id, type, path, elements } = element;
     return (
-        <BlockContainer id={id} style={{zIndex: 20, position: 'relative'}}>
-            <ElementStyle style={{ margin: "0 auto", boxSizing: "border-box"}} element={element}>
+        <BlockContainer id={id} style={{ zIndex: 20, position: "relative" }}>
+            <ElementStyle style={{ margin: "0 auto", boxSizing: "border-box" }} element={element}>
                 {({ elementStyle, inlineStyle, customClasses, combineClassNames }) => {
                     const { width, ...containerStyle } = elementStyle;
                     return (
@@ -33,8 +34,8 @@ const Block = ({ element, dropElement }) => {
                                         Add an element here
                                     </DropZone.Center>
                                 )}
-                                {elements.map((element, index) => (
-                                    <React.Fragment key={element.id}>
+                                {elements.map((childId, index) => (
+                                    <React.Fragment key={childId}>
                                         <DropZone.Above
                                             type={type}
                                             onDrop={source =>
@@ -44,7 +45,7 @@ const Block = ({ element, dropElement }) => {
                                                 })
                                             }
                                         />
-                                        <Element key={element.id} element={element} />
+                                        <Element key={childId} id={childId} />
                                         {index === elements.length - 1 && (
                                             <DropZone.Below
                                                 type={type}
@@ -69,7 +70,7 @@ const Block = ({ element, dropElement }) => {
             </ElementStyle>
         </BlockContainer>
     );
-};
+});
 
 export default connect(
     null,

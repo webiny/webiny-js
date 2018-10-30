@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { isEqual, pick } from "lodash";
+import { isEqual, pick, debounce } from "lodash";
 import { createAction, addMiddleware, addReducer } from "webiny-app-cms/editor/redux";
 import { getPage } from "webiny-app-cms/editor/selectors";
 import { PREFIX, UPDATE_ELEMENT, DELETE_ELEMENT } from "./actions";
@@ -21,6 +21,7 @@ const dataChanged = revision => {
 };
 
 export const saveRevision = createAction(SAVING_REVISION);
+let debouncedSave = null;
 addMiddleware(
     [UPDATE_ELEMENT, DELETE_ELEMENT, "@@redux-undo/UNDO", "@@redux-undo/REDO"],
     ({ store, next, action }) => {
@@ -30,7 +31,12 @@ addMiddleware(
             return;
         }
 
-        store.dispatch(saveRevision());
+        if (debouncedSave) {
+            debouncedSave.cancel();
+        }
+
+        debouncedSave = debounce(() => store.dispatch(saveRevision()), 1000);
+        debouncedSave();
     }
 );
 
