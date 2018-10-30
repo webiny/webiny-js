@@ -1,5 +1,5 @@
 import React from "react";
-import { get } from "dot-prop-immutable";
+import { get } from "lodash";
 import AddBlock from "./AddBlock";
 import AddContent from "./AddContent";
 import SearchBlocks from "./SearchBlocks";

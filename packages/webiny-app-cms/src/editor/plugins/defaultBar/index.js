@@ -1,6 +1,6 @@
 //@flow
 import React from "react";
-import { get } from "dot-prop-immutable";
+import { get } from "lodash";
 import { IconButton, ButtonPrimary } from "webiny-ui/Button";
 import PageSettings from "./PageSettings";
 import PageSettingsButton from "./PageSettingsButton";
