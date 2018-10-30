@@ -35,7 +35,7 @@ addMiddleware(
             debouncedSave.cancel();
         }
 
-        debouncedSave = debounce(() => store.dispatch(saveRevision()), 2000);
+        debouncedSave = debounce(() => store.dispatch(saveRevision()), 1000);
         debouncedSave();
     }
 );

@@ -1,8 +1,7 @@
 import _ from "lodash";
 import invariant from "invariant";
-import debug from "debug";
 import dotProp from "dot-prop-immutable";
-import undoable from "redux-undo";
+import undoable from "./history";
 import { cloneDeep } from "lodash";
 import {
     createAction,
@@ -31,6 +30,7 @@ export const DELETE_ELEMENT = `${PREFIX} Delete element`;
 export const FLATTEN_ELEMENTS = `${PREFIX} Flatten elements`;
 export const SET_TMP = `${PREFIX} Set tmp`;
 export const SETUP_EDITOR = `${PREFIX} Setup editor`;
+export const SETUP_CONTENT = `${PREFIX} Setup content`;
 
 const horStatePath = "page.content";
 addHigherOrderReducer(
@@ -38,6 +38,7 @@ addHigherOrderReducer(
         UPDATE_ELEMENT,
         DELETE_ELEMENT,
         ELEMENT_DROPPED,
+        SETUP_EDITOR,
         "@@redux-undo/UNDO",
         "@@redux-undo/REDO",
         "@@redux-undo/INIT"
@@ -85,9 +86,12 @@ addReducer([SET_TMP], "tmp", (state, action) => {
     return dotProp.set(state, action.payload.key, action.payload.value);
 });
 
-export const setupEditor = createAction(SETUP_EDITOR);
 addReducer([SETUP_EDITOR], null, (state, action) => {
-    return action.payload;
+    return { ...state, ...action.payload };
+});
+
+addReducer([SETUP_CONTENT], "page.content", (state, action) => {
+    return { ...state, ...action.payload };
 });
 
 export const togglePlugin = createAction(TOGGLE_PLUGIN);
@@ -143,6 +147,7 @@ addReducer(
         if (element.type === "cms-element-document") {
             return "page.content";
         }
+        // .slice(2) removes `0.` from the beginning of the generated path
         return "page.content." + action.payload.element.path.replace(/\./g, ".elements.").slice(2);
     },
     (state, action) => {
@@ -200,7 +205,6 @@ addMiddleware([ELEMENT_DROPPED], ({ store, next, action }) => {
 });
 
 // Flatten page content
-const log = debug("webiny-app-cms");
 const flattenContent = el => {
     let els = {};
     el.elements =
@@ -218,23 +222,18 @@ addReducer([FLATTEN_ELEMENTS], "elements", (state, action) => {
     return action.payload;
 });
 addMiddleware(
-    [
-        UPDATE_ELEMENT,
-        DELETE_ELEMENT,
-        //ELEMENT_DROPPED,
-        "@@redux-undo/UNDO",
-        "@@redux-undo/REDO",
-        "@@redux-undo/INIT"
-    ],
+    [UPDATE_ELEMENT, DELETE_ELEMENT, "@@redux-undo/UNDO", "@@redux-undo/REDO", "@@redux-undo/INIT"],
     ({ store, next, action }) => {
         const result = next(action);
 
         const state = store.getState();
         if (state.page.content) {
-            log("Start page content flattening");
-            const elements = flattenContent(cloneDeep(state.page.content.present));
-            log("Finished page content flattening");
-            store.dispatch({ type: FLATTEN_ELEMENTS, payload: elements, meta: { log: false } });
+            const content = dotProp.get(state, "page.content.present") || null;
+            if (!content) {
+                return result;
+            }
+            const elements = flattenContent(cloneDeep(content));
+            store.dispatch({ type: FLATTEN_ELEMENTS, payload: elements, meta: { log: true } });
         }
 
         return result;
