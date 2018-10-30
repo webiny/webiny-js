@@ -65,6 +65,9 @@ export const getPage = gql`
                     ${sharedFields}
                     content
                     settings
+                    category {
+                        name
+                    }
                     revisions {
                         ${sharedFields}
                     }

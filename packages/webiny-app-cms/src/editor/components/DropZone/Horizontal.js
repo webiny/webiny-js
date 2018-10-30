@@ -2,6 +2,7 @@
 import React from "react";
 import Droppable from "webiny-app-cms/editor/components/Droppable";
 import styled from "react-emotion";
+import { pure } from "recompose";
 
 const InnerDiv = styled("div")({
     height: 5,
@@ -12,30 +13,39 @@ const InnerDiv = styled("div")({
     display: "none"
 });
 
-const OuterDiv = styled("div")(
-    {
-        height: 20,
-        margin: 0,
-        padding: 0,
-        width: "100%",
-        zIndex: 10,
-        backgroundColor: "transparent",
-        position: "absolute",
-        display: "flex"
-    },
-    props => ({
-        alignItems: props.below ? "flex-end" : "flex-start",
-        //[props.below ? "bottom" : "top"]: 0,
-        [InnerDiv]: {
-            backgroundColor: props.isOver
-                ? "var(--mdc-theme-primary)"
-                : "var(--mdc-theme-secondary)",
-            display: props.isOver ? "block" : "none"
-        }
-    })
+const OuterDiv = pure(
+    styled("div")(
+        {
+            height: 20,
+            margin: 0,
+            padding: 0,
+            width: "100%",
+            zIndex: 10,
+            backgroundColor: "transparent",
+            position: "absolute",
+            display: "flex"
+        },
+        props => ({
+            alignItems: props.below ? "flex-end" : "flex-start",
+            //[props.below ? "bottom" : "top"]: 0,
+            [InnerDiv]: {
+                backgroundColor: props.isOver
+                    ? "var(--mdc-theme-primary)"
+                    : "var(--mdc-theme-secondary)",
+                display: props.isOver ? "block" : "none"
+            }
+        })
+    )
 );
 
-const Horizontal = ({ below, onDrop, isVisible, type }: Object) => {
+type Props = {
+    type: string,
+    onDrop: Function,
+    below: boolean,
+    isVisible: boolean
+};
+
+const Horizontal = pure(({ below, onDrop, isVisible, type }: Props) => {
     return (
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>
             {({ isOver }) => (
@@ -45,6 +55,6 @@ const Horizontal = ({ below, onDrop, isVisible, type }: Object) => {
             )}
         </Droppable>
     );
-};
+});
 
 export default Horizontal;

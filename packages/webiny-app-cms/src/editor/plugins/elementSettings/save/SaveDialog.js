@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import { css } from "emotion";
-import { compose, withProps } from "recompose";
+import { compose, withProps, pure } from "recompose";
 import {
     Dialog,
     DialogHeader,
@@ -43,7 +43,7 @@ const removeIdsAndPaths = el => {
     });
 };
 
-const SaveDialog = ({ open, onClose, onSubmit, element }: Props) => {
+const SaveDialog = pure(({ open, onClose, onSubmit, element }: Props) => {
     const type = element.type === "cms-element-block" ? "block" : "element";
     return (
         <Dialog open={open} onClose={onClose} className={narrowDialog}>
@@ -92,6 +92,6 @@ const SaveDialog = ({ open, onClose, onSubmit, element }: Props) => {
             </Form>
         </Dialog>
     );
-};
+});
 
 export default SaveDialog;

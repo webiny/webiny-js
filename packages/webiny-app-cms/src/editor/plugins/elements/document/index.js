@@ -14,8 +14,8 @@ export default (): ElementPluginType => {
                 ...options
             };
         },
-        render(props) {
-            return <Document {...props} />;
+        render({ element }) {
+            return <Document element={element} />;
         }
     };
 };

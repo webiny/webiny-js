@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import { getActiveElement, getParentElement } from "webiny-app-cms/editor/selectors";
+import { getActiveElement } from "webiny-app-cms/editor/selectors";
 
 export function withActiveElement(propName = "element") {
     return function decorator(Component) {
@@ -7,8 +7,7 @@ export function withActiveElement(propName = "element") {
             const element = getActiveElement(state);
 
             return {
-                [propName]: element,
-                parent: element ? getParentElement(state, element.path) : null
+                [propName]: element
             };
         })(Component);
     };

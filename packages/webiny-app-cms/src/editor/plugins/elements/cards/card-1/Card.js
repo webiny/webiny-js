@@ -32,7 +32,7 @@ const Card = ({ element, dropElement }) => {
                                 dropElement({ source, target: { id, path, type, position: index } })
                             }
                         />
-                        <Element element={element} />
+                        <Element id={element.id} />
                         {index === elements.length - 1 && (
                             <DropZone.Below
                                 isVisible={({ isDragging }) => isDragging}

@@ -59,8 +59,8 @@
     "webiny-ui": "0.0.0-semantically-released"
   },
   "peerDependencies": {
-    "react": "^16.4.0",
-    "react-dom": "^16.4.0"
+    "react": "^16.6.0",
+    "react-dom": "^16.6.0"
   },
   "scripts": {
     "build": "babel src types.js -d ${DEST:-build} --source-maps --copy-files --ignore types.js",

@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import { dispatch } from "webiny-app-cms/editor/redux";
+import { redux } from "webiny-app-cms/editor/redux";
 import Block from "./Block";
 import { set } from "dot-prop-immutable";
 import { createElement, createRow, createColumn, cloneElement } from "webiny-app-cms/editor/utils";
@@ -41,7 +41,8 @@ export default (): ElementPluginType => {
             return <Block {...props} />;
         },
         // This callback is executed when another element is dropped on the drop zones with type "block"
-        onReceived({ store, source, target, position = null }) {
+        onReceived({ source, target, position = null }) {
+            const { store } = redux;
             const element = source.path
                 ? cloneElement(source)
                 : createElement(source.type, {}, target);
@@ -63,7 +64,8 @@ export default (): ElementPluginType => {
                         elements: [createColumn({ data: { width: 100 } })]
                     })
                 ]);
-                dispatch(updateElement({ element }));
+
+                redux.store.dispatch(updateElement({ element }));
             }
         }
     };

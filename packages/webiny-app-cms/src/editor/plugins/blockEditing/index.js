@@ -1,4 +1,5 @@
 import React from "react";
+import { redux } from "webiny-app-cms/editor/redux";
 import AddBlock from "./AddBlock";
 import AddContent from "./AddContent";
 import SearchBlocks from "./SearchBlocks";
@@ -22,8 +23,8 @@ export default [
     {
         name: "cms-search-blocks-bar",
         type: "cms-editor-bar",
-        shouldRender({ state }) {
-            return getActivePlugin("cms-editor-bar")(state) === "cms-search-blocks-bar";
+        shouldRender() {
+            return getActivePlugin("cms-editor-bar")(redux.store.getState()) === "cms-search-blocks-bar";
         },
 
         render() {

@@ -1,15 +1,13 @@
 // @flow
 import React from "react";
-import invariant from "invariant";
 import { get } from "dot-prop-immutable";
 import { connect } from "react-redux";
 import styled from "react-emotion";
-import compose from "recompose/compose";
+import { compose, pure } from "recompose";
 import { getPlugins, getPlugin } from "webiny-app/plugins";
 import { withTheme } from "webiny-app-cms/theme";
-import { getContent, getActivePlugin } from "webiny-app-cms/editor/selectors";
+import { getContent } from "webiny-app-cms/editor/selectors";
 import Element from "webiny-app-cms/editor/components/Element";
-import RenderElement from "webiny-app-cms/render/components/Element";
 
 const ContentContainer = styled("div")(({ theme }) => ({
     margin: "64px 0px 0 54px",
@@ -31,46 +29,25 @@ const BaseContainer = styled("div")({
     margin: "0 auto"
 });
 
-const renderPreview = (content, activePreview) => {
-    const plugin = getPlugin(activePreview);
-
-    if (!plugin) {
-        return content;
-    }
-
-    const wrappedContent = plugin.renderPreview({ content });
-    invariant(
-        React.isValidElement(wrappedContent),
-        `"${plugin.name}" must return a valid React element from "renderPreview" function!`
-    );
-
-    return wrappedContent;
-};
-
-const Content = ({ content, theme, previewLayout, activePreview, renderContent }) => {
+const Content = pure(({ rootElement, theme, previewLayout }) => {
     const plugins = getPlugins("cms-editor-content");
     const layout = (previewLayout && getPlugin(previewLayout)) || null;
 
-    let renderedContent = renderContent ? (
-        <RenderElement element={content} />
-    ) : (
-        <Element element={content} />
-    );
+    let renderedContent = <Element id={rootElement.id} />;
 
     renderedContent = layout ? layout.render(renderedContent) : renderedContent;
 
     return (
         <ContentContainer theme={theme}>
             {plugins.map(plugin => React.cloneElement(plugin.render(), { key: plugin.name }))}
-            <BaseContainer>{renderPreview(renderedContent, activePreview)}</BaseContainer>
+            <BaseContainer>{renderedContent}</BaseContainer>
         </ContentContainer>
     );
-};
+});
 
 const stateToProps = state => ({
-    content: getContent(state),
-    previewLayout: state.previewLayout,
-    activePreview: getActivePlugin("cms-editor-content-preview")(state)
+    rootElement: state.elements[getContent(state).id],
+    previewLayout: state.previewLayout
 });
 
 export default compose(
