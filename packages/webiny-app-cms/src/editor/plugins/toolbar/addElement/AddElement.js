@@ -2,7 +2,6 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { compose } from "recompose";
-import { ButtonFloating } from "webiny-ui/Button";
 import Draggable from "webiny-app-cms/editor/components/Draggable";
 import { dragStart, dragEnd, deactivatePlugin, dropElement } from "webiny-app-cms/editor/actions";
 import { getPlugins } from "webiny-app/plugins";
@@ -13,6 +12,7 @@ import { css } from "emotion";
 import { List, ListItem, ListItemMeta } from "webiny-ui/List";
 import { Icon } from "webiny-ui/Icon";
 import { Typography } from "webiny-ui/Typography";
+import { ButtonFloating } from "webiny-ui/Button";
 import { ReactComponent as AddIcon } from "webiny-app-cms/editor/assets/icons/add.svg";
 import type { CmsThemeType, ElementPluginType, ElementGroupPluginType } from "webiny-app-cms/types";
 
@@ -60,7 +60,7 @@ class AddElement extends React.Component<Props, State> {
 
     getGroupElements(group: string) {
         return getPlugins("cms-element").filter(
-            (el: ElementPluginType) => el.element && el.element.group === group
+            (el: ElementPluginType) => el.toolbar && el.toolbar.group === group
         );
     }
 
@@ -88,7 +88,9 @@ class AddElement extends React.Component<Props, State> {
                 }}
             >
                 {({ connectDragSource }) =>
-                    connectDragSource(<div>{this.renderOverlay(element, null, "Drag to Add")}</div>)
+                    connectDragSource(
+                        <div>{this.renderOverlay(element, null, "Drag to Add", plugin)}</div>
+                    )
                 }
             </Draggable>
         );
@@ -108,19 +110,20 @@ class AddElement extends React.Component<Props, State> {
                     name: ADD_ELEMENT
                 });
             },
-            "Click to Add"
+            "Click to Add",
+            plugin
         );
 
         return React.cloneElement(item, { key: plugin.name });
     };
 
-    renderOverlay = (element, onClick = null, label) => {
+    renderOverlay = (element, onClick = null, label, plugin: ElementPluginType) => {
         return (
             <Styled.ElementPreview>
                 <Styled.Overlay>
                     <Styled.Backdrop className={"backdrop"} />
                     <Styled.AddBlock className={"add-block"}>
-                        <ButtonFloating small onClick={onClick} label={label} icon={<AddIcon />} />
+                        <ButtonFloating onClick={onClick} label={label} icon={<AddIcon />} />
                     </Styled.AddBlock>
                 </Styled.Overlay>
                 {element}
@@ -158,12 +161,16 @@ class AddElement extends React.Component<Props, State> {
                                     <div>
                                         <Styled.ElementBox>
                                             <Styled.ElementTitle>
-                                                <Typography use="overline">
-                                                    {plugin.element.title}
-                                                </Typography>
+                                                {typeof plugin.toolbar.title === "function" ? (
+                                                    plugin.toolbar.title()
+                                                ) : (
+                                                    <Typography use="overline">
+                                                        {plugin.toolbar.title}
+                                                    </Typography>
+                                                )}
                                             </Styled.ElementTitle>
                                             <Styled.ElementPreviewCanvas>
-                                                {plugin.preview({ theme })}
+                                                {plugin.toolbar.preview({ theme })}
                                             </Styled.ElementPreviewCanvas>
                                         </Styled.ElementBox>
                                     </div>,

@@ -1,10 +1,9 @@
 // @flow
 import _ from "lodash";
 import mdbid from "mdbid";
-import type { Connection, Pool } from "mysql";
-import { Entity, Driver, QueryResult } from "webiny-entity";
-import { MySQLConnection } from "webiny-mysql-connection";
+import { Entity, Driver, QueryResult, createPaginationMeta } from "webiny-entity";
 import { Attribute } from "webiny-model";
+
 import type {
     EntitySaveParams,
     EntityFindParams,
@@ -18,7 +17,7 @@ import { MySQLModel } from "./model";
 import operators from "./operators";
 
 declare type MySQLDriverOptions = {
-    connection: Connection | Pool,
+    connection: Object,
     model?: Class<MySQLModel>,
     operators?: { [string]: Operator },
     tables?: {
@@ -29,7 +28,7 @@ declare type MySQLDriverOptions = {
 };
 
 class MySQLDriver extends Driver {
-    connection: MySQLConnection;
+    connection: Object;
     model: Class<MySQLModel>;
     operators: { [string]: Operator };
     tables: {
@@ -40,7 +39,7 @@ class MySQLDriver extends Driver {
     constructor(options: MySQLDriverOptions) {
         super();
         this.operators = { ...operators, ...(options.operators || {}) };
-        this.connection = new MySQLConnection(options.connection);
+        this.connection = options.connection;
         this.model = options.model || MySQLModel;
 
         this.tables = {
@@ -101,7 +100,14 @@ class MySQLDriver extends Driver {
         }
 
         if (!this.autoIncrementIds) {
-            entity.id = MySQLDriver.__generateID();
+            // If ID was assigned manually, just check if it's valid.
+            if (entity.id) {
+                if (!this.isId(entity, entity.id)) {
+                    throw Error(`You have assigned an invalid id (${entity.id})`);
+                }
+            } else {
+                entity.id = MySQLDriver.__generateID();
+            }
         }
 
         const data = await entity.toStorage();
@@ -164,9 +170,16 @@ class MySQLDriver extends Driver {
         clonedOptions.calculateFoundRows = true;
 
         const sql = new Select(clonedOptions, entity).generate();
-        const results = await this.getConnection().query([sql, "SELECT FOUND_ROWS() as count"]);
+        const results = await this.getConnection().query(sql);
+        const totalCount = await this.getConnection().query("SELECT FOUND_ROWS() as count");
 
-        return new QueryResult(results[0], { totalCount: results[1][0].count });
+        const meta = createPaginationMeta({
+            totalCount: totalCount[0].count,
+            page: options.page,
+            perPage: options.perPage
+        });
+
+        return new QueryResult(results, meta);
     }
 
     async findOne(
@@ -178,7 +191,9 @@ class MySQLDriver extends Driver {
             table: this.getTableName(entity),
             where: options.query,
             search: options.search,
+            groupBy: options.groupBy,
             sort: options.sort,
+            sql: options.sql,
             page: options.page,
             limit: 1
         };
@@ -230,7 +245,7 @@ class MySQLDriver extends Driver {
         return false;
     }
 
-    getConnection(): MySQLConnection {
+    getConnection() {
         return this.connection;
     }
 
@@ -278,7 +293,7 @@ class MySQLDriver extends Driver {
     }
 
     async test() {
-        await this.getConnection().test();
+        await this.getConnection().query("SELECT version()");
         return true;
     }
 

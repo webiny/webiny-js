@@ -228,14 +228,11 @@ class Element extends React.Component<ElementProps, ElementState> {
                                                 className={"element-holder"}
                                                 onClick={this.onClick}
                                             >
-                                                {plugin.element && plugin.element.help && (
+                                                {plugin.help && (
                                                     <HelpIcon
                                                         className={"help-icon"}
                                                         onClick={() => {
-                                                            window.open(
-                                                                plugin.element.help,
-                                                                "_blank"
-                                                            );
+                                                            window.open(plugin.help, "_blank");
                                                         }}
                                                     />
                                                 )}

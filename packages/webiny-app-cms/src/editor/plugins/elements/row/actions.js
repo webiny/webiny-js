@@ -47,6 +47,6 @@ addMiddleware([ROW_RESIZE_COLUMN], ({ store, next, action }) => {
 
 export const resizeStart = createAction(ROW_RESIZE_START);
 export const resizeStop = createAction(ROW_RESIZE_END);
-addReducer([ROW_RESIZE_START, ROW_RESIZE_END], "editor.ui.resizing", (state, action) => {
+addReducer([ROW_RESIZE_START, ROW_RESIZE_END], "ui.resizing", (state, action) => {
     return action.type === ROW_RESIZE_START;
 });

@@ -18,11 +18,18 @@ export default (): ElementPluginType => {
     return {
         name: "cms-element-spacer",
         type: "cms-element",
-        element: {
+        toolbar: {
             title: "Spacer",
             group: "cms-element-group-layout",
-            settings: ["cms-element-settings-delete"]
+            preview() {
+                return (
+                    <PreviewBox>
+                        <SpacerIcon />
+                    </PreviewBox>
+                );
+            }
         },
+        settings: ["cms-element-settings-delete"],
         target: ["cms-element-block", "cms-element-column"],
         create(options = {}) {
             return {
@@ -33,13 +40,6 @@ export default (): ElementPluginType => {
         },
         render(props) {
             return <Spacer {...props} />;
-        },
-        preview() {
-            return (
-                <PreviewBox>
-                    <SpacerIcon />
-                </PreviewBox>
-            );
         }
     };
 };

@@ -8,7 +8,7 @@ import pageRevisions from "./pageDetails/pageRevisions";
 export default [
     ...header,
     revisionContent,
-    previewContent,
+    ...previewContent,
     pageRevisions,
     globalSearchCategories,
     globalSearchPages

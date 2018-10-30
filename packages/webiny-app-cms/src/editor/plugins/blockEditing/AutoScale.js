@@ -22,6 +22,10 @@ export default class AutoScale extends React.Component {
     }
 
     updateState() {
+        if (!this.content.current) {
+            return;
+        }
+
         const actualContent = this.content.current.children[0];
         const contentSize = {
             width: actualContent.offsetWidth,

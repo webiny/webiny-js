@@ -1,14 +1,20 @@
 // @flow
 import { Entity, type EntityCollection } from "webiny-entity";
 import type { ICategory } from "./Category.entity";
-import type { IRevision } from "./Revision.entity";
+import mdbid from "mdbid";
 
 export interface IPage extends Entity {
     createdBy: string;
-    activeRevision: Promise<IRevision>;
-    revisions: Promise<EntityCollection>;
+    updatedBy: string;
+    title: string;
+    slug: string;
+    content: Object;
+    settings: Object;
     category: Promise<ICategory>;
-    status: "draft" | "published";
+    version: number;
+    parent: string;
+    published: boolean;
+    locked: boolean;
 }
 
 export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
@@ -17,61 +23,131 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
         static storageClassId = "Cms_Pages";
 
         createdBy: string;
-        activeRevision: Promise<IRevision>;
-        revisions: Promise<EntityCollection>;
+        updatedBy: string;
+        title: string;
+        slug: string;
+        content: Object;
+        settings: Object;
         category: Promise<ICategory>;
-        status: "draft" | "published";
+        version: number;
+        parent: string;
+        published: boolean;
+        locked: boolean;
 
         constructor() {
             super();
 
-            const { Revision, Category } = entities;
-
-            this.attr("createdBy").char();
-
-            this.attr("activeRevision")
-                .entity(Revision)
-                .setDynamic(async () => {
-                    const publishedRevision = await Revision.findOne({
-                        query: { page: this.id, published: true }
-                    });
-
-                    if (publishedRevision) {
-                        return publishedRevision;
-                    }
-
-                    // Find latest revision
-                    return await Revision.findOne({
-                        query: { page: this.id },
-                        sort: { createdOn: -1 }
-                    });
-                });
-
-            this.attr("revisions").entities(Revision);
+            const { Category } = entities;
 
             this.attr("category")
                 .entity(Category)
                 .setValidators("required");
 
-            this.attr("status")
+            this.attr("createdBy")
                 .char()
-                .setValidators("in:draft:published:trash")
-                .setDefaultValue("draft");
+                .setSkipOnPopulate();
 
-            this.on("beforeCreate", () => {
+            this.attr("updatedBy")
+                .char()
+                .setSkipOnPopulate();
+
+            this.attr("title")
+                .char()
+                .setValidators("required")
+                .onSet(value => (this.locked ? this.title : value));
+
+            this.attr("slug")
+                .char()
+                .setValidators("required")
+                .onSet(value => (this.locked ? this.slug : value));
+
+            this.attr("content")
+                .object()
+                .onSet(value => (this.locked ? this.content : value));
+
+            this.attr("settings")
+                .object()
+                .onSet(value => (this.locked ? this.settings : value));
+
+            this.attr("version").integer();
+
+            this.attr("parent").char();
+
+            this.attr("revisions")
+                .entities(Page)
+                .setDynamic(() => {
+                    return Page.find({ query: { parent: this.parent }, sort: { version: -1 } });
+                });
+
+            this.attr("locked")
+                .boolean()
+                .setSkipOnPopulate()
+                .setDefaultValue(false);
+
+            this.attr("published")
+                .boolean()
+                .setDefaultValue(false)
+                .onSet(value => {
+                    // Deactivate previously published revision
+                    if (value && value !== this.published && this.isExisting()) {
+                        this.locked = true;
+                        this.on("beforeSave", async () => {
+                            // Deactivate previously published revision
+                            const publishedRev: Page = (await Page.findOne({
+                                query: { published: true, parent: this.parent }
+                            }): any);
+
+                            if (publishedRev) {
+                                publishedRev.published = false;
+                                await publishedRev.save();
+                            }
+                        }).setOnce();
+                    }
+                    return value;
+                });
+
+            this.on("beforeCreate", async () => {
+                const newId = mdbid();
+                this.id = newId;
+
+                if (!this.parent) {
+                    this.parent = newId;
+                }
+
                 this.createdBy = user.id;
+                this.title = this.title || "Untitled";
+                this.slug = (await this.category).url + "untitled-" + this.id;
+                this.version = await this.getNextVersion();
             });
 
-            this.on("afterCreate", async () => {
-                const revision = new Revision();
-                revision.populate({
-                    page: this,
-                    title: "Untitled",
-                    slug: (await this.category).url + "untitled-" + this.id,
-                    name: "Revision #1"
-                });
-                await revision.save();
-            }).setOnce();
+            this.on("beforeUpdate", () => {
+                this.updatedBy = user.id;
+            });
+
+            this.on("afterDelete", async () => {
+                // If the deleted page is the root page - delete its revisions
+                if (this.id === this.parent) {
+                    // Delete all revisions
+                    const revisions: EntityCollection<Page> = await Page.find({
+                        query: { parent: this.parent }
+                    });
+
+                    return Promise.all(revisions.map(rev => rev.delete()));
+                }
+            });
+        }
+
+        async getNextVersion() {
+            const revision: null | Page = await Page.findOne({
+                query: { parent: this.parent },
+                sort: { version: -1 }
+            });
+
+            if (!revision) {
+                return 1;
+            }
+
+            return revision.version + 1;
         }
     };
 };

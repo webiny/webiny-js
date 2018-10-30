@@ -5,7 +5,7 @@ import { get } from "dot-prop-immutable";
 import { connect } from "react-redux";
 import { Input } from "webiny-ui/Input";
 import { updateRevision } from "./actions";
-import { getPage, getRevision } from "webiny-app-cms/editor/selectors";
+import { getPage } from "webiny-app-cms/editor/selectors";
 import { Tooltip } from "webiny-ui/Tooltip";
 import { Typography } from "webiny-ui/Typography";
 import {
@@ -20,7 +20,7 @@ import {
 type Props = {
     page: Object,
     title: string,
-    revision: Object,
+    page: Object,
     updateRevision: ({ title: string, history?: boolean }) => void,
     editTitle: boolean,
     enableEdit: Function,
@@ -30,7 +30,6 @@ type Props = {
 };
 
 const Title = ({
-    revision,
     page,
     updateRevision,
     editTitle,
@@ -56,7 +55,7 @@ const Title = ({
             <PageMeta>
                 <Typography use={"overline"}>
                     {get(page, "category.name") || ""} (status:{" "}
-                    {revision.locked ? "published" : "draft"})
+                    {page.locked ? "published" : "draft"})
                 </Typography>
             </PageMeta>
             <div style={{ width: "100%", display: "flex" }}>
@@ -67,7 +66,7 @@ const Title = ({
                 >
                     <PageTitle onClick={enableEdit}>{title}</PageTitle>
                 </Tooltip>
-                <PageVersion>{`(v${revision.version})`}</PageVersion>
+                <PageVersion>{`(v${page.version})`}</PageVersion>
             </div>
         </TitleWrapper>
     );
@@ -75,13 +74,13 @@ const Title = ({
 
 export default compose(
     connect(
-        state => ({ page: getPage(state), revision: getRevision(state) }),
+        state => ({ page: getPage(state) }),
         { updateRevision }
     ),
     withState("editTitle", "setEdit", false),
     withState("title", "setTitle", null),
-    withProps(({ title, revision }) => ({
-        title: title === null ? revision.title : title
+    withProps(({ title, page }) => ({
+        title: title === null ? page.title : title
     })),
     withHandlers({
         enableEdit: ({ setEdit }) => () => setEdit(true),
@@ -93,14 +92,14 @@ export default compose(
             setEdit(false);
             updateRevision({ title });
         },
-        onKeyDown: ({ title, setTitle, setEdit, revision, updateRevision }) => (
+        onKeyDown: ({ title, setTitle, setEdit, page, updateRevision }) => (
             e: SyntheticKeyboardEvent<HTMLInputElement>
         ) => {
             switch (e.key) {
                 case "Escape":
                     e.preventDefault();
                     setEdit(false);
-                    setTitle(revision.title);
+                    setTitle(page.title);
                     break;
                 case "Enter":
                     if (title === "") {

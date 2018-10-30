@@ -75,7 +75,7 @@ export default () => {
         type: "route",
         route: {
             name: "Cms.Editor",
-            path: "/cms/editor/:page/:revision",
+            path: "/cms/editor/:id",
             exact: true,
             render() {
                 return <Editor />;

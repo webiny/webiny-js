@@ -9,7 +9,7 @@ import { withSnackbar, type WithSnackbarProps } from "webiny-app-admin/component
 import PagesDataList from "./PagesDataList";
 import PageDetails from "./PageDetails";
 import CategoriesDialog from "./CategoriesDialog";
-import { createPage, loadPages } from "webiny-app-cms/admin/graphql/pages";
+import { createPage, listPages } from "webiny-app-cms/admin/graphql/pages";
 import { get } from "lodash";
 
 type Props = {
@@ -45,10 +45,10 @@ class Pages extends React.Component<Props, State> {
                     onSelect={this.onSelect}
                 />
                 <CompactView>
-                    <LeftPanel>
+                    <LeftPanel span={4}>
                         <PagesDataList dataList={dataList} />
                     </LeftPanel>
-                    <RightPanel>
+                    <RightPanel span={8}>
                         <PageDetails refreshPages={dataList.refresh} />
                     </RightPanel>
                 </CompactView>
@@ -63,7 +63,7 @@ export default compose(
     withRouter(),
     graphql(createPage, { name: "createMutation" }),
     withDataList({
-        query: loadPages,
+        query: listPages,
         response: data => {
             return get(data, "cms.pages", {});
         },
@@ -84,7 +84,7 @@ export default compose(
                 const { data } = res.data.cms.page;
                 router.goToRoute({
                     name: "Cms.Editor",
-                    params: { page: data.id, revision: data.activeRevision.id }
+                    params: { id: data.id }
                 });
             } catch (e) {
                 showSnackbar(e.message);

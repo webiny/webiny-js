@@ -10,16 +10,16 @@ const smallSelect = css({
 
 type Props = WithPageDetailsProps & WithRouterProps;
 
-const RevisionSelector = ({ router, pageDetails: { revision, revisions } }: Props) => {
+const RevisionSelector = ({ router, pageDetails: { page } }: Props) => {
     return (
         <Select
-            value={revision.data.id}
-            onChange={id => router.goToRoute({ params: { revision: id }, merge: true })}
+            value={page.id}
+            onChange={id => router.goToRoute({ params: { id } })}
             className={smallSelect}
         >
-            {revisions.data.map(({ id, name }) => (
+            {page.revisions.map(({ id, version }) => (
                 <option key={id} value={id}>
-                    {name}
+                    Revision #{version}
                 </option>
             ))}
         </Select>

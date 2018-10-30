@@ -7,6 +7,7 @@ export { default as EntityPoolEntry } from "./src/entityPoolEntry";
 export { default as EntityCollection } from "./src/entityCollection";
 export { default as EntityAttributesContainer } from "./src/entityAttributesContainer";
 export { default as QueryResult } from "./src/queryResult";
+export { default as createPaginationMeta } from "./src/createPaginationMeta";
 export { default as Driver } from "./src/driver";
 export { default as EventHandler } from "./src/eventHandler";
 

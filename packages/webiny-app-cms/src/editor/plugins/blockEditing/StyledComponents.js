@@ -1,3 +1,4 @@
+//@flow
 import styled from "react-emotion";
 import { css } from "emotion";
 
@@ -44,14 +45,16 @@ export const searchIcon = css({
 
 export const wrapper = css({
     height: "100vh",
-    overflow: "scroll"
+    overflow: "scroll",
+    backgroundColor: "var(--mdc-theme-background)"
 });
 
 export const BlockList = styled("div")({
     display: "flex",
     padding: 50,
-    backgroundColor: "var(--mdc-theme-background)",
-    justifyContent: "space-around"
+    justifyContent: "space-around",
+    maxWidth: 1200,
+    margin: "0 auto"
 });
 
 export const BlockPreview = styled("div")({
