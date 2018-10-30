@@ -33,8 +33,6 @@ const Droppable = pure(
             return null;
         }
 
-        console.log("RENDER DROPPABLE");
-
         return connectDropTarget(
             <div data-type="droppable">
                 {children({ isDragging, isOver, isDroppable: isDroppable(item) })}

@@ -30,6 +30,7 @@ export const UPDATE_ELEMENT = `${PREFIX} Update element`;
 export const DELETE_ELEMENT = `${PREFIX} Delete element`;
 export const FLATTEN_ELEMENTS = `${PREFIX} Flatten elements`;
 export const SET_TMP = `${PREFIX} Set tmp`;
+export const SETUP_EDITOR = `${PREFIX} Setup editor`;
 
 const horStatePath = "page.content";
 addHigherOrderReducer(
@@ -60,6 +61,7 @@ addHigherOrderReducer(
             },
             {
                 initTypes: ["@@redux-undo/INIT"],
+                ignoreInitialState: true,
                 filter: action => {
                     if (action.payload && action.payload.history === false) {
                         return false;
@@ -81,6 +83,11 @@ addReducer(
 export const setTmp = createAction(SET_TMP);
 addReducer([SET_TMP], "tmp", (state, action) => {
     return dotProp.set(state, action.payload.key, action.payload.value);
+});
+
+export const setupEditor = createAction(SETUP_EDITOR);
+addReducer([SETUP_EDITOR], null, (state, action) => {
+    return action.payload;
 });
 
 export const togglePlugin = createAction(TOGGLE_PLUGIN);

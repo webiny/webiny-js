@@ -17,65 +17,70 @@ const ColumnContainer = styled("div")({
 
 type Props = {
     element: Object,
+    leftElement: Object,
     index: number,
     last: boolean,
     target: Object,
     dropElementLeft: Function,
-    dropElementRight: Function
+    dropElementRight: Function,
+    resizeStart: Function,
+    resizeStop: Function,
+    resize: Function
 };
 
-const RowChild = pure(({
-    target,
-    element,
-    index,
-    last = false,
-    dropElementLeft,
-    dropElementRight
-}: Props) => {
-    return (
-        <ColumnContainer
-            data-type="row-column-container"
-            style={{ width: (element.data.width || 100) + "%" }}
-        >
-            {/*{index > 0 && (
-                <Resizer
-                    axis={"x"}
-                    onResizeStart={() => resizeStart()}
-                    onResizeStop={() => {
-                        resizeStop();
-                        updateElement({ element: rowElement });
-                    }}
-                    onResize={diff => {
-                        if (!row.current) {
-                            return;
-                        }
-
-                        const change = (diff / row.current.offsetWidth) * 100;
-                        resizeRowColumn({ row: path, column: index, change });
-                    }}
-                >
-                    {resizeProps => (
-                        <ResizeHandle
-                            {...resizeProps}
-                            leftWidth={childElements[index - 1].data.width}
-                            rightWidth={element.data.width}
-                        />
-                    )}
-                </Resizer>
-            )}*/}
-            <DropZone.Left type={target.type} onDrop={dropElementLeft} />
-            <Element id={element.id} />
-            {last && <DropZone.Right type={target.type} onDrop={dropElementRight} />}
-        </ColumnContainer>
-    );
-});
+const RowChild = pure(
+    ({
+        target,
+        element,
+        index,
+        leftElement,
+        last = false,
+        dropElementLeft,
+        dropElementRight,
+        resizeStart,
+        resizeStop,
+        resize
+    }: Props) => {
+        return (
+            <ColumnContainer
+                data-type="row-column-container"
+                style={{ width: (element.data.width || 100) + "%" }}
+            >
+                {index > 0 && (
+                    <Resizer
+                        axis={"x"}
+                        onResizeStart={resizeStart}
+                        onResizeStop={resizeStop}
+                        onResize={resize}
+                    >
+                        {resizeProps => (
+                            <ResizeHandle
+                                {...resizeProps}
+                                leftWidth={leftElement.data.width}
+                                rightWidth={element.data.width}
+                            />
+                        )}
+                    </Resizer>
+                )}
+                <DropZone.Left type={target.type} onDrop={dropElementLeft} />
+                <Element id={element.id} />
+                {last && <DropZone.Right type={target.type} onDrop={dropElementRight} />}
+            </ColumnContainer>
+        );
+    }
+);
 
 export default compose(
     connect(
-        (state, props) => ({ isDragging: getIsDragging(state), element: state.elements[props.id] }),
+        state => ({ isDragging: getIsDragging(state) }),
         { dropElement }
     ),
     withHandlers({
+        resizeStart: ({ onResizeStart, element, leftElement }) => () => {
+            onResizeStart(leftElement, element);
+        },
+        resizeStop: ({ onResizeStop }) => () => onResizeStop(),
+        resize: ({ onResize }) => diff => onResize(diff),
         dropElementLeft: ({ dropElement, target, index }) => (source: Object) => {
             dropElement({ source, target: { ...target, position: index } });
         },
