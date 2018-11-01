@@ -7,7 +7,7 @@ import omit from "lodash/omit";
 import { compose, withHandlers, withProps, withState, pure } from "recompose";
 import ElementStyle from "webiny-app-cms/render/components/ElementStyle";
 import { updateElement } from "webiny-app-cms/editor/actions";
-import { getElementById } from "webiny-app-cms/editor/selectors";
+import { getElement } from "webiny-app-cms/editor/selectors";
 import RowChild from "./RowChild";
 import { resizeStart, resizeStop } from "./actions";
 
@@ -78,7 +78,7 @@ export default compose(
     connect(
         (state, props) => ({
             childElements: props.element.elements.map(id =>
-                omit(getElementById(state, id), ["elements"])
+                omit(getElement(state, id), ["elements"])
             )
         }),
         { updateElement, resizeStart, resizeStop }

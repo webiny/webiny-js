@@ -1,4 +1,3 @@
-import { createSelector } from "reselect";
 import _ from "lodash";
 import { getPlugin } from "webiny-app/plugins";
 
@@ -39,25 +38,24 @@ export const getContent = state => {
 /**
  * Get element.
  */
-export const getElementByPath = (state, path) => {
-    if (!path) {
-        return null;
-    }
+export const getElementWithChildren = (state, id) => {
+    const element = getElement(state, id);
     const content = getContent(state);
-    return _.get(content, path.replace(/\./g, ".elements.").slice(2));
+    return _.get(content, element.path.replace(/\./g, ".elements.").slice(2));
 };
 
-export const getElementById = (state, id) => {
+export const getElement = (state, id) => {
     return state.elements[id];
 };
 
-export const getParentElement = (state, path) => {
+export const getParentElementWithChildren = (state, id) => {
+    const element = getElement(state, id);
     const content = getContent(state);
-    const parentPaths = path.split(".").slice(0, -1);
+    const parentPaths = element.path.split(".").slice(0, -1);
     if (parentPaths.length === 1) {
         return content;
     }
-    
+
     return _.get(content, parentPaths.join(".elements.").slice(2));
 };
 
@@ -79,7 +77,7 @@ export const getPluginsByType = type => {
 };
 
 /**
- * Get active plugin of given type.
+ * Get an active plugin of the given type.
  */
 export const getActivePlugin = type => {
     const pluginsByType = getPluginsByType(type);
@@ -99,17 +97,6 @@ export const getActivePluginParams = type => {
         return (plugins && plugins.params) || null;
     };
 };
-
-/**
- * Get active element.
- */
-export const getActiveElement = createSelector(
-    state => state,
-    getActiveElementId,
-    (state, elementId) => {
-        return getElementById(state, elementId);
-    }
-);
 
 /**
  * Get dragging state.
