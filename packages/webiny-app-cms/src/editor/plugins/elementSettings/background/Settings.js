@@ -8,12 +8,31 @@ import { withActiveElement } from "webiny-app-cms/editor/components";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import ColorPicker from "webiny-app-cms/editor/components/ColorPicker";
 import { Cell, Grid } from "webiny-ui/Grid";
+import BackgroundImage from "./BackgroundImage";
 
 class Settings extends React.Component<*> {
     updateSettings = (value, history = true) => {
         const { element, updateElement } = this.props;
         updateElement({ element: set(element, "settings.style.backgroundColor", value), history });
     };
+
+    updateBackgroundImage = (value, history = true) => {
+        const { element, updateElement } = this.props;
+
+        updateElement({
+            element: set(element, "settings.style.backgroundImage", `url("${value.src}")`),
+            history
+        });
+    };
+
+    parseImageValue(value: ?string): string {
+        if (!value) {
+            return "";
+        }
+
+        const match = value.match(/url\("(.*?)"\)/);
+        return { src: Array.isArray(match) ? match[1] : "" };
+    }
 
     render() {
         const { element } = this.props;
@@ -35,7 +54,14 @@ class Settings extends React.Component<*> {
                     </Tab>
                     <Tab label={"Image"}>
                         <Grid>
-                            <Cell span={12}>Image</Cell>
+                            <Cell span={12}>
+                                <BackgroundImage
+                                    onChange={v => this.updateBackgroundImage(v)}
+                                    value={this.parseImageValue(
+                                        get(settings, "style.backgroundImage")
+                                    )}
+                                />
+                            </Cell>
                         </Grid>
                     </Tab>
                 </Tabs>
@@ -49,5 +75,5 @@ export default compose(
         null,
         { updateElement }
     ),
-    withActiveElement()
+    withActiveElement({ omit: ["elements"] })
 )(Settings);
