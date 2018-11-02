@@ -1,5 +1,5 @@
 import React from "react";
-import { get, set } from "dot-prop-immutable";
+import { get, set, merge } from "dot-prop-immutable";
 import { connect } from "react-redux";
 import { compose } from "recompose";
 import styled from "react-emotion";
@@ -41,6 +41,8 @@ class Advanced extends React.Component {
         // Get a sidebar plugin responsible for rendering current element (if any)
         const plugin = getPlugins("cms-element-sidebar").find(pl => pl.element === element.type);
 
+        const { data, settings } = element;
+
         return (
             <React.Fragment>
                 <Header>
@@ -57,19 +59,20 @@ class Advanced extends React.Component {
                 </Header>
                 <Body>
                     <Form
-                        data={get(element, "settings.advanced", {})}
-                        onChange={data =>
+                        data={{ data, settings }}
+                        onChange={formData => {
+                            const newElement = merge(element, "data", formData.data);
                             updateElement({
-                                element: set(element, "settings.advanced", data),
+                                element: merge(newElement, "settings", formData.settings),
                                 history: false
-                            })
-                        }
+                            });
+                        }}
                     >
                         {({ Bind }) => (
                             <React.Fragment>
                                 <Grid>
                                     <Cell span={12}>
-                                        <Bind name={"style.classNames"}>
+                                        <Bind name={"settings.advanced.style.classNames"}>
                                             <Input
                                                 label={"CSS class"}
                                                 description={"Custom CSS class names"}
@@ -79,7 +82,7 @@ class Advanced extends React.Component {
                                 </Grid>
                                 <Grid>
                                     <Cell span={12}>
-                                        <Bind name={"style.inline"}>
+                                        <Bind name={"settings.advanced.style.inline"}>
                                             <Input
                                                 rows={10}
                                                 label={"Inline CSS"}

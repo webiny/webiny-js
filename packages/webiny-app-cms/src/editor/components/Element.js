@@ -18,6 +18,7 @@ import { getElementProps } from "webiny-app-cms/editor/selectors";
 import Draggable from "./Draggable";
 import type { ElementType } from "webiny-app-cms/types";
 import { defaultStyle, ElementContainer, transitionStyles, typeStyle } from "./ElementStyled";
+import ElementAdvancedSettings from "./ElementAdvancedSettings";
 
 declare type ElementProps = {
     active: boolean,
@@ -33,7 +34,10 @@ declare type ElementProps = {
     plugin: Object,
     beginDrag: Function,
     endDrag: Function,
-    dragging: boolean
+    dragging: boolean,
+    // Dialog
+    openSettings: boolean,
+    hideSettings: Function
 };
 
 const Element = pure(
@@ -46,7 +50,10 @@ const Element = pure(
         theme,
         onMouseOver,
         beginDrag,
-        endDrag
+        endDrag,
+        // Dialog
+         openSettings,
+         hideSettings
     }: ElementProps) => {
         if (!plugin) {
             return null;
@@ -70,6 +77,7 @@ const Element = pure(
                                 {renderDraggable}
                             </Draggable>
                             {plugin.render({ theme, element })}
+                            <ElementAdvancedSettings open={openSettings} onClose={hideSettings}/>
                         </div>
                     </ElementContainer>
                 )}
@@ -98,9 +106,12 @@ export default compose(
     withProps(({ element }) => ({
         plugin: getPlugin(element.type)
     })),
+    withState("openSettings", "setOpenSettings", false),
     withHandlers({
+        showSettings: ({ setOpenSettings }) => () => setOpenSettings(true),
+        hideSettings: ({ setOpenSettings }) => () => setOpenSettings(false),
         beginDrag: ({ plugin, element, dragStart }) => () => {
-            const data = { type: element.type, path: element.path };
+            const data = { id: element.id, type: element.type, path: element.path };
             setTimeout(() => {
                 dragStart({ element: data });
             });
@@ -132,14 +143,15 @@ export default compose(
         }
     }),
     withHandlers({
-        renderDraggable: ({ plugin, onClick, openHelp }) => ({ connectDragSource }) => {
+        renderDraggable: ({ plugin, onClick, openHelp, showSettings }) => ({ connectDragSource }) => {
             return connectDragSource(
                 <div className={"type " + typeStyle}>
                     <div className="background" onClick={onClick} />
                     <div className={"element-holder"} onClick={onClick}>
                         {plugin.help && <HelpIcon className={"help-icon"} onClick={openHelp} />}
+                        {<SettingsIcon className={"help-icon"} onClick={showSettings} />}
                         <span>
-                            <SettingsIcon /> {plugin.name.replace("cms-element-", "")}
+                            {plugin.name.replace("cms-element-", "")}
                         </span>
                     </div>
                 </div>

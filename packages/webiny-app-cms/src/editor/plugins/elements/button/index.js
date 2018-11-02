@@ -58,7 +58,7 @@ export default (): ElementPluginType => {
                     <React.Fragment>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name={"type"} defaultValue={""}>
+                                <Bind name={"settings.advanced.type"} defaultValue={""}>
                                     <Select description={"Button type"}>
                                         {types.map(type => (
                                             <option key={type.className} value={type.className}>
@@ -71,14 +71,14 @@ export default (): ElementPluginType => {
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name={"href"} defaultValue={""} validators={["url"]}>
+                                <Bind name={"settings.advanced.href"} defaultValue={""} validators={["url"]}>
                                     <Input description={"On click, go to this URL."} />
                                 </Bind>
                             </Cell>
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name={"newTab"} defaultValue={false}>
+                                <Bind name={"settings.advanced.newTab"} defaultValue={false}>
                                     <Switch description={"New tab"} />
                                 </Bind>
                             </Cell>

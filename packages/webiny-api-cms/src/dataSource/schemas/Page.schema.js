@@ -7,6 +7,7 @@ import {
 } from "webiny-api/graphql";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
 import listPages from "./pageResolvers/listPages";
+import oembed from "./pageResolvers/oembed";
 
 const pageFetcher = ctx => ctx.cms.Page;
 const elementFetcher = ctx => ctx.cms.Element;
@@ -79,6 +80,11 @@ export default {
             data: [Element]
             meta: ListMeta
         }
+        
+        type OembedResponse {
+            data: JSON,
+            error: Error
+        }
     `,
     queryFields: `
         getPage(
@@ -95,6 +101,8 @@ export default {
         ): PageListResponse
         
         listElements: ElementListResponse
+        
+        oembedData(url: String!): OembedResponse
     `,
     mutationFields: `
         createPage(
@@ -135,7 +143,8 @@ export default {
     queryResolvers: {
         getPage: resolveGet(pageFetcher),
         listPages: listPages(pageFetcher),
-        listElements: resolveList(elementFetcher)
+        listElements: resolveList(elementFetcher),
+        oembedData: oembed
     },
     mutationResolvers: {
         // Creates a new page
