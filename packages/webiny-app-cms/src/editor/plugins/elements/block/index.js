@@ -23,8 +23,7 @@ export default (): ElementPluginType => {
             "",
             "cms-element-settings-clone",
             "cms-element-settings-delete",
-            "",
-            "cms-element-settings-advanced"
+            ""
         ],
         create(options = {}) {
             return {

@@ -1,7 +1,6 @@
 import bar from "./bar";
 import deleteElement from "./delete";
 import clone from "./clone";
-import advanced from "./advanced";
 import background from "./background";
 import border from "./border";
 import shadow from "./shadow";
@@ -23,7 +22,6 @@ export default [
     align,
     clone,
     deleteElement,
-    advanced,
     width,
     save
 ];

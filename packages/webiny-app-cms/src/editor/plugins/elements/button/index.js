@@ -6,6 +6,8 @@ import { Select } from "webiny-ui/Select";
 import { Input } from "webiny-ui/Input";
 import { Switch } from "webiny-ui/Switch";
 import { Grid, Cell } from "webiny-ui/Grid";
+import { AccordionItem } from "webiny-ui/Accordion";
+import { ReactComponent as ButtonIcon } from "./round-category-24px.svg";
 import type { ElementPluginType } from "webiny-app-cms/types";
 
 export default (): ElementPluginType => {
@@ -31,8 +33,7 @@ export default (): ElementPluginType => {
                 "",
                 "cms-element-settings-clone",
                 "cms-element-settings-delete",
-                "",
-                "cms-element-settings-advanced"
+                ""
             ],
             target: ["cms-element-column", "cms-element-row"],
             create(options) {
@@ -48,14 +49,18 @@ export default (): ElementPluginType => {
             }
         },
         {
-            name: "cms-element-sidebar-button",
-            type: "cms-element-sidebar",
+            name: "cms-element-advanced-button",
+            type: "cms-element-advanced-settings",
             element: "cms-element-button",
             render({ Bind, theme }) {
                 const { types } = theme.elements.button;
 
                 return (
-                    <React.Fragment>
+                    <AccordionItem
+                        icon={<ButtonIcon />}
+                        title="Button settings"
+                        description="Customize the look and behaviour of your button"
+                    >
                         <Grid>
                             <Cell span={12}>
                                 <Bind name={"settings.advanced.type"} defaultValue={""}>
@@ -83,7 +88,7 @@ export default (): ElementPluginType => {
                                 </Bind>
                             </Cell>
                         </Grid>
-                    </React.Fragment>
+                    </AccordionItem>
                 );
             }
         }

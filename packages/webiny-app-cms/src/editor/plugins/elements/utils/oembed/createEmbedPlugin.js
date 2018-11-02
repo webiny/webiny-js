@@ -30,8 +30,7 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): ElementPluginType 
         toolbar: config.toolbar,
         settings: config.settings || [
             "cms-element-settings-delete",
-            "",
-            "cms-element-settings-advanced"
+            ""
         ],
         target: config.target || ["cms-element-column", "cms-element-row", "cms-element-list-item"],
         create({ content = {}, ...options }) {

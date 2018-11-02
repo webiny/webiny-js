@@ -17,8 +17,13 @@ import { ReactComponent as SettingsIcon } from "webiny-app-cms/editor/assets/ico
 import { getElementProps } from "webiny-app-cms/editor/selectors";
 import Draggable from "./Draggable";
 import type { ElementType } from "webiny-app-cms/types";
-import { defaultStyle, ElementContainer, transitionStyles, typeStyle } from "./ElementStyled";
-import ElementAdvancedSettings from "./ElementAdvancedSettings";
+import {
+    defaultStyle,
+    ElementContainer,
+    transitionStyles,
+    typeStyle
+} from "./Element/ElementStyled";
+import AdvancedSettings from "./Element/AdvancedSettings";
 
 declare type ElementProps = {
     active: boolean,
@@ -52,8 +57,8 @@ const Element = pure(
         beginDrag,
         endDrag,
         // Dialog
-         openSettings,
-         hideSettings
+        openSettings,
+        hideSettings
     }: ElementProps) => {
         if (!plugin) {
             return null;
@@ -77,7 +82,12 @@ const Element = pure(
                                 {renderDraggable}
                             </Draggable>
                             {plugin.render({ theme, element })}
-                            <ElementAdvancedSettings open={openSettings} onClose={hideSettings}/>
+                            <AdvancedSettings
+                                element={element}
+                                theme={theme}
+                                open={openSettings}
+                                onClose={hideSettings}
+                            />
                         </div>
                     </ElementContainer>
                 )}
@@ -143,16 +153,16 @@ export default compose(
         }
     }),
     withHandlers({
-        renderDraggable: ({ plugin, onClick, openHelp, showSettings }) => ({ connectDragSource }) => {
+        renderDraggable: ({ plugin, onClick, openHelp, showSettings }) => ({
+            connectDragSource
+        }) => {
             return connectDragSource(
                 <div className={"type " + typeStyle}>
                     <div className="background" onClick={onClick} />
                     <div className={"element-holder"} onClick={onClick}>
                         {plugin.help && <HelpIcon className={"help-icon"} onClick={openHelp} />}
                         {<SettingsIcon className={"help-icon"} onClick={showSettings} />}
-                        <span>
-                            {plugin.name.replace("cms-element-", "")}
-                        </span>
+                        <span>{plugin.name.replace("cms-element-", "")}</span>
                     </div>
                 </div>
             );

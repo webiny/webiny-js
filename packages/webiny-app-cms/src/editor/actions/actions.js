@@ -90,10 +90,6 @@ addReducer([SETUP_EDITOR], null, (state, action) => {
     return { ...state, ...action.payload };
 });
 
-addReducer([SETUP_CONTENT], "page.content", (state, action) => {
-    return { ...state, ...action.payload };
-});
-
 export const togglePlugin = createAction(TOGGLE_PLUGIN);
 addReducer([TOGGLE_PLUGIN], "ui.plugins", (state, action) => {
     const { name, params } = action.payload;

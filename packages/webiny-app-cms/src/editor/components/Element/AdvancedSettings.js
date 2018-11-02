@@ -1,7 +1,10 @@
 // @flow
-import React from "react";
-import { css } from "emotion";
-import { compose, withProps, pure } from "recompose";
+import * as React from "react";
+import { connect } from "react-redux";
+import { compose, shouldUpdate, pure } from "recompose";
+import { isEqual } from "lodash";
+import { merge } from "dot-prop-immutable";
+import { renderPlugins } from "webiny-app/plugins";
 import {
     Dialog,
     DialogHeader,
@@ -15,19 +18,30 @@ import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Form } from "webiny-form";
 import { Accordion, AccordionItem } from "webiny-ui/Accordion";
+import { updateElement } from "webiny-app-cms/editor/actions";
 import { ReactComponent as SettingsIcon } from "webiny-app-cms/editor/assets/icons/settings.svg";
 
 type Props = {
     open: boolean,
     onClose: Function,
     onSubmit: Function,
-    element: Object
+    element: Object,
+    theme: Object
 };
 
-const ElementAdvancedSettings = pure(({ open, onClose, onSubmit }: Props) => {
+const AdvancedSettings = pure(({ element, theme, open, onClose, updateElement }: Props) => {
+    const { data, settings } = element;
     return (
-        <Dialog open={open} onClose={onClose} className={null}>
-            <Form onSubmit={onSubmit}>
+        <Dialog open={open} onClose={onClose}>
+            <Form
+                data={{ data, settings }}
+                onSubmit={formData => {
+                    const newElement = merge(element, "data", formData.data);
+                    updateElement({
+                        element: merge(newElement, "settings", formData.settings)
+                    });
+                }}
+            >
                 {({ data, submit, Bind }) => (
                     <React.Fragment>
                         <DialogHeader>
@@ -35,19 +49,11 @@ const ElementAdvancedSettings = pure(({ open, onClose, onSubmit }: Props) => {
                         </DialogHeader>
                         <DialogBody>
                             <Accordion>
-                                <AccordionItem
-                                    icon={<SettingsIcon />}
-                                    title="Embed settings"
-                                    description="Customize your embed"
-                                >
-                                    <Grid>
-                                        <Cell span={12}>
-                                            <Bind name={"data.url"} validators={"required"}>
-                                                <Input label={"URL"} />
-                                            </Bind>
-                                        </Cell>
-                                    </Grid>
-                                </AccordionItem>
+                                {renderPlugins(
+                                    "cms-element-advanced-settings",
+                                    { Bind, theme },
+                                    { filter: pl => pl.element === element.type }
+                                )}
                                 <AccordionItem
                                     icon={<SettingsIcon />}
                                     title="Style settings"
@@ -88,4 +94,12 @@ const ElementAdvancedSettings = pure(({ open, onClose, onSubmit }: Props) => {
     );
 });
 
-export default ElementAdvancedSettings;
+export default compose(
+    shouldUpdate((props, nextProps) => {
+        return props.open !== nextProps.open || !isEqual(props.element, nextProps.element);
+    }),
+    connect(
+        null,
+        { updateElement }
+    )
+)(AdvancedSettings);
