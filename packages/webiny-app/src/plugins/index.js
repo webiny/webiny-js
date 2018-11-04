@@ -34,7 +34,8 @@ export const removePlugin = (name: string): void => {
 
 type RenderPluginOptions = {
     wrapper?: boolean,
-    fn?: string
+    fn?: string,
+    filter?: Function
 };
 
 const Plugin = ({ children }: { children: React.Node }) => children;
@@ -69,11 +70,11 @@ export const renderPlugin = (
 export const renderPlugins = (
     type: string,
     params?: Object = {},
-    { wrapper = true, fn = "render" }: RenderPluginOptions = {}
+    { wrapper = true, fn = "render", filter = v => v }: RenderPluginOptions = {}
 ): React.Node | Array<React.Node> => {
-    const content = getPlugins(type).map(plugin =>
-        renderPlugin(plugin.name, params, { wrapper, fn })
-    );
+    const content = getPlugins(type)
+        .filter(filter)
+        .map(plugin => renderPlugin(plugin.name, params, { wrapper, fn }));
 
     return wrapper ? (
         <Plugins type={type} params={params} fn={fn}>
