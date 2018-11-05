@@ -4,6 +4,9 @@ import Image from "./Image";
 import styled from "react-emotion";
 import { ReactComponent as ImageIcon } from "webiny-app-cms/editor/assets/icons/image-icon.svg";
 import type { ElementPluginType } from "webiny-app-cms/types";
+import { updateElement } from "webiny-app-cms/editor/actions";
+import { set } from "dot-prop-immutable";
+import { redux } from "webiny-app-cms/editor/redux";
 
 export default (): ElementPluginType => {
     const PreviewBox = styled("div")({
@@ -47,8 +50,17 @@ export default (): ElementPluginType => {
         create(options) {
             return { type: "cms-element-image", elements: [], ...options };
         },
-        render(props) {
-            return <Image {...props} />;
+        render({ element }) {
+            return (
+                <Image
+                    value={element.data}
+                    onChange={data => {
+                        redux.store.dispatch(
+                            updateElement({ element: set(element, "data", data) })
+                        );
+                    }}
+                />
+            );
         }
     };
 };

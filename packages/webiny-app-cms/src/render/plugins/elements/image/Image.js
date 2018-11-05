@@ -1,8 +1,11 @@
+// @flow
 import React from "react";
-import image from "webiny-app-cms/editor/assets/icons/image-icon.svg";
 
-const Image = () => {
-    return <img src={image} alt={""} width={"100%"} />;
+const Image = (props: *) => {
+    const {
+        element: { data }
+    } = props;
+    return <img src={data.src} alt={data.alt} width={data.width} height={data.height} />;
 };
 
 export default Image;

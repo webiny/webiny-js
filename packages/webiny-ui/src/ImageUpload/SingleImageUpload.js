@@ -52,6 +52,9 @@ type Props = FormComponentProps & {
     // Please check the docs of ImageEditor component for the list of all available options.
     imageEditor?: boolean | Object,
 
+    // Should remove image button (top right ✕) be shown? Default is set to `true`.
+    showRemoveImageButton?: boolean,
+
     // Use these to customize error messages (eg. if i18n supported is needed).
     errorMessages: {
         maxSizeExceeded: string,
@@ -77,6 +80,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
         maxSize: "5mb",
         accept: ["image/jpeg", "image/png", "image/gif", "image/svg+xml"],
         imageEditor: true,
+        showRemoveImageButton: true,
         errorMessages: {
             maxSizeExceeded: "Max size exceeded.",
             unsupportedFileType: "Unsupported file type.",
@@ -121,7 +125,8 @@ export class SingleImageUpload extends React.Component<Props, State> {
             description,
             accept,
             maxSize,
-            onChange
+            onChange,
+            showRemoveImageButton
         } = this.props;
 
         let imageEditorImageSrc = "";
@@ -166,7 +171,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
                         <Image
                             loading={this.state.loading}
                             value={value}
-                            removeImage={onChange}
+                            removeImage={showRemoveImageButton ? onChange : null}
                             uploadImage={() => {
                                 browseFiles({
                                     onSuccess: files => this.handleFiles(files),

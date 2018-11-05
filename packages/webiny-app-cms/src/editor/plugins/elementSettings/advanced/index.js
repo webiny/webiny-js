@@ -12,7 +12,7 @@ export default {
     renderAction({ active }: Object) {
         return (
             <Action
-                tooltip={"Advance settings"}
+                tooltip={"Advanced settings"}
                 active={active}
                 onClick={() => dispatch(togglePlugin({ name: this.name }))}
                 icon={<SettingsIcon />}

@@ -110,12 +110,13 @@ const ImagePreviewWrapper = styled("div")({
             display: "block",
             zIndex: 2
         }
-    }
+    },
+    zIndex: 10
 });
 
 type Props = {
     uploadImage: Function,
-    removeImage?: Function,
+    removeImage?: ?Function,
     editImage?: Function,
     value?: Object,
     disabled?: boolean,
@@ -143,12 +144,14 @@ class Image extends React.Component<Props> {
                             }}
                         />
 
-                        <RemoveImage onClick={() => removeImage && removeImage(null)}>
-                            <RemoveImageIcon />
-                        </RemoveImage>
+                        {typeof removeImage === "function" && (
+                            <RemoveImage onClick={() => removeImage(null)}>
+                                <RemoveImageIcon />
+                            </RemoveImage>
+                        )}
 
-                        {editImage && (
-                            <EditImage onClick={() => editImage && editImage(value)}>
+                        {typeof editImage === "function" && (
+                            <EditImage onClick={() => editImage(value)}>
                                 <EditImageIcon />
                             </EditImage>
                         )}
