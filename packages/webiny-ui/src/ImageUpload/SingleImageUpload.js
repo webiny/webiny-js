@@ -46,6 +46,9 @@ type Props = FormComponentProps & {
     // Uses "bytes" (https://www.npmjs.com/package/bytes) library to convert string notation to actual number.
     maxSize: string,
 
+    // Preview <img> props (eg. width, height, alt, title ...).
+    img?: Object,
+
     // By default, the editor tool will be shown when an image is selected.
     // Set to false if there is no need for editor to be shown. Otherwise, set true (default value) or alternatively
     // an object containing all of the image editor related options (eg. "filter").
@@ -122,6 +125,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
             value,
             validation = { isValid: null },
             label,
+            img,
             description,
             accept,
             maxSize,
@@ -169,6 +173,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
                 <FileBrowser accept={accept} maxSize={maxSize}>
                     {({ browseFiles }) => (
                         <Image
+                            img={img}
                             loading={this.state.loading}
                             value={value}
                             removeImage={showRemoveImageButton ? onChange : null}

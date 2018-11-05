@@ -4,11 +4,20 @@ import { get } from "lodash";
 
 const Image = (props: *) => {
     const { src } = props.element.data;
-    if (!src) {
-        return null;
+    const { width, height, align, rest } = get(props, "element.settings.advanced.img", {});
+    const wrapperStyle = get(props, "element.settings.style", {});
+
+    const style = { width, height };
+    if (!style.width && !style.height) {
+        style.width = "100%";
+        style.height = "100%";
     }
-    const attributes = get(props, "element.settings.advanced.img", {});
-    return <img {...attributes} src={src} />;
+
+    return (
+        <div style={{ ...wrapperStyle, textAlign: align }}>
+            <img {...rest} style={style} src={src} />
+        </div>
+    );
 };
 
 export default Image;

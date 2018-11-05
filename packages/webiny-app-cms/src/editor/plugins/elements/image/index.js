@@ -9,6 +9,8 @@ import { get, set } from "dot-prop-immutable";
 import { redux } from "webiny-app-cms/editor/redux";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
+import { Select } from "webiny-ui/Select";
+import isNumeric from "isnumeric";
 
 export default (): ElementPluginType => {
     const PreviewBox = styled("div")({
@@ -54,18 +56,29 @@ export default (): ElementPluginType => {
                 return { type: "cms-element-image", elements: [], ...options };
             },
             render({ element }) {
-                const attributes = get(element, "settings.advanced.img", {});
+                const { width, height } = get(element, "settings.advanced.img", {});
+                const wrapperStyle = get(element, "settings.style", {});
+                const imgStyle = {};
+                if (width) {
+                    imgStyle.width = isNumeric(width) ? parseInt(width) : width;
+                }
+                if (height) {
+                    imgStyle.height = isNumeric(height) ? parseInt(height) : height;
+                }
 
                 return (
-                    <Image
-                        {...attributes}
-                        value={element.data}
-                        onChange={data => {
-                            redux.store.dispatch(
-                                updateElement({ element: set(element, "data", data) })
-                            );
-                        }}
-                    />
+                    <div style={wrapperStyle}>
+                        <Image
+                            img={{ style: imgStyle }}
+                            showRemoveImageButton={false}
+                            value={element.data}
+                            onChange={data => {
+                                redux.store.dispatch(
+                                    updateElement({ element: set(element, "data", data) })
+                                );
+                            }}
+                        />
+                    </div>
                 );
             }
         },
@@ -98,12 +111,31 @@ export default (): ElementPluginType => {
                         <Grid>
                             <Cell span={6}>
                                 <Bind name={"img.width"} defaultValue={""}>
-                                    <Input label="Width" />
+                                    <Input
+                                        label="Width"
+                                        placeholder="auto"
+                                        description="eg. 300 or 50%"
+                                    />
                                 </Bind>
                             </Cell>
                             <Cell span={6}>
                                 <Bind name={"img.height"} defaultValue={""}>
-                                    <Input label="Height" />
+                                    <Input
+                                        label="Height"
+                                        placeholder="auto"
+                                        description="eg. 300 or 50%"
+                                    />
+                                </Bind>
+                            </Cell>
+                        </Grid>
+                        <Grid>
+                            <Cell span={12}>
+                                <Bind name={"img.align"} defaultValue={"center"}>
+                                    <Select label="Align">
+                                        <option value="left">Left</option>
+                                        <option value="center">Center</option>
+                                        <option value="right">Right</option>
+                                    </Select>
                                 </Bind>
                             </Cell>
                         </Grid>
