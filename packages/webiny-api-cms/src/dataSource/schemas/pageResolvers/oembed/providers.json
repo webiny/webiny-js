@@ -2333,6 +2333,10 @@
         "provider_url": "https:\/\/www.youtube.com\/",
         "endpoints": [
             {
+                "schemes": [
+                    "https:\/\/youtu.be\/*",
+                    "https:\/\/www.youtube.com\/*"
+                ],
                 "url": "https:\/\/www.youtube.com\/oembed",
                 "discovery": true
             }

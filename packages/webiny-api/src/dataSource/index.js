@@ -1,19 +1,22 @@
 import { dummyResolver } from "../graphql";
-import setupEntities from "./setupEntities";
-import role from "./schemas/Role.schema";
-import group from "./schemas/Group.schema";
-import user from "./schemas/User.schema";
-import apiToken from "./schemas/ApiToken.schema";
+import setupEntities from "./../entities/setupEntities";
+import role from "./typeDefs/Role";
+import group from "./typeDefs/Group";
+import user from "./typeDefs/User";
+import apiToken from "./typeDefs/ApiToken";
 
 export default {
     namespace: "security",
     scopes: ["superadmin", "users:read", "users:write"],
-    typeDefs: `
-        ${role.typeDefs}
-        ${group.typeDefs}
-        ${user.typeDefs}
-        ${apiToken.typeDefs}
-        
+    typeDefs: [
+        user.typeDefs,
+        user.typeExtensions,
+        role.typeDefs,
+        role.typeExtensions,
+        group.typeDefs,
+        group.typeExtensions,
+        apiToken.typeDefs,
+        `
         type Query {
             security: SecurityQuery
         }
@@ -23,40 +26,28 @@ export default {
         }
         
         type SecurityQuery {
-            ${role.queryFields}
-            ${group.queryFields}
-            ${user.queryFields}
-            ${apiToken.queryFields}
             scopes: [String]
         }
         
         type SecurityMutation {
-            ${role.mutationFields}
-            ${group.mutationFields}
-            ${user.mutationFields}
-            ${apiToken.mutationFields}
+            _empty: String
         }
-    `,
-    resolvers: {
-        Query: {
-            security: dummyResolver
+    `
+    ],
+    resolvers: [
+        {
+            Query: {
+                security: dummyResolver
+            },
+            Mutation: {
+                security: dummyResolver
+            },
         },
-        Mutation: {
-            security: dummyResolver
-        },
-        SecurityQuery: {
-            ...role.queryResolvers,
-            ...group.queryResolvers,
-            ...user.queryResolvers,
-            ...apiToken.queryResolvers
-        },
-        SecurityMutation: {
-            ...role.mutationResolvers,
-            ...group.mutationResolvers,
-            ...user.mutationResolvers,
-            ...apiToken.mutationResolvers
-        }
-    },
+        apiToken.resolvers,
+        group.resolvers,
+        role.resolvers,
+        user.resolvers
+    ],
     context: (ctx: Object) => {
         return setupEntities(ctx);
     }

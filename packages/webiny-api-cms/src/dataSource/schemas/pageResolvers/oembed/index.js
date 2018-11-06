@@ -47,5 +47,5 @@ export const fetchEmbed = async (resourceUrl: string, provider: Object) => {
     let link = `${url}?format=json&url=${encodeURIComponent(resourceUrl)}`;
 
     const res = await fetch(link);
-    return res.json();
+    return { ...(await res.json()), url: resourceUrl };
 };

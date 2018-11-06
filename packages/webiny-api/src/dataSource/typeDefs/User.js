@@ -16,8 +16,14 @@ import resolveUpdateCurrentUserSettings from "./userResolvers/updateCurrentUserS
 const userFetcher = ctx => ctx.security.User;
 const userSettingsFetcher = ctx => ctx.security.UserSettings;
 
+import Role from "./Role";
+import Group from "./Group";
+
 export default {
-    typeDefs: `
+    typeDefs: () => [
+        Role.typeDefs,
+        Group.typeDefs,
+        `
         type Avatar {
             name: String
             size: Int
@@ -95,74 +101,80 @@ export default {
             data: UserLogin
             error: Error
         }
+    `
+    ],
+    typeExtensions: `
+        extend type SecurityQuery {
+            "Get current user"
+            getCurrentUser: UserResponse
+            
+            "Get settings of current user"
+            getCurrentUserSettings(key: String!): JSON
+            
+            "Get a single user by id or specific search criteria"
+            getUser(
+                id: ID 
+                where: JSON
+                sort: String
+            ): UserResponse
+            
+            "Get a list of users"
+            listUsers(
+                page: Int
+                perPage: Int
+                where: JSON
+                sort: JSON
+                search: SearchInput
+            ): UserListResponse
+        }
+        
+        extend type SecurityMutation {
+            "Login user"
+            loginUser(
+                username: String! 
+                password: String! 
+                remember: Boolean
+            ): UserLoginResponse
+            
+            "Update current user"
+            updateCurrentUser(
+                data: CurrentUserInput!
+            ): UserResponse
+            
+            "Update settings of current user"
+            updateCurrentUserSettings(
+                key: String!
+                data: JSON!
+            ): JSON
+            
+            createUser(
+                data: UserInput!
+            ): UserResponse
+            
+            updateUser(
+                id: ID!
+                data: UserInput!
+            ): UserResponse
+        
+            deleteUser(
+                id: ID!
+            ): DeleteResponse
+        }
     `,
-    queryFields: `
-        "Get current user"
-        getCurrentUser: UserResponse
-        
-        "Get settings of current user"
-        getCurrentUserSettings(key: String!): JSON
-        
-        "Get a single user by id or specific search criteria"
-        getUser(
-            id: ID 
-            where: JSON
-            sort: String
-        ): UserResponse
-        
-        "Get a list of users"
-        listUsers(
-            page: Int
-            perPage: Int
-            where: JSON
-            sort: JSON
-            search: SearchInput
-        ): UserListResponse
-    `,
-    mutationFields: `
-        "Login user"
-        loginUser(
-            username: String! 
-            password: String! 
-            remember: Boolean
-        ): UserLoginResponse
-        
-        "Update current user"
-        updateCurrentUser(
-            data: CurrentUserInput!
-        ): UserResponse
-        
-        "Update settings of current user"
-        updateCurrentUserSettings(
-            key: String!
-            data: JSON!
-        ): JSON
-        
-        createUser(
-            data: UserInput!
-        ): UserResponse
-        
-        updateUser(
-            id: ID!
-            data: UserInput!
-        ): UserResponse
-    
-        deleteUser(
-            id: ID!
-        ): DeleteResponse
-    `,
-    queryResolvers: {
-        getCurrentUser: resolveGetCurrentUser(userFetcher),
-        getCurrentUserSettings: resolveGetCurrentUserSettings(userSettingsFetcher),
-        getUser: resolveGet(userFetcher),
-        listUsers: resolveList(userFetcher)
-    },
-    mutationResolvers: {
-        loginUser: resolveLoginUser(userFetcher),
-        updateCurrentUser: resolveUpdateCurrentUser(userFetcher),
-        updateCurrentUserSettings: resolveUpdateCurrentUserSettings(userSettingsFetcher),
-        createUser: resolveCreate(userFetcher),
-        updateUser: resolveUpdate(userFetcher),
-        deleteUser: resolveDelete(userFetcher),
+    resolvers: {
+        SecurityQuery: {
+            getCurrentUser: resolveGetCurrentUser(userFetcher),
+            getCurrentUserSettings: resolveGetCurrentUserSettings(userSettingsFetcher),
+            getUser: resolveGet(userFetcher),
+            listUsers: resolveList(userFetcher)
+        },
+        SecurityMutation: {
+            loginUser: resolveLoginUser(userFetcher),
+            updateCurrentUser: resolveUpdateCurrentUser(userFetcher),
+            updateCurrentUserSettings: resolveUpdateCurrentUserSettings(userSettingsFetcher),
+            createUser: resolveCreate(userFetcher),
+            updateUser: resolveUpdate(userFetcher),
+            deleteUser: resolveDelete(userFetcher)
+        }
     }
 };

@@ -1,11 +1,11 @@
 // @flow
-import { userFactory } from "../entities/User.entity";
-import { apiTokenFactory } from "../entities/ApiToken.entity";
-import { groupFactory } from "../entities/Group.entity";
-import { groups2entitiesFactory } from "../entities/Groups2Entities.entity";
-import { roleFactory } from "../entities/Role.entity";
-import { roles2entitiesFactory } from "../entities/Roles2Entities.entity";
-import { userSettingsFactory } from "../entities/UserSettings.entity";
+import { userFactory } from "./User.entity";
+import { apiTokenFactory } from "./ApiToken.entity";
+import { groupFactory } from "./Group.entity";
+import { groups2entitiesFactory } from "./Groups2Entities.entity";
+import { roleFactory } from "./Role.entity";
+import { roles2entitiesFactory } from "./Roles2Entities.entity";
+import { userSettingsFactory } from "./UserSettings.entity";
 
 export default ({ user, config }: Object) => {
     let entities = {};

@@ -1,7 +1,7 @@
 // @flow
-import { categoryFactory } from "../entities/Category.entity";
-import { pageFactory } from "../entities/Page.entity";
-import { elementFactory } from "../entities/Element.entity";
+import { categoryFactory } from "./Category.entity";
+import { pageFactory } from "./Page.entity";
+import { elementFactory } from "./Element.entity";
 
 export default ({ user }: Object) => {
     let entities = {};
