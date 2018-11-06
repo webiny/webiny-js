@@ -36,6 +36,7 @@ export default (el: Element) => {
                 return <RenderElement element={previewContent} />;
             }
         },
+        onCreate: "skip",
         settings: rootPlugin ? rootPlugin.settings : [],
         create() {
             return cloneDeep(el.content);

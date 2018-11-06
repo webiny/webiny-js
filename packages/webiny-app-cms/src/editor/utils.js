@@ -1,4 +1,5 @@
 import shortid from "shortid";
+import { set } from "dot-prop-immutable";
 import { isPlainObject, omit } from "lodash";
 import { getPlugin } from "webiny-app/plugins";
 
@@ -27,6 +28,22 @@ export const updateChildPaths = element => {
             });
         }
     }
+};
+
+export const addElementToParent = (element, parent, position) => {
+    let newParent;
+    if (position === null) {
+        newParent = set(parent, "elements", [...parent.elements, element]);
+    } else {
+        newParent = set(parent, "elements", [
+            ...parent.elements.slice(0, position),
+            element,
+            ...parent.elements.slice(position)
+        ]);
+    }
+
+    updateChildPaths(newParent);
+    return newParent;
 };
 
 export const createBlock = (options = {}, parent = null) => {

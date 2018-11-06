@@ -17,6 +17,7 @@ export const PREFIX = "[CMS]";
 
 export const DRAG_START = `${PREFIX} Drag start`;
 export const DRAG_END = `${PREFIX} Drag end`;
+export const ELEMENT_CREATED = `${PREFIX} Element created`;
 export const ELEMENT_DROPPED = `${PREFIX} Element dropped`;
 export const TOGGLE_PLUGIN = `${PREFIX} Toggle plugin`;
 export const DEACTIVATE_PLUGIN = `${PREFIX} Deactivate plugin`;
@@ -134,6 +135,8 @@ addReducer([DRAG_START], "ui.dragging", () => true);
 
 export const dragEnd = createAction(DRAG_END);
 addReducer([DRAG_END], "ui.dragging", () => false);
+
+export const elementCreated = createAction(ELEMENT_CREATED);
 
 export const updateElement = createAction(UPDATE_ELEMENT);
 addReducer(

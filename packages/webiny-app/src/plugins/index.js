@@ -12,6 +12,7 @@ export type PluginType = Object & {
 export const addPlugin = (...args: Array<PluginType>): void => {
     args.forEach(pl => {
         plugins[pl.name] = pl;
+        pl.init && pl.init();
     });
 };
 

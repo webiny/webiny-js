@@ -6,7 +6,7 @@ import { Select } from "webiny-ui/Select";
 import { Input } from "webiny-ui/Input";
 import { Switch } from "webiny-ui/Switch";
 import { Grid, Cell } from "webiny-ui/Grid";
-import { AccordionItem } from "webiny-ui/Accordion";
+import { Tab } from "webiny-ui/Tabs";
 import { ReactComponent as ButtonIcon } from "./round-category-24px.svg";
 import type { ElementPluginType } from "webiny-app-cms/types";
 
@@ -56,10 +56,9 @@ export default (): ElementPluginType => {
                 const { types } = theme.elements.button;
 
                 return (
-                    <AccordionItem
+                    <Tab
                         icon={<ButtonIcon />}
-                        title="Button settings"
-                        description="Customize the look and behaviour of your button"
+                        label="Button"
                     >
                         <Grid>
                             <Cell span={12}>
@@ -88,7 +87,7 @@ export default (): ElementPluginType => {
                                 </Bind>
                             </Cell>
                         </Grid>
-                    </AccordionItem>
+                    </Tab>
                 );
             }
         }

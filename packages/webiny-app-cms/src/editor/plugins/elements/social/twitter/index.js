@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import type { ElementPluginType } from "webiny-app-cms/types";
-import { createEmbedPlugin, createEmbedSidebarPlugin } from "./../../utils/oembed/createEmbedPlugin";
+import { createEmbedPlugin, createEmbedSettingsPlugin } from "./../../utils/oembed/createEmbedPlugin";
 
 export default (): Array<ElementPluginType> => [
     createEmbedPlugin({
@@ -21,7 +21,7 @@ export default (): Array<ElementPluginType> => [
             }
         }
     }),
-    createEmbedSidebarPlugin({
+    createEmbedSettingsPlugin({
         type: "twitter",
         urlDescription: "Tweet URL",
         urlPlaceholder: "Enter a Tweet URL"

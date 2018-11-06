@@ -4,7 +4,7 @@ import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
 import withOEmbedData from "webiny-app-cms/editor/components/withOEmbedData";
 
-const OEmbedUrl = ({ Bind, urlPlaceholder, urlDescription, getOEmbedData }) => {
+const OEmbedInput = ({ Bind, urlPlaceholder, urlDescription, getOEmbedData }) => {
     return (
         <Grid>
             <Cell span={12}>
@@ -28,4 +28,4 @@ const OEmbedUrl = ({ Bind, urlPlaceholder, urlDescription, getOEmbedData }) => {
     );
 };
 
-export default compose(withOEmbedData())(OEmbedUrl);
+export default compose(withOEmbedData())(OEmbedInput);

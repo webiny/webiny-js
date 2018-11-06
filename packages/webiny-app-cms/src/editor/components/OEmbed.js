@@ -3,11 +3,11 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { isEqual } from "lodash";
 import { compose, withHandlers, shouldUpdate, lifecycle } from "recompose";
-import { get, set } from "dot-prop-immutable";
+import { get } from "lodash";
+import { set } from "dot-prop-immutable";
+import gql from "graphql-tag";
+import { graphql } from "react-apollo";
 import { updateElement } from "webiny-app-cms/editor/actions";
-import { Input } from "webiny-ui/Input";
-import { Form } from "webiny-form";
-import withOEmbedData from "./withOEmbedData";
 
 function appendSDK(props) {
     const { sdk, global, element } = props;
@@ -40,6 +40,20 @@ function initEmbed(props) {
     }
 }
 
+const oembedQuery = gql`
+    query GetOEmbedData($url: String!) {
+        cms {
+            oembedData(url: $url) {
+                data
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
+
 type Props = {
     placeholder: string,
     description: string
@@ -53,43 +67,43 @@ export default compose(
         null,
         { updateElement }
     ),
-    withOEmbedData(),
-    withHandlers({
-        onChange: ({ element, updateElement, getOEmbedData }) => async ({ url }: Object) => {
-            updateElement({
-                element: set(element, "data", { url, oembed: await getOEmbedData(url) })
-            });
+    graphql(oembedQuery, {
+        skip: ({ element }) => {
+            const url = get(element, "data.url");
+            const oembed = get(element, "data.oembed") || {};
+
+            return !url || oembed.url === url;
+        },
+        options: ({ element, updateElement }) => {
+            return {
+                variables: { url: get(element, "data.url") },
+                onCompleted: data => {
+                    updateElement({
+                        element: set(element, "data.oembed", get(data, "cms.oembedData.data"))
+                    });
+                }
+            };
         }
     }),
     withHandlers({
-        renderInput: ({ renderInput, onChange, urlPlaceholder, urlDescription }) => () => {
-            if (typeof renderInput === "function") {
-                return renderInput();
+        renderInput: () => () => {
+            return <div>You must configure your embed in the settings!</div>;
+        },
+        renderEmbed: ({ renderEmbed, ...props }) => () => {
+            if (typeof renderEmbed === "function") {
+                return renderEmbed(props);
             }
 
-            return (
-                <Form onSubmit={onChange}>
-                    {({ submit, Bind }) => (
-                        <Bind name={"url"} defaultValue={""} validators={["required"]}>
-                            <Input
-                                placeholder={urlPlaceholder}
-                                description={urlDescription}
-                                onBlur={submit}
-                            />
-                        </Bind>
-                    )}
-                </Form>
-            );
-        },
-        renderEmbed: ({ renderEmbed, element }) => () => {
-            if (typeof renderEmbed === "function") {
-                return renderEmbed();
+            const { element, data } = props;
+
+            if (data && data.loading) {
+                return "Loading embed data...";
             }
 
             return (
                 <div
                     id={"cms-embed-" + element.id}
-                    dangerouslySetInnerHTML={{ __html: element.data.oembed.html }}
+                    dangerouslySetInnerHTML={{ __html: get(element, "data.oembed.html") || "" }}
                 />
             );
         }
