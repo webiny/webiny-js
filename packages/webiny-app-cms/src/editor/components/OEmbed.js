@@ -42,7 +42,7 @@ function initEmbed(props) {
 }
 
 const oembedQuery = gql`
-    query GetOEmbedData($url: String!, $width: Int, $height: Int) {
+    query GetOEmbedData($url: String!, $width: String, $height: String) {
         cms {
             oembedData(url: $url, width: $width, height: $height) {
                 data

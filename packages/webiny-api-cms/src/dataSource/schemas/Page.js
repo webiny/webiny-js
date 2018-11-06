@@ -113,8 +113,8 @@ export default {
             
             oembedData(
                 url: String! 
-                width: Int
-                height: Int
+                width: String
+                height: String
             ): OembedResponse
         }
         
