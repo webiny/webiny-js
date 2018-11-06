@@ -11,7 +11,7 @@ export default async (_, args) => {
             });
         }
 
-        return new Response(await fetchEmbed(args.url, provider));
+        return new Response(await fetchEmbed(args, provider));
     } catch (e) {
         console.log(e);
         return new ErrorResponse({

@@ -11,8 +11,6 @@ type EmbedPluginConfig = {
         preview: () => React.Node
     },
     oembed?: {
-        urlDescription: string,
-        urlPlaceholder: string,
         global?: string,
         sdk?: string,
         renderEmbed?: () => React.Node

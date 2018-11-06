@@ -89,6 +89,12 @@ export default {
             error: Error
         }
         
+        input OEmbedInput {
+            url: String!
+            width: Int
+            height: Int
+        }
+        
         extend type CmsQuery {
             getPage(
                 id: ID 
@@ -105,7 +111,11 @@ export default {
             
             listElements: ElementListResponse
             
-            oembedData(url: String!): OembedResponse
+            oembedData(
+                url: String! 
+                width: Int
+                height: Int
+            ): OembedResponse
         }
         
         extend type CmsMutation {

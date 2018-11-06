@@ -1,6 +1,7 @@
 // @flow
 import * as React from "react";
 import { connect } from "react-redux";
+import { css } from "emotion";
 import { isEqual } from "lodash";
 import { compose, withHandlers, shouldUpdate, lifecycle } from "recompose";
 import { get } from "lodash";
@@ -41,9 +42,9 @@ function initEmbed(props) {
 }
 
 const oembedQuery = gql`
-    query GetOEmbedData($url: String!) {
+    query GetOEmbedData($url: String!, $width: Int, $height: Int) {
         cms {
-            oembedData(url: $url) {
+            oembedData(url: $url, width: $width, height: $height) {
                 data
                 error {
                     code
@@ -54,10 +55,7 @@ const oembedQuery = gql`
     }
 `;
 
-type Props = {
-    placeholder: string,
-    description: string
-};
+const centerAlign = css({ width: "100%", textAlign: "center" });
 
 export default compose(
     shouldUpdate((props, nextProps) => {
@@ -69,15 +67,17 @@ export default compose(
     ),
     graphql(oembedQuery, {
         skip: ({ element }) => {
-            const url = get(element, "data.url");
+            const source = get(element, "data.source") || {};
             const oembed = get(element, "data.oembed") || {};
 
-            return !url || oembed.url === url;
+            return !source.url || isEqual(oembed.source, source);
         },
         options: ({ element, updateElement }) => {
+            const source = get(element, "data.source") || {};
             return {
-                variables: { url: get(element, "data.url") },
+                variables: source,
                 onCompleted: data => {
+                    // Store loaded oembed data
                     updateElement({
                         element: set(element, "data.oembed", get(data, "cms.oembedData.data"))
                     });
@@ -86,7 +86,7 @@ export default compose(
         }
     }),
     withHandlers({
-        renderInput: () => () => {
+        renderEmpty: () => () => {
             return <div>You must configure your embed in the settings!</div>;
         },
         renderEmbed: ({ renderEmbed, ...props }) => () => {
@@ -103,6 +103,7 @@ export default compose(
             return (
                 <div
                     id={"cms-embed-" + element.id}
+                    className={centerAlign}
                     dangerouslySetInnerHTML={{ __html: get(element, "data.oembed.html") || "" }}
                 />
             );
@@ -117,8 +118,8 @@ export default compose(
             initEmbed(this.props);
         }
     })
-)(({ element, renderEmbed, renderInput }: Props) => {
-    const { url } = get(element, "data") || {};
+)(({ element, renderEmbed, renderEmpty }: Object) => {
+    const { url } = get(element, "data.source") || {};
 
-    return url ? renderEmbed() : renderInput();
+    return url ? renderEmbed() : renderEmpty();
 });

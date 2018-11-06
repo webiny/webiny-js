@@ -6,6 +6,7 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import type { ElementPluginType } from "webiny-app-cms/types";
 import { createEmbedSettingsPlugin, createEmbedPlugin } from "./../../utils/oembed";
 import { ReactComponent as MediaIcon } from "./../../../elementGroups/media/round-music_video-24px.svg";
+import YoutubeEmbed from "./YoutubeEmbed";
 
 export default (): Array<ElementPluginType> => [
     createEmbedPlugin({
@@ -17,7 +18,12 @@ export default (): Array<ElementPluginType> => [
                 return <span>A youtube sample</span>;
             }
         },
-        onCreate: "open-settings"
+        onCreate: "open-settings",
+        oembed: {
+            renderEmbed(props) {
+                return <YoutubeEmbed {...props}/>
+            }
+        }
     }),
     createEmbedSettingsPlugin({
         type: "youtube",
@@ -26,19 +32,19 @@ export default (): Array<ElementPluginType> => [
                 <Tab icon={<MediaIcon />} label="YouTube">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"data.url"} validators={["required", "minLength:10"]}>
+                            <Bind name={"data.source.url"} validators={["required", "minLength:10"]}>
                                 <Input label={"Video URL"} description={"Enter a video URL"} />
                             </Bind>
                         </Cell>
                     </Grid>
                     <Grid>
                         <Cell span={6}>
-                            <Bind name={"data.width"}>
+                            <Bind name={"data.source.width"}>
                                 <Input label={"Width"} />
                             </Bind>
                         </Cell>
                         <Cell span={6}>
-                            <Bind name={"data.height"}>
+                            <Bind name={"data.source.height"}>
                                 <Input label={"Height"} />
                             </Bind>
                         </Cell>

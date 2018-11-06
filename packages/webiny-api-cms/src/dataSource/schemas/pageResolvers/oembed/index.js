@@ -42,10 +42,13 @@ export const findProvider = (url: string): Object => {
     return candidates.length > 0 ? candidates[0] : null;
 };
 
-export const fetchEmbed = async (resourceUrl: string, provider: Object) => {
-    let { url } = provider;
-    let link = `${url}?format=json&url=${encodeURIComponent(resourceUrl)}`;
+export const fetchEmbed = async (params: Object, provider: Object) => {
+    let link =
+        `${provider.url}?format=json&` +
+        Object.keys(params)
+            .map(k => `${k}=${encodeURIComponent(params[k])}`)
+            .join("&");
 
     const res = await fetch(link);
-    return { ...(await res.json()), url: resourceUrl };
+    return { ...(await res.json()), source: params };
 };
