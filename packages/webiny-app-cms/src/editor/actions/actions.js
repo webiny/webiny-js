@@ -17,6 +17,7 @@ export const PREFIX = "[CMS]";
 
 export const DRAG_START = `${PREFIX} Drag start`;
 export const DRAG_END = `${PREFIX} Drag end`;
+export const ELEMENT_CREATED = `${PREFIX} Element created`;
 export const ELEMENT_DROPPED = `${PREFIX} Element dropped`;
 export const TOGGLE_PLUGIN = `${PREFIX} Toggle plugin`;
 export const DEACTIVATE_PLUGIN = `${PREFIX} Deactivate plugin`;
@@ -90,10 +91,6 @@ addReducer([SETUP_EDITOR], null, (state, action) => {
     return { ...state, ...action.payload };
 });
 
-addReducer([SETUP_CONTENT], "page.content", (state, action) => {
-    return { ...state, ...action.payload };
-});
-
 export const togglePlugin = createAction(TOGGLE_PLUGIN);
 addReducer([TOGGLE_PLUGIN], "ui.plugins", (state, action) => {
     const { name, params } = action.payload;
@@ -138,6 +135,8 @@ addReducer([DRAG_START], "ui.dragging", () => true);
 
 export const dragEnd = createAction(DRAG_END);
 addReducer([DRAG_END], "ui.dragging", () => false);
+
+export const elementCreated = createAction(ELEMENT_CREATED);
 
 export const updateElement = createAction(UPDATE_ELEMENT);
 addReducer(

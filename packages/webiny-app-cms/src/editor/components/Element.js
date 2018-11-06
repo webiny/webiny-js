@@ -4,7 +4,7 @@ import { Transition } from "react-transition-group";
 import { compose, pure, withHandlers, withProps, withState } from "recompose";
 import { connect } from "react-redux";
 import isEqual from "lodash/isEqual";
-import { getPlugin } from "webiny-app/plugins";
+import { getPlugin, renderPlugins } from "webiny-app/plugins";
 import { withTheme } from "webiny-app-cms/theme";
 import {
     dragStart,
@@ -12,12 +12,15 @@ import {
     activateElement,
     highlightElement
 } from "webiny-app-cms/editor/actions";
-import { ReactComponent as HelpIcon } from "webiny-app-cms/editor/assets/icons/help_outline.svg";
-import { ReactComponent as SettingsIcon } from "webiny-app-cms/editor/assets/icons/settings.svg";
 import { getElementProps } from "webiny-app-cms/editor/selectors";
 import Draggable from "./Draggable";
 import type { ElementType } from "webiny-app-cms/types";
-import { defaultStyle, ElementContainer, transitionStyles, typeStyle } from "./ElementStyled";
+import {
+    defaultStyle,
+    ElementContainer,
+    transitionStyles,
+    typeStyle
+} from "./Element/ElementStyled";
 
 declare type ElementProps = {
     active: boolean,
@@ -28,7 +31,6 @@ declare type ElementProps = {
     theme: Object,
     onClick: Function,
     onMouseOver: Function,
-    openHelp: Function,
     renderDraggable: Function,
     plugin: Object,
     beginDrag: Function,
@@ -100,7 +102,7 @@ export default compose(
     })),
     withHandlers({
         beginDrag: ({ plugin, element, dragStart }) => () => {
-            const data = { type: element.type, path: element.path };
+            const data = { id: element.id, type: element.type, path: element.path };
             setTimeout(() => {
                 dragStart({ element: data });
             });
@@ -108,9 +110,6 @@ export default compose(
         },
         endDrag: ({ dragEnd }) => (props, monitor) => {
             dragEnd({ element: monitor.getItem() });
-        },
-        openHelp: ({ plugin }) => () => {
-            window.open(plugin.help, "_blank");
         },
         onClick: ({ element, active, activateElement }) => () => {
             if (element.type === "cms-element-document") {
@@ -132,15 +131,13 @@ export default compose(
         }
     }),
     withHandlers({
-        renderDraggable: ({ plugin, onClick, openHelp }) => ({ connectDragSource }) => {
+        renderDraggable: ({ element, plugin, onClick }) => ({ connectDragSource }) => {
             return connectDragSource(
                 <div className={"type " + typeStyle}>
                     <div className="background" onClick={onClick} />
                     <div className={"element-holder"} onClick={onClick}>
-                        {plugin.help && <HelpIcon className={"help-icon"} onClick={openHelp} />}
-                        <span>
-                            <SettingsIcon /> {plugin.name.replace("cms-element-", "")}
-                        </span>
+                        {renderPlugins("cms-element-action", { element, plugin })}
+                        <span>{plugin.name.replace("cms-element-", "")}</span>
                     </div>
                 </div>
             );

@@ -43,6 +43,10 @@ const addKeyHandler = (id, key, handler) => {
 };
 
 const removeKeyHandler = (id, key) => {
+    if(!keyStack[key]) {
+        return;
+    }
+
     const index = keyStack[key].findIndex(item => item.id === id);
     if (index >= 0) {
         keyStack[key].splice(index, 1);

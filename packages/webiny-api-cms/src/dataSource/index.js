@@ -1,61 +1,44 @@
 import { dummyResolver } from "webiny-api/graphql";
-import setupEntities from "./setupEntities";
-import resolveUser from "./schemas/typeResolvers/resolveUser";
+import setupEntities from "../entities/setupEntities";
 
-import page from "./schemas/Page.schema";
-import category from "./schemas/Category.schema";
+import page from "./schemas/Page";
+import category from "./schemas/Category";
 
 export default {
     namespace: "cms",
-    typeDefs: `
-        type Author {
-            id: ID
-            firstName: String
-            lastName: String
-            email: String
-        }
-        
-        ${page.typeDefs}
-        ${category.typeDefs}
-        
-        type CmsQuery {
-            ${page.queryFields}
-            ${category.queryFields}
-        }
-        
-        type CmsMutation {
-            ${page.mutationFields}
-            ${category.mutationFields}
-        }
-        
-        type Query {
-            cms: CmsQuery
-        }
-        
-        type Mutation {
-            cms: CmsMutation
-        }
-    `,
-    resolvers: {
-        Query: {
-            cms: dummyResolver
+    typeDefs: [
+        `
+            type CmsQuery {
+                _empty: String
+            }
+            
+            type CmsMutation {
+                _empty: String
+            }
+            
+            type Query {
+                cms: CmsQuery
+            }
+            
+            type Mutation {
+                cms: CmsMutation
+            }
+        `,
+        page.typeDefs,
+        category.typeDefs
+    ],
+    resolvers: [
+        {
+            Query: {
+                cms: dummyResolver
+            },
+            Mutation: {
+                cms: dummyResolver
+            }
         },
-        Mutation: {
-            cms: dummyResolver
-        },
-        CmsQuery: {
-            ...page.queryResolvers,
-            ...category.queryResolvers
-        },
-        CmsMutation: {
-            ...page.mutationResolvers,
-            ...category.mutationResolvers
-        },
-        Page: {
-            createdBy: resolveUser("createdBy"),
-            updatedBy: resolveUser("updatedBy")
-        }
-    },
+        page.resolvers,
+        category.resolvers
+    ],
     context: (ctx: Object) => {
         return setupEntities(ctx);
     }

@@ -30,32 +30,12 @@ type Props = {
     element: Object
 };
 
-const removeIdsAndPaths = el => {
-    delete el.id;
-    delete el.path;
-
-    el.elements.forEach(el => {
-        delete el.id;
-        delete el.path;
-        if (el.elements.length) {
-            removeIdsAndPaths(el);
-        }
-    });
-};
-
-const SaveDialog = pure(({ open, onClose, onSubmit, element }: Props) => {
-    const type = element.type === "cms-element-block" ? "block" : "element";
+const SaveDialog = pure(({ open, onClose, onSubmit, type }: Props) => {
     return (
         <Dialog open={open} onClose={onClose} className={narrowDialog}>
             <Form
-                onSubmit={data => {
-                    removeIdsAndPaths(data.content);
-                    onSubmit(data);
-                }}
-                data={{
-                    type,
-                    content: element
-                }}
+                onSubmit={onSubmit}
+                data={{ type }}
             >
                 {({ data, submit, Bind }) => (
                     <React.Fragment>
@@ -66,7 +46,7 @@ const SaveDialog = pure(({ open, onClose, onSubmit, element }: Props) => {
                             <Grid>
                                 <Cell span={12}>
                                     <Bind name={"name"} validators={"required"}>
-                                        <Input label={"Name"} />
+                                        <Input label={"Name"} autoFocus/>
                                     </Bind>
                                 </Cell>
                             </Grid>

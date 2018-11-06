@@ -3,8 +3,8 @@ import React from "react";
 import { redux } from "webiny-app-cms/editor/redux";
 import Block from "./Block";
 import { set } from "dot-prop-immutable";
-import { createElement, createRow, createColumn, cloneElement } from "webiny-app-cms/editor/utils";
-import { updateElement, deleteElement } from "webiny-app-cms/editor/actions";
+import { createElement, createRow, createColumn, cloneElement, addElementToParent } from "webiny-app-cms/editor/utils";
+import { updateElement, deleteElement, elementCreated } from "webiny-app-cms/editor/actions";
 import type { ElementPluginType } from "webiny-app-cms/types";
 
 export default (): ElementPluginType => {
@@ -23,8 +23,7 @@ export default (): ElementPluginType => {
             "",
             "cms-element-settings-clone",
             "cms-element-settings-delete",
-            "",
-            "cms-element-settings-advanced"
+            ""
         ],
         create(options = {}) {
             return {
@@ -42,19 +41,27 @@ export default (): ElementPluginType => {
         },
         // This callback is executed when another element is dropped on the drop zones with type "block"
         onReceived({ source, target, position = null }) {
-            const { store } = redux;
-            const element = source.path
-                ? cloneElement(source)
-                : createElement(source.type, {}, target);
+            let dispatchNew = false;
+            let element;
+            if (source.path) {
+                element = cloneElement(source);
+            } else {
+                dispatchNew = true;
+                element = createElement(source.type, {}, target);
+            }
 
             const block = addElementToParent(element, target, position);
 
             // Dispatch update action
-            store.dispatch(updateElement({ element: block }));
+            redux.store.dispatch(updateElement({ element: block }));
 
             // Delete exiting element
             if (source.path) {
-                store.dispatch(deleteElement({ element: source }));
+                redux.store.dispatch(deleteElement({ element: source }));
+            }
+
+            if (dispatchNew) {
+                redux.store.dispatch(elementCreated({ element, source }));
             }
         },
         onChildDeleted({ element }) {
@@ -69,16 +76,4 @@ export default (): ElementPluginType => {
             }
         }
     };
-};
-
-const addElementToParent = (element, parent, position) => {
-    if (position === null) {
-        return set(parent, "elements", [...parent.elements, element]);
-    }
-
-    return set(parent, "elements", [
-        ...parent.elements.slice(0, position),
-        element,
-        ...parent.elements.slice(position)
-    ]);
 };

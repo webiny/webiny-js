@@ -6,6 +6,8 @@ import { Select } from "webiny-ui/Select";
 import { Input } from "webiny-ui/Input";
 import { Switch } from "webiny-ui/Switch";
 import { Grid, Cell } from "webiny-ui/Grid";
+import { Tab } from "webiny-ui/Tabs";
+import { ReactComponent as ButtonIcon } from "./round-category-24px.svg";
 import type { ElementPluginType } from "webiny-app-cms/types";
 
 export default (): ElementPluginType => {
@@ -31,8 +33,7 @@ export default (): ElementPluginType => {
                 "",
                 "cms-element-settings-clone",
                 "cms-element-settings-delete",
-                "",
-                "cms-element-settings-advanced"
+                ""
             ],
             target: ["cms-element-column", "cms-element-row"],
             create(options) {
@@ -48,17 +49,20 @@ export default (): ElementPluginType => {
             }
         },
         {
-            name: "cms-element-sidebar-button",
-            type: "cms-element-sidebar",
+            name: "cms-element-advanced-button",
+            type: "cms-element-advanced-settings",
             element: "cms-element-button",
             render({ Bind, theme }) {
                 const { types } = theme.elements.button;
 
                 return (
-                    <React.Fragment>
+                    <Tab
+                        icon={<ButtonIcon />}
+                        label="Button"
+                    >
                         <Grid>
                             <Cell span={12}>
-                                <Bind name={"type"} defaultValue={""}>
+                                <Bind name={"settings.advanced.type"} defaultValue={""}>
                                     <Select description={"Button type"}>
                                         {types.map(type => (
                                             <option key={type.className} value={type.className}>
@@ -71,19 +75,19 @@ export default (): ElementPluginType => {
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name={"href"} defaultValue={""} validators={["url"]}>
+                                <Bind name={"settings.advanced.href"} defaultValue={""} validators={["url"]}>
                                     <Input description={"On click, go to this URL."} />
                                 </Bind>
                             </Cell>
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name={"newTab"} defaultValue={false}>
+                                <Bind name={"settings.advanced.newTab"} defaultValue={false}>
                                     <Switch description={"New tab"} />
                                 </Bind>
                             </Cell>
                         </Grid>
-                    </React.Fragment>
+                    </Tab>
                 );
             }
         }
