@@ -1,39 +1,32 @@
 // @flow
 import React from "react";
-import type { ElementPluginType } from "webiny-app-cms/types";
 import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
-import { ReactComponent as SocialIcon } from "./../../../elementGroups/social/round-people-24px.svg";
+import type { ElementPluginType } from "webiny-app-cms/types";
 import { createEmbedPlugin, createEmbedSettingsPlugin } from "./../../utils/oembed/createEmbedPlugin";
+import { ReactComponent as MediaIcon } from "./../../../elementGroups/media/round-music_video-24px.svg";
 
 export default (): Array<ElementPluginType> => [
     createEmbedPlugin({
-        type: "twitter",
+        type: "soundcloud",
         toolbar: {
-            title: "Twitter",
-            group: "cms-element-group-social",
+            title: "Soundcloud",
+            group: "cms-element-group-media",
             preview() {
-                return <span>A tweet sample</span>;
-            }
-        },
-        oembed: {
-            global: "twttr",
-            sdk: "https://platform.twitter.com/widgets.js",
-            init({ node }) {
-                window.twttr.widgets.load(node);
+                return <span>A soundcloud sample</span>;
             }
         }
     }),
     createEmbedSettingsPlugin({
-        type: "twitter",
+        type: "soundcloud",
         render({ Bind }) {
             return (
-                <Tab icon={<SocialIcon />} label="Twitter">
+                <Tab icon={<MediaIcon />} label="Soundcloud">
                     <Grid>
                         <Cell span={12}>
                             <Bind name={"data.source.url"} validators={["required", "url"]}>
-                                <Input label={"Tweet URL"} description={"Enter a Tweet URL"} />
+                                <Input label={"Song URL"} description={"Enter a song URL"} />
                             </Bind>
                         </Cell>
                     </Grid>

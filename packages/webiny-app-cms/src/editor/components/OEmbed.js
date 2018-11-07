@@ -12,7 +12,7 @@ import { updateElement } from "webiny-app-cms/editor/actions";
 
 function appendSDK(props) {
     const { sdk, global, element } = props;
-    const { url } = element.data || {};
+    const { url } = get(element, "data.source") || {};
 
     if (!sdk || !url || window[global]) {
         return;
@@ -31,12 +31,10 @@ function appendSDK(props) {
 
 function initEmbed(props) {
     const { sdk, init, element } = props;
-    if (sdk && element.data.url) {
-        if (typeof init === "function") {
-            init({
-                props,
-                node: document.getElementById("cms-embed-" + element.id)
-            });
+    if (sdk && get(element, "data.source.url")) {
+        const node = document.getElementById("cms-embed-" + element.id);
+        if (typeof init === "function" && node) {
+            init({ props, node });
         }
     }
 }
@@ -55,7 +53,12 @@ const oembedQuery = gql`
     }
 `;
 
-const centerAlign = css({ width: "100%", textAlign: "center" });
+const centerAlign = css({
+    "*:first-child": {
+        marginLeft: "auto !important",
+        marginRight: "auto !important"
+    }
+});
 
 export default compose(
     shouldUpdate((props, nextProps) => {
