@@ -2,12 +2,14 @@
 import React from "react";
 import Image from "./Image";
 import styled from "react-emotion";
+import { getPlugin } from "webiny-app/plugins";
+import { redux, addMiddleware } from "webiny-app-cms/editor/redux";
+import { ELEMENT_CREATED } from "webiny-app-cms/editor/actions";
 import ElementStyle from "webiny-app-cms/render/components/ElementStyle";
-import { ReactComponent as ImageIcon } from "webiny-app-cms/editor/assets/icons/image-icon.svg";
+import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
 import type { ElementPluginType } from "webiny-app-cms/types";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { get, set } from "dot-prop-immutable";
-import { redux } from "webiny-app-cms/editor/redux";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
@@ -52,8 +54,21 @@ export default (): ElementPluginType => {
                 "cms-element-settings-delete",
                 ""
             ],
-            onCreate: "open-settings",
             target: ["cms-element-column", "cms-element-row"],
+            init() {
+                addMiddleware([ELEMENT_CREATED], ({ store, action, next }) => {
+                    const { element, source } = action.payload;
+
+                    next(action);
+
+                    // Check the source of the element (could be `saved` element which behaves differently from other elements)
+                    const { onCreate } = getPlugin(source.type);
+                    if (!onCreate || onCreate !== "skip") {
+                        // If source element does not define a specific `onCreate` behavior - continue with the actual element plugin
+                        document.querySelector(`#cms-element-image-${element.id} [data-role="select-image"]`).click()
+                    }
+                });
+            },
             create(options) {
                 return { type: "cms-element-image", elements: [], ...options };
             },
@@ -70,6 +85,7 @@ export default (): ElementPluginType => {
                 return (
                     <ElementStyle element={element}>
                         <Image
+                            element={element}
                             img={{ style: imgStyle }}
                             showRemoveImageButton={false}
                             value={element.data}
@@ -89,7 +105,7 @@ export default (): ElementPluginType => {
             element: "cms-element-image",
             render({ Bind }) {
                 return (
-                    <Tab label="Image">
+                    <Tab icon={<ImageIcon />} label="Image">
                         <Grid>
                             <Cell span={12}>
                                 <Bind name={"img.title"} defaultValue={""}>

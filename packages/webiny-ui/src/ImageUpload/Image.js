@@ -85,6 +85,7 @@ const ImagePreviewWrapper = styled("div")({
         display: "none",
         top: 0,
         height: "100%",
+        zIndex: 10,
         backgroundColor: "rgba(0,0,0, 0.75)",
         [AddImageIconWrapper]: {
             top: "50%",
@@ -122,7 +123,7 @@ type Props = {
 
 class Image extends React.Component<Props> {
     static defaultProps = {
-        placeholder: "Select image"
+        placeholder: "Select an image"
     };
 
     renderBlank() {
@@ -130,13 +131,14 @@ class Image extends React.Component<Props> {
 
         return (
             <AddImageWrapper
+                data-role={"select-image"}
                 onClick={() => {
                     uploadImage();
                 }}
             >
                 <AddImageIconWrapper>
                     <AddImageIcon />
-                    <Typography use={"caption"}>Select image</Typography>
+                    <Typography use={"caption"}>{this.props.placeholder}</Typography>
                 </AddImageIconWrapper>
             </AddImageWrapper>
         );
@@ -177,6 +179,7 @@ class Image extends React.Component<Props> {
                 )}
 
                 <AddImageWrapper
+                    data-role={"select-image"}
                     onClick={() => {
                         uploadImage();
                     }}
