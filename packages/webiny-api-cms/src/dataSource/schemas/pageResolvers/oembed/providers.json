@@ -2334,8 +2334,8 @@
         "endpoints": [
             {
                 "schemes": [
-                    "https:\/\/youtu.be\/*",
-                    "https:\/\/www.youtube.com\/*"
+                    "https?:\/\/youtu.be\/*",
+                    "https?:\/\/www.youtube.com\/*"
                 ],
                 "url": "https:\/\/www.youtube.com\/oembed",
                 "discovery": true

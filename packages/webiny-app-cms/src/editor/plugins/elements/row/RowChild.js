@@ -2,6 +2,7 @@
 import * as React from "react";
 import { compose, withHandlers, pure } from "recompose";
 import { connect } from "react-redux";
+import { css } from "emotion";
 import styled from "react-emotion";
 import DropZone from "webiny-app-cms/editor/components/DropZone";
 import Resizer from "webiny-app-cms/editor/components/Resizer";
@@ -16,6 +17,7 @@ const ColumnContainer = styled("div")({
 });
 
 type Props = {
+    resizing: boolean,
     element: Object,
     leftElement: Object,
     index: number,
@@ -28,9 +30,16 @@ type Props = {
     resize: Function
 };
 
+const noPointer = css({
+    "> *": {
+        pointerEvents: "none"
+    }
+});
+
 const RowChild = pure(
     ({
         target,
+        resizing,
         element,
         index,
         leftElement,
@@ -63,7 +72,7 @@ const RowChild = pure(
                     </Resizer>
                 )}
                 <DropZone.Left type={target.type} onDrop={dropElementLeft} />
-                <Element id={element.id} />
+                <Element id={element.id} className={resizing && noPointer}/>
                 {last && <DropZone.Right type={target.type} onDrop={dropElementRight} />}
             </ColumnContainer>
         );

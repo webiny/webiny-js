@@ -37,18 +37,6 @@ export default (): Array<ElementPluginType> => [
                             </Bind>
                         </Cell>
                     </Grid>
-                    <Grid>
-                        <Cell span={6}>
-                            <Bind name={"data.source.width"}>
-                                <Input label={"Width"} />
-                            </Bind>
-                        </Cell>
-                        <Cell span={6}>
-                            <Bind name={"data.source.height"}>
-                                <Input label={"Height"} />
-                            </Bind>
-                        </Cell>
-                    </Grid>
                 </Tab>
             );
         }

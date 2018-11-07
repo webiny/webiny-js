@@ -1,7 +1,12 @@
 // @flow
 import React from "react";
-import { createEmbedPlugin, createEmbedSettingsPlugin } from "./../../utils/oembed/createEmbedPlugin";
+import { Tab } from "webiny-ui/Tabs";
+import { Input } from "webiny-ui/Input";
+import { Grid, Cell } from "webiny-ui/Grid";
 import type { ElementPluginType } from "webiny-app-cms/types";
+import { createEmbedPlugin, createEmbedSettingsPlugin } from "./../../utils/oembed/createEmbedPlugin";
+import { ReactComponent as MediaIcon } from "./../../../elementGroups/media/round-music_video-24px.svg";
+import VimeoEmbed from "./VimeoEmbed";
 
 export default (): Array<ElementPluginType> => [
     createEmbedPlugin({
@@ -12,11 +17,27 @@ export default (): Array<ElementPluginType> => [
             preview() {
                 return <span>A vimeo sample</span>;
             }
+        },
+        oembed: {
+            renderEmbed(props) {
+                return <VimeoEmbed {...props}/>
+            }
         }
     }),
     createEmbedSettingsPlugin({
         type: "vimeo",
-        urlDescription: "Vimeo video URL",
-        urlPlaceholder: "Enter a video URL"
+        render({ Bind }) {
+            return (
+                <Tab icon={<MediaIcon />} label="Vimeo">
+                    <Grid>
+                        <Cell span={12}>
+                            <Bind name={"data.source.url"} validators={["required", "minLength:10"]}>
+                                <Input label={"Video URL"} description={"Enter a video URL"} />
+                            </Bind>
+                        </Cell>
+                    </Grid>
+                </Tab>
+            );
+        }
     })
 ];

@@ -48,7 +48,8 @@ const Element = pure(
         theme,
         onMouseOver,
         beginDrag,
-        endDrag
+        endDrag,
+        className = ""
     }: ElementProps) => {
         if (!plugin) {
             return null;
@@ -63,7 +64,7 @@ const Element = pure(
                         active={active}
                         style={{ ...defaultStyle, ...transitionStyles[state] }}
                     >
-                        <div className={"innerWrapper"}>
+                        <div className={["innerWrapper", className].filter(c => c).join(" ")}>
                             <Draggable
                                 target={plugin.target}
                                 beginDrag={beginDrag}
