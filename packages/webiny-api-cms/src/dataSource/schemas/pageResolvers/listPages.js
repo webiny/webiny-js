@@ -8,7 +8,8 @@ type EntityFetcher = (context: Object) => Class<Entity>;
 export default (entityFetcher: EntityFetcher) => async (
     root: any,
     args: Object,
-    context: Object
+    context: Object,
+    info: Object
 ) => {
     const entityClass = entityFetcher(context);
 

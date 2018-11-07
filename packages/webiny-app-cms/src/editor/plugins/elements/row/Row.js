@@ -56,6 +56,7 @@ const Row = pure(
                         return (
                             <RowChild
                                 key={element.id}
+                                resizing={resizing}
                                 element={element}
                                 index={index}
                                 leftElement={leftElement}

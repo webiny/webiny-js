@@ -17,7 +17,7 @@ const BlockContainer = styled("div")({
 });
 
 const Block = pure(({ element, dropElement }) => {
-    const { id, type, path, elements } = element;
+    const { id, type, elements } = element;
     return (
         <BlockContainer id={id} style={{ zIndex: 20, position: "relative" }}>
             <ElementStyle style={{ margin: "0 auto", boxSizing: "border-box" }} element={element}>
@@ -41,7 +41,7 @@ const Block = pure(({ element, dropElement }) => {
                                             onDrop={source =>
                                                 dropElement({
                                                     source,
-                                                    target: { path, type, position: index }
+                                                    target: { id, type, position: index }
                                                 })
                                             }
                                         />
@@ -49,16 +49,16 @@ const Block = pure(({ element, dropElement }) => {
                                         {index === elements.length - 1 && (
                                             <DropZone.Below
                                                 type={type}
-                                                onDrop={source =>
+                                                onDrop={source => {
                                                     dropElement({
                                                         source,
                                                         target: {
-                                                            path,
+                                                            id,
                                                             type,
                                                             position: elements.length
                                                         }
-                                                    })
-                                                }
+                                                    });
+                                                }}
                                             />
                                         )}
                                     </React.Fragment>

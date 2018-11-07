@@ -15,7 +15,7 @@ export default {
         }
 
         return (
-            <SaveAction>
+            <SaveAction element={element}>
                 <Action tooltip={"Save element"} icon={<FavoriteIcon />} />
             </SaveAction>
         );

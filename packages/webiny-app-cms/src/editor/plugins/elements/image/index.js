@@ -2,12 +2,14 @@
 import React from "react";
 import Image from "./Image";
 import styled from "react-emotion";
+import ElementStyle from "webiny-app-cms/render/components/ElementStyle";
 import { ReactComponent as ImageIcon } from "webiny-app-cms/editor/assets/icons/image-icon.svg";
 import type { ElementPluginType } from "webiny-app-cms/types";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { get, set } from "dot-prop-immutable";
 import { redux } from "webiny-app-cms/editor/redux";
 import { Grid, Cell } from "webiny-ui/Grid";
+import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
 import isNumeric from "isnumeric";
@@ -48,16 +50,15 @@ export default (): ElementPluginType => {
                 "",
                 "cms-element-settings-clone",
                 "cms-element-settings-delete",
-                "",
-                "cms-element-settings-advanced"
+                ""
             ],
+            onCreate: "open-settings",
             target: ["cms-element-column", "cms-element-row"],
             create(options) {
                 return { type: "cms-element-image", elements: [], ...options };
             },
             render({ element }) {
                 const { width, height } = get(element, "settings.advanced.img", {});
-                const wrapperStyle = get(element, "settings.style", {});
                 const imgStyle = {};
                 if (width) {
                     imgStyle.width = isNumeric(width) ? parseInt(width) : width;
@@ -67,7 +68,7 @@ export default (): ElementPluginType => {
                 }
 
                 return (
-                    <div style={wrapperStyle}>
+                    <ElementStyle element={element}>
                         <Image
                             img={{ style: imgStyle }}
                             showRemoveImageButton={false}
@@ -78,17 +79,17 @@ export default (): ElementPluginType => {
                                 );
                             }}
                         />
-                    </div>
+                    </ElementStyle>
                 );
             }
         },
         {
-            type: "cms-element-sidebar",
-            name: "cms-element-sidebar-image",
+            name: "cms-element-advanced-settings-image",
+            type: "cms-element-advanced-settings",
             element: "cms-element-image",
             render({ Bind }) {
                 return (
-                    <React.Fragment>
+                    <Tab label="Image">
                         <Grid>
                             <Cell span={12}>
                                 <Bind name={"img.title"} defaultValue={""}>
@@ -139,7 +140,7 @@ export default (): ElementPluginType => {
                                 </Bind>
                             </Cell>
                         </Grid>
-                    </React.Fragment>
+                    </Tab>
                 );
             }
         }

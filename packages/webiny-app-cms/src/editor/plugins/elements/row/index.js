@@ -3,8 +3,13 @@ import React from "react";
 import styled from "react-emotion";
 import { set } from "dot-prop-immutable";
 import { dispatch } from "webiny-app-cms/editor/redux";
-import { createElement, createColumn, cloneElement } from "webiny-app-cms/editor/utils";
-import { updateElement, deleteElement } from "webiny-app-cms/editor/actions";
+import {
+    createElement,
+    createColumn,
+    cloneElement,
+    addElementToParent
+} from "webiny-app-cms/editor/utils";
+import { updateElement, deleteElement, elementCreated } from "webiny-app-cms/editor/actions";
 import "./actions";
 import Row from "./Row";
 import { ReactComponent as RowIcon } from "webiny-app-cms/editor/assets/icons/row-icon.svg";
@@ -46,8 +51,7 @@ export default (): ElementPluginType => {
             "",
             "cms-element-settings-clone",
             "cms-element-settings-delete",
-            "",
-            "cms-element-settings-advanced"
+            ""
         ],
         // Target drop zones that will accept this type
         target: ["cms-element-block", "cms-element-column"],
@@ -80,9 +84,14 @@ export default (): ElementPluginType => {
 
         // This callback is executed when another element is dropped on the drop zones with type "row"
         onReceived({ source, target, position = null }) {
-            let element = source.path
-                ? cloneElement(source)
-                : createElement(source.type, {}, target);
+            let dispatchNew = false;
+            let element;
+            if (source.path) {
+                element = cloneElement(source);
+            } else {
+                dispatchNew = true;
+                element = createElement(source.type, {}, target);
+            }
 
             if (element.type !== "cms-element-column") {
                 element = createColumn({ elements: [element] });
@@ -100,6 +109,10 @@ export default (): ElementPluginType => {
             if (source.path) {
                 dispatch(deleteElement({ element: source }));
             }
+
+            if (dispatchNew) {
+                dispatch(elementCreated({ element, source }));
+            }
         },
 
         onChildDeleted({ element }) {
@@ -114,16 +127,4 @@ const distributeColumnWidths = row => {
         return set(el, "data.width", width);
     });
     return set(row, "elements", columns);
-};
-
-const addElementToParent = (element, parent, position) => {
-    if (position === null) {
-        return set(parent, "elements", [...parent.elements, element]);
-    }
-
-    return set(parent, "elements", [
-        ...parent.elements.slice(0, position),
-        element,
-        ...parent.elements.slice(position)
-    ]);
 };
