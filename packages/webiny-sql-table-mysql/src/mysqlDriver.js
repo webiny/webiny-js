@@ -2,13 +2,12 @@
 import ColumnsContainer from "./columnsContainer";
 import IndexesContainer from "./indexesContainer";
 import { Driver, Table } from "webiny-sql-table";
-import { MySQLConnection } from "webiny-mysql-connection";
 import { createTable, alterTable, truncateTable, dropTable } from "./sql";
 import type { MySQLDriverOptions, MySQL } from "./../types";
 import type { CommandOptions } from "webiny-sql-table/types";
 
 class MySQLDriver extends Driver {
-    connection: ?MySQLConnection;
+    connection: ?Object;
 
     constructor(options: MySQLDriverOptions = {}) {
         super();
@@ -16,12 +15,12 @@ class MySQLDriver extends Driver {
         options.connection && this.setConnection(options.connection);
     }
 
-    getConnection(): ?MySQLConnection {
+    getConnection(): ?Object {
         return this.connection;
     }
 
     setConnection(connection: MySQL): MySQLDriver {
-        this.connection = new MySQLConnection(connection);
+        this.connection = connection;
         return this;
     }
 
@@ -68,7 +67,7 @@ class MySQLDriver extends Driver {
 
     async execute(sql: string): Promise<Array<mixed>> {
         const connection = this.getConnection();
-        if (connection instanceof MySQLConnection) {
+        if (connection) {
             return await connection.query(sql);
         }
 

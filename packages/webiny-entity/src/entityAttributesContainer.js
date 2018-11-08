@@ -14,7 +14,7 @@ import type { EntityAttributeOptions } from "../types";
 
 class EntityAttributesContainer extends DefaultAttributesContainer {
     entity(
-        entity: Class<Entity> | Array<Class<Entity>>,
+        entity: Class<$Subtype<Entity>> | Array<Class<$Subtype<Entity>>>,
         options: EntityAttributeOptions = {}
     ): EntityAttribute {
         const parent = this.getParentModel();
@@ -22,7 +22,7 @@ class EntityAttributesContainer extends DefaultAttributesContainer {
         return ((parent.getAttribute(this.name): any): EntityAttribute);
     }
 
-    entities(entity: Class<Entity>, attribute: string = ""): EntitiesAttribute {
+    entities(entity: Class<$Subtype<Entity>>, attribute: string = ""): EntitiesAttribute {
         const parent = this.getParentModel();
         parent.setAttribute(this.name, new EntitiesAttribute(this.name, this, entity, attribute));
         return ((parent.getAttribute(this.name): any): EntitiesAttribute);

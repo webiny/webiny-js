@@ -1,11 +1,11 @@
 //@flow
 import React from "react";
-import { compose, withState, withProps, withHandlers } from "recompose";
+import { compose, withState, withProps, withHandlers, pure } from "recompose";
 import { get } from "dot-prop-immutable";
 import { connect } from "react-redux";
 import { Input } from "webiny-ui/Input";
 import { updateRevision } from "./actions";
-import { getPage, getRevision } from "webiny-app-cms/editor/selectors";
+import { getPage } from "webiny-app-cms/editor/selectors";
 import { Tooltip } from "webiny-ui/Tooltip";
 import { Typography } from "webiny-ui/Typography";
 import {
@@ -18,9 +18,10 @@ import {
 } from "./Styled";
 
 type Props = {
-    page: Object,
     title: string,
-    revision: Object,
+    pageCategory: string,
+    pageLocked: boolean,
+    pageVersion: number,
     updateRevision: ({ title: string, history?: boolean }) => void,
     editTitle: boolean,
     enableEdit: Function,
@@ -29,59 +30,69 @@ type Props = {
     onBlur: Function
 };
 
-const Title = ({
-    revision,
-    page,
-    updateRevision,
-    editTitle,
-    enableEdit,
-    setTitle,
-    title,
-    onKeyDown,
-    onBlur
-}: Props) => {
-    return editTitle ? (
-        <TitleInputWrapper>
-            <Input
-                autoFocus
-                fullwidth
-                value={title}
-                onChange={setTitle}
-                onKeyDown={onKeyDown}
-                onBlur={onBlur}
-            />
-        </TitleInputWrapper>
-    ) : (
-        <TitleWrapper>
-            <PageMeta>
-                <Typography use={"overline"}>
-                    {get(page, "category.name") || ""} (status:{" "}
-                    {revision.locked ? "published" : "draft"})
-                </Typography>
-            </PageMeta>
-            <div style={{ width: "100%", display: "flex" }}>
-                <Tooltip
-                    className={pageTitleWrapper}
-                    placement={"bottom"}
-                    content={<span>Rename</span>}
-                >
-                    <PageTitle onClick={enableEdit}>{title}</PageTitle>
-                </Tooltip>
-                <PageVersion>{`(v${revision.version})`}</PageVersion>
-            </div>
-        </TitleWrapper>
-    );
-};
+const Title = pure(
+    ({
+        updateRevision,
+        editTitle,
+        enableEdit,
+        setTitle,
+        title,
+        onKeyDown,
+        onBlur,
+        pageCategory,
+        pageLocked,
+        pageVersion
+    }: Props) => {
+        return editTitle ? (
+            <TitleInputWrapper>
+                <Input
+                    autoFocus
+                    fullwidth
+                    value={title}
+                    onChange={setTitle}
+                    onKeyDown={onKeyDown}
+                    onBlur={onBlur}
+                />
+            </TitleInputWrapper>
+        ) : (
+            <TitleWrapper>
+                <PageMeta>
+                    <Typography use={"overline"}>
+                        {`${pageCategory} (status: ${pageLocked ? "published" : "draft"})`}
+                    </Typography>
+                </PageMeta>
+                <div style={{ width: "100%", display: "flex" }}>
+                    <Tooltip
+                        className={pageTitleWrapper}
+                        placement={"bottom"}
+                        content={<span>Rename</span>}
+                    >
+                        <PageTitle onClick={enableEdit}>{title}</PageTitle>
+                    </Tooltip>
+                    <PageVersion>{`(v${pageVersion})`}</PageVersion>
+                </div>
+            </TitleWrapper>
+        );
+    }
+);
 
 export default compose(
     connect(
-        state => ({ page: getPage(state), revision: getRevision(state) }),
+        state => {
+            const { title, version, locked, category } = getPage(state);
+            return {
+                pageTitle: title,
+                pageVersion: version,
+                pageLocked: locked,
+                pageCategory: category.name
+            };
+        },
         { updateRevision }
     ),
     withState("editTitle", "setEdit", false),
     withState("title", "setTitle", null),
-    withProps(({ title, revision }) => ({
-        title: title === null ? revision.title : title
+    withProps(({ title, pageTitle }) => ({
+        title: title === null ? pageTitle : title
     })),
     withHandlers({
         enableEdit: ({ setEdit }) => () => setEdit(true),
@@ -93,14 +104,14 @@ export default compose(
             setEdit(false);
             updateRevision({ title });
         },
-        onKeyDown: ({ title, setTitle, setEdit, revision, updateRevision }) => (
+        onKeyDown: ({ title, setTitle, setEdit, pageTitle, updateRevision }) => (
             e: SyntheticKeyboardEvent<HTMLInputElement>
         ) => {
             switch (e.key) {
                 case "Escape":
                     e.preventDefault();
                     setEdit(false);
-                    setTitle(revision.title);
+                    setTitle(pageTitle);
                     break;
                 case "Enter":
                     if (title === "") {

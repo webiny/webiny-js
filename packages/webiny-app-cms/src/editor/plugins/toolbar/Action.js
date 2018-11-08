@@ -1,6 +1,7 @@
 //@flow
 import * as React from "react";
 import { css } from "emotion";
+import { pure } from "recompose";
 import { IconButton } from "webiny-ui/Button";
 import { Tooltip } from "webiny-ui/Tooltip";
 
@@ -10,7 +11,7 @@ const activeStyle = css({
     }
 });
 
-const Action = ({
+const Action = pure(({
     icon,
     onClick,
     active,
@@ -38,6 +39,6 @@ const Action = ({
     }
 
     return iconButton;
-};
+});
 
 export default Action;

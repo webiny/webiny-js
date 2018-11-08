@@ -1,10 +1,10 @@
 // @flow
 import Entity from "./entity";
 
-class EntityCollection extends Array<mixed> {
+class EntityCollection<T: $Subtype<Entity>> extends Array<T> {
     __entityCollection: { params: Object, meta: Object };
 
-    constructor(values: Array<mixed> = []) {
+    constructor(values: Array<T> = []) {
         super();
         this.__entityCollection = { params: {}, meta: {} };
         if (Array.isArray(values)) {

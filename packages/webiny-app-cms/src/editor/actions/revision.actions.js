@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
-import { isEqual, pick } from "lodash";
+import { isEqual, pick, debounce } from "lodash";
 import { createAction, addMiddleware, addReducer } from "webiny-app-cms/editor/redux";
-import { getRevision } from "webiny-app-cms/editor/selectors";
+import { getPage } from "webiny-app-cms/editor/selectors";
 import { PREFIX, UPDATE_ELEMENT, DELETE_ELEMENT } from "./actions";
 
 export const SAVING_REVISION = `${PREFIX} Save revision`;
@@ -21,6 +21,7 @@ const dataChanged = revision => {
 };
 
 export const saveRevision = createAction(SAVING_REVISION);
+let debouncedSave = null;
 addMiddleware(
     [UPDATE_ELEMENT, DELETE_ELEMENT, "@@redux-undo/UNDO", "@@redux-undo/REDO"],
     ({ store, next, action }) => {
@@ -30,22 +31,27 @@ addMiddleware(
             return;
         }
 
-        store.dispatch(saveRevision());
+        if (debouncedSave) {
+            debouncedSave.cancel();
+        }
+
+        debouncedSave = debounce(() => store.dispatch(saveRevision()), 1000);
+        debouncedSave();
     }
 );
 
 const startSaving = { type: START_SAVING, payload: { progress: true } };
 const finishSaving = { type: FINISH_SAVING, payload: { progress: false } };
 
-addReducer([START_SAVING, FINISH_SAVING], "editor.ui.saving", (state = false, action) => {
+addReducer([START_SAVING, FINISH_SAVING], "ui.saving", (state = false, action) => {
     return action.payload.progress;
 });
 
 addMiddleware([SAVING_REVISION], ({ store, next, action }) => {
     next(action);
 
-    // Construct revision payload
-    const data = getRevision(store.getState());
+    // Construct page payload
+    const data = getPage(store.getState());
     const revision = pick(data, ["title", "slug", "settings"]);
     revision.content = data.content.present;
 
@@ -57,7 +63,7 @@ addMiddleware([SAVING_REVISION], ({ store, next, action }) => {
     lastSavedRevision = revision;
 
     const updateRevision = gql`
-        mutation UpdateRevision($id: ID!, $data: RevisionInput!) {
+        mutation UpdateRevision($id: ID!, $data: UpdatePageInput!) {
             cms {
                 updateRevision(id: $id, data: $data) {
                     data {

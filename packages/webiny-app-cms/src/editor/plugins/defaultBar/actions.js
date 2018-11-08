@@ -17,9 +17,9 @@ addMiddleware([UPDATE_REVISION], ({ store, next, action }) => {
     store.dispatch(saveRevision());
 });
 
-addReducer([UPDATE_REVISION], "editor.revision", (state, action) => {
+addReducer([UPDATE_REVISION], "page", (state, action) => {
     return { ...state, ...action.payload };
 });
 
 export const setPreviewLayout = createAction(SET_PREVIEW_LAYOUT);
-addReducer([SET_PREVIEW_LAYOUT], "editor.previewLayout", (state, action) => action.payload.layout);
+addReducer([SET_PREVIEW_LAYOUT], "previewLayout", (state, action) => action.payload.layout);

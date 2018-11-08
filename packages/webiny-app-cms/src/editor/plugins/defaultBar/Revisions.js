@@ -1,11 +1,11 @@
 //@flow
 import React from "react";
 import { connect } from "react-redux";
-import { compose } from "recompose";
+import { compose, pure } from "recompose";
 import { css } from "emotion";
 import { withRouter } from "webiny-app/components";
 import { Menu, MenuItem } from "webiny-ui/Menu";
-import { getPage } from "webiny-app-cms/editor/selectors";
+import { getRevisions } from "webiny-app-cms/editor/selectors";
 import { ButtonDefault } from "webiny-ui/Button";
 import { Icon } from "webiny-ui/Icon";
 import { Typography } from "webiny-ui/Typography";
@@ -26,12 +26,13 @@ const menuList = css({
     }
 });
 
-const Revisions = ({ page, router }: Object) => {
-    const revisions = page.revisions || [];
+const Revisions = pure(({ revisions, router }: Object) => {
     return (
         <Menu
             className={menuList}
-            onSelect={evt => router.goToRoute({ params: { revision: revisions[evt.detail.index].id }, merge: true })}
+            onSelect={evt =>
+                router.goToRoute({ params: { id: revisions[evt.detail.index].id }, merge: true })
+            }
             handle={
                 <ButtonDefault className={buttonStyle}>
                     Revisions <Icon icon={<DownButton />} />
@@ -40,15 +41,15 @@ const Revisions = ({ page, router }: Object) => {
         >
             {revisions.map(rev => (
                 <MenuItem key={rev.id}>
-                    <Typography use={"body2"}>{rev.name}</Typography>
+                    <Typography use={"body2"}>v{rev.version}</Typography>
                     <Typography use={"caption"}>({rev.locked ? "published" : "draft"})</Typography>
                 </MenuItem>
             ))}
         </Menu>
     );
-};
+});
 
 export default compose(
-    connect(state => ({ page: getPage(state) })),
+    connect(state => ({ revisions: getRevisions(state) })),
     withRouter()
 )(Revisions);

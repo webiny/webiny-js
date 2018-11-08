@@ -2,6 +2,7 @@ import { QueryResult } from "webiny-entity";
 import { User, Company } from "../../entities/userCompanyImage";
 import { One } from "../../entities/oneTwoThree";
 import { ClassA } from "../../entities/abc";
+import { ClassADynamic, ClassBDynamic, ClassCDynamic } from "../../entities/abcDynamicAttribute";
 import sinon from "sinon";
 
 const sandbox = sinon.sandbox.create();
@@ -197,6 +198,51 @@ describe("entity delete test", () => {
 
         await classA.delete();
         expect(entityDelete.calledOnce).toBeTruthy();
+
+        entityDelete.restore();
+    });
+
+    test("should not attempt to delete linked entities if attribute is set as dynamic", async () => {
+        const entityFindById = sandbox
+            .stub(ClassADynamic.getDriver(), "findOne")
+            .onCall(0)
+            .callsFake(() => {
+                return new QueryResult({ id: "classADynamic", name: "ClassADynamic" });
+            });
+
+        const classADynamic = await ClassADynamic.findById("classADynamic");
+        entityFindById.restore();
+
+        const entitySave = sandbox
+            .stub(classADynamic.getDriver(), "save")
+            .onCall(0)
+            .callsFake(() => {
+                return new QueryResult();
+            })
+            .onCall(1)
+            .callsFake(() => {
+                return new QueryResult();
+            });
+
+        await classADynamic.save();
+        expect(entitySave.callCount).toBe(0);
+
+        classADynamic.name = "now it should save because of this dirty attribute";
+        await classADynamic.save();
+
+        await classADynamic.save();
+        entitySave.restore();
+        expect(entitySave.callCount).toBe(1);
+
+        const entityDelete = sandbox
+            .stub(ClassADynamic.getDriver(), "delete")
+            .onCall(0)
+            .callsFake(() => {
+                return new QueryResult();
+            });
+
+        await classADynamic.delete();
+        expect(entitySave.callCount).toBe(1);
 
         entityDelete.restore();
     });

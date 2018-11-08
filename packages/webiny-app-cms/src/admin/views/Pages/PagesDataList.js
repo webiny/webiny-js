@@ -48,21 +48,21 @@ const PagesDataList = props => {
                             <ListItemText
                                 onClick={() =>
                                     router.goToRoute({
-                                        params: { id: page.id, revision: page.activeRevision.id },
+                                        params: { id: page.id },
                                         merge: true
                                     })
                                 }
                             >
-                                {page.activeRevision.title}
+                                {page.title}
                                 <ListTextOverline>{page.category.name}</ListTextOverline>
-                                <ListItemTextSecondary>
-                                    Created by: {page.createdBy.firstName}. Last modified:{" "}
-                                    <TimeAgo datetime={page.activeRevision.savedOn} />.
-                                </ListItemTextSecondary>
+                                {page.createdBy && (
+                                    <ListItemTextSecondary>
+                                        Created by: {page.createdBy.firstName}. Last modified:{" "}
+                                        <TimeAgo datetime={page.savedOn} />.
+                                    </ListItemTextSecondary>
+                                )}
                             </ListItemText>
-                            <ListItemMeta>
-                                {page.activeRevision.published ? "Published" : "Draft"}
-                            </ListItemMeta>
+                            <ListItemMeta>{page.locked ? "Published" : "Draft"}</ListItemMeta>
                         </ListItem>
                     ))}
                 </List>

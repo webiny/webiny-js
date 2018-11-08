@@ -33,7 +33,6 @@
     "chalk": "^2.4.1",
     "child-process-promise": "^2.2.1",
     "commitizen": "^2.10.1",
-    "coveralls": "^3.0.0",
     "cross-env": "^5.2.0",
     "cz-customizable": "^5.2.0",
     "documentation": "^5.3.5",
@@ -92,10 +91,7 @@
   "scripts": {
     "build": "node scripts/build-tool/build.js --out=build/node_modules",
     "test": "jest --config ./scripts/jest/config.src.js",
-    "test:coverage": "yarn test --coverage",
-    "test:coverage:ci": "yarn test:coverage --maxWorkers=4 && cat ./coverage/lcov.info | coveralls",
     "test:build": "jest --config ./scripts/jest/config.build.js",
-    "test:build:coverage": "yarn test:build --coverage",
     "commit": "node ./scripts/commitizen.js",
     "commit:skip": "yarn commit --no-verify",
     "commit:check": "yarn lint-staged",

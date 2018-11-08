@@ -1,6 +1,7 @@
 // @flow
 export const genericTypes = () => {
-    return `
+    return [
+        `
         input SearchInput {
             query: String
             fields: [String]
@@ -8,7 +9,6 @@ export const genericTypes = () => {
         }
         
         type ListMeta {
-            count: Int
             totalCount: Int
             totalPages: Int
             page: Int
@@ -29,5 +29,6 @@ export const genericTypes = () => {
             message: String
             data: JSON
         }
-  `;
+  `
+    ];
 };

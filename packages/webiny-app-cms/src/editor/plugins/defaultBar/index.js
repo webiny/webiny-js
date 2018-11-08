@@ -1,7 +1,7 @@
 //@flow
 import React from "react";
+import { get } from "lodash";
 import { IconButton, ButtonPrimary } from "webiny-ui/Button";
-import { getActivePlugin } from "webiny-app-cms/editor/selectors";
 import PageSettings from "./PageSettings";
 import PageSettingsButton from "./PageSettingsButton";
 import Divider from "./Divider";
@@ -14,10 +14,9 @@ export default [
     {
         name: "cms-page-settings-bar",
         type: "cms-editor-bar",
-        shouldRender({ state }: { state: Object }) {
-            return getActivePlugin("cms-editor-bar")(state) === "cms-page-settings-bar";
+        shouldRender({ plugins }: Object) {
+            return get(plugins, "cms-editor-bar.active") === "cms-page-settings-bar";
         },
-
         render() {
             return <PageSettings />;
         }
@@ -57,13 +56,6 @@ export default [
             return <ButtonPrimary>Publish</ButtonPrimary>;
         }
     },
-    /*{
-        name: "cms-default-bar-preview-select",
-        type: "cms-default-bar-center",
-        render() {
-            return <Preview />;
-        }
-    },*/
     {
         name: "cms-default-bar-back-button",
         type: "cms-default-bar-left",

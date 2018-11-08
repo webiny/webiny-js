@@ -54,23 +54,14 @@ export const resolveList = (entityFetcher: EntityFetcher) => async (
         };
     }
 
-    const data: EntityCollection = await entityClass.find({
+    const data: EntityCollection<Entity> = await entityClass.find({
         query,
         page: args.page,
         perPage: args.perPage,
         sort: args.sort
     });
 
-    const meta = data.getParams();
-    meta.count = data.length;
-    meta.totalCount = data.getMeta().totalCount;
-    meta.totalPages = Math.ceil(meta.totalCount / meta.perPage);
-    meta.to = (meta.page - 1) * meta.perPage + meta.count;
-    meta.from = meta.to - meta.count + 1;
-    meta.nextPage = meta.page < meta.totalPages ? meta.page + 1 : null;
-    meta.previousPage = meta.page === 1 ? null : meta.page - 1;
-
-    return new ListResponse(data, meta);
+    return new ListResponse(data, data.getMeta());
 };
 
 export const resolveCreate = (entityFetcher: EntityFetcher) => async (

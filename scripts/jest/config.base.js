@@ -14,7 +14,5 @@ module.exports = {
     setupTestFrameworkScriptFile: "jest-extended",
     rootDir: process.cwd(),
     testRegex: `packages/(${packages.join("|")})/.*test.js$`,
-    collectCoverageFrom: [`packages/{${packages.join(",")}}/src/**/*.js`],
-    coverageReporters: ["lcov", "html"],
     testEnvironment: "node"
 };

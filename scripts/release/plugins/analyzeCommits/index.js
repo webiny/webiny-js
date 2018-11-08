@@ -1,6 +1,6 @@
 const semver = require("semver");
 const { template } = require("lodash");
-const commitAnalyzer = require("@semantic-release/commit-analyzer");
+const { analyzeCommits } = require("@semantic-release/commit-analyzer");
 const getCommits = require("./getCommits");
 const getLastReleaseFactory = require("./getLastRelease");
 
@@ -31,7 +31,7 @@ module.exports = (pluginConfig = {}) => {
         params["lastRelease"] = lastRelease;
         params["commits"] = commits;
 
-        const type = await commitAnalyzer(
+        const type = await analyzeCommits(
             pluginConfig.commitAnalyzer || {},
             Object.assign({ logger, commits })
         );

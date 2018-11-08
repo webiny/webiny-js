@@ -79,8 +79,6 @@ export class Redux {
             composeEnhancers(applyMiddleware(...createMiddleware(this)))
         );
 
-        this.store.dispatch({ type: "@@redux-undo/INIT" });
-
         return this.store;
     }
 }

@@ -53,6 +53,10 @@ class EntityAttribute extends Attribute {
          * nested entities, ending with the main parent entity.
          */
         this.parentEntity.on("__beforeSave", async () => {
+            if (this.getDynamic()) {
+                return;
+            }
+
             const value = ((this.value: any): EntityAttributeValue);
 
             // At this point current value is an instance or is not instance. It cannot be in the 'loading' state, because that was
@@ -82,6 +86,10 @@ class EntityAttribute extends Attribute {
          * The deletes are done on initial storage entities, not on entities stored as current value.
          */
         this.parentEntity.on("delete", async () => {
+            if (this.getDynamic()) {
+                return;
+            }
+
             if (this.getAutoDelete()) {
                 const value = ((this.value: any): EntityAttributeValue);
                 await value.load();

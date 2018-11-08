@@ -7,7 +7,7 @@ import EntityCollection from "./../entityCollection";
 import _ from "lodash";
 
 class EntitiesAttributeValue extends AttributeValue {
-    initial: EntityCollection;
+    initial: EntityCollection<$Subtype<Entity>>;
     links: Object;
     queue: Array<Function>;
     parentModel: EntityModel;
@@ -93,12 +93,12 @@ class EntitiesAttributeValue extends AttributeValue {
         return this.current;
     }
 
-    setInitial(value: EntityCollection): this {
+    setInitial(value: EntityCollection<Entity>): this {
         this.initial = value;
         return this;
     }
 
-    getInitial(): EntityCollection {
+    getInitial(): EntityCollection<Entity> {
         return this.initial;
     }
 
@@ -151,11 +151,11 @@ class EntitiesAttributeValue extends AttributeValue {
         }
     }
 
-    getCurrent(): EntityCollection {
-        return ((super.getCurrent(): any): EntityCollection);
+    getCurrent(): EntityCollection<$Subtype<Entity>> {
+        return ((super.getCurrent(): any): EntityCollection<$Subtype<Entity>>);
     }
 
-    getInitialLinks(): Array<mixed> | EntityCollection {
+    getInitialLinks(): Array<$Subtype<Entity>> | EntityCollection<$Subtype<Entity>> {
         return this.links.initial;
     }
 
@@ -168,7 +168,7 @@ class EntitiesAttributeValue extends AttributeValue {
         return this;
     }
 
-    getCurrentLinks(): EntityCollection {
+    getCurrentLinks(): EntityCollection<$Subtype<Entity>> {
         return this.links.current;
     }
 

@@ -18,6 +18,7 @@ class Settings extends React.Component<*> {
     render() {
         const { element } = this.props;
         const { settings } = element;
+        
 
         return (
             <React.Fragment>

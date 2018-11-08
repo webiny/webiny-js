@@ -92,10 +92,6 @@
     "transform": {
       "^.+\\.js$": "babel-jest"
     },
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "/tests/"
-    ],
     "setupTestFrameworkScriptFile": "jest-extended"
   }
 }
