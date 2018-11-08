@@ -1,15 +1,15 @@
 // @flow
 import React from "react";
-import Card from "./Card";
+import OEmbed from "webiny-app-cms/render/components/OEmbed";
 import type { RenderElementPluginType } from "webiny-app-cms/types";
 
 export default (): RenderElementPluginType => {
     return {
-        name: "cms-render-element-card-1",
+        name: "cms-render-element-codepen",
         type: "cms-render-element",
-        element: "cms-element-card-1",
+        element: "cms-element-codepen",
         render(props) {
-            return <Card {...props} />;
+            return <OEmbed element={props.element} />;
         }
     };
 };
