@@ -35,22 +35,14 @@ const scaleableVideo = css({
 });
 
 const YoutubeEmbed = props => {
-    const { element, data } = props;
-
-    if (data && data.loading) {
-        return "Loading Youtube data...";
-    }
+    const { element } = props;
 
     return (
         <div className={outerWrapper}>
             <div className={innerWrapper}>
                 <div
                     id={"cms-embed-" + element.id}
-                    className={[
-                        scaleableVideo,
-                        "cms-editor-dragging--disabled",
-                        "cms-editor-resizing--disabled"
-                    ].join(" ")}
+                    className={scaleableVideo}
                     dangerouslySetInnerHTML={{ __html: get(element, "data.oembed.html") || "" }}
                 />
             </div>

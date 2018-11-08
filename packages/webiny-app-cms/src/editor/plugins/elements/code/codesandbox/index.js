@@ -1,39 +1,38 @@
 // @flow
 import React from "react";
-import type { ElementPluginType } from "webiny-app-cms/types";
 import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
-import { ReactComponent as SocialIcon } from "./../../../elementGroups/social/round-people-24px.svg";
+import { ReactComponent as CodeIcon } from "./../../../elementGroups/code/code.svg";
+import type { ElementPluginType } from "webiny-app-cms/types";
 import { createEmbedPlugin, createEmbedSettingsPlugin } from "./../../utils/oembed/createEmbedPlugin";
 
 export default (): Array<ElementPluginType> => [
     createEmbedPlugin({
-        type: "twitter",
+        type: "codesandbox",
         toolbar: {
-            title: "Twitter",
-            group: "cms-element-group-social",
+            title: "CodeSandbox",
+            group: "cms-element-group-code",
             preview() {
-                return <span>A tweet sample</span>;
+                return <span>A CodeSandbox sample</span>;
             }
         },
         oembed: {
-            global: "twttr",
-            sdk: "https://platform.twitter.com/widgets.js",
-            init({ node }) {
-                window.twttr.widgets.load(node);
+            onData(data) {
+                data.html = data.html.replace(/1000px/g, "100%").replace(/1000/g, "100%");
+                return data;
             }
         }
     }),
     createEmbedSettingsPlugin({
-        type: "twitter",
+        type: "codesandbox",
         render({ Bind }) {
             return (
-                <Tab icon={<SocialIcon />} label="Twitter">
+                <Tab icon={<CodeIcon />} label="CodeSandbox">
                     <Grid>
                         <Cell span={12}>
                             <Bind name={"data.source.url"} validators={["required", "url"]}>
-                                <Input label={"Tweet URL"} description={"Enter a Tweet URL"} />
+                                <Input label={"CodeSandbox URL"} description={"Enter a CodeSandbox URL"} />
                             </Bind>
                         </Cell>
                     </Grid>

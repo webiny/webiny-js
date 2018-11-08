@@ -1,39 +1,32 @@
 // @flow
 import React from "react";
-import type { ElementPluginType } from "webiny-app-cms/types";
 import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
-import { ReactComponent as SocialIcon } from "./../../../elementGroups/social/round-people-24px.svg";
+import { ReactComponent as CodeIcon } from "./../../../elementGroups/code/code.svg";
+import type { ElementPluginType } from "webiny-app-cms/types";
 import { createEmbedPlugin, createEmbedSettingsPlugin } from "./../../utils/oembed/createEmbedPlugin";
 
 export default (): Array<ElementPluginType> => [
     createEmbedPlugin({
-        type: "twitter",
+        type: "codepen",
         toolbar: {
-            title: "Twitter",
-            group: "cms-element-group-social",
+            title: "CodePen",
+            group: "cms-element-group-code",
             preview() {
-                return <span>A tweet sample</span>;
-            }
-        },
-        oembed: {
-            global: "twttr",
-            sdk: "https://platform.twitter.com/widgets.js",
-            init({ node }) {
-                window.twttr.widgets.load(node);
+                return <span>A CodePen sample</span>;
             }
         }
     }),
     createEmbedSettingsPlugin({
-        type: "twitter",
+        type: "codepen",
         render({ Bind }) {
             return (
-                <Tab icon={<SocialIcon />} label="Twitter">
+                <Tab icon={<CodeIcon />} label="CodePen">
                     <Grid>
                         <Cell span={12}>
                             <Bind name={"data.source.url"} validators={["required", "url"]}>
-                                <Input label={"Tweet URL"} description={"Enter a Tweet URL"} />
+                                <Input label={"CodePen URL"} description={"Enter a CodePen URL"} />
                             </Bind>
                         </Cell>
                     </Grid>
