@@ -106,7 +106,7 @@ export default compose(
             return (
                 <div
                     id={"cms-embed-" + element.id}
-                    className={centerAlign}
+                    className={centerAlign + " cms-editor-dragging--disabled cms-editor-resizing--disabled"}
                     dangerouslySetInnerHTML={{ __html: get(element, "data.oembed.html") || "" }}
                 />
             );
