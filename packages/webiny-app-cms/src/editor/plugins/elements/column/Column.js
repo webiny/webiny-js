@@ -36,7 +36,7 @@ const Column = pure(({ element, dropElement, togglePlugin }) => {
 
     return (
         <ColumnContainer>
-            <ElementStyle element={element} className={"test-inner"} style={{ height: "100%" }}>
+            <ElementStyle element={element} style={{ height: "100%" }}>
                 {!elements.length && (
                     <DropZone.Center id={id} type={type} onDrop={dropElement}>
                         <IconButton

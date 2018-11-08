@@ -10,9 +10,11 @@ type EmbedPluginConfig = {
         group: string,
         preview: () => React.Node
     },
+    render?: () => React.Node,
     oembed?: {
         global?: string,
         sdk?: string,
+        onData: Function,
         renderEmbed?: () => React.Node
     },
     settings?: Array<string>,
@@ -36,8 +38,12 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): ElementPluginType 
                 ...options
             };
         },
-        render({ element }: Object) {
-            return <OEmbed element={element} {...config.oembed || {}} />;
+        render(props: Object) {
+            if (config.render) {
+                return config.render(props);
+            }
+
+            return <OEmbed element={props.element} {...config.oembed || {}} />;
         },
         onCreate: config.onCreate || "open-settings"
     };

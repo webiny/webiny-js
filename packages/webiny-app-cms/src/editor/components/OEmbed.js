@@ -9,6 +9,7 @@ import { set } from "dot-prop-immutable";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 import { updateElement } from "webiny-app-cms/editor/actions";
+import { withSnackbar } from "webiny-app-admin/components";
 
 function appendSDK(props) {
     const { sdk, global, element } = props;
@@ -68,6 +69,7 @@ export default compose(
         null,
         { updateElement }
     ),
+    withSnackbar(),
     graphql(oembedQuery, {
         skip: ({ element }) => {
             const source = get(element, "data.source") || {};
@@ -75,15 +77,21 @@ export default compose(
 
             return !source.url || isEqual(oembed.source, source);
         },
-        options: ({ element, updateElement }) => {
+        options: ({ element, updateElement, showSnackbar, onData = d => d }) => {
             const source = get(element, "data.source") || {};
             return {
                 variables: source,
                 onCompleted: data => {
-                    // Store loaded oembed data
-                    updateElement({
-                        element: set(element, "data.oembed", get(data, "cms.oembedData.data"))
-                    });
+                    const { data: oembed, error } = get(data, "cms.oembedData");
+                    if (oembed) {
+                        // Store loaded oembed data
+                        updateElement({
+                            element: set(element, "data.oembed", onData(oembed))
+                        });
+                    }
+                    if (error) {
+                        showSnackbar(error.message);
+                    }
                 }
             };
         }
@@ -106,7 +114,9 @@ export default compose(
             return (
                 <div
                     id={"cms-embed-" + element.id}
-                    className={centerAlign + " cms-editor-dragging--disabled cms-editor-resizing--disabled"}
+                    className={
+                        centerAlign + " cms-editor-dragging--disabled cms-editor-resizing--disabled"
+                    }
                     dangerouslySetInnerHTML={{ __html: get(element, "data.oembed.html") || "" }}
                 />
             );
