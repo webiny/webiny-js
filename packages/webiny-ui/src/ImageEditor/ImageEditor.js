@@ -1,27 +1,24 @@
 // @flow
 import * as React from "react";
 import * as toolbar from "./toolbar";
-import TuiImageEditor from "tui-image-editor";
-import type { ImageEditorTool, ImageEditor as ImageEditorType } from "./toolbar/types";
+import type { ImageEditorTool } from "./toolbar/types";
 import styled from "react-emotion";
+import classNames from "classnames";
 
-export type ToolbarTool = "undo" | "redo" | "crop" | "flip" | "rotate" | "draw" | "filter";
+export type ToolbarTool = "crop" | "flip" | "rotate" | "filter";
 
 type Props = {
     src: string,
     onChange: ?Function,
-    tools: Array<ToolbarTool>
+    tools: Array<ToolbarTool>,
+    onToolActivate?: Function,
+    onToolDeactivate?: Function
 };
 
 type State = {
-    imageEditor: ?ImageEditorType,
-    tool: ?Object
+    tool: ?Object,
+    src: string
 };
-
-/**
- * TODO - should add following missing tools:
- * ClearObjects, RemoveActiveObject, Shape, Icon, Text, Filters (a few missing ones here like tilt)
- */
 
 const Toolbar = styled("div")({
     display: "flex",
@@ -29,7 +26,11 @@ const Toolbar = styled("div")({
     alignItems: "center",
     backgroundColor: "var(--mdc-theme-secondary)",
     margin: "-20px -24px 0px -24px",
-    padding: 2
+    padding: 2,
+    "> div.disabled": {
+        opacity: 0.5,
+        pointerEvents: "none"
+    }
 });
 
 const ToolOptions = styled("div")({
@@ -45,96 +46,104 @@ const ToolOptions = styled("div")({
     flexBasis: 0
 });
 
+const readFileContent = async file => {
+    return new Promise(resolve => {
+        const reader = new window.FileReader();
+        reader.onload = function(e) {
+            resolve(e.target.result);
+        };
+
+        reader.readAsDataURL(file);
+    });
+};
+
 class ImageEditor extends React.Component<Props, State> {
     static defaultProps = {
-        tools: ["undo", "redo", "crop", "flip", "rotate", "draw", "filter"],
+        tools: ["crop", "flip", "rotate", "filter"],
         onChange: null
     };
 
     state = {
-        imageEditor: null,
-        tool: null
+        tool: null,
+        src: ""
     };
 
-    imageEditorElement: any = React.createRef();
+    canvas = React.createRef();
 
     componentDidMount() {
-        const imageEditor = new TuiImageEditor(this.imageEditorElement, {
-            cssMaxWidth: 700,
-            cssMaxHeight: 400,
-            selectionStyle: {
-                cornerSize: 20,
-                rotatingPointOffset: 70
-            },
-            usageStatistics: false
-        });
+        readFileContent(this.props.src).then(src => {
+            const image = new Image();
+            const canvas = this.canvas.current;
+            if (canvas) {
+                image.onload = () => {
+                    const ctx = canvas.getContext("2d");
+                    canvas.width = image.width;
+                    canvas.height = image.height;
 
-        // Load image
-        imageEditor.loadImageFromFile(this.props.src).then(() => this.resizeCanvas());
+                    ctx.drawImage(image, 0, 0);
+                };
 
-        imageEditor.on({
-            undoStackChanged: () => {
-                const { onChange } = this.props;
-                onChange && onChange(imageEditor.toDataURL());
-            },
-            redoStackChanged: () => {
-                const { onChange } = this.props;
-                onChange && onChange(imageEditor.toDataURL());
+                image.src = src;
             }
         });
-
-        this.setState({ imageEditor });
-    }
-
-    componentWillUnmount() {
-        this.state.imageEditor && this.state.imageEditor.destroy();
-    }
-
-    resizeCanvas() {
-        const container = document.querySelector(".tui-image-editor-canvas-container");
-        if (container) {
-            const height = parseFloat(container.style.maxHeight);
-            const width = parseFloat(container.style.maxWidth);
-
-            this.imageEditorElement.style.width = width + "px";
-            this.imageEditorElement.style.height = height + "px";
-        }
     }
 
     render() {
-        const { imageEditor } = this.state;
-        const { tools } = this.props;
+        const { tools, onToolActivate, onToolDeactivate } = this.props;
 
         return (
             <React.Fragment>
-                {imageEditor && (
-                    <Toolbar>
-                        {tools.map(key => {
-                            const tool: ?ImageEditorTool = toolbar[key];
-                            if (!tool) {
-                                return null;
-                            }
+                <Toolbar>
+                    {tools.map(key => {
+                        const tool: ?ImageEditorTool = toolbar[key];
+                        if (!tool) {
+                            return null;
+                        }
 
-                            return (
-                                <React.Fragment key={key}>
-                                    {tool.icon({
-                                        imageEditor,
-                                        enableTool: () => this.setState({ tool }),
-                                        resizeCanvas: () => this.resizeCanvas()
-                                    })}
-                                </React.Fragment>
-                            );
-                        })}
-                    </Toolbar>
-                )}
+                        return (
+                            <div key={key} className={classNames({ disabled: this.state.tool })}>
+                                {tool.icon({
+                                    canvas: this.canvas,
+                                    apply: () => {
+                                        console.log("idees miki");
+                                    },
+                                    activateTool: () => {
+                                        this.setState({ tool }, () => {
+                                            onToolActivate && onToolActivate();
+                                        });
+                                    }
+                                })}
+                            </div>
+                        );
+                    })}
+                </Toolbar>
 
                 <ToolOptions>
                     {this.state.tool &&
                         typeof this.state.tool.subMenu === "function" &&
                         this.state.tool.subMenu({
-                            imageEditor: this.state.imageEditor,
-                            clearTool: () => this.setState({ tool: null }),
-                            resizeCanvas: () => this.resizeCanvas()
+                            apply: src => {
+                                const current = this.canvas.current;
+
+                                if (current) {
+                                    const image = new Image();
+                                    const ctx = current.getContext("2d");
+                                    image.onload = () => {
+                                        ctx.drawImage(image, 0, 0);
+                                        current.width = image.width;
+                                        current.height = image.height;
+
+                                        ctx.drawImage(image, 0, 0);
+                                    };
+                                    image.src = src;
+                                }
+                            },
+                            canvas: this.canvas,
+                            deactivateTool: () => {
+                                this.setState({ tool: null }, () => {
+                                    onToolDeactivate && onToolDeactivate();
+                                });
+                            }
                         })}
                     {!this.state.tool && (
                         <React.Fragment>
@@ -143,7 +152,9 @@ class ImageEditor extends React.Component<Props, State> {
                     )}
                 </ToolOptions>
 
-                <div ref={ref => (this.imageEditorElement = ref)} style={{ margin: "0 auto" }} />
+                <div style={{ margin: "0 auto", textAlign: "center" }}>
+                    <canvas style={{ maxWidth: 500 }} ref={this.canvas} />
+                </div>
             </React.Fragment>
         );
     }

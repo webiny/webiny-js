@@ -2,9 +2,14 @@
 import React from "react";
 import { ReactComponent as RotateRight } from "./icons/rotateRight.svg";
 import type { ImageEditorTool } from "./types";
-import { IconButton } from "webiny-ui/Button";
 import { Slider } from "webiny-ui/Slider";
 import { Tooltip } from "webiny-ui/Tooltip";
+import { IconButton, ButtonDefault } from "webiny-ui/Button";
+
+import Cropper from "cropperjs";
+import "cropperjs/dist/cropper.css";
+
+let cropper: ?Cropper = null;
 
 class SubMenu extends React.Component<*, { rangeInput: 0 }> {
     state = {
@@ -12,7 +17,8 @@ class SubMenu extends React.Component<*, { rangeInput: 0 }> {
     };
 
     render() {
-        const { imageEditor, resizeCanvas } = this.props;
+        const { apply, deactivateTool } = this.props;
+
         return (
             <React.Fragment>
                 <div style={{ width: "500px" }}>
@@ -26,11 +32,37 @@ class SubMenu extends React.Component<*, { rangeInput: 0 }> {
                         displayMarkers={true}
                         onInput={value => {
                             this.setState({ rangeInput: value }, async () => {
-                                await imageEditor.setAngle(parseInt(value, 10));
-                                resizeCanvas();
+                                if (cropper) {
+                                    cropper.rotateTo(parseInt(value, 10));
+                                }
                             });
                         }}
                     />
+                </div>
+                <div>
+                    <ButtonDefault
+                        onClick={() => {
+                            if (cropper) {
+                                apply(cropper.getCroppedCanvas().toDataURL());
+                                cropper.destroy();
+                                cropper = null;
+                                deactivateTool();
+                            }
+                        }}
+                    >
+                        Apply
+                    </ButtonDefault>
+                    <ButtonDefault
+                        onClick={() => {
+                            if (cropper) {
+                                cropper.destroy();
+                                cropper = null;
+                                deactivateTool();
+                            }
+                        }}
+                    >
+                        Cancel
+                    </ButtonDefault>
                 </div>
             </React.Fragment>
         );
@@ -39,14 +71,21 @@ class SubMenu extends React.Component<*, { rangeInput: 0 }> {
 
 const tool: ImageEditorTool = {
     name: "rotate",
-    icon({ imageEditor, enableTool }) {
+    icon({ canvas, activateTool }) {
         return (
             <Tooltip placement={"bottom"} content={"Rotate"}>
                 <IconButton
                     icon={<RotateRight />}
                     onClick={() => {
-                        enableTool();
-                        imageEditor.stopDrawingMode();
+                        cropper = new Cropper(canvas.current, {
+                            background: false,
+                            modal: false,
+                            guides: false,
+                            dragMode: "none",
+                            highlight: false,
+                            autoCrop: false
+                        });
+                        activateTool();
                     }}
                 />
             </Tooltip>

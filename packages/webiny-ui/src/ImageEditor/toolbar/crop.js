@@ -4,27 +4,33 @@ import type { ImageEditorTool } from "./types";
 import { ReactComponent as CropIcon } from "./icons/crop.svg";
 import { IconButton, ButtonDefault } from "webiny-ui/Button";
 import { Tooltip } from "webiny-ui/Tooltip";
+import Cropper from "cropperjs";
+import "cropperjs/dist/cropper.css";
 
-const subMenu = ({ imageEditor, clearTool, resizeCanvas }) => {
+let cropper: ?Cropper = null;
+
+const subMenu = ({ apply, deactivateTool }) => {
     return (
         <React.Fragment>
             <div>Click and drag to crop a portion of the image. Hold Shift to crop a square.</div>
             <div>
                 <ButtonDefault
                     onClick={() => {
-                        imageEditor.crop(imageEditor.getCropzoneRect()).then(() => {
-                            imageEditor.stopDrawingMode();
-                            resizeCanvas();
-                            clearTool();
-                        });
+                        if (cropper) {
+                            apply(cropper.getCroppedCanvas().toDataURL());
+                            cropper.destroy();
+                            deactivateTool();
+                        }
                     }}
                 >
                     Apply
                 </ButtonDefault>
                 <ButtonDefault
                     onClick={() => {
-                        imageEditor.stopDrawingMode();
-                        clearTool();
+                        if (cropper) {
+                            cropper.destroy();
+                            deactivateTool();
+                        }
                     }}
                 >
                     Cancel
@@ -36,14 +42,14 @@ const subMenu = ({ imageEditor, clearTool, resizeCanvas }) => {
 
 const tool: ImageEditorTool = {
     name: "crop",
-    icon({ imageEditor, enableTool }) {
+    icon(props) {
         return (
             <Tooltip placement={"bottom"} content={"Crop"}>
                 <IconButton
                     icon={<CropIcon />}
                     onClick={() => {
-                        enableTool();
-                        imageEditor.startDrawingMode("CROPPER");
+                        cropper = new Cropper(props.canvas.current);
+                        props.activateTool();
                     }}
                 />
             </Tooltip>
