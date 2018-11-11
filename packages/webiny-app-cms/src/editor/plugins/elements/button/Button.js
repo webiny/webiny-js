@@ -13,11 +13,13 @@ const Button = ({ theme, element, preview, updateElement }) => {
     };
 
     const { type = "default" } = get(element, "settings.advanced") || {};
+    const icon = element.data.icon || null;
 
     return (
         <ElementStyle element={element}>
             {({ getAllClasses }) => (
                 <button className={getAllClasses("webiny-cms-element-button", type)}>
+                    {icon && <span dangerouslySetInnerHTML={{ __html: icon }} />}
                     <Slate
                         value={element.data.text}
                         onChange={onChange}

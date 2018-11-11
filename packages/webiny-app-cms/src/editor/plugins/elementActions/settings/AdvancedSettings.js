@@ -1,7 +1,15 @@
 // @flow
 import * as React from "react";
 import { connect } from "react-redux";
-import { compose, lifecycle, onlyUpdateForKeys, pure, withHandlers, setDisplayName } from "recompose";
+import {
+    compose,
+    lifecycle,
+    onlyUpdateForKeys,
+    pure,
+    withHandlers,
+    setDisplayName
+} from "recompose";
+import { cloneDeep } from "lodash";
 import { merge } from "dot-prop-immutable";
 import { renderPlugins } from "webiny-app/plugins";
 import { getActivePlugin } from "webiny-app-cms/editor/selectors";
@@ -34,10 +42,10 @@ type Props = {
 const emptyElement = { data: {}, settings: {}, type: null };
 
 const AdvancedSettings = pure(({ element, theme, open, onClose, onSubmit }: Props) => {
-    const { data, settings, type } = element || emptyElement;
+    const { data, settings, type } = element || cloneDeep(emptyElement);
     return (
         <Dialog open={open} onClose={onClose}>
-            <Form data={{ data, settings }} onSubmit={onSubmit}>
+            <Form key={element && element.id} data={{ data, settings }} onSubmit={onSubmit} onChange={data => console.log(data)}>
                 {({ data, submit, Bind }) => (
                     <React.Fragment>
                         <DialogHeader>
@@ -47,7 +55,7 @@ const AdvancedSettings = pure(({ element, theme, open, onClose, onSubmit }: Prop
                             <Tabs>
                                 {renderPlugins(
                                     "cms-element-advanced-settings",
-                                    { Bind, theme },
+                                    { Bind, theme, element },
                                     { wrapper: false, filter: pl => pl.element === type }
                                 )}
                                 <Tab icon={<SettingsIcon />} label="Style">
