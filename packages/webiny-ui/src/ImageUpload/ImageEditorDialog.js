@@ -12,7 +12,7 @@ class ImageEditorDialog extends React.Component<Props> {
         return (
             <Dialog {...dialogProps}>
                 {src && (
-                    <ImageEditor src={src}>
+                    <ImageEditor src={src} key={src.name + src.size}>
                         {({ render, getCanvasDataUrl, hasActiveTool }) => (
                             <>
                                 <DialogBody>{render()}</DialogBody>
@@ -23,17 +23,13 @@ class ImageEditorDialog extends React.Component<Props> {
                                         <Tooltip
                                             placement={"left"}
                                             content={
-                                                <span>Please deactivate current tool to save.</span>
+                                                <span>Cannot save because of an active tool.</span>
                                             }
                                         >
                                             <DialogAccept disabled>Save</DialogAccept>
                                         </Tooltip>
                                     ) : (
-                                        <DialogAccept
-                                            onClick={() => {
-                                                onAccept(getCanvasDataUrl());
-                                            }}
-                                        >
+                                        <DialogAccept onClick={() => onAccept(getCanvasDataUrl())}>
                                             Save
                                         </DialogAccept>
                                     )}
