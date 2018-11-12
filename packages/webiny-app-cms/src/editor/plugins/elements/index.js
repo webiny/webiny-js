@@ -5,6 +5,7 @@ import block from "./block";
 import column from "./column";
 import image from "./image";
 import text from "./text";
+import icon from "./icon";
 import spacer from "./spacer";
 import button from "./button";
 import media from "./media";
@@ -16,6 +17,7 @@ export default [
     row(),
     block(),
     column(),
+    ...icon(),
     image(),
     text(),
     spacer(),

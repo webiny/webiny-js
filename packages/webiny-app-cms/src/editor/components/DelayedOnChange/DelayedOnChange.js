@@ -18,8 +18,8 @@ class DelayedOnChange extends React.Component {
     delay = null;
     state = { value: "" };
 
-    static getDerivedStateFromProps(props) {
-        return { value: props.value || "" };
+    componentDidMount() {
+        this.setState({ value: this.props.value });
     }
 
     applyValue = (value, callback = _.noop) => {
@@ -35,10 +35,11 @@ class DelayedOnChange extends React.Component {
     };
 
     render() {
-        const childElement = this.props.children({
+        const { children, ...other } = this.props;
+        const childElement = children({
+            ...other,
             value: this.state.value,
-            onChange: e => {
-                const value = _.isString(e) ? e : e.target.value;
+            onChange: value => {
                 this.setState({ value }, this.changed);
             }
         });

@@ -23,8 +23,8 @@ export default ({
             const defs = library.definitions[pack];
             Object.keys(defs).forEach(icon => {
                 icons.push({
+                    id: [pack, icon],
                     name: icon,
-                    id: pack + "-" + icon,
                     svg: createSvg(defs[icon])
                 });
             });

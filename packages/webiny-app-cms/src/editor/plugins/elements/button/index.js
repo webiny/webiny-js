@@ -1,11 +1,13 @@
 // @flow
 import React from "react";
-import Button from "./Button";
 import { createValue } from "webiny-app-cms/editor/components/Slate";
 import type { ElementPluginType } from "webiny-app-cms/types";
-import { Tab } from "webiny-ui/Tabs";
-import { ReactComponent as ButtonIcon } from "./round-category-24px.svg";
+import { ReactComponent as ButtonIcon } from "./round-toggle_on-24px.svg";
+import { ReactComponent as LinkIcon } from "./round-link-24px.svg";
 import ButtonSettings from "./ButtonSettings";
+import LinkSettings from "./LinkSettings";
+import Button from "./Button";
+import Action from "../../elementSettings/Action";
 
 export default (): ElementPluginType => {
     return [
@@ -20,8 +22,11 @@ export default (): ElementPluginType => {
                 }
             },
             settings: [
-                "cms-element-settings-background",
+                "cms-element-settings-button",
+                "cms-element-settings-icon",
+                "cms-element-settings-link",
                 "",
+                "cms-element-settings-background",
                 "cms-element-settings-border",
                 "cms-element-settings-shadow",
                 "",
@@ -46,15 +51,37 @@ export default (): ElementPluginType => {
             }
         },
         {
-            name: "cms-element-advanced-button",
-            type: "cms-element-advanced-settings",
-            element: "cms-element-button",
-            render(props) {
+            name: "cms-element-settings-button",
+            type: "cms-element-settings",
+            renderAction({ active }: { active: boolean }) {
                 return (
-                    <Tab icon={<ButtonIcon />} label="Button">
-                        <ButtonSettings {...props}/>
-                    </Tab>
+                    <Action
+                        plugin={this.name}
+                        tooltip={"Button"}
+                        active={active}
+                        icon={<ButtonIcon />}
+                    />
                 );
+            },
+            renderMenu() {
+                return <ButtonSettings />;
+            }
+        },
+        {
+            name: "cms-element-settings-link",
+            type: "cms-element-settings",
+            renderAction({ active }: { active: boolean }) {
+                return (
+                    <Action
+                        plugin={this.name}
+                        tooltip={"Link"}
+                        active={active}
+                        icon={<LinkIcon />}
+                    />
+                );
+            },
+            renderMenu() {
+                return <LinkSettings />;
             }
         }
     ];

@@ -1,108 +1,89 @@
 import * as React from "react";
-import { getPlugins } from "webiny-app/plugins";
+import { connect } from "react-redux";
+import { compose } from "recompose";
+import { get, set } from "dot-prop-immutable";
+import { Tabs, Tab } from "webiny-ui/Tabs";
 import { Select } from "webiny-ui/Select";
-import { Input } from "webiny-ui/Input";
-import { Switch } from "webiny-ui/Switch";
 import { Grid, Cell } from "webiny-ui/Grid";
-import IconPicker from "webiny-app-cms/editor/components/IconPicker";
-import { get } from "dot-prop-immutable";
+import { Typography } from "webiny-ui/Typography";
+import { withTheme } from "webiny-app-cms/theme";
+import { withActiveElement } from "webiny-app-cms/editor/components";
+import { updateElement } from "webiny-app-cms/editor/actions";
 
-let icons;
-const getIcons = () => {
-    if (!icons) {
-        icons = getPlugins("cms-icons").reduce((icons: Array<Object>, pl: Object) => {
-            return icons.concat(pl.getIcons());
-        }, []);
-        window.icons = icons;
+class ButtonSettings extends React.Component<*> {
+    historyUpdated = {};
+
+    updateSettings = (name, value, history = true) => {
+        const { element, updateElement } = this.props;
+        const attrKey = `settings.advanced.${name}`;
+
+        const newElement = set(element, attrKey, value);
+
+        if (!history) {
+            updateElement({ element: newElement, history });
+            return;
+        }
+
+        if (this.historyUpdated[name] !== value) {
+            this.historyUpdated[name] = value;
+            updateElement({ element: newElement });
+        }
+    };
+
+    render() {
+        const { element, theme } = this.props;
+        const { icon, type } = get(element, "settings.advanced");
+        const { types } = theme.elements.button;
+
+        return (
+            <React.Fragment>
+                <Tabs>
+                    <Tab label={"Button"}>
+                        <Grid>
+                            <Cell span={6}>
+                                <Typography use={"overline"}>Button type</Typography>
+                            </Cell>
+                            <Cell span={6}>
+                                <Select
+                                    value={type}
+                                    onChange={value => this.updateSettings("type", value)}
+                                >
+                                    {types.map(type => (
+                                        <option key={type.className} value={type.className}>
+                                            {type.label}
+                                        </option>
+                                    ))}
+                                </Select>
+                            </Cell>
+                        </Grid>
+                        <Grid>
+                            <Cell span={6}>
+                                <Typography use={"overline"}>Icon position</Typography>
+                            </Cell>
+                            <Cell span={6}>
+                                <Select
+                                    value={icon.position || "left"}
+                                    onChange={pos => this.updateSettings("icon.position", pos)}
+                                >
+                                    <option value={"left"}>Left</option>
+                                    <option value={"right"}>Right</option>
+                                    <option value={"top"}>Top</option>
+                                    <option value={"bottom"}>Bottom</option>
+                                </Select>
+                            </Cell>
+                        </Grid>
+                    </Tab>
+                </Tabs>
+            </React.Fragment>
+        );
     }
-    return icons;
-};
+}
 
-const getSvg = (name, width = 24) => {
-    const svg = getIcons().find(ic => ic.id === name).svg;
-    return svg.replace(`width="24"`, `width="${width}"`);
-};
-
-const ButtonSettings = ({ Bind, theme }) => {
-    const { types } = theme.elements.button;
-
-    const preview = (
-        <Bind name={"data.icon"}>
-            {({ value }) => <span dangerouslySetInnerHTML={{ __html: value }} />}
-        </Bind>
-    );
-
-    return (
-        <React.Fragment>
-            <Grid>
-                <Cell span={12}>
-                    <Bind name={"settings.advanced.type"} defaultValue={""}>
-                        <Select description={"Button type"}>
-                            {types.map(type => (
-                                <option key={type.className} value={type.className}>
-                                    {type.label}
-                                </option>
-                            ))}
-                        </Select>
-                    </Bind>
-                </Cell>
-            </Grid>
-            <Grid>
-                <Cell span={12}>
-                    <Bind name={"settings.advanced.href"} defaultValue={""} validators={["url"]}>
-                        <Input description={"On click, go to this URL."} />
-                    </Bind>
-                </Cell>
-            </Grid>
-            <Grid>
-                <Cell span={12}>
-                    <Bind name={"settings.advanced.newTab"} defaultValue={false}>
-                        <Switch description={"New tab"} />
-                    </Bind>
-                </Cell>
-            </Grid>
-            <Grid>
-                <Bind name={"data.icon"} defaultValue={""}>
-                    {({ onChange: setIcon }) => (
-                        <Bind
-                            name={"settings.advanced.icon"}
-                            defaultValue={""}
-                            beforeChange={(value, cb) => {
-                                cb(value);
-                                setIcon(getSvg(value, 24));
-                            }}
-                        >
-                            {({ value, onChange }) => (
-                                <React.Fragment>
-                                    <Cell span={6}>
-                                        <IconPicker
-                                            label={"Icon"}
-                                            value={value}
-                                            onChange={onChange}
-                                        />
-                                    </Cell>
-                                    <Cell span={4}>
-                                        <Bind
-                                            name={"settings.advanced.width"}
-                                            defaultValue={"24"}
-                                            validators={["number", "gt:0"]}
-                                            beforeChange={(width, cb) => {
-                                                cb(width);
-                                                setIcon(getSvg(value, width));
-                                            }}
-                                        >
-                                            <Input label={"Icon size"} />
-                                        </Bind>
-                                    </Cell>
-                                    <Cell span={2}>{preview}</Cell>
-                                </React.Fragment>
-                            )}
-                        </Bind>
-                    )}
-                </Bind>
-            </Grid>
-        </React.Fragment>
-    );
-};
-
-export default ButtonSettings;
+export default compose(
+    connect(
+        null,
+        { updateElement }
+    ),
+    withTheme(),
+    withActiveElement()
+)(ButtonSettings);
