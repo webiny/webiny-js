@@ -105,6 +105,7 @@ class RenderForm extends React.Component<Props, State> {
         const { canvas } = this.props;
         const { values } = this.state;
         const component = this;
+        // $FlowFixMe
         Caman(canvas.current, function() {
             this.revert(false);
             Object.keys(values).forEach(
@@ -168,6 +169,7 @@ class RenderForm extends React.Component<Props, State> {
 
                 {renderApplyCancel({
                     onCancel: () => {
+                        // $FlowFixMe
                         Caman(canvas.current, function() {
                             this.revert(false);
                         });

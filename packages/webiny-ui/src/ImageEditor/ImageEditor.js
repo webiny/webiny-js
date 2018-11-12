@@ -9,12 +9,18 @@ import loadScript from "load-script";
 
 export type ToolbarTool = "crop" | "flip" | "rotate" | "filter";
 
+type RenderPropArgs = {
+    render: Function,
+    getCanvasDataUrl: () => string,
+    hasActiveTool: boolean
+};
+
 type Props = {
     src: string,
-    onChange: ?Function,
     tools: Array<ToolbarTool>,
     onToolActivate?: Function,
-    onToolDeactivate?: Function
+    onToolDeactivate?: Function,
+    children?: RenderPropArgs => React.Node
 };
 
 type State = {
@@ -72,8 +78,7 @@ const initScripts = () => {
 
 class ImageEditor extends React.Component<Props, State> {
     static defaultProps = {
-        tools: ["crop", "flip", "rotate", "filter"],
-        onChange: null
+        tools: ["crop", "flip", "rotate", "filter"]
     };
 
     state = {
@@ -91,10 +96,9 @@ class ImageEditor extends React.Component<Props, State> {
                 if (canvas) {
                     this.image.onload = () => {
                         if (this.image) {
-                            const ctx = canvas.getContext("2d");
                             canvas.width = this.image.width;
                             canvas.height = this.image.height;
-
+                            const ctx = canvas.getContext("2d");
                             ctx.drawImage(this.image, 0, 0);
                         }
                     };
@@ -106,23 +110,22 @@ class ImageEditor extends React.Component<Props, State> {
     }
 
     activateTool = (tool: ImageEditorTool) => {
-        const { onToolActivate } = this.props;
-        this.setState({ tool }, () => {
-            onToolActivate && onToolActivate();
-        });
+        this.setState({ tool });
     };
 
     deactivateTool = () => {
-        const { onToolDeactivate } = this.props;
+        this.setState({ tool: null });
+    };
 
-        this.setState({ tool: null }, () => {
-            onToolDeactivate && onToolDeactivate();
-        });
+    getCanvasDataUrl = () => {
+        const { current: canvas } = this.canvas;
+        return canvas ? canvas.toDataURL() : "";
     };
 
     render() {
-        const { tools, onChange } = this.props;
-        return (
+        const { tools, children } = this.props;
+
+        const editor = (
             <React.Fragment>
                 <Toolbar>
                     {tools.map(key => {
@@ -153,10 +156,6 @@ class ImageEditor extends React.Component<Props, State> {
                                     <ButtonDefault
                                         onClick={async () => {
                                             onApply && (await onApply());
-                                            const canvas = this.canvas.current;
-                                            if (canvas) {
-                                                onChange && onChange(canvas.toDataURL());
-                                            }
                                             this.deactivateTool();
                                         }}
                                     >
@@ -185,6 +184,16 @@ class ImageEditor extends React.Component<Props, State> {
                 </div>
             </React.Fragment>
         );
+
+        if (typeof children === "function") {
+            return children({
+                render: () => editor,
+                getCanvasDataUrl: this.getCanvasDataUrl,
+                hasActiveTool: !!this.state.tool
+            });
+        }
+
+        return editor;
     }
 }
 
