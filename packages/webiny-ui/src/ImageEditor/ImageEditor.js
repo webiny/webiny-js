@@ -154,20 +154,20 @@ class ImageEditor extends React.Component<Props, State> {
                             renderApplyCancel: ({ onApply, onCancel }) => (
                                 <ApplyCancelActions>
                                     <ButtonDefault
-                                        onClick={async () => {
-                                            onApply && (await onApply());
-                                            this.deactivateTool();
-                                        }}
-                                    >
-                                        Apply
-                                    </ButtonDefault>
-                                    <ButtonDefault
                                         onClick={() => {
                                             onCancel && onCancel();
                                             this.deactivateTool();
                                         }}
                                     >
                                         Cancel
+                                    </ButtonDefault>
+                                    <ButtonDefault
+                                        onClick={async () => {
+                                            onApply && (await onApply());
+                                            this.deactivateTool();
+                                        }}
+                                    >
+                                        Apply
                                     </ButtonDefault>
                                 </ApplyCancelActions>
                             )
