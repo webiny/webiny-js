@@ -4,6 +4,8 @@ import * as toolbar from "./toolbar";
 import type { ImageEditorTool } from "./toolbar/types";
 import styled from "react-emotion";
 import classNames from "classnames";
+import { ButtonDefault } from "webiny-ui/Button";
+import loadScript from "load-script";
 
 export type ToolbarTool = "crop" | "flip" | "rotate" | "filter";
 
@@ -34,16 +36,15 @@ const Toolbar = styled("div")({
 });
 
 const ToolOptions = styled("div")({
-    display: "flex",
-    justifyContent: "space-evenly",
-    alignItems: "center",
     margin: "0 -24px 10px -24px",
     boxSizing: "border-box",
     padding: 10,
     backgroundColor: "var(--mdc-theme-background)",
-    borderTop: "1px solid var(--mdc-theme-on-background)",
-    flexGrow: 1,
-    flexBasis: 0
+    borderTop: "1px solid var(--mdc-theme-on-background)"
+});
+
+const ApplyCancelActions = styled("div")({
+    textAlign: "center"
 });
 
 const readFileContent = async file => {
@@ -54,6 +55,18 @@ const readFileContent = async file => {
         };
 
         reader.readAsDataURL(file);
+    });
+};
+
+const initScripts = () => {
+    return new Promise(resolve => {
+        if (window.Caman) {
+            return resolve();
+        }
+        return loadScript(
+            "https://cdnjs.cloudflare.com/ajax/libs/camanjs/4.1.2/caman.full.min.js",
+            resolve
+        );
     });
 };
 
@@ -69,28 +82,46 @@ class ImageEditor extends React.Component<Props, State> {
     };
 
     canvas = React.createRef();
-
+    image = null;
     componentDidMount() {
-        readFileContent(this.props.src).then(src => {
-            const image = new Image();
-            const canvas = this.canvas.current;
-            if (canvas) {
-                image.onload = () => {
-                    const ctx = canvas.getContext("2d");
-                    canvas.width = image.width;
-                    canvas.height = image.height;
+        initScripts().then(() => {
+            readFileContent(this.props.src).then(src => {
+                this.image = new window.Image();
+                const canvas = this.canvas.current;
+                if (canvas) {
+                    this.image.onload = () => {
+                        if (this.image) {
+                            const ctx = canvas.getContext("2d");
+                            canvas.width = this.image.width;
+                            canvas.height = this.image.height;
 
-                    ctx.drawImage(image, 0, 0);
-                };
+                            ctx.drawImage(this.image, 0, 0);
+                        }
+                    };
 
-                image.src = src;
-            }
+                    this.image.src = src;
+                }
+            });
         });
     }
 
-    render() {
-        const { tools, onToolActivate, onToolDeactivate } = this.props;
+    activateTool = (tool: ImageEditorTool) => {
+        const { onToolActivate } = this.props;
+        this.setState({ tool }, () => {
+            onToolActivate && onToolActivate();
+        });
+    };
 
+    deactivateTool = () => {
+        const { onToolDeactivate } = this.props;
+
+        this.setState({ tool: null }, () => {
+            onToolDeactivate && onToolDeactivate();
+        });
+    };
+
+    render() {
+        const { tools, onChange } = this.props;
         return (
             <React.Fragment>
                 <Toolbar>
@@ -104,14 +135,7 @@ class ImageEditor extends React.Component<Props, State> {
                             <div key={key} className={classNames({ disabled: this.state.tool })}>
                                 {tool.icon({
                                     canvas: this.canvas,
-                                    apply: () => {
-                                        console.log("idees miki");
-                                    },
-                                    activateTool: () => {
-                                        this.setState({ tool }, () => {
-                                            onToolActivate && onToolActivate();
-                                        });
-                                    }
+                                    activateTool: () => this.activateTool(tool)
                                 })}
                             </div>
                         );
@@ -120,40 +144,44 @@ class ImageEditor extends React.Component<Props, State> {
 
                 <ToolOptions>
                     {this.state.tool &&
-                        typeof this.state.tool.subMenu === "function" &&
-                        this.state.tool.subMenu({
-                            apply: src => {
-                                const current = this.canvas.current;
-
-                                if (current) {
-                                    const image = new Image();
-                                    const ctx = current.getContext("2d");
-                                    image.onload = () => {
-                                        ctx.drawImage(image, 0, 0);
-                                        current.width = image.width;
-                                        current.height = image.height;
-
-                                        ctx.drawImage(image, 0, 0);
-                                    };
-                                    image.src = src;
-                                }
-                            },
+                        typeof this.state.tool.renderForm === "function" &&
+                        this.state.tool.renderForm({
+                            image: this.image,
                             canvas: this.canvas,
-                            deactivateTool: () => {
-                                this.setState({ tool: null }, () => {
-                                    onToolDeactivate && onToolDeactivate();
-                                });
-                            }
+                            renderApplyCancel: ({ onApply, onCancel }) => (
+                                <ApplyCancelActions>
+                                    <ButtonDefault
+                                        onClick={async () => {
+                                            onApply && (await onApply());
+                                            const canvas = this.canvas.current;
+                                            if (canvas) {
+                                                onChange && onChange(canvas.toDataURL());
+                                            }
+                                            this.deactivateTool();
+                                        }}
+                                    >
+                                        Apply
+                                    </ButtonDefault>
+                                    <ButtonDefault
+                                        onClick={() => {
+                                            onCancel && onCancel();
+                                            this.deactivateTool();
+                                        }}
+                                    >
+                                        Cancel
+                                    </ButtonDefault>
+                                </ApplyCancelActions>
+                            )
                         })}
                     {!this.state.tool && (
-                        <React.Fragment>
-                            {"Select a tool to start working on your image."}
-                        </React.Fragment>
+                        <div style={{ textAlign: "center" }}>
+                            Select a tool to start working on your image.
+                        </div>
                     )}
                 </ToolOptions>
 
                 <div style={{ margin: "0 auto", textAlign: "center" }}>
-                    <canvas style={{ maxWidth: 500 }} ref={this.canvas} />
+                    <canvas id={"canvas"} style={{ maxWidth: 500 }} ref={this.canvas} />
                 </div>
             </React.Fragment>
         );

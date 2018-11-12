@@ -10,38 +10,66 @@ import { Tooltip } from "webiny-ui/Tooltip";
 
 let cropper: ?Cropper = null;
 
-const subMenu = ({ apply, deactivateTool }) => {
+const flipped = { x: 1, y: 1 };
+
+const renderForm = ({ canvas, renderApplyCancel }) => {
     return (
         <React.Fragment>
-            <div>
-                <ButtonDefault onClick={() => cropper && cropper.scale(-1, 1)}>FlipX</ButtonDefault>
-                <ButtonDefault onClick={() => cropper && cropper.scale(1, -1)}>FlipY</ButtonDefault>
-            </div>
-            <div>
+            <div style={{ textAlign: "center" }}>
                 <ButtonDefault
                     onClick={() => {
-                        if (cropper) {
-                            apply(cropper.getCroppedCanvas().toDataURL());
-                            cropper.destroy();
-                            cropper = null;
-                            deactivateTool();
+                        if (!cropper) {
+                            return;
                         }
+
+                        flipped.x = flipped.x === 1 ? -1 : 1;
+                        cropper.scaleX(flipped.x);
                     }}
                 >
-                    Apply
+                    FlipX
                 </ButtonDefault>
                 <ButtonDefault
                     onClick={() => {
-                        if (cropper) {
-                            cropper.destroy();
-                            cropper = null;
-                            deactivateTool();
+                        if (!cropper) {
+                            return;
                         }
+
+                        flipped.y = flipped.y === 1 ? -1 : 1;
+                        cropper.scaleY(flipped.y);
                     }}
                 >
-                    Cancel
+                    FlipY
                 </ButtonDefault>
             </div>
+            {renderApplyCancel({
+                onCancel: () => cropper && cropper.destroy(),
+                onApply: () => {
+                    return new Promise(resolve => {
+                        if (!cropper) {
+                            resolve();
+                            return;
+                        }
+
+                        const current = canvas.current;
+                        const src = cropper.getCroppedCanvas().toDataURL();
+                        if (current) {
+                            const image = new window.Image();
+                            const ctx = current.getContext("2d");
+                            image.onload = () => {
+                                ctx.drawImage(image, 0, 0);
+                                current.width = image.width;
+                                current.height = image.height;
+
+                                ctx.drawImage(image, 0, 0);
+                                resolve();
+                            };
+                            image.src = src;
+                        }
+
+                        cropper.destroy();
+                    });
+                }
+            })}
         </React.Fragment>
     );
 };
@@ -68,7 +96,7 @@ const tool: ImageEditorTool = {
             </Tooltip>
         );
     },
-    subMenu
+    renderForm
 };
 
 export default tool;

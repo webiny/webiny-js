@@ -4,13 +4,11 @@ import * as React from "react";
 export type ImageEditorTool = {
     name: string,
     icon: ({
-        apply: Function,
         canvas: any,
         activateTool: Function
     }) => React.Element<any>,
-    subMenu?: ({
-        apply: Function,
+    renderForm?: ({
         canvas: any,
-        deactivateTool: Function
+        renderApplyCancel: Function
     }) => React.Node
 };

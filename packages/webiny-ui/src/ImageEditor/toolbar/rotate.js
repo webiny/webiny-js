@@ -4,24 +4,24 @@ import { ReactComponent as RotateRight } from "./icons/rotateRight.svg";
 import type { ImageEditorTool } from "./types";
 import { Slider } from "webiny-ui/Slider";
 import { Tooltip } from "webiny-ui/Tooltip";
-import { IconButton, ButtonDefault } from "webiny-ui/Button";
+import { IconButton } from "webiny-ui/Button";
 
 import Cropper from "cropperjs";
 import "cropperjs/dist/cropper.css";
 
 let cropper: ?Cropper = null;
 
-class SubMenu extends React.Component<*, { rangeInput: 0 }> {
+class RenderForm extends React.Component<*, { rangeInput: 0 }> {
     state = {
         rangeInput: 0
     };
 
     render() {
-        const { apply, deactivateTool } = this.props;
+        const { canvas, renderApplyCancel } = this.props;
 
         return (
             <React.Fragment>
-                <div style={{ width: "500px" }}>
+                <div style={{ width: "500px", margin: "0 auto" }}>
                     <Slider
                         label={"Range Input"}
                         value={this.state.rangeInput}
@@ -39,31 +39,35 @@ class SubMenu extends React.Component<*, { rangeInput: 0 }> {
                         }}
                     />
                 </div>
-                <div>
-                    <ButtonDefault
-                        onClick={() => {
-                            if (cropper) {
-                                apply(cropper.getCroppedCanvas().toDataURL());
-                                cropper.destroy();
-                                cropper = null;
-                                deactivateTool();
+                {renderApplyCancel({
+                    onCancel: () => cropper && cropper.destroy(),
+                    onApply: () => {
+                        return new Promise(resolve => {
+                            if (!cropper) {
+                                resolve();
+                                return;
                             }
-                        }}
-                    >
-                        Apply
-                    </ButtonDefault>
-                    <ButtonDefault
-                        onClick={() => {
-                            if (cropper) {
-                                cropper.destroy();
-                                cropper = null;
-                                deactivateTool();
+
+                            const current = canvas.current;
+                            const src = cropper.getCroppedCanvas().toDataURL();
+                            if (current) {
+                                const image = new window.Image();
+                                const ctx = current.getContext("2d");
+                                image.onload = () => {
+                                    ctx.drawImage(image, 0, 0);
+                                    current.width = image.width;
+                                    current.height = image.height;
+
+                                    ctx.drawImage(image, 0, 0);
+                                };
+                                image.src = src;
+                                resolve();
                             }
-                        }}
-                    >
-                        Cancel
-                    </ButtonDefault>
-                </div>
+
+                            cropper.destroy();
+                        });
+                    }
+                })}
             </React.Fragment>
         );
     }
@@ -91,8 +95,8 @@ const tool: ImageEditorTool = {
             </Tooltip>
         );
     },
-    subMenu(props) {
-        return <SubMenu {...props} />;
+    renderForm(props) {
+        return <RenderForm {...props} />;
     }
 };
 
