@@ -4,7 +4,7 @@ import * as toolbar from "./toolbar";
 import type { ImageEditorTool } from "./toolbar/types";
 import styled from "react-emotion";
 import classNames from "classnames";
-import { ButtonDefault } from "webiny-ui/Button";
+import { ButtonSecondary, ButtonPrimary } from "webiny-ui/Button";
 import loadScript from "load-script";
 
 export type ToolbarTool = "crop" | "flip" | "rotate" | "filter";
@@ -153,22 +153,23 @@ class ImageEditor extends React.Component<Props, State> {
                             canvas: this.canvas,
                             renderApplyCancel: ({ onApply, onCancel }) => (
                                 <ApplyCancelActions>
-                                    <ButtonDefault
+                                    <ButtonSecondary
                                         onClick={() => {
                                             onCancel && onCancel();
                                             this.deactivateTool();
                                         }}
                                     >
                                         Cancel
-                                    </ButtonDefault>
-                                    <ButtonDefault
+                                    </ButtonSecondary>
+                                    &nbsp;
+                                    <ButtonPrimary
                                         onClick={async () => {
                                             onApply && (await onApply());
                                             this.deactivateTool();
                                         }}
                                     >
                                         Apply
-                                    </ButtonDefault>
+                                    </ButtonPrimary>
                                 </ApplyCancelActions>
                             )
                         })}
