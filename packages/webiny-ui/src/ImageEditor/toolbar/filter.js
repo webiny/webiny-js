@@ -172,6 +172,7 @@ class RenderForm extends React.Component<Props, State> {
                         // $FlowFixMe
                         Caman(canvas.current, function() {
                             this.revert(false);
+                            this.render();
                         });
                     }
                 })}
