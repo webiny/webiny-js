@@ -180,7 +180,7 @@ class ImageEditor extends React.Component<Props, State> {
                 </ToolOptions>
 
                 <div style={{ margin: "0 auto", textAlign: "center" }}>
-                    <canvas id={"canvas"} style={{ maxWidth: 500 }} ref={this.canvas} />
+                    <canvas id={"canvas"} style={{ maxWidth: 700 }} ref={this.canvas} />
                 </div>
             </React.Fragment>
         );
