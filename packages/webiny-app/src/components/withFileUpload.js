@@ -71,14 +71,7 @@ export const withFileUpload = (options: WithFileUploadOptions = {}): Function =>
                                             current,
                                             params
                                         );
-
-                                        // Once we receive image URL, we make sure to fetch the image, and only then continue
-                                        // by calling the "onChange" callback. Prevents short but ugly image flashing.
-                                        const image = new window.Image();
-                                        image.onload = async () => {
-                                            onChange && (await onChange(file));
-                                        };
-                                        image.src = file.src;
+                                        onChange && (await onChange(file));
                                     }
                                 }
                             }
@@ -93,18 +86,11 @@ export const withFileUpload = (options: WithFileUploadOptions = {}): Function =>
                         if (mustUpload(file)) {
                             // Send file to server and get its path.
                             try {
-                                const uploadedFile = await withFileUploadPlugin.upload(
-                                    file,
-                                    params
-                                );
-
-                                // Once we receive image URL, we make sure to fetch the image, and only then continue
-                                // by calling the "onChange" callback. Prevents short but ugly image flashing.
-                                const image = new window.Image();
-                                image.onload = async () => {
-                                    onChange && (await onChange(uploadedFile));
-                                };
-                                image.src = uploadedFile.src;
+                                return withFileUploadPlugin
+                                    .upload(file, params)
+                                    .then(async uploadedFile => {
+                                        onChange && (await onChange(uploadedFile));
+                                    });
                             } catch (e) {
                                 console.warn(e);
                             }
