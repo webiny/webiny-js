@@ -1,7 +1,6 @@
 // @flow
 import * as React from "react";
 import { ImageEditor } from "webiny-ui/ImageEditor";
-import { Tooltip } from "webiny-ui/Tooltip";
 import { Dialog, DialogAccept, DialogCancel, DialogFooter, DialogBody } from "webiny-ui/Dialog";
 
 type Props = Object & { src: ?string };
@@ -12,26 +11,19 @@ class ImageEditorDialog extends React.Component<Props> {
         return (
             <Dialog {...dialogProps}>
                 <ImageEditor src={src}>
-                    {({ render, getCanvasDataUrl, hasActiveTool }) => (
+                    {({ render, getCanvasDataUrl, activeTool, applyActiveTool }) => (
                         <>
                             <DialogBody>{render()}</DialogBody>
                             <DialogFooter>
                                 <DialogCancel>Cancel</DialogCancel>
-
-                                {hasActiveTool ? (
-                                    <Tooltip
-                                        placement={"left"}
-                                        content={
-                                            <span>Cannot save because of an active tool.</span>
-                                        }
-                                    >
-                                        <DialogAccept disabled>Save</DialogAccept>
-                                    </Tooltip>
-                                ) : (
-                                    <DialogAccept onClick={() => onAccept(getCanvasDataUrl())}>
-                                        Save
-                                    </DialogAccept>
-                                )}
+                                <DialogAccept
+                                    onClick={async () => {
+                                        activeTool && (await applyActiveTool());
+                                        onAccept(getCanvasDataUrl());
+                                    }}
+                                >
+                                    Save
+                                </DialogAccept>
                             </DialogFooter>
                         </>
                     )}

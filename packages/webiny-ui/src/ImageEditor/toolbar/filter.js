@@ -128,7 +128,6 @@ class RenderForm extends React.Component<Props, State> {
     };
 
     render() {
-        const { canvas, renderApplyCancel } = this.props;
         return (
             <Wrapper>
                 <ul>
@@ -166,16 +165,6 @@ class RenderForm extends React.Component<Props, State> {
                         Reset filters
                     </ButtonDefault>
                 </div>
-
-                {renderApplyCancel({
-                    onCancel: () => {
-                        // $FlowFixMe
-                        Caman(canvas.current, function() {
-                            this.revert(false);
-                            this.render();
-                        });
-                    }
-                })}
             </Wrapper>
         );
     }
@@ -192,6 +181,13 @@ const tool: ImageEditorTool = {
     },
     renderForm(props) {
         return <RenderForm {...props} />;
+    },
+    cancel: ({ canvas }) => {
+        // $FlowFixMe
+        Caman(canvas.current, function() {
+            this.revert(false);
+            this.render();
+        });
     }
 };
 

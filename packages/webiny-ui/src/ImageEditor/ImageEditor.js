@@ -12,7 +12,9 @@ export type ToolbarTool = "crop" | "flip" | "rotate" | "filter";
 type RenderPropArgs = {
     render: Function,
     getCanvasDataUrl: () => string,
-    hasActiveTool: boolean
+    activeTool: ?ImageEditorTool,
+    applyActiveTool: Function,
+    cancelActiveTool: Function
 };
 
 type Props = {
@@ -84,6 +86,7 @@ class ImageEditor extends React.Component<Props, State> {
 
     componentDidUpdate(previousProps: Object) {
         if (previousProps.src !== this.props.src) {
+            this.deactivateTool();
             this.updateCanvas();
         }
     }
@@ -119,9 +122,35 @@ class ImageEditor extends React.Component<Props, State> {
         return canvas ? canvas.toDataURL() : "";
     };
 
-    render() {
-        const { tools, children } = this.props;
+    applyActiveTool = async () => {
+        const { tool } = this.state;
+        if (!tool) {
+            return;
+        }
 
+        tool.apply &&
+            (await tool.apply({
+                canvas: this.canvas
+            }));
+        this.deactivateTool();
+    };
+
+    cancelActiveTool = async () => {
+        const { tool } = this.state;
+        if (!tool) {
+            return;
+        }
+
+        tool.cancel &&
+            (await tool.cancel({
+                canvas: this.canvas
+            }));
+        this.deactivateTool();
+    };
+
+    render() {
+        const { src, tools, children } = this.props;
+        const { tool } = this.state;
         const editor = (
             <React.Fragment>
                 <Toolbar>
@@ -143,34 +172,23 @@ class ImageEditor extends React.Component<Props, State> {
                 </Toolbar>
 
                 <ToolOptions>
-                    {this.state.tool &&
-                        typeof this.state.tool.renderForm === "function" &&
-                        this.state.tool.renderForm({
-                            image: this.image,
-                            canvas: this.canvas,
-                            renderApplyCancel: ({ onApply, onCancel }) => (
-                                <ApplyCancelActions>
-                                    <ButtonSecondary
-                                        onClick={() => {
-                                            onCancel && onCancel();
-                                            this.deactivateTool();
-                                        }}
-                                    >
-                                        Cancel
-                                    </ButtonSecondary>
-                                    &nbsp;
-                                    <ButtonPrimary
-                                        onClick={async () => {
-                                            onApply && (await onApply());
-                                            this.deactivateTool();
-                                        }}
-                                    >
-                                        Apply
-                                    </ButtonPrimary>
-                                </ApplyCancelActions>
-                            )
-                        })}
-                    {!this.state.tool && (
+                    {tool ? (
+                        <>
+                            {typeof tool.renderForm === "function" &&
+                                tool.renderForm({
+                                    image: this.image,
+                                    canvas: this.canvas
+                                })}
+
+                            <ApplyCancelActions>
+                                <ButtonSecondary onClick={this.cancelActiveTool}>
+                                    Cancel
+                                </ButtonSecondary>
+                                &nbsp;
+                                <ButtonPrimary onClick={this.applyActiveTool}>Apply</ButtonPrimary>
+                            </ApplyCancelActions>
+                        </>
+                    ) : (
                         <div style={{ textAlign: "center" }}>
                             Select a tool to start working on your image.
                         </div>
@@ -178,7 +196,7 @@ class ImageEditor extends React.Component<Props, State> {
                 </ToolOptions>
 
                 <div style={{ margin: "0 auto", textAlign: "center" }}>
-                    <canvas id={"canvas"} style={{ maxWidth: 700 }} ref={this.canvas} />
+                    <canvas key={src} id={"canvas"} style={{ maxWidth: 700 }} ref={this.canvas} />
                 </div>
             </React.Fragment>
         );
@@ -186,8 +204,11 @@ class ImageEditor extends React.Component<Props, State> {
         if (typeof children === "function") {
             return children({
                 render: () => editor,
+                canvas: this.canvas,
                 getCanvasDataUrl: this.getCanvasDataUrl,
-                hasActiveTool: !!this.state.tool
+                activeTool: this.state.tool,
+                applyActiveTool: this.applyActiveTool,
+                cancelActiveTool: this.cancelActiveTool
             });
         }
 

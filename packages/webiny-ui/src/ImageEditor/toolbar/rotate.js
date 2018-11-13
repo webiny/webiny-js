@@ -17,58 +17,25 @@ class RenderForm extends React.Component<*, { rangeInput: 0 }> {
     };
 
     render() {
-        const { canvas, renderApplyCancel } = this.props;
-
         return (
-            <React.Fragment>
-                <div style={{ width: "500px", margin: "0 auto" }}>
-                    <Slider
-                        label={"Range Input"}
-                        value={this.state.rangeInput}
-                        min={0}
-                        max={360}
-                        step={10}
-                        discrete={true}
-                        displayMarkers={true}
-                        onInput={value => {
-                            this.setState({ rangeInput: value }, async () => {
-                                if (cropper) {
-                                    cropper.rotateTo(parseInt(value, 10));
-                                }
-                            });
-                        }}
-                    />
-                </div>
-                {renderApplyCancel({
-                    onCancel: () => cropper && cropper.destroy(),
-                    onApply: () => {
-                        return new Promise(resolve => {
-                            if (!cropper) {
-                                resolve();
-                                return;
+            <div style={{ width: "500px", margin: "0 auto" }}>
+                <Slider
+                    label={"Range Input"}
+                    value={this.state.rangeInput}
+                    min={0}
+                    max={360}
+                    step={10}
+                    discrete={true}
+                    displayMarkers={true}
+                    onInput={value => {
+                        this.setState({ rangeInput: value }, async () => {
+                            if (cropper) {
+                                cropper.rotateTo(parseInt(value, 10));
                             }
-
-                            const current = canvas.current;
-                            const src = cropper.getCroppedCanvas().toDataURL();
-                            if (current) {
-                                const image = new window.Image();
-                                const ctx = current.getContext("2d");
-                                image.onload = () => {
-                                    ctx.drawImage(image, 0, 0);
-                                    current.width = image.width;
-                                    current.height = image.height;
-
-                                    ctx.drawImage(image, 0, 0);
-                                };
-                                image.src = src;
-                                resolve();
-                            }
-
-                            cropper.destroy();
                         });
-                    }
-                })}
-            </React.Fragment>
+                    }}
+                />
+            </div>
         );
     }
 }
@@ -97,6 +64,33 @@ const tool: ImageEditorTool = {
     },
     renderForm(props) {
         return <RenderForm {...props} />;
+    },
+    cancel: () => cropper && cropper.destroy(),
+    apply: ({ canvas }) => {
+        return new Promise(resolve => {
+            if (!cropper) {
+                resolve();
+                return;
+            }
+
+            const current = canvas.current;
+            const src = cropper.getCroppedCanvas().toDataURL();
+            if (current) {
+                const image = new window.Image();
+                const ctx = current.getContext("2d");
+                image.onload = () => {
+                    ctx.drawImage(image, 0, 0);
+                    current.width = image.width;
+                    current.height = image.height;
+
+                    ctx.drawImage(image, 0, 0);
+                };
+                image.src = src;
+                resolve();
+            }
+
+            cropper.destroy();
+        });
     }
 };
 

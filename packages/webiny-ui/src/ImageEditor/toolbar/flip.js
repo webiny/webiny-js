@@ -12,65 +12,34 @@ let cropper: ?Cropper = null;
 
 const flipped = { x: 1, y: 1 };
 
-const renderForm = ({ canvas, renderApplyCancel }) => {
+const renderForm = () => {
     return (
-        <React.Fragment>
-            <div style={{ textAlign: "center" }}>
-                <ButtonDefault
-                    onClick={() => {
-                        if (!cropper) {
-                            return;
-                        }
+        <div style={{ textAlign: "center" }}>
+            <ButtonDefault
+                onClick={() => {
+                    if (!cropper) {
+                        return;
+                    }
 
-                        flipped.x = flipped.x === 1 ? -1 : 1;
-                        cropper.scaleX(flipped.x);
-                    }}
-                >
-                    FlipX
-                </ButtonDefault>
-                <ButtonDefault
-                    onClick={() => {
-                        if (!cropper) {
-                            return;
-                        }
+                    flipped.x = flipped.x === 1 ? -1 : 1;
+                    cropper.scaleX(flipped.x);
+                }}
+            >
+                FlipX
+            </ButtonDefault>
+            <ButtonDefault
+                onClick={() => {
+                    if (!cropper) {
+                        return;
+                    }
 
-                        flipped.y = flipped.y === 1 ? -1 : 1;
-                        cropper.scaleY(flipped.y);
-                    }}
-                >
-                    FlipY
-                </ButtonDefault>
-            </div>
-            {renderApplyCancel({
-                onCancel: () => cropper && cropper.destroy(),
-                onApply: () => {
-                    return new Promise(resolve => {
-                        if (!cropper) {
-                            resolve();
-                            return;
-                        }
-
-                        const current = canvas.current;
-                        const src = cropper.getCroppedCanvas().toDataURL();
-                        if (current) {
-                            const image = new window.Image();
-                            const ctx = current.getContext("2d");
-                            image.onload = () => {
-                                ctx.drawImage(image, 0, 0);
-                                current.width = image.width;
-                                current.height = image.height;
-
-                                ctx.drawImage(image, 0, 0);
-                                resolve();
-                            };
-                            image.src = src;
-                        }
-
-                        cropper.destroy();
-                    });
-                }
-            })}
-        </React.Fragment>
+                    flipped.y = flipped.y === 1 ? -1 : 1;
+                    cropper.scaleY(flipped.y);
+                }}
+            >
+                FlipY
+            </ButtonDefault>
+        </div>
     );
 };
 
@@ -96,7 +65,34 @@ const tool: ImageEditorTool = {
             </Tooltip>
         );
     },
-    renderForm
+    renderForm,
+    cancel: () => cropper && cropper.destroy(),
+    apply: ({ canvas }) => {
+        return new Promise(resolve => {
+            if (!cropper) {
+                resolve();
+                return;
+            }
+
+            const current = canvas.current;
+            const src = cropper.getCroppedCanvas().toDataURL();
+            if (current) {
+                const image = new window.Image();
+                const ctx = current.getContext("2d");
+                image.onload = () => {
+                    ctx.drawImage(image, 0, 0);
+                    current.width = image.width;
+                    current.height = image.height;
+
+                    ctx.drawImage(image, 0, 0);
+                    resolve();
+                };
+                image.src = src;
+            }
+
+            cropper.destroy();
+        });
+    }
 };
 
 export default tool;

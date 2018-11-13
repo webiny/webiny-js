@@ -9,42 +9,11 @@ import "cropperjs/dist/cropper.css";
 
 let cropper: ?Cropper = null;
 
-const renderForm = ({ canvas, renderApplyCancel }) => {
+const renderForm = () => {
     return (
-        <>
-            <div style={{ textAlign: "center" }}>
-                Click and drag to crop a portion of the image. Hold Shift to persist aspect ratio.
-            </div>
-            {renderApplyCancel({
-                onCancel: () => cropper && cropper.destroy(),
-                onApply: () => {
-                    return new Promise(resolve => {
-                        if (!cropper) {
-                            resolve();
-                            return;
-                        }
-
-                        const current = canvas.current;
-                        const src = cropper.getCroppedCanvas().toDataURL();
-                        if (current) {
-                            const image = new window.Image();
-                            const ctx = current.getContext("2d");
-                            image.onload = () => {
-                                ctx.drawImage(image, 0, 0);
-                                current.width = image.width;
-                                current.height = image.height;
-
-                                ctx.drawImage(image, 0, 0);
-                                resolve();
-                            };
-                            image.src = src;
-                        }
-
-                        cropper.destroy();
-                    });
-                }
-            })}
-        </>
+        <div style={{ textAlign: "center" }}>
+            Click and drag to crop a portion of the image. Hold Shift to persist aspect ratio.
+        </div>
     );
 };
 
@@ -63,7 +32,34 @@ const tool: ImageEditorTool = {
             </Tooltip>
         );
     },
-    renderForm
+    renderForm,
+    cancel: () => cropper && cropper.destroy(),
+    apply: ({ canvas }) => {
+        return new Promise(resolve => {
+            if (!cropper) {
+                resolve();
+                return;
+            }
+
+            const current = canvas.current;
+            const src = cropper.getCroppedCanvas().toDataURL();
+            if (current) {
+                const image = new window.Image();
+                const ctx = current.getContext("2d");
+                image.onload = () => {
+                    ctx.drawImage(image, 0, 0);
+                    current.width = image.width;
+                    current.height = image.height;
+
+                    ctx.drawImage(image, 0, 0);
+                    resolve();
+                };
+                image.src = src;
+            }
+
+            cropper.destroy();
+        });
+    }
 };
 
 export default tool;
