@@ -1,6 +1,5 @@
 import React from "react";
 import _ from "lodash";
-import { set } from "lodash/fp";
 import linkState from "./linkState";
 import validation from "./validation";
 
@@ -33,14 +32,13 @@ class Form extends React.Component {
         let validation = _.cloneDeep(state.validation);
         if (_.isPlainObject(invalidFields) && Object.keys(invalidFields).length) {
             _.each(invalidFields, (message, name) => {
-                validation = set(
-                    name,
-                    {
+                validation = {
+                    ...validation,
+                    [name]: {
                         isValid: false,
                         message
-                    },
-                    validation
-                );
+                    }
+                };
             });
         }
 
@@ -85,6 +83,7 @@ class Form extends React.Component {
                 if (this.props.onSubmit) {
                     return this.props.onSubmit(data);
                 }
+                return;
             }
             return this.onInvalid();
         });
@@ -103,7 +102,7 @@ class Form extends React.Component {
             }
 
             const hasValue = !!_.get(this.state.data, name);
-            const isInputValid = _.get(this.state.validation, name + ".isValid");
+            const isInputValid = _.get(this.state.validation[name], "isValid");
 
             const shouldValidate =
                 (!hasValue && validators.required) || (hasValue && isInputValid !== true);
@@ -140,15 +139,17 @@ class Form extends React.Component {
                 const isValid = hasValidators ? (value === null ? null : true) : null;
 
                 this.setState(state => {
-                    return set(
-                        "validation." + name,
-                        {
-                            isValid,
-                            message: null,
-                            results: validationResults
-                        },
-                        state
-                    );
+                    return {
+                        ...state,
+                        validation: {
+                            ...state.validation,
+                            [name]: {
+                                isValid,
+                                message: null,
+                                results: validationResults
+                            }
+                        }
+                    };
                 });
 
                 return validationResults;
@@ -162,15 +163,17 @@ class Form extends React.Component {
 
                 // Set component state to reflect validation error
                 this.setState(state => {
-                    return set(
-                        "validation." + name,
-                        {
-                            isValid: false,
-                            message: validationError.getMessage(),
-                            results: false
-                        },
-                        state
-                    );
+                    return {
+                        ...state,
+                        validation: {
+                            ...state.validation,
+                            [name]: {
+                                isValid: false,
+                                message: validationError.getMessage(),
+                                results: false
+                            }
+                        }
+                    };
                 });
 
                 return false;

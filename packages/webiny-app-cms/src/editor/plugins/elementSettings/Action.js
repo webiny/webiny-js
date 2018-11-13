@@ -2,7 +2,8 @@
 import React from "react";
 import { css } from "emotion";
 import { connect } from "react-redux";
-import { compose, lifecycle } from "recompose";
+import { compose, lifecycle, withHandlers } from "recompose";
+import { togglePlugin } from "webiny-app-cms/editor/actions";
 import { IconButton } from "webiny-ui/Button";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
 import { getUi, getActivePlugin } from "webiny-app-cms/editor/selectors";
@@ -27,11 +28,22 @@ const Action = ({ icon, onClick, active, tooltip }) => {
 };
 
 export default compose(
-    connect(state => ({
-        slateFocused: getUi(state).slateFocused,
-        settingsActive: getActivePlugin("cms-element-settings")(state)
-    })),
+    connect(
+        state => ({
+            slateFocused: getUi(state).slateFocused,
+            settingsActive: getActivePlugin("cms-element-settings")(state)
+        }),
+        { togglePlugin }
+    ),
     withKeyHandler(),
+    withHandlers({
+        onClick: ({ onClick, togglePlugin, plugin }) => () => {
+            if (typeof onClick === "function") {
+                return onClick();
+            }
+            togglePlugin({ name: plugin });
+        }
+    }),
     lifecycle({
         componentDidMount() {
             const { addKeyHandler, onClick, shortcut } = this.props;

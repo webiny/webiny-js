@@ -10,6 +10,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.0.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.8",
+    "@fortawesome/free-brands-svg-icons": "^5.5.0",
+    "@fortawesome/free-solid-svg-icons": "^5.5.0",
+    "@fortawesome/react-fontawesome": "^0.1.3",
     "dot-prop-immutable": "^1.4.0",
     "downshift": "^2.1.1",
     "dynamics.js": "^1.1.5",
@@ -28,6 +32,7 @@
     "react-infinite-scroller": "^1.1.4",
     "react-redux": "^5.0.7",
     "react-transition-group": "2.3.1",
+    "react-virtualized": "^9.21.0",
     "recompose": "^0.27.1",
     "redux": "^4.0.0",
     "redux-undo": "^1.0.0-beta9-9-7",

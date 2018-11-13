@@ -106,10 +106,14 @@ let timeout: ?TimeoutID = null;
 
 export class AutoComplete extends React.Component<Props, State> {
     static defaultProps = {
+        minInput: 2,
         valueProp: "id",
         textProp: "name",
         multiple: false,
-        unique: true
+        unique: true,
+        renderItem(item) {
+            return <Typography use={"body2"}>{this.getItemText(item)}</Typography>;
+        }
     };
 
     state = {
@@ -130,8 +134,8 @@ export class AutoComplete extends React.Component<Props, State> {
     }
 
     /**
-     * Renders options - based on user's input. It will try to match inputted text with available options.
-     * Optionally, if both "multiple" and "unique" props are set to true, it will also filter out items that were
+     * Renders options - based on user's input. It will try to match input text with available options.
+     * Optionally, if both "multiple" and "unique" props are set to `true`, it will also filter out items that were
      * already selected.
      * @param options
      * @param isOpen
@@ -153,7 +157,11 @@ export class AutoComplete extends React.Component<Props, State> {
             return null;
         }
 
-        const { unique, multiple, value } = this.props;
+        const { unique, multiple, value, renderItem, minInput } = this.props;
+
+        if (minInput && minInput > this.state.inputValue.length) {
+            return null;
+        }
 
         const filtered = options.filter(item => {
             // We need to filter received options.
@@ -196,7 +204,6 @@ export class AutoComplete extends React.Component<Props, State> {
                 <ul {...getMenuProps()}>
                     {filtered.map((item, index) => {
                         const itemValue = this.getItemValue(item);
-                        const itemText = this.getItemText(item);
 
                         // Base classes.
                         const itemClassNames = {
@@ -222,7 +229,7 @@ export class AutoComplete extends React.Component<Props, State> {
                                     className: classNames(itemClassNames)
                                 })}
                             >
-                                <Typography use={"body2"}>{itemText}</Typography>
+                                {renderItem.call(this, item, index)}
                             </li>
                         );
                     })}
@@ -280,10 +287,15 @@ export class AutoComplete extends React.Component<Props, State> {
             ...otherInputProps
         } = this.props;
 
+        let defaultItem = null;
+        if (!multiple) {
+            defaultItem = typeof value !== "string" ? value : options.find(opt => opt.id === value);
+        }
+
         // Downshift related props.
         const downshiftProps = {
             className: autoCompleteStyle,
-            defaultSelectedItem: multiple ? null : value,
+            defaultSelectedItem: defaultItem,
             itemToString: item => item && this.getItemText(item),
             onChange: selection => {
                 if (!selection || !onChange) {
@@ -318,7 +330,7 @@ export class AutoComplete extends React.Component<Props, State> {
                                     rawOnChange: true,
                                     onChange: e => e,
                                     onBlur: e => e,
-                                    onKeyDown: e => {
+                                    onKeyUp: e => {
                                         timeout && clearTimeout(timeout);
                                         const inputValue = e.target.value || "";
 
@@ -334,9 +346,15 @@ export class AutoComplete extends React.Component<Props, State> {
 
                                         timeout = setTimeout(
                                             () =>
-                                                this.setState({ inputValue }, () => {
-                                                    onInput && onInput(inputValue);
-                                                }),
+                                                this.setState(
+                                                    state => ({
+                                                        ...state,
+                                                        inputValue
+                                                    }),
+                                                    () => {
+                                                        onInput && onInput(inputValue);
+                                                    }
+                                                ),
                                             300
                                         );
                                     },
