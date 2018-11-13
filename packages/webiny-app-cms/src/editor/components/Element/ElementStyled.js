@@ -1,3 +1,4 @@
+//@flow
 import styled from "react-emotion";
 import { css } from "emotion";
 import { pure } from "recompose";
@@ -54,7 +55,7 @@ export const ElementContainer = pure(
             "&::after": {
                 content: "''",
                 position: "absolute",
-                zIndex: "-1",
+                zIndex: active ? "0" : "-1",
                 top: 0,
                 left: 0,
                 width: "100%",

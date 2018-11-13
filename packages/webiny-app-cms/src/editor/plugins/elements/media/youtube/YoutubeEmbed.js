@@ -1,3 +1,4 @@
+//@flow
 import * as React from "react";
 import { css } from "emotion";
 import { get } from "dot-prop-immutable";
@@ -20,7 +21,6 @@ const scaleableVideo = css({
     paddingTop: "56.25%",
     width: "100%",
     backgroundColor: "#000",
-    marginBottom: "1.2rem",
     ["iframe"]: {
         maxWidth: "100%",
         border: "none",
