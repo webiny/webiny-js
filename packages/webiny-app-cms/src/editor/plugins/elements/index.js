@@ -11,6 +11,8 @@ import button from "./button";
 import media from "./media";
 import social from "./social";
 import code from "./code";
+import pagesList from "./pagesList";
+
 
 export default [
     document(),
@@ -24,5 +26,6 @@ export default [
     ...button(),
     ...media,
     ...social,
-    ...code
+    ...code,
+    ...pagesList()
 ];

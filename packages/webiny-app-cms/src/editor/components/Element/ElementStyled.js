@@ -55,7 +55,7 @@ export const ElementContainer = pure(
             "&::after": {
                 content: "''",
                 position: "absolute",
-                zIndex: active ? "0" : "-1",
+                zIndex: -1,
                 top: 0,
                 left: 0,
                 width: "100%",
