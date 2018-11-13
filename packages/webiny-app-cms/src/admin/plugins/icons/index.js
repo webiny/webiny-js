@@ -6,9 +6,9 @@ import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 
 const createSvg = (icon: Object) => {
-    return `<svg width="24" viewBox="0 0 ${icon[0]} ${icon[1]}">
-            <path d="${icon[4]}" fill="currentColor" />
-        </svg>`;
+    return <svg width={24} viewBox={`0 0 ${icon[0]} ${icon[1]}`}>
+            <path d={icon[4]} fill="currentColor" />
+        </svg>;
 };
 
 const icons = [];

@@ -27,7 +27,13 @@ const grid = css({
 
 const IconPicker = ({ value, renderGrid }: Object) => {
     return (
-        <Menu handle={<FontAwesomeIcon icon={value || ["fab", "font-awesome-flag"]} size={"2x"} />}>
+        <Menu
+            handle={
+                <div style={{ width: 50, textAlign: "center" }}>
+                    <FontAwesomeIcon icon={value || ["fab", "font-awesome-flag"]} size={"2x"} />
+                </div>
+            }
+        >
             {renderGrid}
         </Menu>
     );

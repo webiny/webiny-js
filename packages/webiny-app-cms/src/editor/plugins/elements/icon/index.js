@@ -22,10 +22,6 @@ export default (): ElementPluginType => {
             settings: [
                 "cms-element-settings-icon",
                 "",
-                "cms-element-settings-background",
-                "cms-element-settings-border",
-                "cms-element-settings-shadow",
-                "",
                 "cms-element-settings-padding",
                 "cms-element-settings-margin",
                 "",
