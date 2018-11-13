@@ -11,33 +11,31 @@ class ImageEditorDialog extends React.Component<Props> {
         const { src, onAccept, ...dialogProps } = this.props;
         return (
             <Dialog {...dialogProps}>
-                {src && (
-                    <ImageEditor src={src} key={src.name + src.size}>
-                        {({ render, getCanvasDataUrl, hasActiveTool }) => (
-                            <>
-                                <DialogBody>{render()}</DialogBody>
-                                <DialogFooter>
-                                    <DialogCancel>Cancel</DialogCancel>
+                <ImageEditor src={src}>
+                    {({ render, getCanvasDataUrl, hasActiveTool }) => (
+                        <>
+                            <DialogBody>{render()}</DialogBody>
+                            <DialogFooter>
+                                <DialogCancel>Cancel</DialogCancel>
 
-                                    {hasActiveTool ? (
-                                        <Tooltip
-                                            placement={"left"}
-                                            content={
-                                                <span>Cannot save because of an active tool.</span>
-                                            }
-                                        >
-                                            <DialogAccept disabled>Save</DialogAccept>
-                                        </Tooltip>
-                                    ) : (
-                                        <DialogAccept onClick={() => onAccept(getCanvasDataUrl())}>
-                                            Save
-                                        </DialogAccept>
-                                    )}
-                                </DialogFooter>
-                            </>
-                        )}
-                    </ImageEditor>
-                )}
+                                {hasActiveTool ? (
+                                    <Tooltip
+                                        placement={"left"}
+                                        content={
+                                            <span>Cannot save because of an active tool.</span>
+                                        }
+                                    >
+                                        <DialogAccept disabled>Save</DialogAccept>
+                                    </Tooltip>
+                                ) : (
+                                    <DialogAccept onClick={() => onAccept(getCanvasDataUrl())}>
+                                        Save
+                                    </DialogAccept>
+                                )}
+                            </DialogFooter>
+                        </>
+                    )}
+                </ImageEditor>
             </Dialog>
         );
     }

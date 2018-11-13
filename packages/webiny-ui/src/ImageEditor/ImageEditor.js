@@ -53,17 +53,6 @@ const ApplyCancelActions = styled("div")({
     textAlign: "center"
 });
 
-const readFileContent = async file => {
-    return new Promise(resolve => {
-        const reader = new window.FileReader();
-        reader.onload = function(e) {
-            resolve(e.target.result);
-        };
-
-        reader.readAsDataURL(file);
-    });
-};
-
 const initScripts = () => {
     return new Promise(resolve => {
         if (window.Caman) {
@@ -88,26 +77,34 @@ class ImageEditor extends React.Component<Props, State> {
 
     canvas = React.createRef();
     image = null;
-    componentDidMount() {
-        initScripts().then(() => {
-            readFileContent(this.props.src).then(src => {
-                this.image = new window.Image();
-                const canvas = this.canvas.current;
-                if (canvas) {
-                    this.image.onload = () => {
-                        if (this.image) {
-                            canvas.width = this.image.width;
-                            canvas.height = this.image.height;
-                            const ctx = canvas.getContext("2d");
-                            ctx.drawImage(this.image, 0, 0);
-                        }
-                    };
 
-                    this.image.src = src;
-                }
-            });
-        });
+    componentDidMount() {
+        initScripts().then(this.updateCanvas);
     }
+
+    componentDidUpdate(previousProps: Object) {
+        if (previousProps.src !== this.props.src) {
+            this.updateCanvas();
+        }
+    }
+
+    updateCanvas = () => {
+        const { src } = this.props;
+        this.image = new window.Image();
+        const canvas = this.canvas.current;
+        if (canvas) {
+            this.image.onload = () => {
+                if (this.image) {
+                    canvas.width = this.image.width;
+                    canvas.height = this.image.height;
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(this.image, 0, 0);
+                }
+            };
+
+            this.image.src = src;
+        }
+    };
 
     activateTool = (tool: ImageEditorTool) => {
         this.setState({ tool });

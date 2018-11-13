@@ -161,7 +161,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
                         });
                     }}
                 />
-                <FileBrowser accept={accept} maxSize={maxSize}>
+                <FileBrowser accept={accept} maxSize={maxSize} convertToBase64>
                     {({ browseFiles }) => (
                         <Image
                             loading={this.state.loading}
