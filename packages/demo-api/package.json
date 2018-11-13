@@ -18,7 +18,6 @@
     "graphql": "^0.13.2",
     "graphql-iso-date": "^3.5.0",
     "mime-types": "^2.1.20",
-    "nodemon": "^1.18.3",
     "sanitize-filename": "^1.6.1",
     "serverless-mysql": "^1.1.0",
     "serverless-apigw-binary": "^0.4.4",
@@ -44,15 +43,5 @@
     "serverless-webpack": "^5.2.0",
     "webpack-cli": "^3.1.0",
     "webpack-node-externals": "^1.7.2"
-  },
-  "nodemonConfig": {
-    "watch": [
-      "dist"
-    ],
-    "ignoreRoot": [
-      ".git"
-    ],
-    "ext": "js",
-    "delay": "3"
   }
 }
