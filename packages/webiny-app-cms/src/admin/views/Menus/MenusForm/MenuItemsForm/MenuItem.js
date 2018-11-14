@@ -3,12 +3,8 @@ import React from "react";
 import { Icon } from "webiny-ui/Icon";
 import { Link } from "webiny-app/router";
 
-const icons = {
-    link: "fa-link",
-    group: "fa-folder",
-    article: "fa-file-text",
-    articlesList: "fa-list"
-};
+import { ReactComponent as Pen } from "./icons/baseline-edit-24px.svg";
+import { ReactComponent as Delete } from "./icons/baseline-delete-24px.svg";
 
 const MenuItem = (props: *) => {
     const draggable = {
@@ -23,15 +19,15 @@ const MenuItem = (props: *) => {
     return (
         <li {...draggable}>
             <span className="item">
-                <Icon icon={icons[props.item.type]} />
+                {/*<Icon icon={icons[props.item.type]} />*/}
                 {props.item.title}
                 {/*<ClickConfirm message="Are you sure you want to delete this menu item?">*/}
                 <Link align="right" onClick={() => props.onDelete(props.item.id)}>
-                    <Icon icon="icon-cancel" />
+                    <Icon icon={<Delete />} />
                 </Link>
                 {/*</ClickConfirm>*/}
                 <Link align="right" onClick={() => props.onEdit(props.item)}>
-                    <Icon icon="icon-pencil" />
+                    <Icon icon={<Pen />} />
                 </Link>
             </span>
             <ul>
@@ -40,7 +36,6 @@ const MenuItem = (props: *) => {
                         const itemProps = {
                             ...draggable,
                             "data-id": item.id,
-                            key: index,
                             item,
                             index,
                             onDrop: props.onDrop,
@@ -48,7 +43,7 @@ const MenuItem = (props: *) => {
                             onEdit: props.onEdit
                         };
 
-                        return <MenuItem {...itemProps} />;
+                        return <MenuItem key={index} {...itemProps} />;
                     })}
             </ul>
         </li>

@@ -49,7 +49,7 @@ const MenusDataList = ({ dataList, router, deleteRecord }: WithCrudListProps) =>
                                     router.goToRoute({ params: { id: item.id }, merge: true })
                                 }
                             >
-                                {item.name}
+                                {item.title}
                                 <ListItemTextSecondary>{item.description}</ListItemTextSecondary>
                             </ListItemText>
 

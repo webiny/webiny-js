@@ -19,7 +19,7 @@ export function menuFactory(): Class<IMenu> {
         constructor() {
             super();
 
-            this.attr("name")
+            this.attr("title")
                 .char()
                 .setValidators("required");
 
@@ -30,6 +30,10 @@ export function menuFactory(): Class<IMenu> {
 
             this.attr("description")
                 .char()
+                .setValidators();
+
+            this.attr("items")
+                .object()
                 .setValidators();
 
             this.on("beforeCreate", async () => {

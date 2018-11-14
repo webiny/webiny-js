@@ -1,8 +1,10 @@
+// @flow
 import { dummyResolver } from "webiny-api/graphql";
 import setupEntities from "../entities/setupEntities";
 
 import page from "./schemas/Page";
 import category from "./schemas/Category";
+import menu from "./schemas/Menu";
 
 export default {
     namespace: "cms",
@@ -25,7 +27,8 @@ export default {
             }
         `,
         page.typeDefs,
-        category.typeDefs
+        category.typeDefs,
+        menu.typeDefs
     ],
     resolvers: [
         {
@@ -37,7 +40,8 @@ export default {
             }
         },
         page.resolvers,
-        category.resolvers
+        category.resolvers,
+        menu.resolvers
     ],
     context: (ctx: Object) => {
         return setupEntities(ctx);

@@ -3,9 +3,10 @@ import gql from "graphql-tag";
 
 const fields = `
     id
-    name
+    title
     slug
     description
+    items
 `;
 
 export const loadMenus = gql`
@@ -20,13 +21,12 @@ export const loadMenus = gql`
             ) {
                 data {
                     id
-                    name
+                    title
                     slug
                     description
                     createdOn
                 }
                 meta {
-                    count
                     totalCount
                     totalPages
                     to

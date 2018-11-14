@@ -17,10 +17,10 @@ const Menus = ({ router, formProps, listProps }: WithCrudProps) => {
     return (
         <React.Fragment>
             <CompactView>
-                <LeftPanel>
+                <LeftPanel span={4}>
                     <MenusDataList {...listProps} />
                 </LeftPanel>
-                <RightPanel>
+                <RightPanel span={8}>
                     <MenusForm {...formProps} />
                 </RightPanel>
             </CompactView>
@@ -59,7 +59,7 @@ export default withCrud({
             update: updateMenu,
             response: data => data.cms.menu,
             variables: data => ({
-                data: pick(data, ["name", "slug", "description"])
+                data: pick(data, ["title", "slug", "description"])
             }),
             snackbar: data => t`Menu {name} saved successfully.`({ name: data.name })
         }
