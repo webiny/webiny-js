@@ -27,7 +27,7 @@ type Props = FormComponentProps & {
     disabled?: boolean,
 
     // Options that will be shown.
-    options: Array<any>,
+    options?: Array<any>,
 
     // Options that will be shown.
     children?: RenderPropParams => Options,
@@ -289,7 +289,10 @@ export class AutoComplete extends React.Component<Props, State> {
 
         let defaultItem = null;
         if (!multiple) {
-            defaultItem = typeof value !== "string" ? value : options.find(opt => opt.id === value);
+            defaultItem =
+                typeof value !== "string"
+                    ? value
+                    : options && options.find(opt => opt.id === value);
         }
 
         // Downshift related props.
