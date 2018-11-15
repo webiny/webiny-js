@@ -1,4 +1,5 @@
-import React from "react";
+// @flow
+import * as React from "react";
 import _ from "lodash";
 
 /**
@@ -28,6 +29,10 @@ class DelayedOnChange extends React.Component {
         this.props.onChange(value, callback);
     };
 
+    onChange = value => {
+        this.setState({ value }, this.changed);
+    };
+
     changed = () => {
         clearTimeout(this.delay);
         this.delay = null;
@@ -36,16 +41,16 @@ class DelayedOnChange extends React.Component {
 
     render() {
         const { children, ...other } = this.props;
-        const childElement = children({
+        const newProps = {
             ...other,
             value: this.state.value,
-            onChange: value => {
-                this.setState({ value }, this.changed);
-            }
-        });
+            onChange: this.onChange
+        };
 
-        const props = { ...childElement.props };
+        const renderProp = typeof children === "function" ? children : false;
+        const child = renderProp ? renderProp(newProps) : React.cloneElement(children, newProps);
 
+        const props = { ...child.props };
         const realOnKeyDown = props.onKeyDown || _.noop;
         const realOnBlur = props.onBlur || _.noop;
 
@@ -67,7 +72,7 @@ class DelayedOnChange extends React.Component {
             }
         };
 
-        return React.cloneElement(childElement, props);
+        return React.cloneElement(child, props);
     }
 }
 

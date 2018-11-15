@@ -22,6 +22,7 @@ export default {
             createdBy: User
             updatedBy: User
             savedOn: DateTime
+            publishedOn: DateTime
             category: Category
             version: Int
             title: String
@@ -53,6 +54,7 @@ export default {
         
         input UpdatePageInput {
             title: String
+            category: ID
             slug: String
             settings: JSON
             content: JSON
@@ -85,7 +87,7 @@ export default {
         }
         
         type OembedResponse {
-            data: JSON,
+            data: JSON
             error: Error
         }
         

@@ -38,6 +38,7 @@ export const listPages = gql`
                 data {
                     ${sharedFields}
                     category {
+                        id
                         name
                     }
                     createdBy {
@@ -66,6 +67,7 @@ export const getPage = gql`
                     content
                     settings
                     category {
+                        id
                         name
                     }
                     revisions {

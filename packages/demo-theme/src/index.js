@@ -32,8 +32,8 @@ export default {
         pagesList: {
             components: [
                 {
-                    name: "generic",
-                    title: "Generic page list",
+                    name: "default",
+                    title: "Default page list",
                     component: PageList
                 },
                 {

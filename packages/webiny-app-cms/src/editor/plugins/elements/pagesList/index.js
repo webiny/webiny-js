@@ -23,6 +23,10 @@ export default () => {
             create(options = {}) {
                 return {
                     type: "cms-element-pages-list",
+                    settings: {
+                        limit: 3,
+                        component: "default"
+                    },
                     ...options
                 };
             },

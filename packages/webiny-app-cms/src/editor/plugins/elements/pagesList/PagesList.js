@@ -16,6 +16,7 @@ const loadPages = gql`
                         lastName
                     }
                     category {
+                        id
                         name
                     }
                 }
@@ -24,17 +25,15 @@ const loadPages = gql`
     }
 `;
 
-const PagesList = ({ element, theme } = {}) => {
-    if (!element || !element.settings) {
-        return "Not configured!";
-    }
-    
-    console.log(element);
-
+const PagesList = ({ element, theme }: Object = {}) => {
     const { limit, component } = element.settings;
-    const { component: ListComponent } = theme.elements.pagesList.components.find(
-        cmp => cmp.name === component
-    );
+    const pageList = theme.elements.pagesList.components.find(cmp => cmp.name === component);
+
+    if (!pageList) {
+        return "Selected page list component not found!";
+    }
+
+    const { component: ListComponent } = pageList;
 
     if (!ListComponent) {
         return "You must select a component to render your list!";
@@ -46,7 +45,7 @@ const PagesList = ({ element, theme } = {}) => {
                 if (loading) {
                     return "Loading...";
                 }
-
+                
                 return <ListComponent {...data.cms.listPages} theme={theme} />;
             }}
         </Query>

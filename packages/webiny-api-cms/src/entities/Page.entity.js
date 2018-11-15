@@ -6,6 +6,7 @@ import mdbid from "mdbid";
 export interface IPage extends Entity {
     createdBy: string;
     updatedBy: string;
+    publishedOn: ?Date;
     title: string;
     slug: string;
     content: Object;
@@ -24,6 +25,7 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
 
         createdBy: string;
         updatedBy: string;
+        publishedOn: ?Date;
         title: string;
         slug: string;
         content: Object;
@@ -49,6 +51,10 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
 
             this.attr("updatedBy")
                 .char()
+                .setSkipOnPopulate();
+
+            this.attr("publishedOn")
+                .date()
                 .setSkipOnPopulate();
 
             this.attr("title")
@@ -91,6 +97,7 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
                     // Deactivate previously published revision
                     if (value && value !== this.published && this.isExisting()) {
                         this.locked = true;
+                        this.publishedOn = new Date();
                         this.on("beforeSave", async () => {
                             // Deactivate previously published revision
                             const publishedRev: Page = (await Page.findOne({

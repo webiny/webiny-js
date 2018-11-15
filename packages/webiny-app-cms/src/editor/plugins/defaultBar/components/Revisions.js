@@ -9,7 +9,7 @@ import { getRevisions } from "webiny-app-cms/editor/selectors";
 import { ButtonDefault } from "webiny-ui/Button";
 import { Icon } from "webiny-ui/Icon";
 import { Typography } from "webiny-ui/Typography";
-import { ReactComponent as DownButton } from "webiny-app-cms/editor/assets/icons/round-arrow_drop_down-24px.svg";
+import { ReactComponent as DownButton } from "./icons/round-arrow_drop_down-24px.svg";
 
 const buttonStyle = css({
     "&.mdc-button": {

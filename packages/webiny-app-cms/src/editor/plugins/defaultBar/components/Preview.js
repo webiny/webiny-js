@@ -8,7 +8,7 @@ import { Menu } from "webiny-ui/Menu";
 import { css } from "emotion";
 import { Icon } from "webiny-ui/Icon";
 import { List, ListItem, ListItemMeta } from "webiny-ui/List";
-import { ReactComponent as DownButton } from "webiny-app-cms/editor/assets/icons/round-arrow_drop_down-24px.svg";
+import { ReactComponent as DownButton } from "./icons/round-arrow_drop_down-24px.svg";
 
 const menuList = css({
     ".mdc-list-item": {
