@@ -19,7 +19,7 @@ type Props = AutoCompleteBaseProps & {
     unique: boolean,
 
     // Set if custom values (not from list of suggestions) are allowed.
-    freeInput?: boolean
+    allowFreeInput?: boolean
 };
 
 type State = {
@@ -33,7 +33,7 @@ export class MultiAutoComplete extends React.Component<Props, State> {
         textProp: "name",
         unique: true,
         simpleValues: false,
-        renderItem(item) {
+        renderItem(item: any) {
             return <Typography use={"body2"}>{getOptionText(item, this.props)}</Typography>;
         }
     };
@@ -62,7 +62,7 @@ export class MultiAutoComplete extends React.Component<Props, State> {
             return null;
         }
 
-        const { unique, value, renderItem, minInput } = this.props;
+        const { unique, value, allowFreeInput, simpleValues, renderItem, minInput } = this.props;
 
         if (minInput && minInput > this.state.inputValue.length) {
             return null;
@@ -97,6 +97,25 @@ export class MultiAutoComplete extends React.Component<Props, State> {
                 .includes(this.state.inputValue.toLowerCase());
         });
 
+        // If free input is allowed, prepend typed value to the list.
+        if (allowFreeInput) {
+            if (simpleValues) {
+                const existingValue = filtered.includes(this.state.inputValue);
+                if (!existingValue) {
+                    filtered.unshift(this.state.inputValue);
+                }
+            } else {
+                const existingValue = filtered.find(
+                    item =>
+                        getOptionText(this.state.inputValue, this.props) ===
+                        getOptionText(item, this.props)
+                );
+                if (!existingValue) {
+                    filtered.unshift({ [this.props.textProp]: this.state.inputValue });
+                }
+            }
+        }
+
         if (!filtered.length) {
             return (
                 <Elevation z={1}>
@@ -125,7 +144,7 @@ export class MultiAutoComplete extends React.Component<Props, State> {
                         // Render the item.
                         return (
                             <li
-                                key={itemValue}
+                                key={itemValue + index}
                                 {...getItemProps({
                                     index,
                                     item,
@@ -178,44 +197,45 @@ export class MultiAutoComplete extends React.Component<Props, State> {
 
     render() {
         const {
-            options,
-            freeInput,
-            simpleValues,
-            unique,
-            value,
-            onChange,
-            valueProp,
-            textProp, // eslint-disable-line
-            onInput,
-            validation = { isValid: null },
-            ...otherInputProps
-        } = this.props;
+            props,
+            props: {
+                options,
+                allowFreeInput, // eslint-disable-line
+                simpleValues, // eslint-disable-line
+                unique,
+                value,
+                onChange,
+                valueProp, // eslint-disable-line
+                textProp, // eslint-disable-line
+                onInput,
+                validation = { isValid: null },
+                ...otherInputProps
+            }
+        } = this;
 
         let defaultSelectedItem = null;
 
-        // Downshift related props.
-        const downshiftProps = {
-            defaultSelectedItem,
-            className: autoCompleteStyle,
-            itemToString: item => item && getOptionText(item, this.props),
-            onChange: selection => {
-                if (!selection || !onChange) {
-                    return;
-                }
-
-                if (Array.isArray(value) && value.length > 0) {
-                    onChange([...value, selection]);
-                } else {
-                    onChange([selection]);
-                }
-
-                this.downshift.current.clearSelection();
-            }
-        };
-
         return (
             <div className={autoCompleteStyle}>
-                <Downshift {...downshiftProps} ref={this.downshift}>
+                <Downshift
+                    defaultSelectedItem={defaultSelectedItem}
+                    className={autoCompleteStyle}
+                    itemToString={item => item && getOptionText(item, props)}
+                    ref={this.downshift}
+                    onChange={selection => {
+                        if (!selection || !onChange) {
+                            return;
+                        }
+
+                        if (Array.isArray(value)) {
+                            onChange([...value, selection]);
+                        } else {
+                            onChange([selection]);
+                        }
+
+                        this.downshift.current.clearSelection();
+                    }}
+                >
                     {/* "getInputProps" and "openMenu" are not needed in renderOptions method. */}
                     {({ getInputProps, openMenu, ...rest }) => (
                         <div>
@@ -232,43 +252,14 @@ export class MultiAutoComplete extends React.Component<Props, State> {
 
                                         // If user pressed 'esc', 'enter' or similar...
                                         if (keyCode.length > 1) {
-                                            if (keyCode === "enter") {
-                                                if (!freeInput) {
-                                                    return;
-                                                }
-
-                                                if (!onChange) {
-                                                    return;
-                                                }
-
-                                                const newValue = simpleValues
-                                                    ? inputValue
-                                                    : { [valueProp]: inputValue };
-
-                                                if (Array.isArray(value) && value.length > 0) {
-                                                    onChange([...value, newValue]);
-                                                } else {
-                                                    onChange([newValue]);
-                                                }
-                                                return;
-                                            }
                                             return;
                                         }
 
-                                        // If values are the same, exit, do not update current search term.
-                                        if (inputValue === this.state.inputValue) {
-                                            return;
-                                        }
-
-                                        this.setState(
-                                            state => ({
-                                                ...state,
-                                                inputValue
-                                            }),
-                                            () => {
+                                        if (inputValue !== this.state.inputValue) {
+                                            this.setState({ inputValue }, () => {
                                                 onInput && onInput(inputValue);
-                                            }
-                                        );
+                                            });
+                                        }
                                     },
                                     onFocus: e => {
                                         openMenu();

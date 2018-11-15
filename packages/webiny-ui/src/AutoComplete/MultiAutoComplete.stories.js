@@ -125,7 +125,7 @@ story.add("MultiAutoComplete", () => {
                         {({ Bind }) => (
                             <Bind name="country">
                                 <MultiAutoComplete
-                                    freeInput
+                                    allowFreeInput
                                     options={options}
                                     label="Country"
                                     disabled={disabled}
@@ -143,6 +143,51 @@ story.add("MultiAutoComplete", () => {
                                 <MultiAutoComplete
                                     simpleValues
                                     options={${JSON.stringify(options)}}
+                                    label="Country"
+                                    disabled={disabled}
+                                    description="Choose your country"
+                                />
+                            </Bind>
+                        )}
+                    </Form>
+                    `}
+                </StorySandboxCode>
+            </StorySandbox>
+
+            <StorySandbox>
+                <StorySandboxExample title={"Allow free input (values as strings)"}>
+                    <Form
+                        data={{
+                            country: ["Another Country", "Nowhere", "France"]
+                        }}
+                    >
+                        {({ Bind }) => (
+                            <Bind name="country">
+                                <MultiAutoComplete
+                                    simpleValues
+                                    allowFreeInput
+                                    options={options.map(item => item.name)}
+                                    label="Country"
+                                    disabled={disabled}
+                                    description="Choose your country"
+                                />
+                            </Bind>
+                        )}
+                    </Form>
+                </StorySandboxExample>
+                <StorySandboxCode>
+                    {`
+                  <Form
+                        data={{
+                            country: ["Another Country", "Nowhere", "France"]
+                        }}
+                    >
+                        {({ Bind }) => (
+                            <Bind name="country">
+                                <MultiAutoComplete
+                                    simpleValues
+                                    allowFreeInput
+                                    options={options.map(item => item.name)}
                                     label="Country"
                                     disabled={disabled}
                                     description="Choose your country"
