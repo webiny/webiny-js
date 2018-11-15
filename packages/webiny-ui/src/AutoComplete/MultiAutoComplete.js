@@ -2,20 +2,31 @@
 import * as React from "react";
 import Downshift from "downshift";
 import { Input } from "webiny-ui/Input";
+import { Chips, Chip, ChipText, ChipIcon } from "webiny-ui/Chips";
+import { getOptionValue, getOptionText } from "./utils";
+
+import { ReactComponent as BaselineCloseIcon } from "./icons/baseline-close-24px.svg";
 import classNames from "classnames";
 import { Elevation } from "webiny-ui/Elevation";
 import { Typography } from "webiny-ui/Typography";
 import keycode from "keycode";
 import { autoCompleteStyle, suggestionList } from "./styles";
-import type { AutoCompleteBaseProps } from "./types";
-import { getOptionValue, getOptionText } from "./utils";
 
-type Props = AutoCompleteBaseProps;
+import type { AutoCompleteBaseProps } from "./types";
+
+type Props = AutoCompleteBaseProps & {
+    // Prevents adding the same item to the list twice.
+    unique: boolean,
+
+    // Set if custom values (not from list of suggestions) are allowed.
+    freeInput?: boolean
+};
+
 type State = {
     inputValue: string
 };
 
-export class AutoComplete extends React.Component<Props, State> {
+export class MultiAutoComplete extends React.Component<Props, State> {
     static defaultProps = {
         minInput: 2,
         valueProp: "id",
@@ -23,7 +34,7 @@ export class AutoComplete extends React.Component<Props, State> {
         unique: true,
         simpleValues: false,
         renderItem(item) {
-            return <Typography use={"body2"}>{this.getOptionText(item, this.props)}</Typography>;
+            return <Typography use={"body2"}>{getOptionText(item, this.props)}</Typography>;
         }
     };
 
@@ -46,25 +57,36 @@ export class AutoComplete extends React.Component<Props, State> {
      * @param getItemProps
      * @returns {*}
      */
-    renderOptions({
-        options,
-        isOpen,
-        highlightedIndex,
-        selectedItem,
-        getMenuProps,
-        getItemProps
-    }: Object) {
+    renderOptions({ options, isOpen, highlightedIndex, getMenuProps, getItemProps }: Object) {
         if (!isOpen) {
             return null;
         }
 
-        const { renderItem, minInput } = this.props;
+        const { unique, value, renderItem, minInput } = this.props;
 
         if (minInput && minInput > this.state.inputValue.length) {
             return null;
         }
 
         const filtered = options.filter(item => {
+            // We need to filter received options.
+            // 1) If "unique" prop was passed, we don't want to show already picked options again.
+            if (unique) {
+                const values = value;
+                if (!Array.isArray(values)) {
+                    return true;
+                }
+
+                if (
+                    values.find(
+                        value =>
+                            getOptionValue(value, this.props) === getOptionValue(item, this.props)
+                    )
+                ) {
+                    return false;
+                }
+            }
+
             // 2) At the end, we want to show only options that are matched by typed text.
             if (!this.state.inputValue) {
                 return true;
@@ -100,14 +122,6 @@ export class AutoComplete extends React.Component<Props, State> {
                             selected: false
                         };
 
-                        // Add "selected" class if the item is selected.
-                        if (
-                            selectedItem &&
-                            getOptionValue(selectedItem, this.props) === itemValue
-                        ) {
-                            itemClassNames.selected = true;
-                        }
-
                         // Render the item.
                         return (
                             <li
@@ -127,14 +141,50 @@ export class AutoComplete extends React.Component<Props, State> {
         );
     }
 
+    /**
+     * Once added, items can also be removed by clicking on the ✕ icon. This is the method that is responsible for
+     * rendering selected items (we are using already existing "Chips" component).
+     * @returns {*}
+     */
+    renderMultipleSelection() {
+        const { value, onChange, disabled } = this.props;
+
+        return (
+            <React.Fragment>
+                {Array.isArray(value) && value.length ? (
+                    <Chips disabled={disabled}>
+                        {value.map((item, index) => (
+                            <Chip
+                                disabled
+                                key={`${getOptionValue(item, this.props)}-${index}`}
+                                onRemoval={() => {
+                                    // On removal, let's update the value and call "onChange" callback.
+                                    if (onChange) {
+                                        const newValue = [...value];
+                                        newValue.splice(index, 1);
+                                        onChange(newValue);
+                                    }
+                                }}
+                            >
+                                <ChipText>{getOptionText(item, this.props)}</ChipText>
+                                <ChipIcon trailing icon={<BaselineCloseIcon />} />
+                            </Chip>
+                        ))}
+                    </Chips>
+                ) : null}
+            </React.Fragment>
+        );
+    }
+
     render() {
         const {
             options,
+            freeInput,
+            simpleValues,
             unique,
             value,
             onChange,
-            simpleValues, // eslint-disable-line
-            valueProp, // eslint-disable-line
+            valueProp,
             textProp, // eslint-disable-line
             onInput,
             validation = { isValid: null },
@@ -142,11 +192,6 @@ export class AutoComplete extends React.Component<Props, State> {
         } = this.props;
 
         let defaultSelectedItem = null;
-        if (value) {
-            defaultSelectedItem = options.find(option => {
-                return getOptionValue(value, this.props) === getOptionValue(option, this.props);
-            });
-        }
 
         // Downshift related props.
         const downshiftProps = {
@@ -157,7 +202,14 @@ export class AutoComplete extends React.Component<Props, State> {
                 if (!selection || !onChange) {
                     return;
                 }
-                onChange(getOptionValue(selection, this.props));
+
+                if (Array.isArray(value) && value.length > 0) {
+                    onChange([...value, selection]);
+                } else {
+                    onChange([selection]);
+                }
+
+                this.downshift.current.clearSelection();
             }
         };
 
@@ -180,6 +232,26 @@ export class AutoComplete extends React.Component<Props, State> {
 
                                         // If user pressed 'esc', 'enter' or similar...
                                         if (keyCode.length > 1) {
+                                            if (keyCode === "enter") {
+                                                if (!freeInput) {
+                                                    return;
+                                                }
+
+                                                if (!onChange) {
+                                                    return;
+                                                }
+
+                                                const newValue = simpleValues
+                                                    ? inputValue
+                                                    : { [valueProp]: inputValue };
+
+                                                if (Array.isArray(value) && value.length > 0) {
+                                                    onChange([...value, newValue]);
+                                                } else {
+                                                    onChange([newValue]);
+                                                }
+                                                return;
+                                            }
                                             return;
                                         }
 
@@ -205,6 +277,7 @@ export class AutoComplete extends React.Component<Props, State> {
                                 })}
                             />
                             {this.renderOptions({ ...rest, unique, options })}
+                            {this.renderMultipleSelection()}
                         </div>
                     )}
                 </Downshift>
@@ -213,4 +286,4 @@ export class AutoComplete extends React.Component<Props, State> {
     }
 }
 
-export default AutoComplete;
+export default MultiAutoComplete;
