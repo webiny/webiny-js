@@ -7,7 +7,6 @@ import classNames from "classnames";
 import { FormElementMessage } from "webiny-ui/FormElementMessage";
 import Image from "./Image";
 import ImageEditorDialog from "./ImageEditorDialog";
-import convertToBase64 from "./convertToBase64";
 
 const imagesStyle = css({
     ".disabled": {
@@ -122,8 +121,12 @@ class MultiImageUpload extends React.Component<Props, State> {
                 const convertedImages = [];
                 for (let i = 0; i < images.length; i++) {
                     const image = images[i];
-                    const file: File = (image.src: any);
-                    convertedImages.push({ ...image, src: await convertToBase64(file) });
+                    convertedImages.push({
+                        src: image.src,
+                        name: image.name,
+                        size: image.size,
+                        type: image.type
+                    });
                 }
 
                 newValue.splice(selectedIndex, 0, ...convertedImages);
@@ -204,7 +207,7 @@ class MultiImageUpload extends React.Component<Props, State> {
                     }}
                 />
 
-                <FileBrowser accept={accept} maxSize={maxSize} multiple>
+                <FileBrowser accept={accept} maxSize={maxSize} multiple convertToBase64>
                     {({ browseFiles }) => {
                         const images = Array.isArray(value) ? [...value] : [];
 

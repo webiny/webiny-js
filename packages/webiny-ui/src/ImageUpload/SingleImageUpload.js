@@ -7,7 +7,6 @@ import styled from "react-emotion";
 import classNames from "classnames";
 import Image from "./Image";
 import ImageEditorDialog from "./ImageEditorDialog";
-import convertToBase64 from "./convertToBase64";
 
 const ImageUploadWrapper = styled("div")({
     position: "relative",
@@ -100,8 +99,6 @@ export class SingleImageUpload extends React.Component<Props, State> {
             if (imageEditor && !noImageEditingTypes.includes(image.type)) {
                 this.setState({ imageEditor: { image, open: true } });
             } else {
-                const file: File = (image.src: any);
-                image.src = await convertToBase64(file);
                 onChange && onChange(image);
             }
         });
@@ -161,7 +158,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
                         });
                     }}
                 />
-                <FileBrowser accept={accept} maxSize={maxSize}>
+                <FileBrowser accept={accept} maxSize={maxSize} convertToBase64>
                     {({ browseFiles }) => (
                         <Image
                             loading={this.state.loading}
