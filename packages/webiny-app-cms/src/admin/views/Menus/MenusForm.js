@@ -5,7 +5,7 @@ import { Form } from "webiny-form";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
-import MenuItemsForm from "./MenusForm/MenuItemsForm/MenuItemsForm";
+import MenuItemsForm from "./MenusForm/MenuItemsForm";
 import type { WithCrudFormProps } from "webiny-app-admin/components";
 import { withTheme, type WithThemeProps } from "webiny-app-cms/theme";
 import {
@@ -46,9 +46,7 @@ class MenusForm extends React.Component<Props, State> {
                                     </Bind>
                                 </Cell>
                             </Grid>
-                            <Bind name="items">
-                                <MenuItemsForm />
-                            </Bind>
+                            <Bind name="items">{props => <MenuItemsForm {...props} />}</Bind>
                         </SimpleFormContent>
                         <SimpleFormFooter>
                             <ButtonPrimary type="primary" onClick={form.submit} align="right">

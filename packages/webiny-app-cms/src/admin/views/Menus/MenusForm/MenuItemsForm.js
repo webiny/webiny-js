@@ -6,14 +6,15 @@ import { Select } from "webiny-ui/Select";
 import { Input } from "webiny-ui/Input";
 import { ButtonPrimary, ButtonSecondary } from "webiny-ui/Button";
 import { Form } from "webiny-form";
-import MenuItems from "./MenuItems";
-import findObject from "./findObject";
+import MenuItems from "./MenuItemsForm/MenuItems";
+import findObject from "./MenuItemsForm/findObject";
+import PagesAutoComplete from "./MenuItemsForm/PagesAutoComplete";
 
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("Cms.MenusForm.MenuItemsForm");
 
 const blankFormData = {
-    type: "group",
+    type: "page",
     article: null,
     url: null,
     title: "",
@@ -181,8 +182,8 @@ class MenuItemsForm extends React.Component<Props, State> {
                                             >
                                                 <option value="link">Link</option>
                                                 <option value="group">Group</option>
-                                                {/*<option value="article">Article</option>
-                                                <option value="articlesList">Articles List</option>*/}
+                                                <option value="page">Page</option>
+                                                <option value="articlesList">Pages List</option>
                                             </Select>
                                         </Bind>
                                     </Cell>
@@ -213,6 +214,23 @@ class MenuItemsForm extends React.Component<Props, State> {
                                             <Bind name="title">
                                                 <Input
                                                     placeholder="Enter title"
+                                                    validators={["required"]}
+                                                />
+                                            </Bind>
+                                        </Cell>
+                                    )}
+
+                                    {data.type === "page" && (
+                                        <Cell span={12}>
+                                            <Bind name="title">
+                                                <Input
+                                                    placeholder="Enter title"
+                                                    validators={["required"]}
+                                                />
+                                            </Bind>
+                                            <Bind name="page">
+                                                <PagesAutoComplete
+                                                    placeholder="Search page..."
                                                     validators={["required"]}
                                                 />
                                             </Bind>
