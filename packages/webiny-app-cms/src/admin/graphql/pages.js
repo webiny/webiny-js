@@ -1,5 +1,6 @@
 // @flow
 import gql from "graphql-tag";
+import { getPlugins } from "webiny-app/plugins";
 
 const error = `
 error {
@@ -58,14 +59,19 @@ export const listPages = gql`
     }
 `;
 
-export const getPage = gql`
+export const getPage = () => gql`
     query CmsGetPage($id: ID!) {
         cms {
             page: getPage(id: $id) {
                 data {
                     ${sharedFields}
                     content
-                    settings
+                    settings {
+                        _empty
+                        ${getPlugins("cms-editor-page-settings-fields")
+                            .map(pl => pl.fields)
+                            .join("\n")}
+                    }
                     category {
                         id
                         name

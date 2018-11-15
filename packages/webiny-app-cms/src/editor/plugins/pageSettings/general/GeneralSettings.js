@@ -5,7 +5,7 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { Tags } from "webiny-ui/Tags";
 import { Input } from "webiny-ui/Input";
 
-const GeneralSettings = ({ Bind }) => {
+const GeneralSettings = ({ Bind }: Object) => {
     return (
         <React.Fragment>
             <Grid>
@@ -17,8 +17,15 @@ const GeneralSettings = ({ Bind }) => {
                     </Bind>
                 </Cell>
                 <Cell span={12}>
+                    <Bind name={"settings.description"}>
+                        <DelayedOnChange>
+                            <Input rows={4} label="Description" description="Page description" />
+                        </DelayedOnChange>
+                    </Bind>
+                </Cell>
+                <Cell span={12}>
                     <Bind name={"settings.tags"}>
-                        <Tags label="Filter by tags" description="Enter tags to filter pages" />
+                        <Tags label="Tags" description="Enter tags to filter pages" />
                     </Bind>
                 </Cell>
             </Grid>

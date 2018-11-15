@@ -1,3 +1,4 @@
+// @flow
 import {
     resolveCreate,
     resolveUpdate,
@@ -27,12 +28,16 @@ export default {
             version: Int
             title: String
             slug: String
-            settings: JSON
+            settings: PageSettings
             content: JSON
             published: Boolean
             locked: Boolean
             parent: ID
             revisions: [Page]
+        }
+        
+        type PageSettings {
+            _empty: String
         }
         
         type Element {
@@ -155,7 +160,7 @@ export default {
             createElement(
                 data: ElementInput!
             ): ElementResponse
-        }
+        },
     `
     ],
     resolvers: {
@@ -175,7 +180,7 @@ export default {
             // Updates revision
             updateRevision: resolveUpdate(pageFetcher),
             // Publish revision (must be given an exact revision ID to publish)
-            publishRevision: (_, args, ctx, info) => {
+            publishRevision: (_: any, args: Object, ctx: Object, info: Object) => {
                 args.data = { published: true };
 
                 return resolveUpdate(pageFetcher)(_, args, ctx, info);
@@ -188,6 +193,9 @@ export default {
         Page: {
             createdBy: resolveUser("createdBy"),
             updatedBy: resolveUser("updatedBy")
+        },
+        PageSettings: {
+            _empty: () => ""
         }
     }
 };
