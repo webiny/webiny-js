@@ -22,8 +22,8 @@ export class AutoComplete extends React.Component<Props, State> {
         textProp: "name",
         unique: true,
         simpleValues: false,
-        renderItem(item) {
-            return <Typography use={"body2"}>{this.getOptionText(item, this.props)}</Typography>;
+        renderItem(item: any) {
+            return <Typography use={"body2"}>{getOptionText(item, this.props)}</Typography>;
         }
     };
 
