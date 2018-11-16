@@ -8,6 +8,7 @@ export default [
         apply(model: EntityModel) {
             model.attr("description").char();
             model.attr("tags").array();
+            model.attr("layout").array();
         }
     },
     {
@@ -17,6 +18,7 @@ export default [
             extend type PageSettings {
                 description: String
                 tags: [String]
+                layout: String
             }
         `,
         resolvers: {

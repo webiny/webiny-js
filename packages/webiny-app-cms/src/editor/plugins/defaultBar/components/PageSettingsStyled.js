@@ -1,3 +1,4 @@
+// @flow
 import * as React from "react";
 import { css } from "emotion";
 import styled from "react-emotion";
@@ -8,10 +9,6 @@ export const listStyle = css({
         padding: 0,
         backgroundColor: "var(--mdc-theme-surface)"
     }
-});
-
-export const rightPanel = css({
-    padding: 50
 });
 
 export const listItem = css({

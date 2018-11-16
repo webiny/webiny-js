@@ -4,7 +4,7 @@ import { DelayedOnChange } from "webiny-app-cms/editor/components/DelayedOnChang
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 
-const GeneralSettings = ({ Bind }) => {
+const SocialSettings = ({ Bind }) => {
     return (
         <React.Fragment>
             <Grid>
@@ -20,4 +20,4 @@ const GeneralSettings = ({ Bind }) => {
     );
 };
 
-export default GeneralSettings;
+export default SocialSettings;

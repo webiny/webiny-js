@@ -2,16 +2,17 @@
 import * as React from "react";
 import { DelayedOnChange } from "webiny-app-cms/editor/components/DelayedOnChange";
 import { Grid, Cell } from "webiny-ui/Grid";
-import { Tags } from "webiny-ui/Tags";
 import { Input } from "webiny-ui/Input";
 
-const GeneralSettings = ({ Bind }) => {
+const SocialSettings = ({ Bind }) => {
     return (
         <React.Fragment>
             <Grid>
                 <Cell span={12}>
-                    <Bind name={"settings.tags"}>
-                        <Tags label="Filter by tags" description="Enter tags to filter pages" />
+                    <Bind name={"title"}>
+                        <DelayedOnChange>
+                            <Input label="Description" description="SEO description" />
+                        </DelayedOnChange>
                     </Bind>
                 </Cell>
             </Grid>
@@ -19,4 +20,4 @@ const GeneralSettings = ({ Bind }) => {
     );
 };
 
-export default GeneralSettings;
+export default SocialSettings;

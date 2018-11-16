@@ -36,5 +36,7 @@ const Blog = ({ children }) => {
 export default {
     name: "blog",
     title: "Blog",
-    component: Blog,
+    render(content: React.Node) {
+        return <Blog>{content}</Blog>;
+    }
 };

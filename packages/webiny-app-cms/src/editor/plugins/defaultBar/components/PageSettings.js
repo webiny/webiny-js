@@ -9,23 +9,20 @@ import { getPage } from "webiny-app-cms/editor/selectors";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
 import { withSnackbar } from "webiny-app-admin/components";
 import { SecondaryLayout } from "webiny-app-admin/components/Views/SecondaryLayout";
-import {
-    CompactView,
-    LeftPanel as RightPanel,
-    RightPanel as LeftPanel
-} from "webiny-app-admin/components/Views/CompactView";
+import { CompactView, LeftPanel, RightPanel } from "webiny-app-admin/components/Views/CompactView";
 import { Typography } from "webiny-ui/Typography";
 import { Form } from "webiny-form";
 import { Icon } from "webiny-ui/Icon";
+import { ButtonPrimary } from "webiny-ui/Button";
 import { List, ListItem, ListItemGraphic } from "webiny-ui/List";
 import {
-    Title,
-    listItem,
-    ListItemTitle,
-    listStyle,
-    rightPanel,
-    TitleContent
-} from "./PageSettingsStyled";
+    SimpleForm,
+    SimpleFormFooter,
+    SimpleFormContent,
+    SimpleFormHeader
+} from "webiny-app-admin/components/Views/SimpleForm";
+import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./PageSettingsStyled";
+import type { CmsPageSettingsPluginType } from "webiny-app-cms/types";
 
 type Props = {
     deactivatePlugin: Function,
@@ -37,15 +34,19 @@ type Props = {
 
 const PageSettings = ({ deactivatePlugin, page, savePage, active, setActive }: Props) => {
     const plugins = getPlugins("cms-editor-page-settings");
-    const activePlugin = plugins.find(pl => pl.name === active);
+    const activePlugin: ?CmsPageSettingsPluginType = plugins.find(pl => pl.name === active);
+
+    if (!activePlugin) {
+        return null;
+    }
 
     return (
         <SecondaryLayout
             barMiddle={Title}
             onExited={() => deactivatePlugin({ name: "cms-page-settings-bar" })}
         >
-            <Form data={page} onChange={savePage}>
-                {({ Bind }) => (
+            <Form data={page} onSubmit={savePage}>
+                {({ Bind, submit }) => (
                     <CompactView>
                         <LeftPanel span={5}>
                             <List twoLine className={listStyle}>
@@ -68,8 +69,18 @@ const PageSettings = ({ deactivatePlugin, page, savePage, active, setActive }: P
                                 ))}
                             </List>
                         </LeftPanel>
-                        <RightPanel span={7} className={rightPanel}>
-                            {activePlugin ? activePlugin.render({ Bind }) : null}
+                        <RightPanel span={7}>
+                            <SimpleForm>
+                                <SimpleFormHeader title={activePlugin.title} />
+                                <SimpleFormContent>
+                                    {activePlugin ? activePlugin.render({ Bind }) : null}
+                                </SimpleFormContent>
+                                <SimpleFormFooter>
+                                    <ButtonPrimary type="primary" onClick={submit} align="right">
+                                        Save settings
+                                    </ButtonPrimary>
+                                </SimpleFormFooter>
+                            </SimpleForm>
                         </RightPanel>
                     </CompactView>
                 )}

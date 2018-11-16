@@ -306,7 +306,7 @@ addMiddleware(
     ({ store, next, action }) => {
         next(action);
 
-        const { onFinish } = action.meta;
+        const { onFinish } = action.meta || {};
 
         if (action.type === UPDATE_ELEMENT && action.payload.history === false) {
             return;

@@ -126,6 +126,9 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
                 this.title = this.title || "Untitled";
                 this.slug = (await this.category).url + "untitled-" + this.id;
                 this.version = await this.getNextVersion();
+                this.settings = {
+                    layout: (await this.category).layout
+                };
             });
 
             this.on("beforeUpdate", () => {
