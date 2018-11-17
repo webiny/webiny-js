@@ -27,7 +27,8 @@ export default {
             category: Category
             version: Int
             title: String
-            slug: String
+            snippet: String
+            url: String
             settings: PageSettings
             content: JSON
             published: Boolean
@@ -59,8 +60,9 @@ export default {
         
         input UpdatePageInput {
             title: String
+            snippet: String
             category: ID
-            slug: String
+            url: String
             settings: JSON
             content: JSON
         }

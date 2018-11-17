@@ -9,7 +9,8 @@ export interface IPage extends Entity {
     updatedBy: string;
     publishedOn: ?Date;
     title: string;
-    slug: string;
+    snippet: string;
+    url: string;
     content: Object;
     settings: Object;
     category: Promise<ICategory>;
@@ -28,7 +29,8 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
         updatedBy: string;
         publishedOn: ?Date;
         title: string;
-        slug: string;
+        snippet: string;
+        url: string;
         content: Object;
         settings: Object;
         category: Promise<ICategory>;
@@ -63,10 +65,14 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
                 .setValidators("required")
                 .onSet(value => (this.locked ? this.title : value));
 
-            this.attr("slug")
+            this.attr("snippet")
+                .char()
+                .onSet(value => (this.locked ? this.snippet : value));
+
+            this.attr("url")
                 .char()
                 .setValidators("required")
-                .onSet(value => (this.locked ? this.slug : value));
+                .onSet(value => (this.locked ? this.url : value));
 
             this.attr("content")
                 .object()
@@ -124,7 +130,7 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
 
                 this.createdBy = user.id;
                 this.title = this.title || "Untitled";
-                this.slug = (await this.category).url + "untitled-" + this.id;
+                this.url = (await this.category).url + "untitled-" + this.id;
                 this.version = await this.getNextVersion();
                 this.settings = {
                     layout: (await this.category).layout

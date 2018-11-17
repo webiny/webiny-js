@@ -16,9 +16,10 @@ export default ([
         description: "Manage things like title, page status,url and more.",
         icon: <SettingsIcon />,
         fields: `
-        description
-        tags
-        layout
+            general {
+                tags
+                layout
+            }
     `,
         render(props: Object) {
             return <GeneralSettings {...props} />;
@@ -30,6 +31,16 @@ export default ([
         title: "SEO",
         description: "Control SEO settings like description and keywords.",
         icon: <SeoIcon />,
+        fields: `
+            seo {
+                title
+                description
+                meta {
+                    name
+                    content
+                }
+            }
+    `,
         render(props: Object) {
             return <SeoSettings {...props} />;
         }
@@ -40,6 +51,16 @@ export default ([
         title: "Social media",
         description: "Set share images and settings for social media sites.",
         icon: <SocialIcon />,
+        fields: `
+            social {
+                title
+                description
+                meta {
+                    property
+                    content
+                }
+            }
+    `,
         render(props: Object) {
             return <SocialSettings {...props} />;
         }

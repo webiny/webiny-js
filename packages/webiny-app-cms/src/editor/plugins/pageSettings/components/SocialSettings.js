@@ -3,19 +3,55 @@ import * as React from "react";
 import { DelayedOnChange } from "webiny-app-cms/editor/components/DelayedOnChange";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
+import OpenGraphTags from "./OpenGraphTags";
 
-const SocialSettings = ({ Bind }) => {
+const SocialSettings = ({ Bind }: Object) => {
     return (
         <React.Fragment>
             <Grid>
                 <Cell span={12}>
-                    <Bind name={"title"}>
+                    <Bind name={"settings.social.title"}>
                         <DelayedOnChange>
-                            <Input label="Description" description="SEO description" />
+                            <Input
+                                label="Title (leave blank to use your page title)"
+                                description="Social media title (og:title)."
+                            />
                         </DelayedOnChange>
                     </Bind>
                 </Cell>
             </Grid>
+            <Grid>
+                <Cell span={12}>
+                    <Bind name={"settings.social.description"}>
+                        <DelayedOnChange>
+                            <Input
+                                label="Description (leave blank to use your page snippet)"
+                                description="Social media description (og:description)."
+                            />
+                        </DelayedOnChange>
+                    </Bind>
+                </Cell>
+            </Grid>
+
+            <Grid>
+                <Cell span={12}>
+                    TODO: add image upload
+                    {/* <Bind name={"settings.social.image"}>
+
+                    </Bind>*/}
+                </Cell>
+            </Grid>
+            <Bind name={"settings.social.meta"} defaultValue={[]}>
+                {({ value, onChange, ...other }) => (
+                    <OpenGraphTags
+                        prefix={"settings.social.meta"}
+                        value={value}
+                        onChange={onChange}
+                        Bind={Bind}
+                        {...other}
+                    />
+                )}
+            </Bind>
         </React.Fragment>
     );
 };

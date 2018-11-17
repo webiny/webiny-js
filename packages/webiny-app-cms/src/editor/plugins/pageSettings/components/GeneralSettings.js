@@ -20,15 +20,22 @@ const GeneralSettings = ({ Bind, theme }: Object) => {
                     </Bind>
                 </Cell>
                 <Cell span={12}>
-                    <Bind name={"settings.description"}>
+                    <Bind name={"url"}>
                         <DelayedOnChange>
-                            <Input rows={4} label="Description" description="Page description" />
+                            <Input label="URL" description="Page URL" />
                         </DelayedOnChange>
                     </Bind>
                 </Cell>
                 <Cell span={12}>
-                    <Bind name={"settings.layout"}>
-                        <Select label={"Layout"}>
+                    <Bind name={"snippet"}>
+                        <DelayedOnChange>
+                            <Input rows={4} label="Snippet" description="Page snippet" />
+                        </DelayedOnChange>
+                    </Bind>
+                </Cell>
+                <Cell span={12}>
+                    <Bind name={"settings.general.layout"}>
+                        <Select label={"Layout"} description={"Render this page using the selected layout"}>
                             {theme.layouts.map(({ name, title }) => (
                                 <option key={name} value={name}>
                                     {title}
@@ -38,10 +45,11 @@ const GeneralSettings = ({ Bind, theme }: Object) => {
                     </Bind>
                 </Cell>
                 <Cell span={12}>
-                    <Bind name={"settings.tags"}>
+                    <Bind name={"settings.general.tags"}>
                         <Tags label="Tags" description="Enter tags to filter pages" />
                     </Bind>
                 </Cell>
+                <Cell span={12}>TODO: add page image</Cell>
             </Grid>
         </React.Fragment>
     );

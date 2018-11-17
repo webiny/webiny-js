@@ -12,7 +12,7 @@ error {
 const sharedFields = `
     id
     title
-    slug
+    url
     version
     parent
     published
@@ -66,6 +66,7 @@ export const getPage = () => gql`
             page: getPage(id: $id) {
                 data {
                     ${sharedFields}
+                    snippet
                     content
                     settings {
                         _empty

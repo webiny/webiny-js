@@ -3,19 +3,44 @@ import * as React from "react";
 import { DelayedOnChange } from "webiny-app-cms/editor/components/DelayedOnChange";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
+import MetaTags from "./MetaTags";
 
-const SocialSettings = ({ Bind }) => {
+type Props = {
+    Bind: React.ComponentType<*>
+};
+
+const SocialSettings = ({ Bind }: Props) => {
     return (
         <React.Fragment>
             <Grid>
                 <Cell span={12}>
-                    <Bind name={"title"}>
+                    <Bind name={"settings.seo.title"}>
                         <DelayedOnChange>
-                            <Input label="Description" description="SEO description" />
+                            <Input label="Title" description="SEO title" />
                         </DelayedOnChange>
                     </Bind>
                 </Cell>
             </Grid>
+            <Grid>
+                <Cell span={12}>
+                    <Bind name={"settings.seo.description"}>
+                        <DelayedOnChange>
+                            <Input rows={4} label="Description" description="SEO description" />
+                        </DelayedOnChange>
+                    </Bind>
+                </Cell>
+            </Grid>
+            <Bind name={"settings.seo.meta"} defaultValue={[]}>
+                {({ value, onChange, ...other }) => (
+                    <MetaTags
+                        prefix={"settings.seo.meta"}
+                        value={value}
+                        onChange={onChange}
+                        Bind={Bind}
+                        {...other}
+                    />
+                )}
+            </Bind>
         </React.Fragment>
     );
 };

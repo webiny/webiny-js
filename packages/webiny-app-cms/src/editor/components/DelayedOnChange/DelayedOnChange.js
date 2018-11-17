@@ -11,7 +11,7 @@ import _ from "lodash";
  * The logic behind this component is to serve as a middleware between Form and Input/Textarea, and only notify form of a change when
  * a user stops typing for given period of time (400ms by default).
  */
-class DelayedOnChange extends React.Component {
+class DelayedOnChange extends React.Component<*, *> {
     static defaultProps = {
         delay: 400
     };
@@ -23,18 +23,18 @@ class DelayedOnChange extends React.Component {
         this.setState({ value: this.props.value });
     }
 
-    applyValue = (value, callback = _.noop) => {
-        clearTimeout(this.delay);
+    applyValue = (value: any, callback: Function = _.noop) => {
+        this.delay && clearTimeout(this.delay);
         this.delay = null;
         this.props.onChange(value, callback);
     };
 
-    onChange = value => {
+    onChange = (value: any) => {
         this.setState({ value }, this.changed);
     };
 
     changed = () => {
-        clearTimeout(this.delay);
+        this.delay && clearTimeout(this.delay);
         this.delay = null;
         this.delay = setTimeout(() => this.applyValue(this.state.value), this.props.delay);
     };

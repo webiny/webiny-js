@@ -333,7 +333,7 @@ addMiddleware([SAVING_REVISION], ({ store, next, action }) => {
 
     // Construct page payload
     const data = getPage(store.getState());
-    const revision = pick(data, ["title", "slug", "settings"]);
+    const revision = pick(data, ["title", "snippet", "url", "settings"]);
     revision.content = data.content.present;
     revision.category = data.category.id;
 
@@ -354,6 +354,7 @@ addMiddleware([SAVING_REVISION], ({ store, next, action }) => {
                     error {
                         code
                         message
+                        data
                     }
                 }
             }

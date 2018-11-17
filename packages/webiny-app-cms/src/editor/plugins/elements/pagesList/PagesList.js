@@ -1,6 +1,7 @@
 // @flow
 import * as React from "react";
 import gql from "graphql-tag";
+import { pure } from "recompose";
 import { Query } from "react-apollo";
 
 const loadPages = gql`
@@ -10,7 +11,7 @@ const loadPages = gql`
                 data {
                     id
                     title
-                    slug
+                    url
                     createdBy {
                         firstName
                         lastName
@@ -25,7 +26,7 @@ const loadPages = gql`
     }
 `;
 
-const PagesList = ({ element, theme }: Object = {}) => {
+const PagesList = pure(({ element, theme }: Object = {}) => {
     const { limit, component } = element.settings;
     const pageList = theme.elements.pagesList.components.find(cmp => cmp.name === component);
 
@@ -50,6 +51,6 @@ const PagesList = ({ element, theme }: Object = {}) => {
             }}
         </Query>
     );
-};
+});
 
 export default PagesList;

@@ -1,30 +1,34 @@
 // @flow
-import type { EntityModel } from "webiny-entity";
+import { EntityModel } from "webiny-entity";
+
+class GeneralSettings extends EntityModel {
+    constructor() {
+        super();
+        this.attr("tags").array();
+        this.attr("layout").char();
+    }
+}
 
 export default [
     {
         name: "cms-page-settings-general",
         type: "cms-page-settings-model",
         apply(model: EntityModel) {
-            model.attr("description").char();
-            model.attr("tags").array();
-            model.attr("layout").array();
+            model.attr("general").model(GeneralSettings);
         }
     },
     {
         name: "cms-schema-settings-general",
         type: "cms-schema",
         typeDefs: `
-            extend type PageSettings {
-                description: String
+            type GeneralSettings {
                 tags: [String]
                 layout: String
+            } 
+            
+            extend type PageSettings {
+                general: GeneralSettings
             }
-        `,
-        resolvers: {
-            PageSettings: {
-                description: () => "Custom description"
-            }
-        }
+        `
     }
 ];
