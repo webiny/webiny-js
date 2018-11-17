@@ -59,7 +59,7 @@ export default withCrud({
             update: updateMenu,
             response: data => data.cms.menu,
             variables: data => ({
-                data: pick(data, ["title", "slug", "description"])
+                data: pick(data, ["items", "title", "slug", "description"])
             }),
             snackbar: data => t`Menu {name} saved successfully.`({ name: data.name })
         }

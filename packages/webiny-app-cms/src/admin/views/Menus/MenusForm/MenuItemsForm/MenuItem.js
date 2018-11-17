@@ -2,9 +2,29 @@
 import React from "react";
 import { Icon } from "webiny-ui/Icon";
 import { Link } from "webiny-app/router";
+import styled from "react-emotion";
 
 import { ReactComponent as Pen } from "./icons/baseline-edit-24px.svg";
 import { ReactComponent as Delete } from "./icons/baseline-delete-24px.svg";
+import { ReactComponent as LinkIcon } from "./icons/baseline-link-24px.svg";
+import { ReactComponent as Folder } from "./icons/baseline-folder-24px.svg";
+import { ReactComponent as Page } from "./icons/file.svg";
+import { ReactComponent as Pages } from "./icons/blank-page.svg";
+
+const icons = {
+    link: <Icon icon={<LinkIcon />} />,
+    group: <Icon icon={<Folder />} />,
+    page: <Icon icon={<Page />} />,
+    pagesList: <Icon icon={<Pages />} />
+};
+
+const ItemTypeListItem = styled("li")({
+    ".item-type-icon": {
+        display: "inline-block",
+        width: 24,
+        height: 24
+    }
+});
 
 const MenuItem = (props: *) => {
     const draggable = {
@@ -17,21 +37,19 @@ const MenuItem = (props: *) => {
     };
 
     return (
-        <li {...draggable}>
-            <span className="item">
-                {/*<Icon icon={icons[props.item.type]} />*/}
+        <ItemTypeListItem {...draggable}>
+            <span>
+                <Icon className="item-type-icon" icon={icons[props.item.type]} />
                 {props.item.title}
-                {/*<ClickConfirm message="Are you sure you want to delete this menu item?">*/}
-                <Link align="right" onClick={() => props.onDelete(props.item.id)}>
+                <Link onClick={() => props.onDelete(props.item.id)}>
                     <Icon icon={<Delete />} />
                 </Link>
-                {/*</ClickConfirm>*/}
-                <Link align="right" onClick={() => props.onEdit(props.item)}>
+                <Link onClick={() => props.onEdit(props.item)}>
                     <Icon icon={<Pen />} />
                 </Link>
             </span>
             <ul>
-                {props.item.items &&
+                {Array.isArray(props.item.items) &&
                     props.item.items.map((item, index) => {
                         const itemProps = {
                             ...draggable,
@@ -46,7 +64,7 @@ const MenuItem = (props: *) => {
                         return <MenuItem key={index} {...itemProps} />;
                     })}
             </ul>
-        </li>
+        </ItemTypeListItem>
     );
 };
 

@@ -3,11 +3,12 @@ import * as React from "react";
 import { compose, withProps } from "recompose";
 import { withDataList } from "./withDataList";
 import { debounce } from "lodash";
+import invariant from "invariant";
 
-export const withAutoComplete = (props: Object): Function => {
+export const withAutoComplete = (withAutoCompleteProps: Object): Function => {
     return (BaseComponent: typeof React.Component) => {
         return compose(
-            withDataList(props),
+            withDataList(withAutoCompleteProps),
             withProps(props => {
                 const { dataList, ...rest } = props;
 
@@ -15,8 +16,21 @@ export const withAutoComplete = (props: Object): Function => {
                     ...rest,
                     options: dataList.data || [],
                     onInput: debounce(query => {
-                        console.log(query);
-                        query && dataList.setSearch(query);
+                        if (!query) {
+                            return;
+                        }
+
+                        let { variables } = withAutoCompleteProps;
+                        invariant(
+                            variables,
+                            `"variables" prop for withAutoComplete component is missing.`
+                        );
+
+                        if (typeof variables === "function") {
+                            variables = variables(query);
+                        }
+
+                        dataList.setSearch(variables);
                     }, 250)
                 };
             })

@@ -20,7 +20,7 @@ export class AutoComplete extends React.Component<Props, State> {
         minInput: 2,
         valueProp: "id",
         textProp: "name",
-        unique: true,
+        options: [],
         simpleValues: false,
         renderItem(item: any) {
             return <Typography use={"body2"}>{getOptionText(item, this.props)}</Typography>;
@@ -130,7 +130,6 @@ export class AutoComplete extends React.Component<Props, State> {
     render() {
         const {
             options,
-            unique,
             value,
             onChange,
             simpleValues, // eslint-disable-line
@@ -204,7 +203,7 @@ export class AutoComplete extends React.Component<Props, State> {
                                     }
                                 })}
                             />
-                            {this.renderOptions({ ...rest, unique, options })}
+                            {this.renderOptions({ ...rest, options })}
                         </div>
                     )}
                 </Downshift>

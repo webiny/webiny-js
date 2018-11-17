@@ -28,13 +28,9 @@ export function menuFactory(): Class<IMenu> {
                 .setValidators("required")
                 .setOnce();
 
-            this.attr("description")
-                .char()
-                .setValidators();
+            this.attr("description").char();
 
-            this.attr("items")
-                .object()
-                .setValidators();
+            this.attr("items").object();
 
             this.on("beforeCreate", async () => {
                 const existingMenu = await Menu.findOne({ query: { slug: this.slug } });

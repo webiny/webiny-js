@@ -46,7 +46,9 @@ class MenusForm extends React.Component<Props, State> {
                                     </Bind>
                                 </Cell>
                             </Grid>
-                            <Bind name="items">{props => <MenuItemsForm {...props} />}</Bind>
+                            <Bind name="items">
+                                {props => <MenuItemsForm menuForm={form} {...props} />}
+                            </Bind>
                         </SimpleFormContent>
                         <SimpleFormFooter>
                             <ButtonPrimary type="primary" onClick={form.submit} align="right">

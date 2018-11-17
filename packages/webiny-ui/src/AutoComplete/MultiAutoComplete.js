@@ -32,6 +32,7 @@ export class MultiAutoComplete extends React.Component<Props, State> {
         valueProp: "id",
         textProp: "name",
         unique: true,
+        options: [],
         simpleValues: false,
         renderItem(item: any) {
             return <Typography use={"body2"}>{getOptionText(item, this.props)}</Typography>;
@@ -128,6 +129,7 @@ export class MultiAutoComplete extends React.Component<Props, State> {
             );
         }
 
+        console.log("lista", filtered);
         return (
             <Elevation z={1}>
                 <ul {...getMenuProps()}>

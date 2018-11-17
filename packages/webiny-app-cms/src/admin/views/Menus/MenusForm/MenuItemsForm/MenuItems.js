@@ -1,8 +1,11 @@
 // @flow
 import React from "react";
+import ReactDOM from "react-dom";
 import MenuItem from "./MenuItem";
 import findObject from "./findObject";
 import styled from "react-emotion";
+import { get } from "lodash";
+import $ from "jquery";
 
 const Wrapper = styled("div")({
     ul: {
@@ -22,16 +25,18 @@ const Wrapper = styled("div")({
     }
 });
 
+const placeholder = document.createElement("li");
+placeholder.className = "the-hub-separator";
+
 class MenuItems extends React.Component<*> {
-    dragged = null;
+    dragged: any = null;
+    over: any = null;
+    lastClientY: null;
+    lastClientX: null;
+    nodePlacement: null;
+    processing: false;
 
-    // ---------------------------------------
-
-    /*  /!**
-     * Drag start callback
-     * @param e
-     *!/
-    onDragStart = e => {
+    onDragStart = (e: *) => {
         if (this.dragged) {
             return;
         }
@@ -41,41 +46,52 @@ class MenuItems extends React.Component<*> {
         e.dataTransfer.setData("text/html", this.dragged);
     };
 
-    /!**
+    /**
      * Drag end callback
      * @param e
-     *!/
-    onDragEnd = e => {
+     */
+    onDragEnd = (e: *) => {
         if (!this.dragged) {
             return;
         }
         e.preventDefault();
 
-        if (this.dragged.dataset.id !== this.over.dataset.id) {
-            const data = this.menuForm.getData("items");
-            // Remove item being dragged from data
-            const source = this.findObject(data, this.dragged.dataset.id);
-            source.source.splice(source.index, 1);
+        const { menuForm } = this.props;
 
-            // Insert item into the new position
-            const target = this.findObject(data, this.over.dataset.id);
-            if (this.over.classList && this.over.classList.contains("highlight")) {
-                // This is executed when item is being dropped on a highlighted item (meaning it has no child items)
-                target.item.items = target.item.items || [];
-                target.item.items.push(source.item);
-            } else {
-                // This is executed when target item has children, we splice the existing items with the new item
-                target.source.splice(
-                    this.nodePlacement === "after" ? target.index + 1 : target.index,
-                    0,
-                    source.item
-                );
+        if (this.dragged.dataset.id !== this.over.dataset.id) {
+            const data = menuForm.state.data.items;
+            // Remove item being dragged from model
+            const source = findObject(data, this.dragged.dataset.id);
+
+            if (source) {
+                source.source.splice(source.index, 1);
+
+                // Insert item into the new position
+                const target = findObject(data, this.over.dataset.id);
+                if (this.over.classList && this.over.classList.contains("highlight")) {
+                    // This is executed when item is being dropped on a highlighted item (meaning it has no child items)
+                    if (target) {
+                        target.item.items = target.item.items || [];
+                        target.item.items.push(source.item);
+                    }
+                } else {
+                    // This is executed when target item has children, we splice the existing items with the new item
+                    target &&
+                        target.source.splice(
+                            this.nodePlacement === "after" ? target.index + 1 : target.index,
+                            0,
+                            source.item
+                        );
+                }
+                menuForm.setState(state => {
+                    state.items = data;
+                    return state;
+                });
             }
-            this.menuForm.setData({ items: data });
         }
 
         // Update UI
-        const el = ReactDOM.findDOMNode(this);
+        const el = ReactDOM.findDOMNode(this); // eslint-disable-line
         this.dragged.style.display = "block";
         const highlightedItem = el.querySelector("li.highlight");
         if (highlightedItem) {
@@ -85,7 +101,7 @@ class MenuItems extends React.Component<*> {
         this.dragged = null;
     };
 
-    onDragOver = e => {
+    onDragOver = (e: *) => {
         e.preventDefault();
         e.stopPropagation();
 
@@ -93,6 +109,8 @@ class MenuItems extends React.Component<*> {
         if (!this.dragged || (this.lastClientY === e.clientY && this.lastClientX === e.clientX)) {
             return false;
         }
+
+        const { menuForm } = this.props;
 
         // Store current mouse position
         this.lastClientX = e.clientX;
@@ -126,8 +144,8 @@ class MenuItems extends React.Component<*> {
             this.nodePlacement = "before";
             parent.insertBefore(placeholder, over);
         } else if (nest) {
-            const data = this.menuForm.getData("items");
-            const nestTarget = this.findObject(data, over.dataset.id);
+            const data = menuForm.state.data.items;
+            const nestTarget = findObject(data, over.dataset.id);
             if (get(nestTarget.item, "items.length", 0) === 0) {
                 over.classList.add("highlight");
             }
@@ -135,9 +153,7 @@ class MenuItems extends React.Component<*> {
 
         this.processing = false;
         return false;
-    };*/
-
-    onDragOver = () => {};
+    };
 
     render() {
         const { items, onChange, setCurrentItem } = this.props;
@@ -152,11 +168,10 @@ class MenuItems extends React.Component<*> {
                             index,
                             onDragStart: this.onDragStart,
                             onDragEnd: this.onDragEnd,
-                            onDrop: this.onDrop,
                             onEdit: setCurrentItem,
                             onDelete: id => {
                                 const target = findObject(data, id);
-                                target.source.splice(target.index, 1);
+                                target && target.source.splice(target.index, 1);
                                 onChange(data);
                                 setCurrentItem(null);
                             }

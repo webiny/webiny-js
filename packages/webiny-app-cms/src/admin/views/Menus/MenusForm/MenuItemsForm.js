@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import { omitBy, isNull } from "lodash";
+import { get, omitBy, isNull } from "lodash";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Select } from "webiny-ui/Select";
 import { Input } from "webiny-ui/Input";
@@ -9,12 +9,15 @@ import { Form } from "webiny-form";
 import MenuItems from "./MenuItemsForm/MenuItems";
 import findObject from "./MenuItemsForm/findObject";
 import PagesAutoComplete from "./MenuItemsForm/PagesAutoComplete";
+import CategoriesAutoComplete from "./MenuItemsForm/CategoriesAutoComplete";
+import { MultiAutoComplete } from "webiny-ui/AutoComplete";
+import uniqid from "uniqid";
 
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("Cms.MenusForm.MenuItemsForm");
 
 const blankFormData = {
-    type: "page",
+    type: "link",
     article: null,
     url: null,
     title: "",
@@ -39,111 +42,9 @@ class MenuItemsForm extends React.Component<Props, State> {
         currentMenuItem: null
     };
 
-    /*  renderMenuItemForm(data: Object, form: Form) {
-        switch (data.type) {
-            case "link":
-                return (
-                    <wrapper>
-                        <Input
-                            placeholder="Enter link URL"
-                            name="url"
-                            validators={["required", "url"]}
-                        />
-                        <Input
-                            placeholder="Enter menu title"
-                            name="title"
-                            validators={["required"]}
-                        />
-                    </wrapper>
-                );
-            case "article":
-                const articlesProps = {
-                    api: "/entities/the-hub/articles",
-                    placeholder: "Type to find an article",
-                    fields: "id,title,category.title",
-                    name: "article",
-                    textAttr: "title",
-                    searchFields: "title",
-                    validators: ["required"],
-                    useDataAsValue: true,
-                    formatValue: ({ value }) => {
-                        if (!data.title) {
-                            form.setData({ title: value.title });
-                        }
-                        return value.id;
-                    },
-                    optionRenderer: ({ option }) => {
-                        return (
-                            <span>{`${option.data.title} (${option.data.category.title})`}</span>
-                        );
-                    }
-                };
-                return (
-                    <wrapper>
-                        <AutoComplete {...articlesProps} />
-                        <Input placeholder="Enter menu title" name="title" validators="required" />
-                    </wrapper>
-                );
-            case "articlesList":
-                const categoryProps = {
-                    api: "/entities/the-hub/categories",
-                    textAttr: "title",
-                    fields: "id,title,icon",
-                    optionRenderer: ({ option }) => {
-                        return (
-                            <div>
-                                <Icon icon={option.data.icon} /> {option.data.title}
-                            </div>
-                        );
-                    },
-                    selectedRenderer: params => categoryProps.optionRenderer(params)
-                };
-                return (
-                    <wrapper>
-                        <Input
-                            placeholder="Enter menu title"
-                            name="title"
-                            validators={["required"]}
-                        />
-                        <Select
-                            name="category"
-                            placeholder="Category..."
-                            validators={["required"]}
-                            {...categoryProps}
-                        />
-                        <Select name="sortBy" placeholder="Sort by..." validators={["required"]}>
-                            <option value="publishedOn">Published on</option>
-                            <option value="title">Title</option>
-                        </Select>
-                        <Select
-                            name="sortDir"
-                            placeholder="Sort direction..."
-                            validators={["required"]}
-                        >
-                            <option value="1">Ascending</option>
-                            <option value="-1">Descending</option>
-                        </Select>
-                        <Tags name="tags" placeholder="Filter by tags..." />
-                        {get(data, "tags.length", 0) > 0 && (
-                            <Select
-                                name="tagsRule"
-                                placeholder="Select tags rule..."
-                                validators={["required"]}
-                            >
-                                <option value="all">Must include all tags</option>
-                                <option value="any">Must include any of the tags</option>
-                            </Select>
-                        )}
-                    </wrapper>
-                );
-            default:
-                return null;
-        }
-    }
-*/
-
-    setCurrentItem = data => {
-        this.form.current.setState({ data: data || blankFormData });
+    setCurrentItem = (data: ?Object) => {
+        const { current: form } = this.form;
+        form && form.setState({ data: data || blankFormData });
     };
 
     render() {
@@ -157,33 +58,35 @@ class MenuItemsForm extends React.Component<Props, State> {
                     const item = omitBy(data, isNull);
                     if (item.id) {
                         const target = findObject(items, item.id);
-                        target.source[target.index] = item;
-                        onChange([...items]);
+                        if (target) {
+                            target.source[target.index] = item;
+                            onChange([...items]);
+                        }
                     } else {
-                        item.id = +new Date();
-                        console.log("changeam", [...items, item]);
+                        item.id = uniqid();
                         onChange([...items, item]);
                     }
 
-                    this.form.current.setState({ data: blankFormData });
+                    const { current: form } = this.form;
+                    form && form.setState({ data: blankFormData });
                 }}
             >
                 {({ data, form, Bind }) => (
                     <Grid>
-                        <Cell span={6}>
+                        <Cell span={5}>
                             {data.id ? "Edit menu item" : "Add menu item"}
                             <>
                                 <Grid>
                                     <Cell span={12}>
                                         <Bind name="type">
                                             <Select
-                                                placeholder="Select menu item type"
+                                                label="Select menu item type"
                                                 validators={["required"]}
                                             >
                                                 <option value="link">Link</option>
                                                 <option value="group">Group</option>
                                                 <option value="page">Page</option>
-                                                <option value="articlesList">Pages List</option>
+                                                <option value="pagesList">Pages List</option>
                                             </Select>
                                         </Bind>
                                     </Cell>
@@ -212,36 +115,108 @@ class MenuItemsForm extends React.Component<Props, State> {
                                     {data.type === "group" && (
                                         <Cell span={12}>
                                             <Bind name="title">
-                                                <Input
-                                                    placeholder="Enter title"
-                                                    validators={["required"]}
-                                                />
+                                                <Input label="Title" validators={["required"]} />
                                             </Bind>
                                         </Cell>
                                     )}
 
                                     {data.type === "page" && (
-                                        <Cell span={12}>
-                                            <Bind name="title">
-                                                <Input
-                                                    placeholder="Enter title"
-                                                    validators={["required"]}
-                                                />
-                                            </Bind>
-                                            <Bind name="page">
-                                                <PagesAutoComplete
-                                                    placeholder="Search page..."
-                                                    validators={["required"]}
-                                                />
-                                            </Bind>
-                                        </Cell>
+                                        <>
+                                            <Cell span={12}>
+                                                <Bind name="title">
+                                                    <Input
+                                                        label="Title"
+                                                        validators={["required"]}
+                                                    />
+                                                </Bind>
+                                            </Cell>
+                                            <Cell span={12}>
+                                                <Bind name="page">
+                                                    <PagesAutoComplete
+                                                        label="Page"
+                                                        validators={["required"]}
+                                                    />
+                                                </Bind>
+                                            </Cell>
+                                        </>
+                                    )}
+
+                                    {data.type === "pagesList" && (
+                                        <>
+                                            <Cell span={12}>
+                                                <Bind name="title">
+                                                    <Input
+                                                        label="Title"
+                                                        validators={["required"]}
+                                                    />
+                                                </Bind>
+                                            </Cell>
+                                            <Cell span={12}>
+                                                <Bind name="category">
+                                                    <CategoriesAutoComplete
+                                                        label="Category"
+                                                        validators={["required"]}
+                                                    />
+                                                </Bind>
+                                            </Cell>
+                                            <Cell span={12}>
+                                                <Bind name="sortBy" defaultValue={"publishedOn"}>
+                                                    <Select
+                                                        label="Sort by..."
+                                                        validators={["required"]}
+                                                    >
+                                                        <option value="publishedOn">
+                                                            {t`Published on`}
+                                                        </option>
+                                                        <option value="title">{t`Title`}</option>
+                                                    </Select>
+                                                </Bind>
+                                            </Cell>
+                                            <Cell span={12}>
+                                                <Bind name="sortDir" defaultValue={"1"}>
+                                                    <Select
+                                                        label="Sort direction..."
+                                                        validators={["required"]}
+                                                    >
+                                                        <option value="1">{t`Ascending`}</option>
+                                                        <option value="-1">{t`Descending`}</option>
+                                                    </Select>
+                                                </Bind>
+                                            </Cell>
+                                            <Cell span={12}>
+                                                <Bind name="tags">
+                                                    <MultiAutoComplete
+                                                        label="Tags"
+                                                        useSimpleValues
+                                                        allowFreeInput
+                                                    />
+                                                </Bind>
+                                            </Cell>
+                                            <Cell span={12}>
+                                                {get(data, "tags.length", 0) > 0 && (
+                                                    <Bind name="tagsRule" defaultValue={""}>
+                                                        <Select
+                                                            placeholder="Select tags rule..."
+                                                            validators={["required"]}
+                                                        >
+                                                            <option value="all">
+                                                                {t`Must include all tags`}
+                                                            </option>
+                                                            <option value="any">
+                                                                {t`Must include any of the tags`}
+                                                            </option>
+                                                        </Select>
+                                                    </Bind>
+                                                )}
+                                            </Cell>
+                                        </>
                                     )}
 
                                     {data.type && (
                                         <Cell span={12}>
                                             <ButtonSecondary
                                                 type="primary"
-                                                onClick={this.setCurrentItem}
+                                                onClick={() => this.setCurrentItem()}
                                             >
                                                 Cancel
                                             </ButtonSecondary>
@@ -254,9 +229,10 @@ class MenuItemsForm extends React.Component<Props, State> {
                                 </Grid>
                             </>
                         </Cell>
-                        <Cell span={6}>
+                        <Cell span={7}>
                             Menu structure
                             <MenuItems
+                                menuForm={this.props.menuForm}
                                 items={items}
                                 onChange={onChange}
                                 setCurrentItem={this.setCurrentItem}

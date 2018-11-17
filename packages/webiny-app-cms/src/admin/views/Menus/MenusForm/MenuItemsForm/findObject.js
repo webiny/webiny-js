@@ -7,7 +7,7 @@ import { findIndex, each } from "lodash";
  * @param id
  * @returns {*}
  */
-const findObject = (source: Array<Object>, id: string) => {
+const findObject = (source: Array<Object>, id: string): ?Object => {
     const index = findIndex(source, { id });
     if (index >= 0) {
         return { source, index, item: source[index] };
@@ -23,6 +23,7 @@ const findObject = (source: Array<Object>, id: string) => {
             }
         }
     });
+
     return res;
 };
 
