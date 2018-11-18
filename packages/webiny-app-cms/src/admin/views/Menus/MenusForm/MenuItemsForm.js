@@ -28,7 +28,8 @@ const blankFormData = {
 
 type Props = {
     onChange: Function,
-    value: any
+    value: any,
+    menuForm: *
 };
 
 type State = {
@@ -99,7 +100,6 @@ class MenuItemsForm extends React.Component<Props, State> {
                                                 <Bind name="title">
                                                     <Input
                                                         label={t`Title`}
-                                                        placeholder="Enter title"
                                                         validators={["required"]}
                                                     />
                                                 </Bind>
@@ -196,7 +196,7 @@ class MenuItemsForm extends React.Component<Props, State> {
                                                 {get(data, "tags.length", 0) > 0 && (
                                                     <Bind name="tagsRule" defaultValue={""}>
                                                         <Select
-                                                            placeholder="Select tags rule..."
+                                                            label="Select tags rule..."
                                                             validators={["required"]}
                                                         >
                                                             <option value="all">

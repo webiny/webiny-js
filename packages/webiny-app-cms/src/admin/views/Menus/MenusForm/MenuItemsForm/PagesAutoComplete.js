@@ -34,7 +34,7 @@ const loadPages = gql`
 `;
 
 const PagesAutoComplete = props => (
-    <Query variables={{ id: props.value }} query={loadPage}>
+    <Query skip={!props.value} variables={{ id: props.value }} query={loadPage}>
         {({ data }) => (
             <AutoComplete {...props} textProp={"title"} value={get(data, "cms.getPage.data")} />
         )}
