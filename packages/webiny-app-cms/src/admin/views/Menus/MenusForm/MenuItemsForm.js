@@ -10,7 +10,7 @@ import MenuItems from "./MenuItemsForm/MenuItems";
 import findObject from "./MenuItemsForm/findObject";
 import PagesAutoComplete from "./MenuItemsForm/PagesAutoComplete";
 import CategoriesAutoComplete from "./MenuItemsForm/CategoriesAutoComplete";
-import { MultiAutoComplete } from "webiny-ui/AutoComplete";
+import TagsAutoComplete from "./MenuItemsForm/TagsAutoComplete";
 import uniqid from "uniqid";
 
 import { i18n } from "webiny-app/i18n";
@@ -18,12 +18,8 @@ const t = i18n.namespace("Cms.MenusForm.MenuItemsForm");
 
 const blankFormData = {
     type: "link",
-    article: null,
-    url: null,
     title: "",
-    items: null,
-    tags: [],
-    tagsRule: null
+    items: null
 };
 
 type Props = {
@@ -79,11 +75,8 @@ class MenuItemsForm extends React.Component<Props, State> {
                             <>
                                 <Grid>
                                     <Cell span={12}>
-                                        <Bind name="type">
-                                            <Select
-                                                label="Select menu item type"
-                                                validators={["required"]}
-                                            >
+                                        <Bind name="type" validators={["required"]}>
+                                            <Select label="Select menu item type">
                                                 <option value="link">Link</option>
                                                 <option value="group">Group</option>
                                                 <option value="page">Page</option>
@@ -97,16 +90,13 @@ class MenuItemsForm extends React.Component<Props, State> {
                                     {data.type === "link" && (
                                         <>
                                             <Cell span={12}>
-                                                <Bind name="title">
-                                                    <Input
-                                                        label={t`Title`}
-                                                        validators={["required"]}
-                                                    />
+                                                <Bind name="title" validators={["required"]}>
+                                                    <Input label={t`Title`} />
                                                 </Bind>
                                             </Cell>
                                             <Cell span={12}>
-                                                <Bind name="url">
-                                                    <Input label="URL" validators={["required"]} />
+                                                <Bind name="url" validators={["required"]}>
+                                                    <Input label="URL" />
                                                 </Bind>
                                             </Cell>
                                         </>
@@ -114,8 +104,8 @@ class MenuItemsForm extends React.Component<Props, State> {
 
                                     {data.type === "group" && (
                                         <Cell span={12}>
-                                            <Bind name="title">
-                                                <Input label="Title" validators={["required"]} />
+                                            <Bind name="title" validators={["required"]}>
+                                                <Input label="Title" />
                                             </Bind>
                                         </Cell>
                                     )}
@@ -123,19 +113,13 @@ class MenuItemsForm extends React.Component<Props, State> {
                                     {data.type === "page" && (
                                         <>
                                             <Cell span={12}>
-                                                <Bind name="title">
-                                                    <Input
-                                                        label="Title"
-                                                        validators={["required"]}
-                                                    />
+                                                <Bind name="title" validators={["required"]}>
+                                                    <Input label="Title" />
                                                 </Bind>
                                             </Cell>
                                             <Cell span={12}>
-                                                <Bind name="page">
-                                                    <PagesAutoComplete
-                                                        label="Page"
-                                                        validators={["required"]}
-                                                    />
+                                                <Bind name="page" validators={["required"]}>
+                                                    <PagesAutoComplete label="Page" />
                                                 </Bind>
                                             </Cell>
                                         </>
@@ -144,27 +128,22 @@ class MenuItemsForm extends React.Component<Props, State> {
                                     {data.type === "pagesList" && (
                                         <>
                                             <Cell span={12}>
-                                                <Bind name="title">
-                                                    <Input
-                                                        label="Title"
-                                                        validators={["required"]}
-                                                    />
+                                                <Bind name="title" validators={["required"]}>
+                                                    <Input label="Title" />
                                                 </Bind>
                                             </Cell>
                                             <Cell span={12}>
-                                                <Bind name="category">
-                                                    <CategoriesAutoComplete
-                                                        label="Category"
-                                                        validators={["required"]}
-                                                    />
+                                                <Bind name="category" validators={["required"]}>
+                                                    <CategoriesAutoComplete label="Category" />
                                                 </Bind>
                                             </Cell>
                                             <Cell span={12}>
-                                                <Bind name="sortBy" defaultValue={"publishedOn"}>
-                                                    <Select
-                                                        label="Sort by..."
-                                                        validators={["required"]}
-                                                    >
+                                                <Bind
+                                                    name="sortBy"
+                                                    defaultValue={"publishedOn"}
+                                                    validators={["required"]}
+                                                >
+                                                    <Select label="Sort by...">
                                                         <option value="publishedOn">
                                                             {t`Published on`}
                                                         </option>
@@ -173,11 +152,12 @@ class MenuItemsForm extends React.Component<Props, State> {
                                                 </Bind>
                                             </Cell>
                                             <Cell span={12}>
-                                                <Bind name="sortDir" defaultValue={"1"}>
-                                                    <Select
-                                                        label="Sort direction..."
-                                                        validators={["required"]}
-                                                    >
+                                                <Bind
+                                                    name="sortDir"
+                                                    defaultValue={"1"}
+                                                    validators={["required"]}
+                                                >
+                                                    <Select label="Sort direction...">
                                                         <option value="1">{t`Ascending`}</option>
                                                         <option value="-1">{t`Descending`}</option>
                                                     </Select>
@@ -185,18 +165,14 @@ class MenuItemsForm extends React.Component<Props, State> {
                                             </Cell>
                                             <Cell span={12}>
                                                 <Bind name="tags">
-                                                    <MultiAutoComplete
-                                                        label="Tags"
-                                                        useSimpleValues
-                                                        allowFreeInput
-                                                    />
+                                                    <TagsAutoComplete />
                                                 </Bind>
                                             </Cell>
                                             <Cell span={12}>
                                                 {get(data, "tags.length", 0) > 0 && (
-                                                    <Bind name="tagsRule" defaultValue={""}>
+                                                    <Bind name="tagsRule" defaultValue={"all"}>
                                                         <Select
-                                                            label="Select tags rule..."
+                                                            label="Tags rule..."
                                                             validators={["required"]}
                                                         >
                                                             <option value="all">

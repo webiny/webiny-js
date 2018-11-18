@@ -20,7 +20,7 @@ const loadCategory = gql`
     }
 `;
 
-const loadCategories = gql`
+const listCategories = gql`
     query LoadCategories($search: SearchInput) {
         cms {
             categories: listCategories(search: $search) {
@@ -43,6 +43,6 @@ export default compose(
     withAutoComplete({
         response: data => get(data, "cms.categories"),
         search: query => ({ query, fields: ["name"] }),
-        query: loadCategories
+        query: listCategories
     })
 )(CategoriesAutoComplete);
