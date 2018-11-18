@@ -22,7 +22,7 @@ export class AutoComplete extends React.Component<Props, State> {
         valueProp: "id",
         textProp: "name",
         options: [],
-        simpleValues: false,
+        useSimpleValue: false,
         renderItem(item: any) {
             return <Typography use={"body2"}>{getOptionText(item, this.props)}</Typography>;
         }
@@ -143,7 +143,7 @@ export class AutoComplete extends React.Component<Props, State> {
             options,
             value,
             onChange,
-            simpleValues, // eslint-disable-line
+            useSimpleValue, // eslint-disable-line
             valueProp, // eslint-disable-line
             textProp, // eslint-disable-line
             onInput,
