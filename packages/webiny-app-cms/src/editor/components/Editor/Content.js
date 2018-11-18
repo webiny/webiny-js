@@ -51,7 +51,7 @@ const Content = pure(({ rootElement, theme, renderLayout, layout }) => {
 
 const stateToProps = state => ({
     rootElement: state.elements[getContent(state).id],
-    layout: get(getPage(state), "settings.layout"),
+    layout: get(getPage(state), "settings.general.layout"),
     renderLayout: getActivePlugin("cms-toolbar-top")(state) === "cms-toolbar-preview"
 });
 

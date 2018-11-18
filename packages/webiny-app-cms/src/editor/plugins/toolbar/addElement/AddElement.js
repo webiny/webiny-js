@@ -158,7 +158,7 @@ class AddElement extends React.Component<Props, State> {
                         {this.state.group &&
                             this.getGroupElements(this.state.group).map(plugin => {
                                 return (params ? this.renderClickable : this.renderDraggable)(
-                                    <div>
+                                    <div data-role="draggable">
                                         <Styled.ElementBox>
                                             <Styled.ElementTitle>
                                                 {typeof plugin.toolbar.title === "function" ? (

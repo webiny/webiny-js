@@ -45,31 +45,29 @@ const PageSettings = ({ deactivatePlugin, page, savePage, active, setActive }: P
             barMiddle={Title}
             onExited={() => deactivatePlugin({ name: "cms-page-settings-bar" })}
         >
-            <Form data={page} onSubmit={savePage}>
-                {({ Bind, submit }) => (
-                    <CompactView>
-                        <LeftPanel span={5}>
-                            <List twoLine className={listStyle}>
-                                {plugins.map(pl => (
-                                    <ListItem
-                                        key={pl.name}
-                                        className={listItem}
-                                        onClick={() => setActive(pl.name)}
-                                    >
-                                        <ListItemGraphic>
-                                            <Icon icon={pl.icon} />
-                                        </ListItemGraphic>
-                                        <TitleContent>
-                                            <ListItemTitle>{pl.title}</ListItemTitle>
-                                            <Typography use={"subtitle2"}>
-                                                {pl.description}
-                                            </Typography>
-                                        </TitleContent>
-                                    </ListItem>
-                                ))}
-                            </List>
-                        </LeftPanel>
-                        <RightPanel span={7}>
+            <CompactView>
+                <LeftPanel span={5}>
+                    <List twoLine className={listStyle}>
+                        {plugins.map(pl => (
+                            <ListItem
+                                key={pl.name}
+                                className={listItem}
+                                onClick={() => setActive(pl.name)}
+                            >
+                                <ListItemGraphic>
+                                    <Icon icon={pl.icon} />
+                                </ListItemGraphic>
+                                <TitleContent>
+                                    <ListItemTitle>{pl.title}</ListItemTitle>
+                                    <Typography use={"subtitle2"}>{pl.description}</Typography>
+                                </TitleContent>
+                            </ListItem>
+                        ))}
+                    </List>
+                </LeftPanel>
+                <RightPanel span={7}>
+                    <Form data={page} onSubmit={savePage}>
+                        {({ Bind, submit }) => (
                             <SimpleForm>
                                 <SimpleFormHeader title={activePlugin.title} />
                                 <SimpleFormContent>
@@ -81,10 +79,10 @@ const PageSettings = ({ deactivatePlugin, page, savePage, active, setActive }: P
                                     </ButtonPrimary>
                                 </SimpleFormFooter>
                             </SimpleForm>
-                        </RightPanel>
-                    </CompactView>
-                )}
-            </Form>
+                        )}
+                    </Form>
+                </RightPanel>
+            </CompactView>
         </SecondaryLayout>
     );
 };
@@ -100,9 +98,7 @@ export default compose(
     withHandlers({
         savePage: ({ showSnackbar, updateRevision }) => (page: Object) =>
             updateRevision(page, {
-                onFinish: () => {
-                    showSnackbar("Settings saved");
-                }
+                onFinish: () => showSnackbar("Settings saved")
             })
     }),
     lifecycle({

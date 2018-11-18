@@ -23,7 +23,10 @@ export default [
         name: "cms-page-settings-social",
         type: "cms-page-settings-model",
         apply(model: EntityModel) {
-            model.attr("social").model(SocialSettings);
+            model
+                .attr("social")
+                .model(SocialSettings)
+                .setDefaultValue({});
         }
     },
     {
