@@ -5,24 +5,45 @@ import { withAutoComplete } from "webiny-app/components";
 import { compose } from "recompose";
 import gql from "graphql-tag";
 import { get } from "lodash";
+import { Query } from "react-apollo";
 
-const PagesAutoComplete = props => <AutoComplete {...props} textProp={"title"} />;
+const loadPage = gql`
+    query LoadPage($id: ID!) {
+        cms {
+            getPage(id: $id) {
+                data {
+                    id
+                    title
+                }
+            }
+        }
+    }
+`;
+
+const loadPages = gql`
+    query LoadPages($search: String) {
+        cms {
+            pages: listPages(search: $search) {
+                data {
+                    id
+                    title
+                }
+            }
+        }
+    }
+`;
+
+const PagesAutoComplete = props => (
+    <Query variables={{ id: props.value }} query={loadPage}>
+        {({ data }) => (
+            <AutoComplete {...props} textProp={"title"} value={get(data, "cms.getPage.data")} />
+        )}
+    </Query>
+);
 
 export default compose(
     withAutoComplete({
         response: data => get(data, "cms.pages"),
-        variables: search => ({ search }),
-        query: gql`
-            query LoadPages($search: String) {
-                cms {
-                    pages: listPages(search: $search) {
-                        data {
-                            id
-                            title
-                        }
-                    }
-                }
-            }
-        `
+        query: loadPages
     })
 )(PagesAutoComplete);

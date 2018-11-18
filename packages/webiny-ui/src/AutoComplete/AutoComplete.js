@@ -9,6 +9,7 @@ import keycode from "keycode";
 import { autoCompleteStyle, suggestionList } from "./styles";
 import type { AutoCompleteBaseProps } from "./types";
 import { getOptionValue, getOptionText } from "./utils";
+import { isEqual } from "lodash";
 
 type Props = AutoCompleteBaseProps;
 type State = {
@@ -17,7 +18,7 @@ type State = {
 
 export class AutoComplete extends React.Component<Props, State> {
     static defaultProps = {
-        minInput: 2,
+        minInput: 0,
         valueProp: "id",
         textProp: "name",
         options: [],
@@ -35,6 +36,16 @@ export class AutoComplete extends React.Component<Props, State> {
      * Helps us trigger some of the downshift's methods (eg. clearSelection) and helps us to avoid adding state.
      */
     downshift: any = React.createRef();
+
+    componentDidUpdate(previousProps: *) {
+        const { value } = this.props;
+        const { value: previousValue } = previousProps;
+
+        if (!isEqual(value, previousValue)) {
+            const { current: downshift } = this.downshift;
+            downshift && downshift.selectItem(value);
+        }
+    }
 
     /**
      * Renders options - based on user's input. It will try to match input text with available options.

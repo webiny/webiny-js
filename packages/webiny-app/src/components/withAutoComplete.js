@@ -3,7 +3,6 @@ import * as React from "react";
 import { compose, withProps } from "recompose";
 import { withDataList } from "./withDataList";
 import { debounce } from "lodash";
-import invariant from "invariant";
 
 export const withAutoComplete = (withAutoCompleteProps: Object): Function => {
     return (BaseComponent: typeof React.Component) => {
@@ -20,17 +19,12 @@ export const withAutoComplete = (withAutoCompleteProps: Object): Function => {
                             return;
                         }
 
-                        let { variables } = withAutoCompleteProps;
-                        invariant(
-                            variables,
-                            `"variables" prop for withAutoComplete component is missing.`
-                        );
-
-                        if (typeof variables === "function") {
-                            variables = variables(query);
+                        let search = withAutoCompleteProps.search || query;
+                        if (typeof search === "function") {
+                            search = search(query);
                         }
 
-                        dataList.setSearch(variables);
+                        dataList.setSearch(search);
                     }, 250)
                 };
             })
