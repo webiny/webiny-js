@@ -12,7 +12,7 @@ class OpenGraphTagModel extends EntityModel {
 class SocialSettings extends EntityModel {
     constructor() {
         super();
-        this.attr("meta").models(OpenGraphTagModel, false);
+        this.attr("meta").models(OpenGraphTagModel);
         this.attr("title").char();
         this.attr("description").char();
     }

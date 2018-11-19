@@ -14,7 +14,10 @@ export default [
         name: "cms-page-settings-general",
         type: "cms-page-settings-model",
         apply(model: EntityModel) {
-            model.attr("general").model(GeneralSettings);
+            model
+                .attr("general")
+                .model(GeneralSettings)
+                .setDefaultValue({});
         }
     },
     {
