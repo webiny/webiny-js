@@ -13,7 +13,7 @@ import { genericTypes } from "./genericTypes";
 const mapSourcesToExecutableSchemas = (sources: Array<Object>) => {
     const schemas = {};
 
-    sources.forEach(({ scopes, typeDefs, resolvers, namespace, schemaDirectives }) => {
+    sources.forEach(({ typeDefs, resolvers, namespace, schemaDirectives }) => {
         if (!Array.isArray(resolvers)) {
             resolvers = [resolvers];
         }
@@ -25,7 +25,7 @@ const mapSourcesToExecutableSchemas = (sources: Array<Object>) => {
         schemas[namespace] = makeExecutableSchema({
             typeDefs: [
                 `scalar JSON
-                scalar DateTime`,
+                    scalar DateTime`,
                 genericTypes,
                 ...typeDefs
             ],
@@ -47,7 +47,7 @@ const mapSourcesToExecutableSchemas = (sources: Array<Object>) => {
  * @param  {Array?}    config.dataSources     data sources to combine
  * @return {schema, context}
  */
-export function prepareSchema({ dataSources = [] } = {}) {
+export function prepareSchema({ dataSources = [] }: Object = {}) {
     const schemas = mapSourcesToExecutableSchemas(dataSources);
 
     const securityScopes = [
@@ -68,7 +68,7 @@ export function prepareSchema({ dataSources = [] } = {}) {
         }
     });
 
-    const getContext = globalContext => {
+    const getContext = (globalContext: Object) => {
         return dataSources.reduce((allContext, source) => {
             const sourceContext =
                 typeof source.context === "function"
@@ -88,8 +88,8 @@ export function prepareSchema({ dataSources = [] } = {}) {
     };
 }
 
-export function createGraphqlRunner(schema, ctx) {
-    return opts => {
+export function createGraphqlRunner(schema: Object, ctx: Object) {
+    return (opts: Object) => {
         return graphql(
             opts.schema || schema,
             opts.source,

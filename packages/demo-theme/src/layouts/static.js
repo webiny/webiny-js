@@ -1,4 +1,5 @@
-import React from "react";
+// @flow
+import * as React from "react";
 import styled from "react-emotion";
 //import { Menu } from "components/Menu";
 
@@ -22,15 +23,17 @@ const Static = ({ children }) => {
                     </ul>
                 )}
             </Menu>*/}
-            <Banner/>
+            <Banner />
             {children}
-            <Banner/>
+            <Banner />
         </div>
-    )
+    );
 };
 
 export default {
     name: "static",
     title: "Static page",
-    component: Static,
+    render(content: React.Node) {
+        return <Static>{content}</Static>;
+    }
 };

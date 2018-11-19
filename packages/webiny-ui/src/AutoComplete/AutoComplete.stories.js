@@ -10,7 +10,7 @@ import {
     StorySandboxExample
 } from "webiny-storybook-utils/Story";
 import { withKnobs, boolean } from "@storybook/addon-knobs";
-import readme from "./README.md";
+import readme from "./AutoCompleteReadme.md";
 
 import { Form } from "webiny-form";
 
@@ -32,7 +32,7 @@ const options = [
     { name: "Czech Republic", id: "czech-republic" }
 ];
 
-story.add("usage", () => {
+story.add("AutoComplete", () => {
     const disabled = boolean("Disabled", false);
 
     return (
@@ -73,20 +73,16 @@ story.add("usage", () => {
             </StorySandbox>
 
             <StorySandbox>
-                <StorySandboxExample title={"Multiple values"}>
-                    <Form
-                        data={{
-                            country: [{ id: "uk", name: "UK" }, { id: "italy", name: "Italy" }]
-                        }}
-                    >
+                <StorySandboxExample title={"Single value - use simple strings"}>
+                    <Form data={{ country: "Germany" }}>
                         {({ Bind }) => (
                             <Bind name="country">
                                 <AutoComplete
-                                    options={options}
+                                    useSimpleValue
+                                    options={["France", "Germany", "Italy", "Spain"]}
                                     label="Country"
-                                    multiple
                                     disabled={disabled}
-                                    description="Choose one or more countries."
+                                    description="Choose your country"
                                 />
                             </Bind>
                         )}
@@ -94,58 +90,19 @@ story.add("usage", () => {
                 </StorySandboxExample>
                 <StorySandboxCode>
                     {`
-                        <Form>
-                            {({ Bind }) => (
-                                 <Bind name="country">
-                                    <AutoComplete
-                                        options={${JSON.stringify(options)}}
-                                        label="Country"
-                                        multiple
-                                        disabled={${disabled}}
-                                        description="Choose one or more countries."
-                                    />
-                                </Bind>
-                            )}
-                        </Form>
-                    `}
-                </StorySandboxCode>
-            </StorySandbox>
-
-            <StorySandbox>
-                <StorySandboxExample title={"Multiple values - use simple strings"}>
-                    <Form
-                        data={{
-                            country: ["Italy", "France"]
-                        }}
-                    >
+                    <Form data={{ country: "Germany" }}>
                         {({ Bind }) => (
                             <Bind name="country">
                                 <AutoComplete
-                                    options={options.map(item => item.name)}
+                                    useSimpleValue
+                                    options={["France", "Germany", "Italy", "Spain"]}
                                     label="Country"
-                                    multiple
                                     disabled={disabled}
-                                    description="Choose one or more countries."
+                                    description="Choose your country"
                                 />
                             </Bind>
                         )}
                     </Form>
-                </StorySandboxExample>
-                <StorySandboxCode>
-                    {`
-                        <Form>
-                            {({ Bind }) => (
-                                 <Bind name="country">
-                                    <AutoComplete
-                                        options={${JSON.stringify(options)}}
-                                        label="Country"
-                                        multiple
-                                        disabled={${disabled}}
-                                        description="Choose one or more countries."
-                                    />
-                                </Bind>
-                            )}
-                        </Form>
                     `}
                 </StorySandboxCode>
             </StorySandbox>

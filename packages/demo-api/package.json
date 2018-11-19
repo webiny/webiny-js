@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack-cli --config webpack.config.js",
-    "start": "cross-env NODE_ENV=development npx sls offline start --port=9000 --dontPrintOutput --useSeparateProcesses"
+    "start": "cross-env NODE_ENV=development npx sls offline start --port=9000 --dontPrintOutput --useSeparateProcesses",
+    "setup": "node src/install.js"
   },
   "author": "",
   "license": "MIT",

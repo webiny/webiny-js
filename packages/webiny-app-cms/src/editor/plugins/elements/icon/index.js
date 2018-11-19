@@ -1,12 +1,11 @@
 // @flow
 import React from "react";
-import type { ElementPluginType } from "webiny-app-cms/types";
 import { ReactComponent as IconSvg } from "./round-flag-24px.svg";
 import IconSettings from "./IconSettings";
 import Icon from "./Icon";
 import Action from "./../../elementSettings/Action";
 
-export default (): ElementPluginType => {
+export default () => {
     return [
         {
             name: "cms-element-icon",

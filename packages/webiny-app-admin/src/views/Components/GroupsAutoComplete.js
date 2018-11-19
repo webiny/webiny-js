@@ -1,24 +1,28 @@
 // @flow
 import * as React from "react";
-import { AutoComplete } from "webiny-ui/AutoComplete";
-import { groupsAutoComplete } from "./graphql";
+import { MultiAutoComplete } from "webiny-ui/AutoComplete";
+import { withAutoComplete } from "webiny-app/components";
+import { compose } from "recompose";
+import gql from "graphql-tag";
 import { get } from "lodash";
-import { Query } from "react-apollo";
 
-const GroupsAutoComplete = (props: Object) => (
-    <AutoComplete multiple unique {...props}>
-        {({ query, renderOptions }) => (
-            <Query
-                query={groupsAutoComplete}
-                variables={{
-                    sort: { savedOn: -1 },
-                    search: { query, fields: ["name", "description"] }
-                }}
-            >
-                {({ data }) => renderOptions(get(data, "security.groups.data", []))}
-            </Query>
-        )}
-    </AutoComplete>
-);
+const GroupsAutoComplete = props => <MultiAutoComplete {...props} />;
 
-export default GroupsAutoComplete;
+export default compose(
+    withAutoComplete({
+        response: data => get(data, "security.groups"),
+        variables: query => ({ query, fields: ["name"] }),
+        query: gql`
+            query LoadGroups($search: SearchInput) {
+                security {
+                    groups: listGroups(search: $search) {
+                        data {
+                            id
+                            name
+                        }
+                    }
+                }
+            }
+        `
+    })
+)(GroupsAutoComplete);

@@ -1,10 +1,12 @@
 // @flow
 import React from "react";
+import { css } from "emotion";
 import cloneDeep from "lodash/cloneDeep";
 import { addPlugin, getPlugin } from "webiny-app/plugins";
 import { updateChildPaths } from "webiny-app-cms/editor/utils";
 import RenderElement from "webiny-app-cms/render/components/Element";
 import Title from "./Title";
+import AutoScale from "./AutoScale";
 
 type Element = {
     id: string,
@@ -13,6 +15,12 @@ type Element = {
     content: Object,
     keywords: Array<string>
 };
+
+const autoScale = css({
+    height: "auto",
+    maxHeight: 260,
+    overflow: "hidden"
+});
 
 export default (el: Element) => {
     const rootPlugin = getPlugin(el.content.type);
@@ -33,7 +41,13 @@ export default (el: Element) => {
             },
             group: "cms-element-group-saved",
             preview() {
-                return <RenderElement element={previewContent} />;
+                return (
+                    <div className={autoScale}>
+                        <AutoScale maxWidth={276} maxHeight={276}>
+                            <RenderElement element={previewContent} />
+                        </AutoScale>
+                    </div>
+                );
             }
         },
         onCreate: "skip",

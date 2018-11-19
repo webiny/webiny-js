@@ -1,24 +1,28 @@
 // @flow
 import * as React from "react";
-import { AutoComplete } from "webiny-ui/AutoComplete";
-import { rolesAutoComplete } from "./graphql";
+import { MultiAutoComplete } from "webiny-ui/AutoComplete";
+import { withAutoComplete } from "webiny-app/components";
+import { compose } from "recompose";
+import gql from "graphql-tag";
 import { get } from "lodash";
-import { Query } from "react-apollo";
 
-const RolesAutoComplete = (props: Object) => (
-    <AutoComplete multiple unique {...props}>
-        {({ query, renderOptions }) => (
-            <Query
-                query={rolesAutoComplete}
-                variables={{
-                    sort: { savedOn: -1 },
-                    search: { query, fields: ["name", "description"] }
-                }}
-            >
-                {({ data }) => renderOptions(get(data, "security.roles.data", []))}
-            </Query>
-        )}
-    </AutoComplete>
-);
+const RolesAutoComplete = props => <MultiAutoComplete {...props} />;
 
-export default RolesAutoComplete;
+export default compose(
+    withAutoComplete({
+        response: data => get(data, "security.roles"),
+        variables: query => ({ query, fields: ["name"] }),
+        query: gql`
+            query LoadRoles($search: SearchInput) {
+                security {
+                    roles: listRoles(search: $search) {
+                        data {
+                            id
+                            name
+                        }
+                    }
+                }
+            }
+        `
+    })
+)(RolesAutoComplete);

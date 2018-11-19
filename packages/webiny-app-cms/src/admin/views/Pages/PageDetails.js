@@ -80,7 +80,7 @@ export default compose(
     withProps(({ router }) => ({
         pageId: router.getQuery("id")
     })),
-    graphql(getPage, {
+    graphql(getPage(), {
         skip: props => !props.pageId,
         options: ({ pageId }) => ({ variables: { id: pageId } }),
         props: ({ data }) => {

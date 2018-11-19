@@ -25,6 +25,9 @@ export default {
         driver: new MySQLDriver({ connection }),
         crud: {
             logs: true,
+            read: {
+                maxPerPage: 100
+            },
             delete: {
                 soft: true
             }

@@ -8,7 +8,7 @@ export default {
                 loadPageByUrl(url: $url) {
                     id
                     title
-                    slug
+                    url
                     content
                 }
             }
@@ -25,7 +25,7 @@ export default {
                 loadPageRevision(id: $id) {
                     id
                     title
-                    slug
+                    url
                     content
                 }
             }

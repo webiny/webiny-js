@@ -1,6 +1,5 @@
 // @flow
 import * as React from "react";
-// Webiny imports
 import { i18n } from "webiny-app/i18n";
 import { Form } from "webiny-form";
 import { Grid, Cell } from "webiny-ui/Grid";
@@ -31,7 +30,7 @@ const CategoriesForm = ({
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={6}>
-                                <Bind name="data.name" validators={["required"]}>
+                                <Bind name="name" validators={["required"]}>
                                     <Input label={t`Name`} />
                                 </Bind>
                             </Cell>
@@ -46,7 +45,7 @@ const CategoriesForm = ({
                                 </Bind>
                             </Cell>
                             <Cell span={6}>
-                                <Bind name="layout" defaultValue={""}>
+                                <Bind name="layout" defaultValue={theme.layouts[0].name}>
                                     <Select label={t`Layout`}>
                                         {theme.layouts.map(({ name, title }) => (
                                             <option key={name} value={name}>

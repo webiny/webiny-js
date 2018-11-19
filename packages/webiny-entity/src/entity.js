@@ -278,6 +278,12 @@ class Entity {
         const events = params.events || {};
         const existing = this.isExisting();
 
+        if (this.processing) {
+            return;
+        }
+
+        this.processing = "save";
+
         events.beforeSave !== false && (await this.emit("beforeSave", { params }));
 
         if (existing) {
@@ -286,11 +292,6 @@ class Entity {
             events.beforeCreate !== false && (await this.emit("beforeCreate", { params }));
         }
 
-        if (this.processing) {
-            return;
-        }
-
-        this.processing = "save";
         const logs = _.get(this, "constructor.crud.logs");
 
         try {

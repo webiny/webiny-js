@@ -4,7 +4,7 @@ import { compose, withState, withProps, withHandlers, pure } from "recompose";
 import { get } from "dot-prop-immutable";
 import { connect } from "react-redux";
 import { Input } from "webiny-ui/Input";
-import { updateRevision } from "./actions";
+import { updateRevision } from "webiny-app-cms/editor/actions";
 import { getPage } from "webiny-app-cms/editor/selectors";
 import { Tooltip } from "webiny-ui/Tooltip";
 import { Typography } from "webiny-ui/Typography";
@@ -32,7 +32,6 @@ type Props = {
 
 const Title = pure(
     ({
-        updateRevision,
         editTitle,
         enableEdit,
         setTitle,

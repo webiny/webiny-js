@@ -5,7 +5,7 @@ import { Form } from "webiny-form";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
-import { AutoComplete } from "webiny-ui/AutoComplete";
+import { MultiAutoComplete } from "webiny-ui/AutoComplete";
 import type { WithCrudFormProps } from "webiny-app-admin/components";
 
 import {
@@ -23,6 +23,7 @@ const RoleForm = ({
     invalidFields,
     scopes
 }: WithCrudFormProps & { scopes: Array<string> }) => {
+    console.log(scopes);
     return (
         <Form invalidFields={invalidFields} data={data} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (
@@ -51,7 +52,8 @@ const RoleForm = ({
                         <Grid>
                             <Cell span={12}>
                                 <Bind name="scopes">
-                                    <AutoComplete
+                                    <MultiAutoComplete
+                                        useSimpleValue
                                         options={scopes}
                                         label={t`Scopes`}
                                         description={t`Choose one or more scopes.`}
