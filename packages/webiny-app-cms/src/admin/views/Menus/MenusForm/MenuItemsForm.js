@@ -10,7 +10,7 @@ import MenuItems from "./MenuItemsForm/MenuItems";
 import findObject from "./MenuItemsForm/findObject";
 import PagesAutoComplete from "./MenuItemsForm/PagesAutoComplete";
 import CategoriesAutoComplete from "./MenuItemsForm/CategoriesAutoComplete";
-import TagsAutoComplete from "./MenuItemsForm/TagsAutoComplete";
+import TagsAutoComplete from "webiny-app-cms/admin/components/TagsAutoComplete";
 import uniqid from "uniqid";
 
 import { i18n } from "webiny-app/i18n";
