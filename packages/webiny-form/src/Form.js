@@ -1,7 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import linkState from "./linkState";
 import validation from "./validation";
+import { createBind } from "./Bind";
+import linkState from "./linkState";
 
 class Form extends React.Component {
     static defaultProps = {
@@ -21,6 +22,9 @@ class Form extends React.Component {
     isValid = null;
     inputs = {};
     lastRender = [];
+    validateFns = {};
+    onChangeFns = {};
+    Bind = createBind(this);
 
     static getDerivedStateFromProps({ data, invalidFields = {} }, state) {
         // If we received new `data`, overwrite current `data` in the state
@@ -180,83 +184,49 @@ class Form extends React.Component {
             });
     };
 
-    /**
-     * @private
-     * @param {Object} props
-     * @returns {*}
-     */
-    registerComponent = props => {
-        const {
-            name,
-            defaultValue,
-            validators = [],
-            validationMessages = {},
-            value,
-            children: input,
-            beforeChange
-        } = props;
+    getOnChangeFn = ({
+        name,
+        beforeChange,
+        afterChange
+    }: {
+        name: string,
+        beforeChange: any,
+        afterChange: any
+    }) => {
+        if (!this.onChangeFns[name]) {
+            const linkStateChange = linkState(this, `data.${name}`);
 
-        let { afterChange } = props;
+            const baseOnChange = (newValue, cb) => {
+                // When linkState is done processing the value change...
+                return linkStateChange(newValue, cb).then(value => {
+                    // call the Form onChange with updated data
+                    if (typeof this.props.onChange === "function") {
+                        this.props.onChange({ ...this.state.data }, this);
+                    }
 
-        const isElement = typeof input !== "function";
+                    // Execute onAfterChange
+                    afterChange && afterChange(value);
 
-        // Track component rendering
-        this.lastRender.push(name);
+                    return value;
+                });
+            };
 
-        // Store validators and custom messages
-        this.inputs[name] = {
-            validators: validation.parseValidators(validators),
-            validationMessages
-        };
+            const onChange = beforeChange
+                ? newValue => beforeChange(newValue, baseOnChange)
+                : baseOnChange;
 
-        // Build new input props
-        const newProps = {
-            form: this,
-            validate: () => this.validateInput(name),
-            validation: this.state.validation[name] || {
-                isValid: null,
-                message: null,
-                results: null
-            }
-        };
-
-        // If Form has a `disabled` prop we must evaluate it to see if form input needs to be disabled
-        if (this.props.disabled) {
-            const inputDisabledByForm = _.isFunction(this.props.disabled)
-                ? this.props.disabled({ data: { ...this.state.data } })
-                : this.props.disabled;
-            // Only override the input prop if the entire Form is disabled
-            if (inputDisabledByForm) {
-                newProps["disabled"] = true;
-            }
+            this.onChangeFns[name] = onChange;
         }
 
-        // Assign value and onChange props
-        const ls = linkState(this, name === "*" ? "data" : "data." + name, defaultValue);
+        return this.onChangeFns[name];
+    };
 
-        const onChange = (newValue, cb) => {
-            // When linkState is done processing the value change...
-            return ls.onChange(newValue, cb).then(value => {
-                // call the Form onChange with updated data
-                if (typeof this.props.onChange === "function") {
-                    this.props.onChange({ ...this.state.data }, this);
-                }
+    getValidateFn = (name: string) => {
+        if (!this.validateFns[name]) {
+            this.validateFns[name] = () => this.validateInput(name);
+        }
 
-                // Execute onAfterChange
-                afterChange && afterChange(value);
-
-                return value;
-            });
-        };
-
-        _.assign(newProps, {
-            value: typeof value === "function" ? value(ls.value) : ls.value,
-            onChange: beforeChange ? newValue => beforeChange(newValue, onChange) : onChange
-        });
-
-        this.inputs[name].props = newProps;
-
-        return isElement ? React.cloneElement(input, newProps) : input(newProps);
+        return this.validateFns[name];
     };
 
     __removeKeys = (collection, excludeKeys = ["$key", "$index"]) => {
@@ -299,7 +269,7 @@ class Form extends React.Component {
                     data: _.cloneDeep(this.state.data),
                     form: this,
                     submit: this.submit,
-                    Bind: this.registerComponent
+                    Bind: this.Bind
                 })}
             </webiny-form-container>
         );

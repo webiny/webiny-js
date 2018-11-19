@@ -2,12 +2,11 @@ import "./style/theme.scss";
 import React from "react";
 import staticLayout from "./layouts/static";
 import blogLayout from "./layouts/blog";
+import PageList from "./components/PageList";
+import PageListv2 from "./components/PageListv2";
 
 export default {
-    layouts: [
-        staticLayout,
-        blogLayout
-    ],
+    layouts: [staticLayout, blogLayout],
     fonts: {
         google: {
             families: ["Alegreya", "Lato"]
@@ -25,9 +24,23 @@ export default {
     elements: {
         button: {
             types: [
-                {className: "", label: "Default"},
+                { className: "", label: "Default" },
                 { className: "primary", label: "Primary" },
                 { className: "secondary", label: "Secondary" }
+            ]
+        },
+        pagesList: {
+            components: [
+                {
+                    name: "default",
+                    title: "Default page list",
+                    component: PageList
+                },
+                {
+                    name: "custom",
+                    title: "Custom page list",
+                    component: PageListv2
+                }
             ]
         }
     },

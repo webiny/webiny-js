@@ -16,7 +16,7 @@ const t = i18n.namespace("Cms.Admin.Menu");
 
 export default () => {
     // CMS plugins
-    addPlugin(...editorPlugins, ...renderPlugins);
+    addPlugin(...editorPlugins, ...renderPlugins, ...plugins);
 
     // Navigation plugin
     addPlugin({
@@ -35,15 +35,12 @@ export default () => {
         }
     });
 
-    addPlugin(...plugins);
-
     addPlugin({
         name: "route-cms-categories",
         type: "route",
         route: {
             name: "Cms.Categories",
             path: "/cms/categories",
-            exact: true,
             render() {
                 return (
                     <AdminLayout>
@@ -77,7 +74,6 @@ export default () => {
         route: {
             name: "Cms.Pages",
             path: "/cms/pages",
-            exact: true,
             render() {
                 return (
                     <AdminLayout>
@@ -94,7 +90,6 @@ export default () => {
         route: {
             name: "Cms.Editor",
             path: "/cms/editor/:id",
-            exact: true,
             render() {
                 return <Editor />;
             }

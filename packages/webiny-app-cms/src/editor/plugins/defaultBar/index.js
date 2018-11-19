@@ -2,12 +2,12 @@
 import React from "react";
 import { get } from "lodash";
 import { IconButton, ButtonPrimary } from "webiny-ui/Button";
-import PageSettings from "./PageSettings";
-import PageSettingsButton from "./PageSettingsButton";
-import Divider from "./Divider";
-import Title from "./Title";
-import BackButton from "./BackButton";
-import Revisions from "./Revisions";
+import PageSettings from "./components/PageSettings";
+import PageSettingsButton from "./components/PageSettingsButton";
+import Divider from "./components/Divider";
+import Title from "./components/Title";
+import BackButton from "./components/BackButton";
+import Revisions from "./components/Revisions";
 import { ReactComponent as MoreVerticalIcon } from "webiny-app-cms/editor/assets/icons/more_vert.svg";
 
 export default [

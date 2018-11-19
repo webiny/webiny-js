@@ -1,8 +1,9 @@
 // @flow
 import React from "react";
+import { isEqual } from "lodash";
 import { ReactComponent as WebinyLogo } from "webiny-app-admin/assets/images/webiny-logo.svg";
 
-class Logo extends React.Component {
+class Logo extends React.Component<*> {
     static defaultProps = {
         width: 100,
         height: 30,
@@ -15,6 +16,10 @@ class Logo extends React.Component {
     checkDisplayInterval = null;
 
     state = { display: "desktop" };
+
+    shouldComponentUpdate(props, state) {
+        return !isEqual(state, this.state);
+    }
 
     componentDidMount() {
         this.checkDisplayInterval = setInterval(() => {

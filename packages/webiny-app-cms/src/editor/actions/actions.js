@@ -1,8 +1,9 @@
+// @flow
 import _ from "lodash";
 import invariant from "invariant";
 import dotProp from "dot-prop-immutable";
-import undoable from "./history";
-import { cloneDeep } from "lodash";
+import gql from "graphql-tag";
+import { isEqual, pick, debounce, cloneDeep } from "lodash";
 import {
     createAction,
     addMiddleware,
@@ -10,11 +11,15 @@ import {
     addHigherOrderReducer
 } from "webiny-app-cms/editor/redux";
 import { getPlugin } from "webiny-app/plugins";
-import { getElementWithChildren, getParentElementWithChildren } from "webiny-app-cms/editor/selectors";
+import {
+    getPage,
+    getElementWithChildren,
+    getParentElementWithChildren
+} from "webiny-app-cms/editor/selectors";
 import { updateChildPaths } from "webiny-app-cms/editor/utils";
+import undoable from "./history";
 
 export const PREFIX = "[CMS]";
-
 export const DRAG_START = `${PREFIX} Drag start`;
 export const DRAG_END = `${PREFIX} Drag end`;
 export const ELEMENT_CREATED = `${PREFIX} Element created`;
@@ -31,8 +36,12 @@ export const DELETE_ELEMENT = `${PREFIX} Delete element`;
 export const FLATTEN_ELEMENTS = `${PREFIX} Flatten elements`;
 export const SET_TMP = `${PREFIX} Set tmp`;
 export const SETUP_EDITOR = `${PREFIX} Setup editor`;
-export const SETUP_CONTENT = `${PREFIX} Setup content`;
+export const UPDATE_REVISION = `${PREFIX} Update revision`;
+export const SAVING_REVISION = `${PREFIX} Save revision`;
+export const START_SAVING = `${PREFIX} Started saving`;
+export const FINISH_SAVING = `${PREFIX} Finished saving`;
 
+/***************** HISTORY REDUCER *****************/
 const horStatePath = "page.content";
 addHigherOrderReducer(
     [
@@ -82,6 +91,7 @@ addReducer(
     state => state
 );
 
+/***************** EDITOR ACTIONS *****************/
 export const setTmp = createAction(SET_TMP);
 addReducer([SET_TMP], "tmp", (state, action) => {
     return dotProp.set(state, action.payload.key, action.payload.value);
@@ -97,6 +107,10 @@ addReducer([TOGGLE_PLUGIN], "ui.plugins", (state, action) => {
 
     const plugin = getPlugin(name);
 
+    if (!plugin) {
+        return;
+    }
+
     return dotProp.set(
         state,
         `${plugin.type}`,
@@ -108,6 +122,9 @@ export const deactivatePlugin = createAction(DEACTIVATE_PLUGIN);
 addReducer([DEACTIVATE_PLUGIN], "ui.plugins", (state, action) => {
     const { name } = action.payload;
     const plugin = getPlugin(name);
+    if (!plugin) {
+        return;
+    }
     return { ...state, [plugin.type]: null };
 });
 
@@ -173,6 +190,10 @@ addMiddleware([DELETE_ELEMENT], ({ store, next, action }) => {
 
     // Execute `onChildDeleted` if defined
     const plugin = getPlugin(parent.type);
+    if (!plugin) {
+        return;
+    }
+
     if (typeof plugin.onChildDeleted === "function") {
         plugin.onChildDeleted({ element: parent, child: element });
     }
@@ -186,6 +207,10 @@ addMiddleware([ELEMENT_DROPPED], ({ store, next, action }) => {
     const target = getElementWithChildren(state, action.payload.target.id);
     const plugin = getPlugin(target.type);
 
+    if (!plugin) {
+        return;
+    }
+
     invariant(
         plugin.onReceived,
         "To accept drops, element plugin must implement `onReceived` function"
@@ -196,11 +221,32 @@ addMiddleware([ELEMENT_DROPPED], ({ store, next, action }) => {
         source = getElementWithChildren(state, source.id);
     }
 
-    getPlugin(target.type).onReceived({
+    const targetPlugin = getPlugin(target.type);
+    if (!targetPlugin) {
+        return;
+    }
+
+    targetPlugin.onReceived({
         source,
         target,
         position: action.payload.target.position
     });
+});
+
+export const updateRevision = createAction(UPDATE_REVISION);
+addMiddleware([UPDATE_REVISION], ({ store, next, action }) => {
+    next(action);
+
+    if (action.payload.history === false) {
+        return;
+    }
+
+    const { onFinish } = action.meta;
+    store.dispatch(saveRevision(null, { onFinish }));
+});
+
+addReducer([UPDATE_REVISION], "page", (state, action) => {
+    return { ...state, ...action.payload };
 });
 
 // Flatten page content
@@ -217,6 +263,7 @@ const flattenContent = el => {
     return els;
 };
 
+// TODO: remove elements flattening
 addReducer([FLATTEN_ELEMENTS], "elements", (state, action) => {
     return action.payload;
 });
@@ -238,3 +285,93 @@ addMiddleware(
         return result;
     }
 );
+
+/************************* SAVE REVISION *************************/
+let lastSavedRevision = null;
+const dataChanged = revision => {
+    if (!lastSavedRevision) {
+        return true;
+    }
+
+    const { content, ...other } = revision;
+    const { content: lastContent, ...lastOther } = lastSavedRevision;
+
+    return !isEqual(content, lastContent) || !isEqual(other, lastOther);
+};
+
+export const saveRevision = createAction(SAVING_REVISION);
+let debouncedSave = null;
+addMiddleware(
+    [UPDATE_REVISION, UPDATE_ELEMENT, DELETE_ELEMENT, "@@redux-undo/UNDO", "@@redux-undo/REDO"],
+    ({ store, next, action }) => {
+        next(action);
+
+        const { onFinish } = action.meta || {};
+
+        if (action.type === UPDATE_ELEMENT && action.payload.history === false) {
+            return;
+        }
+
+        if (debouncedSave) {
+            debouncedSave.cancel();
+        }
+
+        debouncedSave = debounce(() => store.dispatch(saveRevision(null, { onFinish })), 1000);
+        debouncedSave();
+    }
+);
+
+const startSaving = { type: START_SAVING, payload: { progress: true } };
+const finishSaving = { type: FINISH_SAVING, payload: { progress: false } };
+
+addReducer([START_SAVING, FINISH_SAVING], "ui.saving", (state, action) => {
+    return action.payload.progress;
+});
+
+addMiddleware([SAVING_REVISION], ({ store, next, action }) => {
+    next(action);
+
+    // Construct page payload
+    const data = getPage(store.getState());
+    const revision = pick(data, ["title", "snippet", "url", "settings"]);
+    revision.content = data.content.present;
+    revision.category = data.category.id;
+
+    // Check if API call is necessary
+    if (!dataChanged(revision)) {
+        return;
+    }
+
+    lastSavedRevision = revision;
+
+    const updateRevision = gql`
+        mutation UpdateRevision($id: ID!, $data: UpdatePageInput!) {
+            cms {
+                updateRevision(id: $id, data: $data) {
+                    data {
+                        id
+                    }
+                    error {
+                        code
+                        message
+                        data
+                    }
+                }
+            }
+        }
+    `;
+
+    store.dispatch(startSaving);
+
+    action.meta.client
+        .mutate({ mutation: updateRevision, variables: { id: data.id, data: revision } })
+        .then(data => {
+            store.dispatch(finishSaving);
+            action.meta.onFinish && action.meta.onFinish();
+            return data;
+        })
+        .catch(err => {
+            store.dispatch(finishSaving);
+            console.log(err);
+        });
+});

@@ -8,7 +8,8 @@ export const Flex = styled("div")({
 
 export const Elements = styled("div")({
     flex: "65%",
-    backgroundColor: "var(--mdc-theme-background)"
+    backgroundColor: "var(--mdc-theme-background)",
+    overflow: "scroll"
 });
 
 export const ElementPreview = styled("div")({
@@ -30,7 +31,9 @@ export const ElementPreviewCanvas = styled("div")({
     border: "1px solid var(--mdc-theme-on-background)",
     backgroundColor: "var(--mdc-theme-surface)",
     color: "var(--mdc-theme-on-surface)",
-    padding: 15
+    padding: 15,
+    boxSizing: "border-box",
+    width: 260
 });
 
 export const Backdrop = styled("div")({

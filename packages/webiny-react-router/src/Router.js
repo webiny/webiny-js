@@ -95,7 +95,7 @@ class Router {
             route = _.cloneDeep(this.routes[i]);
             const match = matchPath(pathname, {
                 path: route.path,
-                exact: route.exact
+                exact: route.hasOwnProperty("exact") ? route.exact : true
             });
 
             if (!match) {

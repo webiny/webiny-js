@@ -17,10 +17,18 @@ export default [
                 next(action);
 
                 // Check the source of the element (could be `saved` element which behaves differently from other elements)
-                const { onCreate } = getPlugin(source.type);
+                const sourcePlugin = getPlugin(source.type);
+                if (!sourcePlugin) {
+                    return;
+                }
+                const { onCreate } = sourcePlugin;
                 if (!onCreate || onCreate !== "skip") {
                     // If source element does not define a specific `onCreate` behavior - continue with the actual element plugin
-                    const { onCreate } = getPlugin(element.type);
+                    const plugin = getPlugin(element.type);
+                    if (!plugin) {
+                        return;
+                    }
+                    const { onCreate } = plugin;
                     if (onCreate && onCreate === "open-settings") {
                         store.dispatch(activateElement({ element: element.id }));
                         store.dispatch(togglePlugin({ name: "cms-element-action-advanced" }));

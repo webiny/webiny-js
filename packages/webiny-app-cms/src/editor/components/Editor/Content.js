@@ -4,9 +4,9 @@ import { get } from "dot-prop-immutable";
 import { connect } from "react-redux";
 import styled from "react-emotion";
 import { compose, pure } from "recompose";
-import { getPlugins, getPlugin } from "webiny-app/plugins";
+import { getPlugins } from "webiny-app/plugins";
 import { withTheme } from "webiny-app-cms/theme";
-import { getContent } from "webiny-app-cms/editor/selectors";
+import { getContent, getActivePlugin, getPage } from "webiny-app-cms/editor/selectors";
 import Element from "webiny-app-cms/editor/components/Element";
 
 const ContentContainer = styled("div")(({ theme }) => ({
@@ -20,7 +20,7 @@ const ContentContainer = styled("div")(({ theme }) => ({
     boxShadow: "inset 1px 0px 5px 0px rgba(128, 128, 128, 1)",
     boxSizing: "border-box",
     zIndex: 1,
-    ...get(theme, "elements.body", {})
+    backgroundColor: get(theme, "colors.background")
 }));
 
 const BaseContainer = styled("div")({
@@ -29,13 +29,17 @@ const BaseContainer = styled("div")({
     margin: "0 auto"
 });
 
-const Content = pure(({ rootElement, theme, previewLayout }) => {
+const Content = pure(({ rootElement, theme, renderLayout, layout }) => {
     const plugins = getPlugins("cms-editor-content");
-    const layout = (previewLayout && getPlugin(previewLayout)) || null;
+    const themeLayout = theme.layouts.find(l => l.name === layout);
+
+    if (renderLayout && !themeLayout) {
+        return `Layout "${layout}" was not found in your theme!`;
+    }
 
     let renderedContent = <Element id={rootElement.id} />;
 
-    renderedContent = layout ? layout.render(renderedContent) : renderedContent;
+    renderedContent = renderLayout ? themeLayout.render(renderedContent) : renderedContent;
 
     return (
         <ContentContainer theme={theme}>
@@ -47,7 +51,8 @@ const Content = pure(({ rootElement, theme, previewLayout }) => {
 
 const stateToProps = state => ({
     rootElement: state.elements[getContent(state).id],
-    previewLayout: state.previewLayout
+    layout: get(getPage(state), "settings.general.layout"),
+    renderLayout: getActivePlugin("cms-toolbar-top")(state) === "cms-toolbar-preview"
 });
 
 export default compose(

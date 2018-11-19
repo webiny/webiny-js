@@ -1,5 +1,6 @@
 import type { Node, ComponentType } from "react";
 import type { Store } from "webiny-app/redux";
+import type { PluginType } from "webiny-app/plugins";
 import type { WithPageDetailsProps } from "webiny-app-cms/admin/components";
 
 export { WithPageDetailsProps };
@@ -34,9 +35,7 @@ export type CmsThemeType = {
     layouts: Array<ComponentType<*>>
 };
 
-export type ElementGroupPluginType = {
-    name: string,
-    type: string,
+export type ElementGroupPluginType = PluginType & {
     group: {
         // Group name used by element plugins.
         name: string,
@@ -47,9 +46,7 @@ export type ElementGroupPluginType = {
     }
 };
 
-export type ElementPluginType = {
-    name: string,
-    type: string,
+export type ElementPluginType = PluginType & {
     toolbar: {
         // Element name (used by the editor).
         name: string,
@@ -67,7 +64,7 @@ export type ElementPluginType = {
     // A function to create an element data structure.
     create: ({ options: Object }) => Object,
     // A function to render an element in the editor.
-    render: ({ theme: CmsThemeType, element: ElementType, preview: boolean }) => Node,
+    render: ({ theme: CmsThemeType, element: ElementType }) => Node,
     // A function to check if an element can be deleted.
     canDelete: ({ parent, element}) => boolean,
     // Executed when another element is dropped on the drop zones of current element.
@@ -81,19 +78,29 @@ export type ElementPluginType = {
     onChildDeleted?: ({ element: ElementType, child: ElementType }) => void
 };
 
-export type RenderElementPluginType = {
-    name: string,
-    type: string,
+export type RenderElementPluginType = PluginType & {
     // Name of the cms-element plugin this render plugin is handling.
     element: string,
     render: ({ theme: CmsThemeType, element: ElementType }) => Node
 };
 
-export type CmsPageDetailsPluginType = {
-    name: string,
-    type: string,
+export type CmsPageDetailsPluginType = PluginType &  {
     render: (params: WithPageDetailsProps) => Node
 };
+
+export type CmsPageSettingsPluginType = PluginType & {
+    /* Settings group title */
+    title: string,
+    /* Settings group description */
+    description: string,
+    /* Settings group icon */
+    icon: Node,
+    /* GraphQL query fields to include in the `settings` subselect */
+    fields: string,
+    /* Render function that handles the specified `fields` */
+    render: (params: { Bind: ComponentType<*>}) => Node
+};
+
 
 // ================= Redux types ===================
 export type { Redux } from "webiny-app-cms/editor/redux";

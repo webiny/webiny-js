@@ -1,13 +1,16 @@
 // @flow
 import { Entity, type EntityCollection } from "webiny-entity";
 import type { ICategory } from "./Category.entity";
+import PageSettingsModel from "./PageSettings.model";
 import mdbid from "mdbid";
 
 export interface IPage extends Entity {
     createdBy: string;
     updatedBy: string;
+    publishedOn: ?Date;
     title: string;
-    slug: string;
+    snippet: string;
+    url: string;
     content: Object;
     settings: Object;
     category: Promise<ICategory>;
@@ -24,8 +27,10 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
 
         createdBy: string;
         updatedBy: string;
+        publishedOn: ?Date;
         title: string;
-        slug: string;
+        snippet: string;
+        url: string;
         content: Object;
         settings: Object;
         category: Promise<ICategory>;
@@ -51,22 +56,30 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
                 .char()
                 .setSkipOnPopulate();
 
+            this.attr("publishedOn")
+                .date()
+                .setSkipOnPopulate();
+
             this.attr("title")
                 .char()
                 .setValidators("required")
                 .onSet(value => (this.locked ? this.title : value));
 
-            this.attr("slug")
+            this.attr("snippet")
+                .char()
+                .onSet(value => (this.locked ? this.snippet : value));
+
+            this.attr("url")
                 .char()
                 .setValidators("required")
-                .onSet(value => (this.locked ? this.slug : value));
+                .onSet(value => (this.locked ? this.url : value));
 
             this.attr("content")
                 .object()
                 .onSet(value => (this.locked ? this.content : value));
 
             this.attr("settings")
-                .object()
+                .model(PageSettingsModel)
                 .onSet(value => (this.locked ? this.settings : value));
 
             this.attr("version").integer();
@@ -91,6 +104,7 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
                     // Deactivate previously published revision
                     if (value && value !== this.published && this.isExisting()) {
                         this.locked = true;
+                        this.publishedOn = new Date();
                         this.on("beforeSave", async () => {
                             // Deactivate previously published revision
                             const publishedRev: Page = (await Page.findOne({
@@ -116,8 +130,11 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
 
                 this.createdBy = user.id;
                 this.title = this.title || "Untitled";
-                this.slug = (await this.category).url + "untitled-" + this.id;
+                this.url = (await this.category).url + "untitled-" + this.id;
                 this.version = await this.getNextVersion();
+                this.settings = {
+                    layout: (await this.category).layout
+                };
             });
 
             this.on("beforeUpdate", () => {
