@@ -31,7 +31,7 @@ const SocialSettings = ({ Bind }: Props) => {
                 </Cell>
             </Grid>
             <Bind name={"settings.seo.meta"} defaultValue={[]}>
-                <MetaTags prefix={"settings.seo.meta"} Bind={Bind} />
+                {props => <MetaTags prefix={"settings.seo.meta"} Bind={Bind} {...props} />}
             </Bind>
         </React.Fragment>
     );
