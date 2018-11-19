@@ -1,33 +1,11 @@
 // @flow
 import * as React from "react";
-import gql from "graphql-tag";
 import { pure } from "recompose";
 import { Query } from "react-apollo";
+import { loadPages } from "./graphql";
 
-const loadPages = gql`
-    query ListPages($perPage: Int) {
-        cms {
-            listPages(perPage: $perPage) {
-                data {
-                    id
-                    title
-                    url
-                    createdBy {
-                        firstName
-                        lastName
-                    }
-                    category {
-                        id
-                        name
-                    }
-                }
-            }
-        }
-    }
-`;
-
-const PagesList = pure(({ element, theme }: Object = {}) => {
-    const { limit, component } = element.settings;
+const PagesList = pure(({ settings, theme }: Object = {}) => {
+    const { limit, component } = settings;
     const pageList = theme.elements.pagesList.components.find(cmp => cmp.name === component);
 
     if (!pageList) {

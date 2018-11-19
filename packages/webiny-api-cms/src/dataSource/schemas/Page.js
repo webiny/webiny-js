@@ -9,6 +9,7 @@ import {
 import UserType from "webiny-api/dataSource/typeDefs/User";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
 import listPages from "./pageResolvers/listPages";
+import listPublishedPages from "./pageResolvers/listPublishedPages";
 import oembed from "./pageResolvers/oembed";
 import resolveUser from "./typeResolvers/resolveUser";
 
@@ -104,6 +105,16 @@ export default {
             height: Int
         }
         
+        input PageSortInput {
+            title: Int
+            publishedOn: Int
+        }
+        
+        enum TagsRule {
+          ALL
+          ANY
+        }
+        
         extend type CmsQuery {
             getPage(
                 id: ID 
@@ -116,6 +127,14 @@ export default {
                 perPage: Int
                 sort: JSON
                 search: String
+            ): PageListResponse
+            
+            listPublishedPages(
+                page: Int
+                perPage: Int
+                sort: PageSortInput
+                tags: [String]
+                tagsRule: TagsRule
             ): PageListResponse
             
             listElements: ElementListResponse
@@ -169,6 +188,7 @@ export default {
         CmsQuery: {
             getPage: resolveGet(pageFetcher),
             listPages: listPages(pageFetcher),
+            listPublishedPages: listPublishedPages(pageFetcher),
             listElements: resolveList(elementFetcher),
             oembedData: oembed
         },

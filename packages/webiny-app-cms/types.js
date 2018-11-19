@@ -64,7 +64,7 @@ export type ElementPluginType = PluginType & {
     // A function to create an element data structure.
     create: ({ options: Object }) => Object,
     // A function to render an element in the editor.
-    render: ({ theme: CmsThemeType, element: ElementType, preview: boolean }) => Node,
+    render: ({ theme: CmsThemeType, element: ElementType }) => Node,
     // A function to check if an element can be deleted.
     canDelete: ({ parent, element}) => boolean,
     // Executed when another element is dropped on the drop zones of current element.

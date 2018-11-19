@@ -1,3 +1,4 @@
+// @flow
 import React from "react";
 import type { ElementPluginType } from "webiny-app-cms/types";
 import { Tab } from "webiny-ui/Tabs";
@@ -30,8 +31,8 @@ export default () => {
                     ...options
                 };
             },
-            render(props) {
-                return <PagesList {...props} />;
+            render({ element, theme }) {
+                return <PagesList settings={element.settings} theme={theme} />;
             }
         }: ElementPluginType),
         {

@@ -4,8 +4,9 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
 import { Tags } from "webiny-ui/Tags";
+import PagesList from "./PagesList";
 
-const PagesListSettings = ({ Bind, theme }) => {
+const PagesListSettings = ({ theme, Bind }: Object) => {
     return (
         <React.Fragment>
             <Grid>
@@ -53,13 +54,23 @@ const PagesListSettings = ({ Bind, theme }) => {
                         name={"settings.component"}
                         defaultValue={theme.elements.pagesList.components[0].name}
                     >
-                        <Select label={"List component"} description={"Select a component to render the list"}>
+                        <Select
+                            label={"List component"}
+                            description={"Select a component to render the list"}
+                        >
                             {theme.elements.pagesList.components.map(cmp => (
                                 <option key={cmp.name} value={cmp.name}>
                                     {cmp.title}
                                 </option>
                             ))}
                         </Select>
+                    </Bind>
+                </Cell>
+            </Grid>
+            <Grid>
+                <Cell span={12} style={{ overflowY: "scroll" }}>
+                    <Bind name={"settings"}>
+                        {({ value }) => <PagesList settings={value} theme={theme} />}
                     </Bind>
                 </Cell>
             </Grid>
