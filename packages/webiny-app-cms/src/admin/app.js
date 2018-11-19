@@ -8,6 +8,7 @@ import renderPlugins from "webiny-app-cms/render/presets/default";
 import { ReactComponent as PagesIcon } from "./assets/round-ballot-24px.svg";
 import plugins from "./plugins";
 import Categories from "./views/Categories/Categories";
+import Menus from "./views/Menus/Menus";
 import Pages from "./views/Pages/Pages";
 import Editor from "./views/Pages/Editor";
 
@@ -27,7 +28,7 @@ export default () => {
                     <Menu label={t`Pages`}>
                         <Menu label={t`Categories`} route="Cms.Categories" />
                         <Menu label={t`Pages`} route="Cms.Pages" />
-                        {/*<Menu label={t`Menus`} route="Cms.Menus.List" />*/}
+                        <Menu label={t`Menus`} route="Cms.Menus" />
                     </Menu>
                 </Menu>
             );
@@ -44,6 +45,23 @@ export default () => {
                 return (
                     <AdminLayout>
                         <Categories />
+                    </AdminLayout>
+                );
+            }
+        }
+    });
+
+    addPlugin({
+        name: "route-cms-menus",
+        type: "route",
+        route: {
+            name: "Cms.Menus",
+            path: "/cms/menus",
+            exact: true,
+            render() {
+                return (
+                    <AdminLayout>
+                        <Menus />
                     </AdminLayout>
                 );
             }
