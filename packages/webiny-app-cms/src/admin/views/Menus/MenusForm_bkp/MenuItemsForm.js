@@ -41,7 +41,7 @@ class MenuItemsForm extends React.Component<Props, State> {
 
     setCurrentItem = (data: ?Object) => {
         const { current: form } = this.form;
-        form && form.setState({ data: data || blankFormData });
+        form && form.setState({ data: data || blankFormData, validation: {} });
     };
 
     render() {
@@ -65,7 +65,7 @@ class MenuItemsForm extends React.Component<Props, State> {
                     }
 
                     const { current: form } = this.form;
-                    form && form.setState({ data: blankFormData });
+                    form && form.setState({ data: blankFormData, validation: {} });
                 }}
             >
                 {({ data, form, Bind }) => (
@@ -95,7 +95,7 @@ class MenuItemsForm extends React.Component<Props, State> {
                                                 </Bind>
                                             </Cell>
                                             <Cell span={12}>
-                                                <Bind name="url" validators={["required"]}>
+                                                <Bind name="url" validators={["required", "url"]}>
                                                     <Input label="URL" />
                                                 </Bind>
                                             </Cell>
@@ -198,7 +198,7 @@ class MenuItemsForm extends React.Component<Props, State> {
                                             </ButtonSecondary>
                                             &nbsp;
                                             <ButtonPrimary type="primary" onClick={form.submit}>
-                                                Save
+                                                {data.id ? "Save menu item" : "Add menu item"}
                                             </ButtonPrimary>
                                         </Cell>
                                     )}

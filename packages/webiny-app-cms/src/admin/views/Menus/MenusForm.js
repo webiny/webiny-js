@@ -5,7 +5,7 @@ import { Form } from "webiny-form";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
-import MenuItemsForm from "./MenusForm/MenuItemsForm";
+import MenuItems from "./MenusForm/MenuItems";
 import type { WithCrudFormProps } from "webiny-app-admin/components";
 import { withTheme, type WithThemeProps } from "webiny-app-cms/theme";
 import {
@@ -23,6 +23,8 @@ type State = {
 class MenusForm extends React.Component<Props, State> {
     render() {
         const { data, invalidFields, onSubmit } = this.props;
+
+        // TODO: onSubmit - remove attributes added by the Tree plugin
 
         return (
             <Form data={data || { items: [] }} invalidFields={invalidFields} onSubmit={onSubmit}>
@@ -47,7 +49,7 @@ class MenusForm extends React.Component<Props, State> {
                                 </Cell>
                             </Grid>
                             <Bind name="items">
-                                {props => <MenuItemsForm menuForm={form} {...props} />}
+                                {props => <MenuItems menuForm={form} {...props} />}
                             </Bind>
                         </SimpleFormContent>
                         <SimpleFormFooter>

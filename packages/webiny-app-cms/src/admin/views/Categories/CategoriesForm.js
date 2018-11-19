@@ -58,7 +58,7 @@ const CategoriesForm = ({
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>
-                        <ButtonPrimary type="primary" onClick={form.submit} align="right">
+                        <ButtonPrimary onClick={form.submit} align="right">
                             {t`Save category`}
                         </ButtonPrimary>
                     </SimpleFormFooter>

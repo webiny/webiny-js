@@ -50,7 +50,7 @@ const MenusDataList = ({ dataList, router, deleteRecord }: WithCrudListProps) =>
                                 }
                             >
                                 {item.title}
-                                <ListItemTextSecondary>{item.description}</ListItemTextSecondary>
+                                <ListItemTextSecondary>{item.description || "No description provided."}</ListItemTextSecondary>
                             </ListItemText>
 
                             <ListItemMeta>
