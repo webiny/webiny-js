@@ -2,7 +2,13 @@
 import setupEntities from "../entities/setupEntities";
 
 export default async (context: Object) => {
-    const { Category, Element, Page } = setupEntities(context);
+    const { Category, Element, Page, Tag } = setupEntities(context);
+
+    ["nodejs", "graphql", "marketing"].forEach(async tag => {
+        const t = new Tag();
+        t.populate({ name: tag });
+        await t.save();
+    });
 
     const blogCategory = new Category();
     blogCategory.populate({
