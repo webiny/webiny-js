@@ -42,15 +42,7 @@ const SocialSettings = ({ Bind }: Object) => {
                 </Cell>
             </Grid>
             <Bind name={"settings.social.meta"} defaultValue={[]}>
-                {({ value, onChange, ...other }) => (
-                    <OpenGraphTags
-                        prefix={"settings.social.meta"}
-                        value={value}
-                        onChange={onChange}
-                        Bind={Bind}
-                        {...other}
-                    />
-                )}
+                {props => <OpenGraphTags prefix={"settings.social.meta"} Bind={Bind} {...props} />}
             </Bind>
         </React.Fragment>
     );

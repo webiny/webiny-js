@@ -26,7 +26,7 @@ const createBind = (form: Form) => {
             beforeChange,
             afterChange
         } = props;
-        
+
         // Track component rendering
         form.lastRender.push(name);
 
@@ -66,7 +66,7 @@ const createBind = (form: Form) => {
         if (React.isValidElement(children)) {
             return React.cloneElement(children, newProps);
         }
-        return React.createElement(children, newProps);
+        return children(newProps);
     };
 
     return Bind;
