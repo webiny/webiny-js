@@ -1,4 +1,5 @@
-import React from "react";
+// @flow
+import * as React from "react";
 import styled from "react-emotion";
 //import { Menu } from "components/Menu";
 
@@ -16,11 +17,16 @@ const Banner100 = styled("div")({
     return null;
 };*/
 
-const Blog = ({ children }) => {
+
+type Props = {
+    children: React.Node
+};
+
+export default ({ children }: Props) => {
     return (
         <div className={"blog-page-container"}>
             {/*<Menu name={"main"}>
-                {data => (
+                {({ items }) => (
                     <ul>
                         {data.map(item => <li key={item.id}>{item.title}</li>)}
                     </ul>
@@ -31,12 +37,4 @@ const Blog = ({ children }) => {
             <Banner100/>
         </div>
     )
-};
-
-export default {
-    name: "blog",
-    title: "Blog",
-    render(content: React.Node) {
-        return <Blog>{content}</Blog>;
-    }
 };

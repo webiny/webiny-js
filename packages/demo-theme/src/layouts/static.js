@@ -13,7 +13,11 @@ const Banner = styled("div")({
     return null;
 };*/
 
-const Static = ({ children }) => {
+type Props = {
+    children: React.Node
+};
+
+export default ({ children }: Props) => {
     return (
         <div className={"static-page-container"}>
             {/*<Menu name={"main"}>
@@ -28,12 +32,4 @@ const Static = ({ children }) => {
             <Banner />
         </div>
     );
-};
-
-export default {
-    name: "static",
-    title: "Static page",
-    render(content: React.Node) {
-        return <Static>{content}</Static>;
-    }
 };
