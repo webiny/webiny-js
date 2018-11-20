@@ -1,7 +1,7 @@
 // @flow
 import { Entity, type EntityCollection } from "webiny-entity";
 import type { ICategory } from "./Category.entity";
-import PageSettingsModel from "./PageSettings.model";
+import pageSettingsFactory from "./PageSettings.model";
 import mdbid from "mdbid";
 
 export interface IPage extends Entity {
@@ -79,7 +79,7 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
                 .onSet(value => (this.locked ? this.content : value));
 
             this.attr("settings")
-                .model(PageSettingsModel)
+                .model(pageSettingsFactory({ entities, page: this }))
                 .onSet(value => (this.locked ? this.settings : value));
 
             this.attr("version").integer();

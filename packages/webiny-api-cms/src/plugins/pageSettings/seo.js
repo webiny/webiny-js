@@ -22,7 +22,7 @@ export default [
     {
         name: "cms-page-settings-seo",
         type: "cms-page-settings-model",
-        apply(model: EntityModel) {
+        apply({ model }: { model: EntityModel }) {
             model
                 .attr("seo")
                 .model(SeoSettings)

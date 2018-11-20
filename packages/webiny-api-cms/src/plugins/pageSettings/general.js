@@ -1,22 +1,28 @@
 // @flow
 import { EntityModel } from "webiny-entity";
 
-class GeneralSettings extends EntityModel {
-    constructor() {
-        super();
-        this.attr("tags").array();
-        this.attr("layout").char();
-    }
-}
+const generalSettingsFactory = ({ entities, page }: Object) => {
+    return class GeneralSettings extends EntityModel {
+        constructor() {
+            super();
+            this.setParentEntity(page);
+            this.attr("tags")
+                .entities(entities.Tag, "page")
+                .setUsing(entities.Tags2Pages, "tag");
+
+            this.attr("layout").char();
+        }
+    };
+};
 
 export default [
     {
         name: "cms-page-settings-general",
         type: "cms-page-settings-model",
-        apply(model: EntityModel) {
+        apply({ entities, model, page }: Object) {
             model
                 .attr("general")
-                .model(GeneralSettings)
+                .model(generalSettingsFactory({ entities, page }))
                 .setDefaultValue({});
         }
     },
@@ -25,7 +31,7 @@ export default [
         type: "cms-schema",
         typeDefs: `
             type GeneralSettings {
-                tags: [String]
+                tags: [Tag]
                 layout: String
             } 
             
