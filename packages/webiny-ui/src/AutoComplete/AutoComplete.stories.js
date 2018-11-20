@@ -78,7 +78,7 @@ story.add("AutoComplete", () => {
                         {({ Bind }) => (
                             <Bind name="country">
                                 <AutoComplete
-                                    useSimpleValue
+                                    useSimpleValues
                                     options={["France", "Germany", "Italy", "Spain"]}
                                     label="Country"
                                     disabled={disabled}
@@ -94,7 +94,7 @@ story.add("AutoComplete", () => {
                         {({ Bind }) => (
                             <Bind name="country">
                                 <AutoComplete
-                                    useSimpleValue
+                                    useSimpleValues
                                     options={["France", "Germany", "Italy", "Spain"]}
                                     label="Country"
                                     disabled={disabled}

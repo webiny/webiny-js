@@ -18,11 +18,10 @@ type State = {
 
 export class AutoComplete extends React.Component<Props, State> {
     static defaultProps = {
-        minInput: 0,
         valueProp: "id",
         textProp: "name",
         options: [],
-        useSimpleValue: false,
+        useSimpleValues: false,
         renderItem(item: any) {
             return <Typography use={"body2"}>{getOptionText(item, this.props)}</Typography>;
         }
@@ -69,11 +68,7 @@ export class AutoComplete extends React.Component<Props, State> {
             return null;
         }
 
-        const { renderItem, minInput } = this.props;
-
-        if (minInput && minInput > this.state.inputValue.length) {
-            return null;
-        }
+        const { renderItem } = this.props;
 
         const filtered = options.filter(item => {
             // 2) At the end, we want to show only options that are matched by typed text.
@@ -143,7 +138,7 @@ export class AutoComplete extends React.Component<Props, State> {
             options,
             value,
             onChange,
-            useSimpleValue, // eslint-disable-line
+            useSimpleValues, // eslint-disable-line
             valueProp, // eslint-disable-line
             textProp, // eslint-disable-line
             onInput,

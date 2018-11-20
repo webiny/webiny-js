@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import { MultiAutoComplete } from "webiny-ui/AutoComplete";
+import { MultiAutoComplete as UiMultiAutoComplete } from "webiny-ui/AutoComplete";
 import { withAutoComplete } from "webiny-app/components";
 import { compose } from "recompose";
 import gql from "graphql-tag";
@@ -19,14 +19,18 @@ const listTags = gql`
     }
 `;
 
-const TagsAutoComplete = props => (
-    <MultiAutoComplete label="Tags" useSimpleValue allowFreeInput {...props} />
-);
-
-export default compose(
+export const SimpleTagsMultiAutoComplete = compose(
     withAutoComplete({
         response: data => ({ data: get(data, "cms.tags.data", []).map(item => item.name) }),
         search: query => ({ query, fields: ["name"] }),
         query: listTags
     })
-)(TagsAutoComplete);
+)(props => <UiMultiAutoComplete label="Tags" useSimpleValues allowFreeInput {...props} />);
+
+export const TagsMultiAutoComplete = compose(
+    withAutoComplete({
+        response: data => get(data, "cms.tags"),
+        search: query => ({ query, fields: ["name"] }),
+        query: listTags
+    })
+)(props => <UiMultiAutoComplete label="Tags" allowFreeInput {...props} />);

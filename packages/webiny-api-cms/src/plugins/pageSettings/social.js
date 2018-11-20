@@ -1,5 +1,20 @@
 // @flow
 import { EntityModel } from "webiny-entity";
+import { Model } from "webiny-model";
+
+class FileModel extends Model {
+    name: string;
+    size: number;
+    src: string;
+    type: string;
+    constructor() {
+        super();
+        this.attr("name").char();
+        this.attr("size").integer();
+        this.attr("src").char();
+        this.attr("type").char();
+    }
+}
 
 class OpenGraphTagModel extends EntityModel {
     constructor() {
@@ -15,6 +30,7 @@ class SocialSettings extends EntityModel {
         this.attr("meta").models(OpenGraphTagModel);
         this.attr("title").char();
         this.attr("description").char();
+        this.attr("image").model(FileModel);
     }
 }
 
@@ -22,7 +38,7 @@ export default [
     {
         name: "cms-page-settings-social",
         type: "cms-page-settings-model",
-        apply(model: EntityModel) {
+        apply({ model }: { model: EntityModel }) {
             model
                 .attr("social")
                 .model(SocialSettings)
@@ -42,6 +58,7 @@ export default [
                 title: String
                 description: String
                 meta: [OpenGraphTag]
+                image: File
             } 
             
             extend type PageSettings {

@@ -5,6 +5,7 @@ class TagTable extends MySQLTable {
     constructor() {
         super();
         this.column("name").varChar(100);
+        this.index().unique("name");
     }
 }
 

@@ -17,7 +17,13 @@ export default ([
         icon: <SettingsIcon />,
         fields: `
             general {
-                tags
+                image {
+                    src
+                }
+                tags {
+                    id 
+                    name
+                }
                 layout
             }
     `,
@@ -53,6 +59,9 @@ export default ([
         icon: <SocialIcon />,
         fields: `
             social {
+                image {
+                    src
+                }
                 title
                 description
                 meta {

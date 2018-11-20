@@ -4,6 +4,7 @@ import { DelayedOnChange } from "webiny-app-cms/editor/components/DelayedOnChang
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import OpenGraphTags from "./OpenGraphTags";
+import PageImage from "./PageImage";
 
 const SocialSettings = ({ Bind }: Object) => {
     return (
@@ -35,12 +36,12 @@ const SocialSettings = ({ Bind }: Object) => {
 
             <Grid>
                 <Cell span={12}>
-                    TODO: add image upload
-                    {/* <Bind name={"settings.social.image"}>
-
-                    </Bind>*/}
+                    <Bind name={"settings.social.image"}>
+                        <PageImage label="Social Image" />
+                    </Bind>
                 </Cell>
             </Grid>
+
             <Bind name={"settings.social.meta"} defaultValue={[]}>
                 {props => <OpenGraphTags prefix={"settings.social.meta"} Bind={Bind} {...props} />}
             </Bind>

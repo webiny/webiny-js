@@ -17,12 +17,11 @@ const Banner100 = styled("div")({
     return null;
 };*/
 
-
 type Props = {
     children: React.Node
 };
 
-export default ({ children }: Props) => {
+const Blog = ({ children }: Props) => {
     return (
         <div className={"blog-page-container"}>
             {/*<Menu name={"main"}>
@@ -32,9 +31,11 @@ export default ({ children }: Props) => {
                     </ul>
                 )}
             </Menu>*/}
-            <Banner100/>
+            <Banner100 />
             <Content>{children}</Content>
-            <Banner100/>
+            <Banner100 />
         </div>
-    )
+    );
 };
+
+export default Blog;

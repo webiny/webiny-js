@@ -53,7 +53,7 @@ const RoleForm = ({
                             <Cell span={12}>
                                 <Bind name="scopes">
                                     <MultiAutoComplete
-                                        useSimpleValue
+                                        useSimpleValues
                                         options={scopes}
                                         label={t`Scopes`}
                                         description={t`Choose one or more scopes.`}

@@ -12,7 +12,7 @@ const SecondaryLayoutWrapper = styled("div")({
     width: "100%",
     height: "100vh",
     backgroundColor: "var(--mdc-theme-background)",
-    zIndex: 10,
+    zIndex: 4,
     paddingTop: 65
 });
 

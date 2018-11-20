@@ -82,7 +82,7 @@ story.add("MultiAutoComplete", () => {
                         {({ Bind }) => (
                             <Bind name="country">
                                 <MultiAutoComplete
-                                    useSimpleValue
+                                    useSimpleValues
                                     options={options.map(item => item.name)}
                                     label="Country"
                                     disabled={disabled}
@@ -98,7 +98,7 @@ story.add("MultiAutoComplete", () => {
                             {({ Bind }) => (
                                  <Bind name="country">
                                     <MultiAutoComplete
-                                        useSimpleValue
+                                        useSimpleValues
                                         options={${JSON.stringify(options)}}
                                         label="Country"
                                         disabled={${disabled}}
@@ -141,7 +141,7 @@ story.add("MultiAutoComplete", () => {
                         {({ Bind }) => (
                             <Bind name="country">
                                 <MultiAutoComplete
-                                    useSimpleValue
+                                    useSimpleValues
                                     options={${JSON.stringify(options)}}
                                     label="Country"
                                     disabled={disabled}
@@ -164,7 +164,7 @@ story.add("MultiAutoComplete", () => {
                         {({ Bind }) => (
                             <Bind name="country">
                                 <MultiAutoComplete
-                                    useSimpleValue
+                                    useSimpleValues
                                     allowFreeInput
                                     options={options.map(item => item.name)}
                                     label="Country"
@@ -185,7 +185,7 @@ story.add("MultiAutoComplete", () => {
                         {({ Bind }) => (
                             <Bind name="country">
                                 <MultiAutoComplete
-                                    useSimpleValue
+                                    useSimpleValues
                                     allowFreeInput
                                     options={options.map(item => item.name)}
                                     label="Country"

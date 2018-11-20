@@ -10,6 +10,7 @@ class PageTable extends MySQLTable {
         this.column("url").varChar(300);
         this.column("content").mediumText();
         this.column("settings").mediumText();
+        this.column("snippet").text();
         this.column("category").char(24);
         // Revision attributes
         this.column("version").int();
