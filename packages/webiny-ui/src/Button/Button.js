@@ -20,7 +20,9 @@ type Props = {
     // Show ripple effect on button click. Default: true
     ripple?: boolean,
 
-    className?: string
+    className?: string,
+
+    style?: Object
 };
 
 /**
@@ -46,9 +48,9 @@ export const ButtonDefault = (props: Props) => {
  * @constructor
  */
 export const ButtonPrimary = (props: Props) => {
-    const { onClick, children, small = false, flat = false, ripple = true } = props;
+    const { onClick, children, small = false, flat = false, ripple = true, style = null } = props;
     return (
-        <R.Button raised={!flat} dense={small} unelevated={flat} ripple={ripple} onClick={onClick}>
+        <R.Button raised={!flat} dense={small} unelevated={flat} ripple={ripple} onClick={onClick} style={style}>
             {children}
         </R.Button>
     );

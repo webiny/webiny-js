@@ -1,4 +1,4 @@
-// @flow
+// @flowIgnore
 import * as React from "react";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import type { PluginType } from "webiny-app/types";
@@ -6,9 +6,11 @@ import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 
 const createSvg = (icon: Object) => {
-    return <svg width={24} viewBox={`0 0 ${icon[0]} ${icon[1]}`}>
+    return (
+        <svg width={24} viewBox={`0 0 ${icon[0]} ${icon[1]}`}>
             <path d={icon[4]} fill="currentColor" />
-        </svg>;
+        </svg>
+    );
 };
 
 const icons = [];

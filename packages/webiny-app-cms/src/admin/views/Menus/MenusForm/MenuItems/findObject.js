@@ -15,8 +15,8 @@ const findObject = (source: Array<Object>, id: string): ?Object => {
 
     let res = null;
     each(source, s => {
-        if (s.items) {
-            const result = findObject(s.items, id);
+        if (s.children) {
+            const result = findObject(s.children, id);
             if (result) {
                 res = result;
                 return false;
