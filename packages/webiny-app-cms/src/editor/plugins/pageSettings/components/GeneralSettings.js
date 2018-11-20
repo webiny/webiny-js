@@ -7,6 +7,7 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { TagsMultiAutoComplete } from "webiny-app-cms/admin/components/TagsMultiAutoComplete";
 import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
+import PageImage from "./PageImage";
 
 const GeneralSettings = ({ Bind, theme }: Object) => {
     return (
@@ -52,7 +53,11 @@ const GeneralSettings = ({ Bind, theme }: Object) => {
                         <TagsMultiAutoComplete description="Enter tags to filter pages" />
                     </Bind>
                 </Cell>
-                <Cell span={12}>TODO: add page image</Cell>
+                <Cell span={12}>
+                    <Bind name={"settings.general.image"}>
+                        <PageImage label="Page Image" />
+                    </Bind>
+                </Cell>
             </Grid>
         </React.Fragment>
     );

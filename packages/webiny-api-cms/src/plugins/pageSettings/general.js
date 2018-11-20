@@ -1,5 +1,20 @@
 // @flow
 import { EntityModel } from "webiny-entity";
+import { Model } from "webiny-model";
+
+class FileModel extends Model {
+    name: string;
+    size: number;
+    src: string;
+    type: string;
+    constructor() {
+        super();
+        this.attr("name").char();
+        this.attr("size").integer();
+        this.attr("src").char();
+        this.attr("type").char();
+    }
+}
 
 const generalSettingsFactory = ({ entities, page }: Object) => {
     return class GeneralSettings extends EntityModel {
@@ -11,6 +26,7 @@ const generalSettingsFactory = ({ entities, page }: Object) => {
                 .setUsing(entities.Tags2Pages, "tag");
 
             this.attr("layout").char();
+            this.attr("image").model(FileModel);
         }
     };
 };
@@ -33,6 +49,7 @@ export default [
             type GeneralSettings {
                 tags: [Tag]
                 layout: String
+                image: File
             } 
             
             extend type PageSettings {
