@@ -3,8 +3,8 @@ import * as React from "react";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
-import { Tags } from "webiny-ui/Tags";
 import PagesList from "./PagesList";
+import { SimpleTagsMultiAutoComplete } from "webiny-app-cms/admin/components/TagsMultiAutoComplete";
 
 const PagesListSettings = ({ theme, Bind }: Object) => {
     return (
@@ -36,7 +36,10 @@ const PagesListSettings = ({ theme, Bind }: Object) => {
             <Grid>
                 <Cell span={6}>
                     <Bind name="settings.tags">
-                        <Tags label="Filter by tags" description="Enter tags to filter pages" />
+                        <SimpleTagsMultiAutoComplete
+                            label="Filter by tags"
+                            description="Enter tags to filter pages"
+                        />
                     </Bind>
                 </Cell>
                 <Cell span={6}>
