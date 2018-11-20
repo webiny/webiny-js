@@ -29,7 +29,7 @@ export const SimpleTagsMultiAutoComplete = compose(
 
 export const TagsMultiAutoComplete = compose(
     withAutoComplete({
-        response: data => ({ data: get(data, "cms.tags") }),
+        response: data => get(data, "cms.tags"),
         search: query => ({ query, fields: ["name"] }),
         query: listTags
     })

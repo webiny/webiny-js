@@ -34,7 +34,7 @@ const GeneralSettings = ({ Bind, theme }: Object) => {
                     </Bind>
                 </Cell>
                 <Cell span={12}>
-                    <Bind name={"settings.general.layout"}>
+                    <Bind name={"settings.general.layout"} defaultValue={theme.layouts[0].name}>
                         <Select
                             label={"Layout"}
                             description={"Render this page using the selected layout"}
@@ -49,10 +49,7 @@ const GeneralSettings = ({ Bind, theme }: Object) => {
                 </Cell>
                 <Cell span={12}>
                     <Bind name={"settings.general.tags"}>
-                        <TagsMultiAutoComplete
-                            label="Tags"
-                            description="Enter tags to filter pages"
-                        />
+                        <TagsMultiAutoComplete description="Enter tags to filter pages" />
                     </Bind>
                 </Cell>
                 <Cell span={12}>TODO: add page image</Cell>

@@ -28,7 +28,6 @@ type State = {
 
 export class MultiAutoComplete extends React.Component<Props, State> {
     static defaultProps = {
-        minInput: 2,
         valueProp: "id",
         textProp: "name",
         unique: true,
@@ -63,11 +62,7 @@ export class MultiAutoComplete extends React.Component<Props, State> {
             return null;
         }
 
-        const { unique, value, allowFreeInput, useSimpleValues, renderItem, minInput } = this.props;
-
-        if (minInput && minInput > this.state.inputValue.length) {
-            return null;
-        }
+        const { unique, value, allowFreeInput, useSimpleValues, renderItem } = this.props;
 
         const filtered = options.filter(item => {
             // We need to filter received options.
@@ -99,7 +94,7 @@ export class MultiAutoComplete extends React.Component<Props, State> {
         });
 
         // If free input is allowed, prepend typed value to the list.
-        if (allowFreeInput) {
+        if (allowFreeInput && this.state.inputValue) {
             if (useSimpleValues) {
                 const existingValue = filtered.includes(this.state.inputValue);
                 if (!existingValue) {

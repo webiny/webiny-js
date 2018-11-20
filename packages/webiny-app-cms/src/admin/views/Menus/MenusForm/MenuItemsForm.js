@@ -10,14 +10,14 @@ import MenuItems from "./MenuItemsForm/MenuItems";
 import findObject from "./MenuItemsForm/findObject";
 import PagesAutoComplete from "./MenuItemsForm/PagesAutoComplete";
 import CategoriesAutoComplete from "./MenuItemsForm/CategoriesAutoComplete";
-import TagsAutoComplete from "webiny-app-cms/admin/components/TagsAutoComplete";
+import { SimpleTagsMultiAutoComplete } from "webiny-app-cms/admin/components/TagsMultiAutoComplete";
 import uniqid from "uniqid";
 
 import { i18n } from "webiny-app/i18n";
 const t = i18n.namespace("Cms.MenusForm.MenuItemsForm");
 
 const blankFormData = {
-    type: "link",
+    type: "pagesList",
     title: "",
     items: null
 };
@@ -165,7 +165,7 @@ class MenuItemsForm extends React.Component<Props, State> {
                                             </Cell>
                                             <Cell span={12}>
                                                 <Bind name="tags">
-                                                    <TagsAutoComplete />
+                                                    <SimpleTagsMultiAutoComplete />
                                                 </Bind>
                                             </Cell>
                                             <Cell span={12}>
