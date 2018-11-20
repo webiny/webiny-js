@@ -4,7 +4,7 @@ import { compose } from "recompose";
 import Downshift from "downshift";
 import { getPlugin, getPlugins } from "webiny-app/plugins";
 import { withRouter } from "webiny-app/components";
-import type { SearchPlugin } from "webiny-app-admin/types";
+import type { SearchPluginType } from "webiny-app-admin/types";
 import classnames from "classnames";
 
 // UI components
@@ -39,7 +39,7 @@ class SearchBar extends React.Component<
         active: boolean
     }
 > {
-    plugins: Array<SearchPlugin> = getPlugins("global-search");
+    plugins: Array<SearchPluginType> = getPlugins("global-search");
 
     state = {
         hasFilters: false,
@@ -59,7 +59,7 @@ class SearchBar extends React.Component<
     onSearch = () => {
         const type: string = (this.state.type: any);
 
-        const { route }: SearchPlugin = (getPlugin(type): any);
+        const { route }: SearchPluginType = (getPlugin(type): any);
         this.props.router.goToRoute({
             name: route,
             params: { search: JSON.stringify({ query: this.state.term, fields: "name" }) }
@@ -71,8 +71,8 @@ class SearchBar extends React.Component<
     };
 
     setSearchType = (type: string) => {
-        // We are sure we will receive a SearchPlugin here.
-        const plugin: SearchPlugin = (getPlugin(type): any);
+        // We are sure we will receive a SearchPluginType here.
+        const plugin: SearchPluginType = (getPlugin(type): any);
 
         this.setState({
             type,

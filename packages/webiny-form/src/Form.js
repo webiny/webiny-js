@@ -85,7 +85,7 @@ class Form extends React.Component {
             if (valid) {
                 const data = this.__removeKeys(this.state.data);
                 if (this.props.onSubmit) {
-                    return this.props.onSubmit(data);
+                    return this.props.onSubmit(data, this);
                 }
                 return;
             }

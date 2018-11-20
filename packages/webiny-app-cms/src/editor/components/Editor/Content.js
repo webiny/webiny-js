@@ -37,14 +37,14 @@ const Content = pure(({ rootElement, theme, renderLayout, layout }) => {
         return `Layout "${layout}" was not found in your theme!`;
     }
 
-    let renderedContent = <Element id={rootElement.id} />;
+    let content = <Element id={rootElement.id} />;
 
-    renderedContent = renderLayout ? themeLayout.render(renderedContent) : renderedContent;
+    content = renderLayout ? React.createElement(themeLayout.component, null, content) : content;
 
     return (
         <ContentContainer theme={theme}>
             {plugins.map(plugin => React.cloneElement(plugin.render(), { key: plugin.name }))}
-            <BaseContainer>{renderedContent}</BaseContainer>
+            <BaseContainer>{content}</BaseContainer>
         </ContentContainer>
     );
 });

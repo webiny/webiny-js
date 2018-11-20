@@ -1,12 +1,24 @@
+// @flow
 import "./style/theme.scss";
-import React from "react";
-import staticLayout from "./layouts/static";
-import blogLayout from "./layouts/blog";
+import * as React from "react";
+import StaticLayout from "./layouts/static";
+import BlogLayout from "./layouts/blog";
 import PageList from "./components/PageList";
 import PageListv2 from "./components/PageListv2";
 
 export default {
-    layouts: [staticLayout, blogLayout],
+    layouts: [
+        {
+            name: "static",
+            title: "Static page",
+            component: StaticLayout
+        },
+        {
+            name: "blog",
+            title: "Blog",
+            component: BlogLayout
+        }
+    ],
     fonts: {
         google: {
             families: ["Alegreya", "Lato"]
@@ -82,7 +94,7 @@ export default {
         },
         custom: {
             label: "Pavel 1",
-            component: ({ attributes, children }) => {
+            component: ({ attributes, children }: Object) => {
                 return (
                     <div className={"my-custom-class"} {...attributes}>
                         {children}

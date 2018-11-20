@@ -3,10 +3,10 @@ import * as React from "react";
 import { Select } from "webiny-ui/Select";
 import { Grid, GridInner, Cell } from "webiny-ui/Grid";
 import { Typography } from "webiny-ui/Typography";
-import type { SearchPlugin } from "webiny-app-admin/types";
+import type { SearchPluginType } from "webiny-app-admin/types";
 
 // Categories plugin
-export const categories: SearchPlugin = {
+export const categories: SearchPluginType = {
     name: "global-search-cms-categories",
     type: "global-search",
     labels: {
@@ -17,7 +17,7 @@ export const categories: SearchPlugin = {
 };
 
 // Pages plugin
-export const pages: SearchPlugin = {
+export const pages: SearchPluginType = {
     name: "global-search-cms-pages",
     type: "global-search",
     labels: {
