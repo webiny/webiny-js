@@ -1,3 +1,4 @@
+// @flow
 import * as React from "react";
 import {
     Card,
@@ -8,19 +9,22 @@ import {
     CardActionButtons
 } from "@rmwc/card";
 import { css } from "emotion";
+import { get } from "lodash";
 import { Typography } from "@rmwc/typography";
 
-const PageItem = ({ data, className }) => {
+const PageItem = ({ data, className }: Object) => {
     return (
         <Card className={className} style={{ width: "21rem" }}>
             <CardPrimaryAction>
-                <CardMedia
-                    sixteenByNine
-                    style={{
-                        backgroundImage:
-                            "url(https://material-components-web.appspot.com/images/16-9.jpg)"
-                    }}
-                />
+                {get(data, "settings.general.image.src") && (
+                    <CardMedia
+                        sixteenByNine
+                        style={{
+                            backgroundImage: `url("${get(data, "settings.general.image.src")}")`
+                        }}
+                    />
+                )}
+
                 <div style={{ padding: "0 1rem 1rem 1rem" }}>
                     <Typography use="headline6" tag="h2">
                         {data.title}
@@ -56,15 +60,11 @@ const pageItem = css({
     padding: 20
 });
 
-const PageList = ({ data }) => {
+const PageList = ({ data }: Object) => {
     return (
         <div className={pageList}>
             {data.map(page => (
-                <PageItem
-                    className={pageItem}
-                    key={page.id}
-                    data={page}
-                />
+                <PageItem className={pageItem} key={page.id} data={page} />
             ))}
         </div>
     );

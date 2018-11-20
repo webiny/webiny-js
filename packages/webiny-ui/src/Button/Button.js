@@ -50,7 +50,14 @@ export const ButtonDefault = (props: Props) => {
 export const ButtonPrimary = (props: Props) => {
     const { onClick, children, small = false, flat = false, ripple = true, style = null } = props;
     return (
-        <R.Button raised={!flat} dense={small} unelevated={flat} ripple={ripple} onClick={onClick} style={style}>
+        <R.Button
+            raised={!flat}
+            dense={small}
+            unelevated={flat}
+            ripple={ripple}
+            onClick={onClick}
+            style={style}
+        >
             {children}
         </R.Button>
     );

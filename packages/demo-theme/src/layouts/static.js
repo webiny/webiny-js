@@ -3,7 +3,6 @@ import * as React from "react";
 import styled from "react-emotion";
 import { Menu } from "webiny-app-cms/render/components";
 
-
 const Banner = styled("div")({
     backgroundColor: "#666",
     width: "100%",
@@ -14,7 +13,7 @@ type Props = {
     children: React.Node
 };
 
-export default ({ children }: Props) => {
+const Static = ({ children }: Props) => {
     return (
         <div className={"static-page-container"}>
             <Menu slug={"demo-menu"}>
@@ -32,3 +31,5 @@ export default ({ children }: Props) => {
         </div>
     );
 };
+
+export default Static;

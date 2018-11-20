@@ -9,6 +9,13 @@ export const loadPages = gql`
                     id
                     title
                     url
+                    settings {
+                        general {
+                            image {
+                                src
+                            }
+                        }
+                    }
                     createdBy {
                         firstName
                         lastName

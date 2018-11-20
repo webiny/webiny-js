@@ -8,7 +8,7 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { ButtonSecondary, ButtonPrimary } from "webiny-ui/Button";
 import { Select } from "webiny-ui/Select";
 import CategoriesAutoComplete from "./CategoriesAutoComplete";
-import TagsAutoComplete from "webiny-app-cms/admin/components/TagsAutoComplete";
+import { TagsMultiAutoComplete } from "webiny-app-cms/admin/components";
 
 const LinkForm = ({ data, onSubmit, onCancel }: Object) => {
     return (
@@ -61,7 +61,7 @@ const LinkForm = ({ data, onSubmit, onCancel }: Object) => {
                     <Grid>
                         <Cell span={12}>
                             <Bind name="tags">
-                                <TagsAutoComplete />
+                                <TagsMultiAutoComplete />
                             </Bind>
                         </Cell>
                     </Grid>
