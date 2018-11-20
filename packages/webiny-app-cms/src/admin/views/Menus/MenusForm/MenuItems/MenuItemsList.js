@@ -1,10 +1,15 @@
 // @flow
 import React from "react";
 import SortableTree from "react-sortable-tree";
-import menuTypePresets from "./menuTypePresets";
+import { getPlugin } from "webiny-app/plugins";
 import MenuItemRenderer from "./MenuItemRenderer";
 
 class MenuItemsList extends React.Component<*> {
+    canHaveChildren(node: Object) {
+        const plugin = getPlugin(node.type);
+        return plugin ? plugin.canHaveChildren : false;
+    }
+
     render() {
         const { items, onChange, editItem, deleteItem } = this.props;
         const data = Array.isArray(items) ? [...items] : [];
@@ -14,7 +19,7 @@ class MenuItemsList extends React.Component<*> {
                 <SortableTree
                     treeData={data}
                     onChange={onChange}
-                    canNodeHaveChildren={node => menuTypePresets[node.type].canNodeHaveChildren}
+                    canNodeHaveChildren={this.canHaveChildren}
                     nodeContentRenderer={MenuItemRenderer}
                     generateNodeProps={() => ({
                         editItem,

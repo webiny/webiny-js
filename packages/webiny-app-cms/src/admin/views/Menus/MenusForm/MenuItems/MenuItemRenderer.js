@@ -2,9 +2,9 @@
 import * as React from "react";
 import { isDescendant } from "react-sortable-tree";
 import classnames from "classnames";
+import { getPlugin } from "webiny-app/plugins";
 import { IconButton } from "webiny-ui/Button";
 import "./MenuItemRenderer.css";
-import menuTypePresets from "./menuTypePresets";
 import { ReactComponent as EditIcon } from "./icons/round-edit-24px.svg";
 import { ReactComponent as DeleteIcon } from "./icons/round-delete-24px.svg";
 
@@ -44,16 +44,14 @@ class NodeRendererDefault extends React.Component<*> {
         } = this.props;
         const nodeTitle = title || node.title;
 
-        let handle;
-        if (canDrag) {
-            // Show the handle used to initiate a drag-and-drop
-            handle = connectDragSource(
-                <div className="rst__moveHandle">{menuTypePresets[node.type].icon}</div>,
-                {
-                    dropEffect: "copy"
-                }
-            );
+        const plugin = getPlugin(node.type);
+        if (!plugin) {
+            return null;
         }
+
+        const handle = connectDragSource(<div className="rst__moveHandle">{plugin.icon}</div>, {
+            dropEffect: "copy"
+        });
 
         const isDraggedDescendant = draggedNode && isDescendant(draggedNode, node);
         const isLandingPadActive = !didDrop && isDragging;

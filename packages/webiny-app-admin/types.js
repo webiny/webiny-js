@@ -2,11 +2,11 @@
 import type { Node, ComponentType } from "react";
 import type { PluginType } from "webiny-app/types";
 
-export type ContentPlugin = PluginType & {
+export type ContentPluginType = PluginType & {
     render: ({ content: Node }) => {}
 };
 
-export type SearchPlugin = PluginType & {
+export type SearchPluginType = PluginType & {
     labels: {
         option: string,
         search: string

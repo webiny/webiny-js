@@ -101,6 +101,16 @@ export type CmsPageSettingsPluginType = PluginType & {
     render: (params: { Bind: ComponentType<*>}) => Node
 };
 
+export type CmsMenuItemPluginType = PluginType & {
+    /* Menu item title */
+    title: string,
+    /* Menu item icon */
+    icon: Node,
+    /* Can other menu items become children of this item ? */
+    canHaveChildren: boolean,
+    /* Render function for menu item form */
+    renderForm: (params: { data: Object, onSubmit: Function, onCancel: Function }) => Node
+};
 
 // ================= Redux types ===================
 export type { Redux } from "webiny-app-cms/editor/redux";

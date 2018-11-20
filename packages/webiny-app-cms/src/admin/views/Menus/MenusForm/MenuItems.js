@@ -2,18 +2,15 @@
 import React from "react";
 import { css } from "emotion";
 import uniqid from "uniqid";
+import { getPlugins } from "webiny-app/plugins";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Icon } from "webiny-ui/Icon";
 import { Menu, MenuItem } from "webiny-ui/Menu";
 import { ButtonPrimary } from "webiny-ui/Button";
 import MenuItemsList from "./MenuItems/MenuItemsList";
 import MenuItemForm from "./MenuItems/MenuItemForm";
-import { ReactComponent as LinkIcon } from "./MenuItems/icons/round-link-24px.svg";
-import { ReactComponent as FolderIcon } from "./MenuItems/icons/round-folder-24px.svg";
-import { ReactComponent as PageIcon } from "./MenuItems/icons/round-subject-24px.svg";
-import { ReactComponent as PagesIcon } from "./MenuItems/icons/round-format_list_bulleted-24px.svg";
-import menuTypePresets from "./MenuItems/menuTypePresets";
 import findObject from "./MenuItems/findObject";
+import type { CmsMenuItemPluginType } from "webiny-app-cms/types";
 
 const leftPanel = css({
     padding: 25,
@@ -38,15 +35,15 @@ class MenuItems extends React.Component<Props, State> {
         currentMenuItem: null
     };
 
-    editItem = (data: ?Object) => {
-        this.setState({ currentMenuItem: data });
-    };
-
-    addItem = (type: string) => {
+    addItem = (plugin: CmsMenuItemPluginType) => {
         const { onChange, value } = this.props;
-        const newItem = { ...menuTypePresets[type].data(), id: uniqid() };
+        const newItem = { type: plugin.name, id: uniqid() };
         onChange([...value, newItem]);
         this.editItem(newItem);
+    };
+
+    editItem = (data: ?Object) => {
+        this.setState({ currentMenuItem: data });
     };
 
     deleteItem = (item: Object) => {
@@ -60,6 +57,7 @@ class MenuItems extends React.Component<Props, State> {
     render() {
         const { value: items, onChange } = this.props;
         const { currentMenuItem } = this.state;
+        const plugins = getPlugins("cms-menu-item");
 
         return (
             <>
@@ -87,22 +85,17 @@ class MenuItems extends React.Component<Props, State> {
                                         <Menu
                                             handle={<ButtonPrimary>+ Add menu item</ButtonPrimary>}
                                         >
-                                            <MenuItem onClick={() => this.addItem("link")}>
-                                                <Icon icon={<LinkIcon />} />
-                                                &nbsp;&nbsp;Link
-                                            </MenuItem>
-                                            <MenuItem onClick={() => this.addItem("folder")}>
-                                                <Icon icon={<FolderIcon />} />
-                                                &nbsp;&nbsp;Folder
-                                            </MenuItem>
-                                            <MenuItem onClick={() => this.addItem("page")}>
-                                                <Icon icon={<PageIcon />} />
-                                                &nbsp;&nbsp;Page
-                                            </MenuItem>
-                                            <MenuItem onClick={() => this.addItem("pageList")}>
-                                                <Icon icon={<PagesIcon />} />
-                                                &nbsp;&nbsp;Page&nbsp;list
-                                            </MenuItem>
+                                            {plugins.map(pl => (
+                                                <MenuItem
+                                                    key={pl.name}
+                                                    onClick={() => this.addItem(pl)}
+                                                    style={{ whiteSpace: "nowrap" }}
+                                                >
+                                                    <Icon icon={pl.icon} />
+                                                    &nbsp;&nbsp;
+                                                    {pl.title}
+                                                </MenuItem>
+                                            ))}
                                         </Menu>
                                     </div>
                                 </div>
