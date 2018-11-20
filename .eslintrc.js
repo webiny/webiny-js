@@ -1,6 +1,6 @@
 module.exports = {
     parser: "babel-eslint",
-    extends: ["eslint:recommended", "plugin:jest/recommended"],
+    extends: ["eslint:recommended", "plugin:jest/recommended", "plugin:react/recommended"],
     plugins: ["flowtype", "jest", "webiny"],
     env: {
         jest: true,

@@ -8,6 +8,7 @@ import {
 } from "webiny-api/graphql";
 
 const menuFetcher = ctx => ctx.cms.Menu;
+import getMenuBySlug from "./menuResolvers/getMenuBySlug";
 
 export default {
     typeDefs: `
@@ -39,7 +40,7 @@ export default {
             meta: ListMeta
             error: Error
         }
-        
+            
         extend type CmsQuery {
             getMenu(
                 id: ID 
@@ -54,6 +55,11 @@ export default {
                 sort: JSON
                 search: SearchInput
             ): MenuListResponse
+            
+            "Returns menu by given slug."
+            getMenuBySlug(
+                slug: String!
+            ): MenuResponse
         }
         
         extend type CmsMutation {
@@ -74,7 +80,8 @@ export default {
     resolvers: {
         CmsQuery: {
             getMenu: resolveGet(menuFetcher),
-            listMenus: resolveList(menuFetcher)
+            listMenus: resolveList(menuFetcher),
+            getMenuBySlug: getMenuBySlug(menuFetcher)
         },
         CmsMutation: {
             createMenu: resolveCreate(menuFetcher),
