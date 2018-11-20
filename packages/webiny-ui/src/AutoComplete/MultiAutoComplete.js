@@ -47,22 +47,8 @@ export class MultiAutoComplete extends React.Component<Props, State> {
      */
     downshift: any = React.createRef();
 
-    /**
-     * Renders options - based on user's input. It will try to match input text with available options.
-     * @param options
-     * @param isOpen
-     * @param highlightedIndex
-     * @param selectedItem
-     * @param getMenuProps
-     * @param getItemProps
-     * @returns {*}
-     */
-    renderOptions({ options, isOpen, highlightedIndex, getMenuProps, getItemProps }: Object) {
-        if (!isOpen) {
-            return null;
-        }
-
-        const { unique, value, allowFreeInput, useSimpleValues, renderItem } = this.props;
+    getOptions() {
+        const { unique, value, allowFreeInput, useSimpleValues, options } = this.props;
 
         const filtered = options.filter(item => {
             // We need to filter received options.
@@ -102,9 +88,7 @@ export class MultiAutoComplete extends React.Component<Props, State> {
                 }
             } else {
                 const existingValue = filtered.find(
-                    item =>
-                        getOptionText(this.state.inputValue, this.props) ===
-                        getOptionText(item, this.props)
+                    item => this.state.inputValue === getOptionText(item, this.props)
                 );
                 if (!existingValue) {
                     filtered.unshift({ [this.props.textProp]: this.state.inputValue });
@@ -112,7 +96,25 @@ export class MultiAutoComplete extends React.Component<Props, State> {
             }
         }
 
-        if (!filtered.length) {
+        return filtered;
+    }
+
+    /**
+     * Renders options - based on user's input. It will try to match input text with available options.
+     * @param options
+     * @param isOpen
+     * @param highlightedIndex
+     * @param selectedItem
+     * @param getMenuProps
+     * @param getItemProps
+     * @returns {*}
+     */
+    renderOptions({ options, isOpen, highlightedIndex, getMenuProps, getItemProps }: Object) {
+        if (!isOpen) {
+            return null;
+        }
+
+        if (!options.length) {
             return (
                 <Elevation z={1}>
                     <ul {...getMenuProps()}>
@@ -124,10 +126,11 @@ export class MultiAutoComplete extends React.Component<Props, State> {
             );
         }
 
+        const { renderItem } = this.props;
         return (
             <Elevation z={1}>
                 <ul {...getMenuProps()}>
-                    {filtered.map((item, index) => {
+                    {options.map((item, index) => {
                         const itemValue = getOptionValue(item, this.props);
 
                         // Base classes.
@@ -195,7 +198,7 @@ export class MultiAutoComplete extends React.Component<Props, State> {
         const {
             props,
             props: {
-                options,
+                options: rawOptions, // eslint-disable-line
                 allowFreeInput, // eslint-disable-line
                 useSimpleValues, // eslint-disable-line
                 unique,
@@ -208,6 +211,8 @@ export class MultiAutoComplete extends React.Component<Props, State> {
                 ...otherInputProps
             }
         } = this;
+
+        const options = this.getOptions();
 
         let defaultSelectedItem = null;
 
@@ -246,9 +251,11 @@ export class MultiAutoComplete extends React.Component<Props, State> {
                                         const keyCode = keycode(e);
                                         const inputValue = e.target.value || "";
 
-                                        // If user pressed 'esc', 'enter' or similar...
-                                        if (keyCode.length > 1) {
-                                            return;
+                                        // If user pressed enter and free input is allowed, select typed value.
+                                        if (keyCode === "enter") {
+                                            if (this.state.inputValue && options.length) {
+                                                rest.selectItem(options[0]);
+                                            }
                                         }
 
                                         if (inputValue !== this.state.inputValue) {

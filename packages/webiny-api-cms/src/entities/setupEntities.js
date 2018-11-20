@@ -10,7 +10,7 @@ export default ({ user }: Object) => {
     let entities = {};
 
     entities.Category = categoryFactory();
-    entities.Tag = tagFactory();
+    entities.Tag = tagFactory({ entities });
     entities.Tags2Pages = tags2pagesFactory({ user, entities });
     entities.Page = pageFactory({ user, entities });
     entities.Menu = menuFactory();
