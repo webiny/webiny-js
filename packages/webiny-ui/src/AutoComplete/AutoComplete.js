@@ -22,7 +22,7 @@ export class AutoComplete extends React.Component<Props, State> {
         valueProp: "id",
         textProp: "name",
         options: [],
-        useSimpleValue: false,
+        useSimpleValues: false,
         renderItem(item: any) {
             return <Typography use={"body2"}>{getOptionText(item, this.props)}</Typography>;
         }
@@ -68,6 +68,7 @@ export class AutoComplete extends React.Component<Props, State> {
         if (!isOpen) {
             return null;
         }
+        console.log("00", options);
 
         const { renderItem, minInput } = this.props;
 
@@ -143,7 +144,7 @@ export class AutoComplete extends React.Component<Props, State> {
             options,
             value,
             onChange,
-            useSimpleValue, // eslint-disable-line
+            useSimpleValues, // eslint-disable-line
             valueProp, // eslint-disable-line
             textProp, // eslint-disable-line
             onInput,
@@ -209,6 +210,7 @@ export class AutoComplete extends React.Component<Props, State> {
                                         );
                                     },
                                     onFocus: e => {
+                                        console.log("eeeee");
                                         openMenu();
                                         otherInputProps.onFocus && otherInputProps.onFocus(e);
                                     }

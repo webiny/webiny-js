@@ -33,7 +33,7 @@ export class MultiAutoComplete extends React.Component<Props, State> {
         textProp: "name",
         unique: true,
         options: [],
-        useSimpleValue: false,
+        useSimpleValues: false,
         renderItem(item: any) {
             return <Typography use={"body2"}>{getOptionText(item, this.props)}</Typography>;
         }
@@ -63,7 +63,7 @@ export class MultiAutoComplete extends React.Component<Props, State> {
             return null;
         }
 
-        const { unique, value, allowFreeInput, useSimpleValue, renderItem, minInput } = this.props;
+        const { unique, value, allowFreeInput, useSimpleValues, renderItem, minInput } = this.props;
 
         if (minInput && minInput > this.state.inputValue.length) {
             return null;
@@ -100,7 +100,7 @@ export class MultiAutoComplete extends React.Component<Props, State> {
 
         // If free input is allowed, prepend typed value to the list.
         if (allowFreeInput) {
-            if (useSimpleValue) {
+            if (useSimpleValues) {
                 const existingValue = filtered.includes(this.state.inputValue);
                 if (!existingValue) {
                     filtered.unshift(this.state.inputValue);
@@ -202,7 +202,7 @@ export class MultiAutoComplete extends React.Component<Props, State> {
             props: {
                 options,
                 allowFreeInput, // eslint-disable-line
-                useSimpleValue, // eslint-disable-line
+                useSimpleValues, // eslint-disable-line
                 unique,
                 value,
                 onChange,
