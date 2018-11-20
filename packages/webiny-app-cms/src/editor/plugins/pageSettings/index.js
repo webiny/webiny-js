@@ -17,7 +17,10 @@ export default ([
         icon: <SettingsIcon />,
         fields: `
             general {
-                tags
+                tags {
+                    id 
+                    name
+                }
                 layout
             }
     `,
