@@ -4,7 +4,7 @@ import { compose } from "recompose";
 import { withTheme } from "webiny-app-cms/theme";
 import { DelayedOnChange } from "webiny-app-cms/editor/components/DelayedOnChange";
 import { Grid, Cell } from "webiny-ui/Grid";
-import { Tags } from "webiny-ui/Tags";
+import { TagsMultiAutoComplete } from "webiny-app-cms/admin/components/TagsMultiAutoComplete";
 import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
 
@@ -35,7 +35,10 @@ const GeneralSettings = ({ Bind, theme }: Object) => {
                 </Cell>
                 <Cell span={12}>
                     <Bind name={"settings.general.layout"}>
-                        <Select label={"Layout"} description={"Render this page using the selected layout"}>
+                        <Select
+                            label={"Layout"}
+                            description={"Render this page using the selected layout"}
+                        >
                             {theme.layouts.map(({ name, title }) => (
                                 <option key={name} value={name}>
                                     {title}
@@ -46,7 +49,10 @@ const GeneralSettings = ({ Bind, theme }: Object) => {
                 </Cell>
                 <Cell span={12}>
                     <Bind name={"settings.general.tags"}>
-                        <Tags label="Tags" description="Enter tags to filter pages" />
+                        <TagsMultiAutoComplete
+                            label="Tags"
+                            description="Enter tags to filter pages"
+                        />
                     </Bind>
                 </Cell>
                 <Cell span={12}>TODO: add page image</Cell>
@@ -55,6 +61,4 @@ const GeneralSettings = ({ Bind, theme }: Object) => {
     );
 };
 
-export default compose(
-    withTheme()
-)(GeneralSettings);
+export default compose(withTheme())(GeneralSettings);

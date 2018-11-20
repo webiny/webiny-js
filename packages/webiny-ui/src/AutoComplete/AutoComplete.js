@@ -68,7 +68,6 @@ export class AutoComplete extends React.Component<Props, State> {
         if (!isOpen) {
             return null;
         }
-        console.log("00", options);
 
         const { renderItem, minInput } = this.props;
 
@@ -210,7 +209,6 @@ export class AutoComplete extends React.Component<Props, State> {
                                         );
                                     },
                                     onFocus: e => {
-                                        console.log("eeeee");
                                         openMenu();
                                         otherInputProps.onFocus && otherInputProps.onFocus(e);
                                     }
