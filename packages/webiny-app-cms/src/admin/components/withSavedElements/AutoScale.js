@@ -68,16 +68,16 @@ export default class AutoScale extends React.Component<*, *> {
     }
 
     render() {
-        const { scale, width, height } = this.state;
+        const { scale, width } = this.state;
         const { children } = this.props;
 
         return (
             <div
                 ref={this.content}
                 style={{
-                    transform: "scale(" + scale + "), translateX(" + (-width) + "px)",
+                    transform: "scale(" + scale + "), translateX(" + -width + "px)",
                     transformOrigin: "top",
-                    width: width ? width + "px" : "auto",
+                    width: width ? width + "px" : "auto"
                     /* height: height ? height + "px" : "auto" */
                 }}
             >

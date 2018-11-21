@@ -5,7 +5,10 @@ import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ReactComponent as SocialIcon } from "./../../../elementGroups/social/round-people-24px.svg";
-import { createEmbedPlugin, createEmbedSettingsPlugin } from "./../../utils/oembed/createEmbedPlugin";
+import {
+    createEmbedPlugin,
+    createEmbedSettingsPlugin
+} from "./../../utils/oembed/createEmbedPlugin";
 
 export default (): Array<ElementPluginType> => [
     createEmbedPlugin({

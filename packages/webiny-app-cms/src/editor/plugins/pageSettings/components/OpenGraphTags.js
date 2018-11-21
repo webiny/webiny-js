@@ -38,10 +38,7 @@ const MetaTags = ({ prefix, value, onChange, Bind, ...other }: Props) => {
                                 </Bind>
                             </Cell>
                             <Cell span={4}>
-                                <Bind
-                                    name={`${prefix}.${index}.content`}
-                                    validators={["required"]}
-                                >
+                                <Bind name={`${prefix}.${index}.content`} validators={["required"]}>
                                     <Input label={"Content"} />
                                 </Bind>
                             </Cell>
@@ -59,8 +56,7 @@ const MetaTags = ({ prefix, value, onChange, Bind, ...other }: Props) => {
                         <Grid>
                             <Cell span={12}>
                                 <Typography use={"button"}>
-                                    To add other Open Graph tags, click
-                                    {" "}
+                                    To add other Open Graph tags, click{" "}
                                     <ButtonPrimary onClick={actions.add()}>
                                         Add Open Graph tag
                                     </ButtonPrimary>

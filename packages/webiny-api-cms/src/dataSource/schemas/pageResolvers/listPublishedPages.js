@@ -8,17 +8,17 @@ type EntityFetcher = (context: Object) => Class<Entity>;
 export default (entityFetcher: EntityFetcher) => async (
     root: any,
     args: Object,
-    context: Object,
+    context: Object
 ) => {
     const entityClass = entityFetcher(context);
 
-    const { page = 1, perPage = 10, sort = null, tags = null, tagsRule = "ANY" } = args;
+    const { page = 1, perPage = 10, sort = null, tags = null } = args;
     const variables = [];
 
     let where = "WHERE 1=1";
     if (tags) {
         where += ` AND MATCH (title) AGAINST (? IN BOOLEAN MODE)`;
-        variables.push(search);
+        // variables.push(search);
     }
 
     let orderBy = "";

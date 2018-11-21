@@ -36,7 +36,10 @@ export default (): Array<ElementPluginType> => [
                     <Grid>
                         <Cell span={12}>
                             <Bind name={"data.source.url"} validators={["required", "url"]}>
-                                <Input label={"Instagram URL"} description={"Enter an Instagram URL"} />
+                                <Input
+                                    label={"Instagram URL"}
+                                    description={"Enter an Instagram URL"}
+                                />
                             </Bind>
                         </Cell>
                     </Grid>

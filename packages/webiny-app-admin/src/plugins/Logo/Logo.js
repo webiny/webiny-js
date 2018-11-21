@@ -47,7 +47,11 @@ class Logo extends React.Component<*> {
         }
 
         return (
-            <WebinyLogo className={["webiny-logo", className].join(" ")} style={style} alt={altText} />
+            <WebinyLogo
+                className={["webiny-logo", className].join(" ")}
+                style={style}
+                alt={altText}
+            />
         );
     }
 }

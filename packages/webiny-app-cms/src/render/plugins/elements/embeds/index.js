@@ -1,3 +1,4 @@
+// @flow
 import codepen from "./codepen";
 import codesandbox from "./codesandbox";
 import instagram from "./instagram";
@@ -7,4 +8,13 @@ import vimeo from "./vimeo";
 import twitter from "./twitter";
 import pinterest from "./pinterest";
 
-export default [codepen(), codesandbox(), instagram(), soundcloud(), youtube(), vimeo(), twitter(), pinterest()];
+export default [
+    codepen(),
+    codesandbox(),
+    instagram(),
+    soundcloud(),
+    youtube(),
+    vimeo(),
+    twitter(),
+    pinterest()
+];

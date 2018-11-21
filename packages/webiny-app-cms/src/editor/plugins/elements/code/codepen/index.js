@@ -5,7 +5,10 @@ import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ReactComponent as CodeIcon } from "./../../../elementGroups/code/code.svg";
 import type { ElementPluginType } from "webiny-app-cms/types";
-import { createEmbedPlugin, createEmbedSettingsPlugin } from "./../../utils/oembed/createEmbedPlugin";
+import {
+    createEmbedPlugin,
+    createEmbedSettingsPlugin
+} from "./../../utils/oembed/createEmbedPlugin";
 
 export default (): Array<ElementPluginType> => [
     createEmbedPlugin({

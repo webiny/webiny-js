@@ -10,4 +10,15 @@ import spacer from "./spacer";
 import button from "./button";
 import embeds from "./embeds";
 
-export default [document(), row(), block(), column(), image(), icon(), text(), spacer(), button(), ...embeds];
+export default [
+    document(),
+    row(),
+    block(),
+    column(),
+    image(),
+    icon(),
+    text(),
+    spacer(),
+    button(),
+    ...embeds
+];

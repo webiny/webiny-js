@@ -1,14 +1,7 @@
 // @flow
 import * as React from "react";
 import { connect } from "react-redux";
-import {
-    compose,
-    lifecycle,
-    onlyUpdateForKeys,
-    pure,
-    withHandlers,
-    setDisplayName
-} from "recompose";
+import { compose, lifecycle, pure, withHandlers, setDisplayName } from "recompose";
 import { cloneDeep } from "lodash";
 import { merge } from "dot-prop-immutable";
 import { getPlugins, renderPlugins } from "webiny-app/plugins";
@@ -46,7 +39,7 @@ const AdvancedSettings = pure(({ element, theme, open, onClose, onSubmit }: Prop
     return (
         <Dialog open={open} onClose={onClose}>
             <Form data={{ data, settings }} onSubmit={onSubmit}>
-                {({ data, submit, Bind }) => (
+                {({ submit, Bind }) => (
                     <React.Fragment>
                         <DialogHeader>
                             <DialogHeaderTitle>Settings</DialogHeaderTitle>
@@ -113,9 +106,11 @@ export default compose(
     withHandlers({
         onSubmit: ({ element, updateElement, closeDialog }) => (formData: Object) => {
             // Get element settings plugins
-            const plugins = getPlugins("cms-element-advanced-settings").filter(pl => pl.element === element.type);
+            const plugins = getPlugins("cms-element-advanced-settings").filter(
+                pl => pl.element === element.type
+            );
             formData = plugins.reduce((formData, pl) => {
-                if(pl.onSave) {
+                if (pl.onSave) {
                     return pl.onSave(formData);
                 }
                 return formData;

@@ -137,12 +137,11 @@ export class SingleImageUpload extends React.Component<Props, State> {
 
         return (
             <ImageUploadWrapper className={classNames(className)}>
-                {label &&
-                    !value && (
-                        <div className="mdc-floating-label mdc-floating-label--float-above">
-                            {label}
-                        </div>
-                    )}
+                {label && !value && (
+                    <div className="mdc-floating-label mdc-floating-label--float-above">
+                        {label}
+                    </div>
+                )}
 
                 <ImageEditorDialog
                     open={this.state.imageEditor.open}
@@ -188,8 +187,9 @@ export class SingleImageUpload extends React.Component<Props, State> {
                     <FormElementMessage error>{validation.message}</FormElementMessage>
                 )}
 
-                {validation.isValid !== false &&
-                    description && <FormElementMessage>{description}</FormElementMessage>}
+                {validation.isValid !== false && description && (
+                    <FormElementMessage>{description}</FormElementMessage>
+                )}
 
                 {this.state.error && (
                     <FormElementMessage error>

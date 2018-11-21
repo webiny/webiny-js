@@ -11,7 +11,7 @@ export default {
         return (
             <Action
                 plugin={this.name}
-                icon={active ? <ActiveIcon/> : <InactiveIcon/>}
+                icon={active ? <ActiveIcon /> : <InactiveIcon />}
                 tooltip={"Preview"}
                 active={active}
             />
