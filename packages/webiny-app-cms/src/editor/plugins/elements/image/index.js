@@ -61,15 +61,26 @@ export default (): ElementPluginType => {
 
                     next(action);
 
+                    if (!element.type === "cms-element-image") {
+                        return;
+                    }
+
                     // Check the source of the element (could be `saved` element which behaves differently from other elements)
-                    const { onCreate } = getPlugin(source.type);
+                    const imagePlugin = getPlugin(source.type);
+                    if (!imagePlugin) {
+                        return;
+                    }
+
+                    const { onCreate } = imagePlugin;
                     if (!onCreate || onCreate !== "skip") {
                         // If source element does not define a specific `onCreate` behavior - continue with the actual element plugin
-                        document
-                            .querySelector(
-                                `#cms-element-image-${element.id} [data-role="select-image"]`
-                            )
-                            .click();
+                        const image = document.querySelector(
+                            `#cms-element-image-${element.id} [data-role="select-image"]`
+                        );
+
+                        if (image) {
+                            image.click();
+                        }
                     }
                 });
             },
