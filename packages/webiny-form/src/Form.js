@@ -1,10 +1,36 @@
-import React from "react";
+// @flow
+import * as React from "react";
 import _ from "lodash";
+import set from "lodash/fp/set";
 import validation from "./validation";
 import { createBind } from "./Bind";
 import linkState from "./linkState";
+import type { Props as BindProps } from "./Bind";
 
-class Form extends React.Component {
+type Props = {
+    invalidFields?: Object,
+    data?: Object,
+    disabled?: boolean,
+    validateOnFirstSubmit?: boolean,
+    onSubmit?: (data: Object, form: Form) => void,
+    onInvalid?: () => void,
+    onChange?: (data: Object, form: Form) => void,
+    children: ({
+        data: Object,
+        form: Form,
+        submit: ({ event?: SyntheticEvent<*> }) => Promise<void>,
+        Bind: React.ComponentType<BindProps>
+    }) => React.Node
+};
+
+type State = {
+    data: Object,
+    originalData: Object,
+    wasSubmitted: boolean,
+    validation: Object
+};
+
+class Form extends React.Component<Props, State> {
     static defaultProps = {
         data: {},
         disabled: false,
@@ -13,8 +39,8 @@ class Form extends React.Component {
     };
 
     state = {
-        data: this.props.data,
-        originalData: this.props.data,
+        data: this.props.data || {},
+        originalData: this.props.data || {},
         wasSubmitted: false,
         validation: {}
     };
@@ -26,7 +52,7 @@ class Form extends React.Component {
     onChangeFns = {};
     Bind = createBind(this);
 
-    static getDerivedStateFromProps({ data, invalidFields = {} }, state) {
+    static getDerivedStateFromProps({ data, invalidFields = {} }: Props, state: State) {
         // If we received new `data`, overwrite current `data` in the state
         if (!_.isEqual(state.originalData, data)) {
             return { data, originalData: data, validation: {} };
@@ -73,7 +99,7 @@ class Form extends React.Component {
     /**
      * MAIN FORM ACTION METHODS
      */
-    submit = ({ event } = {}) => {
+    submit = ({ event }: { event?: SyntheticEvent<*> } = {}): Promise<void> => {
         // If event is present - prevent default behaviour
         if (event && event.preventDefault) {
             event.preventDefault();
@@ -83,7 +109,16 @@ class Form extends React.Component {
 
         return this.validate().then(valid => {
             if (valid) {
-                const data = this.__removeKeys(this.state.data);
+                let { data } = this.state;
+
+                // Make sure all current inputs have a value in the model (defaultValues do not exist in form data)
+                const inputNames = Object.keys(this.inputs);
+                inputNames.forEach(name => {
+                    if (!_.get(data, name)) {
+                        data = set(name, this.inputs[name].defaultValue, data);
+                    }
+                });
+
                 if (this.props.onSubmit) {
                     return this.props.onSubmit(data, this);
                 }
@@ -124,11 +159,11 @@ class Form extends React.Component {
         return allIsValid;
     };
 
-    validateInput = name => {
+    validateInput = (name: string) => {
         if ((this.props.validateOnFirstSubmit && !this.state.wasSubmitted) || !this.inputs[name]) {
             return Promise.resolve(null);
         }
-        const value = _.get(this.state.data, name);
+        const value = _.get(this.state.data, name, this.inputs[name].defaultValue);
         const { validators, validationMessages } = this.inputs[name];
         const hasValidators = _.keys(validators).length;
 
@@ -229,26 +264,15 @@ class Form extends React.Component {
         return this.validateFns[name];
     };
 
-    __removeKeys = (collection, excludeKeys = ["$key", "$index"]) => {
-        function omitFn(value) {
-            if (value && typeof value === "object") {
-                excludeKeys.forEach(key => {
-                    delete value[key];
-                });
-            }
-        }
-
-        return _.cloneDeepWith(collection, omitFn);
-    };
-
-    __onKeyDown = e => {
+    __onKeyDown = (e: SyntheticKeyboardEvent<*>) => {
         if (
             (e.metaKey || e.ctrlKey) &&
             ["s", "Enter"].indexOf(e.key) > -1 &&
             !e.isDefaultPrevented()
         ) {
             // Need to blur current target in case of input fields to trigger validation
-            e.target.blur();
+            // $FlowFixMe
+            e.target && e.target.blur();
             e.preventDefault();
             e.stopPropagation();
             this.submit();
@@ -265,7 +289,7 @@ class Form extends React.Component {
 
         return (
             <webiny-form-container onKeyDown={this.__onKeyDown}>
-                {children.call(this, {
+                {children({
                     data: _.cloneDeep(this.state.data),
                     form: this,
                     submit: this.submit,

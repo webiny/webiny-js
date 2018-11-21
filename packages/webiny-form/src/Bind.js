@@ -4,7 +4,7 @@ import { get, isFunction } from "lodash";
 import type Form from "./Form";
 import validation from "./validation";
 
-type Props = {
+export type Props = {
     name: string,
     beforeChange?: Function,
     afterChange?: Function,
@@ -32,6 +32,7 @@ const createBind = (form: Form) => {
 
         // Store validators and custom messages
         form.inputs[name] = {
+            defaultValue,
             validators: validation.parseValidators(validators),
             validationMessages
         };
