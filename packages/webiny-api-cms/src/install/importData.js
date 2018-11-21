@@ -10,8 +10,8 @@ export default async (context: Object) => {
         slug: "demo-menu",
         description: "This is a demo menu.",
         items: [
-            { type: "link", title: "Link 1", url: "https://www.google.com", id: "jopxai1f" },
-            { type: "link", title: "Link 2", url: "https://www.duckduckgo.com", id: "jopxaxqh" }
+            { type: "cms-menu-item-link", title: "Link 1", url: "https://www.google.com", id: "jopxai1f" },
+            { type: "cms-menu-item-link", title: "Link 2", url: "https://www.duckduckgo.com", id: "jopxaxqh" }
         ]
     });
 
