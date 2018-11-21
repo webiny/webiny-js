@@ -14,3 +14,16 @@ export type SearchPluginType = PluginType & {
     renderFilters?: ({ Bind: ComponentType<*> }) => Node,
     onSearch?: (data: Object) => void
 };
+
+export type GlobalSearch = PluginType & {
+    label: string,
+    route: string,
+    search?: {
+        operator?: "and" | "or",
+        fields?: Array<string>
+    }
+};
+
+export type HeaderMiddlePlugin = PluginType & {
+    render: ({ content: Node }) => {}
+};

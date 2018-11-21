@@ -44,7 +44,6 @@ type Props = {
     isVisible: boolean
 };
 
-
 const Vertical = pure(({ last, onDrop, isVisible, type }: Props) => {
     return (
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>

@@ -1,3 +1,4 @@
+// @flow
 import React from "react";
 import { css } from "emotion";
 import { renderPlugins, renderPlugin } from "webiny-app/plugins";
