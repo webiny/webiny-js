@@ -8,6 +8,8 @@ class CategoryTable extends MySQLTable {
         this.column("slug").varChar(100);
         this.column("url").varChar(100);
         this.column("layout").varChar(50);
+
+        this.index("slug");
     }
 }
 

@@ -130,11 +130,12 @@ export default {
             ): PageListResponse
             
             listPublishedPages(
-                page: Int
-                perPage: Int
-                sort: PageSortInput
+                category: String
                 tags: [String]
                 tagsRule: TagsRule
+                sort: PageSortInput
+                page: Int
+                perPage: Int
             ): PageListResponse
             
             listElements: ElementListResponse
@@ -188,7 +189,7 @@ export default {
         CmsQuery: {
             getPage: resolveGet(pageFetcher),
             listPages: listPages(pageFetcher),
-            listPublishedPages: listPublishedPages(pageFetcher),
+            listPublishedPages: listPublishedPages,
             listElements: resolveList(elementFetcher),
             oembedData: oembed
         },
