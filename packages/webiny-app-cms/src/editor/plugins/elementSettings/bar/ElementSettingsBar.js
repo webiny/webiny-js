@@ -7,7 +7,6 @@ import { deactivateElement } from "webiny-app-cms/editor/actions";
 import { getPlugin } from "webiny-app/plugins";
 import { getActivePlugin } from "webiny-app-cms/editor/selectors";
 import { withActiveElement, withKeyHandler } from "webiny-app-cms/editor/components";
-import Sidebar from "./components/Sidebar";
 import Menu from "./components/Menu";
 import { ReactComponent as NavigateBeforeIcon } from "webiny-app-cms/editor/assets/icons/navigate_before.svg";
 
@@ -18,10 +17,13 @@ const getElementActions = plugin => {
 
     const actions = plugin.settings.map(name => getPlugin(name || "cms-element-settings-divider"));
 
-    return [...actions, getPlugin("cms-element-settings-save")];
+    return [...actions, getPlugin("cms-element-settings-save")].filter(pl => pl);
 };
 
-const ElementSettingsBar = ({ parent, element, activePlugin, deactivateElement }) => {
+const ElementSettingsBar = ({ element, activePlugin, deactivateElement }) => {
+    if (!element) {
+        return null;
+    }
     const plugin = getPlugin(element.type);
     const actions = getElementActions(plugin);
 
@@ -44,7 +46,7 @@ const ElementSettingsBar = ({ parent, element, activePlugin, deactivateElement }
 
                         return (
                             <div key={plugin.name + "-" + index} style={{ position: "relative" }}>
-                                {plugin.renderAction({ parent, element, active })}
+                                {plugin.renderAction({ element, active })}
                                 {typeof plugin.renderMenu === "function" && (
                                     <Menu plugin={plugin} active={active} />
                                 )}
@@ -53,32 +55,18 @@ const ElementSettingsBar = ({ parent, element, activePlugin, deactivateElement }
                     })}
                 </TopAppBarSection>
             </TopAppBarSecondary>
-            {/*
-            Sidebar component is rendered if an `element-settings` plugin has `renderSidebar` function.
-            This element only serves as a drawer element. Its content is rendered via the relevant `plugin`.
-            See `Advanced` plugin for reference.
-            */}
-            {actions.filter(plugin => typeof plugin.renderSidebar === "function").map(plugin => {
-                return (
-                    <Sidebar
-                        key={plugin.name}
-                        plugin={plugin}
-                        active={activePlugin === plugin.name}
-                    />
-                );
-            })}
         </React.Fragment>
     );
 };
 
 export default compose(
-    withActiveElement(),
     connect(
         state => ({
             activePlugin: getActivePlugin("cms-element-settings")(state)
         }),
         { deactivateElement }
     ),
+    withActiveElement(),
     onlyUpdateForKeys(["element", "activePlugin"]),
     withKeyHandler(),
     lifecycle({

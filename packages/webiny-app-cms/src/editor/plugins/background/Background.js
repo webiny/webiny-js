@@ -9,7 +9,6 @@ const backgroundStyle = css({
     position: "fixed",
     top: 0,
     left: 0,
-    backgroundColor: "#EEEEEE",
     width: "100%",
     minHeight: "100%"
 });

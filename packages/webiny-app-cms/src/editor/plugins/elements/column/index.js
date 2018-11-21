@@ -2,10 +2,16 @@
 import React from "react";
 import styled from "react-emotion";
 import { set } from "dot-prop-immutable";
+import { redux } from "webiny-app-cms/editor/redux";
 import Column from "./Column";
-import { createElement, createColumn, cloneElement } from "webiny-app-cms/editor/utils";
-import { updateElement, deleteElement } from "webiny-app-cms/editor/actions";
-import { getParentElement } from "webiny-app-cms/editor/selectors";
+import {
+    createElement,
+    createColumn,
+    cloneElement,
+    addElementToParent
+} from "webiny-app-cms/editor/utils";
+import { updateElement, deleteElement, elementCreated } from "webiny-app-cms/editor/actions";
+import { getParentElementWithChildren } from "webiny-app-cms/editor/selectors";
 import { ReactComponent as ColumnIcon } from "webiny-app-cms/editor/assets/icons/column-icon.svg";
 import type { ElementPluginType } from "webiny-app-cms/types";
 
@@ -45,8 +51,7 @@ export default (): ElementPluginType => {
             "",
             "cms-element-settings-clone",
             "cms-element-settings-delete",
-            "",
-            "cms-element-settings-advanced"
+            ""
         ],
         target: ["cms-element-row"],
         create(options = {}) {
@@ -63,53 +68,71 @@ export default (): ElementPluginType => {
         render(props) {
             return <Column {...props} />;
         },
-        canDelete({ parent }) {
+        canDelete({ element }) {
+            const parent = getParentElementWithChildren(redux.store.getState(), element.id);
             return parent.elements.length > 1;
         },
-        onReceived({ store, source, target, position = null }) {
+        onReceived({ source, target, position = null }) {
             const droppedOnCenter = position === null;
 
-            let row = getParentElement(store.getState(), target.path);
-            const targetIndex = row.elements.findIndex(el => el.id === target.id);
-
             // Dropped a column onto a center drop zone
-            if (source.type === "column" && droppedOnCenter) {
-                // Split target column in half
-                row.elements[targetIndex].data.width /= 2;
-                // Create a new column with half of the original target width
-                let newColumn = source.path ? cloneElement(source) : createColumn();
-                newColumn = set(newColumn, "data.width", row.elements[targetIndex].data.width);
-
-                row = addElementToParent(newColumn, row, targetIndex + 1);
-                store.dispatch(updateElement({ element: row }));
-                if (source.path) {
-                    store.dispatch(deleteElement({ element: source }));
-                }
-                return;
+            if (source.type === "cms-element-column" && droppedOnCenter) {
+                return splitColumn(source, target);
             }
 
-            let element = source.path
-                ? cloneElement(source)
-                : createElement(source.type, {}, target);
-
-            target = addElementToParent(element, target, position);
-            store.dispatch(updateElement({ element: target }));
-
-            if (source.path) {
-                store.dispatch(deleteElement({ element: source }));
-            }
+            handleDroppedElement(source, target, position);
         }
     };
 };
 
-const addElementToParent = (element, parent, position) => {
-    if (position === null) {
-        return set(parent, "elements", [...parent.elements, element]);
+const handleDroppedElement = (source, target, position) => {
+    let dispatchNew = false;
+    let element;
+    if (source.path) {
+        element = cloneElement(source);
+    } else {
+        dispatchNew = true;
+        element = createElement(source.type, {}, target);
     }
 
-    return set(parent, "elements", [
-        ...parent.elements.slice(0, position),
-        element,
-        ...parent.elements.slice(position)
-    ]);
+    target = addElementToParent(element, target, position);
+    redux.store.dispatch(updateElement({ element: target }));
+
+    if (source.path) {
+        redux.store.dispatch(deleteElement({ element: source }));
+    }
+
+    if (dispatchNew) {
+        redux.store.dispatch(elementCreated({ element, source }));
+    }
+};
+
+const splitColumn = (source, target) => {
+    let dispatchNew = false;
+    let row = getParentElementWithChildren(redux.store.getState(), target.id);
+    const targetIndex = row.elements.findIndex(el => el.id === target.id);
+
+    // Split target column in half
+    row.elements[targetIndex].data.width /= 2;
+
+    // Create a new column with half of the original target width
+    let newColumn;
+    if (source.path) {
+        newColumn = cloneElement(source);
+    } else {
+        dispatchNew = true;
+        newColumn = createColumn();
+    }
+    newColumn = set(newColumn, "data.width", row.elements[targetIndex].data.width);
+
+    row = addElementToParent(newColumn, row, targetIndex + 1);
+    redux.store.dispatch(updateElement({ element: row }));
+
+    if (source.path) {
+        redux.store.dispatch(deleteElement({ element: source }));
+    }
+
+    if (dispatchNew) {
+        redux.store.dispatch(elementCreated({ element: newColumn, source }));
+    }
 };

@@ -1,6 +1,5 @@
 import React from "react";
 import { DragLayer } from "react-dnd";
-import styled from "react-emotion";
 
 const layerStyles = {
     position: "fixed",
@@ -12,51 +11,52 @@ const layerStyles = {
     height: "100%"
 };
 
-function getItemStyles(props) {
-    const { currentOffset } = props;
-    if (!currentOffset) {
-        return {
-            display: "none"
-        };
+let subscribedToOffsetChange = false;
+
+let dragPreviewRef = null;
+
+const onOffsetChange = monitor => () => {
+    if (!dragPreviewRef) return;
+
+    const offset = monitor.getClientOffset();
+    if (!offset) return;
+
+    const transform = `translate(${offset.x - 15}px, ${offset.y - 15}px)`;
+    dragPreviewRef.style["transform"] = transform;
+    dragPreviewRef.style["-webkit-transform"] = transform;
+};
+
+export default DragLayer(monitor => {
+    if (!subscribedToOffsetChange) {
+        monitor.subscribeToOffsetChange(onOffsetChange(monitor));
+        subscribedToOffsetChange = true;
     }
 
-    const { x, y } = currentOffset;
-    const transform = `translate(${x - SIZE / 2 }px, ${y - SIZE / 2}px)`;
     return {
-        transform: transform,
-        WebkitTransform: transform
+        item: monitor.getItem(),
+        itemType: monitor.getItemType(),
+        currentOffset: monitor.getClientOffset(),
+        isDragging: monitor.isDragging()
     };
-}
-
-const SIZE = 30;
-
-const Circle = styled("div")({
-    width: SIZE,
-    height: SIZE,
-    backgroundColor: "var(--mdc-theme-primary)",
-    borderRadius: "50%"
-});
-
-class CustomDragLayer extends React.Component {
-    render() {
-        const { isDragging } = this.props;
+})(
+    React.memo(({ isDragging }) => {
         if (!isDragging) {
             return null;
         }
 
         return (
             <div style={layerStyles}>
-                <div style={getItemStyles(this.props)}>
-                    <Circle/>
+                <div style={{ display: "block" }} ref={el => (dragPreviewRef = el)}>
+                    <div
+                        style={{
+                            width: 30,
+                            height: 30,
+                            backgroundColor: "var(--mdc-theme-primary)",
+                            borderRadius: "50%"
+                        }}
+                    />
                 </div>
             </div>
         );
-    }
-}
-
-export default DragLayer(monitor => ({
-    item: monitor.getItem(),
-    itemType: monitor.getItemType(),
-    currentOffset: monitor.getClientOffset(),
-    isDragging: monitor.isDragging()
-}))(CustomDragLayer);
+    })
+);

@@ -1,62 +1,62 @@
+// @flow
+import { addPlugin, getPlugins } from "webiny-api/plugins";
 import { dummyResolver } from "webiny-api/graphql";
-import setupEntities from "./setupEntities";
-import resolveUser from "./schemas/typeResolvers/resolveUser";
+import setupEntities from "../entities/setupEntities";
+import plugins from "../plugins";
 
-import page from "./schemas/Page.schema";
-import category from "./schemas/Category.schema";
+import page from "./schemas/Page";
+import category from "./schemas/Category";
+import menu from "./schemas/Menu";
+import tag from "./schemas/Tag";
 
-export default {
-    namespace: "cms",
-    typeDefs: `
-        type Author {
-            id: ID
-            firstName: String
-            lastName: String
-            email: String
+export default () => {
+    // Register plugins
+    addPlugin(...plugins);
+
+    // Create dataSource
+    return {
+        namespace: "cms",
+        typeDefs: [
+            `
+            type CmsQuery {
+                _empty: String
+            }
+            
+            type CmsMutation {
+                _empty: String
+            }
+            
+            type Query {
+                cms: CmsQuery
+            }
+            
+            type Mutation {
+                cms: CmsMutation
+            }
+        `,
+            page.typeDefs,
+            category.typeDefs,
+            menu.typeDefs,
+            tag.typeDefs,
+            ...getPlugins("cms-schema").map(pl => pl.typeDefs)
+        ],
+        resolvers: [
+            {
+                Query: {
+                    cms: dummyResolver
+                },
+                Mutation: {
+                    cms: dummyResolver
+                }
+            },
+            page.resolvers,
+            category.resolvers,
+            menu.resolvers,
+            tag.resolvers,
+            ...getPlugins("cms-schema").map(pl => pl.resolvers)
+        ],
+        context: (ctx: Object) => {
+            return setupEntities(ctx);
         }
-        
-        ${page.typeDefs}
-        ${category.typeDefs}
-        
-        type CmsQuery {
-            ${page.queryFields}
-            ${category.queryFields}
-        }
-        
-        type CmsMutation {
-            ${page.mutationFields}
-            ${category.mutationFields}
-        }
-        
-        type Query {
-            cms: CmsQuery
-        }
-        
-        type Mutation {
-            cms: CmsMutation
-        }
-    `,
-    resolvers: {
-        Query: {
-            cms: dummyResolver
-        },
-        Mutation: {
-            cms: dummyResolver
-        },
-        CmsQuery: {
-            ...page.queryResolvers,
-            ...category.queryResolvers
-        },
-        CmsMutation: {
-            ...page.mutationResolvers,
-            ...category.mutationResolvers
-        },
-        Page: {
-            createdBy: resolveUser("createdBy"),
-            updatedBy: resolveUser("updatedBy")
-        }
-    },
-    context: (ctx: Object) => {
-        return setupEntities(ctx);
-    }
+    };
 };

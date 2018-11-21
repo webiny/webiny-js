@@ -1,3 +1,4 @@
+// @flow
 import { Entity } from "webiny-entity";
 import type { Role } from "./Role.entity";
 

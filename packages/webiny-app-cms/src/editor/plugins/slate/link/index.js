@@ -33,8 +33,9 @@ export default () => {
                         if (node.type === "link") {
                             const { data } = node;
                             const href = data.get("href");
+                            const noFollow = data.get("noFollow");
                             return (
-                                <a {...attributes} href={href}>
+                                <a {...attributes} {...{ href, rel: noFollow ? "nofollow" : null }}>
                                     {children}
                                 </a>
                             );

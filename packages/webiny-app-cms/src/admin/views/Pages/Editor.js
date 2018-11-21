@@ -1,55 +1,39 @@
 // @flow
 import React from "react";
 import { Provider } from "react-redux";
-import { compose } from "recompose";
+import { compose, withHandlers } from "recompose";
 import { Editor as CmsEditor } from "webiny-app-cms/editor";
 import { createElement } from "webiny-app-cms/editor/utils";
 import { redux } from "webiny-app-cms/editor/redux";
+import { SETUP_EDITOR } from "webiny-app-cms/editor/actions";
 import { withRouter } from "webiny-app/components";
-import { graphql, withApollo } from "react-apollo";
+import { Query, withApollo } from "react-apollo";
 import { getPage } from "webiny-app-cms/admin/graphql/pages";
 import { withSavedElements } from "webiny-app-cms/admin/components";
 import Snackbar from "webiny-app-admin/plugins/Snackbar/Snackbar";
 
-let store = null;
+const getEmptyData = (page = {}, revisions = []) => {
+    return {
+        ui: {
+            activeElement: null,
+            dragging: false,
+            highlightElement: null,
+            plugins: {},
+            resizing: false
+        },
+        tmp: {},
+        page,
+        revisions
+    };
+};
 
-const Editor = ({ data, client, elements }: Object) => {
-    if (data.loading || !Array.isArray(elements)) {
-        return <div>Loading editor...</div>;
-    }
+let pageSet = null;
 
-    const { revisions, ...page } = data.cms.page.data;
-    if (!page.content) {
-        page.content = createElement("cms-element-document");
-    }
-
-    if (!store) {
-        store = redux.initStore(
-            {
-                ui: {
-                    activeElement: null,
-                    dragging: false,
-                    highlightElement: null,
-                    plugins: {},
-                    resizing: false
-                },
-                tmp: {},
-                page,
-                revisions
-            },
-            { client }
-        );
-    }
-
+const Editor = ({ renderEditor, router }: Object) => {
     return (
-        <React.Fragment>
-            <Provider store={store}>
-                <CmsEditor />
-            </Provider>
-            <div style={{ zIndex: 10, position: "absolute" }}>
-                <Snackbar />
-            </div>
-        </React.Fragment>
+        <Query query={getPage()} variables={{ id: router.getParams("id") }}>
+            {renderEditor}
+        </Query>
     );
 };
 
@@ -57,10 +41,43 @@ export default compose(
     withApollo,
     withRouter(),
     withSavedElements(),
-    graphql(getPage, {
-        options: ({ router }) => {
-            const { id } = router.getParams();
-            return { variables: { id } };
+    withHandlers({
+        // eslint-disable-next-line react/display-name
+        renderEditor: ({ elements, client }) => ({ data, loading }) => {
+            if (loading || !Array.isArray(elements)) {
+                return <div>Loading editor...</div>;
+            }
+
+            if (!redux.store) {
+                redux.initStore({}, { client });
+            }
+
+            if (!loading) {
+                const { revisions, ...page } = data.cms.page.data;
+                if (!page.content) {
+                    page.content = createElement("cms-element-document");
+                }
+
+                if (pageSet !== page.id) {
+                    pageSet = page.id;
+                    redux.store.dispatch({
+                        type: SETUP_EDITOR,
+                        payload: getEmptyData(page, revisions)
+                    });
+                    redux.store.dispatch({ type: "@@redux-undo/INIT" });
+                }
+            }
+
+            return (
+                <React.Fragment>
+                    <Provider store={redux.store}>
+                        <CmsEditor />
+                    </Provider>
+                    <div style={{ zIndex: 10, position: "absolute" }}>
+                        <Snackbar />
+                    </div>
+                </React.Fragment>
+            );
         }
     })
 )(Editor);

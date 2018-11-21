@@ -1,15 +1,13 @@
 // @flow
 import React from "react";
-import invariant from "invariant";
 import { get } from "dot-prop-immutable";
 import { connect } from "react-redux";
 import styled from "react-emotion";
-import compose from "recompose/compose";
-import { getPlugins, getPlugin } from "webiny-app/plugins";
+import { compose, pure } from "recompose";
+import { getPlugins } from "webiny-app/plugins";
 import { withTheme } from "webiny-app-cms/theme";
-import { getContent, getActivePlugin } from "webiny-app-cms/editor/selectors";
+import { getContent, getActivePlugin, getPage } from "webiny-app-cms/editor/selectors";
 import Element from "webiny-app-cms/editor/components/Element";
-import RenderElement from "webiny-app-cms/render/components/Element";
 
 const ContentContainer = styled("div")(({ theme }) => ({
     margin: "64px 0px 0 54px",
@@ -22,7 +20,7 @@ const ContentContainer = styled("div")(({ theme }) => ({
     boxShadow: "inset 1px 0px 5px 0px rgba(128, 128, 128, 1)",
     boxSizing: "border-box",
     zIndex: 1,
-    ...get(theme, "elements.body", {})
+    backgroundColor: get(theme, "colors.background")
 }));
 
 const BaseContainer = styled("div")({
@@ -31,46 +29,30 @@ const BaseContainer = styled("div")({
     margin: "0 auto"
 });
 
-const renderPreview = (content, activePreview) => {
-    const plugin = getPlugin(activePreview);
+const Content = pure(({ rootElement, theme, renderLayout, layout }) => {
+    const plugins = getPlugins("cms-editor-content");
+    const themeLayout = theme.layouts.find(l => l.name === layout);
 
-    if (!plugin) {
-        return content;
+    if (renderLayout && !themeLayout) {
+        return `Layout "${layout}" was not found in your theme!`;
     }
 
-    const wrappedContent = plugin.renderPreview({ content });
-    invariant(
-        React.isValidElement(wrappedContent),
-        `"${plugin.name}" must return a valid React element from "renderPreview" function!`
-    );
+    let content = <Element id={rootElement.id} />;
 
-    return wrappedContent;
-};
-
-const Content = ({ content, theme, previewLayout, activePreview, renderContent }) => {
-    const plugins = getPlugins("cms-editor-content");
-    const layout = (previewLayout && getPlugin(previewLayout)) || null;
-
-    let renderedContent = renderContent ? (
-        <RenderElement element={content} />
-    ) : (
-        <Element element={content} />
-    );
-
-    renderedContent = layout ? layout.render(renderedContent) : renderedContent;
+    content = renderLayout ? React.createElement(themeLayout.component, null, content) : content;
 
     return (
         <ContentContainer theme={theme}>
             {plugins.map(plugin => React.cloneElement(plugin.render(), { key: plugin.name }))}
-            <BaseContainer>{renderPreview(renderedContent, activePreview)}</BaseContainer>
+            <BaseContainer>{content}</BaseContainer>
         </ContentContainer>
     );
-};
+});
 
 const stateToProps = state => ({
-    content: getContent(state),
-    previewLayout: state.previewLayout,
-    activePreview: getActivePlugin("cms-editor-content-preview")(state)
+    rootElement: state.elements[getContent(state).id],
+    layout: get(getPage(state), "settings.general.layout"),
+    renderLayout: getActivePlugin("cms-toolbar-top")(state) === "cms-toolbar-preview"
 });
 
 export default compose(

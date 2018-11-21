@@ -1,7 +1,9 @@
+// @flow
 import _ from "lodash";
 import invariant from "invariant";
 import dotProp from "dot-prop-immutable";
-import undoable from "redux-undo";
+import gql from "graphql-tag";
+import { isEqual, pick, debounce, cloneDeep } from "lodash";
 import {
     createAction,
     addMiddleware,
@@ -9,13 +11,18 @@ import {
     addHigherOrderReducer
 } from "webiny-app-cms/editor/redux";
 import { getPlugin } from "webiny-app/plugins";
-import { getElement, getParentElement } from "webiny-app-cms/editor/selectors";
-import { updateChildPaths, createElement } from "webiny-app-cms/editor/utils";
+import {
+    getPage,
+    getElementWithChildren,
+    getParentElementWithChildren
+} from "webiny-app-cms/editor/selectors";
+import { updateChildPaths } from "webiny-app-cms/editor/utils";
+import undoable from "./history";
 
 export const PREFIX = "[CMS]";
-
 export const DRAG_START = `${PREFIX} Drag start`;
 export const DRAG_END = `${PREFIX} Drag end`;
+export const ELEMENT_CREATED = `${PREFIX} Element created`;
 export const ELEMENT_DROPPED = `${PREFIX} Element dropped`;
 export const TOGGLE_PLUGIN = `${PREFIX} Toggle plugin`;
 export const DEACTIVATE_PLUGIN = `${PREFIX} Deactivate plugin`;
@@ -26,14 +33,22 @@ export const ACTIVATE_ELEMENT = `${PREFIX} Activate element`;
 export const DEACTIVATE_ELEMENT = `${PREFIX} Deactivate element`;
 export const UPDATE_ELEMENT = `${PREFIX} Update element`;
 export const DELETE_ELEMENT = `${PREFIX} Delete element`;
+export const FLATTEN_ELEMENTS = `${PREFIX} Flatten elements`;
 export const SET_TMP = `${PREFIX} Set tmp`;
+export const SETUP_EDITOR = `${PREFIX} Setup editor`;
+export const UPDATE_REVISION = `${PREFIX} Update revision`;
+export const SAVING_REVISION = `${PREFIX} Save revision`;
+export const START_SAVING = `${PREFIX} Started saving`;
+export const FINISH_SAVING = `${PREFIX} Finished saving`;
 
+/***************** HISTORY REDUCER *****************/
 const horStatePath = "page.content";
 addHigherOrderReducer(
     [
         UPDATE_ELEMENT,
         DELETE_ELEMENT,
         ELEMENT_DROPPED,
+        SETUP_EDITOR,
         "@@redux-undo/UNDO",
         "@@redux-undo/REDO",
         "@@redux-undo/INIT"
@@ -57,6 +72,7 @@ addHigherOrderReducer(
             },
             {
                 initTypes: ["@@redux-undo/INIT"],
+                ignoreInitialState: true,
                 filter: action => {
                     if (action.payload && action.payload.history === false) {
                         return false;
@@ -75,18 +91,14 @@ addReducer(
     state => state
 );
 
-addReducer(["SETUP_EDITOR"], "editor", (state = null, action) => {
-    const editorState = { ...state, ...action.payload };
-    if (!editorState.revision.content) {
-        console.log("Creating initial content");
-        editorState.revision.content = createElement("cms-element-document");
-    }
-    return editorState;
-});
-
+/***************** EDITOR ACTIONS *****************/
 export const setTmp = createAction(SET_TMP);
 addReducer([SET_TMP], "tmp", (state, action) => {
     return dotProp.set(state, action.payload.key, action.payload.value);
+});
+
+addReducer([SETUP_EDITOR], null, (state, action) => {
+    return { ...state, ...action.payload };
 });
 
 export const togglePlugin = createAction(TOGGLE_PLUGIN);
@@ -94,6 +106,10 @@ addReducer([TOGGLE_PLUGIN], "ui.plugins", (state, action) => {
     const { name, params } = action.payload;
 
     const plugin = getPlugin(name);
+
+    if (!plugin) {
+        return;
+    }
 
     return dotProp.set(
         state,
@@ -106,6 +122,9 @@ export const deactivatePlugin = createAction(DEACTIVATE_PLUGIN);
 addReducer([DEACTIVATE_PLUGIN], "ui.plugins", (state, action) => {
     const { name } = action.payload;
     const plugin = getPlugin(name);
+    if (!plugin) {
+        return;
+    }
     return { ...state, [plugin.type]: null };
 });
 
@@ -134,6 +153,8 @@ addReducer([DRAG_START], "ui.dragging", () => true);
 export const dragEnd = createAction(DRAG_END);
 addReducer([DRAG_END], "ui.dragging", () => false);
 
+export const elementCreated = createAction(ELEMENT_CREATED);
+
 export const updateElement = createAction(UPDATE_ELEMENT);
 addReducer(
     [UPDATE_ELEMENT],
@@ -142,6 +163,7 @@ addReducer(
         if (element.type === "cms-element-document") {
             return "page.content";
         }
+        // .slice(2) removes `0.` from the beginning of the generated path
         return "page.content." + action.payload.element.path.replace(/\./g, ".elements.").slice(2);
     },
     (state, action) => {
@@ -156,17 +178,22 @@ addMiddleware([DELETE_ELEMENT], ({ store, next, action }) => {
     next(action);
 
     store.dispatch(deactivateElement());
+    const state = store.getState();
 
-    const { element } = action.payload;
+    let { element } = action.payload;
+    let parent = getParentElementWithChildren(state, element.id);
 
     // Remove child from parent
-    let parent = getParentElement(store.getState(), element.path);
     const index = parent.elements.findIndex(el => el.id === element.id);
     parent = dotProp.delete(parent, "elements." + index);
     store.dispatch(updateElement({ element: parent }));
 
     // Execute `onChildDeleted` if defined
     const plugin = getPlugin(parent.type);
+    if (!plugin) {
+        return;
+    }
+
     if (typeof plugin.onChildDeleted === "function") {
         plugin.onChildDeleted({ element: parent, child: element });
     }
@@ -177,8 +204,12 @@ addMiddleware([ELEMENT_DROPPED], ({ store, next, action }) => {
     next(action);
 
     const state = store.getState();
-    const target = getElement(state, action.payload.target.path);
+    const target = getElementWithChildren(state, action.payload.target.id);
     const plugin = getPlugin(target.type);
+
+    if (!plugin) {
+        return;
+    }
 
     invariant(
         plugin.onReceived,
@@ -187,13 +218,160 @@ addMiddleware([ELEMENT_DROPPED], ({ store, next, action }) => {
 
     let { source } = action.payload;
     if (source.path) {
-        source = getElement(store.getState(), source.path);
+        source = getElementWithChildren(state, source.id);
     }
 
-    getPlugin(target.type).onReceived({
-        store,
+    const targetPlugin = getPlugin(target.type);
+    if (!targetPlugin) {
+        return;
+    }
+
+    targetPlugin.onReceived({
         source,
         target,
         position: action.payload.target.position
     });
+});
+
+export const updateRevision = createAction(UPDATE_REVISION);
+addMiddleware([UPDATE_REVISION], ({ store, next, action }) => {
+    next(action);
+
+    if (action.payload.history === false) {
+        return;
+    }
+
+    const { onFinish } = action.meta;
+    store.dispatch(saveRevision(null, { onFinish }));
+});
+
+addReducer([UPDATE_REVISION], "page", (state, action) => {
+    return { ...state, ...action.payload };
+});
+
+// Flatten page content
+const flattenContent = el => {
+    let els = {};
+    el.elements =
+        Array.isArray(el.elements) &&
+        el.elements.map(child => {
+            els = { ...els, ...flattenContent(child) };
+            return child.id;
+        });
+
+    els[el.id] = el;
+    return els;
+};
+
+// TODO: remove elements flattening
+addReducer([FLATTEN_ELEMENTS], "elements", (state, action) => {
+    return action.payload;
+});
+addMiddleware(
+    [UPDATE_ELEMENT, DELETE_ELEMENT, "@@redux-undo/UNDO", "@@redux-undo/REDO", "@@redux-undo/INIT"],
+    ({ store, next, action }) => {
+        const result = next(action);
+
+        const state = store.getState();
+        if (state.page.content) {
+            const content = dotProp.get(state, "page.content.present") || null;
+            if (!content) {
+                return result;
+            }
+            const elements = flattenContent(cloneDeep(content));
+            store.dispatch({ type: FLATTEN_ELEMENTS, payload: elements, meta: { log: true } });
+        }
+
+        return result;
+    }
+);
+
+/************************* SAVE REVISION *************************/
+let lastSavedRevision = null;
+const dataChanged = revision => {
+    if (!lastSavedRevision) {
+        return true;
+    }
+
+    const { content, ...other } = revision;
+    const { content: lastContent, ...lastOther } = lastSavedRevision;
+
+    return !isEqual(content, lastContent) || !isEqual(other, lastOther);
+};
+
+export const saveRevision = createAction(SAVING_REVISION);
+let debouncedSave = null;
+addMiddleware(
+    [UPDATE_REVISION, UPDATE_ELEMENT, DELETE_ELEMENT, "@@redux-undo/UNDO", "@@redux-undo/REDO"],
+    ({ store, next, action }) => {
+        next(action);
+
+        const { onFinish } = action.meta || {};
+
+        if (action.type === UPDATE_ELEMENT && action.payload.history === false) {
+            return;
+        }
+
+        if (debouncedSave) {
+            debouncedSave.cancel();
+        }
+
+        debouncedSave = debounce(() => store.dispatch(saveRevision(null, { onFinish })), 1000);
+        debouncedSave();
+    }
+);
+
+const startSaving = { type: START_SAVING, payload: { progress: true } };
+const finishSaving = { type: FINISH_SAVING, payload: { progress: false } };
+
+addReducer([START_SAVING, FINISH_SAVING], "ui.saving", (state, action) => {
+    return action.payload.progress;
+});
+
+addMiddleware([SAVING_REVISION], ({ store, next, action }) => {
+    next(action);
+
+    // Construct page payload
+    const data = getPage(store.getState());
+    const revision = pick(data, ["title", "snippet", "url", "settings"]);
+    revision.content = data.content.present;
+    revision.category = data.category.id;
+
+    // Check if API call is necessary
+    if (!dataChanged(revision)) {
+        return;
+    }
+
+    lastSavedRevision = revision;
+
+    const updateRevision = gql`
+        mutation UpdateRevision($id: ID!, $data: UpdatePageInput!) {
+            cms {
+                updateRevision(id: $id, data: $data) {
+                    data {
+                        id
+                    }
+                    error {
+                        code
+                        message
+                        data
+                    }
+                }
+            }
+        }
+    `;
+
+    store.dispatch(startSaving);
+
+    action.meta.client
+        .mutate({ mutation: updateRevision, variables: { id: data.id, data: revision } })
+        .then(data => {
+            store.dispatch(finishSaving);
+            action.meta.onFinish && action.meta.onFinish();
+            return data;
+        })
+        .catch(err => {
+            store.dispatch(finishSaving);
+            console.log(err);
+        });
 });

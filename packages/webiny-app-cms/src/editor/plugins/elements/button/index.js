@@ -1,12 +1,13 @@
 // @flow
 import React from "react";
-import Button from "./Button";
 import { createValue } from "webiny-app-cms/editor/components/Slate";
-import { Select } from "webiny-ui/Select";
-import { Input } from "webiny-ui/Input";
-import { Switch } from "webiny-ui/Switch";
-import { Grid, Cell } from "webiny-ui/Grid";
 import type { ElementPluginType } from "webiny-app-cms/types";
+import { ReactComponent as ButtonIcon } from "./round-toggle_on-24px.svg";
+import { ReactComponent as LinkIcon } from "./round-link-24px.svg";
+import ButtonSettings from "./ButtonSettings";
+import LinkSettings from "./LinkSettings";
+import Button from "./Button";
+import Action from "../../elementSettings/Action";
 
 export default (): ElementPluginType => {
     return [
@@ -21,8 +22,11 @@ export default (): ElementPluginType => {
                 }
             },
             settings: [
-                "cms-element-settings-background",
+                "cms-element-settings-button",
+                "cms-element-settings-icon",
+                "cms-element-settings-link",
                 "",
+                "cms-element-settings-background",
                 "cms-element-settings-border",
                 "cms-element-settings-shadow",
                 "",
@@ -31,8 +35,7 @@ export default (): ElementPluginType => {
                 "",
                 "cms-element-settings-clone",
                 "cms-element-settings-delete",
-                "",
-                "cms-element-settings-advanced"
+                ""
             ],
             target: ["cms-element-column", "cms-element-row"],
             create(options) {
@@ -48,43 +51,37 @@ export default (): ElementPluginType => {
             }
         },
         {
-            name: "cms-element-sidebar-button",
-            type: "cms-element-sidebar",
-            element: "cms-element-button",
-            render({ Bind, theme }) {
-                const { types } = theme.elements.button;
-
+            name: "cms-element-settings-button",
+            type: "cms-element-settings",
+            renderAction({ active }: { active: boolean }) {
                 return (
-                    <React.Fragment>
-                        <Grid>
-                            <Cell span={12}>
-                                <Bind name={"type"} defaultValue={""}>
-                                    <Select description={"Button type"}>
-                                        {types.map(type => (
-                                            <option key={type.className} value={type.className}>
-                                                {type.label}
-                                            </option>
-                                        ))}
-                                    </Select>
-                                </Bind>
-                            </Cell>
-                        </Grid>
-                        <Grid>
-                            <Cell span={12}>
-                                <Bind name={"href"} defaultValue={""} validators={["url"]}>
-                                    <Input description={"On click, go to this URL."} />
-                                </Bind>
-                            </Cell>
-                        </Grid>
-                        <Grid>
-                            <Cell span={12}>
-                                <Bind name={"newTab"} defaultValue={false}>
-                                    <Switch description={"New tab"} />
-                                </Bind>
-                            </Cell>
-                        </Grid>
-                    </React.Fragment>
+                    <Action
+                        plugin={this.name}
+                        tooltip={"Button"}
+                        active={active}
+                        icon={<ButtonIcon />}
+                    />
                 );
+            },
+            renderMenu() {
+                return <ButtonSettings />;
+            }
+        },
+        {
+            name: "cms-element-settings-link",
+            type: "cms-element-settings",
+            renderAction({ active }: { active: boolean }) {
+                return (
+                    <Action
+                        plugin={this.name}
+                        tooltip={"Link"}
+                        active={active}
+                        icon={<LinkIcon />}
+                    />
+                );
+            },
+            renderMenu() {
+                return <LinkSettings />;
             }
         }
     ];

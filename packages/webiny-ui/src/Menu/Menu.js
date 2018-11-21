@@ -80,6 +80,10 @@ class Menu extends React.Component<Props, State> {
         menu.style.top = anchorRect.top + "px";
     }
 
+    openMenu = () => this.setState({ menuIsOpen: true });
+
+    closeMenu = () => this.setState({ menuIsOpen: false });
+
     renderMenuWithPortal = () => {
         return ReactDOM.createPortal(
             <div ref={this.menuRef}>
@@ -87,7 +91,7 @@ class Menu extends React.Component<Props, State> {
                     anchorCorner={this.props.anchor}
                     open={this.state.menuIsOpen}
                     className={this.props.className}
-                    onClose={() => this.setState({ menuIsOpen: false })}
+                    onClose={this.closeMenu}
                     onSelect={this.props.onSelect}
                 >
                     {this.props.children}
@@ -98,12 +102,12 @@ class Menu extends React.Component<Props, State> {
     };
 
     renderCustomContent = () => {
+        const { children } = this.props;
         return (
-            <MenuSurface
-                open={this.state.menuIsOpen}
-                onClose={() => this.setState({ menuIsOpen: false })}
-            >
-                {this.props.children}
+            <MenuSurface open={this.state.menuIsOpen} onClose={this.closeMenu}>
+                {typeof children === "function"
+                    ? children({ closeMenu: this.closeMenu })
+                    : children}
             </MenuSurface>
         );
     };
@@ -120,9 +124,7 @@ class Menu extends React.Component<Props, State> {
                 {this.renderMenuContent()}
                 {this.props.handle &&
                     /* $FlowFixMe */
-                    React.cloneElement(this.props.handle, {
-                        onClick: () => this.setState({ menuIsOpen: true })
-                    })}
+                    React.cloneElement(this.props.handle, { onClick: this.openMenu })}
             </MenuSurfaceAnchor>
         );
     }

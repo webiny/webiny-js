@@ -113,6 +113,10 @@ class Model {
      * Populates the model with given data.
      */
     populate(data: Object): this {
+        if (data === null) {
+            return this;
+        }
+
         if (!_.isObject(data)) {
             throw new ModelError(
                 "Populate failed - received data not an object.",
@@ -258,6 +262,10 @@ class Model {
     }
 
     populateFromStorage(data: Object) {
+        if (data === null) {
+            return this;
+        }
+
         if (!_.isObject(data)) {
             throw new ModelError(
                 "Populate failed - received data not an object.",

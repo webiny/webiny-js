@@ -12,15 +12,16 @@
     "@babel/runtime": "^7.0.0",
     "graphql-iso-date": "^3.5.0",
     "mdbid": "^1.0.0",
+    "node-fetch": "2.1.2",
     "webiny-api": "0.0.0-semantically-released"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
-    "@babel/preset-flow": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
-    "@babel/plugin-syntax-dynamic-import": "^7.0.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-flow": "^7.0.0",
     "babel-plugin-dynamic-import-node": "^2.0.0",
     "flow-copy-source": "^2.0.2"
   },

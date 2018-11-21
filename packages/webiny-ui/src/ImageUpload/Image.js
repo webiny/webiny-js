@@ -80,15 +80,12 @@ const ImagePreviewWrapper = styled("div")({
     flexDirection: "column",
     boxSizing: "border-box",
     position: "relative",
-    ">img": {
-        width: "100%",
-        height: "100%"
-    },
     [AddImageWrapper]: {
         position: "absolute",
         display: "none",
         top: 0,
         height: "100%",
+        zIndex: 10,
         backgroundColor: "rgba(0,0,0, 0.75)",
         [AddImageIconWrapper]: {
             top: "50%",
@@ -115,67 +112,93 @@ const ImagePreviewWrapper = styled("div")({
 
 type Props = {
     uploadImage: Function,
-    removeImage?: Function,
+    removeImage?: ?Function,
     editImage?: Function,
     value?: Object,
     disabled?: boolean,
     loading?: boolean,
-    placeholder: string
+    placeholder: string,
+    img?: Object
 };
 
 class Image extends React.Component<Props> {
     static defaultProps = {
-        placeholder: "Select image"
+        placeholder: "Select an image"
     };
 
+    renderBlank() {
+        const { uploadImage } = this.props;
+
+        return (
+            <AddImageWrapper
+                data-role={"select-image"}
+                onClick={() => {
+                    uploadImage();
+                }}
+            >
+                <AddImageIconWrapper>
+                    <AddImageIcon />
+                    <Typography use={"caption"}>{this.props.placeholder}</Typography>
+                </AddImageIconWrapper>
+            </AddImageWrapper>
+        );
+    }
+
+    renderImg() {
+        const { removeImage, editImage, uploadImage, value, img } = this.props;
+
+        const imgProps = {
+            src: value ? value.src : null,
+            onClick: () => uploadImage(),
+            ...img
+        };
+
+        if (!imgProps.style) {
+            imgProps.style = {};
+        }
+
+        if (!imgProps.style.width && !imgProps.style.height) {
+            imgProps.style.width = "100%";
+            imgProps.style.height = "100%";
+        }
+
+        return (
+            <ImagePreviewWrapper>
+                <img {...imgProps} />
+
+                {typeof removeImage === "function" && (
+                    <RemoveImage onClick={() => removeImage(null)}>
+                        <RemoveImageIcon />
+                    </RemoveImage>
+                )}
+
+                {typeof editImage === "function" && (
+                    <EditImage onClick={() => editImage(value)}>
+                        <EditImageIcon />
+                    </EditImage>
+                )}
+
+                <AddImageWrapper
+                    data-role={"select-image"}
+                    onClick={() => {
+                        uploadImage();
+                    }}
+                >
+                    <AddImageIconWrapper>
+                        <AddImageIcon />
+                        <Typography use={"caption"}>{this.props.placeholder}</Typography>
+                    </AddImageIconWrapper>
+                </AddImageWrapper>
+            </ImagePreviewWrapper>
+        );
+    }
+
     render() {
-        const { value, disabled, uploadImage, removeImage, editImage } = this.props;
+        const { value, disabled } = this.props;
 
         const image = (
             <div className={classNames({ disabled })} style={{ height: "100%" }}>
-                {value && value.src ? (
-                    <ImagePreviewWrapper>
-                        <img
-                            alt={value.name}
-                            src={value.src}
-                            onClick={() => {
-                                uploadImage();
-                            }}
-                        />
-
-                        <RemoveImage onClick={() => removeImage && removeImage(null)}>
-                            <RemoveImageIcon />
-                        </RemoveImage>
-
-                        {editImage && (
-                            <EditImage onClick={() => editImage && editImage(value)}>
-                                <EditImageIcon />
-                            </EditImage>
-                        )}
-
-                        <AddImageWrapper
-                            onClick={() => {
-                                uploadImage();
-                            }}
-                        >
-                            <AddImageIconWrapper>
-                                <AddImageIcon />
-                                <Typography use={"caption"}>{this.props.placeholder}</Typography>
-                            </AddImageIconWrapper>
-                        </AddImageWrapper>
-                    </ImagePreviewWrapper>
-                ) : (
-                    <AddImageWrapper
-                        onClick={() => {
-                            uploadImage();
-                        }}
-                    >
-                        <AddImageIconWrapper>
-                            <AddImageIcon />
-                            <Typography use={"caption"}>Select image</Typography>
-                        </AddImageIconWrapper>
-                    </AddImageWrapper>
-                )}
+                {value && value.src ? this.renderImg() : this.renderBlank()}
             </div>
         );
 

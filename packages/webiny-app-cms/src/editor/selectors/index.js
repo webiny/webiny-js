@@ -1,4 +1,3 @@
-import { createSelector } from "reselect";
 import _ from "lodash";
 import { getPlugin } from "webiny-app/plugins";
 
@@ -39,34 +38,31 @@ export const getContent = state => {
 /**
  * Get element.
  */
-export const getElement = (state, path) => {
-    if (!path) {
-        return null;
-    }
+export const getElementWithChildren = (state, id) => {
+    const element = getElement(state, id);
     const content = getContent(state);
-    return _.get(content, path.replace(/\./g, ".elements.").slice(2));
+    return _.get(content, element.path.replace(/\./g, ".elements.").slice(2));
 };
 
-export const getParentElement = (state, path) => {
+export const getElement = (state, id) => {
+    return state.elements[id];
+};
+
+export const getParentElementWithChildren = (state, id) => {
+    const element = getElement(state, id);
     const content = getContent(state);
-    const parentPaths = path.split(".").slice(0, -1);
+    const parentPaths = element.path.split(".").slice(0, -1);
     if (parentPaths.length === 1) {
         return content;
     }
-    return _.cloneDeep(_.get(content, parentPaths.join(".elements.").slice(2)));
+
+    return _.get(content, parentPaths.join(".elements.").slice(2));
 };
 
 /**
  * Get active element path.
  */
-export const getActiveElementPath = state => getUi(state).activeElement;
-
-/**
- * Get active preview plugin.
- * This is used to render editor content using a custom wrapper.
- * For example: to simulate different device sizes.
- */
-export const getActivePreview = state => getUi(state).preview;
+export const getActiveElementId = state => getUi(state).activeElement;
 
 /**
  * Get editor plugins (this mostly contains UI state).
@@ -81,7 +77,7 @@ export const getPluginsByType = type => {
 };
 
 /**
- * Get active plugin of given type.
+ * Get an active plugin of the given type.
  */
 export const getActivePlugin = type => {
     const pluginsByType = getPluginsByType(type);
@@ -103,17 +99,6 @@ export const getActivePluginParams = type => {
 };
 
 /**
- * Get active element.
- */
-export const getActiveElement = createSelector(
-    state => state,
-    getActiveElementPath,
-    (state, elementPath) => {
-        return getElement(state, elementPath);
-    }
-);
-
-/**
  * Get dragging state.
  */
 export const getIsDragging = state => getUi(state).dragging;
@@ -121,16 +106,15 @@ export const getIsDragging = state => getUi(state).dragging;
 /**
  * Get <Element> props.
  */
-export const getElementProps = (state, { element }) => {
+export const getElementProps = (state, { id }) => {
     const { activeElement, highlightElement, resizing, dragging } = getUi(state);
+    const element = state.elements[id];
 
-    const active = activeElement && activeElement === element.path;
-    const highlight = active || (highlightElement && highlightElement === element.id);
+    const active = activeElement && activeElement === element.id;
+    const highlight = active || (highlightElement && highlightElement === id);
 
     return {
         active,
-        highlight: highlight && !dragging && !resizing,
-        isResizing: resizing,
-        isDragging: dragging
+        highlight: highlight && !dragging && !resizing
     };
 };

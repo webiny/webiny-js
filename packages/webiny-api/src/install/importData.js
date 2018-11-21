@@ -1,5 +1,5 @@
 // @flow
-import setupEntities from "../dataSource/setupEntities";
+import setupEntities from "../entities/setupEntities";
 
 export default async (context: Object) => {
     const { User, Role } = setupEntities(context);

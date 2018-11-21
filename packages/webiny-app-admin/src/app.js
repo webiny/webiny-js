@@ -87,7 +87,7 @@ export default () => {
                     </AdminLayout>
                 );
             },
-            user: securityManager
+            group: securityManager
         }
     });
 
@@ -96,7 +96,7 @@ export default () => {
         type: "route",
         route: {
             name: "ApiTokens",
-            path: "/identities/api-tokens",
+            path: "/api-tokens",
             title: "Security - Identities - API Tokens",
             render() {
                 return (

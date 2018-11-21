@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import { css } from "emotion";
-import { compose, withProps } from "recompose";
+import { compose, withProps, pure } from "recompose";
 import {
     Dialog,
     DialogHeader,
@@ -30,33 +30,10 @@ type Props = {
     element: Object
 };
 
-const removeIdsAndPaths = el => {
-    delete el.id;
-    delete el.path;
-
-    el.elements.forEach(el => {
-        delete el.id;
-        delete el.path;
-        if (el.elements.length) {
-            removeIdsAndPaths(el);
-        }
-    });
-};
-
-const SaveDialog = ({ open, onClose, onSubmit, element }: Props) => {
-    const type = element.type === "cms-element-block" ? "block" : "element";
+const SaveDialog = pure(({ open, onClose, onSubmit, type }: Props) => {
     return (
         <Dialog open={open} onClose={onClose} className={narrowDialog}>
-            <Form
-                onSubmit={data => {
-                    removeIdsAndPaths(data.content);
-                    onSubmit(data);
-                }}
-                data={{
-                    type,
-                    content: element
-                }}
-            >
+            <Form onSubmit={onSubmit} data={{ type }}>
                 {({ data, submit, Bind }) => (
                     <React.Fragment>
                         <DialogHeader>
@@ -66,7 +43,7 @@ const SaveDialog = ({ open, onClose, onSubmit, element }: Props) => {
                             <Grid>
                                 <Cell span={12}>
                                     <Bind name={"name"} validators={"required"}>
-                                        <Input label={"Name"} />
+                                        <Input label={"Name"} autoFocus />
                                     </Bind>
                                 </Cell>
                             </Grid>
@@ -92,6 +69,6 @@ const SaveDialog = ({ open, onClose, onSubmit, element }: Props) => {
             </Form>
         </Dialog>
     );
-};
+});
 
 export default SaveDialog;

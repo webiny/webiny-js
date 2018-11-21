@@ -1,8 +1,27 @@
 // @flow
-import setupEntities from "../dataSource/setupEntities";
+import setupEntities from "../entities/setupEntities";
 
 export default async (context: Object) => {
-    const { Category, Element, Page } = setupEntities(context);
+    const { Category, Element, Page, Tag, Menu } = setupEntities(context);
+
+    const menu = new Menu();
+    menu.populate({
+        title: "Demo Menu",
+        slug: "demo-menu",
+        description: "This is a demo menu.",
+        items: [
+            { type: "link", title: "Link 1", url: "https://www.google.com", id: "jopxai1f" },
+            { type: "link", title: "Link 2", url: "https://www.duckduckgo.com", id: "jopxaxqh" }
+        ]
+    });
+
+    await menu.save();
+
+    ["nodejs", "graphql", "marketing"].forEach(async tag => {
+        const t = new Tag();
+        t.populate({ name: tag });
+        await t.save();
+    });
 
     const blogCategory = new Category();
     blogCategory.populate({

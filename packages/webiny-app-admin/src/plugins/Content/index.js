@@ -1,14 +1,14 @@
 //@flow
 import React from "react";
 import styled from "react-emotion";
-import type { ContentPlugin } from "webiny-app-admin/types";
+import type { ContentPluginType } from "webiny-app-admin/types";
 
 const WebinyLayoutRoot = styled("div")({
     width: "100%",
     paddingTop: 67
 });
 
-const plugin: ContentPlugin = {
+const plugin: ContentPluginType = {
     name: "content",
     type: "layout",
     render({ content }) {

@@ -1,8 +1,14 @@
-import React from "react";
-import image from "webiny-app-cms/editor/assets/icons/image-icon.svg";
+// @flow
+import * as React from "react";
+import { withFileUpload } from "webiny-app/components";
+import { SingleImageUpload } from "webiny-ui/ImageUpload";
 
-const Image = () => {
-    return <img src={image} alt={"Webiny"} width={"100"} />;
+const Image = ({ element, ...props }) => {
+    return (
+        <div id={element.type + "-" + element.id}>
+            <SingleImageUpload {...props} />
+        </div>
+    );
 };
 
-export default Image;
+export default withFileUpload()(Image);

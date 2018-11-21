@@ -24,7 +24,7 @@ export default (prop: string) => {
 
                         // Update revisions
                         const pageFromCache = cache.readQuery({
-                            query: getPage,
+                            query: getPage(),
                             variables: { id: page.id }
                         });
 
@@ -44,7 +44,7 @@ export default (prop: string) => {
 
                         // Write our data back to the cache.
                         cache.writeQuery({
-                            query: getPage,
+                            query: getPage(),
                             data: set(pageFromCache, "cms.page.data", page)
                         });
                     }

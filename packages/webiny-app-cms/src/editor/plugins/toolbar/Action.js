@@ -1,11 +1,14 @@
 //@flow
 import * as React from "react";
 import { css } from "emotion";
+import { connect } from "react-redux";
+import { togglePlugin } from "webiny-app-cms/editor/actions";
+import { compose, withHandlers } from "recompose";
 import { IconButton } from "webiny-ui/Button";
 import { Tooltip } from "webiny-ui/Tooltip";
 
 const activeStyle = css({
-    "&.mdc-icon-button": {
+    ".mdc-icon-button__icon": {
         color: "var(--mdc-theme-primary)"
     }
 });
@@ -40,4 +43,17 @@ const Action = ({
     return iconButton;
 };
 
-export default Action;
+export default compose(
+    connect(
+        null,
+        { togglePlugin }
+    ),
+    withHandlers({
+        onClick: ({ onClick, togglePlugin, plugin }) => () => {
+            if (typeof onClick === "function") {
+                return onClick();
+            }
+            togglePlugin({ name: plugin });
+        }
+    })
+)(Action);

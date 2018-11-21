@@ -1,0 +1,13 @@
+.cms-editor-dragging {
+  /* Append this class to the DOM elements you want to disable during element dragging. */
+  .cms-editor-dragging--disabled {
+    pointer-events: none;
+  }
+}
+
+.cms-editor-resizing {
+  /* Append this class to the DOM elements you want to disable during element resizing. */
+  .cms-editor-resizing--disabled {
+    pointer-events: none;
+  }
+}

@@ -15,7 +15,7 @@ install:
 jobs:
   include:
     - stage: test
-      script: yarn build && yarn test:build && yarn test:coverage:ci
+      script: yarn build && yarn test:build
     - stage: release
       if: branch = "master" AND type = "push"
       script: yarn build && yarn release

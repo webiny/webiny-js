@@ -1,5 +1,6 @@
 import shortid from "shortid";
-import _ from "lodash";
+import { set } from "dot-prop-immutable";
+import { isPlainObject, omit } from "lodash";
 import { getPlugin } from "webiny-app/plugins";
 
 export const updateChildPaths = element => {
@@ -11,16 +12,38 @@ export const updateChildPaths = element => {
         element.path = "0";
     }
 
-    element.elements.forEach((el, index) => {
-        if (!el.id) {
-            el.id = shortid.generate();
-        }
+    if (Array.isArray(element.elements)) {
+        // Process children only if "elements" is an array of objects.
+        // We may get an array of strings when working with shallow element copies.
+        if (isPlainObject(element.elements[0])) {
+            element.elements.forEach((el, index) => {
+                if (!el.id) {
+                    el.id = shortid.generate();
+                }
 
-        el.path = element.path + "." + index;
-        if (el.elements.length) {
-            updateChildPaths(el);
+                el.path = element.path + "." + index;
+                if (el.elements.length) {
+                    updateChildPaths(el);
+                }
+            });
         }
-    });
+    }
+};
+
+export const addElementToParent = (element, parent, position) => {
+    let newParent;
+    if (position === null) {
+        newParent = set(parent, "elements", [...parent.elements, element]);
+    } else {
+        newParent = set(parent, "elements", [
+            ...parent.elements.slice(0, position),
+            element,
+            ...parent.elements.slice(position)
+        ]);
+    }
+
+    updateChildPaths(newParent);
+    return newParent;
 };
 
 export const createBlock = (options = {}, parent = null) => {
@@ -49,7 +72,7 @@ export const createElement = (type, options = {}, parent = null) => {
 };
 
 export const cloneElement = element => {
-    const clone = _.omit(element, ["id", "path"]);
+    const clone = omit(element, ["id", "path"]);
 
     clone.elements = clone.elements.map(el => cloneElement(el));
 
