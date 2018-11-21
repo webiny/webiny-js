@@ -112,10 +112,17 @@ class SearchBar extends React.Component<*, State> {
                 };
 
                 if (this.state.searchTerm.current) {
-                    route.params.search = JSON.stringify({
-                        query: this.state.searchTerm.current,
-                        ...plugin.search
-                    });
+                    // If "search" key in the plugin was defined, it means SearchInput values were set. Otherwise,
+                    // we need to send the plain string into the "search" query param. This behavior was needed
+                    // eg. for pages, since Page entity doesn't use regular SearchInput type, but plain string.
+                    if (plugin.search) {
+                        route.params.search = JSON.stringify({
+                            query: this.state.searchTerm.current,
+                            ...plugin.search
+                        });
+                    } else {
+                        route.params.search = this.state.searchTerm.current;
+                    }
                 }
 
                 this.props.router.goToRoute(route);

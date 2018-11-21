@@ -22,7 +22,7 @@ export default (router: ?Router) => {
                 try {
                     params[key] = JSON.parse(router.match.query[key]);
                 } catch (e) {
-                    // Do nothing.
+                    params[key] = router.match.query[key];
                 }
             }
         });

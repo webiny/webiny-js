@@ -18,8 +18,12 @@ export type SearchPluginType = PluginType & {
 export type GlobalSearch = PluginType & {
     label: string,
     route: string,
-    search: {
+    search?: {
         operator?: "and" | "or",
         fields?: Array<string>
     }
+};
+
+export type HeaderMiddlePlugin = PluginType & {
+    render: ({ content: Node }) => {}
 };

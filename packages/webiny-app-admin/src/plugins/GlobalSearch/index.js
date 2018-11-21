@@ -3,8 +3,8 @@ import React from "react";
 import SearchBar from "./SearchBar";
 import type { GlobalSearch, HeaderMiddlePlugin } from "webiny-app-admin/types";
 
-export const searchBar: HeaderMiddlePlugin = {
-    name: "search-bar",
+export const globalSearch: HeaderMiddlePlugin = {
+    name: "global-search",
     type: "header-middle",
     render() {
         return <SearchBar />;
