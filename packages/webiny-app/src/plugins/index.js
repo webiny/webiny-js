@@ -55,7 +55,7 @@ export const renderPlugin = (
         return null;
     }
 
-    const content = plugin[fn].call(null, params);
+    const content = plugin[fn](params);
     if (content) {
         return wrapper ? (
             <Plugin key={plugin.name} name={name} params={params} fn={fn}>

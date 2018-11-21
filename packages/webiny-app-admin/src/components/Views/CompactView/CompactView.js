@@ -1,5 +1,6 @@
 //@flow
 import * as React from "react";
+import classSet from "classnames";
 import { Cell, Grid, GridInner, type Props } from "webiny-ui/Grid";
 import { css } from "emotion";
 import styled from "react-emotion";
@@ -40,7 +41,7 @@ const CompactView = (props: {
 
 const LeftPanel = (props: Props) => {
     return (
-        <Cell className={leftPanel} span={props.span ? props.span : 5}>
+        <Cell className={classSet(leftPanel, props.className)} span={props.span ? props.span : 5}>
             {props.children}
         </Cell>
     );

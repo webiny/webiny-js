@@ -9,8 +9,9 @@ import {
     withHandlers,
     setDisplayName
 } from "recompose";
+import { cloneDeep } from "lodash";
 import { merge } from "dot-prop-immutable";
-import { renderPlugins } from "webiny-app/plugins";
+import { getPlugins, renderPlugins } from "webiny-app/plugins";
 import { getActivePlugin } from "webiny-app-cms/editor/selectors";
 import { withTheme } from "webiny-app-cms/theme";
 import { withActiveElement, withKeyHandler } from "webiny-app-cms/editor/components";
@@ -41,7 +42,7 @@ type Props = {
 const emptyElement = { data: {}, settings: {}, type: null };
 
 const AdvancedSettings = pure(({ element, theme, open, onClose, onSubmit }: Props) => {
-    const { data, settings, type } = element || emptyElement;
+    const { data, settings, type } = element || cloneDeep(emptyElement);
     return (
         <Dialog open={open} onClose={onClose}>
             <Form data={{ data, settings }} onSubmit={onSubmit}>
@@ -54,7 +55,7 @@ const AdvancedSettings = pure(({ element, theme, open, onClose, onSubmit }: Prop
                             <Tabs>
                                 {renderPlugins(
                                     "cms-element-advanced-settings",
-                                    { Bind, theme },
+                                    { Bind, theme, element },
                                     { wrapper: false, filter: pl => pl.element === type }
                                 )}
                                 <Tab icon={<SettingsIcon />} label="Style">
@@ -102,7 +103,6 @@ export default compose(
         { updateElement, deactivatePlugin }
     ),
     withActiveElement(),
-    onlyUpdateForKeys(["open"]),
     withKeyHandler(),
     withTheme(),
     withHandlers({
@@ -112,6 +112,15 @@ export default compose(
     }),
     withHandlers({
         onSubmit: ({ element, updateElement, closeDialog }) => (formData: Object) => {
+            // Get element settings plugins
+            const plugins = getPlugins("cms-element-advanced-settings").filter(pl => pl.element === element.type);
+            formData = plugins.reduce((formData, pl) => {
+                if(pl.onSave) {
+                    return pl.onSave(formData);
+                }
+                return formData;
+            }, formData);
+
             const newElement = merge(element, "data", formData.data);
             updateElement({
                 element: merge(newElement, "settings", formData.settings)

@@ -1,10 +1,11 @@
 // @flow
 import React from "react";
 import type { ElementPluginType } from "webiny-app-cms/types";
-import {
-    createEmbedPlugin,
-    createEmbedSettingsPlugin
-} from "./../../utils/oembed/createEmbedPlugin";
+import { Tab } from "webiny-ui/Tabs";
+import { Input } from "webiny-ui/Input";
+import { Grid, Cell } from "webiny-ui/Grid";
+import { ReactComponent as SocialIcon } from "./../../../elementGroups/social/round-people-24px.svg";
+import { createEmbedPlugin, createEmbedSettingsPlugin } from "./../../utils/oembed/createEmbedPlugin";
 
 export default (): Array<ElementPluginType> => [
     createEmbedPlugin({
@@ -26,7 +27,18 @@ export default (): Array<ElementPluginType> => [
     }),
     createEmbedSettingsPlugin({
         type: "twitter",
-        urlDescription: "Tweet URL",
-        urlPlaceholder: "Enter a Tweet URL"
+        render({ Bind }) {
+            return (
+                <Tab icon={<SocialIcon />} label="Twitter">
+                    <Grid>
+                        <Cell span={12}>
+                            <Bind name={"data.source.url"} validators={["required", "url"]}>
+                                <Input label={"Tweet URL"} description={"Enter a Tweet URL"} />
+                            </Bind>
+                        </Cell>
+                    </Grid>
+                </Tab>
+            );
+        }
     })
 ];

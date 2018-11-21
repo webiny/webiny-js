@@ -51,10 +51,15 @@ class Tabs extends React.Component<Props, State> {
             </TabBar>
         );
 
+        let children = null;
+        if (tabs[this.state.activeTabIndex]) {
+            children = tabs[this.state.activeTabIndex].children;
+        }
+
         return (
             <React.Fragment>
                 {content}
-                {tabs[this.state.activeTabIndex].children}
+                {children}
             </React.Fragment>
         );
     }

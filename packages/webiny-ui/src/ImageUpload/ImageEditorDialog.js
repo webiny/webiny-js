@@ -1,28 +1,35 @@
 // @flow
 import * as React from "react";
 import { ImageEditor } from "webiny-ui/ImageEditor";
-
 import { Dialog, DialogAccept, DialogCancel, DialogFooter, DialogBody } from "webiny-ui/Dialog";
 
-// Each time ImageEditor makes a change, we store it here, so we can pass it to the onAccept callback.
-let resultSrc = "";
+type Props = Object & { src: ?string };
 
-const ImageEditorDialog = (props: Object & { src: ?string }) => {
-    const { src, onAccept, ...dialogProps } = props;
-    return (
-        <Dialog {...dialogProps}>
-            <DialogBody>
-                {src &&
-                    dialogProps.open && (
-                        <ImageEditor src={src} onChange={src => (resultSrc = src)} />
+class ImageEditorDialog extends React.Component<Props> {
+    render() {
+        const { src, onAccept, ...dialogProps } = this.props;
+        return (
+            <Dialog {...dialogProps}>
+                <ImageEditor src={src}>
+                    {({ render, getCanvasDataUrl, activeTool, applyActiveTool }) => (
+                        <>
+                            <DialogBody>{render()}</DialogBody>
+                            <DialogFooter>
+                                <DialogCancel>Cancel</DialogCancel>
+                                <DialogAccept
+                                    onClick={async () => {
+                                        activeTool && (await applyActiveTool());
+                                        onAccept(getCanvasDataUrl());
+                                    }}
+                                >
+                                    Save
+                                </DialogAccept>
+                            </DialogFooter>
+                        </>
                     )}
-            </DialogBody>
-            <DialogFooter>
-                <DialogCancel>Cancel</DialogCancel>
-                <DialogAccept onClick={() => onAccept(resultSrc)}>Save</DialogAccept>
-            </DialogFooter>
-        </Dialog>
-    );
-};
-
+                </ImageEditor>
+            </Dialog>
+        );
+    }
+}
 export default ImageEditorDialog;

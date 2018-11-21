@@ -9,10 +9,11 @@ import { set } from "dot-prop-immutable";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 import { updateElement } from "webiny-app-cms/editor/actions";
+import { withSnackbar } from "webiny-app-admin/components";
 
 function appendSDK(props) {
     const { sdk, global, element } = props;
-    const { url } = element.data || {};
+    const { url } = get(element, "data.source") || {};
 
     if (!sdk || !url || window[global]) {
         return;
@@ -31,12 +32,10 @@ function appendSDK(props) {
 
 function initEmbed(props) {
     const { sdk, init, element } = props;
-    if (sdk && element.data.url) {
-        if (typeof init === "function") {
-            init({
-                props,
-                node: document.getElementById("cms-embed-" + element.id)
-            });
+    if (sdk && get(element, "data.source.url")) {
+        const node = document.getElementById("cms-embed-" + element.id);
+        if (typeof init === "function" && node) {
+            init({ props, node });
         }
     }
 }
@@ -55,7 +54,12 @@ const oembedQuery = gql`
     }
 `;
 
-const centerAlign = css({ width: "100%", textAlign: "center" });
+const centerAlign = css({
+    "*:first-child": {
+        marginLeft: "auto !important",
+        marginRight: "auto !important"
+    }
+});
 
 export default compose(
     shouldUpdate((props, nextProps) => {
@@ -65,6 +69,7 @@ export default compose(
         null,
         { updateElement }
     ),
+    withSnackbar(),
     graphql(oembedQuery, {
         skip: ({ element }) => {
             const source = get(element, "data.source") || {};
@@ -72,15 +77,21 @@ export default compose(
 
             return !source.url || isEqual(oembed.source, source);
         },
-        options: ({ element, updateElement }) => {
+        options: ({ element, updateElement, showSnackbar, onData = d => d }) => {
             const source = get(element, "data.source") || {};
             return {
                 variables: source,
                 onCompleted: data => {
-                    // Store loaded oembed data
-                    updateElement({
-                        element: set(element, "data.oembed", get(data, "cms.oembedData.data"))
-                    });
+                    const { data: oembed, error } = get(data, "cms.oembedData");
+                    if (oembed) {
+                        // Store loaded oembed data
+                        updateElement({
+                            element: set(element, "data.oembed", onData(oembed))
+                        });
+                    }
+                    if (error) {
+                        showSnackbar(error.message);
+                    }
                 }
             };
         }
@@ -103,7 +114,9 @@ export default compose(
             return (
                 <div
                     id={"cms-embed-" + element.id}
-                    className={centerAlign}
+                    className={
+                        centerAlign + " cms-editor-dragging--disabled cms-editor-resizing--disabled"
+                    }
                     dangerouslySetInnerHTML={{ __html: get(element, "data.oembed.html") || "" }}
                 />
             );

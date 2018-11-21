@@ -1,4 +1,5 @@
 // @flow
 import tweetEmbed from "./twitter";
 import instagramEmbed from "./instagram";
-export default [...tweetEmbed(), ...instagramEmbed()];
+import pinterestEmbed from "./pinterest";
+export default [...tweetEmbed(), ...instagramEmbed(), ...pinterestEmbed()];

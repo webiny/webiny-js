@@ -70,7 +70,7 @@ export const withDataList = (withDataListParams: Object): Function => {
                         const preparedParams = { ...dataListProps.__loadParams, page: page };
                         this.refresh(preparedParams);
                     },
-                    setSearch(search: SearchParams): void {
+                    setSearch(search: SearchParams | any): void {
                         const preparedParams = { ...dataListProps.__loadParams, search };
                         this.refresh(preparedParams);
                     },

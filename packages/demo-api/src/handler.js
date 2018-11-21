@@ -4,6 +4,6 @@ import config from "./configs";
 import { dataSource as cmsApi } from "webiny-api-cms";
 
 export const api = createHandler({
-    dataSources: [coreApi, cmsApi],
+    dataSources: [coreApi, cmsApi()],
     ...config
 });

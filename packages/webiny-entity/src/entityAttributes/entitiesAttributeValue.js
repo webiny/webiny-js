@@ -53,7 +53,9 @@ class EntitiesAttributeValue extends AttributeValue {
         this.state.loading = true;
 
         if (this.parentModel.getParentEntity().isExisting()) {
-            const idAttribute: Attribute = (this.parentModel.getAttribute("id"): any);
+            const idAttribute: Attribute = (this.parentModel
+                .getParentEntity()
+                .getAttribute("id"): any);
             let id = await idAttribute.getStorageValue();
 
             if (classes.using.class) {

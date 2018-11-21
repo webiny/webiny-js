@@ -1,4 +1,5 @@
-import React from "react";
+// @flow
+import * as React from "react";
 import _ from "lodash";
 
 /**
@@ -10,7 +11,7 @@ import _ from "lodash";
  * The logic behind this component is to serve as a middleware between Form and Input/Textarea, and only notify form of a change when
  * a user stops typing for given period of time (400ms by default).
  */
-class DelayedOnChange extends React.Component {
+class DelayedOnChange extends React.Component<*, *> {
     static defaultProps = {
         delay: 400
     };
@@ -18,33 +19,38 @@ class DelayedOnChange extends React.Component {
     delay = null;
     state = { value: "" };
 
-    static getDerivedStateFromProps(props) {
-        return { value: props.value || "" };
+    componentDidMount() {
+        this.setState({ value: this.props.value });
     }
 
-    applyValue = (value, callback = _.noop) => {
-        clearTimeout(this.delay);
+    applyValue = (value: any, callback: Function = _.noop) => {
+        this.delay && clearTimeout(this.delay);
         this.delay = null;
         this.props.onChange(value, callback);
     };
 
+    onChange = (value: any) => {
+        this.setState({ value }, this.changed);
+    };
+
     changed = () => {
-        clearTimeout(this.delay);
+        this.delay && clearTimeout(this.delay);
         this.delay = null;
         this.delay = setTimeout(() => this.applyValue(this.state.value), this.props.delay);
     };
 
     render() {
-        const childElement = this.props.children({
+        const { children, ...other } = this.props;
+        const newProps = {
+            ...other,
             value: this.state.value,
-            onChange: e => {
-                const value = _.isString(e) ? e : e.target.value;
-                this.setState({ value }, this.changed);
-            }
-        });
+            onChange: this.onChange
+        };
 
-        const props = { ...childElement.props };
+        const renderProp = typeof children === "function" ? children : false;
+        const child = renderProp ? renderProp(newProps) : React.cloneElement(children, newProps);
 
+        const props = { ...child.props };
         const realOnKeyDown = props.onKeyDown || _.noop;
         const realOnBlur = props.onBlur || _.noop;
 
@@ -66,7 +72,7 @@ class DelayedOnChange extends React.Component {
             }
         };
 
-        return React.cloneElement(childElement, props);
+        return React.cloneElement(child, props);
     }
 }
 

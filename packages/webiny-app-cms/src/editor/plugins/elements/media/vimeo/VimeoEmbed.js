@@ -46,7 +46,11 @@ const VimeoEmbed = props => {
             <div className={innerWrapper}>
                 <div
                     id={"cms-embed-" + element.id}
-                    className={scaleableVideo}
+                    className={[
+                        scaleableVideo,
+                        "cms-editor-dragging--disabled",
+                        "cms-editor-resizing--disabled"
+                    ].join(" ")}
                     dangerouslySetInnerHTML={{ __html: get(element, "data.oembed.html") || "" }}
                 />
             </div>

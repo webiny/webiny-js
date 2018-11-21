@@ -1,11 +1,14 @@
+// @flow
 import React from "react";
 import { connect } from "react-redux";
+import classSet from "classnames";
 import { ActionCreators } from "redux-undo";
 import HTML5Backend from "react-dnd-html5-backend";
 import { DragDropContext } from "react-dnd";
 import { compose, lifecycle } from "recompose";
 import { getUi } from "webiny-app-cms/editor/selectors";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
+import "./Editor.scss";
 
 // Components
 import EditorBar from "./Bar";
@@ -14,22 +17,34 @@ import EditorContent from "./Content";
 import DragPreview from "./DragPreview";
 import Dialogs from "./Dialogs";
 
-const Editor = () => {
+type Props = {
+    isDragging: boolean,
+    isResizing: boolean
+};
+
+const Editor = ({ isDragging, isResizing }: Props) => {
+    const classes = {
+        "cms-editor": true,
+        "cms-editor-dragging": isDragging,
+        "cms-editor-resizing": isResizing
+    };
     return (
-        <React.Fragment>
+        <div className={classSet(classes)}>
             <EditorBar />
             <EditorToolbar />
             <EditorContent />
             <Dialogs />
             <DragPreview />
-        </React.Fragment>
+        </div>
     );
 };
 
 export default compose(
     connect(
         state => ({
-            slateFocused: getUi(state).slateFocused
+            slateFocused: getUi(state).slateFocused,
+            isDragging: getUi(state).dragging,
+            isResizing: getUi(state).resizing
         }),
         {
             undo: ActionCreators.undo,

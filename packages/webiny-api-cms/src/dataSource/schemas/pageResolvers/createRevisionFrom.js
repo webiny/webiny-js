@@ -26,7 +26,7 @@ export default (entityFetcher: EntityFetcher) => async (
     const newRevision: IPage = (new pageClass(): any);
     try {
         newRevision.populate({
-            slug: sourceRev.slug,
+            url: sourceRev.url,
             title: sourceRev.title,
             settings: sourceRev.settings,
             content: sourceRev.content,

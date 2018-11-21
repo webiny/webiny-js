@@ -1,10 +1,10 @@
 // @flow
 import * as React from "react";
-import { withFileUpload } from "webiny-app/components";
+import { withImageUpload } from "webiny-app/components";
 import { SingleImageUpload } from "webiny-ui/ImageUpload";
 
 const AvatarImage = props => {
     return <SingleImageUpload {...props} />;
 };
 
-export default withFileUpload()(AvatarImage);
+export default withImageUpload()(AvatarImage);

@@ -1,5 +1,9 @@
 // @flow
 import React from "react";
+import { Tab } from "webiny-ui/Tabs";
+import { Input } from "webiny-ui/Input";
+import { Grid, Cell } from "webiny-ui/Grid";
+import { ReactComponent as SocialIcon } from "./../../../elementGroups/social/round-people-24px.svg";
 import type { ElementPluginType } from "webiny-app-cms/types";
 import {
     createEmbedPlugin,
@@ -18,15 +22,26 @@ export default (): Array<ElementPluginType> => [
         },
         oembed: {
             global: "instgrm",
-            sdk: "https://platform.instagram.com/en_US/embeds.js",
+            sdk: "https://www.instagram.com/embed.js",
             init({ node }) {
-                window.instgrm.Embeds.process(node);
+                window.instgrm.Embeds.process(node.firstChild);
             }
         }
     }),
     createEmbedSettingsPlugin({
         type: "instagram",
-        urlDescription: "Instagram post URL",
-        urlPlaceholder: "Enter an Instagram post URL"
+        render({ Bind }) {
+            return (
+                <Tab icon={<SocialIcon />} label="Instagram">
+                    <Grid>
+                        <Cell span={12}>
+                            <Bind name={"data.source.url"} validators={["required", "url"]}>
+                                <Input label={"Instagram URL"} description={"Enter an Instagram URL"} />
+                            </Bind>
+                        </Cell>
+                    </Grid>
+                </Tab>
+            );
+        }
     })
 ];

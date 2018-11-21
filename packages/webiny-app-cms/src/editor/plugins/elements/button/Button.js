@@ -12,12 +12,16 @@ const Button = ({ theme, element, preview, updateElement }) => {
         }
     };
 
-    const { type = "default" } = get(element, "settings.advanced") || {};
+    const { type = "default", icon = {} } = get(element, "settings.advanced") || {};
+    const svg = element.data.icon || null;
+    // TODO: @sven render according to icon position
+    const { position = "left" } = icon;
 
     return (
         <ElementStyle element={element}>
             {({ getAllClasses }) => (
                 <button className={getAllClasses("webiny-cms-element-button", type)}>
+                    {svg && <span dangerouslySetInnerHTML={{ __html: svg }} />}
                     <Slate
                         value={element.data.text}
                         onChange={onChange}

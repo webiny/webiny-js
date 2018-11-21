@@ -63,15 +63,27 @@ const LinkMenu = ({ linkData, updateLink, closeMenu, removeLink }) => {
                                 )}
                             </InputContainer>
                         </Cell>
+                    </Grid>
+                    <Grid>
                         <Cell span={3} style={{ marginBottom: 0 }}>
                             <Typography use={"overline"}>NEW TAB</Typography>
                         </Cell>
-                        <Cell span={2} style={{ justifySelf: "flex-start", marginBottom: 0 }}>
+                        <Cell span={3} style={{ justifySelf: "flex-start", marginBottom: 0 }}>
                             <Bind name={"newTab"}>
                                 <Switch onChange={() => submit()} />
                             </Bind>
                         </Cell>
-                        <Cell span={7} style={{ marginBottom: 0 }}>
+                        <Cell span={3} style={{ marginBottom: 0 }}>
+                            <Typography use={"overline"}>NO FOLLOW</Typography>
+                        </Cell>
+                        <Cell span={3} style={{ justifySelf: "flex-start", marginBottom: 0 }}>
+                            <Bind name={"noFollow"}>
+                                <Switch onChange={() => submit()} />
+                            </Bind>
+                        </Cell>
+                    </Grid>
+                    <Grid>
+                        <Cell span={12} style={{ marginBottom: 0, float: "right" }}>
                             <ButtonPrimary
                                 onClick={() => {
                                     submit();

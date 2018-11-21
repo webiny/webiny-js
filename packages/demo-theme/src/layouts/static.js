@@ -1,6 +1,7 @@
-import React from "react";
+// @flow
+import * as React from "react";
 import styled from "react-emotion";
-//import { Menu } from "components/Menu";
+import { Menu } from "webiny-app-cms/render/components";
 
 const Banner = styled("div")({
     backgroundColor: "#666",
@@ -8,29 +9,27 @@ const Banner = styled("div")({
     height: 50
 });
 
-/*const Menu = () => {
-    return null;
-};*/
+type Props = {
+    children: React.Node
+};
 
-const Static = ({ children }) => {
+const Static = ({ children }: Props) => {
     return (
         <div className={"static-page-container"}>
-            {/*<Menu name={"main"}>
-                {data => (
+            <Menu slug={"demo-menu"}>
+                {({ data }) => (
                     <ul>
-                        {data.map(item => <li key={item.id}>{item.title}</li>)}
+                        {data.items.map(item => (
+                            <li key={item.id}>{item.title}</li>
+                        ))}
                     </ul>
                 )}
-            </Menu>*/}
-            <Banner/>
+            </Menu>
+            <Banner />
             {children}
-            <Banner/>
+            <Banner />
         </div>
-    )
+    );
 };
 
-export default {
-    name: "static",
-    title: "Static page",
-    component: Static,
-};
+export default Static;

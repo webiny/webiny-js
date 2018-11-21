@@ -7,9 +7,10 @@ class PageTable extends MySQLTable {
         this.column("createdBy").char(24);
         this.column("updatedBy").char(24);
         this.column("title").varChar(300);
-        this.column("slug").varChar(300);
+        this.column("url").varChar(300);
         this.column("content").mediumText();
         this.column("settings").mediumText();
+        this.column("snippet").text();
         this.column("category").char(24);
         // Revision attributes
         this.column("version").int();

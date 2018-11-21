@@ -48,8 +48,7 @@ export type Props = {
 };
 
 export type GridProps = {
-    // One or more Cell components.
-    children: React.ChildrenArray<React.Element<typeof Cell> | React.Element<typeof GridInner>>
+    children: any
 };
 
 /**
