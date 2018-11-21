@@ -26,7 +26,7 @@ const ElementSettingsBar = ({ element, activePlugin, deactivateElement }) => {
     }
     const plugin = getPlugin(element.type);
     const actions = getElementActions(plugin);
-    
+
     return (
         <React.Fragment>
             <TopAppBarSecondary fixed>

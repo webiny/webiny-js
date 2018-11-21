@@ -45,11 +45,17 @@ type Props = FormComponentProps & {
     // Uses "bytes" (https://www.npmjs.com/package/bytes) library to convert string notation to actual number.
     maxSize: string,
 
+    // Preview <img> props (eg. width, height, alt, title ...).
+    img?: Object,
+
     // By default, the editor tool will be shown when an image is selected.
     // Set to false if there is no need for editor to be shown. Otherwise, set true (default value) or alternatively
     // an object containing all of the image editor related options (eg. "filter").
     // Please check the docs of ImageEditor component for the list of all available options.
     imageEditor?: boolean | Object,
+
+    // Should remove image button (top right ✕) be shown? Default is set to `true`.
+    showRemoveImageButton?: boolean,
 
     // Use these to customize error messages (eg. if i18n supported is needed).
     errorMessages: {
@@ -76,6 +82,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
         maxSize: "5mb",
         accept: ["image/jpeg", "image/png", "image/gif", "image/svg+xml"],
         imageEditor: true,
+        showRemoveImageButton: true,
         errorMessages: {
             maxSizeExceeded: "Max size exceeded.",
             unsupportedFileType: "Unsupported file type.",
@@ -115,10 +122,12 @@ export class SingleImageUpload extends React.Component<Props, State> {
             value,
             validation = { isValid: null },
             label,
+            img,
             description,
             accept,
             maxSize,
-            onChange
+            onChange,
+            showRemoveImageButton
         } = this.props;
 
         let imageEditorImageSrc = "";
@@ -128,12 +137,11 @@ export class SingleImageUpload extends React.Component<Props, State> {
 
         return (
             <ImageUploadWrapper className={classNames(className)}>
-                {label &&
-                    !value && (
-                        <div className="mdc-floating-label mdc-floating-label--float-above">
-                            {label}
-                        </div>
-                    )}
+                {label && !value && (
+                    <div className="mdc-floating-label mdc-floating-label--float-above">
+                        {label}
+                    </div>
+                )}
 
                 <ImageEditorDialog
                     open={this.state.imageEditor.open}
@@ -161,9 +169,10 @@ export class SingleImageUpload extends React.Component<Props, State> {
                 <FileBrowser accept={accept} maxSize={maxSize} convertToBase64>
                     {({ browseFiles }) => (
                         <Image
+                            img={img}
                             loading={this.state.loading}
                             value={value}
-                            removeImage={onChange}
+                            removeImage={showRemoveImageButton ? onChange : null}
                             uploadImage={() => {
                                 browseFiles({
                                     onSuccess: files => this.handleFiles(files),
@@ -178,8 +187,9 @@ export class SingleImageUpload extends React.Component<Props, State> {
                     <FormElementMessage error>{validation.message}</FormElementMessage>
                 )}
 
-                {validation.isValid !== false &&
-                    description && <FormElementMessage>{description}</FormElementMessage>}
+                {validation.isValid !== false && description && (
+                    <FormElementMessage>{description}</FormElementMessage>
+                )}
 
                 {this.state.error && (
                     <FormElementMessage error>

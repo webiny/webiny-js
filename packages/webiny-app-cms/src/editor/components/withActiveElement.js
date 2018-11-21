@@ -14,7 +14,9 @@ export function withActiveElement({ propName = "element", shallow = false } = {}
             }
 
             return {
-                [propName]: shallow ? getElement(state, elementId) : getElementWithChildren(state, elementId)
+                [propName]: shallow
+                    ? getElement(state, elementId)
+                    : getElementWithChildren(state, elementId)
             };
         })(Component);
     };

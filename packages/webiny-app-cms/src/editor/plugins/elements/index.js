@@ -13,14 +13,13 @@ import social from "./social";
 import code from "./code";
 import pagesList from "./pagesList";
 
-
 export default [
     document(),
     row(),
     block(),
     column(),
     ...icon(),
-    image(),
+    ...image(),
     text(),
     spacer(),
     ...button(),

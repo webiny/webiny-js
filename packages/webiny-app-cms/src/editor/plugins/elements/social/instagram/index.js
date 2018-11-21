@@ -5,7 +5,10 @@ import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ReactComponent as SocialIcon } from "./../../../elementGroups/social/round-people-24px.svg";
 import type { ElementPluginType } from "webiny-app-cms/types";
-import { createEmbedPlugin, createEmbedSettingsPlugin } from "./../../utils/oembed/createEmbedPlugin";
+import {
+    createEmbedPlugin,
+    createEmbedSettingsPlugin
+} from "./../../utils/oembed/createEmbedPlugin";
 
 export default (): Array<ElementPluginType> => [
     createEmbedPlugin({
@@ -33,7 +36,10 @@ export default (): Array<ElementPluginType> => [
                     <Grid>
                         <Cell span={12}>
                             <Bind name={"data.source.url"} validators={["required", "url"]}>
-                                <Input label={"Instagram URL"} description={"Enter an Instagram URL"} />
+                                <Input
+                                    label={"Instagram URL"}
+                                    description={"Enter an Instagram URL"}
+                                />
                             </Bind>
                         </Cell>
                     </Grid>

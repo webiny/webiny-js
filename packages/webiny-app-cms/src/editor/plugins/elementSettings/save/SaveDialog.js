@@ -33,10 +33,7 @@ type Props = {
 const SaveDialog = pure(({ open, onClose, onSubmit, type }: Props) => {
     return (
         <Dialog open={open} onClose={onClose} className={narrowDialog}>
-            <Form
-                onSubmit={onSubmit}
-                data={{ type }}
-            >
+            <Form onSubmit={onSubmit} data={{ type }}>
                 {({ data, submit, Bind }) => (
                     <React.Fragment>
                         <DialogHeader>
@@ -46,7 +43,7 @@ const SaveDialog = pure(({ open, onClose, onSubmit, type }: Props) => {
                             <Grid>
                                 <Cell span={12}>
                                     <Bind name={"name"} validators={"required"}>
-                                        <Input label={"Name"} autoFocus/>
+                                        <Input label={"Name"} autoFocus />
                                     </Bind>
                                 </Cell>
                             </Grid>

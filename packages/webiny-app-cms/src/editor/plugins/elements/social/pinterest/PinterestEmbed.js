@@ -1,11 +1,9 @@
 // @flow
 import * as React from "react";
-import { connect } from "react-redux";
 import { css } from "emotion";
 import { isEqual } from "lodash";
 import { compose, withHandlers, shouldUpdate, lifecycle } from "recompose";
 import { get } from "lodash";
-import { set } from "dot-prop-immutable";
 
 function appendSDK(props) {
     const { element } = props;
@@ -41,7 +39,7 @@ const centerAlign = css({
 const getHTML = data => {
     return `<a
         data-pin-do="embedPin"
-        data-pin-width="${data.size || 'small'}"
+        data-pin-width="${data.size || "small"}"
         href="${data.url}"
     />`;
 };
@@ -51,19 +49,21 @@ export default compose(
         return !isEqual(props, nextProps);
     }),
     withHandlers({
-        renderEmpty: () => () => {
-            return <div>You must configure your embed in the settings!</div>;
-        },
-        renderEmbed: ({ element }) => () => {
-            const data = get(element, "data.source");
-            return (
-                <div
-                    id={"cms-embed-" + element.id}
-                    className={centerAlign}
-                    dangerouslySetInnerHTML={{ __html: getHTML(data) }}
-                />
-            );
-        }
+        renderEmpty: () =>
+            function renderEmpty() {
+                return <div>You must configure your embed in the settings!</div>;
+            },
+        renderEmbed: ({ element }) =>
+            function renderEmbed() {
+                const data = get(element, "data.source");
+                return (
+                    <div
+                        id={"cms-embed-" + element.id}
+                        className={centerAlign}
+                        dangerouslySetInnerHTML={{ __html: getHTML(data) }}
+                    />
+                );
+            }
     }),
     lifecycle({
         async componentDidMount() {

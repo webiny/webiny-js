@@ -43,7 +43,7 @@ const addKeyHandler = (id, key, handler) => {
 };
 
 const removeKeyHandler = (id, key) => {
-    if(!keyStack[key]) {
+    if (!keyStack[key]) {
         return;
     }
 

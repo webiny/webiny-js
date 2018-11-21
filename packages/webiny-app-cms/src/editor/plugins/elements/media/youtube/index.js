@@ -21,7 +21,7 @@ export default (): Array<ElementPluginType> => [
         onCreate: "open-settings",
         oembed: {
             renderEmbed(props) {
-                return <YoutubeEmbed {...props}/>
+                return <YoutubeEmbed {...props} />;
             }
         }
     }),

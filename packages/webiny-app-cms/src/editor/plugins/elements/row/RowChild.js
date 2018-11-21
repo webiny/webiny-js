@@ -72,7 +72,7 @@ const RowChild = pure(
                     </Resizer>
                 )}
                 <DropZone.Left type={target.type} onDrop={dropElementLeft} />
-                <Element id={element.id} className={resizing && noPointer}/>
+                <Element id={element.id} className={resizing && noPointer} />
                 {last && <DropZone.Right type={target.type} onDrop={dropElementRight} />}
             </ColumnContainer>
         );

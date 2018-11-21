@@ -4,11 +4,14 @@ import { set } from "dot-prop-immutable";
 import { redux } from "webiny-app-cms/editor/redux";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { cloneElement } from "webiny-app-cms/editor/utils";
-import { getElementWithChildren, getParentElementWithChildren } from "webiny-app-cms/editor/selectors";
+import {
+    getElementWithChildren,
+    getParentElementWithChildren
+} from "webiny-app-cms/editor/selectors";
 import { ReactComponent as CloneIcon } from "webiny-app-cms/editor/assets/icons/round-queue-24px.svg";
 import Action from "../Action";
 
-const duplicate = (element) => {
+const duplicate = element => {
     const state = redux.store.getState();
     element = getElementWithChildren(state, element.id);
     const parent = getParentElementWithChildren(state, element.id);

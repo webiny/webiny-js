@@ -60,8 +60,7 @@ const MetaTags = ({ prefix, value, onChange, Bind, ...other }: Props) => {
                         <Grid>
                             <Cell span={12}>
                                 <Typography use={"button"}>
-                                    To add other meta tags, click
-                                    {" "}
+                                    To add other meta tags, click{" "}
                                     <ButtonPrimary onClick={actions.add()}>
                                         Add meta tag
                                     </ButtonPrimary>

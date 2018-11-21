@@ -199,7 +199,7 @@ class PMSettings extends React.Component {
 }
 
 export default compose(
-    withActiveElement(),
+    withActiveElement({ omit: ["elements"] }),
     connect(
         (state, props) => ({
             tmpValue: getTmp(state, `settings.${props.element.id}.${props.styleAttribute}`)

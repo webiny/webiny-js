@@ -13,12 +13,7 @@ export default {
     type: "cms-toolbar-top",
     renderAction({ active }: { active: Boolean }) {
         return (
-            <Action
-                tooltip={"Add Element"}
-                active={active}
-                plugin={this.name}
-                icon={<AddIcon />}
-            />
+            <Action tooltip={"Add Element"} active={active} plugin={this.name} icon={<AddIcon />} />
         );
     },
     renderDrawer({ withDrawer }: { withDrawer: Function }) {

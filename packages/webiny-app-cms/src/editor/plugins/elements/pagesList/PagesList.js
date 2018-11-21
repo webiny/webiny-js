@@ -24,7 +24,7 @@ const PagesList = pure(({ settings, theme }: Object = {}) => {
                 if (loading) {
                     return "Loading...";
                 }
-                
+
                 return <ListComponent {...data.cms.listPages} theme={theme} />;
             }}
         </Query>

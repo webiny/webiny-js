@@ -1,16 +1,10 @@
+// @flow
 import * as React from "react";
-import {
-    Card,
-    CardPrimaryAction,
-    CardMedia,
-    CardAction,
-    CardActions,
-    CardActionButtons
-} from "@rmwc/card";
+import { Card, CardPrimaryAction, CardAction, CardActions, CardActionButtons } from "@rmwc/card";
 import { css } from "emotion";
 import { Typography } from "@rmwc/typography";
 
-const PageItem = ({ data, className }) => {
+const PageItem = ({ data, className }: Object) => {
     return (
         <Card className={className} style={{ width: "21rem", backgroundColor: "transparent" }}>
             <CardPrimaryAction>
@@ -51,15 +45,11 @@ const pageItem = css({
     color: "var(--mdc-theme-primary)"
 });
 
-const PageList = ({ data }) => {
+const PageList = ({ data }: Object) => {
     return (
         <div className={pageList}>
             {data.map(page => (
-                <PageItem
-                    className={pageItem}
-                    key={page.id}
-                    data={page}
-                />
+                <PageItem className={pageItem} key={page.id} data={page} />
             ))}
         </div>
     );

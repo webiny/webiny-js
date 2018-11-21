@@ -21,6 +21,9 @@ class Entity {
         logs?: boolean,
         delete?: {
             soft?: boolean
+        },
+        read?: {
+            maxPerPage: ?number
         }
     };
     classId: string;
@@ -485,10 +488,11 @@ class Entity {
 
         prepared.perPage = Number(prepared.perPage);
         if (Number.isInteger(prepared.perPage) && prepared.perPage > 0) {
-            if (prepared.perPage > 100) {
+            const maxPerPage = _.get(this, "crud.read.maxPerPage");
+            if (Number.isInteger(maxPerPage) && prepared.perPage > maxPerPage) {
                 throw new EntityError(
-                    "Cannot query for more than 100 entities per page.",
-                    EntityError.CANNOT_QUERY_MORE_THAN_100
+                    `Cannot query for more than ${maxPerPage} entities per page.`,
+                    EntityError.MAX_PER_PAGE_EXCEEDED
                 );
             }
         } else {
@@ -672,6 +676,9 @@ Entity.crud = {
     logs: false,
     delete: {
         soft: false
+    },
+    read: {
+        maxPerPage: 100
     }
 };
 

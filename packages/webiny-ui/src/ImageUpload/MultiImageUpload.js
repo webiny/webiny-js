@@ -279,8 +279,9 @@ class MultiImageUpload extends React.Component<Props, State> {
                     <FormElementMessage error>{validation.message}</FormElementMessage>
                 )}
 
-                {validation.isValid !== false &&
-                    description && <FormElementMessage>{description}</FormElementMessage>}
+                {validation.isValid !== false && description && (
+                    <FormElementMessage>{description}</FormElementMessage>
+                )}
 
                 {Array.isArray(this.state.errors) && (
                     <FormElementMessage error>

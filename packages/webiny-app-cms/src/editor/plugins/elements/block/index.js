@@ -3,7 +3,13 @@ import React from "react";
 import { redux } from "webiny-app-cms/editor/redux";
 import Block from "./Block";
 import { set } from "dot-prop-immutable";
-import { createElement, createRow, createColumn, cloneElement, addElementToParent } from "webiny-app-cms/editor/utils";
+import {
+    createElement,
+    createRow,
+    createColumn,
+    cloneElement,
+    addElementToParent
+} from "webiny-app-cms/editor/utils";
 import { updateElement, deleteElement, elementCreated } from "webiny-app-cms/editor/actions";
 import type { ElementPluginType } from "webiny-app-cms/types";
 

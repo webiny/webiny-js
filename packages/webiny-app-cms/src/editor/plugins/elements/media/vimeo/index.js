@@ -4,7 +4,10 @@ import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
 import type { ElementPluginType } from "webiny-app-cms/types";
-import { createEmbedPlugin, createEmbedSettingsPlugin } from "./../../utils/oembed/createEmbedPlugin";
+import {
+    createEmbedPlugin,
+    createEmbedSettingsPlugin
+} from "./../../utils/oembed/createEmbedPlugin";
 import { ReactComponent as MediaIcon } from "./../../../elementGroups/media/round-music_video-24px.svg";
 import VimeoEmbed from "./VimeoEmbed";
 
@@ -20,7 +23,7 @@ export default (): Array<ElementPluginType> => [
         },
         oembed: {
             renderEmbed(props) {
-                return <VimeoEmbed {...props}/>
+                return <VimeoEmbed {...props} />;
             }
         }
     }),

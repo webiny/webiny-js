@@ -80,13 +80,12 @@ class NodeRendererDefault extends React.Component<*> {
                                 }
                             />
 
-                            {node.expanded &&
-                                !isDragging && (
-                                    <div
-                                        style={{ width: scaffoldBlockPxWidth }}
-                                        className={classnames("rst__lineChildren")}
-                                    />
-                                )}
+                            {node.expanded && !isDragging && (
+                                <div
+                                    style={{ width: scaffoldBlockPxWidth }}
+                                    className={classnames("rst__lineChildren")}
+                                />
+                            )}
                         </div>
                     )}
 

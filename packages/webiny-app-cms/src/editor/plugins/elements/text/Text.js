@@ -16,7 +16,6 @@ const Text = pure(({ element, onChange }) => {
     );
 });
 
-
 export default compose(
     connect(
         null,

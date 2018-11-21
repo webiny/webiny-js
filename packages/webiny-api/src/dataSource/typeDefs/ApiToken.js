@@ -10,7 +10,7 @@ import {
 const apiTokenFetcher = ctx => ctx.security.ApiToken;
 
 export default {
-    typeDefs: () => ([
+    typeDefs: () => [
         `
          type ApiToken {
             id: ID
@@ -70,7 +70,7 @@ export default {
                 id: ID!
             ): DeleteResponse
         }`
-    ]),
+    ],
     resolvers: {
         SecurityQuery: {
             getApiToken: resolveGet(apiTokenFetcher),

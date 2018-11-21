@@ -10,7 +10,8 @@ import {
 const roleFetcher = ctx => ctx.security.Role;
 
 export default {
-    typeDefs: () => [`
+    typeDefs: () => [
+        `
         type Role {
             id: ID
             name: String
@@ -38,7 +39,8 @@ export default {
             meta: ListMeta
             error: Error
         }
-    `],
+    `
+    ],
     typeExtensions: `
         extend type SecurityQuery {
             getRole(

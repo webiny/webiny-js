@@ -41,7 +41,7 @@ export default {
             },
             Mutation: {
                 security: dummyResolver
-            },
+            }
         },
         apiToken.resolvers,
         group.resolvers,

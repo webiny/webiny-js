@@ -45,7 +45,7 @@ const Container = styled("div")({
     height: 600,
     backgroundColor: "var(--mdc-theme-surface)",
     borderRadius: 2,
-    color: 'var(--mdc-theme-text-primary-on-background)'
+    color: "var(--mdc-theme-text-primary-on-background)"
 });
 
 const InnerContainer = styled("div")({
@@ -64,7 +64,7 @@ const SlideControl = styled("div")({
     alignItems: "center",
     justifyContent: "center",
     cursor: "pointer",
-    color: 'var(--mdc-theme-text-secondary-on-background)',
+    color: "var(--mdc-theme-text-secondary-on-background)",
     "&:hover": {
         background: "var(--mdc-theme-background)"
     }
@@ -103,7 +103,7 @@ class Onboarding extends React.Component<Props, State> {
             <Overlay>
                 <Container>
                     <Carousel
-                        speed={(this.state.slideIndex<1 || this.state.slideIndex>4) ? 500 : 0}
+                        speed={this.state.slideIndex < 1 || this.state.slideIndex > 4 ? 500 : 0}
                         dragging={true}
                         transitionMode={"scroll"}
                         slideIndex={this.state.slideIndex}

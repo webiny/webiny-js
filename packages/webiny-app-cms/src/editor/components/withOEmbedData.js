@@ -22,7 +22,7 @@ export default () => {
         withApollo,
         withSnackbar(),
         withHandlers({
-            getOEmbedData: ({ client, showSnackbar }) => async (url) => {
+            getOEmbedData: ({ client, showSnackbar }) => async url => {
                 const { data: res } = await client.query({
                     query: oembedQuery,
                     variables: { url }
@@ -36,5 +36,5 @@ export default () => {
                 return data;
             }
         })
-    )
+    );
 };
