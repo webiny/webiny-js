@@ -1,7 +1,7 @@
 // @flow
 import { Entity } from "webiny-entity";
 
-export default ({ user = {} }: Object) => {
+export const settingsFactory = ({ user = {} }: Object) => {
     class Settings extends Entity {
         static key: string;
         key: string;
@@ -17,6 +17,10 @@ export default ({ user = {} }: Object) => {
                 .setValidators("required");
 
             this.attr("data").object();
+
+            this.on("beforeCreate", () => {
+                this.key = this.constructor.key;
+            });
         }
 
         static async load(): Promise<Settings | null> {

@@ -1,5 +1,19 @@
 // @flow
-import general from "./pageSettings/general";
-import seo from "./pageSettings/seo";
-import social from "./pageSettings/social";
-export default [...general, ...seo, ...social];
+import {
+    general as pageSettingsGeneral,
+    seo as pageSettingsSeo,
+    social as pageSettingsSocial
+} from "./pageSettings/";
+
+import {
+    general as websiteSettingsGeneral,
+    social as websiteSettingsSocial
+} from "./websiteSettings/";
+
+export default [
+    ...pageSettingsGeneral,
+    ...pageSettingsSeo,
+    ...pageSettingsSocial,
+    ...websiteSettingsGeneral,
+    ...websiteSettingsSocial
+];
