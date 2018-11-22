@@ -33,7 +33,7 @@ export default [
         }
     },
     {
-        name: "cms-schema-settings-general",
+        name: "cms-schema-website-settings-general",
         type: "cms-schema",
         typeDefs: `
             type WebsiteGeneralSettings {

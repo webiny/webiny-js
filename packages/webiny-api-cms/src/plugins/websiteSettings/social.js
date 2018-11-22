@@ -19,7 +19,7 @@ export default [
         }
     },
     {
-        name: "cms-schema-social-general",
+        name: "cms-schema-website-settings-social",
         type: "cms-schema",
         typeDefs: `
             type WebsiteSocialSettings {
