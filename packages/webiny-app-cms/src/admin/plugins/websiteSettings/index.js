@@ -15,14 +15,13 @@ export default ([
         icon: <SettingsIcon />,
         fields: `
             general {
-                image {
+                name
+                logo {
                     src
                 }
-                tags {
-                    id 
-                    name
+                favicon {
+                    src
                 }
-                layout
             }
     `,
         render(props: Object) {
@@ -37,15 +36,9 @@ export default ([
         icon: <SocialIcon />,
         fields: `
             social {
-                image {
-                    src
-                }
-                title
-                description
-                meta {
-                    property
-                    content
-                }
+                facebook
+                twitter
+                instagram
             }
     `,
         render(props: Object) {

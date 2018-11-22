@@ -1,6 +1,6 @@
 //@flow
 import React from "react";
-import { compose, withHandlers, withState } from "recompose";
+import { compose, withState } from "recompose";
 import { getPlugins } from "webiny-app/plugins";
 import { withSnackbar } from "webiny-app-admin/components";
 import AdminLayout from "webiny-app-admin/components/Layouts/AdminLayout";
@@ -16,11 +16,11 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "webiny-app-admin/components/Views/SimpleForm";
+import { get } from "lodash";
 import { listItem, ListItemTitle, listStyle, TitleContent } from "./WebsiteSettingsStyled";
-import type { CmsSettingsPluginType } from "webiny-app-cms/types";
-import { graphql } from "react-apollo";
-import gql from "graphql-tag";
-// import getWebsiteSettingsGraphqlFields from "./getWebsiteSettingsGraphqlFields";
+import type { CmsWebsiteSettingsPluginType } from "webiny-app-cms/types";
+import { Query, Mutation } from "react-apollo";
+import { getWebsiteSettings, updateWebsiteSettings } from "./graphql";
 
 type Props = {
     saveSettings: Function,
@@ -28,12 +28,9 @@ type Props = {
     setActive: Function
 };
 
-const PageSettings = ({ active, setActive, saveSettings }: Props) => {
-    const plugins = getPlugins("cms-website-settings");
-    const page = {
-        title: "baja"
-    };
-    const activePlugin: CmsSettingsPluginType = plugins.find(pl => pl.name === active);
+const PageSettings = ({ active, setActive, showSnackbar }: Props) => {
+    const plugins: Array<CmsWebsiteSettingsPluginType> = getPlugins("cms-website-settings");
+    const activePlugin: CmsWebsiteSettingsPluginType = plugins.find(pl => pl.name === active);
 
     return (
         <AdminLayout>
@@ -58,21 +55,48 @@ const PageSettings = ({ active, setActive, saveSettings }: Props) => {
                     </List>
                 </LeftPanel>
                 <RightPanel span={7}>
-                    <Form data={page} onSubmit={saveSettings}>
-                        {({ Bind, submit }) => (
-                            <SimpleForm>
-                                <SimpleFormHeader title={activePlugin.title} />
-                                <SimpleFormContent>
-                                    {activePlugin ? activePlugin.render({ Bind }) : null}
-                                </SimpleFormContent>
-                                <SimpleFormFooter>
-                                    <ButtonPrimary type="primary" onClick={submit} align="right">
-                                        Save settings
-                                    </ButtonPrimary>
-                                </SimpleFormFooter>
-                            </SimpleForm>
-                        )}
-                    </Form>
+                    <Query query={getWebsiteSettings()}>
+                        {({ data }) => {
+                            const settings = get(data, "cms.getWebsiteSettings.data");
+                            if (!settings) {
+                                return null;
+                            }
+
+                            return (
+                                <Mutation mutation={updateWebsiteSettings()}>
+                                    {update => (
+                                        <Form
+                                            data={settings}
+                                            onSubmit={async data => {
+                                                await update({ variables: { data } });
+                                                showSnackbar("Settings updated successfully.");
+                                            }}
+                                        >
+                                            {({ Bind, submit, data }) => (
+                                                <SimpleForm>
+                                                    <SimpleFormHeader title={activePlugin.title} />
+                                                    <SimpleFormContent>
+                                                        {activePlugin
+                                                            ? activePlugin.render({ Bind, data })
+                                                            : null}
+                                                    </SimpleFormContent>
+                                                    <SimpleFormFooter>
+                                                        <ButtonPrimary
+                                                            type="primary"
+                                                            onClick={submit}
+                                                            align="right"
+                                                        >
+                                                            Save settings
+                                                        </ButtonPrimary>
+                                                    </SimpleFormFooter>
+                                                </SimpleForm>
+                                            )}
+                                        </Form>
+                                    )}
+                                </Mutation>
+                            );
+                        }}
+                    </Query>
                 </RightPanel>
             </CompactView>
         </AdminLayout>
@@ -81,30 +105,5 @@ const PageSettings = ({ active, setActive, saveSettings }: Props) => {
 
 export default compose(
     withSnackbar(),
-    withState("active", "setActive", "cms-website-settings-general"),
-    graphql(
-        gql`
-            mutation saveSettings($data: JSON) {
-                cms {
-                    updateWebsiteSettings(data: $data) {
-                        data {
-                            id
-                        }
-                        error {
-                            code
-                            message
-                            data
-                        }
-                    }
-                }
-            }
-        `,
-        { name: "saveSettings" }
-    ),
-    withHandlers({
-        saveSettings: ({ showSnackbar, updateRevision }) => (page: Object) =>
-            updateRevision(page, {
-                onFinish: () => showSnackbar("Settings saved")
-            })
-    })
+    withState("active", "setActive", "cms-website-settings-general")
 )(PageSettings);

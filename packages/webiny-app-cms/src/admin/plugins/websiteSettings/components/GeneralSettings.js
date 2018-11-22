@@ -12,19 +12,19 @@ const GeneralSettings = ({ Bind }: Object) => {
         <React.Fragment>
             <Grid>
                 <Cell span={12}>
-                    <Bind name={"websiteName"}>
+                    <Bind name={"general.name"}>
                         <DelayedOnChange>
                             <Input validators={["required", "url"]} label="Website name" />
                         </DelayedOnChange>
                     </Bind>
                 </Cell>
                 <Cell span={6}>
-                    <Bind name={"settings.general.favicon"}>
+                    <Bind name={"general.favicon"}>
                         <Image label="Favicon" />
                     </Bind>
                 </Cell>
                 <Cell span={6}>
-                    <Bind name={"settings.general.logo"}>
+                    <Bind name={"general.logo"}>
                         <Image label="Logo" />
                     </Bind>
                 </Cell>
