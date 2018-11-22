@@ -12,6 +12,7 @@ import Categories from "./views/Categories/Categories";
 import Menus from "./views/Menus/Menus";
 import Pages from "./views/Pages/Pages";
 import Editor from "./views/Pages/Editor";
+import WebsiteSettings from "./views/WebsiteSettings/WebsiteSettings";
 
 const t = i18n.namespace("Cms.Admin.Menu");
 
@@ -30,6 +31,7 @@ export default () => {
                         <Menu label={t`Categories`} route="Cms.Categories" />
                         <Menu label={t`Pages`} route="Cms.Pages" />
                         <Menu label={t`Menus`} route="Cms.Menus" />
+                        <Menu label={t`Settings`} route="Cms.Settings" />
                     </Menu>
                 </Menu>
             );
@@ -93,6 +95,18 @@ export default () => {
             path: "/cms/editor/:id",
             render() {
                 return <Editor />;
+            }
+        }
+    });
+
+    addPlugin({
+        name: "route-cms-website-settings",
+        type: "route",
+        route: {
+            name: "Cms.Settings",
+            path: "/cms/settings",
+            render() {
+                return <WebsiteSettings />;
             }
         }
     });
