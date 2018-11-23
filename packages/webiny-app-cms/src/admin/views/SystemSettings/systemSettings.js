@@ -17,10 +17,10 @@ import {
     SimpleFormHeader
 } from "webiny-app-admin/components/Views/SimpleForm";
 import { get } from "lodash";
-import { listItem, ListItemTitle, listStyle, TitleContent } from "./WebsiteSettingsStyled";
-import type { CmsWebsiteSettingsPluginType } from "webiny-app-cms/types";
+import { listItem, ListItemTitle, listStyle, TitleContent } from "./SystemSettingsStyled";
+import type { CmsSystemSettingsPluginType } from "webiny-app-cms/types";
 import { Query, Mutation } from "react-apollo";
-import { getWebsiteSettings, updateWebsiteSettings } from "./graphql";
+import { getSystemSettings, updateSystemSettings } from "./graphql";
 
 type Props = {
     saveSettings: Function,
@@ -29,8 +29,8 @@ type Props = {
 };
 
 const PageSettings = ({ active, setActive, showSnackbar }: Props) => {
-    const plugins: Array<CmsWebsiteSettingsPluginType> = getPlugins("cms-website-settings");
-    const activePlugin: CmsWebsiteSettingsPluginType = plugins.find(pl => pl.name === active);
+    const plugins: Array<CmsSystemSettingsPluginType> = getPlugins("cms-system-settings");
+    const activePlugin: CmsSystemSettingsPluginType = plugins.find(pl => pl.name === active);
 
     return (
         <AdminLayout>
@@ -55,15 +55,15 @@ const PageSettings = ({ active, setActive, showSnackbar }: Props) => {
                     </List>
                 </LeftPanel>
                 <RightPanel span={7}>
-                    <Query query={getWebsiteSettings()}>
+                    <Query query={getSystemSettings()}>
                         {({ data }) => {
-                            const settings = get(data, "cms.getWebsiteSettings.data");
+                            const settings = get(data, "cms.getSystemSettings.data");
                             if (!settings) {
                                 return null;
                             }
 
                             return (
-                                <Mutation mutation={updateWebsiteSettings()}>
+                                <Mutation mutation={updateSystemSettings()}>
                                     {update => (
                                         <Form
                                             data={settings}
@@ -105,5 +105,5 @@ const PageSettings = ({ active, setActive, showSnackbar }: Props) => {
 
 export default compose(
     withSnackbar(),
-    withState("active", "setActive", "cms-website-settings-general")
+    withState("active", "setActive", "cms-system-settings-general")
 )(PageSettings);

@@ -1,34 +1,34 @@
 // @flow
-const websiteSettingsFetcher = ctx => ctx.cms.WebsiteSettings;
+const systemSettingsFetcher = ctx => ctx.cms.SystemSettings;
 import { Response } from "webiny-api/graphql";
 
 export default {
     typeDefs: () => [
-        `type WebsiteSettings {
+        `type SystemSettings {
             _empty: String
         }
         
-        type WebsiteSettingsResponse {
-            data: WebsiteSettings
+        type SystemSettingsResponse {
+            data: SystemSettings
             error: Error
         }
         
         extend type CmsQuery {
             # Returns website settings.
-            getWebsiteSettings: WebsiteSettingsResponse
+            getSystemSettings: SystemSettingsResponse
         }
         
         extend type CmsMutation {
             # Updates website settings 
-             updateWebsiteSettings(data: JSON!): WebsiteSettingsResponse
+             updateSystemSettings(data: JSON!): SystemSettingsResponse
         },
     `
     ],
     resolvers: {
         CmsQuery: {
-            getWebsiteSettings: async (_: any, args: Object, ctx: Object) => {
-                const WebsiteSettings = websiteSettingsFetcher(ctx);
-                const settings = await WebsiteSettings.load();
+            getSystemSettings: async (_: any, args: Object, ctx: Object) => {
+                const SystemSettings = systemSettingsFetcher(ctx);
+                const settings = await SystemSettings.load();
                 if (settings) {
                     return new Response(settings.data);
                 }
@@ -36,11 +36,11 @@ export default {
         },
         CmsMutation: {
             // Publish revision (must be given an exact revision ID to publish)
-            updateWebsiteSettings: async (_: any, { data }: Object, ctx: Object) => {
-                const WebsiteSettings = websiteSettingsFetcher(ctx);
-                let settings = await WebsiteSettings.load();
+            updateSystemSettings: async (_: any, { data }: Object, ctx: Object) => {
+                const SystemSettings = systemSettingsFetcher(ctx);
+                let settings = await SystemSettings.load();
                 if (!settings) {
-                    settings = new WebsiteSettings();
+                    settings = new SystemSettings();
                 }
 
                 await settings.populate({ data }).save();

@@ -1,13 +1,13 @@
 // @flow
 import gql from "graphql-tag";
-import getWebsiteSettingsGraphqlFields from "./getWebsiteSettingsGraphqlFields";
+import getSystemSettingsGraphqlFields from "./getSystemSettingsGraphqlFields";
 
-export const updateWebsiteSettings = () => gql`
-            mutation updateWebsiteSettings($data: JSON!) {
+export const updateSystemSettings = () => gql`
+            mutation updateSystemSettings($data: JSON!) {
                 cms {
-                    updateWebsiteSettings(data: $data) {
+                    updateSystemSettings(data: $data) {
                         data {
-                            ${getWebsiteSettingsGraphqlFields()}
+                            ${getSystemSettingsGraphqlFields()}
                         }
                         error {
                             code
@@ -19,13 +19,13 @@ export const updateWebsiteSettings = () => gql`
             }
         `;
 
-export const getWebsiteSettings = () => {
+export const getSystemSettings = () => {
     return gql`
-            query getWebsiteSettings {
+            query getSystemSettings {
                 cms {
-                    getWebsiteSettings {
+                    getSystemSettings {
                         data {
-                            ${getWebsiteSettingsGraphqlFields()}
+                            ${getSystemSettingsGraphqlFields()}
                         }
                         error {
                             code

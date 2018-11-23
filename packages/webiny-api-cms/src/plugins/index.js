@@ -6,14 +6,14 @@ import {
 } from "./pageSettings/";
 
 import {
-    general as websiteSettingsGeneral,
-    social as websiteSettingsSocial
-} from "./websiteSettings/";
+    general as systemSettingsGeneral,
+    social as systemSettingsSocial
+} from "./systemSettings/";
 
 export default [
     ...pageSettingsGeneral,
     ...pageSettingsSeo,
     ...pageSettingsSocial,
-    ...websiteSettingsGeneral,
-    ...websiteSettingsSocial
+    ...systemSettingsGeneral,
+    ...systemSettingsSocial
 ];

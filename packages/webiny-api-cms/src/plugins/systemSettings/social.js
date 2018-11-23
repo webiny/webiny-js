@@ -12,14 +12,14 @@ class SocialSettings extends Model {
 
 export default [
     {
-        name: "cms-website-settings-social",
-        type: "cms-website-settings-model",
+        name: "cms-system-settings-social",
+        type: "cms-system-settings-model",
         apply({ model }: Object) {
             model.attr("social").model(SocialSettings);
         }
     },
     {
-        name: "cms-schema-website-settings-social",
+        name: "cms-schema-system-settings-social",
         type: "cms-schema",
         typeDefs: `
             type WebsiteSocialSettings {
@@ -28,7 +28,7 @@ export default [
                 instagram: String
             } 
             
-            extend type WebsiteSettings {
+            extend type SystemSettings {
                 social: WebsiteSocialSettings
             }
         `

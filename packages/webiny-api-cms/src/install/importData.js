@@ -2,7 +2,7 @@
 import setupEntities from "../entities/setupEntities";
 
 export default async (context: Object) => {
-    const { Category, Element, Page, Tag, Menu, WebsiteSettings } = setupEntities(context);
+    const { Category, Element, Page, Tag, Menu, SystemSettings } = setupEntities(context);
 
     const menu = new Menu();
     menu.populate({
@@ -14,7 +14,7 @@ export default async (context: Object) => {
 
     await menu.save();
 
-    const settings = new WebsiteSettings();
+    const settings = new SystemSettings();
     settings.data = {};
     settings.save();
 

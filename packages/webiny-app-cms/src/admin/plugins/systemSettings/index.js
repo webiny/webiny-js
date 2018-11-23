@@ -8,8 +8,8 @@ import { ReactComponent as SocialIcon } from "./icons/round-thumb_up-24px.svg";
 
 export default ([
     {
-        name: "cms-website-settings-general",
-        type: "cms-website-settings",
+        name: "cms-system-settings-general",
+        type: "cms-system-settings",
         title: "General settings",
         description: "Manage things like website name and favorites icon.",
         icon: <SettingsIcon />,
@@ -29,8 +29,8 @@ export default ([
         }
     },
     {
-        name: "cms-website-settings-social",
-        type: "cms-website-settings",
+        name: "cms-system-settings-social",
+        type: "cms-system-settings",
         title: "Social media",
         description: "Set your social media links.",
         icon: <SocialIcon />,
