@@ -26,14 +26,14 @@ class GeneralSettings extends Model {
 
 export default [
     {
-        name: "cms-system-settings-general",
-        type: "cms-system-settings-model",
+        name: "system-settings-cms-general",
+        type: "system-settings-model",
         apply({ model }: Object) {
             model.attr("general").model(GeneralSettings);
         }
     },
     {
-        name: "cms-schema-system-settings-general",
+        name: "cms-schema-system-settings-cms-general",
         type: "cms-schema",
         typeDefs: `
             type WebsiteGeneralSettings {

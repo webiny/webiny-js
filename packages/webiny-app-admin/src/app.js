@@ -129,7 +129,7 @@ export default () => {
     });
 
     addPlugin({
-        name: "route-cms-system-settings",
+        name: "route-system-settings",
         type: "route",
         route: {
             name: "Cms.Settings",

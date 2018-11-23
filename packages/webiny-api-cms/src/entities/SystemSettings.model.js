@@ -9,7 +9,7 @@ export default function systemSettingsSettingsFactory(): Class<ISystemSettingsSe
         constructor() {
             super();
 
-            getPlugins("cms-system-settings-model").forEach(pl => {
+            getPlugins("system-settings-model").forEach(pl => {
                 pl.apply({ model: this });
             });
         }

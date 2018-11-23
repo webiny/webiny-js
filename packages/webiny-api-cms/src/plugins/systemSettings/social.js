@@ -12,14 +12,14 @@ class SocialSettings extends Model {
 
 export default [
     {
-        name: "cms-system-settings-social",
-        type: "cms-system-settings-model",
+        name: "system-settings-cms-social",
+        type: "system-settings-model",
         apply({ model }: Object) {
             model.attr("social").model(SocialSettings);
         }
     },
     {
-        name: "cms-schema-system-settings-social",
+        name: "cms-schema-system-settings-cms-social",
         type: "cms-schema",
         typeDefs: `
             type WebsiteSocialSettings {
