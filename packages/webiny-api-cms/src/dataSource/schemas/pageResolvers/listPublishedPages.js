@@ -2,7 +2,7 @@
 import type { EntityCollection } from "webiny-entity";
 import { createPaginationMeta } from "webiny-entity";
 import { ListResponse } from "webiny-api/graphql/responses";
-import listPublishedPagesSql from "./listPublishedPage.sql";
+import listPublishedPagesSql from "./listPublishedPages.sql";
 
 export default async (root: any, args: Object, context: Object) => {
     const { page = 1, perPage = 10 } = args;

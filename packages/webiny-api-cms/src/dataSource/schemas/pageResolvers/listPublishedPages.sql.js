@@ -1,3 +1,4 @@
+// @flow
 export default (args: Object, context: Object) => {
     const { Page, Category, Tag, Tags2Pages } = context.cms;
 
@@ -12,9 +13,12 @@ export default (args: Object, context: Object) => {
 
     const variables = [];
 
+    const categorySlug = !Category.isId(category);
+
     const tables = [
         `${Page.storageClassId} as p`,
-        category ? `${Category.storageClassId} as c` : null
+        // If category slug is given, we need to join the table to find the appropriate record
+        category && categorySlug ? `${Category.storageClassId} as c` : null
     ].filter(Boolean);
 
     if (category) {
@@ -22,7 +26,7 @@ export default (args: Object, context: Object) => {
     }
 
     let tagConditions = null;
-    if (tags) {
+    if (tags && tags.length) {
         tagConditions = tags.map((t, i) => {
             tables.push(`${Tag.storageClassId} as t${i}`);
             tables.push(`${Tags2Pages.storageClassId} as t2p${i}`);
@@ -36,7 +40,7 @@ export default (args: Object, context: Object) => {
     }
 
     let orderBy = "";
-    if (sort) {
+    if (sort && Object.keys(sort).length) {
         orderBy =
             "ORDER BY " +
             Object.keys(sort)
@@ -49,9 +53,13 @@ export default (args: Object, context: Object) => {
         "SELECT SQL_CALC_FOUND_ROWS p.*",
         `FROM ${tables.join(", ")}`,
         `WHERE 1=1`,
-        category ? `AND p.category = c.id AND c.slug = ?` : "",
-        `AND p.published = 1`,
-        tagConditions ? `AND (${tagConditions.join(tagsOperator)})` : "",
+        // If category slug is provided - join and and find by slug.
+        category && categorySlug ? `AND p.category = c.id AND c.slug = ?` : "",
+        // If category ID is provided, we just use the ID directly.
+        category && !categorySlug ? `AND p.category = ?` : "",
+        // Only get published pages.
+        // `AND p.published = 1`,
+        tagConditions && tagConditions.length ? `AND (${tagConditions.join(tagsOperator)})` : "",
         "GROUP BY p.id",
         orderBy,
         "LIMIT ? OFFSET ?"

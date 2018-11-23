@@ -4,18 +4,25 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
 import PagesList from "./PagesList";
-import { SimpleTagsMultiAutoComplete } from "webiny-app-cms/admin/components/TagsMultiAutoComplete";
+import { SimpleTagsMultiAutoComplete, CategoriesAutoComplete } from "webiny-app-cms/admin/components";
 
 const PagesListSettings = ({ theme, Bind }: Object) => {
     return (
         <React.Fragment>
             <Grid>
-                <Cell span={4}>
+                <Cell span={6}>
+                    <Bind name={"settings.category"}>
+                        <CategoriesAutoComplete label="Category" />
+                    </Bind>
+                </Cell>
+                <Cell span={6}>
                     <Bind name={"settings.limit"} validators={["required", "numeric"]}>
                         <Input label={"Number of pages"} />
                     </Bind>
                 </Cell>
-                <Cell span={4}>
+            </Grid>
+            <Grid>
+                <Cell span={6}>
                     <Bind name={"settings.sortBy"} defaultValue={"publishedOn"}>
                         <Select label={"Sort by"}>
                             <option value={"publishedOn"}>Publishing date</option>
@@ -23,7 +30,7 @@ const PagesListSettings = ({ theme, Bind }: Object) => {
                         </Select>
                     </Bind>
                 </Cell>
-                <Cell span={4}>
+                <Cell span={6}>
                     <Bind name={"settings.sortDirection"} defaultValue={-1}>
                         <Select label={"Sort direction"}>
                             <option value={-1}>Descending</option>
@@ -43,10 +50,10 @@ const PagesListSettings = ({ theme, Bind }: Object) => {
                     </Bind>
                 </Cell>
                 <Cell span={6}>
-                    <Bind name={"settings.tagsRule"} defaultValue={"all"}>
+                    <Bind name={"settings.tagsRule"} defaultValue={"ALL"}>
                         <Select label={"Filter by tags rule"}>
-                            <option value={"all"}>Page must include all tags</option>
-                            <option value={"any"}>Page must include any of the tags</option>
+                            <option value={"ALL"}>Page must include all tags</option>
+                            <option value={"ANY"}>Page must include any of the tags</option>
                         </Select>
                     </Bind>
                 </Cell>

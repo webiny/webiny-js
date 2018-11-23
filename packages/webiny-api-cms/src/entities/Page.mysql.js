@@ -16,6 +16,7 @@ class PageTable extends MySQLTable {
         this.column("version").int();
         this.column("parent").char(24);
         this.column("published").tinyInt();
+        this.column("publishedOn").dateTime();
         this.column("locked").tinyInt();
 
         this.index().unique("version", "parent");

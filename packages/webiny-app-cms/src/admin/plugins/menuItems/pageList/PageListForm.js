@@ -7,8 +7,7 @@ import { Typography } from "webiny-ui/Typography";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ButtonSecondary, ButtonPrimary } from "webiny-ui/Button";
 import { Select } from "webiny-ui/Select";
-import CategoriesAutoComplete from "./CategoriesAutoComplete";
-import { SimpleTagsMultiAutoComplete } from "webiny-app-cms/admin/components";
+import { SimpleTagsMultiAutoComplete, CategoriesAutoComplete } from "webiny-app-cms/admin/components";
 
 const LinkForm = ({ data, onSubmit, onCancel }: Object) => {
     return (
@@ -68,10 +67,10 @@ const LinkForm = ({ data, onSubmit, onCancel }: Object) => {
                     <Grid>
                         <Cell span={12}>
                             {get(data, "tags.length", 0) > 0 && (
-                                <Bind name="tagsRule" defaultValue={"all"}>
+                                <Bind name="tagsRule" defaultValue={"ALL"}>
                                     <Select label="Tags rule..." validators={["required"]}>
-                                        <option value="all">Must include all tags</option>
-                                        <option value="any">Must include any of the tags</option>
+                                        <option value="ALL">Must include all tags</option>
+                                        <option value="ANY">Must include any of the tags</option>
                                     </Select>
                                 </Bind>
                             )}
