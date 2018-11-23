@@ -39,12 +39,18 @@ const Revisions = pure(({ revisions, router }: Object) => {
                 </ButtonDefault>
             }
         >
-            {revisions.map(rev => (
-                <MenuItem key={rev.id}>
-                    <Typography use={"body2"}>v{rev.version}</Typography>
-                    <Typography use={"caption"}>({rev.locked ? "published" : "draft"})</Typography>
-                </MenuItem>
-            ))}
+            {revisions.map(rev => {
+                let status = "draft";
+                if (rev.published) status = "published";
+                if (rev.locked && !rev.published) status = "locked";
+
+                return (
+                    <MenuItem key={rev.id}>
+                        <Typography use={"body2"}>v{rev.version}</Typography>
+                        <Typography use={"caption"}>({status})</Typography>
+                    </MenuItem>
+                );
+            })}
         </Menu>
     );
 });

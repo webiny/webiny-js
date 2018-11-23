@@ -9,6 +9,7 @@ import text from "./text";
 import spacer from "./spacer";
 import button from "./button";
 import embeds from "./embeds";
+import pagesList from "./pagesList";
 
 export default [
     document(),
@@ -20,5 +21,6 @@ export default [
     text(),
     spacer(),
     button(),
-    ...embeds
+    ...embeds,
+    pagesList()
 ];
