@@ -28,7 +28,7 @@ type Props = {
     setActive: Function
 };
 
-const PageSettings = ({ active, setActive, showSnackbar }: Props) => {
+const SystemSettings = ({ active, setActive, showSnackbar }: Props) => {
     const plugins: Array<CmsSystemSettingsPluginType> = getPlugins("cms-system-settings");
     const activePlugin: CmsSystemSettingsPluginType = plugins.find(pl => pl.name === active);
 
@@ -106,4 +106,4 @@ const PageSettings = ({ active, setActive, showSnackbar }: Props) => {
 export default compose(
     withSnackbar(),
     withState("active", "setActive", "cms-system-settings-general")
-)(PageSettings);
+)(SystemSettings);

@@ -12,7 +12,6 @@ import Categories from "./views/Categories/Categories";
 import Menus from "./views/Menus/Menus";
 import Pages from "./views/Pages/Pages";
 import Editor from "./views/Pages/Editor";
-import SystemSettings from "./views/SystemSettings/systemSettings";
 
 const t = i18n.namespace("Cms.Admin.Menu");
 
@@ -95,18 +94,6 @@ export default () => {
             path: "/cms/editor/:id",
             render() {
                 return <Editor />;
-            }
-        }
-    });
-
-    addPlugin({
-        name: "route-cms-system-settings",
-        type: "route",
-        route: {
-            name: "Cms.Settings",
-            path: "/cms/settings",
-            render() {
-                return <SystemSettings />;
             }
         }
     });

@@ -10,6 +10,7 @@ import ApiTokens from "./views/ApiTokens";
 import Groups from "./views/Groups";
 import Account from "./views/Account";
 import AdminLayout from "webiny-app-admin/components/Layouts/AdminLayout";
+import SystemSettings from "./views/SystemSettings/SystemSettings";
 
 const t = i18n.namespace("Admin.App");
 const securityManager = "webiny-security-manager";
@@ -124,6 +125,18 @@ export default () => {
                 );
             },
             group: securityManager
+        }
+    });
+
+    addPlugin({
+        name: "route-cms-system-settings",
+        type: "route",
+        route: {
+            name: "Cms.Settings",
+            path: "/cms/settings",
+            render() {
+                return <SystemSettings />;
+            }
         }
     });
 };
