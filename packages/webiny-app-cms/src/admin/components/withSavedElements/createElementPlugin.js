@@ -31,13 +31,15 @@ export default (el: Element) => {
     const previewContent = cloneDeep(el.content);
     updateChildPaths(previewContent);
 
+    const name = "cms-saved-element-" + el.id;
+
     addPlugin({
-        name: "cms-saved-element-" + el.id,
+        name,
         type: "cms-element",
         target: rootPlugin.target,
         toolbar: {
-            title() {
-                return <Title title={el.name} onDelete={() => {}} />;
+            title({ refresh }) {
+                return <Title plugin={name} title={el.name} id={el.id} onDelete={refresh}/>;
             },
             group: "cms-element-group-saved",
             preview() {

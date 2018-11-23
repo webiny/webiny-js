@@ -182,6 +182,11 @@ export default {
             createElement(
                 data: ElementInput!
             ): ElementResponse
+            
+            # Delete element
+            deleteElement(
+                id: ID!
+            ): DeleteResponse
         },
     `
     ],
@@ -211,7 +216,9 @@ export default {
             // Delete a revision
             deleteRevision: resolveDelete(pageFetcher),
             // Creates a new element
-            createElement: resolveCreate(elementFetcher)
+            createElement: resolveCreate(elementFetcher),
+            // Deletes an element
+            deleteElement: resolveDelete(elementFetcher)
         },
         Page: {
             createdBy: resolveUser("createdBy"),

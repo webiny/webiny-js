@@ -19,13 +19,12 @@ type Props = {
 const ColumnChild = ({
     target,
     element,
-    index,
     last = false,
     dropElementAbove,
     dropElementBelow
 }: Props) => {
     return (
-        <React.Fragment key={element.id}>
+        <React.Fragment>
             <DropZone.Above type={target.type} onDrop={dropElementAbove} />
             <Element id={element.id} />
             {last && <DropZone.Below type={target.type} onDrop={dropElementBelow} />}
@@ -46,7 +45,7 @@ export default compose(
         dropElementAbove: ({ dropElement, target, index }) => (source: Object) => {
             dropElement({ source, target: { ...target, position: index } });
         },
-        dropElementBelow: ({ dropElement, target, index, count }) => (source: Object) => {
+        dropElementBelow: ({ dropElement, target, count }) => (source: Object) => {
             dropElement({ source, target: { ...target, position: count } });
         }
     })
