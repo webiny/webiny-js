@@ -135,9 +135,10 @@ export class SingleImageUpload extends React.Component<Props, State> {
             imageEditorImageSrc = (this.state.imageEditor.image.src: any);
         }
 
+        const src = value && value.src;
         return (
             <ImageUploadWrapper className={classNames(className)}>
-                {label && !value && (
+                {label && !src && (
                     <div className="mdc-floating-label mdc-floating-label--float-above">
                         {label}
                     </div>
