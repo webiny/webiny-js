@@ -27,9 +27,11 @@ const SaveAction = ({
     return (
         <React.Fragment>
             <SaveDialog
+                key={element.id}
                 open={isDialogOpened}
                 onClose={hideDialog}
                 onSubmit={onSubmit}
+                id={element.id}
                 type={element.type === "cms-element-block" ? "block" : "element"}
             />
             {React.cloneElement(children, { onClick: showDialog })}

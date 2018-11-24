@@ -23,6 +23,7 @@ import {
 } from "./Element/ElementStyled";
 
 declare type ElementProps = {
+    className?: string,
     active: boolean,
     dragStart: Function,
     dragEnd: Function,
@@ -72,7 +73,7 @@ const Element = pure(
                             >
                                 {renderDraggable}
                             </Draggable>
-                            {plugin.render({ theme, element })}
+                            <element-content>{plugin.render({ theme, element })}</element-content>
                         </div>
                     </ElementContainer>
                 )}

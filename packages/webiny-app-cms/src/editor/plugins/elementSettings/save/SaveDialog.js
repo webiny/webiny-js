@@ -1,7 +1,8 @@
 // @flow
 import React from "react";
 import { css } from "emotion";
-import { compose, withProps, pure } from "recompose";
+import { pure } from "recompose";
+import domtoimage from "dom-to-image";
 import {
     Dialog,
     DialogHeader,
@@ -12,6 +13,7 @@ import {
     DialogCancel
 } from "webiny-ui/Dialog";
 import { Input } from "webiny-ui/Input";
+import { SingleImageUpload } from "webiny-ui/ImageUpload";
 import { Tags } from "webiny-ui/Tags";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Form } from "webiny-form";
@@ -24,13 +26,15 @@ const narrowDialog = css({
 });
 
 type Props = {
+    id: string,
     open: boolean,
     onClose: Function,
     onSubmit: Function,
-    element: Object
+    element: Object,
+    type: string
 };
 
-const SaveDialog = pure(({ open, onClose, onSubmit, type }: Props) => {
+const SaveDialog = pure(({ id, open, onClose, onSubmit, type }: Props) => {
     return (
         <Dialog open={open} onClose={onClose} className={narrowDialog}>
             <Form onSubmit={onSubmit} data={{ type }}>
@@ -59,6 +63,15 @@ const SaveDialog = pure(({ open, onClose, onSubmit, type }: Props) => {
                                     </Cell>
                                 </Grid>
                             )}
+                            <Bind name={"preview"}>
+                                {({ value, onChange }) =>
+                                    value ? (
+                                        <SingleImageUpload value={value} onChange={onChange} />
+                                    ) : (
+                                        <ElementPreview key={id} onChange={onChange} id={id} />
+                                    )
+                                }
+                            </Bind>
                         </DialogBody>
                         <DialogFooter>
                             <DialogCancel>Cancel</DialogCancel>
@@ -70,5 +83,27 @@ const SaveDialog = pure(({ open, onClose, onSubmit, type }: Props) => {
         </Dialog>
     );
 });
+
+class ElementPreview extends React.Component<*> {
+    componentDidMount() {
+        this.generateImage();
+    }
+
+    componentDidUpdate() {
+        this.generateImage();
+    }
+
+    generateImage() {
+        setTimeout(async () => {
+            const node = document.querySelector(`#${this.props.id} element-content`).firstChild;
+            const dataUrl = await domtoimage.toPng(node);
+            this.props.onChange({ src: dataUrl });
+        }, 200);
+    }
+
+    render() {
+        return null;
+    }
+}
 
 export default SaveDialog;
