@@ -1,20 +1,18 @@
 // @flow
 import * as React from "react";
-import GeneralSettings from "./components/GeneralSettings";
-import SocialSettings from "./components/SocialSettings";
+import CmsSettings from "./components/CmsSettings";
 import type { CmsPageSettingsPluginType } from "webiny-app-cms/types";
 import { ReactComponent as SettingsIcon } from "./icons/round-settings-24px.svg";
-import { ReactComponent as SocialIcon } from "./icons/round-thumb_up-24px.svg";
 
 export default ([
     {
-        name: "system-settings-cms-general",
+        name: "system-settings-cms",
         type: "system-settings",
-        title: "General settings",
-        description: "Manage things like website name and logo.",
+        title: "CMS",
+        description: "Manage CMS related settings.",
         icon: <SettingsIcon />,
         fields: `
-            general {
+            cms {
                 name
                 logo {
                     src
@@ -22,27 +20,15 @@ export default ([
                 favicon {
                     src
                 }
+                social {
+                    facebook
+                    twitter
+                    instagram
+                }
             }
     `,
         render(props: Object) {
-            return <GeneralSettings {...props} />;
-        }
-    },
-    {
-        name: "system-settings-cms-social",
-        type: "system-settings",
-        title: "Social media",
-        description: "Set your social media links.",
-        icon: <SocialIcon />,
-        fields: `
-            social {
-                facebook
-                twitter
-                instagram
-            }
-    `,
-        render(props: Object) {
-            return <SocialSettings {...props} />;
+            return <CmsSettings {...props} />;
         }
     }
 ]: Array<CmsPageSettingsPluginType>);

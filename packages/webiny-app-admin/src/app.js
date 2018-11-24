@@ -39,6 +39,20 @@ export default () => {
     });
 
     addPlugin({
+        name: "settings-menu",
+        type: "menu",
+        render({ Menu }) {
+            return (
+                <Menu label={t`Settings`} icon={<SecurityIcon />}>
+                    <Menu label={t`Settings`}>
+                        <Menu label={t`View`} route="SystemSettings" />
+                    </Menu>
+                </Menu>
+            );
+        }
+    });
+
+    addPlugin({
         name: "route-roles",
         type: "route",
         route: {
@@ -132,7 +146,7 @@ export default () => {
         name: "route-system-settings",
         type: "route",
         route: {
-            name: "Cms.Settings",
+            name: "SystemSettings",
             path: "/cms/settings",
             render() {
                 return <SystemSettings />;

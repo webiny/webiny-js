@@ -30,7 +30,6 @@ export default () => {
                         <Menu label={t`Categories`} route="Cms.Categories" />
                         <Menu label={t`Pages`} route="Cms.Pages" />
                         <Menu label={t`Menus`} route="Cms.Menus" />
-                        <Menu label={t`Settings`} route="Cms.Settings" />
                     </Menu>
                 </Menu>
             );

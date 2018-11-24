@@ -15,35 +15,50 @@ class FileModel extends Model {
     }
 }
 
-class GeneralSettings extends Model {
+class SocialMedia extends Model {
+    constructor() {
+        super();
+        this.attr("facebook").char();
+        this.attr("twitter").char();
+        this.attr("instagram").char();
+    }
+}
+
+class CmsSettingsGeneralModel extends Model {
     constructor() {
         super();
         this.attr("name").char();
         this.attr("favicon").model(FileModel);
         this.attr("logo").model(FileModel);
+        this.attr("social").model(SocialMedia);
     }
 }
 
 export default [
     {
         name: "system-settings-cms-general",
-        type: "system-settings-model",
-        apply({ model }: Object) {
-            model.attr("general").model(GeneralSettings);
-        }
+        type: "cms-settings-model",
+        model: CmsSettingsGeneralModel
     },
     {
         name: "cms-schema-system-settings-cms-general",
         type: "cms-schema",
         typeDefs: `
-            type WebsiteGeneralSettings {
+            type CmsSocialMedia {
+                facebook: String
+                twitter: String
+                instagram: String
+            } 
+            
+            type CmsSystemSettings {
                 name: String
                 favicon: File
                 logo: File
+                social: CmsSocialMedia
             } 
             
-            extend type SystemSettings {
-                general: WebsiteGeneralSettings
+            extend type SystemSettingsQuery {
+                cms: CmsSystemSettings
             }
         `
     }

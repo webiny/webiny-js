@@ -8,7 +8,6 @@ import page from "./schemas/Page";
 import category from "./schemas/Category";
 import menu from "./schemas/Menu";
 import tag from "./schemas/Tag";
-import systemSettings from "./schemas/SystemSettings";
 
 export default () => {
     // Register plugins
@@ -39,7 +38,6 @@ export default () => {
             category.typeDefs,
             menu.typeDefs,
             tag.typeDefs,
-            systemSettings.typeDefs,
             ...getPlugins("cms-schema").map(pl => pl.typeDefs)
         ],
         resolvers: [
@@ -55,7 +53,6 @@ export default () => {
             category.resolvers,
             menu.resolvers,
             tag.resolvers,
-            systemSettings.resolvers,
             ...getPlugins("cms-schema").map(plugin => plugin.resolvers)
         ],
         context: (ctx: Object) => {

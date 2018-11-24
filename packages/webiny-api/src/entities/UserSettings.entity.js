@@ -1,6 +1,6 @@
 // @flow
 import invariant from "invariant";
-import { settingsFactory as Settings } from "./Settings.entity";
+import { cmsSettingsDataModelFactory as Settings } from "./Settings.entity";
 
 export function userSettingsFactory({ user }: Object) {
     class UserSettings extends Settings({ user }) {

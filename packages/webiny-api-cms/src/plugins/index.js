@@ -5,15 +5,6 @@ import {
     social as pageSettingsSocial
 } from "./pageSettings/";
 
-import {
-    general as systemSettingsGeneral,
-    social as systemSettingsSocial
-} from "./systemSettings/";
+import cmsSettings from "./cmsSettings";
 
-export default [
-    ...pageSettingsGeneral,
-    ...pageSettingsSeo,
-    ...pageSettingsSocial,
-    ...systemSettingsGeneral,
-    ...systemSettingsSocial
-];
+export default [...pageSettingsGeneral, ...pageSettingsSeo, ...pageSettingsSocial, ...cmsSettings];

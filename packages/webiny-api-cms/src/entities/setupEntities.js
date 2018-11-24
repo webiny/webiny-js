@@ -5,7 +5,7 @@ import { pageFactory } from "./Page.entity";
 import { tagFactory } from "./Tag.entity";
 import { tags2pagesFactory } from "./Tags2Pages.entity";
 import { elementFactory } from "./Element.entity";
-import { systemSettingsFactory } from "./SystemSettings.entity";
+import { cmsSettingsFactory } from "./CmsSettings.entity";
 
 export default ({ user }: Object) => {
     let entities = {};
@@ -16,7 +16,7 @@ export default ({ user }: Object) => {
     entities.Page = pageFactory({ user, entities });
     entities.Menu = menuFactory();
     entities.Element = elementFactory();
-    entities.SystemSettings = systemSettingsFactory({ user, entities });
+    entities.CmsSettings = cmsSettingsFactory({ user, entities });
 
     return entities;
 };
