@@ -6,6 +6,7 @@ import { withSnackbar } from "webiny-app-admin/components";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
 import { createElementPlugin, createBlockPlugin } from "webiny-app-cms/admin/components";
 import { createElement } from "webiny-app-cms/admin/graphql/pages";
+import { withFileUpload } from "webiny-app/components";
 
 type Props = {
     isDialogOpened: boolean,
@@ -57,6 +58,7 @@ const removeIdsAndPaths = el => {
 };
 
 export default compose(
+    withFileUpload(),
     withKeyHandler(),
     withState("isDialogOpened", "setOpenDialog", false),
     withHandlers({
@@ -66,9 +68,11 @@ export default compose(
     graphql(createElement, { name: "createElement" }),
     withSnackbar(),
     withHandlers({
-        onSubmit: ({ element, hideDialog, createElement, showSnackbar }) => async (
+        onSubmit: ({ element, hideDialog, createElement, showSnackbar, uploadFile }) => async (
             formData: Object
         ) => {
+            await uploadFile(formData.preview);
+
             hideDialog();
             formData.content = removeIdsAndPaths(element);
             const { data: res } = await createElement({ variables: { data: formData } });
