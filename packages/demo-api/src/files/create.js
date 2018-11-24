@@ -22,7 +22,7 @@ const create = async (src: string, options: Object = {}) => {
     const extension: string = mime.extension(type);
 
     // Generate unique filename.
-    let name = options.name;
+    let name = options.name || "";
     if (name) {
         // Remove extension.
         name =
