@@ -71,7 +71,6 @@ export default compose(
         onSubmit: ({ element, hideDialog, createElement, showSnackbar, uploadFile }) => async (
             formData: Object
         ) => {
-            console.log('ide upload,' , formData.preview)
             await uploadFile(formData.preview);
 
             hideDialog();
