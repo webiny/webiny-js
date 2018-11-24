@@ -34,6 +34,29 @@ const mustUpload = (file: FileBrowserFile) => {
     return src.startsWith("data:");
 };
 
+const getFileUploader = props => {
+    const config = _.get(props, "config.components.withFileUpload");
+    invariant(config, "withFileUpload component's configuration not found.");
+
+    invariant(
+        config.plugin || !Array.isArray(config.plugin),
+        `"withFileUpload" component's plugin not set. 
+                            Please configure it properly via app config ("components.withFileUpload.plugin").`
+    );
+
+    const [plugin, params] = config.plugin;
+    const withFileUploadPlugin = getPlugin(plugin);
+
+    invariant(
+        withFileUploadPlugin,
+        `"withFileUpload" component's plugin (set to "${plugin}") not found.`
+    );
+
+    return file => {
+        return withFileUploadPlugin.upload(file, params);
+    };
+};
+
 export const withFileUpload = (options: WithFileUploadOptions = {}): Function => {
     return (BaseComponent: typeof React.Component) => {
         return compose(
@@ -41,23 +64,11 @@ export const withFileUpload = (options: WithFileUploadOptions = {}): Function =>
             withProps(props => {
                 return {
                     ...props,
+                    uploadFile: async file => {
+                        return getFileUploader(props)(file);
+                    },
                     onChange: async file => {
-                        const config = _.get(props.config, "components.withFileUpload");
-                        invariant(config, "withFileUpload component's configuration not found.");
-
-                        invariant(
-                            config.plugin || !Array.isArray(config.plugin),
-                            `"withFileUpload" component's plugin not set. 
-                            Please configure it properly via app config ("components.withFileUpload.plugin").`
-                        );
-
-                        const [plugin, params] = config.plugin;
-                        const withFileUploadPlugin = getPlugin(plugin);
-
-                        invariant(
-                            withFileUploadPlugin,
-                            `"withFileUpload" component's plugin (set to "${plugin}") not found.`
-                        );
+                        const upload = getFileUploader(props);
 
                         const { onChange } = props;
                         onChange && (await onChange(file));
@@ -67,10 +78,7 @@ export const withFileUpload = (options: WithFileUploadOptions = {}): Function =>
                                 for (let index = 0; index < file.length; index++) {
                                     let current = file[index];
                                     if (mustUpload(current)) {
-                                        file[index] = await withFileUploadPlugin.upload(
-                                            current,
-                                            params
-                                        );
+                                        file[index] = await upload(current);
                                         onChange && (await onChange(file));
                                     }
                                 }
@@ -86,12 +94,11 @@ export const withFileUpload = (options: WithFileUploadOptions = {}): Function =>
                         if (mustUpload(file)) {
                             // Send file to server and get its path.
                             try {
-                                return withFileUploadPlugin
-                                    .upload(file, params)
-                                    .then(async uploadedFile => {
-                                        onChange && (await onChange(uploadedFile));
-                                    });
+                                return upload(file).then(async uploadedFile => {
+                                    onChange && (await onChange(uploadedFile));
+                                });
                             } catch (e) {
+                                // eslint-disable-next-line
                                 console.warn(e);
                             }
                         }
