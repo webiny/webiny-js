@@ -38,7 +38,7 @@ export default [
     {
         name: "system-settings-cms-general",
         type: "cms-settings-model",
-        model: CmsSettingsGeneralModel
+        model: { general: CmsSettingsGeneralModel }
     },
     {
         name: "cms-schema-system-settings-cms-general",
@@ -50,15 +50,15 @@ export default [
                 instagram: String
             } 
             
-            type CmsSystemSettings {
+            type CmsGeneralSettings {
                 name: String
                 favicon: File
                 logo: File
                 social: CmsSocialMedia
             } 
             
-            extend type SystemSettingsQuery {
-                cms: CmsSystemSettings
+            extend type CmsSettings {
+                general: CmsGeneralSettings
             }
         `
     }

@@ -10,7 +10,9 @@ export default function cmsSettingsFactory(): Class<ICmsSettings> {
             super();
 
             getPlugins("cms-settings-model").forEach(plugin => {
-                this.attr(plugin.name).model(plugin.model);
+                Object.keys(plugin.model).forEach(name => {
+                    this.attr(name).model(plugin.model[name]);
+                });
             });
         }
     };

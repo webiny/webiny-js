@@ -18,7 +18,7 @@ import {
 } from "webiny-app-admin/components/Views/SimpleForm";
 import { get } from "lodash";
 import { listItem, ListItemTitle, listStyle, TitleContent } from "./SystemSettingsStyled";
-import type { CmsSystemSettingsPluginType } from "webiny-app-cms/types";
+import type { CmsSettingsPluginType } from "webiny-app-cms/types";
 import { Query, Mutation } from "react-apollo";
 import { getSystemSettings, updateSystemSettings } from "./graphql";
 
@@ -29,8 +29,8 @@ type Props = {
 };
 
 const SystemSettings = ({ active, setActive, showSnackbar }: Props) => {
-    const plugins: Array<CmsSystemSettingsPluginType> = getPlugins("system-settings");
-    const activePlugin: CmsSystemSettingsPluginType = plugins.find(pl => pl.name === active);
+    const plugins: Array<CmsSettingsPluginType> = getPlugins("system-settings");
+    const activePlugin: CmsSettingsPluginType = plugins.find(pl => pl.name === active);
 
     return (
         <AdminLayout>
