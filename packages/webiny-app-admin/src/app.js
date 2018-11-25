@@ -10,7 +10,7 @@ import ApiTokens from "./views/ApiTokens";
 import Groups from "./views/Groups";
 import Account from "./views/Account";
 import AdminLayout from "webiny-app-admin/components/Layouts/AdminLayout";
-import SystemSettings from "./views/SystemSettings/SystemSettings";
+import Settings from "./views/Settings/Settings";
 
 const t = i18n.namespace("Admin.App");
 const securityManager = "webiny-security-manager";
@@ -45,7 +45,7 @@ export default () => {
             return (
                 <Menu label={t`Settings`} icon={<SecurityIcon />}>
                     <Menu label={t`Settings`}>
-                        <Menu label={t`View`} route="SystemSettings" />
+                        <Menu label={t`View`} route="Settings" />
                     </Menu>
                 </Menu>
             );
@@ -143,13 +143,13 @@ export default () => {
     });
 
     addPlugin({
-        name: "route-system-settings",
+        name: "route-settings",
         type: "route",
         route: {
-            name: "SystemSettings",
+            name: "Settings",
             path: "/cms/settings",
             render() {
-                return <SystemSettings />;
+                return <Settings />;
             }
         }
     });

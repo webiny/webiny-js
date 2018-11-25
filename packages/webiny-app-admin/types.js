@@ -1,18 +1,9 @@
 // @flow
-import type { Node, ComponentType } from "react";
+import * as React from "react";
 import type { PluginType } from "webiny-app/types";
 
 export type ContentPluginType = PluginType & {
-    render: ({ content: Node }) => {}
-};
-
-export type SearchPluginType = PluginType & {
-    labels: {
-        option: string,
-        search: string
-    },
-    renderFilters?: ({ Bind: ComponentType<*> }) => Node,
-    onSearch?: (data: Object) => void
+    render: ({ content: React.Node }) => {}
 };
 
 export type GlobalSearch = PluginType & {
@@ -25,5 +16,12 @@ export type GlobalSearch = PluginType & {
 };
 
 export type HeaderMiddlePlugin = PluginType & {
-    render: ({ content: Node }) => {}
+    render: ({ content: React.Node }) => {}
+};
+
+export type SettingsPluginType = PluginType & {
+    title: string,
+    description: string,
+    icon: React.Node,
+    render: () => React.Node
 };

@@ -36,12 +36,12 @@ class CmsSettingsGeneralModel extends Model {
 
 export default [
     {
-        name: "system-settings-cms-general",
+        name: "settings-cms-general",
         type: "cms-settings-model",
         model: { general: CmsSettingsGeneralModel }
     },
     {
-        name: "cms-schema-system-settings-cms-general",
+        name: "cms-schema-settings-cms-general",
         type: "cms-schema",
         typeDefs: `
             type CmsSocialMedia {
