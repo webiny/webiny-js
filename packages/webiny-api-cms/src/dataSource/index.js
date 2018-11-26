@@ -9,9 +9,9 @@ import category from "./schemas/Category";
 import menu from "./schemas/Menu";
 import tag from "./schemas/Tag";
 
-    addPlugin(...plugins);
 export default () => {
     // Register plugins
+    addPlugin(...plugins);
 
     // Create dataSource
     return {

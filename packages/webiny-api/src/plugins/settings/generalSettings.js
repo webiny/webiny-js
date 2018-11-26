@@ -1,11 +1,18 @@
 // @flow
-
-export default [
+import { type SettingsPluginType } from "webiny-api/types";
+export default ([
     {
         name: "schema-settings-general",
         type: "schema-settings",
+        namespace: "general",
         typeDefs: `
             type CmsSocialMedia {
+                facebook: String
+                twitter: String
+                instagram: String
+            } 
+            
+            input CmsSocialMediaInput {
                 facebook: String
                 twitter: String
                 instagram: String
@@ -16,18 +23,23 @@ export default [
                 favicon: File
                 logo: File
                 social: CmsSocialMedia
+            }
+            
+            input GeneralSettingsInput {
+                name: String
+                favicon: FileInput
+                logo: FileInput
+                social: CmsSocialMediaInput
             } 
             
             extend type SettingsQuery {
                 general: GeneralSettings
+            }  
+            
+            extend type SettingsMutation {
+                general(data: GeneralSettingsInput): GeneralSettings
             }
         `,
-        resolvers: {
-            SettingsQuery: {
-                general: () => {
-                    return { name: "kobaja" };
-                }
-            }
-        }
+        entity: ({ security: { GeneralSettings } }) => GeneralSettings
     }
-];
+]: Array<SettingsPluginType>);

@@ -6,6 +6,14 @@ export type PluginType = Object & {
     type: string
 };
 
+export type SettingsPluginType = PluginType & {
+    name: string,
+    type: string,
+    namespace: string,
+    typeDefs: string,
+    entity: Object => mixed
+};
+
 export const addPlugin = (...args: Array<PluginType>): void => {
     args.forEach(pl => {
         plugins[pl.name] = pl;

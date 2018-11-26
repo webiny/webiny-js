@@ -6076,7 +6076,7 @@ compression@^1.5.2:
     safe-buffer "5.1.2"
     vary "~1.1.2"
 
-compute-scroll-into-view@^1.0.2:
+compute-scroll-into-view@^1.0.2, compute-scroll-into-view@^1.0.9:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/compute-scroll-into-view/-/compute-scroll-into-view-1.0.11.tgz#7ff0a57f9aeda6314132d8994cce7aeca794fecf"
   integrity sha512-uUnglJowSe0IPmWOdDtrlHXof5CTIJitfJEyITHBW6zDVOGu9Pjk5puaLM73SLcwak0L4hEjO7Td88/a6P5i7A==
@@ -7500,6 +7500,16 @@ downshift@^2.1.1, downshift@^2.1.5:
   dependencies:
     compute-scroll-into-view "^1.0.2"
     prop-types "^15.6.0"
+
+downshift@^3.1.2:
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/downshift/-/downshift-3.1.5.tgz#2f8a54bd5026942ca06affdb0a5b19c14d949e9c"
+  integrity sha512-2PpR4+A0WiF0R+Q6sq79sSG+sAy4KBlH5FwnU8FtD5zkeZH/UQZm/QS7kq/CglSH8vl1qpPoaap4Z2Oe9Swcrg==
+  dependencies:
+    "@babel/runtime" "^7.1.2"
+    compute-scroll-into-view "^1.0.9"
+    prop-types "^15.6.0"
+    react-is "^16.5.2"
 
 duplexer2@^0.1.2, duplexer2@~0.1.0, duplexer2@~0.1.4:
   version "0.1.4"
@@ -16271,7 +16281,7 @@ react-inspector@^2.3.0:
     babel-runtime "^6.26.0"
     is-dom "^1.0.9"
 
-react-is@^16.3.2, react-is@^16.6.0:
+react-is@^16.3.2, react-is@^16.5.2, react-is@^16.6.0:
   version "16.6.3"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.6.3.tgz#d2d7462fcfcbe6ec0da56ad69047e47e56e7eac0"
   integrity sha512-u7FDWtthB4rWibG/+mFbVd5FvdI20yde86qKGx4lVUTWmPlSWQ4QxbBIrrs+HnXGbxOUlUzTAP/VDmvCwaP2yA==

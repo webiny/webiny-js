@@ -147,7 +147,7 @@ export default () => {
         type: "route",
         route: {
             name: "Settings",
-            path: "/cms/settings",
+            path: "/settings",
             render() {
                 return <Settings />;
             }

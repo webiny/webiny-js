@@ -14,6 +14,10 @@ const mapSourcesToExecutableSchemas = (sources: Array<Object>) => {
     const schemas = {};
 
     sources.forEach(({ typeDefs, resolvers, namespace, schemaDirectives }) => {
+        if (typeof resolvers === 'function') {
+            resolvers = resolvers();
+        }
+
         if (!Array.isArray(resolvers)) {
             resolvers = [resolvers];
         }

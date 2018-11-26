@@ -2,6 +2,7 @@
 import type { Attribute } from "webiny-model";
 import type { Schema as _Schema } from "webiny-api/graphql/Schema";
 import type { Entity as _Entity, Identity } from "webiny-api/entities";
+export type { SettingsPluginType } from "webiny-api/plugins";
 
 export type Schema = _Schema;
 export type Entity = _Entity;
