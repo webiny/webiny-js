@@ -46,14 +46,14 @@ export default [
         name: "cms-schema-settings-general",
         type: "cms-schema",
         typeDefs: `
-            type GeneralSettings {
+            type GeneralPageSettings {
                 tags: [Tag]
                 layout: String
                 image: File
             } 
             
             extend type PageSettings {
-                general: GeneralSettings
+                general: GeneralPageSettings
             }
         `
     }

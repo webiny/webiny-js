@@ -1,17 +1,17 @@
 // @flow
 import { Response, ErrorResponse } from "webiny-api/graphql/responses";
-import { type ICmsSettings } from "./../../../entities/CmsSettings.entity";
+import { type IGeneralSettings } from "./../../../entities/GeneralSettings.entity";
 
-type EntityFetcher = (context: Object) => ICmsSettings;
+type EntityFetcher = (context: Object) => IGeneralSettings;
 
 export default (entityFetcher: EntityFetcher) => async (
     root: any,
     args: Object,
     context: Object
 ) => {
-    const cmsSettingsClass = entityFetcher(context);
+    const generalSettingsClass = entityFetcher(context);
 
-    const settings = await cmsSettingsClass.load();
+    const settings = await generalSettingsClass.load();
     if (!settings) {
         return new ErrorResponse({
             code: "NOT_FOUND",

@@ -6,6 +6,7 @@ import { groups2entitiesFactory } from "./Groups2Entities.entity";
 import { roleFactory } from "./Role.entity";
 import { roles2entitiesFactory } from "./Roles2Entities.entity";
 import { userSettingsFactory } from "./UserSettings.entity";
+import { generalSettingsFactory } from "./GeneralSettings.entity";
 
 export default ({ user, config }: Object) => {
     let entities = {};
@@ -17,6 +18,7 @@ export default ({ user, config }: Object) => {
     entities.Groups2Entities = groups2entitiesFactory({ user, entities });
     entities.Roles2Entities = roles2entitiesFactory({ user, entities });
     entities.UserSettings = userSettingsFactory({ user, entities });
+    entities.GeneralSettings = generalSettingsFactory({ user, entities });
 
     return entities;
 };

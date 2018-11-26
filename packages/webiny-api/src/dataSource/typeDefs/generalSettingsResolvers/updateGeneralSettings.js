@@ -9,9 +9,9 @@ export default (entityFetcher: EntityFetcher) => async (
     { data }: Object,
     context: Object
 ) => {
-    const cmsSettingsClass = entityFetcher(context);
+    const generalSettingsClass = entityFetcher(context);
 
-    const settings = await cmsSettingsClass.load();
+    const settings = await generalSettingsClass.load();
     if (!settings) {
         return new ErrorResponse({
             code: "NOT_FOUND",
