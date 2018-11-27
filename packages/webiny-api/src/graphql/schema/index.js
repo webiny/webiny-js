@@ -70,21 +70,6 @@ export function prepareSchema({ dataSources = [] }: Object = {}) {
     });
 
     const getContext = (globalContext: Object) => {
-        getPlugins("entity").forEach(plugin => {
-            if (plugin.type !== "entity") {
-                return true;
-            }
-
-            if (!globalContext[plugin.namespace]) {
-                globalContext[plugin.namespace] = {
-                    entities: {}
-                };
-            }
-
-            const { name, factory } = plugin.entity;
-            globalContext[plugin.namespace].entities[name] = factory(globalContext);
-        });
-
         dataSources.forEach((allContext, source) => {
             if (!source.context) {
                 return true;
@@ -97,6 +82,10 @@ export function prepareSchema({ dataSources = [] }: Object = {}) {
 
             Object.assign(globalContext, sourceContext);
         }, {});
+
+        getPlugins("graphql-context").forEach(plugin => {
+            plugin.apply(globalContext);
+        });
 
         return globalContext;
     };

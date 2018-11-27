@@ -6,10 +6,11 @@ import user from "./typeDefs/User";
 import apiToken from "./typeDefs/ApiToken";
 import { addPlugin } from "webiny-api/plugins";
 import entities from "webiny-api/plugins/entities";
+import graphqlContextEntities from "webiny-api/plugins/graphqlContextEntities";
 
 export default () => {
     // Register plugins
-    addPlugin(...entities);
+    addPlugin(...entities, graphqlContextEntities);
 
     return {
         namespace: "api",

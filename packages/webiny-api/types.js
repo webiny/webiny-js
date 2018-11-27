@@ -73,3 +73,7 @@ export type EntityPluginType = PluginType & {
         factory: () => Entity
     }
 };
+
+export type GraphQLContextPluginType = PluginType & {
+    apply: (context: Object) => any
+};
