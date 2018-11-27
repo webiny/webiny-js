@@ -4,6 +4,7 @@ import { getPlugin } from "webiny-app/plugins";
 import { redux, addMiddleware } from "webiny-app-cms/editor/redux";
 import { ELEMENT_CREATED, activateElement, togglePlugin } from "webiny-app-cms/editor/actions";
 import { ReactComponent as SettingsIcon } from "webiny-app-cms/editor/assets/icons/settings.svg";
+import type { CmsElementActionPluginType } from "webiny-app-cms/types";
 import AdvancedSettings from "./AdvancedSettings";
 
 export default [
@@ -40,7 +41,7 @@ export default [
             return <AdvancedSettings {...props} />;
         }
     },
-    {
+    ({
         name: "cms-element-action-advanced",
         type: "cms-element-action",
         render() {
@@ -52,5 +53,5 @@ export default [
                 />
             );
         }
-    }
+    }: CmsElementActionPluginType)
 ];

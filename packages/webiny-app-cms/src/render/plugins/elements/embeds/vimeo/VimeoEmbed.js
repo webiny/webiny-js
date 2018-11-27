@@ -41,7 +41,7 @@ const VimeoEmbed = props => {
         <div className={outerWrapper}>
             <div className={innerWrapper}>
                 <div
-                    id={"cms-embed-" + element.id}
+                    id={ element.id}
                     className={scaleableVideo}
                     dangerouslySetInnerHTML={{ __html: get(element, "data.oembed.html") || "" }}
                 />

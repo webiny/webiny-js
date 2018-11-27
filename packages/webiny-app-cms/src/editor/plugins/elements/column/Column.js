@@ -46,16 +46,16 @@ const Column = pure(({ element, dropElement, togglePlugin }) => {
                         />
                     </DropZone.Center>
                 )}
-                {elements.map((childId, index) => (
-                    <ColumnChild
-                        key={childId}
-                        id={childId}
-                        index={index}
-                        count={elements.length}
-                        last={index === elements.length - 1}
-                        target={{ id, path, type }}
-                    />
-                ))}
+                    {elements.map((childId, index) => (
+                        <ColumnChild
+                            key={childId}
+                            id={childId}
+                            index={index}
+                            count={elements.length}
+                            last={index === elements.length - 1}
+                            target={{ id, path, type }}
+                        />
+                    ))}
             </ElementStyle>
         </ColumnContainer>
     );

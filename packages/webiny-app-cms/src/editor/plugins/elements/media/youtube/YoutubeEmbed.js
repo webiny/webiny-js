@@ -34,7 +34,7 @@ const scaleableVideo = css({
     }
 });
 
-const YoutubeEmbed = props => {
+const YoutubeEmbed = (props: Object) => {
     const { element, data } = props;
 
     if (data && data.loading) {
@@ -45,7 +45,7 @@ const YoutubeEmbed = props => {
         <div className={outerWrapper}>
             <div className={innerWrapper}>
                 <div
-                    id={"cms-embed-" + element.id}
+                    id={ element.id}
                     className={[
                         scaleableVideo,
                         "cms-editor-dragging--disabled",

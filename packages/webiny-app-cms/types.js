@@ -112,6 +112,10 @@ export type CmsMenuItemPluginType = PluginType & {
     renderForm: (params: { data: Object, onSubmit: Function, onCancel: Function }) => Node
 };
 
+export type CmsElementActionPluginType = PluginType & {
+    render: ({ plugin: ElementPluginType }) => Node
+};
+
 // ================= Redux types ===================
 export type { Redux } from "webiny-app-cms/editor/redux";
 

@@ -5,6 +5,7 @@ import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ReactComponent as SocialIcon } from "./../../../elementGroups/social/round-people-24px.svg";
+import placeholder from "./placeholder.jpg";
 import {
     createEmbedPlugin,
     createEmbedSettingsPlugin
@@ -26,6 +27,9 @@ export default (): Array<ElementPluginType> => [
             init({ node }) {
                 window.twttr.widgets.load(node);
             }
+        },
+        renderElementPreview({ width, height }) {
+            return <img style={{ width, height }} src={placeholder} alt={"Tweet"}/>;
         }
     }),
     createEmbedSettingsPlugin({

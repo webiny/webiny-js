@@ -2,20 +2,19 @@
 import React from "react";
 import cloneDeep from "lodash/cloneDeep";
 import { addPlugin } from "webiny-app/plugins";
-import { updateChildPaths } from "webiny-app-cms/editor/utils";
 
 type Element = {
     id: string,
     name: string,
     type: string,
     content: Object,
-    keywords: Array<string>
+    keywords: Array<string>,
+    preview: {
+        src: string
+    }
 };
 
 export default (el: Element) => {
-    const previewContent = cloneDeep(el.content);
-    updateChildPaths(previewContent);
-
     addPlugin({
         name: "cms-saved-block-" + el.id,
         type: "cms-block",
@@ -23,6 +22,11 @@ export default (el: Element) => {
         keywords: el.keywords || [],
         create() {
             return cloneDeep(el.content);
+        },
+        preview() {
+            return (
+                <img src={el.preview.src} alt={el.name} style={{ width: 400, height: "auto" }} />
+            );
         }
     });
 };
