@@ -61,7 +61,7 @@ export default (): ElementPluginType => {
 
                     next(action);
 
-                    if (!element.type === "cms-element-image") {
+                    if (element.type !== "cms-element-image") {
                         return;
                     }
 
@@ -75,7 +75,7 @@ export default (): ElementPluginType => {
                     if (!onCreate || onCreate !== "skip") {
                         // If source element does not define a specific `onCreate` behavior - continue with the actual element plugin
                         const image = document.querySelector(
-                            `#cms-element-image-${element.id} [data-role="select-image"]`
+                            `#${element.id} [data-role="select-image"]`
                         );
 
                         if (image) {

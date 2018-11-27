@@ -89,7 +89,7 @@ class AddElement extends React.Component<Props, State> {
             >
                 {({ connectDragSource }) =>
                     connectDragSource(
-                        <div>{this.renderOverlay(element, null, "Drag to Add", plugin)}</div>
+                        <div>{this.renderOverlay(element, null, "Drag to Add")}</div>
                     )
                 }
             </Draggable>
@@ -110,14 +110,13 @@ class AddElement extends React.Component<Props, State> {
                     name: ADD_ELEMENT
                 });
             },
-            "Click to Add",
-            plugin
+            "Click to Add"
         );
 
         return React.cloneElement(item, { key: plugin.name });
     };
 
-    renderOverlay = (element, onClick = null, label, plugin: ElementPluginType) => {
+    renderOverlay = (element, onClick = null, label) => {
         return (
             <Styled.ElementPreview>
                 <Styled.Overlay>
@@ -191,7 +190,7 @@ class AddElement extends React.Component<Props, State> {
 export default compose(
     connect(
         state => ({
-            params: getActivePluginParams("cms-toolbar-top")(state)
+            params: getActivePluginParams("cms-toolbar-add-element")(state)
         }),
         { dragStart, dragEnd, deactivatePlugin, dropElement }
     ),

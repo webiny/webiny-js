@@ -32,7 +32,7 @@ export default compose(
         state => ({
             // $FlowFixMe
             slateFocused: getUi(state).slateFocused,
-            settingsActive: getActivePlugins("cms-element-settings")(state)
+            settingsActive: getActivePlugins("cms-element-settings")(state).length > 0
         }),
         { togglePlugin }
     ),

@@ -110,8 +110,13 @@ addReducer([TOGGLE_PLUGIN], "ui.plugins", (state, action) => {
         return;
     }
 
-    let typePlugins = dotProp.get(state, plugin.type) || [];
+    let typePlugins = dotProp.get(state, plugin.type);
+    if (!Array.isArray(typePlugins)) {
+        typePlugins = [];
+    }
+
     const alreadyActive = typePlugins.findIndex(pl => pl.name === plugin.name);
+
     if (alreadyActive > -1) {
         typePlugins = dotProp.delete(typePlugins, alreadyActive);
     } else {
@@ -133,8 +138,13 @@ addReducer([DEACTIVATE_PLUGIN], "ui.plugins", (state, action) => {
         return;
     }
 
-    let typePlugins = dotProp.get(state, plugin.type) || [];
+    let typePlugins = dotProp.get(state, plugin.type);
+    if (!Array.isArray(typePlugins)) {
+        typePlugins = [];
+    }
+
     const alreadyActive = typePlugins.findIndex(pl => pl.name === plugin.name);
+
     if (alreadyActive > -1) {
         typePlugins = dotProp.delete(typePlugins, alreadyActive);
     }
