@@ -29,23 +29,23 @@ export default ({
     type: "settings",
     title: "General",
     description: "Manage general settings.",
-    query: gql`
-        query getSettings {
-            settings {
-                general ${fields}
-            }
-        }
-    `,
-    mutation: gql`
-        mutation updateSettings($data: GeneralSettingsInput) {
-            settings {
-                general(data: $data) ${fields}
-            }
-        }
-    `,
-    variables: (data: Object) => ({ data: data.general }),
     icon: <PagesIcon />,
-    render(props) {
-        return <GeneralSettings {...props} />;
+    component: <GeneralSettings />,
+    graphql: {
+        query: gql`
+            query getSettings {
+                settings {
+                    general ${fields}
+                }
+            }
+        `,
+        mutation: gql`
+            mutation updateSettings($data: GeneralSettingsInput) {
+                settings {
+                    general(data: $data) ${fields}
+                }
+            }
+        `,
+        variables: (data: Object) => ({ data: data.general })
     }
 }: SettingsPluginType);

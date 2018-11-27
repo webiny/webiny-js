@@ -10,7 +10,5 @@ export default ({
     title: "Integrations",
     description: "Manage settings of installed integrations.",
     icon: <SettingsIcon />,
-    render() {
-        return <IntegrationsList />;
-    }
+    component: <IntegrationsList />
 }: SettingsPluginType);

@@ -54,22 +54,23 @@ const SystemSettings = ({ active, setActive, showSnackbar }: Props) => {
                     </List>
                 </LeftPanel>
                 <RightPanel span={7}>
-                    {activePlugin && (
-                        <Query query={activePlugin.query}>
+                    {activePlugin.graphql ? (
+                        <Query query={activePlugin.graphql.query}>
                             {({ data }) => {
-                                const { settings = {} } = data;
-                                console.log(settings);
+                                const { settings } = data;
+                                if (!settings) {
+                                    return null;
+                                }
 
                                 return (
-                                    <Mutation mutation={activePlugin.mutation}>
+                                    <Mutation mutation={activePlugin.graphql.mutation}>
                                         {update => (
                                             <Form
                                                 data={{ ...settings }}
                                                 onSubmit={async data => {
-                                                    console.log("submitam data", data);
                                                     await update({
                                                         variables: {
-                                                            ...activePlugin.variables(data)
+                                                            ...activePlugin.graphql.variables(data)
                                                         }
                                                     });
                                                     showSnackbar("Settings updated successfully.");
@@ -81,12 +82,13 @@ const SystemSettings = ({ active, setActive, showSnackbar }: Props) => {
                                                             title={activePlugin.title}
                                                         />
                                                         <SimpleFormContent>
-                                                            {activePlugin
-                                                                ? activePlugin.render({
-                                                                      Bind,
-                                                                      data
-                                                                  })
-                                                                : null}
+                                                            {React.cloneElement(
+                                                                activePlugin.component,
+                                                                {
+                                                                    Bind,
+                                                                    data
+                                                                }
+                                                            )}
                                                         </SimpleFormContent>
                                                         <SimpleFormFooter>
                                                             <ButtonPrimary
@@ -105,6 +107,16 @@ const SystemSettings = ({ active, setActive, showSnackbar }: Props) => {
                                 );
                             }}
                         </Query>
+                    ) : (
+                        <SimpleForm>
+                            <SimpleFormHeader title={activePlugin.title} />
+                            <SimpleFormContent>{activePlugin.component}</SimpleFormContent>
+                            <SimpleFormFooter>
+                                <ButtonPrimary type="primary" onClick={() => {}} align="right">
+                                    Save settings
+                                </ButtonPrimary>
+                            </SimpleFormFooter>
+                        </SimpleForm>
                     )}
                 </RightPanel>
             </CompactView>

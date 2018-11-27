@@ -6,10 +6,13 @@ const IntegrationsList = () => {
     return (
         <>
             <Grid>
-                <Cell span={12}>Integracija 1</Cell>
+                <Cell span={12}>Integration 1</Cell>
             </Grid>
             <Grid>
-                <Cell span={12}>Integracija 1</Cell>
+                <Cell span={12}>Integration 2</Cell>
+            </Grid>
+            <Grid>
+                <Cell span={12}>Integration 3</Cell>
             </Grid>
         </>
     );

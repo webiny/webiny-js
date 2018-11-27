@@ -23,5 +23,10 @@ export type SettingsPluginType = PluginType & {
     title: string,
     description: string,
     icon: React.Node,
-    render: () => React.Node
+    component: React.ComponentType<any>,
+    graphql: {
+        query: Object,
+        mutation: Object,
+        variables: Object
+    }
 };
