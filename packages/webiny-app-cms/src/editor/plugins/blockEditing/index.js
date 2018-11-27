@@ -23,7 +23,8 @@ export default [
         name: "cms-search-blocks-bar",
         type: "cms-editor-bar",
         shouldRender({ plugins }) {
-            return get(plugins, "cms-editor-bar.active") === "cms-search-blocks-bar";
+            const active = get(plugins, "cms-editor-bar") || [];
+            return active ? active.find(pl => pl.name === "cms-search-blocks-bar") : false;
         },
 
         render() {

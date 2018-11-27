@@ -5,7 +5,7 @@ import { compose, lifecycle, pure, withHandlers, setDisplayName } from "recompos
 import { cloneDeep } from "lodash";
 import { merge } from "dot-prop-immutable";
 import { getPlugins, renderPlugins } from "webiny-app/plugins";
-import { getActivePlugin } from "webiny-app-cms/editor/selectors";
+import { isPluginActive } from "webiny-app-cms/editor/selectors";
 import { withTheme } from "webiny-app-cms/theme";
 import { withActiveElement, withKeyHandler } from "webiny-app-cms/editor/components";
 import {
@@ -91,7 +91,7 @@ export default compose(
     setDisplayName("AdvancedSettings"),
     connect(
         state => ({
-            open: getActivePlugin("cms-element-action")(state) === "cms-element-action-advanced"
+            open: isPluginActive("cms-element-action-advanced")(state)
         }),
         { updateElement, deactivatePlugin }
     ),

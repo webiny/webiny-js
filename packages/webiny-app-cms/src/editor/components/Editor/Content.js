@@ -6,7 +6,7 @@ import styled from "react-emotion";
 import { compose, pure } from "recompose";
 import { getPlugins } from "webiny-app/plugins";
 import { withTheme } from "webiny-app-cms/theme";
-import { getContent, getActivePlugin, getPage } from "webiny-app-cms/editor/selectors";
+import { getContent, isPluginActive, getPage } from "webiny-app-cms/editor/selectors";
 import Element from "webiny-app-cms/editor/components/Element";
 
 const ContentContainer = styled("div")(({ theme }) => ({
@@ -52,7 +52,7 @@ const Content = pure(({ rootElement, theme, renderLayout, layout }) => {
 const stateToProps = state => ({
     rootElement: state.elements[getContent(state).id],
     layout: get(getPage(state), "settings.general.layout"),
-    renderLayout: getActivePlugin("cms-toolbar-top")(state) === "cms-toolbar-preview"
+    renderLayout: isPluginActive("cms-toolbar-preview")(state)
 });
 
 export default compose(

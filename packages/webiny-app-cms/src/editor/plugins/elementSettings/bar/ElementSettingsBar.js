@@ -5,7 +5,7 @@ import { TopAppBarSecondary, TopAppBarSection } from "webiny-ui/TopAppBar";
 import { ButtonDefault, ButtonIcon } from "webiny-ui/Button";
 import { deactivateElement } from "webiny-app-cms/editor/actions";
 import { getPlugin } from "webiny-app/plugins";
-import { getActivePlugin } from "webiny-app-cms/editor/selectors";
+import { getActivePlugins } from "webiny-app-cms/editor/selectors";
 import { withActiveElement, withKeyHandler } from "webiny-app-cms/editor/components";
 import Menu from "./components/Menu";
 import { ReactComponent as NavigateBeforeIcon } from "webiny-app-cms/editor/assets/icons/navigate_before.svg";
@@ -20,7 +20,7 @@ const getElementActions = plugin => {
     return [...actions, getPlugin("cms-element-settings-save")].filter(pl => pl);
 };
 
-const ElementSettingsBar = ({ element, activePlugin, deactivateElement }) => {
+const ElementSettingsBar = ({ element, activePlugins, deactivateElement }) => {
     if (!element) {
         return null;
     }
@@ -42,7 +42,7 @@ const ElementSettingsBar = ({ element, activePlugin, deactivateElement }) => {
                     If no `settings` array is defined in an `element` plugin, all settings are shown.
                     */}
                     {actions.map((plugin, index) => {
-                        const active = activePlugin === plugin.name;
+                        const active = activePlugins.includes(plugin.name);
 
                         return (
                             <div key={plugin.name + "-" + index} style={{ position: "relative" }}>
@@ -62,12 +62,12 @@ const ElementSettingsBar = ({ element, activePlugin, deactivateElement }) => {
 export default compose(
     connect(
         state => ({
-            activePlugin: getActivePlugin("cms-element-settings")(state)
+            activePlugins: getActivePlugins("cms-element-settings")(state).map(pl => pl.name)
         }),
         { deactivateElement }
     ),
     withActiveElement(),
-    onlyUpdateForKeys(["element", "activePlugin"]),
+    onlyUpdateForKeys(["element", "activePlugins"]),
     withKeyHandler(),
     lifecycle({
         componentDidMount() {

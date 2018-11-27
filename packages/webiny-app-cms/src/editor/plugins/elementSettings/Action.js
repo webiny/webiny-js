@@ -6,7 +6,7 @@ import { compose, lifecycle, withHandlers } from "recompose";
 import { togglePlugin } from "webiny-app-cms/editor/actions";
 import { IconButton } from "webiny-ui/Button";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
-import { getUi, getActivePlugin } from "webiny-app-cms/editor/selectors";
+import { getUi, getActivePlugins } from "webiny-app-cms/editor/selectors";
 import { Tooltip } from "webiny-ui/Tooltip";
 
 const activeStyle = css({
@@ -15,7 +15,7 @@ const activeStyle = css({
     }
 });
 
-const Action = ({ icon, onClick, active, tooltip }) => {
+const Action = ({ icon, active, tooltip, onClick }) => {
     return (
         <Tooltip
             placement={"bottom"}
@@ -30,8 +30,9 @@ const Action = ({ icon, onClick, active, tooltip }) => {
 export default compose(
     connect(
         state => ({
+            // $FlowFixMe
             slateFocused: getUi(state).slateFocused,
-            settingsActive: getActivePlugin("cms-element-settings")(state)
+            settingsActive: getActivePlugins("cms-element-settings")(state)
         }),
         { togglePlugin }
     ),
@@ -41,7 +42,7 @@ export default compose(
             if (typeof onClick === "function") {
                 return onClick();
             }
-            togglePlugin({ name: plugin });
+            togglePlugin({ name: plugin, closeOtherInGroup: true });
         }
     }),
     lifecycle({

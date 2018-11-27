@@ -87,7 +87,7 @@ const ToolbarBox = styled("div")(
     })
 );
 
-class Menu extends React.Component {
+class Menu extends React.Component<*, *> {
     ref = React.createRef();
 
     state = {

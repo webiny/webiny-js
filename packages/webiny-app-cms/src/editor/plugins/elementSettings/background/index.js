@@ -1,7 +1,5 @@
 //@flow
 import React from "react";
-import { dispatch } from "webiny-app-cms/editor/redux";
-import { togglePlugin } from "webiny-app-cms/editor/actions";
 import { ReactComponent as InvertColorsIcon } from "webiny-app-cms/editor/assets/icons/invert_colors.svg";
 import Settings from "./Settings";
 import Action from "./../Action";
@@ -12,8 +10,8 @@ export default {
     renderAction({ active }: { active: boolean }) {
         return (
             <Action
+                plugin={this.name}
                 tooltip={"Background"}
-                onClick={() => dispatch(togglePlugin({ name: this.name }))}
                 icon={<InvertColorsIcon />}
                 active={active}
             />

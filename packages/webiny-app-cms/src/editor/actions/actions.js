@@ -1,5 +1,4 @@
 // @flow
-import _ from "lodash";
 import invariant from "invariant";
 import dotProp from "dot-prop-immutable";
 import gql from "graphql-tag";
@@ -103,7 +102,7 @@ addReducer([SETUP_EDITOR], null, (state, action) => {
 
 export const togglePlugin = createAction(TOGGLE_PLUGIN);
 addReducer([TOGGLE_PLUGIN], "ui.plugins", (state, action) => {
-    const { name, params } = action.payload;
+    const { name, params, closeOtherInGroup = false } = action.payload;
 
     const plugin = getPlugin(name);
 
@@ -111,11 +110,19 @@ addReducer([TOGGLE_PLUGIN], "ui.plugins", (state, action) => {
         return;
     }
 
-    return dotProp.set(
-        state,
-        `${plugin.type}`,
-        _.get(state, `${plugin.type}.active`) === name ? null : { active: name, params }
-    );
+    let typePlugins = dotProp.get(state, plugin.type) || [];
+    const alreadyActive = typePlugins.findIndex(pl => pl.name === plugin.name);
+    if (alreadyActive > -1) {
+        typePlugins = dotProp.delete(typePlugins, alreadyActive);
+    } else {
+        if (closeOtherInGroup) {
+            typePlugins = [{ name, params }];
+        } else {
+            typePlugins.push({ name, params });
+        }
+    }
+
+    return dotProp.set(state, `${plugin.type}`, typePlugins);
 });
 
 export const deactivatePlugin = createAction(DEACTIVATE_PLUGIN);
@@ -125,7 +132,14 @@ addReducer([DEACTIVATE_PLUGIN], "ui.plugins", (state, action) => {
     if (!plugin) {
         return;
     }
-    return { ...state, [plugin.type]: null };
+
+    let typePlugins = dotProp.get(state, plugin.type) || [];
+    const alreadyActive = typePlugins.findIndex(pl => pl.name === plugin.name);
+    if (alreadyActive > -1) {
+        typePlugins = dotProp.delete(typePlugins, alreadyActive);
+    }
+
+    return dotProp.set(state, `${plugin.type}`, typePlugins);
 });
 
 export const highlightElement = createAction(HIGHLIGHT_ELEMENT, { log: false });
@@ -337,7 +351,7 @@ addMiddleware([SAVING_REVISION], ({ store, next, action }) => {
     next(action);
 
     // Construct page payload
-    const data = getPage(store.getState());
+    const data: Object = getPage(store.getState());
     const revision = pick(data, ["title", "snippet", "url", "settings"]);
     revision.content = data.content.present;
     revision.category = data.category.id;

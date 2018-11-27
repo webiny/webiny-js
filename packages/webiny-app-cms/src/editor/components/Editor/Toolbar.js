@@ -8,7 +8,7 @@ import { Drawer, DrawerContent } from "webiny-ui/Drawer";
 import { getPlugins } from "webiny-app/plugins";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
 import { deactivatePlugin } from "webiny-app-cms/editor/actions";
-import { getActivePlugin } from "webiny-app-cms/editor/selectors";
+import { getActivePlugins } from "webiny-app-cms/editor/selectors";
 
 const ToolbarDrawerContainer = styled("div")({
     top: 64,
@@ -94,7 +94,7 @@ const withDrawer = element => {
     return <ToolbarDrawer>{element}</ToolbarDrawer>;
 };
 
-const Toolbar = ({ activePluginTop, activePluginBottom }) => {
+const Toolbar = ({ activePluginsTop, activePluginsBottom }: Object) => {
     const actionsTop = getPlugins("cms-toolbar-top");
     const actionsBottom = getPlugins("cms-toolbar-bottom");
 
@@ -106,7 +106,7 @@ const Toolbar = ({ activePluginTop, activePluginBottom }) => {
                     .map(plugin => {
                         const props = {
                             key: plugin.name,
-                            active: activePluginTop === plugin.name,
+                            active: Boolean(activePluginsTop.find(pl => pl.name === plugin.name)),
                             name: plugin.name
                         };
                         const drawer = plugin.renderDrawer({ withDrawer });
@@ -118,7 +118,11 @@ const Toolbar = ({ activePluginTop, activePluginBottom }) => {
                     <div>
                         {actionsTop.map(plugin =>
                             React.cloneElement(
-                                plugin.renderAction({ active: activePluginTop === plugin.name }),
+                                plugin.renderAction({
+                                    active: Boolean(
+                                        activePluginsTop.find(pl => pl.name === plugin.name)
+                                    )
+                                }),
                                 { key: plugin.name }
                             )
                         )}
@@ -126,7 +130,11 @@ const Toolbar = ({ activePluginTop, activePluginBottom }) => {
                     <div>
                         {actionsBottom.map(plugin =>
                             React.cloneElement(
-                                plugin.renderAction({ active: activePluginBottom === plugin.name }),
+                                plugin.renderAction({
+                                    active: Boolean(
+                                        activePluginsBottom.find(pl => pl.name === plugin.name)
+                                    )
+                                }),
                                 { key: plugin.name }
                             )
                         )}
@@ -138,6 +146,6 @@ const Toolbar = ({ activePluginTop, activePluginBottom }) => {
 };
 
 export default connect(state => ({
-    activePluginTop: getActivePlugin("cms-toolbar-top")(state),
-    activePluginBottom: getActivePlugin("cms-toolbar-bottom")(state)
+    activePluginsTop: getActivePlugins("cms-toolbar-top")(state),
+    activePluginsBottom: getActivePlugins("cms-toolbar-bottom")(state)
 }))(Toolbar);
