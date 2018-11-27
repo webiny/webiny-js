@@ -12,10 +12,14 @@ export interface IApiToken extends Entity {
     groups: Promise<Array<Group>>;
     roles: Promise<Array<Role>>;
     scopes: Promise<Array<string>>;
-    generateJWT(): Promise<void>
+    generateJWT(): Promise<void>;
 }
 
-export function apiTokenFactory({ user = {}, config, entities }: Object): Class<IApiToken> {
+export function apiTokenFactory({
+    user = {},
+    config,
+    api: { entities }
+}: Object): Class<IApiToken> {
     return class extends Entity {
         static classId = "SecurityApiToken";
         static storageClassId = "Security_ApiTokens";

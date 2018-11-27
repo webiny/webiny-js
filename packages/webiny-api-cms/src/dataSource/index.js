@@ -1,7 +1,6 @@
 // @flow
 import { addPlugin, getPlugins } from "webiny-api/plugins";
 import { dummyResolver } from "webiny-api/graphql";
-import setupEntities from "../entities/setupEntities";
 import plugins from "../plugins";
 
 import page from "./schemas/Page";
@@ -54,9 +53,6 @@ export default () => {
             menu.resolvers,
             tag.resolvers,
             ...getPlugins("cms-schema").map(pl => pl.resolvers)
-        ],
-        context: (ctx: Object) => {
-            return setupEntities(ctx);
-        }
+        ]
     };
 };

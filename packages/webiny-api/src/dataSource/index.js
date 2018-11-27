@@ -1,22 +1,28 @@
+// @flow
 import { dummyResolver } from "../graphql";
-import setupEntities from "./../entities/setupEntities";
 import role from "./typeDefs/Role";
 import group from "./typeDefs/Group";
 import user from "./typeDefs/User";
 import apiToken from "./typeDefs/ApiToken";
+import { addPlugin } from "webiny-api/plugins";
+import entities from "webiny-api/plugins/entities";
 
-export default {
-    namespace: "security",
-    scopes: ["superadmin", "users:read", "users:write"],
-    typeDefs: [
-        user.typeDefs,
-        user.typeExtensions,
-        role.typeDefs,
-        role.typeExtensions,
-        group.typeDefs,
-        group.typeExtensions,
-        apiToken.typeDefs,
-        `
+export default () => {
+    // Register plugins
+    addPlugin(...entities);
+
+    return {
+        namespace: "api",
+        scopes: ["superadmin", "users:read", "users:write"],
+        typeDefs: [
+            user.typeDefs,
+            user.typeExtensions,
+            role.typeDefs,
+            role.typeExtensions,
+            group.typeDefs,
+            group.typeExtensions,
+            apiToken.typeDefs,
+            `
         type Query {
             security: SecurityQuery
         }
@@ -33,22 +39,20 @@ export default {
             _empty: String
         }
     `
-    ],
-    resolvers: [
-        {
-            Query: {
-                security: dummyResolver
+        ],
+        resolvers: [
+            {
+                Query: {
+                    security: dummyResolver
+                },
+                Mutation: {
+                    security: dummyResolver
+                }
             },
-            Mutation: {
-                security: dummyResolver
-            }
-        },
-        apiToken.resolvers,
-        group.resolvers,
-        role.resolvers,
-        user.resolvers
-    ],
-    context: (ctx: Object) => {
-        return setupEntities(ctx);
-    }
+            apiToken.resolvers,
+            group.resolvers,
+            role.resolvers,
+            user.resolvers
+        ]
+    };
 };

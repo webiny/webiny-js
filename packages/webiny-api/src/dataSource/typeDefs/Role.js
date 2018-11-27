@@ -7,7 +7,7 @@ import {
     resolveUpdate
 } from "webiny-api/graphql";
 
-const roleFetcher = ctx => ctx.security.Role;
+const roleFetcher = ctx => ctx.api.entities.Role;
 
 export default {
     typeDefs: () => [

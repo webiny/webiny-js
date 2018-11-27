@@ -1,3 +1,4 @@
+// @flow
 import { Entity } from "webiny-entity";
 import { Role } from "./Role.entity";
 
@@ -10,7 +11,7 @@ export class Roles2Entities extends Entity {
 Roles2Entities.classId = "SecurityRoles2Entities";
 Roles2Entities.storageClassId = "Security_Roles2Entities";
 
-export function roles2entitiesFactory({ entities }: Object) {
+export function roles2entitiesFactory({ api: { entities } }: Object) {
     return class extends Roles2Entities {
         constructor() {
             super();

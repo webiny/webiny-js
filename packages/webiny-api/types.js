@@ -2,9 +2,11 @@
 import type { Attribute } from "webiny-model";
 import type { Schema as _Schema } from "webiny-api/graphql/Schema";
 import type { Entity as _Entity, Identity } from "webiny-api/entities";
+import { type PluginType as _PluginType } from "webiny-api/plugins";
 
 export type Schema = _Schema;
 export type Entity = _Entity;
+export type PluginType = _PluginType;
 
 export type ImageProcessor = ({
     image: Buffer,
@@ -62,4 +64,12 @@ export type LambdaEvent = {
         sudo: boolean
     },
     entityPool: Object
+};
+
+export type EntityPluginType = PluginType & {
+    namespace: string,
+    entity: {
+        name: string,
+        factory: () => Entity
+    }
 };

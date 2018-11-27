@@ -23,7 +23,7 @@ export class User extends Entity {
 User.classId = "SecurityUser";
 User.storageClassId = "Security_Users";
 
-export function userFactory({ entities }: Object) {
+export function userFactory({ api: { entities } }: Object) {
     return class extends User {
         constructor() {
             super();
@@ -78,9 +78,11 @@ export function userFactory({ entities }: Object) {
                 .entities(entities.Group, "entity")
                 .setUsing(entities.Groups2Entities, "group");
 
-            this.attr("scopes").array().setDynamic(() => {
-                return loadEntityScopes.call(this);
-            });
+            this.attr("scopes")
+                .array()
+                .setDynamic(() => {
+                    return loadEntityScopes.call(this);
+                });
         }
     };
 }

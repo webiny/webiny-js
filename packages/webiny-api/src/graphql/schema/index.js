@@ -4,6 +4,7 @@ import { makeExecutableSchema, mergeSchemas } from "graphql-tools";
 import GraphQLJSON from "graphql-type-json";
 import { GraphQLDateTime } from "graphql-iso-date";
 import { genericTypes } from "./genericTypes";
+import { getPlugins } from "webiny-api/plugins";
 
 /**
  * Maps data sources and returns array of executable schema
@@ -69,7 +70,11 @@ export function prepareSchema({ dataSources = [] }: Object = {}) {
     });
 
     const getContext = (globalContext: Object) => {
-        return dataSources.reduce((allContext, source) => {
+        const context = dataSources.reduce((allContext, source) => {
+            if (!source.context) {
+                return allContext;
+            }
+
             const sourceContext =
                 typeof source.context === "function"
                     ? source.context(globalContext)
@@ -80,6 +85,23 @@ export function prepareSchema({ dataSources = [] }: Object = {}) {
                 [source.namespace]: sourceContext
             };
         }, {});
+
+        getPlugins("entity").forEach(plugin => {
+            if (plugin.type !== "entity") {
+                return true;
+            }
+
+            if (!context[plugin.namespace]) {
+                context[plugin.namespace] = {
+                    entities: {}
+                };
+            }
+
+            const { name, factory } = plugin.entity;
+            context[plugin.namespace].entities[name] = factory(context);
+        });
+
+        return context;
     };
 
     return {
