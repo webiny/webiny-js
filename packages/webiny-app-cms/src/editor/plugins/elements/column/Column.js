@@ -46,7 +46,6 @@ const Column = pure(({ element, dropElement, togglePlugin }) => {
                         />
                     </DropZone.Center>
                 )}
-                <element-content>
                     {elements.map((childId, index) => (
                         <ColumnChild
                             key={childId}
@@ -57,7 +56,6 @@ const Column = pure(({ element, dropElement, togglePlugin }) => {
                             target={{ id, path, type }}
                         />
                     ))}
-                </element-content>
             </ElementStyle>
         </ColumnContainer>
     );

@@ -19,6 +19,7 @@ function appendSDK(props) {
         script.setAttribute("async", "");
         script.setAttribute("charset", "utf-8");
         script.onload = resolve;
+        // $FlowFixMe
         document.body.appendChild(script);
     });
 }
@@ -26,7 +27,7 @@ function appendSDK(props) {
 function initEmbed(props) {
     const { sdk, init, element } = props;
     if (sdk && get(element, "data.source.url")) {
-        const node = document.getElementById("cms-embed-" + element.id);
+        const node = document.getElementById(element.id);
         if (typeof init === "function" && node) {
             init({ props, node });
         }
@@ -42,7 +43,7 @@ const centerAlign = css({
 
 export default compose(
     withHandlers({
-        renderEmbed: ({ renderEmbed, ...props }) => () => {
+        renderEmbed: ({ renderEmbed, ...props }: Object) => () => {
             if (typeof renderEmbed === "function") {
                 return renderEmbed(props);
             }
@@ -51,7 +52,7 @@ export default compose(
 
             return (
                 <div
-                    id={"cms-embed-" + element.id}
+                    id={element.id}
                     className={centerAlign}
                     dangerouslySetInnerHTML={{ __html: get(element, "data.oembed.html") || "" }}
                 />

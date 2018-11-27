@@ -3,7 +3,7 @@ import React from "react";
 import styled from "react-emotion";
 import { Carousel } from "webiny-ui/Carousel";
 import { connect } from "react-redux";
-import { compose } from "recompose";
+import { compose, lifecycle, withHandlers } from "recompose";
 import { deactivatePlugin } from "webiny-app-cms/editor/actions";
 import { getActivePlugin } from "webiny-app-cms/editor/selectors";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
@@ -158,5 +158,16 @@ export default compose(
             showOnboarding: getActivePlugin("cms-toolbar-bottom")(state) === "toolbar-onboarding"
         }),
         { deactivatePlugin }
-    )
+    ),
+    withHandlers({
+        closeDialog: ({ deactivatePlugin }) => () => {
+            deactivatePlugin({ name: "toolbar-onboarding" });
+        }
+    }),
+    lifecycle({
+        componentDidUpdate() {
+            const { showOnboarding, addKeyHandler, removeKeyHandler, closeDialog } = this.props;
+            showOnboarding ? addKeyHandler("escape", closeDialog) : removeKeyHandler("escape");
+        }
+    })
 )(Onboarding);

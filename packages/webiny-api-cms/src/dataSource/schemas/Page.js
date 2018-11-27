@@ -49,6 +49,7 @@ export default {
             group: String
             content: JSON
             keywords: [String]
+            preview: File
         }
         
         input ElementInput {
@@ -57,6 +58,7 @@ export default {
             group: String
             content: JSON!
             keywords: [String]
+            preview: FileInput
         }
         
         input UpdatePageInput {

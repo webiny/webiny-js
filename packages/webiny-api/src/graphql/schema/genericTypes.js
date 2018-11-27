@@ -36,6 +36,13 @@ export const genericTypes = () => {
             type: String
             src: String
         }
+        
+        input FileInput {
+            name: String
+            size: Int
+            type: String
+            src: String
+        }
   `
     ];
 };

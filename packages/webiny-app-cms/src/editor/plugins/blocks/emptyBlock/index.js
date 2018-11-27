@@ -1,10 +1,13 @@
+// @flow
+import * as React from "react";
 import { createBlock, createRow, createColumn } from "webiny-app-cms/editor/utils";
+import preview from "./preview.png";
 
 export default {
     name: "cms-block-empty",
     type: "cms-block",
     keywords: ["*"],
-    create(options = {}) {
+    create(options: Object = {}) {
         return createBlock({
             ...options,
             elements: [
@@ -13,5 +16,8 @@ export default {
                 })
             ]
         });
+    },
+    preview() {
+        return <img src={preview} alt={"Empty block"}/>;
     }
 };

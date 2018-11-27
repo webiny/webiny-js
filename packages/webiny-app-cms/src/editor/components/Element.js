@@ -73,7 +73,7 @@ const Element = pure(
                             >
                                 {renderDraggable}
                             </Draggable>
-                            <element-content>{plugin.render({ theme, element })}</element-content>
+                            {plugin.render({ theme, element })}
                         </div>
                     </ElementContainer>
                 )}
@@ -100,7 +100,7 @@ export default compose(
     ),
     withTheme(),
     withProps(({ element }) => ({
-        plugin: getPlugin(element.type)
+        plugin: element ? getPlugin(element.type) : null
     })),
     withHandlers({
         beginDrag: ({ plugin, element, dragStart }) => () => {

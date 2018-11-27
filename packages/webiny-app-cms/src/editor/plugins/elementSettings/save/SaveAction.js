@@ -32,7 +32,7 @@ const SaveAction = ({
                 open={isDialogOpened}
                 onClose={hideDialog}
                 onSubmit={onSubmit}
-                id={element.id}
+                element={element}
                 type={element.type === "cms-element-block" ? "block" : "element"}
             />
             {React.cloneElement(children, { onClick: showDialog })}
@@ -71,8 +71,7 @@ export default compose(
         onSubmit: ({ element, hideDialog, createElement, showSnackbar, uploadFile }) => async (
             formData: Object
         ) => {
-            await uploadFile(formData.preview);
-
+            formData.preview = await uploadFile(formData.preview);
             hideDialog();
             formData.content = removeIdsAndPaths(element);
             const { data: res } = await createElement({ variables: { data: formData } });
