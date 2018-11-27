@@ -11,7 +11,7 @@ import Menu from "webiny-app-admin/plugins/Menu";
 import Logo from "webiny-app-admin/plugins/Logo";
 import UserMenu from "webiny-app-admin/plugins/UserMenu";
 import { globalSearch, globalSearchUsers } from "webiny-app-admin/plugins/GlobalSearch";
-import { integrationsList } from "webiny-app-admin/plugins/Settings";
+import { integrationsList, generalSettings } from "webiny-app-admin/plugins/Settings";
 
 // User menu plugins
 import UserInfo from "webiny-app-admin/plugins/UserMenu/plugins/UserInfo";
@@ -37,6 +37,7 @@ export default [
     UserMenu,
     globalSearch,
     integrationsList,
+    generalSettings,
     globalSearchUsers,
     // UserMenu plugins
     UserImage,

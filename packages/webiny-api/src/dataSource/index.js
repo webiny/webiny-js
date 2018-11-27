@@ -71,7 +71,7 @@ export default () => {
             role.resolvers,
             user.resolvers,
             ...getPlugins("schema-settings").map(plugin => {
-                const kobaja = {
+                return {
                     SettingsQuery: {
                         [plugin.namespace]: async (_: any, args: Object, ctx: Object) => {
                             const entityClass = plugin.entity(ctx);
@@ -99,8 +99,6 @@ export default () => {
                         }
                     }
                 };
-
-                return kobaja;
             })
         ],
         context: (ctx: Object) => {

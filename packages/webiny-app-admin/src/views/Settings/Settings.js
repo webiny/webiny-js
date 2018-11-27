@@ -6,6 +6,7 @@ import { withSnackbar } from "webiny-app-admin/components";
 import AdminLayout from "webiny-app-admin/components/Layouts/AdminLayout";
 import { CompactView, LeftPanel, RightPanel } from "webiny-app-admin/components/Views/CompactView";
 import { Typography } from "webiny-ui/Typography";
+import { Form } from "webiny-form";
 import { Icon } from "webiny-ui/Icon";
 import { ButtonPrimary } from "webiny-ui/Button";
 import { List, ListItem, ListItemGraphic } from "webiny-ui/List";
@@ -15,8 +16,10 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "webiny-app-admin/components/Views/SimpleForm";
+import { get } from "lodash";
 import { listItem, ListItemTitle, listStyle, TitleContent } from "./SettingsStyled";
-import type { SettingsPluginType } from "webiny-app-admin/types";
+import type { CmsSystemSettingsPluginType } from "webiny-app-cms/types";
+import { Query, Mutation } from "react-apollo";
 
 type Props = {
     saveSettings: Function,
@@ -24,9 +27,9 @@ type Props = {
     setActive: Function
 };
 
-const Settings = ({ active, setActive }: Props) => {
-    const plugins: Array<SettingsPluginType> = getPlugins("settings");
-    const activePlugin: SettingsPluginType = plugins.find(pl => pl.name === active);
+const SystemSettings = ({ active, setActive, showSnackbar }: Props) => {
+    const plugins: Array<CmsSystemSettingsPluginType> = getPlugins("settings");
+    const activePlugin: CmsSystemSettingsPluginType = plugins.find(pl => pl.name === active);
 
     return (
         <AdminLayout>
@@ -51,20 +54,57 @@ const Settings = ({ active, setActive }: Props) => {
                     </List>
                 </LeftPanel>
                 <RightPanel span={7}>
-                    {activePlugin ? (
-                        <SimpleForm>
-                            <SimpleFormHeader title={activePlugin.title} />
-                            <SimpleFormContent>
-                                {activePlugin ? activePlugin.render() : null}
-                            </SimpleFormContent>
-                            <SimpleFormFooter>
-                                <ButtonPrimary type="primary" align="right">
-                                    Save settings
-                                </ButtonPrimary>
-                            </SimpleFormFooter>
-                        </SimpleForm>
-                    ) : (
-                        <span>Please select a category plugin.</span>
+                    {activePlugin && (
+                        <Query query={activePlugin.query}>
+                            {({ data }) => {
+                                const { settings = {} } = data;
+                                console.log(settings);
+
+                                return (
+                                    <Mutation mutation={activePlugin.mutation}>
+                                        {update => (
+                                            <Form
+                                                data={{ ...settings }}
+                                                onSubmit={async data => {
+                                                    console.log("submitam data", data);
+                                                    await update({
+                                                        variables: {
+                                                            ...activePlugin.variables(data)
+                                                        }
+                                                    });
+                                                    showSnackbar("Settings updated successfully.");
+                                                }}
+                                            >
+                                                {({ Bind, submit, data }) => (
+                                                    <SimpleForm>
+                                                        <SimpleFormHeader
+                                                            title={activePlugin.title}
+                                                        />
+                                                        <SimpleFormContent>
+                                                            {activePlugin
+                                                                ? activePlugin.render({
+                                                                      Bind,
+                                                                      data
+                                                                  })
+                                                                : null}
+                                                        </SimpleFormContent>
+                                                        <SimpleFormFooter>
+                                                            <ButtonPrimary
+                                                                type="primary"
+                                                                onClick={submit}
+                                                                align="right"
+                                                            >
+                                                                Save settings
+                                                            </ButtonPrimary>
+                                                        </SimpleFormFooter>
+                                                    </SimpleForm>
+                                                )}
+                                            </Form>
+                                        )}
+                                    </Mutation>
+                                );
+                            }}
+                        </Query>
                     )}
                 </RightPanel>
             </CompactView>
@@ -74,5 +114,5 @@ const Settings = ({ active, setActive }: Props) => {
 
 export default compose(
     withSnackbar(),
-    withState("active", "setActive", "settings-cms-general")
-)(Settings);
+    withState("active", "setActive", "settings-general")
+)(SystemSettings);
