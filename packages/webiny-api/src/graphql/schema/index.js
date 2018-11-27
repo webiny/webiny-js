@@ -70,9 +70,24 @@ export function prepareSchema({ dataSources = [] }: Object = {}) {
     });
 
     const getContext = (globalContext: Object) => {
-        const context = dataSources.reduce((allContext, source) => {
+        getPlugins("entity").forEach(plugin => {
+            if (plugin.type !== "entity") {
+                return true;
+            }
+
+            if (!globalContext[plugin.namespace]) {
+                globalContext[plugin.namespace] = {
+                    entities: {}
+                };
+            }
+
+            const { name, factory } = plugin.entity;
+            globalContext[plugin.namespace].entities[name] = factory(globalContext);
+        });
+
+        dataSources.forEach((allContext, source) => {
             if (!source.context) {
-                return allContext;
+                return true;
             }
 
             const sourceContext =
@@ -80,28 +95,10 @@ export function prepareSchema({ dataSources = [] }: Object = {}) {
                     ? source.context(globalContext)
                     : source.context;
 
-            return {
-                ...allContext,
-                [source.namespace]: sourceContext
-            };
+            Object.assign(globalContext, sourceContext);
         }, {});
 
-        getPlugins("entity").forEach(plugin => {
-            if (plugin.type !== "entity") {
-                return true;
-            }
-
-            if (!context[plugin.namespace]) {
-                context[plugin.namespace] = {
-                    entities: {}
-                };
-            }
-
-            const { name, factory } = plugin.entity;
-            context[plugin.namespace].entities[name] = factory(context);
-        });
-
-        return context;
+        return globalContext;
     };
 
     return {

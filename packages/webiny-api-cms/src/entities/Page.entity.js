@@ -20,7 +20,7 @@ export interface IPage extends Entity {
     locked: boolean;
 }
 
-export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
+export const pageFactory = (context: Object): Class<IPage> => {
     return class Page extends Entity {
         static classId = "CmsPage";
         static storageClassId = "Cms_Pages";
@@ -42,10 +42,13 @@ export const pageFactory = ({ user, entities }: Object): Class<IPage> => {
         constructor() {
             super();
 
-            const { Category } = entities;
+            const {
+                user,
+                cms: { entities }
+            } = context;
 
             this.attr("category")
-                .entity(Category)
+                .entity(entities.Category)
                 .setValidators("required");
 
             this.attr("createdBy")
