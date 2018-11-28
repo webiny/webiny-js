@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { connect } from "react-redux";
 import { compose } from "recompose";
 import { isEqual } from "lodash";
-import { getPlugins } from "webiny-app/plugins";
+import { getPlugins } from "webiny-plugins";
 import { Tabs, Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
 import { Typography } from "webiny-ui/Typography";

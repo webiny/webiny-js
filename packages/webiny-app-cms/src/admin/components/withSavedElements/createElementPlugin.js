@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import cloneDeep from "lodash/cloneDeep";
-import { addPlugin, getPlugin } from "webiny-app/plugins";
+import { addPlugin, getPlugin } from "webiny-plugins";
 import Title from "./Title";
 
 type Element = {
@@ -34,7 +34,11 @@ export default (el: Element) => {
             group: "cms-element-group-saved",
             preview() {
                 return (
-                    <img src={el.preview.src} alt={el.name} style={{ width: 227, height: "auto" }} />
+                    <img
+                        src={el.preview.src}
+                        alt={el.name}
+                        style={{ width: 227, height: "auto" }}
+                    />
                 );
             }
         },

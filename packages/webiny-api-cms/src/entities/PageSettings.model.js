@@ -1,6 +1,6 @@
 // @flow
 import { EntityModel } from "webiny-entity";
-import { getPlugins } from "webiny-api/plugins";
+import { getPlugins } from "webiny-plugins";
 
 export interface IPageSettings extends EntityModel {}
 

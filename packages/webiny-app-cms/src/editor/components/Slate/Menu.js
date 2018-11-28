@@ -1,7 +1,8 @@
+// @flow
 import React from "react";
 import { compose, lifecycle } from "recompose";
 import { Transition } from "react-transition-group";
-import { getPlugins, getPlugin } from "webiny-app/plugins";
+import { getPlugins, getPlugin } from "webiny-plugins";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
 import { css } from "emotion";
 import { Elevation } from "webiny-ui/Elevation";

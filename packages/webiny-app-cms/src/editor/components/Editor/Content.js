@@ -4,7 +4,7 @@ import { get } from "dot-prop-immutable";
 import { connect } from "react-redux";
 import styled from "react-emotion";
 import { compose, pure } from "recompose";
-import { getPlugins } from "webiny-app/plugins";
+import { getPlugins } from "webiny-plugins";
 import { withTheme } from "webiny-app-cms/theme";
 import { getContent, getActivePlugin, getPage } from "webiny-app-cms/editor/selectors";
 import Element from "webiny-app-cms/editor/components/Element";

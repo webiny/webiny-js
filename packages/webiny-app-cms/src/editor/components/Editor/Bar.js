@@ -2,8 +2,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { pure } from "recompose";
-import { isEqual, pick } from "lodash";
-import { getPlugins } from "webiny-app/plugins";
+import { getPlugins } from "webiny-plugins";
 import { getUi } from "webiny-app-cms/editor/selectors";
 import DefaultEditorBar from "./DefaultEditorBar";
 
