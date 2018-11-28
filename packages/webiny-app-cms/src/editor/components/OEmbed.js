@@ -26,6 +26,7 @@ function appendSDK(props) {
         script.setAttribute("async", "");
         script.setAttribute("charset", "utf-8");
         script.onload = resolve;
+        // $FlowFixMe
         document.body.appendChild(script);
     });
 }
@@ -33,7 +34,7 @@ function appendSDK(props) {
 function initEmbed(props) {
     const { sdk, init, element } = props;
     if (sdk && get(element, "data.source.url")) {
-        const node = document.getElementById("cms-embed-" + element.id);
+        const node = document.getElementById(element.id);
         if (typeof init === "function" && node) {
             init({ props, node });
         }
@@ -113,7 +114,7 @@ export default compose(
 
             return (
                 <div
-                    id={"cms-embed-" + element.id}
+                    id={element.id}
                     className={
                         centerAlign + " cms-editor-dragging--disabled cms-editor-resizing--disabled"
                     }
@@ -127,7 +128,8 @@ export default compose(
             await appendSDK(this.props);
             initEmbed(this.props);
         },
-        componentDidUpdate() {
+        async componentDidUpdate() {
+            await appendSDK(this.props);
             initEmbed(this.props);
         }
     })

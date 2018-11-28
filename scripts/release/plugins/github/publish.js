@@ -26,6 +26,19 @@ module.exports = (pluginConfig = {}) => {
             target_commitish: config.branch
         };
 
+        let tagger = {};
+
+        // Get current user to construct proper tagger data.
+        try {
+            const user = await github.users.getAuthenticated({});
+            tagger = {
+                name: user.data.name,
+                email: user.data.email
+            };
+        } catch (e) {
+            logger.error(e.message);
+        }
+
         if (config.preview) {
             release.body = await execa.stdout("npx", [
                 "lerna-changelog",
@@ -33,6 +46,7 @@ module.exports = (pluginConfig = {}) => {
             ]);
 
             logger.log("GitHub release data:\n%s", JSON.stringify(release, null, 2));
+            logger.log("Tagger:\n%s", JSON.stringify(tagger, null, 2));
         } else {
             logger.log("Publishing a new Github release...");
             try {
@@ -45,10 +59,11 @@ module.exports = (pluginConfig = {}) => {
                     tag: nextRelease.gitTag,
                     message: nextRelease.gitTag,
                     object: nextRelease.gitHead,
-                    type: "commit"
+                    type: "commit",
+                    tagger
                 });
                 // Create a reference to the tag so it becomes annotated
-                await github.gitdata.createReference({
+                await github.gitdata.createRef({
                     owner,
                     repo,
                     ref: "refs/tags/" + tag,

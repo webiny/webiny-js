@@ -27,7 +27,7 @@ function appendSDK(props) {
 
 function initEmbed(props) {
     const { element } = props;
-    const node = document.getElementById("cms-embed-" + element.id);
+    const node = document.getElementById( element.id);
     if (node && window.PinUtils) {
         window.PinUtils.build();
     }
@@ -42,7 +42,7 @@ export default compose(
         renderEmbed: ({ element }) => () => {
             const data = get(element, "data.source");
             return (
-                <div id={"cms-embed-" + element.id} className={centerAlign}>
+                <div id={ element.id} className={centerAlign}>
                     <a
                         data-pin-do="embedPin"
                         data-pin-width={data.size || "small"}

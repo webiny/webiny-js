@@ -38,7 +38,7 @@ const Column = pure(({ element, dropElement, togglePlugin }) => {
         <ColumnContainer>
             <ElementStyle element={element} style={{ height: "100%" }}>
                 {!elements.length && (
-                    <DropZone.Center id={id} type={type} onDrop={dropElement}>
+                    <DropZone.Center key={id} id={id} type={type} onDrop={dropElement}>
                         <IconButton
                             className={addIcon + " addIcon"}
                             icon={<AddCircleOutline />}
@@ -46,16 +46,16 @@ const Column = pure(({ element, dropElement, togglePlugin }) => {
                         />
                     </DropZone.Center>
                 )}
-                {elements.map((childId, index) => (
-                    <ColumnChild
-                        key={childId}
-                        id={childId}
-                        index={index}
-                        count={elements.length}
-                        last={index === elements.length - 1}
-                        target={{ id, path, type }}
-                    />
-                ))}
+                    {elements.map((childId, index) => (
+                        <ColumnChild
+                            key={childId}
+                            id={childId}
+                            index={index}
+                            count={elements.length}
+                            last={index === elements.length - 1}
+                            target={{ id, path, type }}
+                        />
+                    ))}
             </ElementStyle>
         </ColumnContainer>
     );

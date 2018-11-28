@@ -5,6 +5,7 @@ import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ReactComponent as SocialIcon } from "./../../../elementGroups/social/round-people-24px.svg";
 import type { ElementPluginType } from "webiny-app-cms/types";
+import placeholder from "./placeholder.jpg";
 import {
     createEmbedPlugin,
     createEmbedSettingsPlugin
@@ -26,6 +27,9 @@ export default (): Array<ElementPluginType> => [
             init({ node }) {
                 window.instgrm.Embeds.process(node.firstChild);
             }
+        },
+        renderElementPreview({ width, height }) {
+            return <img style={{ width, height }} src={placeholder} alt={"Instagram"} />;
         }
     }),
     createEmbedSettingsPlugin({

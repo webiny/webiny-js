@@ -7,6 +7,7 @@ import type { ElementPluginType } from "webiny-app-cms/types";
 import { createEmbedSettingsPlugin, createEmbedPlugin } from "./../../utils/oembed";
 import { ReactComponent as MediaIcon } from "./../../../elementGroups/media/round-music_video-24px.svg";
 import YoutubeEmbed from "./YoutubeEmbed";
+import placeholder from "./placeholder.png";
 
 export default (): Array<ElementPluginType> => [
     createEmbedPlugin({
@@ -23,6 +24,9 @@ export default (): Array<ElementPluginType> => [
             renderEmbed(props) {
                 return <YoutubeEmbed {...props} />;
             }
+        },
+        renderElementPreview({ width, height }) {
+            return <img style={{ width, height }} src={placeholder} alt={"Youtube"}/>;
         }
     }),
     createEmbedSettingsPlugin({

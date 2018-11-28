@@ -25,6 +25,9 @@ export default (): Array<ElementPluginType> => [
             renderEmbed(props) {
                 return <VimeoEmbed {...props} />;
             }
+        },
+        renderElementPreview() {
+            return <div>Vimeo video</div>;
         }
     }),
     createEmbedSettingsPlugin({

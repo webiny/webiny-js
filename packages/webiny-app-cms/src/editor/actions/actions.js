@@ -312,6 +312,11 @@ addMiddleware(
             return;
         }
 
+        const page = getPage(store.getState());
+        if (page.locked) {
+            return;
+        }
+
         if (debouncedSave) {
             debouncedSave.cancel();
         }

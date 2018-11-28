@@ -7,7 +7,7 @@ import {
     resolveUpdate
 } from "webiny-api/graphql";
 
-const tagFetcher = ctx => ctx.cms.Tag;
+const tagFetcher = ctx => ctx.cms.entities.Tag;
 
 export default {
     typeDefs: `

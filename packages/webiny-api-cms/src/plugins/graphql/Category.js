@@ -1,3 +1,4 @@
+// @flow
 import {
     resolveCreate,
     resolveDelete,
@@ -6,7 +7,7 @@ import {
     resolveUpdate
 } from "webiny-api/graphql";
 
-const categoryFetcher = ctx => ctx.cms.Category;
+const categoryFetcher = ctx => ctx.cms.entities.Category;
 
 export default {
     typeDefs: `

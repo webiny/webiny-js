@@ -131,6 +131,10 @@ class AddElement extends React.Component<Props, State> {
         );
     };
 
+    refresh = () => {
+        this.setState({ group: this.state.group });
+    };
+
     render() {
         const { params, theme } = this.props;
 
@@ -162,7 +166,7 @@ class AddElement extends React.Component<Props, State> {
                                         <Styled.ElementBox>
                                             <Styled.ElementTitle>
                                                 {typeof plugin.toolbar.title === "function" ? (
-                                                    plugin.toolbar.title()
+                                                    plugin.toolbar.title({ refresh: this.refresh })
                                                 ) : (
                                                     <Typography use="overline">
                                                         {plugin.toolbar.title}

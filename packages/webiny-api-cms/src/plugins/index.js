@@ -1,8 +1,8 @@
 // @flow
-import {
-    general as pageSettingsGeneral,
-    seo as pageSettingsSeo,
-    social as pageSettingsSocial
-} from "./pageSettings/";
+import general from "./pageSettings/general";
+import seo from "./pageSettings/seo";
+import social from "./pageSettings/social";
+import entities from "./entities";
+import graphql from "./graphql";
 
-export default [...pageSettingsGeneral, ...pageSettingsSeo, ...pageSettingsSocial];
+export default [...general, ...seo, ...social, ...entities, graphql];

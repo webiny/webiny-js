@@ -1,14 +1,15 @@
+// @flow
 import React from "react";
-import { compose, withProps, withHandlers } from "recompose";
+import { compose, withHandlers } from "recompose";
 import dot from "dot-prop-immutable";
-import { withApollo, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
 import { withRouter } from "webiny-app/components";
 import { withDialog, withSnackbar } from "webiny-app-admin/components";
 import { IconButton } from "webiny-ui/Button";
 import { Tooltip } from "webiny-ui/Tooltip";
 import { withConfirmation, type WithConfirmationProps } from "webiny-ui/ConfirmationDialog";
 import { ReactComponent as DeleteIcon } from "webiny-app-cms/admin/assets/delete.svg";
-import { fragments, deletePage } from "webiny-app-cms/admin/graphql/pages";
+import { deletePage } from "webiny-app-cms/admin/graphql/pages";
 
 type Props = WithConfirmationProps & {
     confirmDelete: Function
@@ -24,7 +25,6 @@ const DeletePage = ({ confirmDelete }: Props) => {
 
 export default compose(
     withRouter(),
-    withApollo,
     withConfirmation(({ pageDetails: { page } }) => ({
         title: "Delete page",
         message: (
@@ -39,12 +39,10 @@ export default compose(
     withSnackbar(),
     withHandlers({
         confirmDelete: ({
-            client,
             pageDetails: { page },
             router,
             showConfirmation,
             deletePage,
-            pageDetails,
             showDialog,
             showSnackbar
         }) => () => {

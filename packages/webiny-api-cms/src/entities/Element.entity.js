@@ -1,5 +1,6 @@
 // @flow
 import { Entity } from "webiny-entity";
+import FileModel from "webiny-api/entities/File.model";
 
 type ElementType = "element" | "block";
 
@@ -9,6 +10,7 @@ export interface IElement extends Entity {
     type: ElementType;
     keywords: Array<string>;
     group: ?string;
+    preview: Object;
 }
 
 export function elementFactory(): Class<IElement> {
@@ -21,6 +23,7 @@ export function elementFactory(): Class<IElement> {
         type: ElementType;
         keywords: Array<string>;
         group: ?string;
+        preview: Object;
 
         constructor() {
             super();
@@ -38,6 +41,8 @@ export function elementFactory(): Class<IElement> {
                 .setValidators("required,in:element:block");
 
             this.attr("keywords").array();
+
+            this.attr("preview").model(FileModel);
         }
     };
 }

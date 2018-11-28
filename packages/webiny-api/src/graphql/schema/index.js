@@ -4,6 +4,7 @@ import { makeExecutableSchema, mergeSchemas } from "graphql-tools";
 import GraphQLJSON from "graphql-type-json";
 import { GraphQLDateTime } from "graphql-iso-date";
 import { genericTypes } from "./genericTypes";
+import { getPlugins } from "webiny-api/plugins";
 
 /**
  * Maps data sources and returns array of executable schema
@@ -14,7 +15,17 @@ const mapSourcesToExecutableSchemas = (sources: Array<Object>) => {
     const schemas = {};
 
     sources.forEach(({ typeDefs, resolvers, namespace, schemaDirectives }) => {
-        if (typeof resolvers === 'function') {
+        // Prepare "typeDefs".
+        if (typeof typeDefs === "function") {
+            typeDefs = typeDefs();
+        }
+
+        if (!Array.isArray(typeDefs)) {
+            typeDefs = [typeDefs];
+        }
+
+        // Prepare "resolvers".
+        if (typeof resolvers === "function") {
             resolvers = resolvers();
         }
 
@@ -22,14 +33,10 @@ const mapSourcesToExecutableSchemas = (sources: Array<Object>) => {
             resolvers = [resolvers];
         }
 
-        if (!Array.isArray(typeDefs)) {
-            typeDefs = [typeDefs];
-        }
-
         schemas[namespace] = makeExecutableSchema({
             typeDefs: [
                 `scalar JSON
-                    scalar DateTime`,
+                 scalar DateTime`,
                 genericTypes,
                 ...typeDefs
             ],
@@ -51,7 +58,8 @@ const mapSourcesToExecutableSchemas = (sources: Array<Object>) => {
  * @param  {Array?}    config.dataSources     data sources to combine
  * @return {schema, context}
  */
-export function prepareSchema({ dataSources = [] }: Object = {}) {
+export function prepareSchema() {
+    const dataSources = getPlugins("graphql");
     const schemas = mapSourcesToExecutableSchemas(dataSources);
 
     const securityScopes = [
@@ -73,17 +81,24 @@ export function prepareSchema({ dataSources = [] }: Object = {}) {
     });
 
     const getContext = (globalContext: Object) => {
-        return dataSources.reduce((allContext, source) => {
+        dataSources.forEach((allContext, source) => {
+            if (!source.context) {
+                return true;
+            }
+
             const sourceContext =
                 typeof source.context === "function"
                     ? source.context(globalContext)
                     : source.context;
 
-            return {
-                ...allContext,
-                [source.namespace]: sourceContext
-            };
+            Object.assign(globalContext, sourceContext);
         }, {});
+
+        getPlugins("graphql-context").forEach(plugin => {
+            plugin.apply(globalContext);
+        });
+
+        return globalContext;
     };
 
     return {

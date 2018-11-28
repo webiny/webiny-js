@@ -23,6 +23,7 @@ import {
 } from "./Element/ElementStyled";
 
 declare type ElementProps = {
+    className?: string,
     active: boolean,
     dragStart: Function,
     dragEnd: Function,
@@ -99,7 +100,7 @@ export default compose(
     ),
     withTheme(),
     withProps(({ element }) => ({
-        plugin: getPlugin(element.type)
+        plugin: element ? getPlugin(element.type) : null
     })),
     withHandlers({
         beginDrag: ({ plugin, element, dragStart }) => () => {

@@ -6,15 +6,15 @@ import {
     resolveGet,
     resolveList
 } from "webiny-api/graphql";
-import UserType from "webiny-api/dataSource/typeDefs/User";
+import UserType from "webiny-api/plugins/graphql/User";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
 import listPages from "./pageResolvers/listPages";
 import listPublishedPages from "./pageResolvers/listPublishedPages";
 import oembed from "./pageResolvers/oembed";
 import resolveUser from "./typeResolvers/resolveUser";
 
-const pageFetcher = ctx => ctx.cms.Page;
-const elementFetcher = ctx => ctx.cms.Element;
+const pageFetcher = ctx => ctx.cms.entities.Page;
+const elementFetcher = ctx => ctx.cms.entities.Element;
 
 export default {
     typeDefs: () => [
@@ -49,6 +49,7 @@ export default {
             group: String
             content: JSON
             keywords: [String]
+            preview: File
         }
         
         input ElementInput {
@@ -57,6 +58,7 @@ export default {
             group: String
             content: JSON!
             keywords: [String]
+            preview: FileInput
         }
         
         input UpdatePageInput {
@@ -130,11 +132,12 @@ export default {
             ): PageListResponse
             
             listPublishedPages(
-                page: Int
-                perPage: Int
-                sort: PageSortInput
+                category: String
                 tags: [String]
                 tagsRule: TagsRule
+                sort: PageSortInput
+                page: Int
+                perPage: Int
             ): PageListResponse
             
             listElements: ElementListResponse
@@ -181,6 +184,11 @@ export default {
             createElement(
                 data: ElementInput!
             ): ElementResponse
+            
+            # Delete element
+            deleteElement(
+                id: ID!
+            ): DeleteResponse
         },
     `
     ],
@@ -188,7 +196,7 @@ export default {
         CmsQuery: {
             getPage: resolveGet(pageFetcher),
             listPages: listPages(pageFetcher),
-            listPublishedPages: listPublishedPages(pageFetcher),
+            listPublishedPages: listPublishedPages,
             listElements: resolveList(elementFetcher),
             oembedData: oembed
         },
@@ -210,7 +218,9 @@ export default {
             // Delete a revision
             deleteRevision: resolveDelete(pageFetcher),
             // Creates a new element
-            createElement: resolveCreate(elementFetcher)
+            createElement: resolveCreate(elementFetcher),
+            // Deletes an element
+            deleteElement: resolveDelete(elementFetcher)
         },
         Page: {
             createdBy: resolveUser("createdBy"),

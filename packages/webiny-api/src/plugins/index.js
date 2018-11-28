@@ -1,4 +1,8 @@
 // @flow
+import graphqContextEntities from "./graphqlContextEntities";
+import entities from "./entities";
+import graphql from "./graphql";
+
 const plugins = {};
 
 export type PluginType = Object & {
@@ -33,3 +37,5 @@ export const getPlugin = (name: string): ?PluginType => {
 export const removePlugin = (name: string): void => {
     delete plugins[name];
 };
+
+export default [...entities, graphql, graphqContextEntities];

@@ -8,7 +8,7 @@ import SaveAction from "./SaveAction";
 export default {
     name: "cms-element-settings-save",
     type: "cms-element-settings",
-    renderAction({ parent, element }: Object) {
+    renderAction({ element }: Object) {
         const plugin = getPlugin(element.type);
         if (!plugin) {
             return null;

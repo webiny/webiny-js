@@ -7,8 +7,7 @@ import { Typography } from "webiny-ui/Typography";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ButtonSecondary, ButtonPrimary } from "webiny-ui/Button";
 import { Select } from "webiny-ui/Select";
-import CategoriesAutoComplete from "./CategoriesAutoComplete";
-import { TagsMultiAutoComplete } from "webiny-app-cms/admin/components";
+import { SimpleTagsMultiAutoComplete, CategoriesAutoComplete } from "webiny-app-cms/admin/components";
 
 const LinkForm = ({ data, onSubmit, onCancel }: Object) => {
     return (
@@ -50,7 +49,7 @@ const LinkForm = ({ data, onSubmit, onCancel }: Object) => {
                     </Grid>
                     <Grid>
                         <Cell span={12}>
-                            <Bind name="sortDir" defaultValue={"1"} validators={["required"]}>
+                            <Bind name="sortDir" defaultValue={"-1"} validators={["required"]}>
                                 <Select label="Sort direction...">
                                     <option value="1">Ascending</option>
                                     <option value="-1">Descending</option>
@@ -61,17 +60,17 @@ const LinkForm = ({ data, onSubmit, onCancel }: Object) => {
                     <Grid>
                         <Cell span={12}>
                             <Bind name="tags">
-                                <TagsMultiAutoComplete />
+                                <SimpleTagsMultiAutoComplete />
                             </Bind>
                         </Cell>
                     </Grid>
                     <Grid>
                         <Cell span={12}>
                             {get(data, "tags.length", 0) > 0 && (
-                                <Bind name="tagsRule" defaultValue={"all"}>
+                                <Bind name="tagsRule" defaultValue={"ALL"}>
                                     <Select label="Tags rule..." validators={["required"]}>
-                                        <option value="all">Must include all tags</option>
-                                        <option value="any">Must include any of the tags</option>
+                                        <option value="ALL">Must include all tags</option>
+                                        <option value="ANY">Must include any of the tags</option>
                                     </Select>
                                 </Bind>
                             )}

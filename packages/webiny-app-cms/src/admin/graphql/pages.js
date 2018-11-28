@@ -142,6 +142,9 @@ name
 type
 content
 keywords
+preview {
+    src
+}
 `;
 
 export const listElements = gql`

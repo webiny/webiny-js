@@ -2,9 +2,9 @@
 import gql from "graphql-tag";
 /*, $sortBy: String, $sortDirection: String*/
 export const loadPages = gql`
-    query ListPages($perPage: Int) {
+    query ListPublishedPages($category: String, $sort: PageSortInput, $tags: [String], $tagsRule: TagsRule, $page: Int, $perPage: Int) {
         cms {
-            listPages(perPage: $perPage) {
+            listPublishedPages(category: $category, sort: $sort, tags: $tags, tagsRule: $tagsRule, page: $page, perPage: $perPage) {
                 data {
                     id
                     title
