@@ -74,6 +74,12 @@ export type EntityPluginType = PluginType & {
     }
 };
 
+export type GraphQLSchemaPluginType = PluginType & {
+    namespace: string,
+    typedefs: Array<string> | Function<Array<string>>,
+    resolvers: Object | Function<Object>
+};
+
 export type GraphQLContextPluginType = PluginType & {
     apply: (context: Object) => any
 };

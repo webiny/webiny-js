@@ -15,18 +15,28 @@ const mapSourcesToExecutableSchemas = (sources: Array<Object>) => {
     const schemas = {};
 
     sources.forEach(({ typeDefs, resolvers, namespace, schemaDirectives }) => {
-        if (!Array.isArray(resolvers)) {
-            resolvers = [resolvers];
+        // Prepare "typeDefs".
+        if (typeof typeDefs === "function") {
+            typeDefs = typeDefs();
         }
 
         if (!Array.isArray(typeDefs)) {
             typeDefs = [typeDefs];
         }
 
+        // Prepare "resolvers".
+        if (typeof resolvers === "function") {
+            resolvers = resolvers();
+        }
+
+        if (!Array.isArray(resolvers)) {
+            resolvers = [resolvers];
+        }
+
         schemas[namespace] = makeExecutableSchema({
             typeDefs: [
                 `scalar JSON
-                    scalar DateTime`,
+                 scalar DateTime`,
                 genericTypes,
                 ...typeDefs
             ],
@@ -48,7 +58,8 @@ const mapSourcesToExecutableSchemas = (sources: Array<Object>) => {
  * @param  {Array?}    config.dataSources     data sources to combine
  * @return {schema, context}
  */
-export function prepareSchema({ dataSources = [] }: Object = {}) {
+export function prepareSchema() {
+    const dataSources = getPlugins("graphql");
     const schemas = mapSourcesToExecutableSchemas(dataSources);
 
     const securityScopes = [
