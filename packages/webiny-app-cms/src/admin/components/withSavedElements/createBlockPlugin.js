@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import cloneDeep from "lodash/cloneDeep";
-import { addPlugin } from "webiny-app/plugins";
+import { addPlugin } from "webiny-plugins";
 
 type Element = {
     id: string,

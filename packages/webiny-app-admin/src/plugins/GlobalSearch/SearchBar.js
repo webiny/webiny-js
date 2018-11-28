@@ -2,7 +2,7 @@
 import * as React from "react";
 import { compose } from "recompose";
 import Downshift from "downshift";
-import { getPlugins } from "webiny-app/plugins";
+import { getPlugins } from "webiny-plugins";
 import { withRouter, withKeyHandler } from "webiny-app/components";
 import type { GlobalSearch } from "webiny-app-admin/types";
 import classnames from "classnames";

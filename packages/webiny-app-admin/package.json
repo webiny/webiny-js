@@ -21,7 +21,8 @@
     "shortid": "^2.2.12",
     "store": "^2.0.12",
     "webiny-app": "0.0.0-semantically-released",
-    "webiny-ui": "0.0.0-semantically-released"
+    "webiny-ui": "0.0.0-semantically-released",
+    "webiny-plugins": "0.0.0-semantically-released"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

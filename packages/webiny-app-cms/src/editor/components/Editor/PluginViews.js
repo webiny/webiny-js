@@ -1,6 +1,7 @@
+// @flow
 import React from "react";
 import styled from "react-emotion";
-import { getPlugins } from "webiny-app/plugins";
+import { getPlugins } from "webiny-plugins";
 
 const PluginViewsContainer = styled("div")({
     position: "absolute",

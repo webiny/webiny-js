@@ -9,7 +9,7 @@ import { compose, withProps, withHandlers } from "recompose";
 import _ from "lodash";
 import styled from "react-emotion";
 import { css } from "emotion";
-import { getPlugin, getPlugins } from "webiny-app/plugins";
+import { getPlugin, getPlugins } from "webiny-plugins";
 import { withUi } from "webiny-app/components";
 import { Typography } from "webiny-ui/Typography";
 import { Transition } from "react-transition-group";
@@ -176,7 +176,7 @@ class Navigation extends React.Component<Props> {
     renderer = menu => {
         const props = _.clone(menu.props);
         const { appsMenu, hideMenu, showSection, hideSection } = this.props;
-        
+
         if (!utils.canAccess(/*props*/)) {
             return null;
         }

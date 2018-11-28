@@ -1,5 +1,6 @@
+// @flow
 import _ from "lodash";
-import { getPlugin } from "webiny-app/plugins";
+import { getPlugin } from "webiny-plugins";
 
 /**
  * Get editor `ui` state

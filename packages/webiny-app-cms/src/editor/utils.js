@@ -1,7 +1,8 @@
+// @flow
 import shortid from "shortid";
 import { set } from "dot-prop-immutable";
 import { isPlainObject, omit } from "lodash";
-import { getPlugin } from "webiny-app/plugins";
+import { getPlugin } from "webiny-plugins";
 
 export const updateChildPaths = element => {
     if (!element.id) {

@@ -3,7 +3,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { compose, lifecycle, withHandlers, withState } from "recompose";
 import { omit } from "lodash";
-import { getPlugins } from "webiny-app/plugins";
+import { getPlugins } from "webiny-plugins";
 import { deactivatePlugin, updateRevision } from "webiny-app-cms/editor/actions";
 import { getPage } from "webiny-app-cms/editor/selectors";
 import { withKeyHandler } from "webiny-app-cms/editor/components";

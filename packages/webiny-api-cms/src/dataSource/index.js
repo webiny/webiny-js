@@ -1,5 +1,5 @@
 // @flow
-import { addPlugin, getPlugins } from "webiny-api/plugins";
+import { addPlugin, getPlugins } from "webiny-plugins";
 import { dummyResolver } from "webiny-api/graphql";
 import setupEntities from "../entities/setupEntities";
 import plugins from "../plugins";

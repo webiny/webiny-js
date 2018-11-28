@@ -2,7 +2,7 @@
 import * as React from "react";
 import { isDescendant } from "react-sortable-tree";
 import classnames from "classnames";
-import { getPlugin } from "webiny-app/plugins";
+import { getPlugin } from "webiny-plugins";
 import { IconButton } from "webiny-ui/Button";
 import "./MenuItemRenderer.css";
 import { ReactComponent as EditIcon } from "./icons/round-edit-24px.svg";

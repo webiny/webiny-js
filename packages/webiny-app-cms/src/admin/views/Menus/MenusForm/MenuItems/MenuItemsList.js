@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import SortableTree from "react-sortable-tree";
-import { getPlugin } from "webiny-app/plugins";
+import { getPlugin } from "webiny-plugins";
 import MenuItemRenderer from "./MenuItemRenderer";
 
 class MenuItemsList extends React.Component<*> {

@@ -1,10 +1,11 @@
+// @flow
 import React from "react";
 import { connect } from "react-redux";
 import { compose, lifecycle, onlyUpdateForKeys } from "recompose";
 import { TopAppBarSecondary, TopAppBarSection } from "webiny-ui/TopAppBar";
 import { ButtonDefault, ButtonIcon } from "webiny-ui/Button";
 import { deactivateElement } from "webiny-app-cms/editor/actions";
-import { getPlugin } from "webiny-app/plugins";
+import { getPlugin } from "webiny-plugins";
 import { getActivePlugin } from "webiny-app-cms/editor/selectors";
 import { withActiveElement, withKeyHandler } from "webiny-app-cms/editor/components";
 import Menu from "./components/Menu";
