@@ -1,6 +1,6 @@
 // @flow
 import gql from "graphql-tag";
-import { getPlugins } from "webiny-app/plugins";
+import { getPlugins } from "webiny-plugins";
 import type { CmsPageSettingsPluginType } from "webiny-app-cms/types";
 
 const error = `

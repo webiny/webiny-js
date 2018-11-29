@@ -1,5 +1,5 @@
 //@flow
-import { getPlugins } from "webiny-app/plugins";
+import { getPlugins } from "webiny-plugins";
 import { withTheme } from "webiny-app-cms/theme";
 import type { ElementType } from "webiny-app-cms/types";
 

@@ -2,7 +2,7 @@
 import React from "react";
 import Image from "./Image";
 import styled from "react-emotion";
-import { getPlugin } from "webiny-app/plugins";
+import { getPlugin } from "webiny-plugins";
 import { redux, addMiddleware } from "webiny-app-cms/editor/redux";
 import { ELEMENT_CREATED } from "webiny-app-cms/editor/actions";
 import ElementStyle from "webiny-app-cms/render/components/ElementStyle";
