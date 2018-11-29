@@ -1,14 +1,7 @@
 // @flow
-import graphqContextEntities from "./graphqlContextEntities";
-import entities from "./entities";
-import graphql from "./graphql";
+import { type PluginType } from "webiny-plugins/types";
 
 const plugins = {};
-
-export type PluginType = Object & {
-    name: string,
-    type: string
-};
 
 export const addPlugin = (...args: Array<PluginType | Array<PluginType>>): void => {
     args.forEach(plugin => {
@@ -32,5 +25,3 @@ export const getPlugin = (name: string): ?PluginType => {
 export const removePlugin = (name: string): void => {
     delete plugins[name];
 };
-
-export default [...entities, graphql, graphqContextEntities];

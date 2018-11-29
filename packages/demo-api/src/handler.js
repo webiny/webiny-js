@@ -1,5 +1,5 @@
 // @flow
-import { addPlugin } from "webiny-api/plugins";
+import { addPlugin } from "webiny-plugins";
 import { createHandler } from "webiny-api";
 import config from "./configs";
 

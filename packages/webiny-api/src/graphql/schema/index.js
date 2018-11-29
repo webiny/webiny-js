@@ -4,7 +4,7 @@ import { makeExecutableSchema, mergeSchemas } from "graphql-tools";
 import GraphQLJSON from "graphql-type-json";
 import { GraphQLDateTime } from "graphql-iso-date";
 import { genericTypes } from "./genericTypes";
-import { getPlugins } from "webiny-api/plugins";
+import { getPlugins } from "webiny-plugins";
 
 /**
  * Maps data sources and returns array of executable schema

@@ -7,6 +7,10 @@ import { addPlugin } from "webiny-plugins";
 addPlugin({
     type: "webiny-install",
     name: "webiny-install-api",
+    meta: {
+        name: "Webiny API",
+        description: "Foundation of the Webiny platform."
+    },
     install: async context => {
         const { config } = context;
         // Configure Entity layer
