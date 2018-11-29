@@ -1,5 +1,5 @@
 // @flow
-import { getPlugins } from "webiny-api/plugins";
+import { getPlugins } from "webiny-plugins";
 import { dummyResolver } from "webiny-api/graphql";
 
 import page from "./graphql/Page";

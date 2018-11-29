@@ -1,7 +1,7 @@
 // @flow
 import { compose, withHandlers } from "recompose";
 import { omitBy, isNull } from "lodash";
-import { getPlugin } from "webiny-app/plugins";
+import { getPlugin } from "webiny-plugins";
 import findObject from "./findObject";
 import uniqid from "uniqid";
 

@@ -2,7 +2,7 @@
 import { hot } from "react-hot-loader";
 import React from "react";
 import { Webiny, Router } from "webiny-app";
-import { addPlugin } from "webiny-app/plugins";
+import { addPlugin } from "webiny-plugins";
 import { app as adminApp, Theme as AdminTheme } from "webiny-app-admin";
 import { app as cmsApp } from "webiny-app-cms/admin";
 import { Theme as CmsTheme } from "webiny-app-cms/theme";

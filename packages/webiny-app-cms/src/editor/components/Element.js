@@ -1,10 +1,11 @@
 //@flow
 import * as React from "react";
 import { Transition } from "react-transition-group";
-import { compose, pure, withHandlers, withProps, withState } from "recompose";
+import { compose, pure, withHandlers, withProps } from "recompose";
 import { connect } from "react-redux";
 import isEqual from "lodash/isEqual";
-import { getPlugin, renderPlugins } from "webiny-app/plugins";
+import { getPlugin } from "webiny-plugins";
+import { renderPlugins } from "webiny-app/plugins";
 import { withTheme } from "webiny-app-cms/theme";
 import {
     dragStart,

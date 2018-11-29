@@ -2,7 +2,7 @@
 import React from "react";
 import { Editor } from "slate-react";
 import { Value } from "slate";
-import { getPlugins } from "webiny-app/plugins";
+import { getPlugins } from "webiny-plugins";
 import { withTheme } from "webiny-app-cms/theme";
 
 class SlateEditor extends React.Component<*, *> {

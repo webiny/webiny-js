@@ -2,7 +2,7 @@
 import React from "react";
 import { dispatch } from "webiny-app-cms/editor/redux";
 import { deleteElement } from "webiny-app-cms/editor/actions";
-import { getPlugin } from "webiny-app/plugins";
+import { getPlugin } from "webiny-plugins";
 import { ReactComponent as DeleteIcon } from "webiny-app-cms/editor/assets/icons/delete.svg";
 import Action from "../Action";
 

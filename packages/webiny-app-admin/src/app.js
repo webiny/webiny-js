@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import { i18n } from "webiny-app/i18n";
-import { addPlugin } from "webiny-app/plugins";
+import { addPlugin } from "webiny-plugins";
 import plugins from "webiny-app-admin/presets/default";
 import { ReactComponent as SecurityIcon } from "./assets/images/icons/baseline-security-24px.svg";
 import Roles from "./views/Roles";

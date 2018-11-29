@@ -1,5 +1,6 @@
 // @flow
-import apiPlugins, { addPlugin } from "./plugins";
+import { addPlugin } from "webiny-plugins";
+import apiPlugins from "./plugins";
 
 // Register required core plugins.
 addPlugin(...apiPlugins);

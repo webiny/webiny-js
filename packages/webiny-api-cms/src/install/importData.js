@@ -1,22 +1,32 @@
 // @flow
-import setupEntities from "../entities/setupEntities";
+import setupEntities from "./setupEntities";
 
 export default async (context: Object) => {
-    const { Category, Element, Page, Tag, Menu, CmsSettings } = setupEntities(context);
+    setupEntities(context);
+    const { Category, Element, Page, Tag, Menu } = context.cms.entities;
 
     const menu = new Menu();
     menu.populate({
         title: "Demo Menu",
         slug: "demo-menu",
         description: "This is a demo menu.",
-        items: []
+        items: [
+            {
+                type: "cms-menu-item-link",
+                title: "Link 1",
+                url: "https://www.google.com",
+                id: "jopxai1f"
+            },
+            {
+                type: "cms-menu-item-link",
+                title: "Link 2",
+                url: "https://www.duckduckgo.com",
+                id: "jopxaxqh"
+            }
+        ]
     });
 
     await menu.save();
-
-    const settings = new CmsSettings();
-    settings.data = {};
-    settings.save();
 
     ["nodejs", "graphql", "marketing"].forEach(async tag => {
         const t = new Tag();

@@ -7,7 +7,7 @@ import { Icon } from "webiny-ui/Icon";
 import { deactivatePlugin, updateElement } from "webiny-app-cms/editor/actions";
 import { getContent } from "webiny-app-cms/editor/selectors";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
-import { getPlugins } from "webiny-app/plugins";
+import { getPlugins } from "webiny-plugins";
 import { createElement } from "webiny-app-cms/editor/utils";
 import { SecondaryLayout } from "webiny-app-admin/components/Views/SecondaryLayout";
 import { Elevation } from "webiny-ui/Elevation";
