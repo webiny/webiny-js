@@ -1,4 +1,6 @@
+// @flow
 import React from "react";
+import { pure } from "recompose";
 import styled from "react-emotion";
 import { getPlugins } from "webiny-app/plugins";
 
@@ -7,9 +9,9 @@ const DialogsContainer = styled("div")({
     zIndex: 5
 });
 
-const Dialogs = () => {
+const Dialogs = pure(() => {
     const actions = [...getPlugins("cms-toolbar-top"), ...getPlugins("cms-toolbar-bottom")];
-
+    
     return (
         <DialogsContainer data-type={"dialogs"}>
             {actions.map(
@@ -20,6 +22,6 @@ const Dialogs = () => {
             )}
         </DialogsContainer>
     );
-};
+});
 
 export default Dialogs;

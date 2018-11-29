@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-import ElementStyle from "webiny-app-cms/render/components/ElementStyle";
+import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
 
 const center = css({ textAlign: "center" });
 
@@ -12,7 +12,7 @@ const Icon = ({ theme, element }) => {
     }
 
     return (
-        <ElementStyle element={element}>
+        <ElementStyle {...getElementStyleProps(element)}>
             {({ getAllClasses }) => (
                 <div
                     className={getAllClasses("webiny-cms-element-icon", center)}

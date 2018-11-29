@@ -88,9 +88,7 @@ class AddElement extends React.Component<Props, State> {
                 }}
             >
                 {({ connectDragSource }) =>
-                    connectDragSource(
-                        <div>{this.renderOverlay(element, null, "Drag to Add")}</div>
-                    )
+                    connectDragSource(<div>{this.renderOverlay(element, null, "Drag to Add")}</div>)
                 }
             </Draggable>
         );
@@ -138,51 +136,49 @@ class AddElement extends React.Component<Props, State> {
         const { params, theme } = this.props;
 
         return (
-            <React.Fragment>
-                <Styled.Flex>
-                    <List className={categoriesList}>
-                        {this.getGroups().map(plugin => (
-                            <ListItem
-                                onClick={() => this.setState({ group: plugin.name })}
-                                key={plugin.name}
-                                className={plugin.name === this.state.group && "active"}
-                            >
-                                {plugin.group.title}
+            <Styled.Flex>
+                <List className={categoriesList}>
+                    {this.getGroups().map(plugin => (
+                        <ListItem
+                            onClick={() => this.setState({ group: plugin.name })}
+                            key={plugin.name}
+                            className={plugin.name === this.state.group && "active"}
+                        >
+                            {plugin.group.title}
 
-                                {plugin.group.icon && (
-                                    <ListItemMeta>
-                                        <Icon icon={plugin.group.icon} />
-                                    </ListItemMeta>
-                                )}
-                            </ListItem>
-                        ))}
-                    </List>
-                    <Styled.Elements>
-                        {this.state.group &&
-                            this.getGroupElements(this.state.group).map(plugin => {
-                                return (params ? this.renderClickable : this.renderDraggable)(
-                                    <div data-role="draggable">
-                                        <Styled.ElementBox>
-                                            <Styled.ElementTitle>
-                                                {typeof plugin.toolbar.title === "function" ? (
-                                                    plugin.toolbar.title({ refresh: this.refresh })
-                                                ) : (
-                                                    <Typography use="overline">
-                                                        {plugin.toolbar.title}
-                                                    </Typography>
-                                                )}
-                                            </Styled.ElementTitle>
-                                            <Styled.ElementPreviewCanvas>
-                                                {plugin.toolbar.preview({ theme })}
-                                            </Styled.ElementPreviewCanvas>
-                                        </Styled.ElementBox>
-                                    </div>,
-                                    plugin
-                                );
-                            })}
-                    </Styled.Elements>
-                </Styled.Flex>
-            </React.Fragment>
+                            {plugin.group.icon && (
+                                <ListItemMeta>
+                                    <Icon icon={plugin.group.icon} />
+                                </ListItemMeta>
+                            )}
+                        </ListItem>
+                    ))}
+                </List>
+                <Styled.Elements>
+                    {this.state.group &&
+                        this.getGroupElements(this.state.group).map(plugin => {
+                            return (params ? this.renderClickable : this.renderDraggable)(
+                                <div data-role="draggable">
+                                    <Styled.ElementBox>
+                                        <Styled.ElementTitle>
+                                            {typeof plugin.toolbar.title === "function" ? (
+                                                plugin.toolbar.title({ refresh: this.refresh })
+                                            ) : (
+                                                <Typography use="overline">
+                                                    {plugin.toolbar.title}
+                                                </Typography>
+                                            )}
+                                        </Styled.ElementTitle>
+                                        <Styled.ElementPreviewCanvas>
+                                            {plugin.toolbar.preview({ theme })}
+                                        </Styled.ElementPreviewCanvas>
+                                    </Styled.ElementBox>
+                                </div>,
+                                plugin
+                            );
+                        })}
+                </Styled.Elements>
+            </Styled.Flex>
         );
     }
 }

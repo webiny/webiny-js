@@ -1,14 +1,16 @@
+// @flow
 import * as React from "react";
 import { connect } from "react-redux";
 import { compose } from "recompose";
-import { get, set } from "dot-prop-immutable";
+import { set } from "dot-prop-immutable";
+import { get } from "lodash";
 import { Tabs, Tab } from "webiny-ui/Tabs";
 import { Select } from "webiny-ui/Select";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Typography } from "webiny-ui/Typography";
 import { withTheme } from "webiny-app-cms/theme";
-import { withActiveElement } from "webiny-app-cms/editor/components";
 import { updateElement } from "webiny-app-cms/editor/actions";
+import { getActiveElement } from "webiny-app-cms/editor/selectors";
 
 class ButtonSettings extends React.Component<*> {
     historyUpdated = {};
@@ -32,8 +34,8 @@ class ButtonSettings extends React.Component<*> {
 
     render() {
         const { element, theme } = this.props;
-        const { icon, type } = get(element, "settings.advanced");
         const { types } = theme.elements.button;
+        const { icon = {}, type = types[0].name } = get(element, "settings.advanced", {});
 
         return (
             <React.Fragment>
@@ -81,9 +83,8 @@ class ButtonSettings extends React.Component<*> {
 
 export default compose(
     connect(
-        null,
+        state => ({ element: getActiveElement(state) }),
         { updateElement }
     ),
-    withTheme(),
-    withActiveElement()
+    withTheme()
 )(ButtonSettings);

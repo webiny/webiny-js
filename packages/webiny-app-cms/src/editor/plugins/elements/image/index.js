@@ -5,7 +5,7 @@ import styled from "react-emotion";
 import { getPlugin } from "webiny-app/plugins";
 import { redux, addMiddleware } from "webiny-app-cms/editor/redux";
 import { ELEMENT_CREATED } from "webiny-app-cms/editor/actions";
-import ElementStyle from "webiny-app-cms/render/components/ElementStyle";
+import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
 import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
 import type { ElementPluginType } from "webiny-app-cms/types";
 import { updateElement } from "webiny-app-cms/editor/actions";
@@ -98,7 +98,7 @@ export default (): ElementPluginType => {
                 }
 
                 return (
-                    <ElementStyle element={element}>
+                    <ElementStyle {...getElementStyleProps(element)}>
                         <Image
                             element={element}
                             img={{ style: imgStyle }}

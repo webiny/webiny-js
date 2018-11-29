@@ -1,11 +1,10 @@
 //@flow
 import * as React from "react";
 import { Transition } from "react-transition-group";
-import { compose, pure, withHandlers, withProps, withState } from "recompose";
+import { compose, pure, withHandlers, withProps, setDisplayName } from "recompose";
 import { connect } from "react-redux";
 import isEqual from "lodash/isEqual";
 import { getPlugin, renderPlugins } from "webiny-app/plugins";
-import { withTheme } from "webiny-app-cms/theme";
 import {
     dragStart,
     dragEnd,
@@ -29,7 +28,6 @@ declare type ElementProps = {
     dragEnd: Function,
     element: ElementType,
     highlight: boolean,
-    theme: Object,
     onClick: Function,
     onMouseOver: Function,
     renderDraggable: Function,
@@ -46,7 +44,6 @@ const Element = pure(
         element,
         highlight,
         active,
-        theme,
         onMouseOver,
         beginDrag,
         endDrag,
@@ -73,7 +70,7 @@ const Element = pure(
                             >
                                 {renderDraggable}
                             </Draggable>
-                            {plugin.render({ theme, element })}
+                            {plugin.render({ element })}
                         </div>
                     </ElementContainer>
                 )}
@@ -83,6 +80,7 @@ const Element = pure(
 );
 
 export default compose(
+    setDisplayName("Element"),
     connect(
         (state, props) => {
             return {
@@ -98,7 +96,6 @@ export default compose(
             }
         }
     ),
-    withTheme(),
     withProps(({ element }) => ({
         plugin: element ? getPlugin(element.type) : null
     })),

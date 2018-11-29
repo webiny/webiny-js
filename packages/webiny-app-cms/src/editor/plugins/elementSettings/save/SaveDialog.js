@@ -1,9 +1,12 @@
 // @flow
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { css } from "emotion";
-import { getPlugin } from "webiny-app/plugins";
+import { connect } from "react-redux";
 import { compose, withState } from "recompose";
+import { css } from "emotion";
+import { isEqual } from "lodash";
+import { getElement } from "webiny-app-cms/editor/selectors";
+import { getPlugin } from "webiny-app/plugins";
 import domToImage from "./domToImage";
 import {
     Dialog,
@@ -121,68 +124,87 @@ type Props = {
     setImage?: Function
 };
 
-const SaveDialog = ({ element, open, onClose, onSubmit, type, image, setImage }: Props) => {
-    return (
-        <Dialog open={open} onClose={onClose} className={narrowDialog}>
-            <ImageEditor src={image ? image.src : ""}>
-                {({ render: renderImageEditor, getCanvasDataUrl }) => (
-                    <Form
-                        onSubmit={data => {
-                            data.preview = { src: getCanvasDataUrl() };
-                            onSubmit(data);
-                        }}
-                        data={{ type }}
-                    >
-                        {({ data, submit, Bind }) => (
-                            <React.Fragment>
-                                <DialogHeader>
-                                    <DialogHeaderTitle>Save {type}</DialogHeaderTitle>
-                                </DialogHeader>
-                                <DialogBody>
-                                    <Grid>
-                                        <Cell span={12}>
-                                            <Bind name={"name"} validators={"required"}>
-                                                <Input label={"Name"} autoFocus />
-                                            </Bind>
-                                        </Cell>
-                                    </Grid>
-                                    {data.type === "block" && (
+class SaveDialog extends React.Component<Props> {
+    shouldComponentUpdate(props) {
+        return props.open;
+    }
+
+    render() {
+        const { element, open, onClose, onSubmit, type, image, setImage } = this.props;
+        return (
+            <Dialog open={open} onClose={onClose} className={narrowDialog}>
+                <ImageEditor src={image ? image.src : ""}>
+                    {({ render: renderImageEditor, getCanvasDataUrl }) => (
+                        <Form
+                            onSubmit={data => {
+                                data.preview = { src: getCanvasDataUrl() };
+                                onSubmit(data);
+                            }}
+                            data={{ type }}
+                        >
+                            {({ data, submit, Bind }) => (
+                                <React.Fragment>
+                                    <DialogHeader>
+                                        <DialogHeaderTitle>Save {type}</DialogHeaderTitle>
+                                    </DialogHeader>
+                                    <DialogBody>
                                         <Grid>
                                             <Cell span={12}>
-                                                <Bind name="keywords">
-                                                    <Tags
-                                                        label="Keywords"
-                                                        description="Enter search keywords"
-                                                    />
+                                                <Bind name={"name"} validators={"required"}>
+                                                    <Input label={"Name"} autoFocus />
                                                 </Bind>
                                             </Cell>
                                         </Grid>
-                                    )}
-                                    <Grid>
-                                        <Cell span={12}>
-                                            {image ? (
-                                                renderImageEditor()
-                                            ) : open ? (
-                                                <ElementPreview
-                                                    key={element.id}
-                                                    onChange={setImage}
-                                                    element={element}
-                                                />
-                                            ) : null}
-                                        </Cell>
-                                    </Grid>
-                                </DialogBody>
-                                <DialogFooter>
-                                    <DialogCancel>Cancel</DialogCancel>
-                                    <DialogFooterButton onClick={submit}>Save</DialogFooterButton>
-                                </DialogFooter>
-                            </React.Fragment>
-                        )}
-                    </Form>
-                )}
-            </ImageEditor>
-        </Dialog>
-    );
-};
+                                        {data.type === "block" && (
+                                            <Grid>
+                                                <Cell span={12}>
+                                                    <Bind name="keywords">
+                                                        <Tags
+                                                            label="Keywords"
+                                                            description="Enter search keywords"
+                                                        />
+                                                    </Bind>
+                                                </Cell>
+                                            </Grid>
+                                        )}
+                                        <Grid>
+                                            <Cell span={12}>
+                                                {image ? (
+                                                    renderImageEditor()
+                                                ) : open ? (
+                                                    <ElementPreview
+                                                        key={element.id}
+                                                        onChange={setImage}
+                                                        element={element}
+                                                    />
+                                                ) : null}
+                                            </Cell>
+                                        </Grid>
+                                    </DialogBody>
+                                    <DialogFooter>
+                                        <DialogCancel>Cancel</DialogCancel>
+                                        <DialogFooterButton onClick={submit}>
+                                            Save
+                                        </DialogFooterButton>
+                                    </DialogFooter>
+                                </React.Fragment>
+                            )}
+                        </Form>
+                    )}
+                </ImageEditor>
+            </Dialog>
+        );
+    }
+}
 
-export default compose(withState("image", "setImage", null))(SaveDialog);
+export default compose(
+    connect(
+        (state, props) => ({
+            element: getElement(state, props.elementId)
+        }),
+        null,
+        null,
+        { areStatePropsEqual: isEqual }
+    ),
+    withState("image", "setImage", null)
+)(SaveDialog);

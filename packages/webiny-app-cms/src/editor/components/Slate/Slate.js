@@ -3,7 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import styled from "react-emotion";
 import { connect } from "react-redux";
-import { compose } from "recompose";
+import { compose, pure } from "recompose";
 import { get } from "lodash";
 import { Editor } from "slate-react";
 import { Value } from "slate";
@@ -163,10 +163,12 @@ class SlateEditor extends React.Component<*, *> {
     }
 }
 
-export default compose(
-    connect(
-        null,
-        { focusSlateEditor, blurSlateEditor }
-    ),
-    withTheme()
-)(SlateEditor);
+export default pure(
+    compose(
+        connect(
+            null,
+            { focusSlateEditor, blurSlateEditor }
+        ),
+        withTheme()
+    )(SlateEditor)
+);

@@ -6,7 +6,7 @@ import { compose, lifecycle, withHandlers } from "recompose";
 import { togglePlugin } from "webiny-app-cms/editor/actions";
 import { IconButton } from "webiny-ui/Button";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
-import { getUi, getActivePlugins } from "webiny-app-cms/editor/selectors";
+import { getUi, getActivePlugins, isPluginActive } from "webiny-app-cms/editor/selectors";
 import { Tooltip } from "webiny-ui/Tooltip";
 
 const activeStyle = css({
@@ -29,7 +29,8 @@ const Action = ({ icon, active, tooltip, onClick }) => {
 
 export default compose(
     connect(
-        state => ({
+        (state, props) => ({
+            active: isPluginActive(props.plugin)(state),
             // $FlowFixMe
             slateFocused: getUi(state).slateFocused,
             settingsActive: getActivePlugins("cms-element-settings")(state).length > 0

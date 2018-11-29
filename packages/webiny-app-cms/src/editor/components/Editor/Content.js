@@ -3,7 +3,7 @@ import React from "react";
 import { get } from "dot-prop-immutable";
 import { connect } from "react-redux";
 import styled from "react-emotion";
-import { compose, pure } from "recompose";
+import { compose } from "recompose";
 import { getPlugins } from "webiny-app/plugins";
 import { withTheme } from "webiny-app-cms/theme";
 import { getContent, isPluginActive, getPage } from "webiny-app-cms/editor/selectors";
@@ -29,7 +29,7 @@ const BaseContainer = styled("div")({
     margin: "0 auto"
 });
 
-const Content = pure(({ rootElement, theme, renderLayout, layout }) => {
+const Content = ({ rootElement, theme, renderLayout, layout }) => {
     const plugins = getPlugins("cms-editor-content");
     const themeLayout = theme.layouts.find(l => l.name === layout);
 
@@ -47,7 +47,7 @@ const Content = pure(({ rootElement, theme, renderLayout, layout }) => {
             <BaseContainer>{content}</BaseContainer>
         </ContentContainer>
     );
-});
+};
 
 const stateToProps = state => ({
     rootElement: state.elements[getContent(state).id],

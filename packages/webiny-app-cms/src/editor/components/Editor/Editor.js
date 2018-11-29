@@ -41,11 +41,15 @@ const Editor = ({ isDragging, isResizing }: Props) => {
 
 export default compose(
     connect(
-        state => ({
-            slateFocused: getUi(state).slateFocused,
-            isDragging: getUi(state).dragging,
-            isResizing: getUi(state).resizing
-        }),
+        state => {
+            const ui: Object = getUi(state);
+
+            return {
+                slateFocused: ui.slateFocused,
+                isDragging: ui.dragging,
+                isResizing: ui.resizing
+            };
+        },
         {
             undo: ActionCreators.undo,
             redo: ActionCreators.redo

@@ -7,7 +7,7 @@ import { set } from "dot-prop-immutable";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { resizeStart, resizeStop } from "./actions";
 import Resizer from "webiny-app-cms/editor/components/Resizer";
-import ElementStyle from "webiny-app-cms/render/components/ElementStyle";
+import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
 
 export const MIN_HEIGHT = 20;
 export const INIT_HEIGHT = 100;
@@ -51,8 +51,10 @@ const Spacer = props => {
 
     return (
         <SpacerElement>
-            <ElementStyle element={element}>
-                {({ elementStyle, inlineStyle, customClasses, combineClassNames }) => {
+            <ElementStyle {...getElementStyleProps(element)}>
+                {({ elementStyle, customClasses, combineClassNames }) => {
+                    // TODO: finish this
+                    console.log("Spacer style", elementStyle);
                     const { height = INIT_HEIGHT, ...spacerStyle } = elementStyle;
 
                     return (
@@ -60,7 +62,6 @@ const Spacer = props => {
                             style={{ height }}
                             className={combineClassNames(
                                 css(spacerStyle),
-                                inlineStyle,
                                 ...customClasses
                             )}
                         >

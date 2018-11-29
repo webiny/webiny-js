@@ -2,7 +2,7 @@
 import invariant from "invariant";
 import dotProp from "dot-prop-immutable";
 import gql from "graphql-tag";
-import { isEqual, pick, debounce, cloneDeep } from "lodash";
+import { isEqual, pick, debounce, cloneDeep, merge } from "lodash";
 import {
     createAction,
     addMiddleware,
@@ -107,7 +107,7 @@ addReducer([TOGGLE_PLUGIN], "ui.plugins", (state, action) => {
     const plugin = getPlugin(name);
 
     if (!plugin) {
-        return;
+        return state;
     }
 
     let typePlugins = dotProp.get(state, plugin.type);
@@ -135,7 +135,7 @@ addReducer([DEACTIVATE_PLUGIN], "ui.plugins", (state, action) => {
     const { name } = action.payload;
     const plugin = getPlugin(name);
     if (!plugin) {
-        return;
+        return state;
     }
 
     let typePlugins = dotProp.get(state, plugin.type);
@@ -192,6 +192,9 @@ addReducer(
     },
     (state, action) => {
         const { element } = action.payload;
+        if (element.elements && typeof element.elements[0] === "string") {
+            delete element["elements"];
+        }
         updateChildPaths(element);
         return { ...state, ...element };
     }

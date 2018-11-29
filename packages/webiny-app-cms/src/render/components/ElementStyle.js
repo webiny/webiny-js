@@ -1,50 +1,63 @@
+// @flow
 import React from "react";
 import { get } from "dot-prop-immutable";
-import { css } from "emotion";
+import { isEqual } from "lodash";
 
 const Node = "div";
-
-const getClassName = style => {
-    if (Object.keys(style).length) {
-        return css(style);
-    }
-    return null;
-};
 
 const combineClassNames = (...styles) => {
     return styles.filter(s => s !== "" && s !== "css-0").join(" ");
 };
 
-const ElementStyle = ({ style = {}, element, children, className = null }) => {
-    const elementStyle = { ...style, ...get(element, "settings.style", {}) };
-    const { inline = "", classNames = "" } = get(element, "settings.advanced.style") || {};
-
-    const getAllClasses = (...extraClasses) => {
-        return [
-            className,
-            ...extraClasses,
-            getClassName(elementStyle),
-            ...classNames.split(" "),
-            inline.trim().length &&
-                css`
-                    ${inline};
-                `
-        ].filter(v => v && v !== "css-0").join(" ");
-    };
-
-    if (typeof children === "function") {
-        return children({
-            getAllClasses,
-            combineClassNames,
-            elementStyle,
-            inlineStyle: css`
-                ${inline.trim()};
-            `,
-            customClasses: classNames.split(" ")
-        });
+class ElementStyle extends React.Component<*> {
+    shouldComponentUpdate(props: Object) {
+        return (
+            !isEqual(props.elementStyle, this.props.elementStyle) ||
+            !isEqual(props.advancedStyle, this.props.advancedStyle)
+        );
     }
 
-    return <Node className={getAllClasses()}>{children}</Node>;
+    render() {
+        const {
+            style = {},
+            elementStyle = {},
+            advancedStyle = {},
+            children,
+            className = null
+        } = this.props;
+        const finalStyle = { ...style, ...elementStyle };
+        const { classNames = "" } = advancedStyle;
+
+        const getAllClasses = (...extraClasses) => {
+            return [className, ...extraClasses, ...classNames.split(" ")]
+                .filter(v => v && v !== "css-0")
+                .join(" ");
+        };
+
+        if (typeof children === "function") {
+            return children({
+                getAllClasses,
+                combineClassNames,
+                elementStyle: finalStyle,
+                customClasses: classNames.split(" ")
+            });
+        }
+
+        return (
+            <Node className={getAllClasses()} style={finalStyle}>
+                {children}
+            </Node>
+        );
+    }
+}
+
+const DEF = {};
+
+const getElementStyleProps = (element: Object) => {
+    return {
+        elementStyle: get(element, "settings.style", DEF),
+        advancedStyle: get(element, "settings.advanced.style", DEF)
+    };
 };
 
-export default ElementStyle;
+export { ElementStyle, getElementStyleProps };

@@ -1,9 +1,13 @@
+// @flow
 import * as React from "react";
+import { connect } from "react-redux";
 import { compose, withState, withHandlers, lifecycle } from "recompose";
 import { graphql } from "react-apollo";
+import { getPlugin } from "webiny-app/plugins";
 import SaveDialog from "./SaveDialog";
 import { withSnackbar } from "webiny-app-admin/components";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
+import { getActiveElement } from "webiny-app-cms/editor/selectors";
 import { createElementPlugin, createBlockPlugin } from "webiny-app-cms/admin/components";
 import { createElement } from "webiny-app-cms/admin/graphql/pages";
 import { withFileUpload } from "webiny-app/components";
@@ -13,8 +17,9 @@ type Props = {
     showDialog: Function,
     hideDialog: Function,
     onSubmit: Function,
-    children: React.Node,
-    element: Object
+    children: any,
+    elementId: string,
+    elementType: string
 };
 
 const SaveAction = ({
@@ -23,17 +28,23 @@ const SaveAction = ({
     isDialogOpened,
     children,
     onSubmit,
-    element
+    elementId,
+    elementType
 }: Props) => {
+    const plugin = getPlugin(elementType);
+    if (!plugin) {
+        return null;
+    }
+
     return (
         <React.Fragment>
             <SaveDialog
-                key={element.id}
+                key={elementId}
                 open={isDialogOpened}
                 onClose={hideDialog}
                 onSubmit={onSubmit}
-                element={element}
-                type={element.type === "cms-element-block" ? "block" : "element"}
+                elementId={elementId}
+                type={elementType === "cms-element-block" ? "block" : "element"}
             />
             {React.cloneElement(children, { onClick: showDialog })}
         </React.Fragment>
@@ -58,6 +69,13 @@ const removeIdsAndPaths = el => {
 };
 
 export default compose(
+    connect(state => {
+        const element = getActiveElement(state);
+        return {
+            elementId: element.id,
+            elementType: element.type
+        };
+    }),
     withFileUpload(),
     withKeyHandler(),
     withState("isDialogOpened", "setOpenDialog", false),

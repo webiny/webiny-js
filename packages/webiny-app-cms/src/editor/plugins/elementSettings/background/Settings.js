@@ -4,8 +4,8 @@ import { connect } from "react-redux";
 import { compose } from "recompose";
 import { Tabs, Tab } from "webiny-ui/Tabs";
 import { get, set } from "dot-prop-immutable";
-import { withActiveElement } from "webiny-app-cms/editor/components";
 import { updateElement } from "webiny-app-cms/editor/actions";
+import { getActiveElement } from "webiny-app-cms/editor/selectors";
 import ColorPicker from "webiny-app-cms/editor/components/ColorPicker";
 import { Cell, Grid } from "webiny-ui/Grid";
 import { Select } from "webiny-ui/Select";
@@ -194,8 +194,7 @@ class Settings extends React.Component<*> {
 
 export default compose(
     connect(
-        null,
+        state => ({ element: getActiveElement(state) }),
         { updateElement }
-    ),
-    withActiveElement({ omit: ["elements"] })
+    )
 )(Settings);

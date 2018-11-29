@@ -1,6 +1,6 @@
 // @flow
-import { Typography as RwmcTypography } from "@rmwc/typography";
 import * as React from "react";
+import { Typography as RwmcTypography } from "@rmwc/typography";
 
 type Props = {
     // Text style.

@@ -1,15 +1,15 @@
 import React from "react";
 import { css } from "emotion";
-import ElementStyle from "webiny-app-cms/render/components/ElementStyle";
+import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const center = css({ textAlign: "center" });
 
-const Icon = ({ theme, element }) => {
+const Icon = ({ element }) => {
     const svg = element.data.icon || null;
 
     return (
-        <ElementStyle element={element}>
+        <ElementStyle {...getElementStyleProps(element)}>
             {({ getAllClasses }) => {
                 const className = getAllClasses("webiny-cms-element-icon", center);
 

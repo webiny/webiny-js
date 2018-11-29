@@ -37,8 +37,8 @@ export default [
                 }
             });
         },
-        render(props: Object) {
-            return <AdvancedSettings {...props} />;
+        render() {
+            return <AdvancedSettings />;
         }
     },
     ({

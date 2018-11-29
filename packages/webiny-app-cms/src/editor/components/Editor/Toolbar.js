@@ -3,6 +3,7 @@ import React from "react";
 import { connect } from "react-redux";
 import styled from "react-emotion";
 import { css } from "emotion";
+import { isEqual } from "lodash";
 import { compose, lifecycle } from "recompose";
 import { Drawer, DrawerContent } from "webiny-ui/Drawer";
 import { getPlugins } from "webiny-app/plugins";
@@ -90,11 +91,11 @@ const ToolbarDrawer = drawerKeyHandler(({ active, children }) => (
     </DrawerContainer>
 ));
 
-const withDrawer = element => {
-    return <ToolbarDrawer>{element}</ToolbarDrawer>;
+const renderPlugin = (plugin: Object) => {
+    return React.cloneElement(plugin.renderAction(), { key: plugin.name });
 };
 
-const Toolbar = ({ activePluginsTop, activePluginsBottom }: Object) => {
+const Toolbar = ({ activePluginsTop }: Object) => {
     const actionsTop = getPlugins("cms-toolbar-top");
     const actionsBottom = getPlugins("cms-toolbar-bottom");
 
@@ -103,49 +104,31 @@ const Toolbar = ({ activePluginsTop, activePluginsBottom }: Object) => {
             <ToolbarDrawerContainer>
                 {actionsTop
                     .filter(plugin => typeof plugin.renderDrawer === "function")
-                    .map(plugin => {
-                        const props = {
-                            key: plugin.name,
-                            active: Boolean(activePluginsTop.find(pl => pl.name === plugin.name)),
-                            name: plugin.name
-                        };
-                        const drawer = plugin.renderDrawer({ withDrawer });
-                        return React.cloneElement(drawer, props);
-                    })}
+                    .map(plugin => (
+                        <ToolbarDrawer
+                            key={plugin.name}
+                            active={Boolean(activePluginsTop.includes(plugin.name))}
+                        >
+                            {plugin.renderDrawer()}
+                        </ToolbarDrawer>
+                    ))}
             </ToolbarDrawerContainer>
             <ToolbarContainer>
                 <ToolbarActions>
-                    <div>
-                        {actionsTop.map(plugin =>
-                            React.cloneElement(
-                                plugin.renderAction({
-                                    active: Boolean(
-                                        activePluginsTop.find(pl => pl.name === plugin.name)
-                                    )
-                                }),
-                                { key: plugin.name }
-                            )
-                        )}
-                    </div>
-                    <div>
-                        {actionsBottom.map(plugin =>
-                            React.cloneElement(
-                                plugin.renderAction({
-                                    active: Boolean(
-                                        activePluginsBottom.find(pl => pl.name === plugin.name)
-                                    )
-                                }),
-                                { key: plugin.name }
-                            )
-                        )}
-                    </div>
+                    <div>{actionsTop.map(renderPlugin)}</div>
+                    <div>{actionsBottom.map(renderPlugin)}</div>
                 </ToolbarActions>
             </ToolbarContainer>
         </React.Fragment>
     );
 };
 
-export default connect(state => ({
-    activePluginsTop: getActivePlugins("cms-toolbar-top")(state),
-    activePluginsBottom: getActivePlugins("cms-toolbar-bottom")(state)
-}))(Toolbar);
+export default connect(
+    state => ({
+        activePluginsTop: getActivePlugins("cms-toolbar-top")(state).map(pl => pl.name),
+        activePluginsBottom: getActivePlugins("cms-toolbar-bottom")(state).map(pl => pl.name)
+    }),
+    null,
+    null,
+    { areStatePropsEqual: isEqual }
+)(Toolbar);

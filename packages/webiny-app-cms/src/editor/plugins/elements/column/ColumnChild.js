@@ -6,6 +6,7 @@ import isEqual from "lodash/isEqual";
 import DropZone from "webiny-app-cms/editor/components/DropZone";
 import Element from "webiny-app-cms/editor/components/Element";
 import { dropElement } from "webiny-app-cms/editor/actions";
+import { getElement } from "webiny-app-cms/editor/selectors";
 
 type Props = {
     element: Object,
@@ -35,11 +36,11 @@ const ColumnChild = ({
 export default compose(
     connect(
         (state, props) => ({
-            element: state.elements[props.id]
+            element: getElement(state, props.id)
         }),
         { dropElement },
         null,
-        { areStatePropsEqual: (state, prevState) => isEqual(state, prevState) }
+        { areStatePropsEqual: isEqual }
     ),
     withHandlers({
         dropElementAbove: ({ dropElement, target, index }) => (source: Object) => {

@@ -1,8 +1,8 @@
 //@flow
 import React from "react";
 import { ReactComponent as MarginIcon } from "webiny-app-cms/editor/assets/icons/fullscreen.svg";
-import Settings from "../utils/PMSettings";
-import Action from "./../Action";
+import Settings from "../components/PMSettings";
+import Action from "../components/Action";
 
 export default {
     name: "cms-element-settings-margin",

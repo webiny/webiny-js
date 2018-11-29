@@ -1,4 +1,3 @@
-// @flow
 import _ from "lodash";
 import { getPlugin } from "webiny-app/plugins";
 
@@ -64,6 +63,8 @@ export const getParentElementWithChildren = (state, id) => {
 
     return _.get(content, parentPaths.join(".elements.").slice(2));
 };
+
+export const getActiveElement = state => getElement(state, getActiveElementId(state));
 
 /**
  * Get active element path.

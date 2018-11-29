@@ -152,13 +152,13 @@ class Onboarding extends React.Component<Props, State> {
 }
 
 export default compose(
-    withKeyHandler(),
     connect(
         state => ({
             showOnboarding: isPluginActive("toolbar-onboarding")(state)
         }),
         { deactivatePlugin }
     ),
+    withKeyHandler(),
     withHandlers({
         closeDialog: ({ deactivatePlugin }) => () => {
             deactivatePlugin({ name: "toolbar-onboarding" });
