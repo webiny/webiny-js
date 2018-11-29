@@ -6,15 +6,15 @@ import {
     resolveGet,
     resolveList
 } from "webiny-api/graphql";
-import UserType from "webiny-api/dataSource/typeDefs/User";
+import UserType from "webiny-api/plugins/graphql/User";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
 import listPages from "./pageResolvers/listPages";
 import listPublishedPages from "./pageResolvers/listPublishedPages";
 import oembed from "./pageResolvers/oembed";
 import resolveUser from "./typeResolvers/resolveUser";
 
-const pageFetcher = ctx => ctx.cms.Page;
-const elementFetcher = ctx => ctx.cms.Element;
+const pageFetcher = ctx => ctx.cms.entities.Page;
+const elementFetcher = ctx => ctx.cms.entities.Element;
 
 export default {
     typeDefs: () => [

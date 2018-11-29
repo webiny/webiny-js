@@ -1,3 +1,4 @@
+// @flow
 import { fetchEmbed, findProvider } from "./oembed/index";
 import { ErrorResponse, Response } from "webiny-api/graphql";
 
@@ -13,7 +14,6 @@ export default async (_, args) => {
 
         return new Response(await fetchEmbed(args, provider));
     } catch (e) {
-        console.log(e);
         return new ErrorResponse({
             code: "OEMBED_ERROR",
             message: e.message

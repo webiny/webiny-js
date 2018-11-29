@@ -1,7 +1,7 @@
 // @flow
 import MySQLTable from "./tables/mysqlTable";
 import type { MySQLDriver } from "webiny-sql-table-mysql";
-import { Sync, ConsoleLog } from "webiny-sql-table-sync";
+import { Sync } from "webiny-sql-table-sync";
 import {
     ApiTokenTable,
     GroupTable,
@@ -28,8 +28,7 @@ export default async (config: Object) => {
 
     const sync = new Sync({
         tables,
-        drop: true,
-        logClass: ConsoleLog
+        drop: true
     });
     await sync.execute();
 };

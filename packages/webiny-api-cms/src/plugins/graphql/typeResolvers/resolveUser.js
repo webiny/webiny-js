@@ -1,3 +1,4 @@
+// @flow
 const { print } = require("graphql/language/printer");
 
 const getUserQuery = fields => `

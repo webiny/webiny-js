@@ -5,7 +5,7 @@ const { log } = console;
 
 export default async (context: Object) => {
     const start = +new Date();
-    const plugins = getPlugins("webiny-install");
+    const plugins = getPlugins("install");
 
     log(chalk.cyan("Welcome to Webiny installer!"));
     log(chalk.cyan("The following will be installed:"));

@@ -1,14 +1,17 @@
+// @flow
 import { dummyResolver } from "../graphql";
-import setupEntities from "./../entities/setupEntities";
-import role from "./typeDefs/Role";
-import group from "./typeDefs/Group";
-import user from "./typeDefs/User";
-import apiToken from "./typeDefs/ApiToken";
+import role from "./graphql/Role";
+import group from "./graphql/Group";
+import user from "./graphql/User";
+import apiToken from "./graphql/ApiToken";
+import { type GraphQLSchemaPluginType } from "webiny-api/types";
 
-export default {
-    namespace: "security",
+export default ({
+    type: "graphql",
+    name: "graphql-api",
+    namespace: "api",
     scopes: ["superadmin", "users:read", "users:write"],
-    typeDefs: [
+    typeDefs: () => [
         user.typeDefs,
         user.typeExtensions,
         role.typeDefs,
@@ -34,7 +37,7 @@ export default {
         }
     `
     ],
-    resolvers: [
+    resolvers: () => [
         {
             Query: {
                 security: dummyResolver
@@ -47,8 +50,5 @@ export default {
         group.resolvers,
         role.resolvers,
         user.resolvers
-    ],
-    context: (ctx: Object) => {
-        return setupEntities(ctx);
-    }
-};
+    ]
+}: GraphQLSchemaPluginType);

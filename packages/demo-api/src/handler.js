@@ -1,9 +1,11 @@
 // @flow
-import { createHandler, dataSource as coreApi } from "webiny-api";
+import { addPlugin } from "webiny-plugins";
+import { createHandler } from "webiny-api";
 import config from "./configs";
-import { dataSource as cmsApi } from "webiny-api-cms";
 
-export const api = createHandler({
-    dataSources: [coreApi, cmsApi()],
-    ...config
-});
+// Plugins from different apps / integrations.
+import cmsPlugins from "webiny-api-cms/plugins";
+
+addPlugin(...cmsPlugins);
+
+export const api = createHandler(config);

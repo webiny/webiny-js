@@ -7,7 +7,7 @@ import {
     resolveUpdate
 } from "webiny-api/graphql";
 
-const apiTokenFetcher = ctx => ctx.security.ApiToken;
+const apiTokenFetcher = ctx => ctx.api.entities.ApiToken;
 
 export default {
     typeDefs: () => [

@@ -1,10 +1,7 @@
 // @flow
-const plugins = {};
+import { type PluginType } from "webiny-plugins/types";
 
-export type PluginType = Object & {
-    name: string,
-    type: string
-};
+const plugins = {};
 
 export const addPlugin = (...args: Array<PluginType | Array<PluginType>>): void => {
     args.forEach(plugin => {
