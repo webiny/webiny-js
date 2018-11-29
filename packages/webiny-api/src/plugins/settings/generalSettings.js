@@ -40,6 +40,10 @@ export default ([
                 general(data: GeneralSettingsInput): GeneralSettings
             }
         `,
-        entity: ({ security: { GeneralSettings } }) => GeneralSettings
+        entity: ({
+            api: {
+                entities: { GeneralSettings }
+            }
+        }) => GeneralSettings
     }
 ]: Array<SettingsPluginType>);

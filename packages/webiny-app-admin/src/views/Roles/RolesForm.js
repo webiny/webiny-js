@@ -23,7 +23,6 @@ const RoleForm = ({
     invalidFields,
     scopes
 }: WithCrudFormProps & { scopes: Array<string> }) => {
-    console.log(scopes);
     return (
         <Form invalidFields={invalidFields} data={data} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (
