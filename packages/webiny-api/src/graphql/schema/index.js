@@ -55,7 +55,6 @@ const mapSourcesToExecutableSchemas = (sources: Array<Object>) => {
 };
 
 /**
- * @param  {Array?}    config.dataSources     data sources to combine
  * @return {schema, context}
  */
 export function prepareSchema() {
@@ -80,30 +79,15 @@ export function prepareSchema() {
         }
     });
 
-    const getContext = (globalContext: Object) => {
-        dataSources.forEach((allContext, source) => {
-            if (!source.context) {
-                return true;
-            }
-
-            const sourceContext =
-                typeof source.context === "function"
-                    ? source.context(globalContext)
-                    : source.context;
-
-            Object.assign(globalContext, sourceContext);
-        }, {});
-
-        getPlugins("graphql-context").forEach(plugin => {
-            plugin.apply(globalContext);
-        });
-
-        return globalContext;
-    };
-
     return {
         schema,
-        context: getContext
+        context: (globalContext: Object) => {
+            getPlugins("graphql-context").forEach(plugin => {
+                plugin.apply(globalContext);
+            });
+
+            return globalContext;
+        }
     };
 }
 

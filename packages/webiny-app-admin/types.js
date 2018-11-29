@@ -20,13 +20,14 @@ export type HeaderMiddlePlugin = PluginType & {
 };
 
 export type SettingsPluginType = PluginType & {
-    title: string,
-    description: string,
-    icon: React.Node,
-    component: React.ComponentType<any>,
-    graphql: {
-        query: Object,
-        mutation: Object,
-        variables: Object
+    settings: {
+        type?: "app" | "integration",
+        component: React.ComponentType<any>,
+        route: {
+            name: string,
+            path: string,
+            title: string,
+            group?: Object
+        }
     }
 };

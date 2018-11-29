@@ -1,0 +1,1 @@
+# webiny-cookie-policy

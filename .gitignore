@@ -11,7 +11,6 @@ coverage
 yarn-error.log
 dist/
 build/
-packages/webiny-cookie-policy
 packages/webiny-ui/.cache/
 packages/demo-api/static/
 .changelog
