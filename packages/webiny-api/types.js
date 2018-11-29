@@ -4,8 +4,6 @@ import type { Schema as _Schema } from "webiny-api/graphql/Schema";
 import type { Entity as _Entity, Identity } from "webiny-api/entities";
 import { type PluginType as _PluginType } from "webiny-plugins/types";
 
-export type { SettingsPluginType } from "webiny-api/plugins";
-
 export type Schema = _Schema;
 export type Entity = _Entity;
 export type PluginType = _PluginType;
@@ -85,3 +83,7 @@ export type GraphQLSchemaPluginType = PluginType & {
 export type GraphQLContextPluginType = PluginType & {
     apply: (context: Object) => any
 };
+
+export type SettingsPluginType = PluginType & {
+
+}

@@ -1,7 +1,7 @@
 //@flow
 import React from "react";
 import { compose, withState } from "recompose";
-import { getPlugins } from "webiny-app/plugins";
+import { getPlugins } from "webiny-plugins";
 import { withSnackbar } from "webiny-app-admin/components";
 import AdminLayout from "webiny-app-admin/components/Layouts/AdminLayout";
 import { CompactView, LeftPanel, RightPanel } from "webiny-app-admin/components/Views/CompactView";
