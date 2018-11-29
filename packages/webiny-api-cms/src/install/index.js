@@ -4,8 +4,11 @@ import plugins from "../plugins";
 import createMySQLTables from "./createMySQLTables";
 import importData from "./importData";
 
-export default async (context: Object) => {
-    addPlugin(...plugins);
-    await createMySQLTables();
-    await importData(context);
-};
+addPlugin({
+    type: "webiny-install",
+    name: "webiny-install-api",
+    install: async context => {
+        addPlugin(...plugins);
+        await createMySQLTables();
+        await importData(context);
+});

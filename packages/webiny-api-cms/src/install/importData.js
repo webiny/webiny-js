@@ -1,5 +1,5 @@
 // @flow
-import setupEntities from "../entities/setupEntities";
+import setupEntities from "./setupEntities";
 
 export default async (context: Object) => {
     const { Category, Element, Page, Tag, Menu } = setupEntities(context);

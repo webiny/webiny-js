@@ -2,14 +2,21 @@
 import { Entity } from "webiny-entity";
 import createMySQLTables from "./createMySQLTables";
 import importData from "./importData";
+import { addPlugin } from "webiny-plugins";
 
-export default async (context: Object) => {
-    const { config } = context;
-    // Configure Entity layer
-    if (config.entity) {
-        Entity.driver = config.entity.driver;
-        Entity.crud = config.entity.crud;
+addPlugin({
+    type: "webiny-install",
+    name: "webiny-install-api",
+    install: async context => {
+        const { config } = context;
+        // Configure Entity layer
+
+        if (config.entity) {
+            Entity.driver = config.entity.driver;
+            Entity.crud = config.entity.crud;
+        }
+
+        await createMySQLTables(config);
+        await importData(context);
     }
-    await createMySQLTables(config);
-    await importData(context);
-};
+});
