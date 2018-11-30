@@ -6,12 +6,12 @@ import { TopAppBarSecondary, TopAppBarSection } from "webiny-ui/TopAppBar";
 import { ButtonDefault, ButtonIcon } from "webiny-ui/Button";
 import { deactivateElement } from "webiny-app-cms/editor/actions";
 import { getPlugin } from "webiny-plugins";
-import { getActivePlugin } from "webiny-app-cms/editor/selectors";
-import { withActiveElement, withKeyHandler } from "webiny-app-cms/editor/components";
+import { getActiveElement } from "webiny-app-cms/editor/selectors";
+import { withKeyHandler } from "webiny-app-cms/editor/components";
 import Menu from "./components/Menu";
 import { ReactComponent as NavigateBeforeIcon } from "webiny-app-cms/editor/assets/icons/navigate_before.svg";
 
-const getElementActions = plugin => {
+const getElementActions = (plugin: Object) => {
     if (!plugin.settings) {
         return [];
     }
@@ -25,7 +25,12 @@ const ElementSettingsBar = pure(({ elementType, deactivateElement }) => {
     if (!elementType) {
         return null;
     }
+
     const plugin = getPlugin(elementType);
+    if (!plugin) {
+        return null;
+    }
+
     const actions = getElementActions(plugin);
 
     return (

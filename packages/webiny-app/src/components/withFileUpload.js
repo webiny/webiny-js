@@ -5,7 +5,7 @@ import type { FileBrowserFile } from "webiny-ui/FileBrowser";
 import { withConfig } from "webiny-app/components";
 import { getPlugin } from "webiny-plugins";
 import invariant from "invariant";
-import type { PluginType } from "webiny-app/types";
+import type { PluginType } from "webiny-plugins/types";
 import _ from "lodash";
 
 type WithFileUploadOptions = {

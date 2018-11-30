@@ -1,6 +1,6 @@
 // @flow
 import type { Node, ComponentType } from "react";
-import type { PluginType } from "webiny-app/types";
+import type { PluginType } from "webiny-plugins/types";
 
 export type ContentPluginType = PluginType & {
     render: ({ content: Node }) => {}

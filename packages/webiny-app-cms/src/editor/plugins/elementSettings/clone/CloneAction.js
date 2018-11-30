@@ -2,7 +2,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
 import { compose, withHandlers } from "recompose";
-import { getPlugin } from "webiny-app/plugins";
+import { getPlugin } from "webiny-plugins";
 import { set } from "dot-prop-immutable";
 import { redux } from "webiny-app-cms/editor/redux";
 import { updateElement } from "webiny-app-cms/editor/actions";

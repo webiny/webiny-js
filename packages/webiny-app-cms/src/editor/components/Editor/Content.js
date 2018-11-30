@@ -5,7 +5,6 @@ import { connect } from "react-redux";
 import styled from "react-emotion";
 import { compose, pure } from "recompose";
 import { getPlugins } from "webiny-plugins";
-import { compose } from "recompose";
 import { withTheme } from "webiny-app-cms/theme";
 import { getContent, isPluginActive, getPage } from "webiny-app-cms/editor/selectors";
 import Element from "webiny-app-cms/editor/components/Element";

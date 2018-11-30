@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { compose, withState, withHandlers, lifecycle, shouldUpdate } from "recompose";
 import { graphql } from "react-apollo";
 import { isEqual, cloneDeep } from "lodash";
-import { getPlugin } from "webiny-app/plugins";
+import { getPlugin } from "webiny-plugins";
 import SaveDialog from "./SaveDialog";
 import { withSnackbar } from "webiny-app-admin/components";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
