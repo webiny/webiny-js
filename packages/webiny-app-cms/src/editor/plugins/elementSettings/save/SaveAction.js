@@ -1,8 +1,9 @@
 // @flow
 import * as React from "react";
 import { connect } from "react-redux";
-import { compose, withState, withHandlers, lifecycle } from "recompose";
+import { compose, withState, withHandlers, lifecycle, shouldUpdate } from "recompose";
 import { graphql } from "react-apollo";
+import { isEqual, cloneDeep } from "lodash";
 import { getPlugin } from "webiny-app/plugins";
 import SaveDialog from "./SaveDialog";
 import { withSnackbar } from "webiny-app-admin/components";
@@ -18,8 +19,7 @@ type Props = {
     hideDialog: Function,
     onSubmit: Function,
     children: any,
-    elementId: string,
-    elementType: string
+    element: Object
 };
 
 const SaveAction = ({
@@ -28,10 +28,9 @@ const SaveAction = ({
     isDialogOpened,
     children,
     onSubmit,
-    elementId,
-    elementType
+    element
 }: Props) => {
-    const plugin = getPlugin(elementType);
+    const plugin = getPlugin(element.type);
     if (!plugin) {
         return null;
     }
@@ -39,12 +38,12 @@ const SaveAction = ({
     return (
         <React.Fragment>
             <SaveDialog
-                key={elementId}
+                key={element.id}
+                element={element}
                 open={isDialogOpened}
                 onClose={hideDialog}
                 onSubmit={onSubmit}
-                elementId={elementId}
-                type={elementType === "cms-element-block" ? "block" : "element"}
+                type={element.type === "cms-element-block" ? "block" : "element"}
             />
             {React.cloneElement(children, { onClick: showDialog })}
         </React.Fragment>
@@ -69,16 +68,16 @@ const removeIdsAndPaths = el => {
 };
 
 export default compose(
-    connect(state => {
-        const element = getActiveElement(state);
-        return {
-            elementId: element.id,
-            elementType: element.type
-        };
+    connect(state => ({ element: getActiveElement(state) })),
+    withState("isDialogOpened", "setOpenDialog", false),
+    shouldUpdate((props, nextProps) => {
+        return (
+            props.isDialogOpened !== nextProps.isDialogOpened ||
+            !isEqual(props.element, nextProps.element)
+        );
     }),
     withFileUpload(),
     withKeyHandler(),
-    withState("isDialogOpened", "setOpenDialog", false),
     withHandlers({
         showDialog: ({ setOpenDialog }) => () => setOpenDialog(true),
         hideDialog: ({ setOpenDialog }) => () => setOpenDialog(false)
@@ -90,9 +89,9 @@ export default compose(
             formData: Object
         ) => {
             formData.preview = await uploadFile(formData.preview);
-            hideDialog();
-            formData.content = removeIdsAndPaths(element);
+            formData.content = removeIdsAndPaths(cloneDeep(element));
             const { data: res } = await createElement({ variables: { data: formData } });
+            hideDialog();
             const { data } = res.cms.element;
             if (data.type === "block") {
                 createBlockPlugin(data);
