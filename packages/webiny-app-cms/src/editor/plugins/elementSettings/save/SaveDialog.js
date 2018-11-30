@@ -3,7 +3,7 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { compose, withState, shouldUpdate } from "recompose";
 import { css } from "emotion";
-import { getPlugin } from "webiny-app/plugins";
+import { getPlugin } from "webiny-plugins";
 import domToImage from "./domToImage";
 import {
     Dialog,

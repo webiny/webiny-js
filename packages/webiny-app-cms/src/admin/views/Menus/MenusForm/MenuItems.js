@@ -2,7 +2,7 @@
 import React from "react";
 import { css } from "emotion";
 import uniqid from "uniqid";
-import { getPlugins } from "webiny-app/plugins";
+import { getPlugins } from "webiny-plugins";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Icon } from "webiny-ui/Icon";
 import { Menu, MenuItem } from "webiny-ui/Menu";
@@ -78,7 +78,7 @@ class MenuItems extends React.Component<Props, State> {
                                     <p>
                                         To build your menu you need to create menu items!
                                         <br />
-                                        Begin by clicking the "Add menu item" button
+                                        Begin by clicking the &quot;Add menu item&quot; button
                                     </p>
                                     <br />
                                     <div style={{ width: 156, margin: "0 auto" }}>

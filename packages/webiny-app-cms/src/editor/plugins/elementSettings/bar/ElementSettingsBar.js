@@ -1,12 +1,13 @@
+// @flow
 import React from "react";
 import { connect } from "react-redux";
 import { compose, lifecycle, pure } from "recompose";
 import { TopAppBarSecondary, TopAppBarSection } from "webiny-ui/TopAppBar";
 import { ButtonDefault, ButtonIcon } from "webiny-ui/Button";
 import { deactivateElement } from "webiny-app-cms/editor/actions";
-import { getPlugin } from "webiny-app/plugins";
-import { getActiveElement } from "webiny-app-cms/editor/selectors";
-import { withKeyHandler } from "webiny-app-cms/editor/components";
+import { getPlugin } from "webiny-plugins";
+import { getActivePlugin } from "webiny-app-cms/editor/selectors";
+import { withActiveElement, withKeyHandler } from "webiny-app-cms/editor/components";
 import Menu from "./components/Menu";
 import { ReactComponent as NavigateBeforeIcon } from "webiny-app-cms/editor/assets/icons/navigate_before.svg";
 
@@ -60,7 +61,7 @@ const ElementSettingsBar = pure(({ elementType, deactivateElement }) => {
 export default compose(
     connect(
         state => ({
-            elementType: getActiveElement(state).type,
+            elementType: getActiveElement(state).type
         }),
         { deactivateElement }
     ),

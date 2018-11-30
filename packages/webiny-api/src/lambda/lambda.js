@@ -7,7 +7,7 @@ import authenticate from "./authenticate";
 
 const setupHandler = async (config: Object) => {
     await setup(config);
-    let { schema, context } = prepareSchema({ ...config });
+    let { schema, context } = prepareSchema();
 
     schema = config.middleware ? applyMiddleware(schema, ...config.middleware) : schema;
 

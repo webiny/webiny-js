@@ -5,7 +5,7 @@ export interface ITag extends Entity {
     name: string;
 }
 
-export function tagFactory({ entities }: Object): Class<ITag> {
+export function tagFactory({ api: { entities } }: Object): Class<ITag> {
     return class Tag extends Entity {
         static classId = "CmsTag";
         static storageClassId = "Cms_Tags";

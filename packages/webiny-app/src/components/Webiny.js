@@ -3,7 +3,7 @@ import React from "react";
 import { ApolloProvider } from "react-apollo";
 import { router } from "../router";
 import { UiProvider } from "./Ui";
-import { getPlugins } from "../plugins";
+import { getPlugins } from "webiny-plugins";
 
 type WebinyProps = { config: Object, children: Function };
 

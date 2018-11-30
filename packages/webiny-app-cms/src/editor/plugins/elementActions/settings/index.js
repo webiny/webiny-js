@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import { getPlugin } from "webiny-app/plugins";
+import { getPlugin } from "webiny-plugins";
 import { redux, addMiddleware } from "webiny-app-cms/editor/redux";
 import { ELEMENT_CREATED, activateElement, togglePlugin } from "webiny-app-cms/editor/actions";
 import { ReactComponent as SettingsIcon } from "webiny-app-cms/editor/assets/icons/settings.svg";

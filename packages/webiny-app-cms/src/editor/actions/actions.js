@@ -9,7 +9,7 @@ import {
     addReducer,
     addHigherOrderReducer
 } from "webiny-app-cms/editor/redux";
-import { getPlugin } from "webiny-app/plugins";
+import { getPlugin } from "webiny-plugins";
 import {
     getPage,
     getElementWithChildren,
@@ -404,6 +404,6 @@ addMiddleware([SAVING_REVISION], ({ store, next, action }) => {
         })
         .catch(err => {
             store.dispatch(finishSaving);
-            console.log(err);
+            console.log(err); // eslint-disable-line
         });
 });

@@ -2,8 +2,8 @@
 import React from "react";
 import Image from "./Image";
 import styled from "react-emotion";
-import { getPlugin } from "webiny-app/plugins";
-import { addMiddleware } from "webiny-app-cms/editor/redux";
+import { getPlugin } from "webiny-plugins";
+import { redux, addMiddleware } from "webiny-app-cms/editor/redux";
 import { ELEMENT_CREATED } from "webiny-app-cms/editor/actions";
 import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
 import { ReactComponent as ImageIcon } from "./round-image-24px.svg";

@@ -4,7 +4,8 @@ import { connect } from "react-redux";
 import { compose, withHandlers } from "recompose";
 import { cloneDeep } from "lodash";
 import { merge } from "dot-prop-immutable";
-import { getPlugins, renderPlugins } from "webiny-app/plugins";
+import { getPlugins } from "webiny-plugins";
+import { renderPlugins } from "webiny-app/plugins";
 import { isPluginActive } from "webiny-app-cms/editor/selectors";
 import { withActiveElement, withKeyHandler } from "webiny-app-cms/editor/components";
 import {

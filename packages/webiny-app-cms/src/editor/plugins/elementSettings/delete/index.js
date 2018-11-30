@@ -1,5 +1,6 @@
 //@flow
 import React from "react";
+import { getPlugin } from "webiny-plugins";
 import { ReactComponent as DeleteIcon } from "webiny-app-cms/editor/assets/icons/delete.svg";
 import DeleteAction from "./DeleteAction";
 import Action from "../components/Action";
@@ -10,11 +11,7 @@ export default {
     renderAction() {
         return (
             <DeleteAction>
-                <Action
-                    tooltip={"Delete element"}
-                    shortcut="Backspace"
-                    icon={<DeleteIcon />}
-                />
+                <Action tooltip={"Delete element"} shortcut="Backspace" icon={<DeleteIcon />} />
             </DeleteAction>
         );
     }

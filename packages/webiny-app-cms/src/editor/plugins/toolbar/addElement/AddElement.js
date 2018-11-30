@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { compose } from "recompose";
 import Draggable from "webiny-app-cms/editor/components/Draggable";
 import { dragStart, dragEnd, deactivatePlugin, dropElement } from "webiny-app-cms/editor/actions";
-import { getPlugins } from "webiny-app/plugins";
+import { getPlugins } from "webiny-plugins";
 import { getActivePluginParams } from "webiny-app-cms/editor/selectors";
 import { withTheme } from "webiny-app-cms/theme";
 import * as Styled from "./StyledComponents";

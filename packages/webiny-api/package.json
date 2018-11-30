@@ -31,6 +31,7 @@
     "webiny-compose": "0.0.0-semantically-released",
     "webiny-entity": "0.0.0-semantically-released",
     "webiny-service-manager": "0.0.0-semantically-released",
+    "webiny-plugins": "0.0.0-semantically-released",
     "webiny-sql-table-mysql": "0.0.0-semantically-released",
     "webiny-sql-table-sync": "0.0.0-semantically-released"
   },

@@ -1,7 +1,7 @@
 // @flow
 import { Entity } from "webiny-entity";
 
-export default ({ user = {} }: Object) => {
+export const settingsFactory = ({ user = {} }: Object) => {
     class Settings extends Entity {
         static key: string;
         key: string;

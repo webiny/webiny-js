@@ -2,7 +2,7 @@
 import React from "react";
 import { pure } from "recompose";
 import styled from "react-emotion";
-import { getPlugins } from "webiny-app/plugins";
+import { getPlugins } from "webiny-plugins";
 
 const DialogsContainer = styled("div")({
     position: "fixed",
@@ -11,14 +11,13 @@ const DialogsContainer = styled("div")({
 
 const Dialogs = pure(() => {
     const actions = [...getPlugins("cms-toolbar-top"), ...getPlugins("cms-toolbar-bottom")];
-    
+
     return (
         <DialogsContainer data-type={"dialogs"}>
-            {actions.map(
-                plugin =>
-                    typeof plugin.renderDialog === "function"
-                        ? React.cloneElement(plugin.renderDialog(), { key: plugin.name })
-                        : null
+            {actions.map(plugin =>
+                typeof plugin.renderDialog === "function"
+                    ? React.cloneElement(plugin.renderDialog(), { key: plugin.name })
+                    : null
             )}
         </DialogsContainer>
     );

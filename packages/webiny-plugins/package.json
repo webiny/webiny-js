@@ -1,0 +1,27 @@
+{
+  "name": "webiny-plugins",
+  "version": "0.0.0-semantically-released",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@babel/runtime": "^7.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0"
+  },
+  "scripts": {
+    "build": "babel src types.js -d ${DEST:-build} --source-maps --copy-files --ignore types.js",
+    "flow-copy-source": "flow-copy-source src ${DEST:-build}",
+    "postbuild": "yarn flow-copy-source",
+    "documentation": "documentation readme --section=Documentation --config documentation.yml types.js src/** --github"
+  }
+}

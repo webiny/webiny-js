@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import invariant from "invariant";
-import { getPlugin } from "webiny-app/plugins";
+import { getPlugin } from "webiny-plugins";
 import type { PluginType } from "webiny-app/types";
 import _ from "lodash";
 import { withAppConfig } from "webiny-app/components/withAppConfig";

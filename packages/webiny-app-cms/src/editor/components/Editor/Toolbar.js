@@ -6,7 +6,7 @@ import { css } from "emotion";
 import { isEqual } from "lodash";
 import { compose, lifecycle } from "recompose";
 import { Drawer, DrawerContent } from "webiny-ui/Drawer";
-import { getPlugins } from "webiny-app/plugins";
+import { getPlugins } from "webiny-plugins";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
 import { deactivatePlugin } from "webiny-app-cms/editor/actions";
 import { getActivePlugins } from "webiny-app-cms/editor/selectors";

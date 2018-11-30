@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { connect } from "react-redux";
 import { compose, withHandlers } from "recompose";
 import { isEqual } from "lodash";
-import { getPlugins } from "webiny-app/plugins";
+import { getPlugins } from "webiny-plugins";
 import { Tabs, Tab } from "webiny-ui/Tabs";
 import { Grid } from "webiny-ui/Grid";
 import { get, set } from "dot-prop-immutable";
