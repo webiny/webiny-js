@@ -3,7 +3,7 @@ import React from "react";
 import { ReactComponent as IconSvg } from "./round-flag-24px.svg";
 import IconSettings from "./IconSettings";
 import Icon from "./Icon";
-import Action from "./../../elementSettings/Action";
+import Action from "./../../elementSettings/components/Action";
 
 export default () => {
     return [

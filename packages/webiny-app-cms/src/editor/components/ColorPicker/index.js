@@ -3,6 +3,7 @@ import React from "react";
 import classnames from "classnames";
 import styled from "react-emotion";
 import { css } from "emotion";
+import { isEqual } from "lodash";
 import { ChromePicker } from "react-color";
 import { Menu } from "webiny-ui/Menu";
 import { withTheme } from "webiny-app-cms/theme";
@@ -118,6 +119,10 @@ class ColorPicker extends React.Component<Props, State> {
         e.stopPropagation();
         this.setState(state => ({ showPicker: !state.showPicker }));
     };
+
+    shouldComponentUpdate(props, state) {
+        return !isEqual(props, this.props) || !isEqual(state, this.state);
+    }
 
     render() {
         const { theme, value, compact = false } = this.props;

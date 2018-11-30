@@ -6,7 +6,7 @@ import styled from "react-emotion";
 import { compose, pure } from "recompose";
 import { getPlugins } from "webiny-plugins";
 import { withTheme } from "webiny-app-cms/theme";
-import { getContent, getActivePlugin, getPage } from "webiny-app-cms/editor/selectors";
+import { getContent, isPluginActive, getPage } from "webiny-app-cms/editor/selectors";
 import Element from "webiny-app-cms/editor/components/Element";
 
 const ContentContainer = styled("div")(({ theme }) => ({
@@ -29,7 +29,7 @@ const BaseContainer = styled("div")({
     margin: "0 auto"
 });
 
-const Content = pure(({ rootElement, theme, renderLayout, layout }) => {
+const Content = ({ rootElement, theme, renderLayout, layout }) => {
     const plugins = getPlugins("cms-editor-content");
     const themeLayout = theme.layouts.find(l => l.name === layout);
 
@@ -47,12 +47,12 @@ const Content = pure(({ rootElement, theme, renderLayout, layout }) => {
             <BaseContainer>{content}</BaseContainer>
         </ContentContainer>
     );
-});
+};
 
 const stateToProps = state => ({
     rootElement: state.elements[getContent(state).id],
     layout: get(getPage(state), "settings.general.layout"),
-    renderLayout: getActivePlugin("cms-toolbar-top")(state) === "cms-toolbar-preview"
+    renderLayout: isPluginActive("cms-toolbar-preview")(state)
 });
 
 export default compose(

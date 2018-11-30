@@ -1,9 +1,9 @@
 // @flow
-import * as React from "react";
-import type { PluginType } from "webiny-app/types";
+import type { Node, ComponentType } from "react";
+import type { PluginType } from "webiny-plugins/types";
 
 export type ContentPluginType = PluginType & {
-    render: ({ content: React.Node }) => {}
+    render: ({ content: Node }) => {}
 };
 
 export type GlobalSearch = PluginType & {
@@ -16,13 +16,13 @@ export type GlobalSearch = PluginType & {
 };
 
 export type HeaderMiddlePlugin = PluginType & {
-    render: ({ content: React.Node }) => {}
+    render: ({ content: Node }) => {}
 };
 
 export type SettingsPluginType = PluginType & {
     settings: {
         type?: "app" | "integration",
-        component: React.ComponentType<any>,
+        component: ComponentType<any>,
         route: {
             name: string,
             path: string,

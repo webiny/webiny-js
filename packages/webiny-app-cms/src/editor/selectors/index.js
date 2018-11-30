@@ -2,6 +2,11 @@
 import _ from "lodash";
 import { getPlugin } from "webiny-plugins";
 
+const getPluginType = (name: string) => {
+    const plugin = getPlugin(name);
+    return plugin ? plugin.type : null;
+};
+
 /**
  * Get editor `ui` state
  */
@@ -60,6 +65,8 @@ export const getParentElementWithChildren = (state, id) => {
     return _.get(content, parentPaths.join(".elements.").slice(2));
 };
 
+export const getActiveElement = state => getElement(state, getActiveElementId(state));
+
 /**
  * Get active element path.
  */
@@ -74,28 +81,41 @@ export const getPlugins = state => getUi(state).plugins || {};
  * Get editor plugins of certain type (this mostly contains UI state).
  */
 export const getPluginsByType = type => {
-    return state => getPlugins(state)[type];
+    return state => getPlugins(state)[type] || [];
 };
 
 /**
  * Get an active plugin of the given type.
  */
-export const getActivePlugin = type => {
+export const getActivePlugins = type => {
     const pluginsByType = getPluginsByType(type);
     return state => {
-        const plugins = pluginsByType(state);
-        return (plugins && plugins.active) || null;
+        return pluginsByType(state) || [];
     };
 };
 
 /**
  * Get active plugin params
  */
-export const getActivePluginParams = type => {
+export const getActivePluginParams = name => {
+    const type = getPluginType(name);
     const pluginsByType = getPluginsByType(type);
     return state => {
         const plugins = pluginsByType(state);
-        return (plugins && plugins.params) || null;
+        if (plugins) {
+            const plugin = plugins.find(pl => pl.name === name);
+            return plugin ? plugin.params : null;
+        }
+        return null;
+    };
+};
+
+export const isPluginActive = name => {
+    const type = getPluginType(name);
+    const pluginsByType = getPluginsByType(type);
+
+    return state => {
+        return Boolean(pluginsByType(state).find(pl => pl.name === name));
     };
 };
 

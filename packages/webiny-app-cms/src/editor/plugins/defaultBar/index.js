@@ -15,7 +15,8 @@ export default [
         name: "cms-page-settings-bar",
         type: "cms-editor-bar",
         shouldRender({ plugins }: Object) {
-            return get(plugins, "cms-editor-bar.active") === "cms-page-settings-bar";
+            const active = get(plugins, "cms-editor-bar");
+            return active ? active.find(pl => pl.name === "cms-page-settings-bar") : false;
         },
         render() {
             return <PageSettings />;

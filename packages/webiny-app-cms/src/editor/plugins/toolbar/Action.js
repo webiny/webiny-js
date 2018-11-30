@@ -3,7 +3,8 @@ import * as React from "react";
 import { css } from "emotion";
 import { connect } from "react-redux";
 import { togglePlugin } from "webiny-app-cms/editor/actions";
-import { compose, withHandlers } from "recompose";
+import { isPluginActive } from "webiny-app-cms/editor/selectors";
+import { compose, withHandlers, pure } from "recompose";
 import { IconButton } from "webiny-ui/Button";
 import { Tooltip } from "webiny-ui/Tooltip";
 
@@ -13,39 +14,48 @@ const activeStyle = css({
     }
 });
 
-const Action = ({
-    icon,
-    onClick,
-    active,
-    tooltip
-}: {
-    icon: React.Element<any>,
-    onClick: Function,
-    active?: Boolean,
-    tooltip?: string
-}) => {
-    const iconButton = (
-        <IconButton icon={icon} onClick={onClick} className={active && activeStyle} />
-    );
+const Action = pure(
+    ({
+        icon,
+        onClick,
+        active,
+        tooltip
+    }: {
+        icon: React.Element<any>,
+        onClick: Function,
+        active?: Boolean,
+        tooltip?: string
+    }) => {
+        let btnIcon = icon;
+        if (Array.isArray(icon)) {
+            btnIcon = active ? icon[0] : icon[1];
+        }
 
-    if (tooltip) {
-        return (
-            <Tooltip
-                placement={"right"}
-                content={<span>{tooltip}</span>}
-                {...(active ? { visible: false } : {})}
-            >
-                {iconButton}
-            </Tooltip>
+        const iconButton = (
+            <IconButton icon={btnIcon} onClick={onClick} className={active && activeStyle} />
         );
-    }
 
-    return iconButton;
-};
+        if (tooltip) {
+            return (
+                <Tooltip
+                    placement={"right"}
+                    content={<span>{tooltip}</span>}
+                    {...(active ? { visible: false } : {})}
+                >
+                    {iconButton}
+                </Tooltip>
+            );
+        }
+
+        return iconButton;
+    }
+);
 
 export default compose(
     connect(
-        null,
+        (state, props) => ({
+            active: isPluginActive(props.plugin)(state)
+        }),
         { togglePlugin }
     ),
     withHandlers({
