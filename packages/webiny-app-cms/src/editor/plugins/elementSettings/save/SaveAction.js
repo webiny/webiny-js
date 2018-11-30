@@ -57,7 +57,7 @@ const removeIdsAndPaths = el => {
     el.elements = el.elements.map(el => {
         delete el.id;
         delete el.path;
-        if (el.elements.length) {
+        if (el.elements && el.elements.length) {
             el = removeIdsAndPaths(el);
         }
 
@@ -88,7 +88,7 @@ export default compose(
         onSubmit: ({ element, hideDialog, createElement, showSnackbar, uploadFile }) => async (
             formData: Object
         ) => {
-            formData.preview = await uploadFile(formData.preview);
+            formData.preview = await uploadFile({ src: formData.preview });
             formData.content = removeIdsAndPaths(cloneDeep(element));
             const { data: res } = await createElement({ variables: { data: formData } });
             hideDialog();
