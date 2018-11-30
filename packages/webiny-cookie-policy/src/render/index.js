@@ -4,7 +4,7 @@ import { Query } from "react-apollo";
 import query from "./graphql";
 import load from "webiny-load-assets";
 
-class CookiePolicy extends React.Component {
+class CookiePolicy extends React.Component<*> {
     componentDidMount() {
         load(
             "//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.css",
