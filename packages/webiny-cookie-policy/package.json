@@ -10,10 +10,16 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.0.0",
+    "load-script": "^1.0.0",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
-    "webiny-ui": "0.0.0-semantically-released",
-    "helmet": "^3.15.0"
+    "webiny-api": "0.0.0-semantically-released",
+    "webiny-app": "0.0.0-semantically-released",
+    "webiny-app-admin": "0.0.0-semantically-released",
+    "webiny-form": "0.0.0-semantically-released",
+    "webiny-model": "0.0.0-semantically-released",
+    "webiny-load-assets": "0.0.0-semantically-released",
+    "webiny-ui": "0.0.0-semantically-released"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

@@ -1,9 +1,9 @@
 // @flow
 import * as React from "react";
-import { i18n } from "webiny-app/i18n";
 import { Form } from "webiny-form";
 import { Grid, Cell } from "webiny-ui/Grid";
-import { Input } from "webiny-ui/Input";
+import { Switch } from "webiny-ui/Switch";
+import { ColorPicker } from "webiny-ui/ColorPicker";
 import { ButtonPrimary } from "webiny-ui/Button";
 import { Query, Mutation } from "react-apollo";
 import { withSnackbar } from "webiny-app-admin/components";
@@ -15,8 +15,6 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "webiny-app-admin/components/Views/SimpleForm";
-
-const t = i18n.namespace("Settings.GeneralSettings");
 
 const CookiePolicySettings = ({ showSnackbar }) => {
     return (
@@ -37,19 +35,24 @@ const CookiePolicySettings = ({ showSnackbar }) => {
                         >
                             {({ Bind, form }) => (
                                 <SimpleForm>
-                                    <SimpleFormHeader title={t`Cookie Policy Settings`} />
+                                    <SimpleFormHeader title="Cookie Policy Settings" />
                                     <SimpleFormContent>
                                         <Grid>
-                                            <Cell span={6}>
+                                            <Bind name={"cookiePolicy.enabled"}>
+                                                <Switch label="Enabled" />
+                                            </Bind>
+                                        </Grid>
+                                        <Grid>
+                                            <Cell span={12}>
                                                 <Grid>
-                                                    <Cell span={12}>
+                                                    <Cell span={6}>
                                                         <Bind name={"cookiePolicy.palette.popup"}>
-                                                            <Input label="Color - popup" />
+                                                            <ColorPicker label="Color - popup" />
                                                         </Bind>
                                                     </Cell>
-                                                    <Cell span={12}>
+                                                    <Cell span={6}>
                                                         <Bind name={"cookiePolicy.palette.button"}>
-                                                            <Input label="Color - button" />
+                                                            <ColorPicker label="Color - button" />
                                                         </Bind>
                                                     </Cell>
                                                 </Grid>
@@ -62,7 +65,7 @@ const CookiePolicySettings = ({ showSnackbar }) => {
                                             onClick={form.submit}
                                             align="right"
                                         >
-                                            {t`Save role`}
+                                            Save role
                                         </ButtonPrimary>
                                     </SimpleFormFooter>
                                 </SimpleForm>

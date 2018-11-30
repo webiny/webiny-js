@@ -6,13 +6,14 @@ class PaletteModel extends Model {
     constructor() {
         super();
         this.attr("popup").char();
-        this.attr("body").char();
+        this.attr("button").char();
     }
 }
 
 class CookiePolicySettingsModel extends Model {
     constructor() {
         super();
+        this.attr("enabled").boolean();
         this.attr("palette").model(PaletteModel);
     }
 }
@@ -22,29 +23,31 @@ export default [
         name: "schema-settings-cookie-policy",
         type: "schema-settings",
         namespace: "cookiePolicy",
-        typeDefs: `
+        typeDefs: /* GraphQL */ `
             type CookiePolicySettings {
+                enabled: Boolean
                 palette: CookiePolicySettingsPalette
             }
-            
+
             type CookiePolicySettingsPalette {
-                popup: String,
+                popup: String
                 button: String
             }
-            
+
             input CookiePolicySettingsInput {
+                enabled: Boolean
                 palette: CookiePolicySettingsPaletteInput
             }
-            
+
             input CookiePolicySettingsPaletteInput {
-                popup: String,
+                popup: String
                 button: String
-            } 
-            
+            }
+
             extend type SettingsQuery {
                 cookiePolicy: CookiePolicySettings
-            }  
-            
+            }
+
             extend type SettingsMutation {
                 cookiePolicy(data: CookiePolicySettingsInput): CookiePolicySettings
             }

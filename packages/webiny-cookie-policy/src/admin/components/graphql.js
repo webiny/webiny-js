@@ -3,6 +3,7 @@ import gql from "graphql-tag";
 
 const fields = /* GraphQL */ `
     {
+        enabled
         palette {
             popup
             button
