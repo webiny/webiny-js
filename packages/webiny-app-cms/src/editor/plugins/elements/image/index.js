@@ -5,16 +5,13 @@ import styled from "react-emotion";
 import { getPlugin } from "webiny-plugins";
 import { redux, addMiddleware } from "webiny-app-cms/editor/redux";
 import { ELEMENT_CREATED } from "webiny-app-cms/editor/actions";
-import ElementStyle from "webiny-app-cms/render/components/ElementStyle";
+import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
 import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
 import type { ElementPluginType } from "webiny-app-cms/types";
-import { updateElement } from "webiny-app-cms/editor/actions";
-import { get, set } from "dot-prop-immutable";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
-import isNumeric from "isnumeric";
 
 export default (): ElementPluginType => {
     const PreviewBox = styled("div")({
@@ -61,7 +58,7 @@ export default (): ElementPluginType => {
 
                     next(action);
 
-                    if (!element.type === "cms-element-image") {
+                    if (element.type !== "cms-element-image") {
                         return;
                     }
 
@@ -75,7 +72,7 @@ export default (): ElementPluginType => {
                     if (!onCreate || onCreate !== "skip") {
                         // If source element does not define a specific `onCreate` behavior - continue with the actual element plugin
                         const image = document.querySelector(
-                            `#cms-element-image-${element.id} [data-role="select-image"]`
+                            `#${element.id} [data-role="select-image"]`
                         );
 
                         if (image) {
@@ -88,28 +85,9 @@ export default (): ElementPluginType => {
                 return { type: "cms-element-image", elements: [], ...options };
             },
             render({ element }) {
-                const { width, height } = get(element, "settings.advanced.img", {});
-                const imgStyle = {};
-                if (width) {
-                    imgStyle.width = isNumeric(width) ? parseInt(width) : width;
-                }
-                if (height) {
-                    imgStyle.height = isNumeric(height) ? parseInt(height) : height;
-                }
-
                 return (
-                    <ElementStyle element={element}>
-                        <Image
-                            element={element}
-                            img={{ style: imgStyle }}
-                            showRemoveImageButton={false}
-                            value={element.data}
-                            onChange={data => {
-                                redux.store.dispatch(
-                                    updateElement({ element: set(element, "data", data) })
-                                );
-                            }}
-                        />
+                    <ElementStyle {...getElementStyleProps(element)}>
+                        <Image elementId={element.id} />
                     </ElementStyle>
                 );
             }
@@ -123,14 +101,14 @@ export default (): ElementPluginType => {
                     <Tab icon={<ImageIcon />} label="Image">
                         <Grid>
                             <Cell span={12}>
-                                <Bind name={"img.title"} defaultValue={""}>
+                                <Bind name={"settings.advanced.img.title"} defaultValue={""}>
                                     <Input label="Image title" />
                                 </Bind>
                             </Cell>
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name={"img.alt"} defaultValue={""}>
+                                <Bind name={"settings.advanced.img.alt"} defaultValue={""}>
                                     <Input
                                         label="Alternate text (alt)"
                                         description={
@@ -142,7 +120,7 @@ export default (): ElementPluginType => {
                         </Grid>
                         <Grid>
                             <Cell span={6}>
-                                <Bind name={"img.width"} defaultValue={""}>
+                                <Bind name={"settings.advanced.img.width"} defaultValue={""}>
                                     <Input
                                         label="Width"
                                         placeholder="auto"
@@ -151,7 +129,7 @@ export default (): ElementPluginType => {
                                 </Bind>
                             </Cell>
                             <Cell span={6}>
-                                <Bind name={"img.height"} defaultValue={""}>
+                                <Bind name={"settings.advanced.img.height"} defaultValue={""}>
                                     <Input
                                         label="Height"
                                         placeholder="auto"
@@ -162,7 +140,7 @@ export default (): ElementPluginType => {
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name={"img.align"} defaultValue={"center"}>
+                                <Bind name={"settings.advanced.img.align"} defaultValue={"center"}>
                                     <Select label="Align">
                                         <option value="left">Left</option>
                                         <option value="center">Center</option>

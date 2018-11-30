@@ -3,8 +3,12 @@ import * as React from "react";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
+import { withTheme } from "webiny-app-cms/theme";
 import PagesList from "./PagesList";
-import { SimpleTagsMultiAutoComplete, CategoriesAutoComplete } from "webiny-app-cms/admin/components";
+import {
+    SimpleTagsMultiAutoComplete,
+    CategoriesAutoComplete
+} from "webiny-app-cms/admin/components";
 
 const PagesListSettings = ({ theme, Bind }: Object) => {
     return (
@@ -88,4 +92,4 @@ const PagesListSettings = ({ theme, Bind }: Object) => {
     );
 };
 
-export default PagesListSettings;
+export default withTheme()(PagesListSettings);

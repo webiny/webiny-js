@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import { compose, withHandlers, pure } from "recompose";
+import { compose, withHandlers, pure, setDisplayName } from "recompose";
 import { connect } from "react-redux";
 import { css } from "emotion";
 import styled from "react-emotion";
@@ -8,7 +8,7 @@ import DropZone from "webiny-app-cms/editor/components/DropZone";
 import Resizer from "webiny-app-cms/editor/components/Resizer";
 import Element from "webiny-app-cms/editor/components/Element";
 import { dropElement } from "webiny-app-cms/editor/actions";
-import { getIsDragging } from "webiny-app-cms/editor/selectors";
+import { getIsDragging, getElement } from "webiny-app-cms/editor/selectors";
 import ResizeHandle from "./ResizeHandle";
 
 const ColumnContainer = styled("div")({
@@ -80,8 +80,11 @@ const RowChild = pure(
 );
 
 export default compose(
+    setDisplayName("RowChild"),
     connect(
-        state => ({ isDragging: getIsDragging(state) }),
+        (state) => ({
+            isDragging: getIsDragging(state)
+        }),
         { dropElement }
     ),
     withHandlers({
@@ -93,7 +96,7 @@ export default compose(
         dropElementLeft: ({ dropElement, target, index }) => (source: Object) => {
             dropElement({ source, target: { ...target, position: index } });
         },
-        dropElementRight: ({ dropElement, target, index, count }) => (source: Object) => {
+        dropElementRight: ({ dropElement, target, count }) => (source: Object) => {
             dropElement({ source, target: { ...target, position: count } });
         }
     })

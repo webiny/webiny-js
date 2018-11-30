@@ -5,7 +5,7 @@ import { Carousel } from "webiny-ui/Carousel";
 import { connect } from "react-redux";
 import { compose, lifecycle, withHandlers } from "recompose";
 import { deactivatePlugin } from "webiny-app-cms/editor/actions";
-import { getActivePlugin } from "webiny-app-cms/editor/selectors";
+import { isPluginActive } from "webiny-app-cms/editor/selectors";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
 
 import { ReactComponent as NextSlideIcon } from "./assets/next-slide.svg";
@@ -152,13 +152,13 @@ class Onboarding extends React.Component<Props, State> {
 }
 
 export default compose(
-    withKeyHandler(),
     connect(
         state => ({
-            showOnboarding: getActivePlugin("cms-toolbar-bottom")(state) === "toolbar-onboarding"
+            showOnboarding: isPluginActive("toolbar-onboarding")(state)
         }),
         { deactivatePlugin }
     ),
+    withKeyHandler(),
     withHandlers({
         closeDialog: ({ deactivatePlugin }) => () => {
             deactivatePlugin({ name: "toolbar-onboarding" });

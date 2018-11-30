@@ -1,150 +1,126 @@
 //@flow
 import React from "react";
 import { connect } from "react-redux";
-import { compose } from "recompose";
+import { compose, withHandlers, withProps } from "recompose";
 import { Tabs, Tab } from "webiny-ui/Tabs";
-import { Input } from "webiny-ui/Input";
 import { get, set } from "dot-prop-immutable";
-import { withActiveElement } from "webiny-app-cms/editor/components";
 import { updateElement } from "webiny-app-cms/editor/actions";
-import ColorPicker from "webiny-app-cms/editor/components/ColorPicker";
-import { InputContainer } from "../utils/StyledComponents";
-import { Cell, Grid } from "webiny-ui/Grid";
-import { Typography } from "webiny-ui/Typography";
+import { getActiveElement } from "webiny-app-cms/editor/selectors";
+import { Grid } from "webiny-ui/Grid";
+import ColorPicker from "webiny-app-cms/editor/plugins/elementSettings/components/ColorPicker";
+import Input from "webiny-app-cms/editor/plugins/elementSettings/components/Input";
 
-const attrKey = `settings.style.boxShadow`;
+const Settings = ({
+    color,
+    horizontal,
+    vertical,
+    spread,
+    blur,
+    updateColor,
+    updateColorPreview,
+    updateHorizontalOffset,
+    updateVerticalOffset,
+    updateBlur,
+    updateSpread
+}: Object) => {
+    return (
+        <React.Fragment>
+            <Tabs>
+                <Tab label={"Shadow"}>
+                    <Grid>
+                        <ColorPicker
+                            label={"Color"}
+                            value={color}
+                            updateValue={updateColor}
+                            updatePreview={updateColorPreview}
+                        />
 
-class Settings extends React.Component<*> {
-    historyUpdated = null;
+                        <Input
+                            label={"Horizontal offset"}
+                            value={horizontal}
+                            updateValue={updateHorizontalOffset}
+                        />
 
-    updateSettings = (name, value, history = true) => {
-        const { element, updateElement } = this.props;
-        const shadow = this.getShadowObject();
-        shadow[name] = value === "" ? 0 : value;
-        const shadowValue = this.getShadowCss(shadow);
+                        <Input
+                            label={"Vertical offset"}
+                            value={vertical}
+                            updateValue={updateVerticalOffset}
+                        />
 
-        const newElement = set(element, attrKey, shadowValue);
+                        <Input label={"Blur"} value={blur} updateValue={updateBlur} />
 
-        if (!history) {
-            updateElement({ element: newElement, history });
-            return;
-        }
-
-        if (this.historyUpdated !== shadowValue) {
-            this.historyUpdated = shadowValue;
-            updateElement({ element: newElement });
-        }
-    };
-
-    getShadowObject = () => {
-        // box-shadow: none|h-offset v-offset blur spread color |inset|initial|inherit;
-        const value = this.getValue();
-        const arr = value.split(" ");
-        const boxShadow = arr.splice(0, 4);
-        boxShadow.push(arr.join(" "));
-
-        return {
-            horizontal: parseInt(boxShadow[0]) || 0,
-            vertical: parseInt(boxShadow[1]) || 0,
-            blur: parseInt(boxShadow[2]) || 0,
-            spread: parseInt(boxShadow[3]) || 0,
-            color: boxShadow[4] || "#000"
-        };
-    };
-
-    getShadowCss = values => {
-        return [
-            values.horizontal + "px",
-            values.vertical + "px",
-            values.blur + "px",
-            values.spread + "px",
-            values.color
-        ].join(" ");
-    };
-
-    getValue = () => {
-        return get(this.props.element, "settings.style.boxShadow") || "";
-    };
-
-    render() {
-        const shadow = this.getShadowObject();
-
-        return (
-            <React.Fragment>
-                <Tabs>
-                    <Tab label={"Shadow"}>
-                        <Grid>
-                            <Cell span={4}>
-                                <Typography use={"overline"}>Color</Typography>
-                            </Cell>
-                            <Cell span={8}>
-                                <ColorPicker
-                                    compact
-                                    value={shadow.color}
-                                    onChange={value => this.updateSettings("color", value, false)}
-                                    onChangeComplete={value => this.updateSettings("color", value)}
-                                />
-                            </Cell>
-
-                            <Cell span={4}>
-                                <Typography use={"overline"}>Horizontal offset</Typography>
-                            </Cell>
-                            <Cell span={8}>
-                                <InputContainer>
-                                    <Input
-                                        value={shadow.horizontal}
-                                        onChange={value => this.updateSettings("horizontal", value)}
-                                    />
-                                </InputContainer>
-                            </Cell>
-
-                            <Cell span={4}>
-                                <Typography use={"overline"}>Vertical offset</Typography>
-                            </Cell>
-                            <Cell span={8}>
-                                <InputContainer>
-                                    <Input
-                                        value={shadow.vertical}
-                                        onChange={value => this.updateSettings("vertical", value)}
-                                    />
-                                </InputContainer>
-                            </Cell>
-
-                            <Cell span={4}>
-                                <Typography use={"overline"}>Blur</Typography>
-                            </Cell>
-                            <Cell span={8}>
-                                <InputContainer>
-                                    <Input
-                                        value={shadow.blur}
-                                        onChange={value => this.updateSettings("blur", value)}
-                                    />
-                                </InputContainer>
-                            </Cell>
-
-                            <Cell span={4}>
-                                <Typography use={"overline"}>Spread</Typography>
-                            </Cell>
-                            <Cell span={8}>
-                                <InputContainer>
-                                    <Input
-                                        value={shadow.spread}
-                                        onChange={value => this.updateSettings("spread", value)}
-                                    />
-                                </InputContainer>
-                            </Cell>
-                        </Grid>
-                    </Tab>
-                </Tabs>
-            </React.Fragment>
-        );
-    }
-}
-
+                        <Input label={"Spread"} value={spread} updateValue={updateSpread} />
+                    </Grid>
+                </Tab>
+            </Tabs>
+        </React.Fragment>
+    );
+};
 export default compose(
     connect(
-        null,
+        state => ({ element: getActiveElement(state) }),
         { updateElement }
     ),
-    withActiveElement()
+    withHandlers({
+        getShadowObject: ({ element }) => () => {
+            // box-shadow: none|h-offset v-offset blur spread color |inset|initial|inherit;
+            const value = get(element, "settings.style.boxShadow") || "";
+            const arr = value.split(" ");
+            const boxShadow = arr.splice(0, 4);
+            boxShadow.push(arr.join(" "));
+
+            return {
+                horizontal: parseInt(boxShadow[0]) || 0,
+                vertical: parseInt(boxShadow[1]) || 0,
+                blur: parseInt(boxShadow[2]) || 0,
+                spread: parseInt(boxShadow[3]) || 0,
+                color: boxShadow[4] || "#000"
+            };
+        },
+
+        getShadowCss: () => values => {
+            return [
+                values.horizontal + "px",
+                values.vertical + "px",
+                values.blur + "px",
+                values.spread + "px",
+                values.color
+            ].join(" ");
+        }
+    }),
+    withHandlers({
+        updateSettings: ({ getShadowObject, getShadowCss, updateElement, element }) => {
+            let historyUpdated = null;
+
+            return (name, value, history = true) => {
+                const shadow = getShadowObject();
+                shadow[name] = value === "" ? 0 : value;
+                const shadowValue = getShadowCss(shadow);
+
+                const newElement = set(element, "settings.style.boxShadow", shadowValue);
+
+                if (!history) {
+                    updateElement({ element: newElement, history });
+                    return;
+                }
+
+                if (historyUpdated !== shadowValue) {
+                    historyUpdated = shadowValue;
+                    updateElement({ element: newElement });
+                }
+            };
+        }
+    }),
+    withHandlers({
+        updateColor: ({ updateSettings }) => (value: string) => updateSettings("color", value),
+        updateColorPreview: ({ updateSettings }) => (value: string) =>
+            updateSettings("color", value, false),
+        updateHorizontalOffset: ({ updateSettings }) => (value: string) =>
+            updateSettings("horizontal", value),
+        updateVerticalOffset: ({ updateSettings }) => (value: string) =>
+            updateSettings("vertical", value),
+        updateBlur: ({ updateSettings }) => (value: string) => updateSettings("blur", value),
+        updateSpread: ({ updateSettings }) => (value: string) => updateSettings("spread", value)
+    }),
+    withProps(({ getShadowObject }) => ({ ...getShadowObject() }))
 )(Settings);

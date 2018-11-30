@@ -1,17 +1,17 @@
 // @flow
 import React from "react";
 import { connect } from "react-redux";
-import { compose, lifecycle, onlyUpdateForKeys } from "recompose";
+import { compose, lifecycle, pure } from "recompose";
 import { TopAppBarSecondary, TopAppBarSection } from "webiny-ui/TopAppBar";
 import { ButtonDefault, ButtonIcon } from "webiny-ui/Button";
 import { deactivateElement } from "webiny-app-cms/editor/actions";
 import { getPlugin } from "webiny-plugins";
-import { getActivePlugin } from "webiny-app-cms/editor/selectors";
-import { withActiveElement, withKeyHandler } from "webiny-app-cms/editor/components";
+import { getActiveElement } from "webiny-app-cms/editor/selectors";
+import { withKeyHandler } from "webiny-app-cms/editor/components";
 import Menu from "./components/Menu";
 import { ReactComponent as NavigateBeforeIcon } from "webiny-app-cms/editor/assets/icons/navigate_before.svg";
 
-const getElementActions = plugin => {
+const getElementActions = (plugin: Object) => {
     if (!plugin.settings) {
         return [];
     }
@@ -21,18 +21,23 @@ const getElementActions = plugin => {
     return [...actions, getPlugin("cms-element-settings-save")].filter(pl => pl);
 };
 
-const ElementSettingsBar = ({ element, activePlugin, deactivateElement }) => {
-    if (!element) {
+const ElementSettingsBar = pure(({ elementType, deactivateElement }) => {
+    if (!elementType) {
         return null;
     }
-    const plugin = getPlugin(element.type);
+
+    const plugin = getPlugin(elementType);
+    if (!plugin) {
+        return null;
+    }
+
     const actions = getElementActions(plugin);
 
     return (
         <React.Fragment>
             <TopAppBarSecondary fixed>
                 <TopAppBarSection alignStart>
-                    <ButtonDefault onClick={() => deactivateElement()}>
+                    <ButtonDefault onClick={deactivateElement}>
                         <ButtonIcon icon={<NavigateBeforeIcon />} /> Back
                     </ButtonDefault>
                 </TopAppBarSection>
@@ -43,13 +48,11 @@ const ElementSettingsBar = ({ element, activePlugin, deactivateElement }) => {
                     If no `settings` array is defined in an `element` plugin, all settings are shown.
                     */}
                     {actions.map((plugin, index) => {
-                        const active = activePlugin === plugin.name;
-
                         return (
                             <div key={plugin.name + "-" + index} style={{ position: "relative" }}>
-                                {plugin.renderAction({ element, active })}
+                                {plugin.renderAction({})}
                                 {typeof plugin.renderMenu === "function" && (
-                                    <Menu plugin={plugin} active={active} />
+                                    <Menu plugin={plugin} />
                                 )}
                             </div>
                         );
@@ -58,17 +61,15 @@ const ElementSettingsBar = ({ element, activePlugin, deactivateElement }) => {
             </TopAppBarSecondary>
         </React.Fragment>
     );
-};
+});
 
 export default compose(
     connect(
         state => ({
-            activePlugin: getActivePlugin("cms-element-settings")(state)
+            elementType: getActiveElement(state).type
         }),
         { deactivateElement }
     ),
-    withActiveElement(),
-    onlyUpdateForKeys(["element", "activePlugin"]),
     withKeyHandler(),
     lifecycle({
         componentDidMount() {

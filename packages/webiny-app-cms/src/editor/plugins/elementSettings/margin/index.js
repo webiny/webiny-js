@@ -1,20 +1,18 @@
 //@flow
 import React from "react";
-import { dispatch } from "webiny-app-cms/editor/redux";
-import { togglePlugin } from "webiny-app-cms/editor/actions";
 import { ReactComponent as MarginIcon } from "webiny-app-cms/editor/assets/icons/fullscreen.svg";
-import Settings from "../utils/PMSettings";
-import Action from "./../Action";
+import Settings from "../components/PMSettings";
+import Action from "../components/Action";
 
 export default {
     name: "cms-element-settings-margin",
     type: "cms-element-settings",
-    renderAction({ active }) {
+    renderAction({ active }: Object) {
         return (
             <Action
                 tooltip={"Margin"}
                 active={active}
-                onClick={() => dispatch(togglePlugin({ name: this.name }))}
+                plugin={this.name}
                 icon={<MarginIcon />}
             />
         );

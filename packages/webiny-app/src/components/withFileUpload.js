@@ -1,11 +1,11 @@
 // @flow
 import * as React from "react";
-import { compose, withProps } from "recompose";
+import { compose, withHandlers } from "recompose";
 import type { FileBrowserFile } from "webiny-ui/FileBrowser";
 import { withConfig } from "webiny-app/components";
 import { getPlugin } from "webiny-plugins";
 import invariant from "invariant";
-import type { PluginType } from "webiny-app/types";
+import type { PluginType } from "webiny-plugins/types";
 import _ from "lodash";
 
 type WithFileUploadOptions = {
@@ -61,49 +61,46 @@ export const withFileUpload = (options: WithFileUploadOptions = {}): Function =>
     return (BaseComponent: typeof React.Component) => {
         return compose(
             withConfig(),
-            withProps(props => {
-                return {
-                    ...props,
-                    uploadFile: async file => {
-                        return getFileUploader(props)(file);
-                    },
-                    onChange: async file => {
-                        const upload = getFileUploader(props);
+            withHandlers({
+                uploadFile: props => async file => {
+                    return getFileUploader(props)(file);
+                },
+                onChange: props => async file => {
+                    const upload = getFileUploader(props);
 
-                        const { onChange } = props;
-                        onChange && (await onChange(file));
+                    const { onChange } = props;
+                    onChange && (await onChange(file));
 
-                        if (options.multiple) {
-                            if (Array.isArray(file)) {
-                                for (let index = 0; index < file.length; index++) {
-                                    let current = file[index];
-                                    if (mustUpload(current)) {
-                                        file[index] = await upload(current);
-                                        onChange && (await onChange(file));
-                                    }
+                    if (options.multiple) {
+                        if (Array.isArray(file)) {
+                            for (let index = 0; index < file.length; index++) {
+                                let current = file[index];
+                                if (mustUpload(current)) {
+                                    file[index] = await upload(current);
+                                    onChange && (await onChange(file));
                                 }
                             }
-                            return;
                         }
+                        return;
+                    }
 
-                        invariant(
-                            !Array.isArray(file),
-                            `Selected two or more files instead of one. Did you forget to set "multiple" option to true ("withFileUpload({multiple: true})")?`
-                        );
+                    invariant(
+                        !Array.isArray(file),
+                        `Selected two or more files instead of one. Did you forget to set "multiple" option to true ("withFileUpload({multiple: true})")?`
+                    );
 
-                        if (mustUpload(file)) {
-                            // Send file to server and get its path.
-                            try {
-                                return upload(file).then(async uploadedFile => {
-                                    onChange && (await onChange(uploadedFile));
-                                });
-                            } catch (e) {
-                                // eslint-disable-next-line
-                                console.warn(e);
-                            }
+                    if (mustUpload(file)) {
+                        // Send file to server and get its path.
+                        try {
+                            return upload(file).then(async uploadedFile => {
+                                onChange && (await onChange(uploadedFile));
+                            });
+                        } catch (e) {
+                            // eslint-disable-next-line
+                            console.warn(e);
                         }
                     }
-                };
+                }
             })
         )(BaseComponent);
     };

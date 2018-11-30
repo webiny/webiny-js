@@ -1,9 +1,9 @@
 // @flow
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { compose, withState, shouldUpdate } from "recompose";
 import { css } from "emotion";
 import { getPlugin } from "webiny-plugins";
-import { compose, withState } from "recompose";
 import domToImage from "./domToImage";
 import {
     Dialog,
@@ -121,7 +121,8 @@ type Props = {
     setImage?: Function
 };
 
-const SaveDialog = ({ element, open, onClose, onSubmit, type, image, setImage }: Props) => {
+const SaveDialog = (props: Props) => {
+    const { element, open, onClose, onSubmit, type, image, setImage } = props;
     return (
         <Dialog open={open} onClose={onClose} className={narrowDialog}>
             <ImageEditor src={image ? image.src : ""}>
@@ -185,4 +186,9 @@ const SaveDialog = ({ element, open, onClose, onSubmit, type, image, setImage }:
     );
 };
 
-export default compose(withState("image", "setImage", null))(SaveDialog);
+export default compose(
+    shouldUpdate((props, nextProps) => {
+        return props.open !== nextProps.open;
+    }),
+    withState("image", "setImage", null)
+)(SaveDialog);

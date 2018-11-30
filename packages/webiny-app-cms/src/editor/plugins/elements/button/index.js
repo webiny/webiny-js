@@ -7,7 +7,7 @@ import { ReactComponent as LinkIcon } from "./round-link-24px.svg";
 import ButtonSettings from "./ButtonSettings";
 import LinkSettings from "./LinkSettings";
 import Button from "./Button";
-import Action from "../../elementSettings/Action";
+import Action from "../../elementSettings/components/Action";
 
 export default (): ElementPluginType => {
     return [
@@ -46,22 +46,15 @@ export default (): ElementPluginType => {
                     ...options
                 };
             },
-            render(props) {
-                return <Button {...props} />;
+            render({ element }: Object) {
+                return <Button element={element} />;
             }
         },
         {
             name: "cms-element-settings-button",
             type: "cms-element-settings",
-            renderAction({ active }: { active: boolean }) {
-                return (
-                    <Action
-                        plugin={this.name}
-                        tooltip={"Button"}
-                        active={active}
-                        icon={<ButtonIcon />}
-                    />
-                );
+            renderAction() {
+                return <Action plugin={this.name} tooltip={"Button"} icon={<ButtonIcon />} />;
             },
             renderMenu() {
                 return <ButtonSettings />;
@@ -70,15 +63,8 @@ export default (): ElementPluginType => {
         {
             name: "cms-element-settings-link",
             type: "cms-element-settings",
-            renderAction({ active }: { active: boolean }) {
-                return (
-                    <Action
-                        plugin={this.name}
-                        tooltip={"Link"}
-                        active={active}
-                        icon={<LinkIcon />}
-                    />
-                );
+            renderAction() {
+                return <Action plugin={this.name} tooltip={"Link"} icon={<LinkIcon />} />;
             },
             renderMenu() {
                 return <LinkSettings />;

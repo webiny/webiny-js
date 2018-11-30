@@ -54,8 +54,8 @@ export default (): ElementPluginType => {
                 ...options
             };
         },
-        render(props) {
-            return <Text {...props} />;
+        render({ element }: Object) {
+            return <Text elementId={element.id} />;
         }
     };
 };

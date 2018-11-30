@@ -1,4 +1,14 @@
 .cms-editor-dragging {
+  .cms-disable {
+    z-index: 10000000;
+    opacity: 0.5;
+    background-color: red;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
   /* Append this class to the DOM elements you want to disable during element dragging. */
   .cms-editor-dragging--disabled {
     pointer-events: none;

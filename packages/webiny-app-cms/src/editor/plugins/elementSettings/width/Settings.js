@@ -6,13 +6,13 @@ import { set } from "dot-prop-immutable";
 
 import { Tabs, Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
-import { InputContainer } from "../utils/StyledComponents";
+import { InputContainer } from "webiny-app-cms/editor/plugins/elementSettings/components/StyledComponents";
 import { Typography } from "webiny-ui/Typography";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Form } from "webiny-form";
 
-import { withActiveElement } from "webiny-app-cms/editor/components";
 import { updateElement } from "webiny-app-cms/editor/actions";
+import { getActiveElement } from "webiny-app-cms/editor/selectors";
 
 const validateWidth = value => {
     if (!value) {
@@ -82,8 +82,7 @@ class Settings extends React.Component<Props> {
 
 export default compose(
     connect(
-        null,
+        state => ({ element: getActiveElement(state) }),
         { updateElement }
-    ),
-    withActiveElement()
+    )
 )(Settings);

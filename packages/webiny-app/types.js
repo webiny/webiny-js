@@ -1,5 +1,4 @@
 // @flow
-export type { PluginType } from "webiny-app/plugins";
 export type {
     WithRouterProps,
     WithDataListProps,

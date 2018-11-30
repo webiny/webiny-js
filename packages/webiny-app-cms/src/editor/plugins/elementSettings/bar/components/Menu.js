@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import styled from "react-emotion";
 import { Elevation } from "webiny-ui/Elevation";
 import { togglePlugin } from "webiny-app-cms/editor/actions";
+import { isPluginActive } from "webiny-app-cms/editor/selectors";
 
 const Overlay = styled("div")({
     position: "fixed",
@@ -87,7 +88,7 @@ const ToolbarBox = styled("div")(
     })
 );
 
-class Menu extends React.Component {
+class Menu extends React.Component<*, *> {
     ref = React.createRef();
 
     state = {
@@ -131,6 +132,8 @@ class Menu extends React.Component {
 }
 
 export default connect(
-    null,
+    (state, props) => ({
+        active: isPluginActive(props.plugin.name)(state)
+    }),
     { togglePlugin }
 )(Menu);

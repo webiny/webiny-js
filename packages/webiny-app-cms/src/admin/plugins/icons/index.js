@@ -1,7 +1,7 @@
 // @flowIgnore
 import * as React from "react";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import type { PluginType } from "webiny-app/types";
+import type { PluginType } from "webiny-plugins/types";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 

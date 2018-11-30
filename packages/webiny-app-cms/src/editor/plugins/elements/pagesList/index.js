@@ -31,8 +31,8 @@ export default () => {
                     ...options
                 };
             },
-            render({ element, theme }) {
-                return <PagesList settings={element.settings} theme={theme} />;
+            render({ element }) {
+                return <PagesList settings={element.settings} />;
             }
         }: ElementPluginType),
         {

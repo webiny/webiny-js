@@ -1,7 +1,7 @@
 import React from "react";
 import { get } from "dot-prop-immutable";
 import Slate from "webiny-app-cms/render/components/Slate";
-import ElementStyle from "webiny-app-cms/render/components/ElementStyle";
+import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
 import type { ElementType } from "webiny-app-cms/types";
 
 const Button = ({ element }: ElementType) => {
@@ -11,7 +11,7 @@ const Button = ({ element }: ElementType) => {
     const { position = "left" } = icon;
 
     return (
-        <ElementStyle element={element}>
+        <ElementStyle {...getElementStyleProps(element)}>
             {({ getAllClasses }) => (
                 <button className={getAllClasses("webiny-cms-element-button", type)}>
                     {svg && <span dangerouslySetInnerHTML={{ __html: svg }} />}

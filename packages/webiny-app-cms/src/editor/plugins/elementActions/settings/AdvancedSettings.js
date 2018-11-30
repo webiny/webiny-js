@@ -1,13 +1,12 @@
 // @flow
 import * as React from "react";
 import { connect } from "react-redux";
-import { compose, lifecycle, pure, withHandlers, setDisplayName } from "recompose";
+import { compose, withHandlers } from "recompose";
 import { cloneDeep } from "lodash";
 import { merge } from "dot-prop-immutable";
 import { getPlugins } from "webiny-plugins";
 import { renderPlugins } from "webiny-app/plugins";
-import { getActivePlugin } from "webiny-app-cms/editor/selectors";
-import { withTheme } from "webiny-app-cms/theme";
+import { isPluginActive } from "webiny-app-cms/editor/selectors";
 import { withActiveElement, withKeyHandler } from "webiny-app-cms/editor/components";
 import {
     Dialog,
@@ -25,80 +24,78 @@ import { Tabs, Tab } from "webiny-ui/Tabs";
 import { updateElement, deactivatePlugin } from "webiny-app-cms/editor/actions";
 import { ReactComponent as SettingsIcon } from "webiny-app-cms/editor/assets/icons/settings.svg";
 
-type Props = {
+type Props = Object & {
     open: boolean,
     onClose: Function,
     onSubmit: Function,
-    element: Object,
-    theme: Object
+    element: Object
 };
 
 const emptyElement = { data: {}, settings: {}, type: null };
 
-const AdvancedSettings = pure(({ element, theme, open, onClose, onSubmit }: Props) => {
-    const { data, settings, type } = element || cloneDeep(emptyElement);
-    return (
-        <Dialog open={open} onClose={onClose}>
-            <Form data={{ data, settings }} onSubmit={onSubmit}>
-                {({ submit, Bind }) => (
-                    <React.Fragment>
-                        <DialogHeader>
-                            <DialogHeaderTitle>Settings</DialogHeaderTitle>
-                        </DialogHeader>
-                        <DialogBody>
-                            <Tabs>
-                                {renderPlugins(
-                                    "cms-element-advanced-settings",
-                                    { Bind, theme, element },
-                                    { wrapper: false, filter: pl => pl.element === type }
-                                )}
-                                <Tab icon={<SettingsIcon />} label="Style">
-                                    <Grid>
-                                        <Cell span={12}>
-                                            <Bind name={"settings.advanced.style.classNames"}>
-                                                <Input
-                                                    label={"CSS class"}
-                                                    description={"Custom CSS class names"}
-                                                />
-                                            </Bind>
-                                        </Cell>
-                                    </Grid>
-                                    <Grid>
-                                        <Cell span={12}>
-                                            <Bind name={"settings.advanced.style.inline"}>
-                                                <Input
-                                                    rows={10}
-                                                    label={"Inline CSS"}
-                                                    description={"Edit inline CSS styles"}
-                                                />
-                                            </Bind>
-                                        </Cell>
-                                    </Grid>
-                                </Tab>
-                            </Tabs>
-                        </DialogBody>
-                        <DialogFooter>
-                            <DialogCancel>Cancel</DialogCancel>
-                            <DialogAccept onClick={submit}>Save</DialogAccept>
-                        </DialogFooter>
-                    </React.Fragment>
-                )}
-            </Form>
-        </Dialog>
-    );
-});
+class AdvancedSettings extends React.Component<Props> {
+    shouldComponentUpdate(props) {
+        return props.open;
+    }
+
+    componentDidUpdate() {
+        const { open, addKeyHandler, removeKeyHandler, closeDialog } = this.props;
+        open ? addKeyHandler("escape", closeDialog) : removeKeyHandler("escape");
+    }
+
+    render() {
+        const { element, open, onClose, onSubmit } = this.props;
+        const { data, settings, type } = element || cloneDeep(emptyElement);
+        return (
+            <Dialog open={open} onClose={onClose}>
+                <Form data={{ data, settings }} onSubmit={onSubmit}>
+                    {({ submit, Bind }) => (
+                        <React.Fragment>
+                            <DialogHeader>
+                                <DialogHeaderTitle>Settings</DialogHeaderTitle>
+                            </DialogHeader>
+                            <DialogBody>
+                                <Tabs>
+                                    {renderPlugins(
+                                        "cms-element-advanced-settings",
+                                        { Bind },
+                                        { wrapper: false, filter: pl => pl.element === type }
+                                    )}
+                                    <Tab icon={<SettingsIcon />} label="Style">
+                                        <Grid>
+                                            <Cell span={12}>
+                                                <Bind name={"settings.advanced.style.classNames"}>
+                                                    <Input
+                                                        label={"CSS class"}
+                                                        description={"Custom CSS class names"}
+                                                    />
+                                                </Bind>
+                                            </Cell>
+                                        </Grid>
+                                    </Tab>
+                                </Tabs>
+                            </DialogBody>
+                            <DialogFooter>
+                                <DialogCancel>Cancel</DialogCancel>
+                                <DialogAccept onClick={submit}>Save</DialogAccept>
+                            </DialogFooter>
+                        </React.Fragment>
+                    )}
+                </Form>
+            </Dialog>
+        );
+    }
+}
 
 export default compose(
-    setDisplayName("AdvancedSettings"),
     connect(
         state => ({
-            open: getActivePlugin("cms-element-action")(state) === "cms-element-action-advanced"
+            open: isPluginActive("cms-element-action-advanced")(state)
         }),
         { updateElement, deactivatePlugin }
     ),
-    withActiveElement(),
+    withActiveElement({ shallow: true }),
     withKeyHandler(),
-    withTheme(),
     withHandlers({
         closeDialog: ({ deactivatePlugin }) => () => {
             deactivatePlugin({ name: "cms-element-action-advanced" });
@@ -124,11 +121,5 @@ export default compose(
             closeDialog();
         },
         onClose: ({ closeDialog }) => () => closeDialog()
-    }),
-    lifecycle({
-        componentDidUpdate() {
-            const { open, addKeyHandler, removeKeyHandler, closeDialog } = this.props;
-            open ? addKeyHandler("escape", closeDialog) : removeKeyHandler("escape");
-        }
     })
 )(AdvancedSettings);
