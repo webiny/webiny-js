@@ -5,6 +5,7 @@ import { Menu } from "webiny-app-cms/render/components";
 import { Modules } from "webiny-app/components";
 import { addPlugin } from "webiny-plugins";
 import cookiePolicy from "webiny-cookie-policy/render";
+import googleTagManager from "webiny-google-tag-manager/render";
 
 const Banner = styled("div")({
     backgroundColor: "#666",
@@ -16,7 +17,7 @@ type Props = {
     children: React.Node
 };
 
-addPlugin(...cookiePolicy);
+addPlugin(...cookiePolicy, ...googleTagManager);
 
 const Static = ({ children }: Props) => {
     return (

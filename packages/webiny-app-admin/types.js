@@ -1,5 +1,5 @@
 // @flow
-import type { Node, ComponentType } from "react";
+import type { Node, Element } from "react";
 import type { PluginType } from "webiny-plugins/types";
 
 export type ContentPluginType = PluginType & {
@@ -22,7 +22,7 @@ export type HeaderMiddlePlugin = PluginType & {
 export type SettingsPluginType = PluginType & {
     settings: {
         type?: "app" | "integration",
-        component: ComponentType<any>,
+        component: Element<any>,
         route: {
             name: string,
             path: string,
