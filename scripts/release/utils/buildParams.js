@@ -9,8 +9,8 @@ module.exports = async config => {
         logger: config.logger || logger(),
         git,
         config: {
-            preview: config.preview || false,
-            ci: config.ci || true,
+            preview: config.hasOwnProperty("preview") ? config.preview : false,
+            ci: config.hasOwnProperty("ci") ? config.ci : true,
             branch: config.branch || "master",
             tagFormat: config.tagFormat || "v<%= version %>",
             registryUrl: config.registryUrl || "https://registry.npmjs.org",
