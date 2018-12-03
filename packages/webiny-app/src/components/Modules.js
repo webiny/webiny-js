@@ -3,8 +3,11 @@ import React from "react";
 import { getPlugins } from "webiny-plugins";
 
 type Props = {};
+type State = {
+    ready: boolean
+};
 
-export default class Modules extends React.Component<Props> {
+export default class Modules extends React.Component<Props, State> {
     settings = {};
     state = {
         ready: false
