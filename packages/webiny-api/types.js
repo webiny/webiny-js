@@ -70,7 +70,7 @@ export type EntityPluginType = PluginType & {
     namespace: string,
     entity: {
         name: string,
-        factory: () => Entity
+        factory: (params?: Object) => Entity
     }
 };
 
