@@ -2,11 +2,19 @@
 import { Model } from "webiny-model";
 import { settingsFactory } from "webiny-api/entities";
 
+class ColorsModel extends Model {
+    constructor() {
+        super();
+        this.attr("background").char();
+        this.attr("text").char();
+    }
+}
+
 class PaletteModel extends Model {
     constructor() {
         super();
-        this.attr("popup").char();
-        this.attr("button").char();
+        this.attr("popup").model(ColorsModel);
+        this.attr("button").model(ColorsModel);
     }
 }
 
@@ -14,6 +22,10 @@ class CookiePolicySettingsModel extends Model {
     constructor() {
         super();
         this.attr("enabled").boolean();
+        this.attr("position")
+            .char()
+            .setValidators("in:bottom:top:bottom-left:bottom-right")
+            .setDefaultValue("bottom");
         this.attr("palette").model(PaletteModel);
     }
 }
@@ -26,22 +38,34 @@ export default [
         typeDefs: /* GraphQL */ `
             type CookiePolicySettings {
                 enabled: Boolean
+                position: String
                 palette: CookiePolicySettingsPalette
             }
 
+            type CookiePolicySettingsPaletteColors {
+                background: String
+                text: String
+            }
+
             type CookiePolicySettingsPalette {
-                popup: String
-                button: String
+                popup: CookiePolicySettingsPaletteColors
+                button: CookiePolicySettingsPaletteColors
             }
 
             input CookiePolicySettingsInput {
                 enabled: Boolean
+                position: String
                 palette: CookiePolicySettingsPaletteInput
             }
 
+            input CookiePolicySettingsPaletteColorsInput {
+                background: String
+                text: String
+            }
+
             input CookiePolicySettingsPaletteInput {
-                popup: String
-                button: String
+                popup: CookiePolicySettingsPaletteColorsInput
+                button: CookiePolicySettingsPaletteColorsInput
             }
 
             extend type SettingsQuery {
@@ -56,7 +80,7 @@ export default [
             cookiePolicy: {
                 entities: { CookiePolicySettings }
             }
-        }) => CookiePolicySettings
+        }: Object) => CookiePolicySettings
     },
     {
         type: "entity",

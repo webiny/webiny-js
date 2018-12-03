@@ -6,21 +6,15 @@ import load from "webiny-load-assets";
 
 class CookiePolicy extends React.Component<*> {
     componentDidMount() {
+        const { settings } = this.props;
+        if (settings.enabled !== true) {
+            return;
+        }
+
         load(
             "//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.css",
             "//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.js"
-        ).then(() => {
-            window.cookieconsent.initialise({
-                palette: {
-                    popup: {
-                        background: "#000"
-                    },
-                    button: {
-                        background: "#f1d600"
-                    }
-                }
-            });
-        });
+        ).then(() => window.cookieconsent.initialise(settings));
     }
 
     render() {
@@ -39,7 +33,7 @@ export default [
                         return null;
                     }
 
-                    return <CookiePolicy data={data.settings.cookiePolicy.data} />;
+                    return <CookiePolicy settings={data.settings.cookiePolicy} />;
                 }}
             </Query>
         )

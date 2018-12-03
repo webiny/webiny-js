@@ -17,8 +17,8 @@
     "webiny-app": "0.0.0-semantically-released",
     "webiny-app-admin": "0.0.0-semantically-released",
     "webiny-form": "0.0.0-semantically-released",
-    "webiny-model": "0.0.0-semantically-released",
     "webiny-load-assets": "0.0.0-semantically-released",
+    "webiny-model": "0.0.0-semantically-released",
     "webiny-ui": "0.0.0-semantically-released"
   },
   "devDependencies": {

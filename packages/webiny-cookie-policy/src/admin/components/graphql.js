@@ -4,9 +4,16 @@ import gql from "graphql-tag";
 const fields = /* GraphQL */ `
     {
         enabled
+        position
         palette {
-            popup
-            button
+            popup {
+                background
+                text
+            }
+            button {
+                background
+                text
+            }
         }
     }
 `;

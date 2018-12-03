@@ -6,9 +6,16 @@ const graphql = gql`
         settings {
             cookiePolicy {
                 enabled
+                position
                 palette {
-                    popup
-                    button
+                    popup {
+                        background
+                        text
+                    }
+                    button {
+                        background
+                        text
+                    }
                 }
             }
         }
