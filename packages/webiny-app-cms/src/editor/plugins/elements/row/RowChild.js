@@ -82,7 +82,7 @@ const RowChild = pure(
 export default compose(
     setDisplayName("RowChild"),
     connect(
-        (state) => ({
+        state => ({
             isDragging: getIsDragging(state)
         }),
         { dropElement }

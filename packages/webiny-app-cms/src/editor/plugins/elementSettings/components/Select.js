@@ -19,11 +19,7 @@ export default pure(({ label, value, updateValue, options }: Props) => {
                 <Typography use={"overline"}>{label}</Typography>
             </Cell>
             <Cell span={8}>
-                <Select
-                    value={value}
-                    onChange={updateValue}
-                    options={options}
-                />
+                <Select value={value} onChange={updateValue} options={options} />
             </Cell>
         </React.Fragment>
     );

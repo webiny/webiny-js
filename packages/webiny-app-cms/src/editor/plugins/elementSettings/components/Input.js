@@ -20,10 +20,7 @@ export default pure(({ label, value, updateValue }: Props) => {
             </Cell>
             <Cell span={8}>
                 <InputContainer>
-                    <Input
-                        value={value}
-                        onChange={updateValue}
-                    />
+                    <Input value={value} onChange={updateValue} />
                 </InputContainer>
             </Cell>
         </React.Fragment>

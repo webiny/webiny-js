@@ -8,13 +8,7 @@ export default {
     name: "cms-element-settings-background",
     type: "cms-element-settings",
     renderAction() {
-        return (
-            <Action
-                plugin={this.name}
-                tooltip={"Background"}
-                icon={<InvertColorsIcon />}
-            />
-        );
+        return <Action plugin={this.name} tooltip={"Background"} icon={<InvertColorsIcon />} />;
     },
     renderMenu() {
         return <Settings />;
