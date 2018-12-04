@@ -1,6 +1,3 @@
-const path = require("path");
-const paths = require("react-scripts/config/paths");
-
 module.exports = {
     presets: ["babel-preset-react-app"],
     plugins: [

@@ -1,3 +1,4 @@
+// @flowIgnore
 const isObject = require("lodash/isObject");
 
 const path = require("path");
