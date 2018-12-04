@@ -55,21 +55,13 @@ const GoogleTagManagerSettings = ({ showSnackbar }) => {
                                                         <Grid>
                                                             <Cell span={6}>
                                                                 <Bind
-                                                                    name={"googleTagManager.head"}
+                                                                    name={"googleTagManager.code"}
                                                                 >
                                                                     <Input
-                                                                        rows={10}
-                                                                        label="<head> snippet"
-                                                                    />
-                                                                </Bind>
-                                                            </Cell>
-                                                            <Cell span={6}>
-                                                                <Bind
-                                                                    name={"googleTagManager.body"}
-                                                                >
-                                                                    <Input
-                                                                        rows={10}
-                                                                        label="<body> snippet"
+                                                                        label="Container ID"
+                                                                        description={
+                                                                            'Formatted as "GTM-XXXXXX".'
+                                                                        }
                                                                     />
                                                                 </Bind>
                                                             </Cell>

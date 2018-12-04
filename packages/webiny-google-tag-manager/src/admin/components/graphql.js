@@ -4,8 +4,7 @@ import gql from "graphql-tag";
 const fields = /* GraphQL */ `
     {
         enabled
-        body
-        head
+        code
     }
 `;
 

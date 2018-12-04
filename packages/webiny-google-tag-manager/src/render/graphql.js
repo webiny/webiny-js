@@ -6,8 +6,7 @@ const graphql = gql`
         settings {
             googleTagManager {
                 enabled
-                body
-                head
+                code
             }
         }
     }

@@ -6,8 +6,7 @@ class GoogleTagManagerSettingsModel extends Model {
     constructor() {
         super();
         this.attr("enabled").boolean();
-        this.attr("head").char();
-        this.attr("body").char();
+        this.attr("code").char();
     }
 }
 
@@ -19,14 +18,12 @@ export default [
         typeDefs: /* GraphQL */ `
             type GoogleTagManagerSettings {
                 enabled: Boolean
-                head: String
-                body: String
+                code: String
             }
 
             input GoogleTagManagerSettingsInput {
                 enabled: Boolean
-                head: String
-                body: String
+                code: String
             }
 
             extend type SettingsQuery {
