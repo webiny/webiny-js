@@ -10,6 +10,10 @@ class GoogleTagManager extends React.Component<*> {
             return;
         }
 
+        if (window.dataLayer) {
+            return;
+        }
+
         document.querySelector("body").prepend(
             new window.DOMParser().parseFromString(
                 `<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${
