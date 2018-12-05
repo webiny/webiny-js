@@ -4,6 +4,7 @@ import { isDescendant } from "react-sortable-tree";
 import classnames from "classnames";
 import { getPlugin } from "webiny-plugins";
 import { IconButton } from "webiny-ui/Button";
+import { Typography } from "webiny-ui/Typography";
 import "./MenuItemRenderer.css";
 import { ReactComponent as EditIcon } from "./icons/round-edit-24px.svg";
 import { ReactComponent as DeleteIcon } from "./icons/round-delete-24px.svg";
@@ -119,7 +120,7 @@ class NodeRendererDefault extends React.Component<*> {
                                             node.subtitle && "rst__rowTitleWithSubtitle"
                                         )}
                                     >
-                                        {nodeTitle}
+                                        <Typography use={"overline"}>{nodeTitle}</Typography>
                                     </span>
                                 </div>
 
