@@ -13,7 +13,7 @@ type WithFileUploadOptions = {
 };
 
 export type WithFileUploadPlugin = PluginType & {
-    type: "with-file-upload",
+    type: string,
     upload: (file: FileBrowserFile, options: Object) => Promise<any>
 };
 

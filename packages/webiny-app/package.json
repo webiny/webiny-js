@@ -32,6 +32,7 @@
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
     "react-error-boundary": "^1.2.3",
+    "react-apollo": "^2.3.2",
     "warning": "^4.0.2",
     "webiny-compose": "0.0.0-semantically-released",
     "webiny-i18n": "0.0.0-semantically-released",
