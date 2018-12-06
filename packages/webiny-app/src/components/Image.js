@@ -14,7 +14,7 @@ type ImageProps = Object & {
 };
 
 export type ImagePlugin = PluginType & {
-    type: "image-component",
+    type: string,
     render: ImageProps => React.Node
 };
 
