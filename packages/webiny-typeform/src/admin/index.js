@@ -18,12 +18,7 @@ export default [
                 return <span>A Typeform sample</span>;
             }
         },
-        settings: [
-            "cms-element-settings-delete",
-            "",
-            "cms-element-settings-height",
-            "cms-element-settings-width"
-        ],
+        settings: ["cms-element-settings-delete", "", "cms-element-settings-height"],
         target: ["cms-element-column", "cms-element-row", "cms-element-list-item"],
         onCreate: "open-settings",
         // eslint-disable-next-line
@@ -42,7 +37,11 @@ export default [
                 type: "cms-element-typeform",
                 elements: [],
                 data: {},
-                settings: {}
+                settings: {
+                    style: {
+                        height: "500px"
+                    }
+                }
             };
         }
     },
