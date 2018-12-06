@@ -6,8 +6,10 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { ReactComponent as CodeIcon } from "./round-text_format-24px.svg";
 import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
 import TypeFormEmbed from "./TypeFormEmbed";
+import render from "./../../render/plugins";
 
 export default [
+    ...render,
     {
         name: "cms-element-typeform",
         type: "cms-element",
@@ -21,7 +23,6 @@ export default [
         settings: ["cms-element-settings-delete", "", "cms-element-settings-height"],
         target: ["cms-element-column", "cms-element-row", "cms-element-list-item"],
         onCreate: "open-settings",
-        // eslint-disable-next-line
         render({ element }: Object) {
             return (
                 <ElementStyle
