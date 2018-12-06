@@ -1,7 +1,6 @@
 // @flow
 import fileUploadPlugin from "./fileUploadPlugin";
 import imagePlugin from "./imagePlugin";
-import cookiePolicyPlugins from "webiny-cookie-policy/admin";
-import googleTagManager from "webiny-google-tag-manager/admin";
+import typeform from "webiny-typeform/admin";
 
-export default [fileUploadPlugin, imagePlugin, ...cookiePolicyPlugins, ...googleTagManager];
+export default [fileUploadPlugin, imagePlugin, ...typeform];
