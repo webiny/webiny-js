@@ -5,6 +5,12 @@ const fields = /* GraphQL */ `
     {
         enabled
         position
+        content {
+            href
+            message
+            dismiss
+            link
+        }
         palette {
             popup {
                 background

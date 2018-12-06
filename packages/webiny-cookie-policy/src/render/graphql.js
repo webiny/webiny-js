@@ -5,6 +5,12 @@ const graphql = gql`
     query getSettings {
         settings {
             cookiePolicy {
+                content {
+                    href
+                    message
+                    dismiss
+                    link
+                }
                 enabled
                 position
                 palette {

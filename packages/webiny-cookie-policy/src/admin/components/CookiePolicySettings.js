@@ -3,13 +3,14 @@ import * as React from "react";
 import { Form } from "webiny-form";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Switch } from "webiny-ui/Switch";
+import { Input } from "webiny-ui/Input";
 import { ColorPicker } from "webiny-ui/ColorPicker";
 import { ButtonSecondary, ButtonPrimary } from "webiny-ui/Button";
 import { Query, Mutation } from "react-apollo";
 import { withSnackbar } from "webiny-app-admin/components";
 import { RadioGroup, Radio } from "webiny-ui/Radio";
 import graphql from "./graphql";
-import load from "webiny-load-assets";
+import showCookiePolicy from "./../../utils/showCookiePolicy";
 
 import {
     SimpleForm,
@@ -138,6 +139,68 @@ const CookiePolicySettings = ({ showSnackbar }) => {
                                                                     </RadioGroup>
                                                                 </Bind>
                                                             </Cell>
+
+                                                            <Cell span={12}>
+                                                                <Bind
+                                                                    name={
+                                                                        "cookiePolicy.content.message"
+                                                                    }
+                                                                >
+                                                                    <Input
+                                                                        label="Message"
+                                                                        desciption={
+                                                                            "Link to your own policy\n"
+                                                                        }
+                                                                    />
+                                                                </Bind>
+                                                            </Cell>
+
+                                                            <Cell span={12}>
+                                                                <Bind
+                                                                    name={
+                                                                        "cookiePolicy.content.dismiss"
+                                                                    }
+                                                                >
+                                                                    <Input
+                                                                        label="Dismiss button text"
+                                                                        desciption={
+                                                                            "Link to your own policy\n"
+                                                                        }
+                                                                    />
+                                                                </Bind>
+                                                            </Cell>
+
+                                                            <Cell span={12}>
+                                                                <Bind
+                                                                    name={
+                                                                        "cookiePolicy.content.href"
+                                                                    }
+                                                                >
+                                                                    <Input
+                                                                        validators={["url"]}
+                                                                        label="Policy link"
+                                                                        desciption={
+                                                                            "Link to your own policy\n"
+                                                                        }
+                                                                    />
+                                                                </Bind>
+                                                            </Cell>
+
+                                                            <Cell span={12}>
+                                                                <Bind
+                                                                    name={
+                                                                        "cookiePolicy.content.link"
+                                                                    }
+                                                                >
+                                                                    <Input
+                                                                        validators={["url"]}
+                                                                        label="Policy link"
+                                                                        desciption={
+                                                                            "Link to your own policy\n"
+                                                                        }
+                                                                    />
+                                                                </Bind>
+                                                            </Cell>
                                                         </Grid>
                                                     </Cell>
                                                 </Grid>
@@ -145,21 +208,19 @@ const CookiePolicySettings = ({ showSnackbar }) => {
                                             <SimpleFormFooter>
                                                 <ButtonSecondary
                                                     type="primary"
+                                                    align="right"
                                                     onClick={() => {
-                                                        load(
-                                                            "//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.css",
-                                                            "//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.js"
-                                                        ).then(() => {
-                                                            window.cookieconsent.initialise({
-                                                                ...data.cookiePolicy,
-                                                                dismissOnTimeout: 5000,
-                                                                cookie: {
-                                                                    expiryDays: 0.00000001
-                                                                }
-                                                            });
+                                                        showCookiePolicy({
+                                                            ...data.cookiePolicy,
+                                                            // Official bug fix.
+                                                            messagelink:
+                                                                '<span id="cookieconsent:desc" class="cc-message">{{message}} <a aria-label="learn more about cookies" tabindex="0" class="cc-link" href="{{href}}" target="_blank">{{link}}</a></span>',
+                                                            dismissOnTimeout: 5000,
+                                                            cookie: {
+                                                                expiryDays: 0.00000001
+                                                            }
                                                         });
                                                     }}
-                                                    align="right"
                                                 >
                                                     Preview
                                                 </ButtonSecondary>

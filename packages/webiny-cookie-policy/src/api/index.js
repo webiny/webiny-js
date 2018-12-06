@@ -17,6 +17,15 @@ class PaletteModel extends Model {
         this.attr("button").model(ColorsModel);
     }
 }
+class ContentModel extends Model {
+    constructor() {
+        super();
+        this.attr("href").char();
+        this.attr("message").char();
+        this.attr("dismiss").char();
+        this.attr("link").char();
+    }
+}
 
 class CookiePolicySettingsModel extends Model {
     constructor() {
@@ -27,6 +36,7 @@ class CookiePolicySettingsModel extends Model {
             .setValidators("in:bottom:top:bottom-left:bottom-right")
             .setDefaultValue("bottom");
         this.attr("palette").model(PaletteModel);
+        this.attr("content").model(ContentModel);
     }
 }
 
@@ -38,8 +48,17 @@ export default [
         typeDefs: /* GraphQL */ `
             type CookiePolicySettings {
                 enabled: Boolean
+                policyLink: String
                 position: String
                 palette: CookiePolicySettingsPalette
+                content: CookiePolicySettingsContent
+            }
+
+            type CookiePolicySettingsContent {
+                href: String
+                message: String
+                dismiss: String
+                link: String
             }
 
             type CookiePolicySettingsPaletteColors {
@@ -56,6 +75,7 @@ export default [
                 enabled: Boolean
                 position: String
                 palette: CookiePolicySettingsPaletteInput
+                content: CookiePolicySettingsContentInput
             }
 
             input CookiePolicySettingsPaletteColorsInput {
@@ -66,6 +86,13 @@ export default [
             input CookiePolicySettingsPaletteInput {
                 popup: CookiePolicySettingsPaletteColorsInput
                 button: CookiePolicySettingsPaletteColorsInput
+            }
+
+            input CookiePolicySettingsContentInput {
+                href: String
+                message: String
+                dismiss: String
+                link: String
             }
 
             extend type SettingsQuery {
