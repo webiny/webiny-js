@@ -53,7 +53,7 @@ export default compose(
                     <LoadingEditor>
                         <img src={editorMock} />
                         <LoadingTitle>
-                            <Typography tag={"h6"} use={"headline6"}>
+                            <Typography tag={"div"} use={"headline6"}>
                                 Loading Editor<span>.</span>
                                 <span>.</span>
                                 <span>.</span>

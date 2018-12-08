@@ -24,7 +24,13 @@ const ButtonContainer = ({ getAllClasses, element, onChange }) => {
     const { position = "left" } = icon;
 
     return (
-        <button className={getAllClasses("webiny-cms-element-button", type)}>
+        <button
+            className={getAllClasses(
+                "webiny-cms-element-button",
+                "webiny-cms-element-button--" + type,
+                "webiny-cms-element-button__icon--" + position
+            )}
+        >
             {svg && <span dangerouslySetInnerHTML={{ __html: svg }} />}
             <ConnectedSlate elementId={element.id} onChange={onChange} exclude={excludePlugins} />
         </button>
