@@ -8,7 +8,7 @@ import { getPlugin } from "webiny-plugins";
 import SaveDialog from "./SaveDialog";
 import { withSnackbar } from "webiny-app-admin/components";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
-import { getActiveElement } from "webiny-app-cms/editor/selectors";
+import { getActiveElementId, getElementWithChildren } from "webiny-app-cms/editor/selectors";
 import { createElementPlugin, createBlockPlugin } from "webiny-app-cms/admin/components";
 import { createElement } from "webiny-app-cms/admin/graphql/pages";
 import { withFileUpload } from "webiny-app/components";
@@ -68,7 +68,7 @@ const removeIdsAndPaths = el => {
 };
 
 export default compose(
-    connect(state => ({ element: getActiveElement(state) })),
+    connect(state => ({ element: getElementWithChildren(state, getActiveElementId(state)) })),
     withState("isDialogOpened", "setOpenDialog", false),
     shouldUpdate((props, nextProps) => {
         return (
