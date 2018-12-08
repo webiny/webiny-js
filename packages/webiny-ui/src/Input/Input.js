@@ -89,7 +89,8 @@ class Input extends React.Component<Props> {
         "onFocus",
         "rootProps",
         "fullwidth",
-        "inputRef"
+        "inputRef",
+        "className"
     ];
 
     onChange = (e: SyntheticInputEvent<HTMLInputElement>) => {
@@ -153,8 +154,9 @@ class Input extends React.Component<Props> {
                 {validation.isValid === false && (
                     <FormElementMessage error>{validation.message}</FormElementMessage>
                 )}
-                {validation.isValid !== false &&
-                    description && <FormElementMessage>{description}</FormElementMessage>}
+                {validation.isValid !== false && description && (
+                    <FormElementMessage>{description}</FormElementMessage>
+                )}
             </React.Fragment>
         );
     }
