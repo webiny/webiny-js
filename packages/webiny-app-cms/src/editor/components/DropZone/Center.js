@@ -16,9 +16,13 @@ const Container = pure(
         userSelect: "none",
         width: "100%",
         ".addIcon": {
+            display: isOver ? "block" : "none",
             color: isOver
                 ? "var(--mdc-theme-primary) !important"
                 : "var(--mdc-theme-secondary) !important"
+        },
+        "&:hover .addIcon": {
+            display: "block"
         }
     }))
 );
