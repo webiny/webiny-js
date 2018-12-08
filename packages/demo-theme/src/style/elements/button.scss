@@ -1,7 +1,9 @@
 @import "../variables";
 
 .webiny-cms-element-button{
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
   margin-right: 0;
   margin-left: 0;
   padding: 14px 20px;
@@ -30,12 +32,26 @@
   &:active{
     transform: translateY(1px);
   }
-  &.primary{
+  &--primary{
     background-color: $webiny-cms-theme-primary;
     color: $webiny-cms-theme-on-primary;
   }
-  &.secondary{
+  &--secondary{
     background-color: $webiny-cms-theme-secondary;
     color: $webiny-cms-theme-on-secondary;
+  }
+  &__icon{
+    &--left{
+      flex-direction: row;
+    }
+    &--right{
+      flex-direction: row-reverse;
+    }
+    &--top{
+      flex-direction: column;
+    }
+    &--bottom{
+      flex-direction: column-reverse;
+    }
   }
 }
