@@ -9,7 +9,7 @@ export default (): RenderElementPluginType => {
         type: "cms-render-element",
         element: "cms-element-pinterest",
         render(props) {
-            return <PinterestEmbed elementId={props.element.id} />;
+            return <PinterestEmbed element={props.element} />;
         }
     };
 };

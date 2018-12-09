@@ -20,11 +20,11 @@ const ButtonContainer = ({ getAllClasses, element, onChange }) => {
     const { type = "default", icon = {} } = get(element, "settings.advanced") || {};
     const svg = element.data.icon || null;
 
-    // TODO: @sven render according to icon position
     const { position = "left" } = icon;
 
     return (
-        <button
+        <a
+            href={null}
             className={getAllClasses(
                 "webiny-cms-element-button",
                 "webiny-cms-element-button--" + type,
@@ -33,7 +33,7 @@ const ButtonContainer = ({ getAllClasses, element, onChange }) => {
         >
             {svg && <span dangerouslySetInnerHTML={{ __html: svg }} />}
             <ConnectedSlate elementId={element.id} onChange={onChange} exclude={excludePlugins} />
-        </button>
+        </a>
     );
 };
 
