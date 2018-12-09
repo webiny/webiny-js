@@ -6,6 +6,7 @@ System.config({
         "webiny-app-cms/*": "./packages/webiny-app-cms/src/*",
         "webiny-api/*": "./packages/webiny-api/src/*",
         "webiny-api-cms/*": "./packages/webiny-api-cms/src/*",
-        "webiny-ui/*": "./packages/webiny-ui/src/*"
+        "webiny-ui/*": "./packages/webiny-ui/src/*",
+        "webiny-plugins/*": "./packages/webiny-plugins/src/*"
     }
 });

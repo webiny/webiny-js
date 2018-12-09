@@ -1,1 +1,0 @@
-`yarn add webiny-validation`

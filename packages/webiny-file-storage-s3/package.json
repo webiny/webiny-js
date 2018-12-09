@@ -1,7 +1,7 @@
 {
   "name": "webiny-file-storage-s3",
   "description": "AWS S3 file-system storage driver for webiny-file-storage library",
-  "version": "0.0.0-semantically-released",
+  "version": "0.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -16,7 +16,7 @@
   "dependencies": {
     "aws-sdk": "^2.188.0",
     "@babel/runtime": "^7.0.0",
-    "webiny-file-storage": "0.0.0-semantically-released"
+    "webiny-file-storage": "0.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
@@ -29,9 +29,8 @@
     "sinon": "^4.2.0"
   },
   "scripts": {
-    "build": "babel src types.js -d ${DEST:-build} --source-maps --copy-files --ignore types.js",
+    "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
     "flow-copy-source": "flow-copy-source src ${DEST:-build}",
-    "postbuild": "yarn flow-copy-source",
-    "documentation": "documentation readme --section=Documentation --config documentation.yml src/** --github"
+    "postbuild": "yarn flow-copy-source"
   }
 }

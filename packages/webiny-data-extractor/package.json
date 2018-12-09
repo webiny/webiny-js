@@ -1,6 +1,6 @@
 {
   "name": "webiny-data-extractor",
-  "version": "0.0.0-semantically-released",
+  "version": "0.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -23,9 +23,8 @@
     "documentation": "^5.3.5"
   },
   "scripts": {
-    "build": "babel src types.js -d ${DEST:-build} --source-maps --copy-files --ignore types.js",
+    "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
     "flow-copy-source": "flow-copy-source src ${DEST:-build}",
-    "postbuild": "yarn flow-copy-source",
-    "documentation": "documentation readme --section=Documentation --config documentation.yml types.js src/** --github"
+    "postbuild": "yarn flow-copy-source"
   }
 }

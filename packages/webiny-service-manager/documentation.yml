@@ -1,8 +1,0 @@
-toc:
-  - name: Installation
-    file: documentation/installation.md
-  - name: Get started
-    file: documentation/getStarted.md
-  - name: Classes
-    children:
-      - ServiceManager
