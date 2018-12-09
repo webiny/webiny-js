@@ -5,7 +5,7 @@ Entity component, as the name already suggests, provides a way to work with enti
 Webiny currently hosts two official drivers - MySQL and Memory drivers. Additional drivers may be added (eg. PostgreSQL or MongoDB) as the need arises in the near future.
 
 ## Installation
-`yarn install webiny-entity`
+`yarn add webiny-entity`
 
 ## Quick Example
 In general, the first step in defining a new entity is to extend a base Entity class, and then define attributes in class constructor. To quickly get an impression on how it works, please consider the following examples:

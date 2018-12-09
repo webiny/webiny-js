@@ -26,15 +26,17 @@ module.exports = (pluginConfig = {}) => {
             target_commitish: config.branch
         };
 
-        let tagger = {};
+        let tagger = null;
 
         // Get current user to construct proper tagger data.
         try {
             const user = await github.users.getAuthenticated({});
-            tagger = {
-                name: user.data.name,
-                email: user.data.email
-            };
+            if (user && user.data && user.data.email) {
+                tagger = {
+                    name: user.data.name,
+                    email: user.data.email
+                };
+            }
         } catch (e) {
             logger.error(e.message);
         }

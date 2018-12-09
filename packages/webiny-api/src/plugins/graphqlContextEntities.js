@@ -1,5 +1,5 @@
 // @flow
-import { type GraphQLContextPluginType, EntityPluginType } from "webiny-api/types";
+import type { GraphQLContextPluginType, EntityPluginType } from "webiny-api/types";
 import { getPlugins } from "webiny-plugins";
 
 const graphqlContextEntities: GraphQLContextPluginType = {

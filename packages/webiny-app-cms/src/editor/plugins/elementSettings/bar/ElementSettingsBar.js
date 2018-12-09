@@ -65,9 +65,12 @@ const ElementSettingsBar = pure(({ elementType, deactivateElement }) => {
 
 export default compose(
     connect(
-        state => ({
-            elementType: getActiveElement(state).type
-        }),
+        state => {
+            const element = getActiveElement(state);
+            return {
+                elementType: element ? element.type : null
+            };
+        },
         { deactivateElement }
     ),
     withKeyHandler(),
