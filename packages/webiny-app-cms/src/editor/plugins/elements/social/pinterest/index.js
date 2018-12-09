@@ -38,7 +38,7 @@ export default (): Array<ElementPluginType> => [
                 );
             }
         },
-        render({ element }: Object) {
+        render({ element }) {
             return <PinterestEmbed element={element} />;
         }
     }),
