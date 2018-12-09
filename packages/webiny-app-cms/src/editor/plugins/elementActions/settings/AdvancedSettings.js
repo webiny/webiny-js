@@ -8,15 +8,8 @@ import { getPlugins } from "webiny-plugins";
 import { renderPlugins } from "webiny-app/plugins";
 import { isPluginActive } from "webiny-app-cms/editor/selectors";
 import { withActiveElement, withKeyHandler } from "webiny-app-cms/editor/components";
-import {
-    Dialog,
-    DialogHeader,
-    DialogHeaderTitle,
-    DialogBody,
-    DialogFooter,
-    DialogAccept,
-    DialogCancel
-} from "webiny-ui/Dialog";
+import { css } from "emotion";
+import { Dialog, DialogBody, DialogFooter, DialogAccept, DialogCancel } from "webiny-ui/Dialog";
 import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Form } from "webiny-form";
@@ -32,6 +25,13 @@ type Props = Object & {
 };
 
 const emptyElement = { data: {}, settings: {}, type: null };
+
+const dialogBody = css({
+    "&.mdc-dialog__body": {
+        marginTop: 0,
+        padding: 0
+    }
+});
 
 class AdvancedSettings extends React.Component<Props> {
     shouldComponentUpdate(props) {
@@ -51,10 +51,7 @@ class AdvancedSettings extends React.Component<Props> {
                 <Form data={{ data, settings }} onSubmit={onSubmit}>
                     {({ submit, Bind }) => (
                         <React.Fragment>
-                            <DialogHeader>
-                                <DialogHeaderTitle>Settings</DialogHeaderTitle>
-                            </DialogHeader>
-                            <DialogBody>
+                            <DialogBody className={dialogBody}>
                                 <Tabs>
                                     {renderPlugins(
                                         "cms-element-advanced-settings",
