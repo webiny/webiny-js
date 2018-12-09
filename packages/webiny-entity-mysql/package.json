@@ -1,6 +1,6 @@
 {
   "name": "webiny-entity-mysql",
-  "version": "0.0.0-semantically-released",
+  "version": "0.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -20,8 +20,8 @@
     "mdbid": "^1.0.0",
     "mysql": "^2.15.0",
     "sqlstring": "^2.3.0",
-    "webiny-entity": "0.0.0-semantically-released",
-    "webiny-mysql-connection": "0.0.0-semantically-released"
+    "webiny-entity": "0.0.0",
+    "webiny-mysql-connection": "0.0.0"
   },
   "peerDependencies": {
     "serverless-mysql": "^1.1.0"
@@ -37,7 +37,7 @@
     "sinon": "^4.2.0"
   },
   "scripts": {
-    "build": "babel src types.js -d ${DEST:-build} --source-maps --copy-files --ignore types.js",
+    "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
     "flow-copy-source": "flow-copy-source src ${DEST:-build}",
     "postbuild": "yarn flow-copy-source"
   }

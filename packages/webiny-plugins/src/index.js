@@ -1,5 +1,5 @@
 // @flow
-import { type PluginType } from "webiny-plugins/types";
+import type { PluginType } from "webiny-plugins/types";
 
 const plugins = {};
 

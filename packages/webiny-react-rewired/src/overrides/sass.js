@@ -1,7 +1,7 @@
 // @flowIgnore
 const isObject = require("lodash/isObject");
-
 const path = require("path");
+
 const includePaths = [
     path.resolve("./src"),
     path.resolve("./node_modules"),

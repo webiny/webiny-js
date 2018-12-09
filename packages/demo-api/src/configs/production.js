@@ -1,6 +1,6 @@
-import mysql from "mysql";
-import { User, ApiToken } from "webiny-api/entities";
-import { createIdentity, credentialsStrategy } from "webiny-api/security";
+// @flow
+import mysql from "serverless-mysql";
+import addDays from "date-fns/add_days";
 import { MySQLDriver } from "webiny-entity-mysql";
 
 const connection = mysql.createPool({
@@ -14,15 +14,27 @@ const connection = mysql.createPool({
 });
 
 export default {
+    database: {
+        connection
+    },
     entity: {
-        // Instantiate driver with DB connection
+        // Instantiate entity driver with DB connection
         driver: new MySQLDriver({ connection }),
+        crud: {
+            logs: true,
+            read: {
+                maxPerPage: 100
+            },
+            delete: {
+                soft: true
+            }
+        }
     },
     security: {
-        token: { secret: "MyS3cr3tK3Y" },
-        identities: [
-            createIdentity(User, { strategy: credentialsStrategy() }),
-            createIdentity(ApiToken)
-        ]
+        enabled: false,
+        token: {
+            secret: process.env.JWT_SECRET || "MyS3cr3tK3Y",
+            expiresOn: (args: Object) => addDays(new Date(), args.remember ? 30 : 1)
+        }
     }
 };

@@ -1,6 +1,7 @@
 {
+  "private": true,
   "name": "webiny-storybook-utils",
-  "version": "0.0.0-semantically-released",
+  "version": "0.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"

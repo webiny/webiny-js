@@ -1,21 +1,9 @@
+// @flow
 import type { Node, ComponentType } from "react";
-import type { Store } from "webiny-app/redux";
-import type { PluginType } from "webiny-app/plugins";
+import type { PluginType } from "webiny-plugins/types";
 import type { WithPageDetailsProps } from "webiny-app-cms/admin/components";
 
-export { WithPageDetailsProps };
-
-// TODO: @pavel
-export type SearchBarPluginType = {
-    name: string,
-    type: string,
-    labels: {
-        option: string,
-        search: string
-    },
-    renderFilters?: ({ Bind: ComponentType<*> }) => Node,
-    onSearch?: (data: Object) => void
-};
+export type { WithPageDetailsProps };
 
 export type ElementType = {
     id: string,
@@ -66,7 +54,7 @@ export type ElementPluginType = PluginType & {
     // A function to render an element in the editor.
     render: ({ theme: CmsThemeType, element: ElementType }) => Node,
     // A function to check if an element can be deleted.
-    canDelete: ({ parent, element}) => boolean,
+    canDelete: ({ element: ElementType }) => boolean,
     // Executed when another element is dropped on the drop zones of current element.
     onReceived?: ({
         store: Store,
@@ -84,7 +72,7 @@ export type RenderElementPluginType = PluginType & {
     render: ({ theme: CmsThemeType, element: ElementType }) => Node
 };
 
-export type CmsPageDetailsPluginType = PluginType &  {
+export type CmsPageDetailsPluginType = PluginType & {
     render: (params: WithPageDetailsProps) => Node
 };
 
@@ -98,7 +86,7 @@ export type CmsPageSettingsPluginType = PluginType & {
     /* GraphQL query fields to include in the `settings` subselect */
     fields: string,
     /* Render function that handles the specified `fields` */
-    render: (params: { Bind: ComponentType<*>}) => Node
+    render: (params: { Bind: ComponentType<*> }) => Node
 };
 
 export type CmsMenuItemPluginType = PluginType & {
@@ -128,7 +116,7 @@ export type ActionOptions = {
     log?: boolean
 };
 
-export type StatePath = null | string | (action: Action) => string;
+export type StatePath = null | string | ((action: Action) => string);
 
 export type Reducer = Function;
 

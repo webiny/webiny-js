@@ -1,6 +1,6 @@
 {
   "name": "webiny-ui",
-  "version": "0.0.0-semantically-released",
+  "version": "0.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -54,8 +54,9 @@
     "react-emotion": "^9.2.6",
     "react-image": "^1.5.1",
     "react-loading-skeleton": "^0.5.0",
-    "webiny-form": "0.0.0-semantically-released",
-    "webiny-storybook-utils": "0.0.0-semantically-released"
+    "@svgr/webpack": "^4.1.0",
+    "webiny-form": "0.0.0",
+    "webiny-storybook-utils": "0.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
@@ -70,7 +71,6 @@
     "@storybook/addon-links": "4.0.0-rc.2",
     "@storybook/addons": "4.0.0-rc.2",
     "@storybook/react": "4.0.0-rc.2",
-    "@svgr/webpack": "^2.1.1",
     "babel-loader": "^8.0.0-beta.6",
     "babel-plugin-emotion": "^9.2.8",
     "node-sass": "^4.9.3",
@@ -93,5 +93,10 @@
       "^.+\\.js$": "babel-jest"
     },
     "setupTestFrameworkScriptFile": "jest-extended"
+  },
+  "svgo": {
+    "plugins": {
+      "removeViewBox": false
+    }
   }
 }

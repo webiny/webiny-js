@@ -1,6 +1,6 @@
 {
   "name": "webiny-file-storage",
-  "version": "0.0.0-semantically-released",
+  "version": "0.0.0",
   "main": "index.js",
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>",
@@ -27,7 +27,7 @@
     "globby": "^8.0.1"
   },
   "scripts": {
-    "build": "babel src types.js -d ${DEST:-build} --source-maps --copy-files --ignore types.js",
+    "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
     "flow-copy-source": "flow-copy-source src ${DEST:-build}",
     "postbuild": "yarn flow-copy-source"
   }

@@ -1,0 +1,19 @@
+{
+  "private": true,
+  "name": "babel-preset-webiny-app",
+  "version": "0.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@svgr/webpack": "^4.1.0",
+    "babel-plugin-emotion": "^10.0.4",
+    "babel-plugin-lodash": "^3.3.4",
+    "babel-plugin-named-asset-import": "^0.2.3",
+    "react-hot-loader": "^4.3.12"
+  },
+  "scripts": {
+    "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
+    "flow-copy-source": "flow-copy-source src ${DEST:-build}",
+    "postbuild": "yarn flow-copy-source"
+  }
+}

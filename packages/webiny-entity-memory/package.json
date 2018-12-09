@@ -1,6 +1,6 @@
 {
   "name": "webiny-entity-memory",
-  "version": "0.0.0-semantically-released",
+  "version": "0.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -16,7 +16,7 @@
     "@babel/runtime": "^7.0.0",
     "lodash": "^4.17.4",
     "mdbid": "^1.0.0",
-    "webiny-entity": "0.0.0-semantically-released"
+    "webiny-entity": "0.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

@@ -1,7 +1,7 @@
 {
   "name": "webiny-react-router",
   "description": "A pluginable React router.",
-  "version": "0.0.0-semantically-released",
+  "version": "0.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -23,7 +23,7 @@
     "invariant": "^2.2.4",
     "debug": "^3.1.0",
     "history": "^4.7.2",
-    "webiny-compose": "0.0.0-semantically-released"
+    "webiny-compose": "0.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
