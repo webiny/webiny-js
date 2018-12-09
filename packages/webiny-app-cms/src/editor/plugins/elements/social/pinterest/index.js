@@ -28,7 +28,7 @@ export default (): Array<ElementPluginType> => [
     createEmbedPlugin({
         type: "pinterest",
         toolbar: {
-            title: "Pinterest",
+            title: "Pinterest post",
             group: "cms-element-group-social",
             preview() {
                 return (
