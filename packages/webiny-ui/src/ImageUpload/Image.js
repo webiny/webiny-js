@@ -101,11 +101,11 @@ const ImagePreviewWrapper = styled("div")({
         },
         [RemoveImage]: {
             display: "block",
-            zIndex: 2
+            zIndex: 12
         },
         [EditImage]: {
             display: "block",
-            zIndex: 2
+            zIndex: 12
         }
     }
 });

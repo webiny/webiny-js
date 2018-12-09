@@ -3,25 +3,28 @@ import React from "react";
 import { get } from "dot-prop-immutable";
 import { connect } from "react-redux";
 import styled from "react-emotion";
+import { css } from "emotion";
 import { compose } from "recompose";
 import { getPlugins } from "webiny-plugins";
-import { withCms } from "webiny-app-cms/context";
+import { withTheme } from "webiny-app-cms/theme";
 import { getContent, isPluginActive, getPage } from "webiny-app-cms/editor/selectors";
 import Element from "webiny-app-cms/editor/components/Element";
+import { Elevation } from "webiny-ui/Elevation";
 
 const ContentContainer = styled("div")(({ theme }) => ({
-    margin: "64px 0px 0 54px",
-    padding: "25px 10px 10px 10px",
-    position: "absolute",
-    width: "calc(100vw - 54px)",
-    height: "calc(100vh - 64px)",
-    overflow: "scroll",
-    top: 0,
-    boxShadow: "inset 1px 0px 5px 0px rgba(128, 128, 128, 1)",
-    boxSizing: "border-box",
-    zIndex: 1,
     backgroundColor: get(theme, "colors.background")
 }));
+
+const contentContainerWrapper = css({
+    margin: "95px 65px 50px 85px",
+    padding: 0,
+    position: "absolute",
+    width: "calc(100vw - 115px)",
+    overflow: "visible",
+    top: 0,
+    boxSizing: "border-box",
+    zIndex: 1
+});
 
 const BaseContainer = styled("div")({
     width: "100%",
@@ -29,8 +32,7 @@ const BaseContainer = styled("div")({
     margin: "0 auto"
 });
 
-const Content = props => {
-    const { rootElement, theme, renderLayout, layout } = props;
+const Content = ({ rootElement, theme, renderLayout, layout }) => {
     const plugins = getPlugins("cms-editor-content");
     const themeLayout = theme.layouts.find(l => l.name === layout);
 
@@ -43,10 +45,12 @@ const Content = props => {
     content = renderLayout ? React.createElement(themeLayout.component, null, content) : content;
 
     return (
-        <ContentContainer theme={theme}>
-            {plugins.map(plugin => React.cloneElement(plugin.render(), { key: plugin.name }))}
-            <BaseContainer>{content}</BaseContainer>
-        </ContentContainer>
+        <Elevation className={contentContainerWrapper} z={2}>
+            <ContentContainer theme={theme}>
+                {plugins.map(plugin => React.cloneElement(plugin.render(), { key: plugin.name }))}
+                <BaseContainer>{content}</BaseContainer>
+            </ContentContainer>
+        </Elevation>
     );
 };
 
@@ -58,5 +62,5 @@ const stateToProps = state => ({
 
 export default compose(
     connect(stateToProps),
-    withCms()
+    withTheme()
 )(Content);

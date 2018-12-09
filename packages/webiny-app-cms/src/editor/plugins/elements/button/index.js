@@ -16,7 +16,7 @@ export default (): ElementPluginType => {
             type: "cms-element",
             toolbar: {
                 title: "Button",
-                group: "cms-element-group-text",
+                group: "cms-element-group-basic",
                 preview() {
                     return <button className={"webiny-cms-element-button"}>Click me</button>;
                 }

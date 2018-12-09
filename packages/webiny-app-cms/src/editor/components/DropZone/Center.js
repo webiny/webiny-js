@@ -15,6 +15,9 @@ const Container = pure(
         position: "relative",
         userSelect: "none",
         width: "100%",
+        border: isOver
+            ? "1px dashed var(--mdc-theme-primary)"
+            : "1px dashed var(--mdc-theme-secondary)",
         ".addIcon": {
             color: isOver
                 ? "var(--mdc-theme-primary) !important"

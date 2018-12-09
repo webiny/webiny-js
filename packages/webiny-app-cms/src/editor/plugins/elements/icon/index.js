@@ -1,21 +1,34 @@
 // @flow
 import React from "react";
-import { ReactComponent as IconSvg } from "./round-flag-24px.svg";
+import { ReactComponent as IconSvg } from "./round-star_border-24px.svg";
 import IconSettings from "./IconSettings";
+import styled from "react-emotion";
 import Icon from "./Icon";
 import Action from "./../../elementSettings/components/Action";
 
 export default () => {
+    const PreviewBox = styled("div")({
+        textAlign: "center",
+        height: 50,
+        svg: {
+            height: 50,
+            width: 50
+        }
+    });
+
     return [
         {
             name: "cms-element-icon",
             type: "cms-element",
             toolbar: {
                 title: "Icon",
-                group: "cms-element-group-image",
+                group: "cms-element-group-basic",
                 preview() {
-                    // TODO: @sven
-                    return "Icon preview";
+                    return (
+                        <PreviewBox>
+                            <IconSvg />
+                        </PreviewBox>
+                    );
                 }
             },
             settings: [
@@ -29,7 +42,7 @@ export default () => {
                 ""
             ],
             target: ["cms-element-column", "cms-element-row"],
-            create(options) {
+            create(options: Object) {
                 return {
                     type: "cms-element-icon",
                     elements: [],
@@ -37,7 +50,7 @@ export default () => {
                     ...options
                 };
             },
-            render(props) {
+            render(props: Object) {
                 return <Icon {...props} />;
             }
         },

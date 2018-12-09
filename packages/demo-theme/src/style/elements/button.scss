@@ -1,7 +1,9 @@
 @import "../variables";
 
 .webiny-cms-element-button{
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
   margin-right: 0;
   margin-left: 0;
   padding: 14px 20px;
@@ -21,8 +23,8 @@
   outline: none;
   border: none;
   width: 100%;
-  background-color: $webiny-cms-theme-surface;
-  color: $webiny-cms-theme-on-surface;
+  background-color: $webiny-cms-theme-background;
+  color: $webiny-cms-theme-on-background;
   &:hover{
     box-shadow: 0 7px 14px rgba(50,50,93,.1), 0 3px 6px rgba(0,0,0,.08);
     transform: translateY(-1px);
@@ -30,12 +32,26 @@
   &:active{
     transform: translateY(1px);
   }
-  &.primary{
+  &--primary{
     background-color: $webiny-cms-theme-primary;
     color: $webiny-cms-theme-on-primary;
   }
-  &.secondary{
+  &--secondary{
     background-color: $webiny-cms-theme-secondary;
     color: $webiny-cms-theme-on-secondary;
+  }
+  &__icon{
+    &--left{
+      flex-direction: row;
+    }
+    &--right{
+      flex-direction: row-reverse;
+    }
+    &--top{
+      flex-direction: column;
+    }
+    &--bottom{
+      flex-direction: column-reverse;
+    }
   }
 }

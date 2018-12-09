@@ -6,6 +6,7 @@ import { ButtonPrimary, ButtonSecondary } from "webiny-ui/Button";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { Typography } from "webiny-ui/Typography";
+import { css } from "emotion";
 
 type Props = {
     prefix: string,
@@ -13,6 +14,15 @@ type Props = {
     onChange: Function,
     Bind: React.ComponentType<*>
 };
+
+const controlButtons = css({
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    ">button": {
+        marginRight: 15
+    }
+});
 
 const MetaTags = ({ prefix, value, onChange, Bind, ...other }: Props) => {
     return (
@@ -46,7 +56,7 @@ const MetaTags = ({ prefix, value, onChange, Bind, ...other }: Props) => {
                                     <Input label={"Content"} />
                                 </Bind>
                             </Cell>
-                            <Cell span={3}>
+                            <Cell span={3} className={controlButtons}>
                                 <ButtonPrimary small onClick={actions.add(index)}>
                                     +
                                 </ButtonPrimary>

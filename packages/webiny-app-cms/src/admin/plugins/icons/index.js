@@ -4,6 +4,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import type { PluginType } from "webiny-plugins/types";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
+import { far } from "@fortawesome/free-regular-svg-icons";
 
 const createSvg = (icon: Object) => {
     return (
@@ -19,8 +20,8 @@ export default ({
     name: "cms-icons-fontawesome",
     type: "cms-icons",
     init() {
-        library.add(fab, fas);
-
+        library.add(fab, fas, far);
+        
         Object.keys(library.definitions).forEach(pack => {
             const defs = library.definitions[pack];
             Object.keys(defs).forEach(icon => {

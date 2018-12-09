@@ -21,6 +21,7 @@ function appendSDK(props) {
         script.setAttribute("async", "");
         script.setAttribute("charset", "utf-8");
         script.onload = resolve;
+        // $FlowFixMe
         document.body.appendChild(script);
     });
 }
@@ -39,7 +40,7 @@ const centerAlign = css({
 
 export default compose(
     withHandlers({
-        renderEmbed: ({ element }) => () => {
+        renderEmbed: ({ element }: Object) => function renderEmbed() {
             const data = get(element, "data.source");
             return (
                 <div id={ element.id} className={centerAlign}>
