@@ -73,7 +73,7 @@ const IconPicker = ({ value, renderGrid }: Object) => {
         <Menu
             handle={
                 <div className={pickIcon}>
-                    <FontAwesomeIcon icon={value || ["fas", "font-awesome-star"]} size={"2x"} />
+                    <FontAwesomeIcon icon={value || ["far", "star"]} size={"2x"} />
                 </div>
             }
         >
