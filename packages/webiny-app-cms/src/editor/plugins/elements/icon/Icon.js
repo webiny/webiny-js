@@ -20,7 +20,7 @@ const Icon = ({ element }: Object) => {
                             <div className={className} dangerouslySetInnerHTML={{ __html: svg }} />
                         ) : (
                             <div className={className}>
-                                <FontAwesomeIcon icon={["fab", "font-awesome-flag"]} size={"4x"} />
+                                <FontAwesomeIcon icon={["far", "star"]} size={"4x"} />
                             </div>
                         );
                     }}

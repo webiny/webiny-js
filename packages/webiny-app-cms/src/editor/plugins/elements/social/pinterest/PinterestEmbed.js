@@ -20,6 +20,7 @@ function appendSDK(props) {
         script.setAttribute("async", "");
         script.setAttribute("charset", "utf-8");
         script.onload = resolve;
+        // $FlowFixMe
         document.body.appendChild(script);
     });
 }
@@ -70,7 +71,8 @@ export default compose(
             await appendSDK(this.props);
             initEmbed(this.props);
         },
-        componentDidUpdate() {
+        async componentDidUpdate() {
+            await appendSDK(this.props);
             initEmbed(this.props);
         }
     })

@@ -3,7 +3,7 @@ import React from "react";
 import { pure } from "recompose";
 import { TopAppBar, TopAppBarSection } from "webiny-ui/TopAppBar";
 import { renderPlugins } from "webiny-app/plugins";
-//import { css } from "emotion";
+import { css } from "emotion";
 
 /*
 const alignCenter = css({
@@ -14,9 +14,13 @@ const alignCenter = css({
 });
 */
 
+const topBar = css({
+    boxShadow: "1px 0px 5px 0px rgba(128,128,128,1)"
+});
+
 const DefaultEditorBar = pure(() => {
     return (
-        <TopAppBar fixed>
+        <TopAppBar className={topBar} fixed>
             <TopAppBarSection style={{ width: "50%" }} alignStart>
                 {renderPlugins("cms-default-bar-left")}
             </TopAppBarSection>

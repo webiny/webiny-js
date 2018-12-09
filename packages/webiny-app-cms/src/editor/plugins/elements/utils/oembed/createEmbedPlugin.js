@@ -10,7 +10,7 @@ type EmbedPluginConfig = {
         group: string,
         preview: () => React.Node
     },
-    render?: (params: ?Object) => React.Node,
+    render?: ({ element: Object }) => React.Node,
     oembed?: {
         global?: string,
         sdk?: string,

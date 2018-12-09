@@ -18,12 +18,23 @@ import { Input } from "webiny-ui/Input";
 import { Tags } from "webiny-ui/Tags";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Form } from "webiny-form";
+import styled from "react-emotion";
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {
         width: 600,
         minWidth: 600
     }
+});
+
+const PreviewBox = styled("div")({
+    width: 500,
+    minHeight: 250,
+    border: "1px solid var(--mdc-theme-on-background)",
+    backgroundColor: "var(--mdc-theme-surface)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
 });
 
 class ElementPreview extends React.Component<*> {
@@ -149,19 +160,21 @@ const SaveDialog = (props: Props) => {
                             )}
                             <Grid>
                                 <Cell span={12}>
-                                    <Bind name={"preview"}>
-                                        {({ value, onChange }) =>
-                                            value ? (
-                                                <img src={value} alt={""} />
-                                            ) : open ? (
-                                                <ElementPreview
-                                                    key={element.id}
-                                                    onChange={onChange}
-                                                    element={element}
-                                                />
-                                            ) : null
-                                        }
-                                    </Bind>
+                                    <PreviewBox>
+                                        <Bind name={"preview"}>
+                                            {({ value, onChange }) =>
+                                                value ? (
+                                                    <img src={value} alt={""} />
+                                                ) : open ? (
+                                                    <ElementPreview
+                                                        key={element.id}
+                                                        onChange={onChange}
+                                                        element={element}
+                                                    />
+                                                ) : null
+                                            }
+                                        </Bind>
+                                    </PreviewBox>
                                 </Cell>
                             </Grid>
                         </DialogBody>

@@ -3,15 +3,16 @@ import React from "react";
 import Image from "./Image";
 import styled from "react-emotion";
 import { getPlugin } from "webiny-plugins";
-import { redux, addMiddleware } from "webiny-app-cms/editor/redux";
+import { addMiddleware } from "webiny-app-cms/editor/redux";
 import { ELEMENT_CREATED } from "webiny-app-cms/editor/actions";
 import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
-import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
 import type { ElementPluginType } from "webiny-app-cms/types";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
+
+import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
 
 export default (): ElementPluginType => {
     const PreviewBox = styled("div")({
@@ -29,7 +30,7 @@ export default (): ElementPluginType => {
             type: "cms-element",
             toolbar: {
                 title: "Image",
-                group: "cms-element-group-image",
+                group: "cms-element-group-basic",
                 preview() {
                     return (
                         <PreviewBox>

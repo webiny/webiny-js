@@ -11,6 +11,10 @@ import { Query, withApollo } from "react-apollo";
 import { getPage } from "webiny-app-cms/admin/graphql/pages";
 import { withSavedElements } from "webiny-app-cms/admin/components";
 import Snackbar from "webiny-app-admin/plugins/Snackbar/Snackbar";
+import { Typography } from "webiny-ui/Typography";
+import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";
+
+import editorMock from "webiny-app-cms/admin/assets/editor-mock.png";
 
 const getEmptyData = (page = {}, revisions = []) => {
     return {
@@ -45,7 +49,18 @@ export default compose(
         // eslint-disable-next-line react/display-name
         renderEditor: ({ elements, client }) => ({ data, loading }) => {
             if (loading || !Array.isArray(elements)) {
-                return <div>Loading editor...</div>;
+                return (
+                    <LoadingEditor>
+                        <img src={editorMock} />
+                        <LoadingTitle>
+                            <Typography tag={"div"} use={"headline6"}>
+                                Loading Editor<span>.</span>
+                                <span>.</span>
+                                <span>.</span>
+                            </Typography>
+                        </LoadingTitle>
+                    </LoadingEditor>
+                );
             }
 
             if (!redux.store) {

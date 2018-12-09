@@ -8,7 +8,6 @@ import { ChromePicker } from "react-color";
 import { Menu } from "webiny-ui/Menu";
 import { withTheme } from "webiny-app-cms/theme";
 import { ReactComponent as IconPalette } from "webiny-app-cms/editor/assets/icons/round-color_lens-24px.svg";
-import { Tooltip } from "webiny-ui/Tooltip";
 
 const ColorPickerStyle = styled("div")({
     display: "flex",
@@ -22,18 +21,47 @@ const CompactColorPicker = styled("div")({
     }
 });
 
-const Color = styled("div")({
+const ColorList = styled("div")({
+    display: "flex"
+});
+
+const ColorBox = styled("div")({
     cursor: "pointer",
-    borderRadius: "50%",
-    width: 32,
-    height: 32,
+    width: 50,
+    height: 40,
     margin: 10,
     padding: 5,
-    boxShadow: "inset 0px 0px 0px 3px var(--mdc-theme-on-background)",
+    borderRadius: 2,
     boxSizing: "border-box",
-    transition: "transform 0.2s, box-shadow 0.2s",
+    transition: "transform 0.2s",
+    color: "var(--mdc-theme-text-secondary-on-background)"
+});
+
+const Color = styled("div")({
+    cursor: "pointer",
+    width: 40,
+    height: 30,
+    border: "1px solid var(--mdc-theme-on-background)",
+    transition: "transform 0.2s, scale 0.2s",
+    display: "flex",
+    alignItems: "center",
+    "&::after": {
+        boxShadow: "0 0.25rem 0.125rem 0 rgba(0,0,0,0.05)",
+        transition: "opacity 0.5s cubic-bezier(0.165, 0.84, 0.44, 1)",
+        content: '""',
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        zIndex: "-1",
+        opacity: 0
+    },
     "&:hover": {
-        transform: "scale(1.25)"
+        transform: "scale(1.25)",
+        "&::after": {
+            opacity: 1
+        }
     }
 });
 
@@ -63,7 +91,7 @@ const iconPaletteStyle = css({
 
 const styles = {
     selectedColor: css({
-        boxShadow: "inset 0px 0px 0px 5px var(--mdc-theme-secondary)"
+        boxShadow: "0px 0px 0px 2px var(--mdc-theme-secondary)"
     }),
     swatch: css({
         padding: "5px",
@@ -137,11 +165,7 @@ class ColorPicker extends React.Component<Props, State> {
                     }
 
                     return (
-                        <Tooltip
-                            key={index}
-                            content={<span>{typeof color === "string" && color.toString()}</span>}
-                            placement={"bottom"}
-                        >
+                        <ColorBox key={index}>
                             <Color
                                 className={color === value ? styles.selectedColor : null}
                                 style={{ backgroundColor: color }}
@@ -150,11 +174,11 @@ class ColorPicker extends React.Component<Props, State> {
                                     this.props.onChangeComplete(color);
                                 }}
                             />
-                        </Tooltip>
+                        </ColorBox>
                     );
                 })}
 
-                <Tooltip content={<span>{"Transparent"}</span>} placement={"bottom"}>
+                <ColorBox>
                     <Color
                         className={classnames(transparent, {
                             [styles.selectedColor]: value === "transparent"
@@ -164,9 +188,9 @@ class ColorPicker extends React.Component<Props, State> {
                             this.props.onChangeComplete("transparent");
                         }}
                     />
-                </Tooltip>
+                </ColorBox>
 
-                <Tooltip content={<span>{"Choose custom color"}</span>} placement={"bottom"}>
+                <ColorBox>
                     <Color
                         className={value && !themeColor ? styles.selectedColor : null}
                         style={{ backgroundColor: themeColor ? "#fff" : value }}
@@ -174,7 +198,7 @@ class ColorPicker extends React.Component<Props, State> {
                     >
                         <IconPalette className={iconPaletteStyle} />
                     </Color>
-                </Tooltip>
+                </ColorBox>
                 {this.state.showPicker && (
                     <span onClick={e => e.stopPropagation()} className={chromePickerStyles}>
                         <ChromePicker
@@ -197,7 +221,9 @@ class ColorPicker extends React.Component<Props, State> {
                             </div>
                         }
                     >
-                        {React.cloneElement(colorPicker, { style: { width: 240 } })}
+                        <ColorList>
+                            {React.cloneElement(colorPicker, { style: { width: 240 } })}
+                        </ColorList>
                     </Menu>
                 </CompactColorPicker>
             );
