@@ -23,8 +23,8 @@
   outline: none;
   border: none;
   width: 100%;
-  background-color: $webiny-cms-theme-surface;
-  color: $webiny-cms-theme-on-surface;
+  background-color: $webiny-cms-theme-background;
+  color: $webiny-cms-theme-on-background;
   &:hover{
     box-shadow: 0 7px 14px rgba(50,50,93,.1), 0 3px 6px rgba(0,0,0,.08);
     transform: translateY(-1px);
