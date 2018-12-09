@@ -10,19 +10,19 @@
     "webiny-app": "0.0.0-semantically-released",
     "webiny-app-admin": "0.0.0-semantically-released",
     "webiny-app-cms": "0.0.0-semantically-released",
-    "webiny-ui": "0.0.0-semantically-released",
-    "webiny-plugins": "0.0.0-semantically-released"
+    "webiny-plugins": "0.0.0-semantically-released",
+    "webiny-ui": "0.0.0-semantically-released"
   },
   "devDependencies": {
     "node-sass": "^4.9.3",
     "react-app-rewired": "^1.5.2",
     "react-scripts": "^2.0.5",
-    "source-map-explorer": "^1.5.0"
+    "source-map-explorer": "^1.6.0"
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
     "start": "SKIP_PREFLIGHT_CHECK=true PORT=3001 react-app-rewired start",
-    "build": "react-app-rewired build",
+    "build": "SKIP_PREFLIGHT_CHECK=true react-app-rewired build",
     "test": "react-app-rewired test --env=jsdom",
     "eject": "react-app-rewired eject"
   },

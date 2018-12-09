@@ -17,20 +17,63 @@ const COLUMN_COUNT = 6;
 const gridItem = css({
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
-    cursor: "pointer"
+    justifyContent: "flex-start",
+    boxSizing: "border-box",
+    paddingTop: 15,
+    alignItems: "center",
+    textAlign: "center",
+    cursor: "pointer",
+    transform: "translateZ(0)",
+    borderRadius: 2,
+    color: "var(--mdc-theme-text-secondary-on-background)",
+    transition: "all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1)",
+    "&::after": {
+        boxShadow: "0 0.25rem 0.125rem 0 rgba(0,0,0,0.05)",
+        transition: "opacity 0.5s cubic-bezier(0.165, 0.84, 0.44, 1)",
+        content: '""',
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        zIndex: "-1",
+        opacity: 0
+    },
+    "&:hover": {
+        backgroundColor: "var(--mdc-theme-background)",
+        color: "var(--mdc-theme-text-primary-on-background)",
+        "&::after": {
+            opacity: 1
+        }
+    },
+    ">svg": {
+        width: 42,
+        marginBottom: 5
+    }
 });
 
 const grid = css({
     padding: 20
 });
 
+const pickIcon = css({
+    width: 50,
+    textAlign: "center",
+    cursor: "pointer"
+});
+
+const searchInput = css({
+    input: {
+        padding: "20px 12px 20px"
+    }
+});
+
 const IconPicker = ({ value, renderGrid }: Object) => {
     return (
         <Menu
             handle={
-                <div style={{ width: 50, textAlign: "center" }}>
-                    <FontAwesomeIcon icon={value || ["fab", "font-awesome-flag"]} size={"2x"} />
+                <div className={pickIcon}>
+                    <FontAwesomeIcon icon={value || ["far", "star"]} size={"2x"} />
                 </div>
             }
         >
@@ -86,6 +129,7 @@ export default compose(
                             {({ value, onChange }) => (
                                 <Input
                                     autoFocus
+                                    className={searchInput}
                                     value={value}
                                     onChange={onChange}
                                     placeholder={"Search icons..."}
