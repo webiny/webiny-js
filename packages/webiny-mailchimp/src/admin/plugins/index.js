@@ -1,8 +1,10 @@
 // @flow
 import React from "react";
 import { Tab } from "webiny-ui/Tabs";
-import MailchimpSettings from "./MailchimpSettings";
-import MailchimpElement from "./MailchimpElement";
+import MailchimpSettings from "./components/MailchimpSettings";
+import MailchimpElementAdvancedSettings from "./components/MailchimpElementAdvancedSettings";
+import MailchimpElement from "./components/MailchimpElement";
+
 import render from "./../../render/plugins";
 
 export default [
@@ -19,7 +21,7 @@ export default [
         },
         settings: ["cms-element-settings-delete", "", "cms-element-settings-height"],
         target: ["cms-element-column", "cms-element-row", "cms-element-list-item"],
-        // onCreate: "open-settings",
+        onCreate: "open-settings",
         render({ element }: Object) {
             return <MailchimpElement element={element} />;
         },
@@ -39,9 +41,24 @@ export default [
         render(props: Object) {
             return (
                 <Tab label="Mailchimp">
-                    <MailchimpSettings {...props} />
+                    <MailchimpElementAdvancedSettings {...props} />
                 </Tab>
             );
+        }
+    },
+    {
+        type: "settings",
+        name: "settings-mailchimp",
+        settings: {
+            type: "integration",
+            name: "Mailchimp",
+            component: <MailchimpSettings />,
+            route: {
+                name: "Settings.Mailchimp",
+                path: "/mailchimp",
+                title: "Mailchimp",
+                group: undefined
+            }
         }
     }
 ];

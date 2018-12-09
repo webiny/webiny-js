@@ -1,29 +1,15 @@
 // @flow
 import React from "react";
 import type { RenderElementPluginType } from "webiny-app-cms/types";
-import { get } from "lodash";
+import RenderMailchimpForm from "./components/RenderMailchimpForm";
 
 export default ([
     {
         name: "cms-render-element-mailchimp",
         type: "cms-render-element",
         element: "cms-element-mailchimp",
-        render(props) {
-            const { source } = props.element.data;
-            if (!source || !source.url) {
-                return null;
-            }
-
-            const style = { width: "100%", ...get(props, "element.settings.style") };
-            return (
-                <div style={style}>
-                    <iframe
-                        frameBorder="0"
-                        src={source.url}
-                        style={{ height: "100%", width: "100%" }}
-                    />
-                </div>
-            );
+        render(props: *) {
+            return <RenderMailchimpForm {...props} />;
         }
     }
 ]: Array<RenderElementPluginType>);

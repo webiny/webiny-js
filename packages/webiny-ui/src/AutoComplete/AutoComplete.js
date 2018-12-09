@@ -156,6 +156,7 @@ export class AutoComplete extends React.Component<Props, State> {
         // Downshift related props.
         const downshiftProps = {
             defaultSelectedItem,
+            selectedItem: defaultSelectedItem || null,
             className: autoCompleteStyle,
             itemToString: item => item && getOptionText(item, this.props),
             onChange: selection => {

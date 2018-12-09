@@ -12,6 +12,7 @@
     "@babel/runtime": "^7.0.0",
     "classnames": "^2.2.6",
     "load-script": "^1.0.0",
+    "mailchimp-api-v3": "^1.12.1",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
     "react-emotion": "^9.2.4",
