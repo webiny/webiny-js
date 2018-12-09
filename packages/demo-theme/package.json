@@ -1,6 +1,6 @@
 {
   "name": "demo-theme",
-  "version": "0.0.0-semantically-released",
+  "version": "0.0.0",
   "main": "index.js",
   "license": "MIT",
   "scripts": {

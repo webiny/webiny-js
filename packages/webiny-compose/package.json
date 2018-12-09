@@ -1,7 +1,7 @@
 {
   "name": "webiny-compose",
   "description": "This library composes a middleware for processing arbitrary data.",
-  "version": "0.0.0-semantically-released",
+  "version": "0.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"

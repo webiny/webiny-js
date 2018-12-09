@@ -1,6 +1,6 @@
 {
   "name": "webiny-form",
-  "version": "0.0.0-semantically-released",
+  "version": "0.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,7 +15,7 @@
   "dependencies": {
     "@babel/runtime": "^7.0.0",
     "lodash": "^4.17.5",
-    "webiny-validation": "0.0.0-semantically-released"
+    "webiny-validation": "0.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

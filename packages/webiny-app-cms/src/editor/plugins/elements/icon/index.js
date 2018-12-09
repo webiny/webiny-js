@@ -29,7 +29,7 @@ export default () => {
                 ""
             ],
             target: ["cms-element-column", "cms-element-row"],
-            create(options) {
+            create(options: Object) {
                 return {
                     type: "cms-element-icon",
                     elements: [],
@@ -37,7 +37,7 @@ export default () => {
                     ...options
                 };
             },
-            render(props) {
+            render(props: Object) {
                 return <Icon {...props} />;
             }
         },

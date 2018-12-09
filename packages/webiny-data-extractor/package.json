@@ -1,6 +1,6 @@
 {
   "name": "webiny-data-extractor",
-  "version": "0.0.0-semantically-released",
+  "version": "0.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",

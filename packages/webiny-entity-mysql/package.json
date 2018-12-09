@@ -1,6 +1,6 @@
 {
   "name": "webiny-entity-mysql",
-  "version": "0.0.0-semantically-released",
+  "version": "0.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -20,8 +20,8 @@
     "mdbid": "^1.0.0",
     "mysql": "^2.15.0",
     "sqlstring": "^2.3.0",
-    "webiny-entity": "0.0.0-semantically-released",
-    "webiny-mysql-connection": "0.0.0-semantically-released"
+    "webiny-entity": "0.0.0",
+    "webiny-mysql-connection": "0.0.0"
   },
   "peerDependencies": {
     "serverless-mysql": "^1.1.0"
