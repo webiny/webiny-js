@@ -1,10 +1,8 @@
 // @flow
 import * as React from "react";
-import { connect } from "react-redux";
 import { css } from "emotion";
 import { compose, withHandlers, lifecycle } from "recompose";
 import { get } from "lodash";
-import { set } from "dot-prop-immutable";
 
 function appendSDK(props) {
     const { element } = props;
@@ -28,7 +26,7 @@ function appendSDK(props) {
 
 function initEmbed(props) {
     const { element } = props;
-    const node = document.getElementById( element.id);
+    const node = document.getElementById(element.id);
     if (node && window.PinUtils) {
         window.PinUtils.build();
     }
@@ -40,18 +38,19 @@ const centerAlign = css({
 
 export default compose(
     withHandlers({
-        renderEmbed: ({ element }: Object) => function renderEmbed() {
-            const data = get(element, "data.source");
-            return (
-                <div id={ element.id} className={centerAlign}>
-                    <a
-                        data-pin-do="embedPin"
-                        data-pin-width={data.size || "small"}
-                        href={data.url}
-                    />
-                </div>
-            );
-        }
+        renderEmbed: ({ element }: Object) =>
+            function renderEmbed() {
+                const data = get(element, "data.source");
+                return (
+                    <div id={element.id} className={centerAlign}>
+                        <a
+                            data-pin-do="embedPin"
+                            data-pin-width={data.size || "small"}
+                            href={data.url}
+                        />
+                    </div>
+                );
+            }
     }),
     lifecycle({
         async componentDidMount() {

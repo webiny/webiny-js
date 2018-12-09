@@ -1,6 +1,6 @@
 //@flow
 import { getPlugins } from "webiny-plugins";
-import { withTheme } from "webiny-app-cms/theme";
+import { withCms } from "webiny-app-cms/context";
 import type { ElementType } from "webiny-app-cms/types";
 
 declare type ElementProps = {
@@ -22,4 +22,4 @@ const Element = ({ element, theme }: ElementProps) => {
     return plugin.render({ theme, element });
 };
 
-export default withTheme()(Element);
+export default withCms()(Element);

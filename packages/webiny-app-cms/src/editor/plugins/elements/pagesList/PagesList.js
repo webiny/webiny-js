@@ -2,7 +2,7 @@
 import * as React from "react";
 import { pure } from "recompose";
 import { Query } from "react-apollo";
-import { withTheme } from "webiny-app-cms/theme";
+import { withCms } from "webiny-app-cms/context";
 import { loadPages } from "./graphql";
 
 const PagesList = pure(({ settings, theme }: Object = {}) => {
@@ -53,4 +53,4 @@ const PagesList = pure(({ settings, theme }: Object = {}) => {
     );
 });
 
-export default withTheme()(PagesList);
+export default withCms()(PagesList);

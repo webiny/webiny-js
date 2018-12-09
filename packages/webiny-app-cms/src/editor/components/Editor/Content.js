@@ -6,7 +6,7 @@ import styled from "react-emotion";
 import { css } from "emotion";
 import { compose } from "recompose";
 import { getPlugins } from "webiny-plugins";
-import { withTheme } from "webiny-app-cms/theme";
+import { withCms } from "webiny-app-cms/context";
 import { getContent, isPluginActive, getPage } from "webiny-app-cms/editor/selectors";
 import Element from "webiny-app-cms/editor/components/Element";
 import { Elevation } from "webiny-ui/Elevation";
@@ -62,5 +62,5 @@ const stateToProps = state => ({
 
 export default compose(
     connect(stateToProps),
-    withTheme()
+    withCms()
 )(Content);

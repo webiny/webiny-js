@@ -5,7 +5,7 @@ import { Webiny, Router } from "webiny-app";
 import { addPlugin } from "webiny-plugins";
 import { app as adminApp, Theme as AdminTheme } from "webiny-app-admin";
 import { app as cmsApp } from "webiny-app-cms/admin";
-import { Theme as CmsTheme } from "webiny-app-cms/theme";
+import { CmsProvider } from "webiny-app-cms/context";
 import myTheme from "demo-theme";
 import { Security } from "webiny-app-admin/components";
 import Login from "webiny-app-admin/views/Login";
@@ -25,7 +25,7 @@ const App = () => {
     return (
         <Webiny config={config}>
             {({ router }) => (
-                <CmsTheme theme={myTheme}>
+                <CmsProvider theme={myTheme} isEditor>
                     <AdminTheme>
                         <Security>
                             {({ authenticated, notAuthenticated }) => (
@@ -36,7 +36,7 @@ const App = () => {
                             )}
                         </Security>
                     </AdminTheme>
-                </CmsTheme>
+                </CmsProvider>
             )}
         </Webiny>
     );

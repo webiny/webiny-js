@@ -6,7 +6,7 @@ import { css } from "emotion";
 import { isEqual } from "lodash";
 import { ChromePicker } from "react-color";
 import { Menu } from "webiny-ui/Menu";
-import { withTheme } from "webiny-app-cms/theme";
+import { withCms } from "webiny-app-cms/context";
 import { ReactComponent as IconPalette } from "webiny-app-cms/editor/assets/icons/round-color_lens-24px.svg";
 
 const ColorPickerStyle = styled("div")({
@@ -233,4 +233,4 @@ class ColorPicker extends React.Component<Props, State> {
     }
 }
 
-export default withTheme()(ColorPicker);
+export default withCms()(ColorPicker);

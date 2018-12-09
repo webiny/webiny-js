@@ -8,7 +8,7 @@ import { Tabs, Tab } from "webiny-ui/Tabs";
 import { Select } from "webiny-ui/Select";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Typography } from "webiny-ui/Typography";
-import { withTheme } from "webiny-app-cms/theme";
+import { withCms } from "webiny-app-cms/context";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { getActiveElement } from "webiny-app-cms/editor/selectors";
 
@@ -86,5 +86,5 @@ export default compose(
         state => ({ element: getActiveElement(state) }),
         { updateElement }
     ),
-    withTheme()
+    withCms()
 )(ButtonSettings);
