@@ -1,21 +1,33 @@
 // @flow
 import React from "react";
 import { css } from "emotion";
+import styled from "react-emotion";
 import uniqid from "uniqid";
 import { getPlugins } from "webiny-plugins";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Icon } from "webiny-ui/Icon";
-import { Menu, MenuItem } from "webiny-ui/Menu";
+import { Menu } from "webiny-ui/Menu";
+import { List, ListItem, ListItemGraphic } from "webiny-ui/List";
 import { ButtonPrimary } from "webiny-ui/Button";
 import MenuItemsList from "./MenuItems/MenuItemsList";
 import MenuItemForm from "./MenuItems/MenuItemForm";
 import findObject from "./MenuItems/findObject";
 import type { CmsMenuItemPluginType } from "webiny-app-cms/types";
+import { Typography } from "webiny-ui/Typography";
 
 const leftPanel = css({
     padding: 25,
     backgroundColor: "var(--mdc-theme-background)",
     overflow: "scroll"
+});
+
+const menuItems = css({
+    width: 170
+});
+
+const AddMenu = styled("div")({
+    width: 180,
+    margin: "25px auto 0 auto"
 });
 
 type Props = {
@@ -75,29 +87,32 @@ class MenuItems extends React.Component<Props, State> {
                         {!currentMenuItem && (
                             <>
                                 <div style={{ textAlign: "center" }}>
-                                    <p>
-                                        To build your menu you need to create menu items!
-                                        <br />
-                                        Begin by clicking the &quot;Add menu item&quot; button
-                                    </p>
-                                    <br />
-                                    <div style={{ width: 156, margin: "0 auto" }}>
+                                    <Typography use={"body2"}>
+                                        To build your menu you need to create menu items! Begin by
+                                        clicking the &quot;Add menu item&quot; button
+                                    </Typography>
+
+                                    <AddMenu>
                                         <Menu
                                             handle={<ButtonPrimary>+ Add menu item</ButtonPrimary>}
+                                            anchor={"topEnd"}
                                         >
-                                            {plugins.map(pl => (
-                                                <MenuItem
-                                                    key={pl.name}
-                                                    onClick={() => this.addItem(pl)}
-                                                    style={{ whiteSpace: "nowrap" }}
-                                                >
-                                                    <Icon icon={pl.icon} />
-                                                    &nbsp;&nbsp;
-                                                    {pl.title}
-                                                </MenuItem>
-                                            ))}
+                                            <List className={menuItems}>
+                                                {plugins.map(pl => (
+                                                    <ListItem
+                                                        key={pl.name}
+                                                        onClick={() => this.addItem(pl)}
+                                                        style={{ whiteSpace: "nowrap" }}
+                                                    >
+                                                        <ListItemGraphic>
+                                                            <Icon icon={pl.icon} />
+                                                        </ListItemGraphic>
+                                                        {pl.title}
+                                                    </ListItem>
+                                                ))}
+                                            </List>
                                         </Menu>
-                                    </div>
+                                    </AddMenu>
                                 </div>
                             </>
                         )}
