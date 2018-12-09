@@ -35,7 +35,7 @@ const dialogBody = css({
 
 class AdvancedSettings extends React.Component<Props> {
     shouldComponentUpdate(props) {
-        return props.open;
+        return this.props.open !== props.open;
     }
 
     componentDidUpdate() {
@@ -48,7 +48,7 @@ class AdvancedSettings extends React.Component<Props> {
         const { data, settings, type } = element || cloneDeep(emptyElement);
         return (
             <Dialog open={open} onClose={onClose}>
-                <Form data={{ data, settings }} onSubmit={onSubmit}>
+                <Form key={element && element.id} data={{ data, settings }} onSubmit={onSubmit}>
                     {({ submit, Bind }) => (
                         <React.Fragment>
                             <DialogBody className={dialogBody}>
