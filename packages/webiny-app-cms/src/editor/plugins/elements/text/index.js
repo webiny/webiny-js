@@ -18,7 +18,7 @@ export default (): ElementPluginType => {
         type: "cms-element",
         toolbar: {
             title: "Text",
-            group: "cms-element-group-text",
+            group: "cms-element-group-basic",
             preview() {
                 const previewText = loremIpsum(defaultLipsum);
 

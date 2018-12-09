@@ -1,5 +1,6 @@
 // @flow
 import React from "react";
+import styled from "react-emotion";
 import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
@@ -12,6 +13,17 @@ import {
 } from "./../../utils/oembed/createEmbedPlugin";
 import PinterestEmbed from "./PinterestEmbed";
 
+import { ReactComponent as LogoIcon } from "./pinterest-brands.svg";
+
+const PreviewBox = styled("div")({
+    textAlign: "center",
+    height: 50,
+    svg: {
+        height: 50,
+        width: 50
+    }
+});
+
 export default (): Array<ElementPluginType> => [
     createEmbedPlugin({
         type: "pinterest",
@@ -19,7 +31,11 @@ export default (): Array<ElementPluginType> => [
             title: "Pinterest",
             group: "cms-element-group-social",
             preview() {
-                return <span>A pinterest sample</span>;
+                return (
+                    <PreviewBox>
+                        <LogoIcon />
+                    </PreviewBox>
+                );
             }
         },
         render({ element }: Object) {
