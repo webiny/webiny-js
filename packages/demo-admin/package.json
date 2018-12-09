@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@fortawesome/free-regular-svg-icons": "^5.6.0",
     "apollo-link-batch-http": "^1.2.3",
     "demo-theme": "0.0.0-semantically-released",
     "react-apollo": "^2.2.4",

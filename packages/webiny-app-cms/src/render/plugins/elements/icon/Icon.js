@@ -1,10 +1,11 @@
+// @flow
 import React from "react";
 import { css } from "emotion";
 import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
 
 const center = css({ textAlign: "center" });
 
-const Icon = ({ theme, element }) => {
+const Icon = ({ theme, element }: Object) => {
     const svg = element.data.icon || null;
 
     if (!svg) {
