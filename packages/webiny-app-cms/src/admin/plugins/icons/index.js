@@ -21,7 +21,7 @@ export default ({
     type: "cms-icons",
     init() {
         library.add(fab, fas, far);
-        
+
         Object.keys(library.definitions).forEach(pack => {
             const defs = library.definitions[pack];
             Object.keys(defs).forEach(icon => {

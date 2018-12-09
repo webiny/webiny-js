@@ -27,7 +27,7 @@ function appendSDK(props) {
 
 function initEmbed(props) {
     const { element } = props;
-    const node = document.getElementById( element.id);
+    const node = document.getElementById(element.id);
     if (node && window.PinUtils) {
         window.PinUtils.build();
     }
@@ -59,7 +59,7 @@ export default compose(
                 const data = get(element, "data.source");
                 return (
                     <div
-                        id={ element.id}
+                        id={element.id}
                         className={centerAlign}
                         dangerouslySetInnerHTML={{ __html: getHTML(data) }}
                     />
