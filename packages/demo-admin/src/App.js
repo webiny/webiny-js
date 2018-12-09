@@ -25,7 +25,7 @@ const App = () => {
     return (
         <Webiny config={config}>
             {({ router }) => (
-                <CmsProvider theme={myTheme} editor>
+                <CmsProvider theme={myTheme} isEditor>
                     <AdminTheme>
                         <Security>
                             {({ authenticated, notAuthenticated }) => (

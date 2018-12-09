@@ -1,18 +1,19 @@
 // @flow
 import React from "react";
-import { CmsContextProvider } from "./CmsContext";
+import { CmsContextConsumer } from "./CmsContext";
 
 export type WithCmsProps = {
-    theme: Object
+    theme: Object,
+    editor?: boolean
 };
 
 export function withCms() {
     return function decorator(Component: *) {
         return function withCmsComponent(props: *) {
             return (
-                <CmsContextProvider>
+                <CmsContextConsumer>
                     <Component {...props} />
-                </CmsContextProvider>
+                </CmsContextConsumer>
             );
         };
     };

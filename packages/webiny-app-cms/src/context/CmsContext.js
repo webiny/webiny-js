@@ -5,7 +5,7 @@ const { Provider, Consumer } = React.createContext({});
 
 type ProviderProps = {
     theme?: Object,
-    editor?: boolean,
+    isEditor?: boolean,
     children?: React.Node
 };
 
@@ -13,8 +13,8 @@ type ConsumerProps = {
     children?: React.Node
 };
 
-export const CmsContextProvider = ({ theme, editor, children }: ProviderProps) => (
-    <Provider value={{ theme, editor }}>{children}</Provider>
+export const CmsContextProvider = ({ theme, isEditor, children }: ProviderProps) => (
+    <Provider value={{ theme, isEditor }}>{children}</Provider>
 );
 
 export const CmsContextConsumer = ({ children }: ConsumerProps) => (

@@ -29,7 +29,8 @@ const BaseContainer = styled("div")({
     margin: "0 auto"
 });
 
-const Content = ({ rootElement, theme, renderLayout, layout }) => {
+const Content = props => {
+    const { rootElement, theme, renderLayout, layout } = props;
     const plugins = getPlugins("cms-editor-content");
     const themeLayout = theme.layouts.find(l => l.name === layout);
 
