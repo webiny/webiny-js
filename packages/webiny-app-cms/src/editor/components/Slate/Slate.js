@@ -9,7 +9,7 @@ import { Editor } from "slate-react";
 import { Value } from "slate";
 import { getPlugins } from "webiny-plugins";
 import { focusSlateEditor, blurSlateEditor } from "webiny-app-cms/editor/actions";
-import { withTheme } from "webiny-app-cms/theme";
+import { withCms } from "webiny-app-cms/context";
 import { createValue } from "./index";
 
 import Menu from "./Menu";
@@ -169,6 +169,6 @@ export default pure(
             null,
             { focusSlateEditor, blurSlateEditor }
         ),
-        withTheme()
+        withCms()
     )(SlateEditor)
 );

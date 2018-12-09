@@ -3,9 +3,9 @@ import React from "react";
 import { get } from "dot-prop-immutable";
 import { connect } from "react-redux";
 import styled from "react-emotion";
-import { compose, pure } from "recompose";
+import { compose } from "recompose";
 import { getPlugins } from "webiny-plugins";
-import { withTheme } from "webiny-app-cms/theme";
+import { withCms } from "webiny-app-cms/context";
 import { getContent, isPluginActive, getPage } from "webiny-app-cms/editor/selectors";
 import Element from "webiny-app-cms/editor/components/Element";
 
@@ -57,5 +57,5 @@ const stateToProps = state => ({
 
 export default compose(
     connect(stateToProps),
-    withTheme()
+    withCms()
 )(Content);

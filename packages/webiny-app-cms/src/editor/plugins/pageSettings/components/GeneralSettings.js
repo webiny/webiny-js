@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import { compose } from "recompose";
-import { withTheme } from "webiny-app-cms/theme";
+import { withCms } from "webiny-app-cms/context";
 import { DelayedOnChange } from "webiny-app-cms/editor/components/DelayedOnChange";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { TagsMultiAutoComplete } from "webiny-app-cms/admin/components/TagsMultiAutoComplete";
@@ -63,4 +63,4 @@ const GeneralSettings = ({ Bind, theme }: Object) => {
     );
 };
 
-export default compose(withTheme())(GeneralSettings);
+export default compose(withCms())(GeneralSettings);

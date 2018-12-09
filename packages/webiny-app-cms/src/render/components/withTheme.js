@@ -1,14 +1,14 @@
 // @flow
 import * as React from "react";
-import { ThemeContextConsumer } from "./../../theme/ThemeContext";
+import { CmsContextConsumer } from "./../../context/CmsContext";
 
 export function withTheme() {
     return function decorator(Component: React.ComponentType<any>) {
         return function renderComponent(props: *) {
             return (
-                <ThemeContextConsumer>
+                <CmsContextConsumer>
                     <Component {...props} />
-                </ThemeContextConsumer>
+                </CmsContextConsumer>
             );
         };
     };
