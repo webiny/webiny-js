@@ -22,10 +22,7 @@ class LinkSettings extends React.Component<*> {
 
         const newElement = merge(element, attrKey, data);
 
-        if (!history) {
-            updateElement({ element: newElement, history });
-            return;
-        }
+        updateElement({ element: newElement, history });
 
         if (!isEqual(this.historyUpdated, data)) {
             this.historyUpdated = data;

@@ -1,9 +1,10 @@
+// @flow
 import React from "react";
 import Downshift from "downshift";
 import styled from "react-emotion";
 import { css } from "emotion";
 import { Elevation } from "webiny-ui/Elevation";
-import { withTheme } from "webiny-app-cms/theme";
+import { withCms } from "webiny-app-cms/context";
 
 const Item = styled("div")(({ isActive, isSelected }) => ({
     cursor: "pointer",
@@ -134,4 +135,4 @@ class TypographySelector extends React.Component {
     }
 }
 
-export default withTheme()(TypographySelector);
+export default withCms()(TypographySelector);

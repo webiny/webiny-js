@@ -20,13 +20,14 @@ function appendSDK(props) {
         script.setAttribute("async", "");
         script.setAttribute("charset", "utf-8");
         script.onload = resolve;
+        // $FlowFixMe
         document.body.appendChild(script);
     });
 }
 
 function initEmbed(props) {
     const { element } = props;
-    const node = document.getElementById( element.id);
+    const node = document.getElementById(element.id);
     if (node && window.PinUtils) {
         window.PinUtils.build();
     }
@@ -58,7 +59,7 @@ export default compose(
                 const data = get(element, "data.source");
                 return (
                     <div
-                        id={ element.id}
+                        id={element.id}
                         className={centerAlign}
                         dangerouslySetInnerHTML={{ __html: getHTML(data) }}
                     />
@@ -70,7 +71,8 @@ export default compose(
             await appendSDK(this.props);
             initEmbed(this.props);
         },
-        componentDidUpdate() {
+        async componentDidUpdate() {
+            await appendSDK(this.props);
             initEmbed(this.props);
         }
     })

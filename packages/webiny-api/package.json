@@ -1,6 +1,6 @@
 {
   "name": "webiny-api",
-  "version": "0.0.0-semantically-released",
+  "version": "0.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -28,12 +28,12 @@
     "jsonwebtoken": "^8.2.2",
     "lodash": "^4.17.4",
     "md5": "^2.2.1",
-    "webiny-compose": "0.0.0-semantically-released",
-    "webiny-entity": "0.0.0-semantically-released",
-    "webiny-service-manager": "0.0.0-semantically-released",
-    "webiny-plugins": "0.0.0-semantically-released",
-    "webiny-sql-table-mysql": "0.0.0-semantically-released",
-    "webiny-sql-table-sync": "0.0.0-semantically-released"
+    "webiny-compose": "0.0.0",
+    "webiny-entity": "0.0.0",
+    "webiny-service-manager": "0.0.0",
+    "webiny-plugins": "0.0.0",
+    "webiny-sql-table-mysql": "0.0.0",
+    "webiny-sql-table-sync": "0.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
@@ -49,7 +49,7 @@
     "fsevents": "^1.2.4"
   },
   "scripts": {
-    "build": "babel src types.js -d ${DEST:-build} --source-maps --copy-files --ignore types.js",
+    "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
     "flow-copy-source": "flow-copy-source src ${DEST:-build}",
     "postbuild": "yarn flow-copy-source"
   }

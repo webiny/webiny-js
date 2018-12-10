@@ -1,5 +1,6 @@
 // @flow
 import React from "react";
+import styled from "react-emotion";
 import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
@@ -9,6 +10,17 @@ import { ReactComponent as MediaIcon } from "./../../../elementGroups/media/roun
 import YoutubeEmbed from "./YoutubeEmbed";
 import placeholder from "./placeholder.png";
 
+import { ReactComponent as LogoIcon } from "./youtube-brands.svg";
+
+const PreviewBox = styled("div")({
+    textAlign: "center",
+    height: 50,
+    svg: {
+        height: 50,
+        width: 50
+    }
+});
+
 export default (): Array<ElementPluginType> => [
     createEmbedPlugin({
         type: "youtube",
@@ -16,7 +28,11 @@ export default (): Array<ElementPluginType> => [
             title: "Youtube",
             group: "cms-element-group-media",
             preview() {
-                return <span>A youtube sample</span>;
+                return (
+                    <PreviewBox>
+                        <LogoIcon />
+                    </PreviewBox>
+                );
             }
         },
         onCreate: "open-settings",
@@ -26,7 +42,7 @@ export default (): Array<ElementPluginType> => [
             }
         },
         renderElementPreview({ width, height }) {
-            return <img style={{ width, height }} src={placeholder} alt={"Youtube"}/>;
+            return <img style={{ width, height }} src={placeholder} alt={"Youtube"} />;
         }
     }),
     createEmbedSettingsPlugin({

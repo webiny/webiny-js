@@ -1,6 +1,6 @@
 {
   "name": "webiny-service-manager",
-  "version": "0.0.0-semantically-released",
+  "version": "0.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -26,7 +26,6 @@
   "scripts": {
     "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
     "flow-copy-source": "flow-copy-source src ${DEST:-build}",
-    "postbuild": "yarn flow-copy-source",
-    "documentation": "documentation readme --section=Documentation --config documentation.yml src/** --github"
+    "postbuild": "yarn flow-copy-source"
   }
 }

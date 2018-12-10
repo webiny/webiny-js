@@ -67,21 +67,28 @@
 .rst__rowContents,
 .rst__rowLabel,
 .rst__rowToolbar,
-.rst__moveHandle,
 .rst__toolbarButton {
     display: inline-block;
     vertical-align: middle;
 }
 
+.rst__moveHandle{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0;
+}
+
 .rst__rowContents {
     position: relative;
-    height: 100%;
+    height: 30px;
     border: solid #bbb 1px;
     border-left: none;
-    box-shadow: 0 2px 2px -2px;
+    box-shadow: none;
+    /*box-shadow: 0 2px 2px -2px;*/
     padding: 0 5px 0 10px;
-    border-radius: 2px;
-    min-width: 230px;
+    border-radius: 0;
+    min-width: 200px;
     flex: 1 0 auto;
     display: flex;
     align-items: center;
@@ -116,18 +123,36 @@
 .rst__rowToolbar {
     flex: 0 1 auto;
     display: flex;
+    width: 60px;
+    justify-content: left;
+    align-items: flex-start;
+}
+
+.rst__rowToolbar icon-button{
+    width: 25px;
+}
+
+.rst__rowToolbar icon-button svg{
+    height: 18px;
 }
 
 .rst__moveHandle {
-    height: 100%;
-    width: 44px;
-    background: #d9d9d9
-    no-repeat center;
-    border: solid #aaa 1px;
-    box-shadow: 0 2px 2px -2px;
+    width: 30px;
+    height: 30px;
+    background: #d9d9d9 no-repeat center;
+    box-shadow: none;
+        /*
+        box-shadow: 0 2px 2px -2px;
+        border: solid #aaa 1px;
+        */
     cursor: move;
-    border-radius: 1px;
+    border-radius: 0px;
     z-index: 1;
+    color: var(--mdc-theme-on-surface);
+}
+
+.rst__moveHandle svg{
+    width: 18px;
 }
 
 @keyframes pointFade {
@@ -240,10 +265,6 @@
 .rst__loadingCirclePoint:nth-of-type(7)::before,
 .rst__loadingCirclePoint:nth-of-type(13)::before {
     animation-delay: 0ms;
-}
-
-.rst__rowTitle {
-    font-weight: bold;
 }
 
 .rst__rowTitleWithSubtitle {

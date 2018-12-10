@@ -1,12 +1,12 @@
 //@flow
 import * as React from "react";
 import { connect } from "react-redux";
-import { compose } from "recompose";
+import { compose, withHandlers } from "recompose";
 import Draggable from "webiny-app-cms/editor/components/Draggable";
 import { dragStart, dragEnd, deactivatePlugin, dropElement } from "webiny-app-cms/editor/actions";
 import { getPlugins } from "webiny-plugins";
 import { getActivePluginParams } from "webiny-app-cms/editor/selectors";
-import { withTheme } from "webiny-app-cms/theme";
+import { withCms } from "webiny-app-cms/context";
 import * as Styled from "./StyledComponents";
 import { css } from "emotion";
 import { List, ListItem, ListItemMeta } from "webiny-ui/List";
@@ -42,7 +42,9 @@ type Props = {
     deactivatePlugin: Function,
     dropElement: Function,
     params: Object | null,
-    theme: CmsThemeType
+    theme: CmsThemeType,
+    enableDragOverlay: Function,
+    disableDragOverlay: Function
 };
 
 type State = {
@@ -115,12 +117,19 @@ class AddElement extends React.Component<Props, State> {
     };
 
     renderOverlay = (element, onClick = null, label) => {
+        const { enableDragOverlay, disableDragOverlay } = this.props;
         return (
             <Styled.ElementPreview>
                 <Styled.Overlay>
                     <Styled.Backdrop className={"backdrop"} />
                     <Styled.AddBlock className={"add-block"}>
-                        <ButtonFloating onClick={onClick} label={label} icon={<AddIcon />} />
+                        <ButtonFloating
+                            onClick={onClick}
+                            label={label}
+                            icon={<AddIcon />}
+                            onMouseDown={enableDragOverlay}
+                            onMouseUp={disableDragOverlay}
+                        />
                     </Styled.AddBlock>
                 </Styled.Overlay>
                 {element}
@@ -190,5 +199,19 @@ export default compose(
         }),
         { dragStart, dragEnd, deactivatePlugin, dropElement }
     ),
-    withTheme()
+    withCms(),
+    withHandlers({
+        enableDragOverlay: () => () => {
+            const el = document.querySelector(".cms-editor");
+            if (el) {
+                el.classList.add("cms-editor-dragging");
+            }
+        },
+        disableDragOverlay: () => () => {
+            const el = document.querySelector(".cms-editor");
+            if (el) {
+                el.classList.remove("cms-editor-dragging");
+            }
+        }
+    })
 )(AddElement);

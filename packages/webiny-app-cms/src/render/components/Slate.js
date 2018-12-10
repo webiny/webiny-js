@@ -3,7 +3,7 @@ import React from "react";
 import { Editor } from "slate-react";
 import { Value } from "slate";
 import { getPlugins } from "webiny-plugins";
-import { withTheme } from "webiny-app-cms/theme";
+import { withCms } from "webiny-app-cms/context";
 
 class SlateEditor extends React.Component<*, *> {
     plugins = getPlugins("cms-slate-editor").map(pl => pl.slate);
@@ -26,4 +26,4 @@ class SlateEditor extends React.Component<*, *> {
     }
 }
 
-export default withTheme()(SlateEditor);
+export default withCms()(SlateEditor);

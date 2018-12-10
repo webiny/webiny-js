@@ -1,7 +1,7 @@
 {
   "name": "webiny-file-storage-local",
   "description": "Local file-system storage driver for webiny-file-storage library",
-  "version": "0.0.0-semantically-released",
+  "version": "0.0.0",
   "main": "index.js",
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>",
@@ -17,7 +17,7 @@
     "@babel/runtime": "^7.0.0",
     "globby": "^7.0.1",
     "mime-types": "^2.1.17",
-    "webiny-file-storage": "0.0.0-semantically-released"
+    "webiny-file-storage": "0.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

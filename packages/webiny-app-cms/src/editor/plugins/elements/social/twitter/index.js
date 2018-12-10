@@ -1,5 +1,6 @@
 // @flow
 import React from "react";
+import styled from "react-emotion";
 import type { ElementPluginType } from "webiny-app-cms/types";
 import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
@@ -11,14 +12,29 @@ import {
     createEmbedSettingsPlugin
 } from "./../../utils/oembed/createEmbedPlugin";
 
+import { ReactComponent as LogoIcon } from "./twitter-brands.svg";
+
+const PreviewBox = styled("div")({
+    textAlign: "center",
+    height: 50,
+    svg: {
+        height: 50,
+        width: 50
+    }
+});
+
 export default (): Array<ElementPluginType> => [
     createEmbedPlugin({
         type: "twitter",
         toolbar: {
-            title: "Twitter",
+            title: "Tweet",
             group: "cms-element-group-social",
             preview() {
-                return <span>A tweet sample</span>;
+                return (
+                    <PreviewBox>
+                        <LogoIcon />
+                    </PreviewBox>
+                );
             }
         },
         oembed: {
@@ -29,7 +45,7 @@ export default (): Array<ElementPluginType> => [
             }
         },
         renderElementPreview({ width, height }) {
-            return <img style={{ width, height }} src={placeholder} alt={"Tweet"}/>;
+            return <img style={{ width, height }} src={placeholder} alt={"Tweet"} />;
         }
     }),
     createEmbedSettingsPlugin({

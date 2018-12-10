@@ -8,10 +8,15 @@ import { updateElement } from "webiny-app-cms/editor/actions";
 import { getActiveElement } from "webiny-app-cms/editor/selectors";
 import ColorPicker from "webiny-app-cms/editor/components/ColorPicker";
 import { Cell, Grid } from "webiny-ui/Grid";
-import { Select } from "webiny-ui/Select";
+import Select from "webiny-app-cms/editor/plugins/elementSettings/components/Select";
 import BackgroundImage from "./BackgroundImage";
 import BackgroundPositionSelector from "./BackgroundPositionSelector";
 import { omit } from "lodash";
+import { css } from "emotion";
+
+const imageSelect = css({
+    width: "100%"
+});
 
 const backgroundStyles = {
     scaling: {
@@ -99,6 +104,8 @@ class Settings extends React.Component<*> {
                     return "tileHorizontally";
                 case "repeat-y":
                     return "tileVertically";
+                default:
+                    return "auto";
             }
         },
         setPosition: (backgroundPosition: string) => {
@@ -152,6 +159,7 @@ class Settings extends React.Component<*> {
                         <Grid>
                             <Cell span={12}>
                                 <BackgroundImage
+                                    className={imageSelect}
                                     onChange={this.image.setImage}
                                     value={this.image.getSrcFromCss(
                                         get(settings, "style.backgroundImage")
@@ -160,21 +168,20 @@ class Settings extends React.Component<*> {
                             </Cell>
                         </Grid>
                         <Grid>
-                            <Cell span={12}>
-                                <Select
-                                    disabled={!hasBackgroundImage}
-                                    label="Scaling"
-                                    value={this.image.getScaling()}
-                                    onChange={this.image.setScaling}
-                                >
-                                    <option value="cover">Cover</option>
-                                    <option value="contain">Contain</option>
-                                    <option value="originalSize">Original size</option>
-                                    <option value="tile">Tile</option>
-                                    <option value="tileHorizontally">Tile Horizontally</option>
-                                    <option value="tileVertically">Tile Vertically</option>
-                                </Select>
-                            </Cell>
+                            <Select
+                                disabled={!hasBackgroundImage}
+                                label="Scaling"
+                                value={this.image.getScaling()}
+                                onChange={this.image.setScaling}
+                                options={[
+                                    { label: "Cover", value: "cover" },
+                                    { label: "Contain", value: "contain" },
+                                    { label: "Original Size", value: "originalSize" },
+                                    { label: "Tile", value: "tile" },
+                                    { label: "Tile Horizontally", value: "tileHorizontally" },
+                                    { label: "Tile Vertically", value: "tileVertically" }
+                                ]}
+                            />
                         </Grid>
                         <Grid>
                             <Cell span={12}>

@@ -2,6 +2,8 @@
 import * as React from "react";
 import classNames from "classnames";
 import styled from "react-emotion";
+import { Tooltip } from "webiny-ui/Tooltip";
+import { Typography } from "webiny-ui/Typography";
 
 const positions = [
     "top left",
@@ -18,7 +20,7 @@ const positions = [
 const Ul = styled("ul")({
     listStyle: "none",
     margin: "0 auto",
-    width: 200,
+    width: 100,
     textAlign: "center",
     "&.disabled": {
         opacity: 0.5,
@@ -27,14 +29,20 @@ const Ul = styled("ul")({
     li: {
         display: "inline-block",
         border: "1px solid lightgray",
-        width: 48,
-        height: 48,
+        width: 25,
+        height: 25,
         margin: 2,
         cursor: "pointer",
         "&.active": {
-            border: "1px solid gray"
+            border: "1px solid gray",
+            backgroundColor: "var(--mdc-theme-background)"
         }
     }
+});
+
+const PositionWrapper = styled("div")({
+    width: "100%",
+    display: "flex"
 });
 
 type Props = {
@@ -45,15 +53,21 @@ type Props = {
 
 const BackgroundPositionSelector = (props: Props) => {
     return (
-        <Ul className={classNames({ disabled: props.disabled })}>
-            {positions.map(position => (
-                <li
-                    key={position}
-                    onClick={() => props.onChange(position)}
-                    className={classNames({ active: props.value === position })}
-                />
-            ))}
-        </Ul>
+        <PositionWrapper>
+            <Typography style={{ width: "60%" }} use={"overline"}>
+                Position
+            </Typography>
+            <Ul className={classNames({ disabled: props.disabled })}>
+                {positions.map(position => (
+                    <Tooltip key={position} content={<span>{position}</span>} placement={"top"}>
+                        <li
+                            onClick={() => props.onChange(position)}
+                            className={classNames({ active: props.value === position })}
+                        />
+                    </Tooltip>
+                ))}
+            </Ul>
+        </PositionWrapper>
     );
 };
 

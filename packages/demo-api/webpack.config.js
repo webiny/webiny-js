@@ -1,8 +1,15 @@
+// @flowIgnore
 const slsw = require("serverless-webpack");
 
 const path = require("path");
 const getPackages = require("get-yarn-workspaces");
 const packages = getPackages(path.join(process.cwd(), "../../"));
+
+const aliases = packages.reduce((aliases, dir) => {
+    const name = path.basename(dir);
+    aliases[`^${name}/(?!src)(.+)$`] = `${name}/src/\\1`;
+    return aliases;
+}, {});
 
 const config = {
     entry: slsw.lib.entries,
@@ -31,7 +38,6 @@ const config = {
                 loader: "babel-loader",
                 include: packages,
                 options: {
-                    configFile: path.join(process.cwd(), "/../../babel.config.js"),
                     presets: [
                         [
                             "@babel/preset-env",
@@ -49,7 +55,8 @@ const config = {
                         "@babel/plugin-proposal-object-rest-spread",
                         "@babel/plugin-transform-runtime",
                         "@babel/plugin-syntax-dynamic-import",
-                        "babel-plugin-dynamic-import-node"
+                        "babel-plugin-dynamic-import-node",
+                        ["babel-plugin-module-resolver", { alias: aliases }]
                     ]
                 }
             }

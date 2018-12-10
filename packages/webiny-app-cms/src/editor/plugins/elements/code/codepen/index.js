@@ -1,5 +1,6 @@
 // @flow
 import React from "react";
+import styled from "react-emotion";
 import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
@@ -10,6 +11,17 @@ import {
     createEmbedSettingsPlugin
 } from "./../../utils/oembed/createEmbedPlugin";
 
+import { ReactComponent as LogoIcon } from "./codepen-brands.svg";
+
+const PreviewBox = styled("div")({
+    textAlign: "center",
+    height: 50,
+    svg: {
+        height: 50,
+        width: 50
+    }
+});
+
 export default (): Array<ElementPluginType> => [
     createEmbedPlugin({
         type: "codepen",
@@ -17,7 +29,11 @@ export default (): Array<ElementPluginType> => [
             title: "CodePen",
             group: "cms-element-group-code",
             preview() {
-                return <span>A CodePen sample</span>;
+                return (
+                    <PreviewBox>
+                        <LogoIcon />
+                    </PreviewBox>
+                );
             }
         }
     }),

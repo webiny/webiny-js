@@ -1,20 +1,10 @@
 // @flow
-import textGroup from "./text";
+import basicGroup from "./basic";
 import layoutGroup from "./layout";
-import imageGroup from "./image";
-import formGroup from "./form";
 import mediaGroup from "./media";
+import formGroup from "./form";
 import socialGroup from "./social";
 import codeGroup from "./code";
 import savedGroup from "./saved";
 
-export default [
-    textGroup,
-    imageGroup,
-    layoutGroup,
-    mediaGroup,
-    formGroup,
-    socialGroup,
-    codeGroup,
-    savedGroup
-];
+export default [basicGroup, formGroup, layoutGroup, mediaGroup, socialGroup, codeGroup, savedGroup];

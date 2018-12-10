@@ -1,6 +1,6 @@
 {
   "name": "webiny-app-admin",
-  "version": "0.0.0-semantically-released",
+  "version": "0.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -20,9 +20,10 @@
     "recompose": "^0.27.1",
     "shortid": "^2.2.12",
     "store": "^2.0.12",
-    "webiny-app": "0.0.0-semantically-released",
-    "webiny-ui": "0.0.0-semantically-released",
-    "webiny-plugins": "0.0.0-semantically-released"
+    "@svgr/webpack": "^4.1.0",
+    "webiny-app": "0.0.0",
+    "webiny-ui": "0.0.0",
+    "webiny-plugins": "0.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
@@ -33,15 +34,19 @@
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-flow": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
-    "@svgr/webpack": "^2.1.1",
     "babel-plugin-emotion": "^9.2.8",
     "babel-plugin-lodash": "^3.3.4",
     "babel-plugin-module-resolver": "^3.1.1",
     "babel-plugin-named-asset-import": "^1.0.0-next.3e165448"
   },
   "scripts": {
-    "build": "babel src types.js -d ${DEST:-build} --source-maps --copy-files --ignore types.js",
+    "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
     "flow-copy-source": "flow-copy-source src ${DEST:-build}",
     "postbuild": "yarn flow-copy-source"
+  },
+  "svgo": {
+    "plugins": {
+      "removeViewBox": false
+    }
   }
 }

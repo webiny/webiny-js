@@ -1,11 +1,12 @@
 {
   "private": true,
   "name": "webiny-react-rewired",
-  "version": "0.0.0-semantically-released",
+  "version": "0.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
+  "main": "index.js",
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>"
   ],
@@ -13,7 +14,14 @@
   "dependencies": {
     "babel-plugin-module-resolver": "^3.1.1",
     "lodash": "^4.17.5",
-    "get-yarn-workspaces": "^1.0.2",
+    "get-yarn-workspaces": "^1.0.2"
+  },
+  "peerDependencies": {
     "react-scripts": "^2.1.1"
+  },
+  "scripts": {
+    "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
+    "flow-copy-source": "flow-copy-source src ${DEST:-build}",
+    "postbuild": "yarn flow-copy-source"
   }
 }
