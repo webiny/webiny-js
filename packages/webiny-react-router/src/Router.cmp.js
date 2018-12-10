@@ -1,6 +1,5 @@
 // @flow
 import React from "react";
-import $ from "jquery";
 import parse from "url-parse";
 
 class Router extends React.Component<*, *> {
@@ -20,25 +19,29 @@ class Router extends React.Component<*, *> {
             });
         });
 
-        $(document)
-            .off("click", "a")
-            .on("click", "a", function(e) {
-                if (this.href.endsWith("#") || this.target === "_blank") {
-                    return;
-                }
+        document.addEventListener("click", function(event: Event) {
+            // $FlowFixMe
+            const a = event.path.find(el => el.tagName === "A");
+            if (!a) {
+                return;
+            }
 
-                // Check if it's an anchor link
-                if (this.href.indexOf("#") > -1) {
-                    return;
-                }
+            if (a.href.endsWith("#") || a.target === "_blank") {
+                return;
+            }
 
-                if (this.href.startsWith(window.location.origin)) {
-                    e.preventDefault();
+            // Check if it's an anchor link
+            if (a.href.indexOf("#") > -1) {
+                return;
+            }
 
-                    let url = parse(this.href, true);
-                    history.push(url.pathname, router.config.basename);
-                }
-            });
+            if (a.href.startsWith(window.location.origin)) {
+                event.preventDefault();
+
+                let url = parse(a.href, true);
+                history.push(url.pathname, router.config.basename);
+            }
+        });
 
         router.matchRoute(history.location.pathname).then(route => {
             this.setState({ route });

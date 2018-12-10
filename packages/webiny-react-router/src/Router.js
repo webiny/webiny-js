@@ -78,6 +78,27 @@ class Router {
         return _.find(this.routes, { name });
     }
 
+    async renderDefaultRoute() {
+        const defaultRoute = this.routes.find(r => r.name === this.config.defaultRoute);
+
+        if (defaultRoute) {
+            this.route = defaultRoute;
+            this.match = {
+                path: defaultRoute.path,
+                url: defaultRoute.path,
+                isExact: true,
+                params: {},
+                query: {}
+            };
+            const params = { route: defaultRoute, output: null, match: this.match };
+            await this.middleware(params);
+
+            return params.output;
+        }
+
+        return null;
+    }
+
     async matchRoute(pathname: string) {
         debug("Matching location %o", pathname);
         let route = null;
@@ -118,7 +139,7 @@ class Router {
             return params.output;
         }
 
-        return route;
+        return await this.renderDefaultRoute();
     }
 }
 
