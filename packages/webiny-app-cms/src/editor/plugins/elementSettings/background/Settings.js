@@ -172,16 +172,15 @@ class Settings extends React.Component<*> {
                                 disabled={!hasBackgroundImage}
                                 label="Scaling"
                                 value={this.image.getScaling()}
-                                onChange={this.image.setScaling}
-                                options={[
-                                    { label: "Cover", value: "cover" },
-                                    { label: "Contain", value: "contain" },
-                                    { label: "Original Size", value: "originalSize" },
-                                    { label: "Tile", value: "tile" },
-                                    { label: "Tile Horizontally", value: "tileHorizontally" },
-                                    { label: "Tile Vertically", value: "tileVertically" }
-                                ]}
-                            />
+                                updateValue={this.image.setScaling}
+                            >
+                                <option value="cover">Cover</option>
+                                <option value="contain">Contain</option>
+                                <option value="originalSize">Original size</option>
+                                <option value="tile">Tile</option>
+                                <option value="tileHorizontally">Tile Horizontally</option>
+                                <option value="tileVertically">Tile Vertically</option>
+                            </Select>
                         </Grid>
                         <Grid>
                             <Cell span={12}>
