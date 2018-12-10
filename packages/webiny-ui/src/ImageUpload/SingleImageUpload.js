@@ -135,9 +135,11 @@ export class SingleImageUpload extends React.Component<Props, State> {
             imageEditorImageSrc = (this.state.imageEditor.image.src: any);
         }
 
+        const src = value ? value.src : null;
+
         return (
             <ImageUploadWrapper className={classNames(className)}>
-                {label && !value && (
+                {label && !src && (
                     <div className="mdc-floating-label mdc-floating-label--float-above">
                         {label}
                     </div>
@@ -167,20 +169,25 @@ export class SingleImageUpload extends React.Component<Props, State> {
                     }}
                 />
                 <FileBrowser accept={accept} maxSize={maxSize} convertToBase64>
-                    {({ browseFiles }) => (
-                        <Image
-                            img={img}
-                            loading={this.state.loading}
-                            value={value}
-                            removeImage={showRemoveImageButton ? onChange : null}
-                            uploadImage={() => {
-                                browseFiles({
-                                    onSuccess: files => this.handleFiles(files),
-                                    onErrors: errors => this.handleErrors(errors)
-                                });
-                            }}
-                        />
-                    )}
+                    {({ browseFiles }) => {
+                        const openBrowseFiles = () => {
+                            browseFiles({
+                                onSuccess: files => this.handleFiles(files),
+                                onErrors: errors => this.handleErrors(errors)
+                            });
+                        };
+
+                        return (
+                            <Image
+                                img={img}
+                                loading={this.state.loading}
+                                value={value}
+                                removeImage={showRemoveImageButton ? onChange : null}
+                                uploadImage={openBrowseFiles}
+                                editImage={openBrowseFiles}
+                            />
+                        );
+                    }}
                 </FileBrowser>
 
                 {validation.isValid === false && (
