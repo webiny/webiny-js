@@ -7,7 +7,10 @@ module.exports = (rewired = {}) => {
 
     return {
         webpack(config) {
-            const newConfig = { ...config, module: { ...config.module, rules: _.cloneDeep(config.module.rules) } };
+            const newConfig = {
+                ...config,
+                module: { ...config.module, rules: _.cloneDeep(config.module.rules) }
+            };
             // Enable .babelrc in each monorepo package
             const overrideBabel = rewired.overrideBabel || require("./overrides/babel");
             overrideBabel({ packages, aliases })(newConfig.module.rules);
