@@ -2,7 +2,7 @@
 import * as React from "react";
 import { withCms } from "webiny-app-cms/context";
 
-const Layout = ({ theme, layout, children }) => {
+const Layout = ({ cms: { theme }, layout, children }) => {
     const themeLayout = theme.layouts.find(l => l.name === layout);
 
     if (!themeLayout) {
