@@ -34,6 +34,8 @@
     "react-dom": "^16.4.0",
     "react-error-boundary": "^1.2.3",
     "react-apollo": "^2.3.2",
+    "recompose": "^0.30.0",
+    "shortid": "^2.2.14",
     "warning": "^4.0.2",
     "webiny-compose": "0.0.0",
     "webiny-i18n": "0.0.0",

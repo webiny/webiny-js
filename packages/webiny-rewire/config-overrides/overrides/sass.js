@@ -1,5 +1,5 @@
 // @flowIgnore
-const isObject = require("lodash/isObject");
+const isObject = require("lodash.isobject");
 const path = require("path");
 
 const includePaths = [

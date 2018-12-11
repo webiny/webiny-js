@@ -1,2 +1,2 @@
 // @flowIgnore
-module.exports = require("webiny-react-rewired")();
+module.exports = require("webiny-rewire/config-overrides");
