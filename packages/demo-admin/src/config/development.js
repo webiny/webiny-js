@@ -10,7 +10,7 @@ import { createOmitTypenameLink } from "webiny-app/graphql";
 export default {
     router: {
         basename: "/admin",
-        defaultRoute: "Policies",
+        defaultRoute: "Cms.Pages",
         middleware: [renderMiddleware()]
     },
     apolloClient: new ApolloClient({

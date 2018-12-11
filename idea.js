@@ -7,6 +7,7 @@ System.config({
         "webiny-api/*": "./packages/webiny-api/src/*",
         "webiny-api-cms/*": "./packages/webiny-api-cms/src/*",
         "webiny-ui/*": "./packages/webiny-ui/src/*",
-        "webiny-plugins/*": "./packages/webiny-plugins/src/*"
+        "webiny-plugins/*": "./packages/webiny-plugins/src/*",
+        "webiny-react-router/*": "./packages/webiny-react-router/src/*"
     }
 });

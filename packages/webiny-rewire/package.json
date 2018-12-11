@@ -1,0 +1,21 @@
+{
+  "name": "webiny-rewire",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "babel-plugin-emotion": "^10.0.4",
+    "babel-plugin-lodash": "^3.3.4",
+    "babel-plugin-module-resolver": "^3.1.1",
+    "babel-plugin-named-asset-import": "^0.2.3",
+    "get-yarn-workspaces": "^1.0.2",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.isobject": "^3.0.2",
+    "react-hot-loader": "^4.3.12",
+    "@svgr/webpack": "^4.1.0"
+  },
+  "peerDependencies": {
+    "babel-preset-react-app": "^6.1.0",
+    "react-app-rewired": "^1.6.2",
+    "react-scripts": "^2.1.1"
+  }
+}

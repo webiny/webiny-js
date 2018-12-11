@@ -155,7 +155,7 @@ class SlateEditor extends React.Component<*, *> {
                         placeholder="Enter some text..."
                         value={this.state.value}
                         onChange={this.onChange}
-                        theme={this.props.theme}
+                        theme={this.props.cms.theme}
                     />
                 </EditorStyle>
             </React.Fragment>

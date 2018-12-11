@@ -1,3 +1,1 @@
-module.exports = {
-    presets: ["babel-preset-react-app", "babel-preset-webiny-app"]
-};
+module.exports = require("webiny-rewire/babel/preset");

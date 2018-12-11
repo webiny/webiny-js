@@ -14,7 +14,11 @@ import { Icon } from "webiny-ui/Icon";
 import { Typography } from "webiny-ui/Typography";
 import { ButtonFloating } from "webiny-ui/Button";
 import { ReactComponent as AddIcon } from "webiny-app-cms/editor/assets/icons/add.svg";
-import type { CmsThemeType, ElementPluginType, ElementGroupPluginType } from "webiny-app-cms/types";
+import type {
+    CmsProviderPropsType,
+    ElementPluginType,
+    ElementGroupPluginType
+} from "webiny-app-cms/types";
 
 const ADD_ELEMENT = "cms-toolbar-add-element";
 
@@ -42,7 +46,7 @@ type Props = {
     deactivatePlugin: Function,
     dropElement: Function,
     params: Object | null,
-    theme: CmsThemeType,
+    cms: CmsProviderPropsType,
     enableDragOverlay: Function,
     disableDragOverlay: Function
 };
@@ -142,7 +146,10 @@ class AddElement extends React.Component<Props, State> {
     };
 
     render() {
-        const { params, theme } = this.props;
+        const {
+            params,
+            cms: { theme }
+        } = this.props;
 
         return (
             <Styled.Flex>

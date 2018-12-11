@@ -1,6 +1,5 @@
 // @flow
 import React from "react";
-import $ from "jquery";
 import parse from "url-parse";
 
 class Router extends React.Component<*, *> {
@@ -9,6 +8,31 @@ class Router extends React.Component<*, *> {
     };
 
     unlisten = null;
+
+    clickHandler = (event: Event) => {
+        // $FlowFixMe
+        const a = event.path.find(el => el.tagName === "A");
+        if (!a) {
+            return;
+        }
+
+        if (a.href.endsWith("#") || a.target === "_blank") {
+            return;
+        }
+
+        // Check if it's an anchor link
+        if (a.href.indexOf("#") > -1) {
+            return;
+        }
+
+        if (a.href.startsWith(window.location.origin)) {
+            event.preventDefault();
+            const { router } = this.props;
+            const { history } = router;
+            let url = parse(a.href, true);
+            history.push(url.pathname, router.config.basename);
+        }
+    };
 
     componentDidMount() {
         const { router } = this.props;
@@ -20,25 +44,7 @@ class Router extends React.Component<*, *> {
             });
         });
 
-        $(document)
-            .off("click", "a")
-            .on("click", "a", function(e) {
-                if (this.href.endsWith("#") || this.target === "_blank") {
-                    return;
-                }
-
-                // Check if it's an anchor link
-                if (this.href.indexOf("#") > -1) {
-                    return;
-                }
-
-                if (this.href.startsWith(window.location.origin)) {
-                    e.preventDefault();
-
-                    let url = parse(this.href, true);
-                    history.push(url.pathname, router.config.basename);
-                }
-            });
+        document.addEventListener("click", this.clickHandler);
 
         router.matchRoute(history.location.pathname).then(route => {
             this.setState({ route });
@@ -56,6 +62,8 @@ class Router extends React.Component<*, *> {
     componentWillUnmount() {
         this.unlisten && this.unlisten();
         this.unlisten = null;
+
+        document.removeEventListener("click", this.clickHandler);
     }
 
     render() {

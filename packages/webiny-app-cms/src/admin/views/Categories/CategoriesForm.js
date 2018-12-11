@@ -7,7 +7,7 @@ import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
 import { ButtonPrimary } from "webiny-ui/Button";
 import type { WithCrudFormProps } from "webiny-app-admin/components";
-import { withCms, type WithCmsProps } from "webiny-app-cms/context";
+import { withCms, type WithCmsPropsType } from "webiny-app-cms/context";
 import {
     SimpleForm,
     SimpleFormFooter,
@@ -21,8 +21,8 @@ const CategoriesForm = ({
     data,
     invalidFields,
     onSubmit,
-    theme
-}: WithCrudFormProps & WithCmsProps) => {
+    cms: { theme }
+}: WithCrudFormProps & { cms: WithCmsPropsType }) => {
     return (
         <Form data={data || {}} invalidFields={invalidFields} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (
