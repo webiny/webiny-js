@@ -20,7 +20,9 @@ const Static = ({ children }: Props) => {
                 {({ data }) => (
                     <ul>
                         {data.items.map(item => (
-                            <li key={item.id}>{item.title}</li>
+                            <li key={item.id}>
+                                <a href={item.url}>{item.title}</a>
+                            </li>
                         ))}
                     </ul>
                 )}

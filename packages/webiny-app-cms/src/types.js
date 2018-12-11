@@ -89,6 +89,10 @@ export type CmsPageSettingsPluginType = PluginType & {
     render: (params: { Bind: ComponentType<*> }) => Node
 };
 
+export type CmsPageSettingsFieldsPluginType = PluginType & {
+    fields: string
+};
+
 export type CmsMenuItemPluginType = PluginType & {
     /* Menu item title */
     title: string,

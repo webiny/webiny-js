@@ -3,10 +3,14 @@ import React from "react";
 
 export default () => {
     return async (params: Object, next: Function) => {
-        const { router, route, match, resolve } = params;
+        const { route, match, resolve } = params;
+
+        if (!route) {
+            return next();
+        }
 
         if (route.render) {
-            params.output = await route.render({ router, route, match, resolve });
+            params.output = await route.render({ route, match, resolve });
         }
 
         if (route.component) {

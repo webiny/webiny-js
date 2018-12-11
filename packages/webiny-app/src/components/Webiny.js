@@ -18,9 +18,10 @@ export const ConfigConsumer = ({ children }: Object) => (
 );
 
 class Webiny extends React.Component<WebinyProps> {
-    componentDidMount() {
+    constructor(props: Object) {
+        super();
         // Setup router
-        router.configure(this.props.config.router);
+        router.configure(props.config.router);
         getPlugins("route").forEach((pl: Object) => {
             router.addRoute(pl.route);
         });
