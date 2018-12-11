@@ -20,7 +20,7 @@ class SlateEditor extends React.Component<*, *> {
                 spellCheck={false}
                 plugins={this.plugins}
                 value={this.state.value}
-                theme={this.props.theme}
+                theme={this.props.cms.theme}
             />
         );
     }

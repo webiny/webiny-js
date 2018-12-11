@@ -57,7 +57,7 @@ const Button = styled("div")({
     lineHeight: "110%"
 });
 
-class TypographySelector extends React.Component {
+class TypographySelector extends React.Component<*, { showMenu: boolean }> {
     state = {
         showMenu: false
     };
@@ -66,8 +66,10 @@ class TypographySelector extends React.Component {
 
     componentDidUpdate() {
         if (this.state.showMenu) {
+            // $FlowFixMe
             const domRect = this.dropdown.current.getBoundingClientRect();
             if (domRect.right > window.innerWidth) {
+                // $FlowFixMe
                 this.dropdown.current.style.left = window.innerWidth - domRect.right + "px";
             }
         }
@@ -80,7 +82,10 @@ class TypographySelector extends React.Component {
     };
 
     render() {
-        const { editor, theme } = this.props;
+        const {
+            editor,
+            cms: { theme }
+        } = this.props;
 
         let blockType = editor.value.blocks.first().type;
         const style = theme.styles[blockType] || theme.styles.paragraph;

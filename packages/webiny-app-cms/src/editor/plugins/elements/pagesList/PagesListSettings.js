@@ -10,7 +10,7 @@ import {
     CategoriesAutoComplete
 } from "webiny-app-cms/admin/components";
 
-const PagesListSettings = ({ theme, Bind }: Object) => {
+const PagesListSettings = ({ cms: { theme }, Bind }: Object) => {
     return (
         <React.Fragment>
             <Grid>

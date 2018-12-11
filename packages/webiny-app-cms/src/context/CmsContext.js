@@ -10,7 +10,7 @@ type ProviderProps = {
 };
 
 type ConsumerProps = {
-    children?: React.Node
+    children: React.Element<any>
 };
 
 export const CmsContextProvider = ({ theme, isEditor, children }: ProviderProps) => (
@@ -18,5 +18,5 @@ export const CmsContextProvider = ({ theme, isEditor, children }: ProviderProps)
 );
 
 export const CmsContextConsumer = ({ children }: ConsumerProps) => (
-    <Consumer>{props => React.cloneElement(children, props)}</Consumer>
+    <Consumer>{props => React.cloneElement(children, { cms: props })}</Consumer>
 );

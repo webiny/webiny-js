@@ -33,7 +33,10 @@ class ButtonSettings extends React.Component<*> {
     };
 
     render() {
-        const { element, theme } = this.props;
+        const {
+            element,
+            cms: { theme }
+        } = this.props;
         const { types } = theme.elements.button;
         const { icon = {}, type = types[0].name } = get(element, "settings.advanced", {});
 
