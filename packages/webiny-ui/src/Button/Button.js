@@ -22,7 +22,7 @@ type Props = {
 
     className?: string,
 
-    disabled: boolean,
+    disabled?: boolean,
 
     style?: Object
 };
