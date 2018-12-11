@@ -1,2 +1,2 @@
-'use strict';
-module.exports = 'svg';
+"use strict";
+module.exports = "svg";
