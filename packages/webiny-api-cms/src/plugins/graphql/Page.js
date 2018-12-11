@@ -10,6 +10,7 @@ import UserType from "webiny-api/plugins/graphql/User";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
 import listPages from "./pageResolvers/listPages";
 import listPublishedPages from "./pageResolvers/listPublishedPages";
+import getPublishedPage from "./pageResolvers/getPublishedPage";
 import oembed from "./pageResolvers/oembed";
 import resolveUser from "./typeResolvers/resolveUser";
 
@@ -124,6 +125,8 @@ export default {
                 sort: String
             ): PageResponse
             
+            getPublishedPage(url: String!): PageResponse
+            
             listPages(
                 page: Int
                 perPage: Int
@@ -197,6 +200,7 @@ export default {
             getPage: resolveGet(pageFetcher),
             listPages: listPages(pageFetcher),
             listPublishedPages: listPublishedPages,
+            getPublishedPage: getPublishedPage,
             listElements: resolveList(elementFetcher),
             oembedData: oembed
         },

@@ -102,8 +102,9 @@ class Router {
     async matchRoute(pathname: string) {
         debug("Matching location %o", pathname);
         let route = null;
-        if (pathname.startsWith(this.config.basename)) {
-            pathname = pathname.substring(this.config.basename.length);
+        const { basename = "/" } = this.config;
+        if (basename !== "/" && pathname.startsWith(basename)) {
+            pathname = pathname.substring(basename.length);
         }
 
         if (pathname === "") {

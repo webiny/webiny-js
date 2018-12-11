@@ -6,7 +6,7 @@ import listPublishedPagesSql from "./listPublishedPages.sql";
 
 export default async (root: any, args: Object, context: Object) => {
     const { page = 1, perPage = 10 } = args;
-    const { Page } = context.cms;
+    const { Page } = context.cms.entities;
 
     const sql = listPublishedPagesSql(args, context);
 
