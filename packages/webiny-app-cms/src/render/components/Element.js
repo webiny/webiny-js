@@ -5,10 +5,10 @@ import type { ElementType } from "webiny-app-cms/types";
 
 declare type ElementProps = {
     element: ElementType,
-    theme: Object
+    cms: Object
 };
 
-const Element = ({ element, theme }: ElementProps) => {
+const Element = ({ element, cms: { theme } }: ElementProps) => {
     if (!element) {
         return null;
     }

@@ -7,7 +7,6 @@ import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
 import MenuItems from "./MenusForm/MenuItems";
 import type { WithCrudFormProps } from "webiny-app-admin/components";
-import { withCms, type WithCmsProps } from "webiny-app-cms/context";
 import {
     SimpleForm,
     SimpleFormFooter,
@@ -15,7 +14,7 @@ import {
 } from "webiny-app-admin/components/Views/SimpleForm";
 const t = i18n.namespace("Cms.MenusForm");
 
-type Props = WithCrudFormProps & WithCmsProps;
+type Props = WithCrudFormProps;
 type State = {
     item: ?Object
 };
@@ -64,4 +63,4 @@ class MenusForm extends React.Component<Props, State> {
     }
 }
 
-export default withCms()(MenusForm);
+export default MenusForm;

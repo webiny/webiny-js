@@ -7,6 +7,8 @@ import { isEqual } from "lodash";
 import { ChromePicker } from "react-color";
 import { Menu } from "webiny-ui/Menu";
 import { withCms } from "webiny-app-cms/context";
+import { type WithCmsPropsType } from "webiny-app-cms/types";
+
 import { ReactComponent as IconPalette } from "webiny-app-cms/editor/assets/icons/round-color_lens-24px.svg";
 
 const ColorPickerStyle = styled("div")({
@@ -111,7 +113,7 @@ const styles = {
 };
 
 type Props = {
-    theme: Object,
+    cms: WithCmsPropsType,
     onChange: Function,
     onChangeComplete: Function,
     value: string,
@@ -153,7 +155,11 @@ class ColorPicker extends React.Component<Props, State> {
     }
 
     render() {
-        const { theme, value, compact = false } = this.props;
+        const {
+            cms: { theme },
+            value,
+            compact = false
+        } = this.props;
 
         let themeColor = false;
 

@@ -2,7 +2,7 @@
 import React from "react";
 import { CmsContextConsumer } from "./CmsContext";
 
-export type WithCmsProps = {
+export type WithCmsPropsType = {
     theme: Object,
     editor?: boolean
 };

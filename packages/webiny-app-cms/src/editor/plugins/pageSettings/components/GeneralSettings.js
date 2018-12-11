@@ -9,7 +9,7 @@ import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
 import PageImage from "./PageImage";
 
-const GeneralSettings = ({ Bind, theme }: Object) => {
+const GeneralSettings = ({ Bind, cms: { theme } }: Object) => {
     return (
         <React.Fragment>
             <Grid>
