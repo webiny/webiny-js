@@ -1,15 +1,17 @@
 // @flow
 import * as React from "react";
 import { compose, withProps } from "recompose";
-import { graphql } from "react-apollo";
+import { Query } from "react-apollo";
 import { renderPlugins } from "webiny-app/plugins";
 import { withRouter } from "webiny-app/components";
-import { PageDetailsProvider, PageDetailsConsumer } from "../../components/PageDetailsContext";
 import type { WithRouterProps } from "webiny-app/components";
-import Loader from "./Loader";
 import styled from "react-emotion";
 import { Elevation } from "webiny-ui/Elevation";
+import { Typography } from "webiny-ui/Typography";
 import { getPage } from "webiny-app-cms/admin/graphql/pages";
+import editorMock from "webiny-app-cms/admin/assets/editor-mock.png";
+import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";
+import { PageDetailsProvider, PageDetailsConsumer } from "../../components/PageDetailsContext";
 
 type Props = WithRouterProps & {
     pageId: string,
@@ -42,8 +44,8 @@ const DetailsContainer = styled("div")({
     }
 });
 
-const PageDetails = ({ router, page, loading }: Props) => {
-    if (!router.getQuery("id")) {
+const PageDetails = ({ pageId }: Props) => {
+    if (!pageId) {
         return (
             <EmptySelect>
                 <Elevation z={2} className={"select-page"}>
@@ -53,25 +55,41 @@ const PageDetails = ({ router, page, loading }: Props) => {
         );
     }
 
-    if (loading) {
-        /* TODO: Ovo je C/P loadera od DataList komponente, treba ga sloziti da lici na taj PageDetails view */
-        return <Loader />;
-    }
-
-    const details = { page, loading };
-
     return (
-        <DetailsContainer>
-            <PageDetailsProvider value={details}>
-                <PageDetailsConsumer>
-                    {pageDetails => (
-                        <React.Fragment>
-                            {renderPlugins("cms-page-details", { pageDetails })}
-                        </React.Fragment>
-                    )}
-                </PageDetailsConsumer>
-            </PageDetailsProvider>
-        </DetailsContainer>
+        <Query query={getPage()} variables={{ id: pageId }}>
+            {({ data, loading }) => {
+                if (loading) {
+                    return (
+                        <LoadingEditor>
+                            <img src={editorMock} />
+                            <LoadingTitle>
+                                <Typography tag={"div"} use={"headline6"}>
+                                    Loading page...<span>.</span>
+                                    <span>.</span>
+                                    <span>.</span>
+                                </Typography>
+                            </LoadingTitle>
+                        </LoadingEditor>
+                    );
+                }
+
+                const details = { page: loading ? {} : data.cms.page.data, loading };
+
+                return (
+                    <DetailsContainer>
+                        <PageDetailsProvider value={details}>
+                            <PageDetailsConsumer>
+                                {pageDetails => (
+                                    <React.Fragment>
+                                        {renderPlugins("cms-page-details", { pageDetails })}
+                                    </React.Fragment>
+                                )}
+                            </PageDetailsConsumer>
+                        </PageDetailsProvider>
+                    </DetailsContainer>
+                );
+            }}
+        </Query>
     );
 };
 
@@ -79,15 +97,5 @@ export default compose(
     withRouter(),
     withProps(({ router }) => ({
         pageId: router.getQuery("id")
-    })),
-    graphql(getPage(), {
-        skip: props => !props.pageId,
-        options: ({ pageId }) => ({ variables: { id: pageId } }),
-        props: ({ data }) => {
-            return {
-                loading: data.loading,
-                page: data.loading ? {} : data.cms.page.data
-            };
-        }
-    })
+    }))
 )(PageDetails);

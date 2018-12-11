@@ -1,6 +1,7 @@
+// @flow
 import React from "react";
 import { compose, withHandlers } from "recompose";
-import { get, set } from "dot-prop-immutable";
+import { set } from "dot-prop-immutable";
 import { graphql } from "react-apollo";
 import { withSnackbar } from "webiny-app-admin/components";
 import { publishRevision, getPage } from "webiny-app-cms/admin/graphql/pages";
@@ -22,9 +23,11 @@ export default (prop: string) => {
                             return;
                         }
 
+                        const getPageQuery = getPage();
+
                         // Update revisions
                         const pageFromCache = cache.readQuery({
-                            query: getPage(),
+                            query: getPageQuery,
                             variables: { id: page.id }
                         });
 
@@ -44,7 +47,7 @@ export default (prop: string) => {
 
                         // Write our data back to the cache.
                         cache.writeQuery({
-                            query: getPage(),
+                            query: getPageQuery,
                             data: set(pageFromCache, "cms.page.data", page)
                         });
                     }
