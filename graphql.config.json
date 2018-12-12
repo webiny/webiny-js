@@ -1,0 +1,25 @@
+{
+  "schema": {
+    "request": {
+      "url" : "http://localhost:9000/graphql",
+      "method" : "POST",
+      "postIntrospectionQuery" : true,
+      "options" : {
+        "headers": {
+          "user-agent" : "JS GraphQL"
+        }
+      }
+    }
+  },
+  "endpoints" : [
+    {
+      "name": "Default (http://localhost:9000/graphql)",
+      "url": "http://localhost:9000/graphql",
+      "options" : {
+        "headers": {
+          "user-agent" : "JS GraphQL"
+        }
+      }
+    }
+  ]
+}
