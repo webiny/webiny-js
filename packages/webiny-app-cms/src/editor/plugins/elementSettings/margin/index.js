@@ -9,12 +9,7 @@ export default {
     type: "cms-element-settings",
     renderAction({ active }: Object) {
         return (
-            <Action
-                tooltip={"Margin"}
-                active={active}
-                plugin={this.name}
-                icon={<MarginIcon />}
-            />
+            <Action tooltip={"Margin"} active={active} plugin={this.name} icon={<MarginIcon />} />
         );
     },
     renderMenu() {

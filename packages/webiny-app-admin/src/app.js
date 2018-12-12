@@ -1,15 +1,17 @@
 // @flow
 import React from "react";
 import { i18n } from "webiny-app/i18n";
-import { addPlugin } from "webiny-plugins";
+import { addPlugin, getPlugins } from "webiny-plugins";
 import plugins from "webiny-app-admin/presets/default";
 import { ReactComponent as SecurityIcon } from "./assets/images/icons/baseline-security-24px.svg";
+import { ReactComponent as SettingsIcon } from "./assets/images/icons/round-settings-24px.svg";
 import Roles from "./views/Roles";
 import Users from "./views/Users";
 import ApiTokens from "./views/ApiTokens";
 import Groups from "./views/Groups";
 import Account from "./views/Account";
 import AdminLayout from "webiny-app-admin/components/Layouts/AdminLayout";
+import type { SettingsPluginType } from "webiny-app-admin/types";
 
 const t = i18n.namespace("Admin.App");
 const securityManager = "webiny-security-manager";
@@ -124,6 +126,76 @@ export default () => {
                 );
             },
             group: securityManager
+        }
+    });
+
+    // Settings
+    // Apps / integrations can register settings plugins and add menu items like the following.
+    let settingsPlugins: Array<SettingsPluginType> = getPlugins("settings");
+
+    settingsPlugins.forEach((sp: SettingsPluginType) => {
+        addPlugin({
+            type: "route",
+            name: "route-settings-" + sp.name,
+            route: {
+                ...sp.settings.route,
+                path: "/settings" + sp.settings.route.path,
+                render() {
+                    return <AdminLayout>{sp.settings.component}</AdminLayout>;
+                }
+            }
+        });
+    });
+
+    settingsPlugins = {
+        apps: settingsPlugins.filter(sp => sp.settings.type === "app"),
+        integrations: settingsPlugins.filter(sp => sp.settings.type === "integration"),
+        other: settingsPlugins.filter(sp => !["app", "integration"].includes(sp.settings.type))
+    };
+
+    addPlugin({
+        type: "menu",
+        name: "menu-settings",
+        render({ Menu }) {
+            return (
+                <Menu label={t`Settings`} icon={<SettingsIcon />}>
+                    {settingsPlugins.apps.length > 0 && (
+                        <Menu label={t`Apps`}>
+                            {settingsPlugins.apps.map(sp => (
+                                <Menu
+                                    key={sp.name}
+                                    label={sp.settings.name}
+                                    route={sp.settings.route.name}
+                                />
+                            ))}
+                        </Menu>
+                    )}
+
+                    {settingsPlugins.integrations.length > 0 && (
+                        <Menu label={t`Integrations`}>
+                            {settingsPlugins.integrations.map(sp => (
+                                <Menu
+                                    key={sp.name}
+                                    label={sp.settings.name}
+                                    route={sp.settings.route.name}
+                                />
+                            ))}
+                        </Menu>
+                    )}
+
+                    {settingsPlugins.other.length > 0 && (
+                        <Menu label={t`Other`}>
+                            {settingsPlugins.other.map(sp => (
+                                <Menu
+                                    key={sp.name}
+                                    label={sp.settings.name}
+                                    route={sp.settings.route.name}
+                                />
+                            ))}
+                        </Menu>
+                    )}
+                </Menu>
+            );
         }
     });
 };

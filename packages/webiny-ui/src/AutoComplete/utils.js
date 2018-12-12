@@ -1,8 +1,16 @@
 // @flow
 export const getOptionValue = (option: any, props: Object) => {
-    return props.useSimpleValues ? option : option[props.valueProp];
+    if (option) {
+        return props.useSimpleValues ? option : option[props.valueProp];
+    }
+
+    return option;
 };
 
 export const getOptionText = (option: any, props: Object) => {
-    return props.useSimpleValues ? option : option[props.textProp];
+    if (option) {
+        return props.useSimpleValues ? option : option[props.textProp];
+    }
+
+    return option;
 };

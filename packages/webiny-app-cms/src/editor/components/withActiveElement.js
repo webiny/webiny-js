@@ -7,7 +7,11 @@ import {
     getElementWithChildren
 } from "webiny-app-cms/editor/selectors";
 
-export function withActiveElement({ propName = "element", shallow = false, keys = [] }: Object = {}) {
+export function withActiveElement({
+    propName = "element",
+    shallow = false,
+    keys = []
+}: Object = {}) {
     return function decorator(Component: React.ComponentType<*>) {
         return connect(state => {
             const elementId = getActiveElementId(state);

@@ -11,11 +11,9 @@ import { Security } from "webiny-app-admin/components";
 import Login from "webiny-app-admin/views/Login";
 import "./App.scss";
 import config from "./config";
-import imagePlugin from "./plugins/imagePlugin";
-import fileUploadPlugin from "./plugins/fileUploadPlugin";
+import plugins from "./plugins";
 
-addPlugin(imagePlugin);
-addPlugin(fileUploadPlugin);
+addPlugin(...plugins);
 
 // Initialize apps
 adminApp();

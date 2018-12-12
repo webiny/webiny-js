@@ -25,16 +25,21 @@ const innerElement = css({
 
 const Row = ({ element }: ElementType) => {
     return (
-        <ElementStyle {...getElementStyleProps(element)} style={{ zIndex: 20, position: "relative" }}>
+        <ElementStyle
+            {...getElementStyleProps(element)}
+            style={{ zIndex: 20, position: "relative" }}
+        >
             <div className={innerElement}>
-                {element.elements.map(element => (
-                    element.data ? <ColumnContainer
-                        key={element.id}
-                        style={{ width: (element.data.width || 100) + "%" }}
-                    >
-                        <Element element={element} />
-                    </ColumnContainer> : null
-                ))}
+                {element.elements.map(element =>
+                    element.data ? (
+                        <ColumnContainer
+                            key={element.id}
+                            style={{ width: (element.data.width || 100) + "%" }}
+                        >
+                            <Element element={element} />
+                        </ColumnContainer>
+                    ) : null
+                )}
             </div>
         </ElementStyle>
     );

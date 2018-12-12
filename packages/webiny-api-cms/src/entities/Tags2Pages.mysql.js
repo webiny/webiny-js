@@ -7,8 +7,9 @@ class Tags2Pages extends MySQLTable {
         this.column("page").char(24);
         this.column("tag").char(24);
 
-        this.index("page");
-        this.index("tag");
+        this.index().key("page");
+        this.index().key("tag");
+        this.index().unique("tag", "page");
     }
 }
 

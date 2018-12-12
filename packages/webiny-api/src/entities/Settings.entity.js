@@ -17,6 +17,10 @@ export const settingsFactory = ({ user = {} }: Object) => {
                 .setValidators("required");
 
             this.attr("data").object();
+
+            this.on("beforeCreate", () => {
+                this.key = this.constructor.key;
+            });
         }
 
         static async load(): Promise<Settings | null> {

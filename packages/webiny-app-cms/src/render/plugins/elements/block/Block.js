@@ -7,7 +7,10 @@ import type { ElementType } from "webiny-app-cms/types";
 
 const Block = ({ element }: { element: ElementType }) => {
     return (
-        <ElementStyle style={{ margin: "0 auto", boxSizing: "border-box" }} {...getElementStyleProps(element)}>
+        <ElementStyle
+            style={{ margin: "0 auto", boxSizing: "border-box" }}
+            {...getElementStyleProps(element)}
+        >
             {({ elementStyle, customClasses, combineClassNames }) => {
                 const { width, ...containerStyle } = elementStyle;
                 return (

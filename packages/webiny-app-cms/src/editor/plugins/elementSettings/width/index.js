@@ -1,6 +1,7 @@
 //@flow
 import React from "react";
-import { ReactComponent as WidthIcon } from "webiny-app-cms/editor/assets/icons/width-icon.svg";
+import { ReactComponent as WidthIcon } from "./arrows-alt-h-solid.svg";
+
 import Settings from "./Settings";
 import Action from "../components/Action";
 

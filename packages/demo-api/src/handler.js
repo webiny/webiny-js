@@ -2,10 +2,8 @@
 import { addPlugin } from "webiny-plugins";
 import { createHandler } from "webiny-api";
 import config from "./configs";
+import plugins from "./plugins";
 
-// Plugins from different apps / integrations.
-import cmsPlugins from "webiny-api-cms/plugins";
-
-addPlugin(...cmsPlugins);
+addPlugin(...plugins);
 
 export const api = createHandler(config);

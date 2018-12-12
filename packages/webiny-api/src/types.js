@@ -14,10 +14,12 @@ export type EntityPluginType = PluginType & {
 
 export type GraphQLSchemaPluginType = PluginType & {
     namespace: string,
-    typedefs: Array<string> | () => Array<string>,
-    resolvers: Object | () => Object
+    typedefs: Array<string> | (() => Array<string>),
+    resolvers: Object | (() => Object)
 };
 
 export type GraphQLContextPluginType = PluginType & {
     apply: (context: Object) => any
 };
+
+export type SettingsPluginType = PluginType & {};

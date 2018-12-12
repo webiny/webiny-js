@@ -22,6 +22,8 @@ type Props = {
 
     className?: string,
 
+    disabled?: boolean,
+
     style?: Object
 };
 
@@ -32,10 +34,10 @@ type Props = {
  * @constructor
  */
 export const ButtonDefault = (props: Props) => {
-    const { onClick, children, small, ripple = true, className = "" } = props;
+    const { disabled, onClick, children, small, ripple = true, className = "" } = props;
 
     return (
-        <R.Button dense={small} onClick={onClick} ripple={ripple} className={className}>
+        <R.Button disabled={disabled} dense={small} onClick={onClick} ripple={ripple} className={className}>
             {children}
         </R.Button>
     );
@@ -48,11 +50,12 @@ export const ButtonDefault = (props: Props) => {
  * @constructor
  */
 export const ButtonPrimary = (props: Props) => {
-    const { onClick, children, small = false, flat = false, ripple = true, style = null } = props;
+    const { disabled, onClick, children, small = false, flat = false, ripple = true, style = null } = props;
     return (
         <R.Button
             raised={!flat}
             dense={small}
+            disabled={disabled}
             unelevated={flat}
             ripple={ripple}
             onClick={onClick}
@@ -70,10 +73,10 @@ export const ButtonPrimary = (props: Props) => {
  * @constructor
  */
 export const ButtonSecondary = (props: Props) => {
-    const { onClick, children, small = false, ripple = true } = props;
+    const { disabled, onClick, children, small = false, ripple = true } = props;
 
     return (
-        <R.Button outlined dense={small} ripple={ripple} onClick={onClick}>
+        <R.Button disabled={disabled} outlined dense={small} ripple={ripple} onClick={onClick}>
             {children}
         </R.Button>
     );
@@ -91,9 +94,9 @@ type ButtonFloatingProps = Props & {
  * @constructor
  */
 export const ButtonFloating = (props: ButtonFloatingProps) => {
-    const { icon, onClick, small = false, label = false, ripple = true, ...rest } = props;
+    const { disabled, icon, onClick, small = false, label = false, ripple = true, ...rest } = props;
     return (
-        <Fab mini={small} onClick={onClick} label={label} ripple={ripple} icon={icon} {...rest} />
+        <Fab disabled={disabled} mini={small} onClick={onClick} label={label} ripple={ripple} icon={icon} {...rest} />
     );
 };
 

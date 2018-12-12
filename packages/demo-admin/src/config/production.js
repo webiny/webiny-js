@@ -13,10 +13,7 @@ export default {
         middleware: [renderMiddleware()]
     },
     apolloClient: new ApolloClient({
-        link: ApolloLink.from([
-            createAuthLink(),
-            new HttpLink({ uri: "/graphql" })
-        ]),
+        link: ApolloLink.from([createAuthLink(), new HttpLink({ uri: "/graphql" })]),
         cache: new InMemoryCache({
             dataIdFromObject: obj => obj.id || null
         }),

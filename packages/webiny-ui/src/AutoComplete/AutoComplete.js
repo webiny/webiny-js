@@ -21,7 +21,6 @@ export class AutoComplete extends React.Component<Props, State> {
         valueProp: "id",
         textProp: "name",
         options: [],
-        useSimpleValues: false,
         renderItem(item: any) {
             return <Typography use={"body2"}>{getOptionText(item, this.props)}</Typography>;
         }
@@ -37,12 +36,25 @@ export class AutoComplete extends React.Component<Props, State> {
     downshift: any = React.createRef();
 
     componentDidUpdate(previousProps: *) {
-        const { value } = this.props;
+        const { value, options } = this.props;
         const { value: previousValue } = previousProps;
 
         if (!isEqual(value, previousValue)) {
+            let item = null;
+
+            if (value) {
+                if (typeof value === "object") {
+                    item = value;
+                } else {
+                    item =
+                        options.find(option => {
+                            return value === getOptionValue(option, this.props);
+                        }) || null;
+                }
+            }
+
             const { current: downshift } = this.downshift;
-            downshift && downshift.selectItem(value);
+            downshift && downshift.selectItem(item);
         }
     }
 
@@ -136,9 +148,8 @@ export class AutoComplete extends React.Component<Props, State> {
     render() {
         const {
             options,
-            value,
             onChange,
-            useSimpleValues, // eslint-disable-line
+            value, // eslint-disable-line
             valueProp, // eslint-disable-line
             textProp, // eslint-disable-line
             onInput,
@@ -146,16 +157,8 @@ export class AutoComplete extends React.Component<Props, State> {
             ...otherInputProps
         } = this.props;
 
-        let defaultSelectedItem = null;
-        if (value) {
-            defaultSelectedItem = options.find(option => {
-                return getOptionValue(value, this.props) === getOptionValue(option, this.props);
-            });
-        }
-
         // Downshift related props.
         const downshiftProps = {
-            defaultSelectedItem,
             className: autoCompleteStyle,
             itemToString: item => item && getOptionText(item, this.props),
             onChange: selection => {
@@ -179,6 +182,10 @@ export class AutoComplete extends React.Component<Props, State> {
                                     rawOnChange: true,
                                     onChange: e => e,
                                     onBlur: e => e,
+                                    onFocus: e => {
+                                        openMenu();
+                                        otherInputProps.onFocus && otherInputProps.onFocus(e);
+                                    },
                                     onKeyUp: e => {
                                         const keyCode = keycode(e);
                                         const inputValue = e.target.value || "";
@@ -202,10 +209,6 @@ export class AutoComplete extends React.Component<Props, State> {
                                                 onInput && onInput(inputValue);
                                             }
                                         );
-                                    },
-                                    onFocus: e => {
-                                        openMenu();
-                                        otherInputProps.onFocus && otherInputProps.onFocus(e);
                                     }
                                 })}
                             />

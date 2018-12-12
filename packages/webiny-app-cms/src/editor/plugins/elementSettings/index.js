@@ -1,3 +1,4 @@
+// @flow
 import bar from "./bar";
 import deleteElement from "./delete";
 import clone from "./clone";
@@ -7,6 +8,7 @@ import shadow from "./shadow";
 import padding from "./padding";
 import margin from "./margin";
 import width from "./width";
+import height from "./height";
 import align from "./align";
 import divider from "./divider";
 import save from "./save";
@@ -23,5 +25,6 @@ export default [
     clone,
     deleteElement,
     width,
+    height,
     save
 ];

@@ -54,6 +54,17 @@ export default {
                     component: PageListv2
                 }
             ]
+        },
+        mailchimp: {
+            components: [
+                {
+                    name: "custom",
+                    title: "Custom page list",
+                    component() {
+                        return <span>custom</span>;
+                    }
+                }
+            ]
         }
     },
     styles: {
@@ -94,7 +105,7 @@ export default {
         },
         custom: {
             label: "Pavel 1",
-            component: ({ attributes, children }: Object) => {
+            component({ attributes, children }: Object) {
                 return (
                     <div className={"my-custom-class"} {...attributes}>
                         {children}

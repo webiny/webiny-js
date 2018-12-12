@@ -38,9 +38,6 @@ export type AutoCompleteBaseProps = FormComponentProps & {
     // Set if you are saving plain strings as values.
     useSimpleValues?: boolean,
 
-    // Min. number of characters needed to show suggestions list.
-    minInput: number,
-
     // Renders a single suggestion item.
     renderItem: Function
 };

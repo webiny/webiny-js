@@ -25,15 +25,11 @@ const PMPropertyInput = pure(({ value, icon, updateValue, updatePreview }: Objec
             </Cell>
             <Cell span={4}>
                 <InputContainer>
-                    <Input
-                        placeholder={"px"}
-                        value={value}
-                        onChange={updateValue}
-                    />
+                    <Input placeholder={"px"} value={value} onChange={updateValue} />
                 </InputContainer>
             </Cell>
         </React.Fragment>
-    )
+    );
 });
 
 export default PMPropertyInput;

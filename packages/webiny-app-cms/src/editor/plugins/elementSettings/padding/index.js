@@ -8,13 +8,7 @@ export default {
     name: "cms-element-settings-padding",
     type: "cms-element-settings",
     renderAction() {
-        return (
-            <Action
-                tooltip={"Padding"}
-                plugin={this.name}
-                icon={<PaddingIcon />}
-            />
-        );
+        return <Action tooltip={"Padding"} plugin={this.name} icon={<PaddingIcon />} />;
     },
     renderMenu() {
         return <Settings title="Padding" styleAttribute="padding" />;

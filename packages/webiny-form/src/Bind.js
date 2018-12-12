@@ -3,6 +3,7 @@ import * as React from "react";
 import { get, isFunction } from "lodash";
 import type Form from "./Form";
 import validation from "./validation";
+import invariant from "invariant";
 
 export type Props = {
     name: string,
@@ -26,6 +27,8 @@ const createBind = (form: Form) => {
             beforeChange,
             afterChange
         } = props;
+
+        invariant(name, `Bind component must have a "name" prop.`);
 
         // Track component rendering
         form.lastRender.push(name);
