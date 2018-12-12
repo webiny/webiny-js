@@ -1,6 +1,5 @@
 // @flow
 import * as React from "react";
-import { i18n } from "webiny-app/i18n";
 import { Form } from "webiny-form";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
@@ -16,8 +15,6 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "webiny-app-admin/components/Views/SimpleForm";
-
-const t = i18n.namespace("Settings.GeneralSettings");
 
 const GeneralSettings = ({ showSnackbar }) => {
     return (
@@ -38,7 +35,7 @@ const GeneralSettings = ({ showSnackbar }) => {
                         >
                             {({ Bind, form }) => (
                                 <SimpleForm>
-                                    <SimpleFormHeader title={t`General Settings`} />
+                                    <SimpleFormHeader title={`General Settings`} />
                                     <SimpleFormContent>
                                         <Grid>
                                             <Cell span={6}>
@@ -100,7 +97,7 @@ const GeneralSettings = ({ showSnackbar }) => {
                                             onClick={form.submit}
                                             align="right"
                                         >
-                                            {t`Save role`}
+                                            Save
                                         </ButtonPrimary>
                                     </SimpleFormFooter>
                                 </SimpleForm>
