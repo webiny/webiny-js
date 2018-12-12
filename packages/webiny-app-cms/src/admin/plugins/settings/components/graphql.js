@@ -12,6 +12,10 @@ const fields = /* GraphQL */ `
                 id
                 title
             }
+            error {
+                id
+                title
+            }
         }
     }
 `;

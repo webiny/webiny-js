@@ -53,6 +53,14 @@ const CmsSettings = ({ showSnackbar }) => {
                                                     />
                                                 </Bind>
                                             </Cell>
+                                            <Cell span={12}>
+                                                <Bind name={"cms.pages.error"}>
+                                                    <PagesAutoComplete
+                                                        label={"Error page"}
+                                                        description={`If an error occurred during page load, this page will be shown.`}
+                                                    />
+                                                </Bind>
+                                            </Cell>
                                         </Grid>
                                     </SimpleFormContent>
                                     <SimpleFormFooter>

@@ -11,6 +11,7 @@ const cmsSettingsPagesModelFactory = (settings, { cms: { entities } }) => {
             this.setParentEntity(settings);
             this.attr("home").entity(entities.Page);
             this.attr("notFound").entity(entities.Page);
+            this.attr("error").entity(entities.Page);
         }
     };
 };
@@ -37,6 +38,7 @@ export default [
             type CmsSettingsPages {
                 home: CmsDefaultPage
                 notFound: CmsDefaultPage
+                error: CmsDefaultPage
             }
 
             type CmsDefaultPage {
@@ -56,6 +58,7 @@ export default [
             input CmsSettingsPagesInput {
                 home: ID
                 notFound: ID
+                error: ID
             }
 
             extend type SettingsQuery {

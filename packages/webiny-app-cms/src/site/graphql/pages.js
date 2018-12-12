@@ -9,34 +9,38 @@ const getSettingsFields = () => {
         .join("\n");
 };
 
-export const getPage = () => {
-    const plugins = getSettingsFields();
+const getDataFields = () => {
+    return /* GraphQL */ `
+        {
+            id
+            title
+            url
+            version
+            publishedOn
+            snippet
+            content
+            createdBy {
+                firstName
+                lastName
+            }
+            settings {
+                _empty
+                ${getSettingsFields()}
+            }
+            category {
+                id
+                name
+            }
+        }
+    `;
+};
 
+export const getPage = () => {
     return gql`
         query CmsGetPage($url: String!) {
             cms {
                 page: getPublishedPage(url: $url) {
-                    data {
-                        id
-                        title
-                        url
-                        version
-                        publishedOn
-                        snippet
-                        content
-                        createdBy {
-                            firstName
-                            lastName
-                        }
-                        settings {
-                            _empty
-                            ${plugins}
-                        }
-                        category {
-                            id
-                            name
-                        }
-                    }
+                    data ${getDataFields()}
                     error {
                         code
                         message
@@ -48,33 +52,25 @@ export const getPage = () => {
 };
 
 export const listPages = () => {
-    const plugins = getSettingsFields();
-
     return gql`
-        query CmsListPages($category: String, $tags: [String], $tagsRule: TagsRule, $sort: PageSortInput, $page: Int, $perPage: Int) {
+        query CmsListPages(
+            $category: String
+            $tags: [String]
+            $tagsRule: TagsRule
+            $sort: PageSortInput
+            $page: Int
+            $perPage: Int
+        ) {
             cms {
-                pages: listPublishedPages(category: $category, page: $page, perPage: $perPage, sort: $sort, tags: $tags, tagsRule: $tagsRule) {
-                    data {
-                        id
-                        title
-                        url
-                        version
-                        publishedOn
-                        snippet
-                        content
-                        createdBy {
-                            firstName
-                            lastName
-                        }
-                        settings {
-                            _empty
-                            ${plugins}
-                        }
-                        category {
-                            id
-                            name
-                        }
-                    }
+                pages: listPublishedPages(
+                    category: $category
+                    page: $page
+                    perPage: $perPage
+                    sort: $sort
+                    tags: $tags
+                    tagsRule: $tagsRule
+                ) {
+                    data ${getDataFields()}
                     error {
                         code
                         message
@@ -84,3 +80,33 @@ export const listPages = () => {
         }
     `;
 };
+
+export const getHomePage = gql`
+    query getHomePage {
+        cms {
+            page: getHomePage {
+                data ${getDataFields()}            
+            }
+        }
+    }
+`;
+
+export const getNotFoundPage = gql`
+    query getNotFoundPage {
+        cms {
+            page: getNotFoundPage {
+                data ${getDataFields()}            
+            }
+        }
+    }
+`;
+
+export const getErrorPage = gql`
+    query getErrorPage {
+        cms {
+            page: getErrorPage {
+                data ${getDataFields()}            
+            }
+        }
+    }
+`;
