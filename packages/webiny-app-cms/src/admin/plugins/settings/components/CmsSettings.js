@@ -41,7 +41,7 @@ const CmsSettings = ({ showSnackbar }) => {
                                                 <Bind name={"cms.pages.home"}>
                                                     <PagesAutoComplete
                                                         label={"Homepage"}
-                                                        description={`This page will be shown if none was specified via URL (when "/" is visited)`}
+                                                        description={`This page will be shown if none was specified in URL (when "/" is visited).`}
                                                     />
                                                 </Bind>
                                             </Cell>
@@ -49,7 +49,7 @@ const CmsSettings = ({ showSnackbar }) => {
                                                 <Bind name={"cms.pages.notFound"}>
                                                     <PagesAutoComplete
                                                         label={"Not found (404) page"}
-                                                        description={`This page will be shown if current URL does not a page assigned to it.`}
+                                                        description={`This page will be shown if URL does not a page assigned to it.`}
                                                     />
                                                 </Bind>
                                             </Cell>

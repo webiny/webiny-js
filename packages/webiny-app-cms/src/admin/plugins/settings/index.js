@@ -8,8 +8,8 @@ export default ([
         type: "settings",
         name: "settings-cms",
         settings: {
-            type: "integration",
-            name: "Cms",
+            type: "app",
+            name: "CMS",
             component: <CmsSettings />,
             route: {
                 name: "Settings.Cms",
