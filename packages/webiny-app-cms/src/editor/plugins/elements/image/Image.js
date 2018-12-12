@@ -21,7 +21,7 @@ const Image = ({ element, onChange }) => {
     }
 
     return (
-        <div id={element.type + "-" + element.id}>
+        <div id={element.id}>
             <SingleImageUpload
                 onChange={onChange}
                 value={element.data}

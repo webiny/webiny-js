@@ -73,7 +73,7 @@ export default (): Array<PluginType> => {
                     if (!onCreate || onCreate !== "skip") {
                         // If source element does not define a specific `onCreate` behavior - continue with the actual element plugin
                         const image = document.querySelector(
-                            `#${element.id} [data-role="select-image"]`
+                            `#${window.CSS.escape(element.id)} [data-role="select-image"]`
                         );
 
                         if (image) {
