@@ -81,31 +81,43 @@ export const listPages = () => {
     `;
 };
 
-export const getHomePage = gql`
+export const getHomePage = () => gql`
     query getHomePage {
         cms {
             page: getHomePage {
-                data ${getDataFields()}            
+                data ${getDataFields()}
+                error {
+                    code
+                    message
+                }
             }
         }
     }
 `;
 
-export const getNotFoundPage = gql`
+export const getNotFoundPage = () => gql`
     query getNotFoundPage {
         cms {
             page: getNotFoundPage {
-                data ${getDataFields()}            
+                data ${getDataFields()}
+                error {
+                    code
+                    message
+                }
             }
         }
     }
 `;
 
-export const getErrorPage = gql`
+export const getErrorPage = () => gql`
     query getErrorPage {
         cms {
             page: getErrorPage {
-                data ${getDataFields()}            
+                data ${getDataFields()}
+                error {
+                    code
+                    message
+                }
             }
         }
     }

@@ -5,7 +5,7 @@ export default async (root: any, args: Object, context: Object) => {
     const { CmsSettings } = context.cms.entities;
 
     const settings = await CmsSettings.load();
-    const page = settings.get("data.pages.error");
+    const page = await settings.get("data.pages.error");
 
     if (!page) {
         return new ErrorResponse({
