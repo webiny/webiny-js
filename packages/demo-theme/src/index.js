@@ -6,8 +6,6 @@ import BlogLayout from "./layouts/blog";
 import PageList from "./components/PageList";
 import PageListv2 from "./components/PageListv2";
 
-import { MailchimpDefaultForm } from "webiny-mailchimp/render/components";
-
 export default {
     layouts: [
         {
@@ -59,11 +57,6 @@ export default {
         },
         mailchimp: {
             components: [
-                {
-                    name: "default",
-                    title: "Default page list",
-                    component: MailchimpDefaultForm
-                },
                 {
                     name: "custom",
                     title: "Custom page list",

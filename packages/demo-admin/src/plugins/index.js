@@ -2,4 +2,7 @@
 import fileUploadPlugin from "./fileUploadPlugin";
 import imagePlugin from "./imagePlugin";
 
-export default [fileUploadPlugin, imagePlugin];
+// TODO remove
+import settingsPlugins from "webiny-app-cms/admin/plugins/settings";
+
+export default [fileUploadPlugin, imagePlugin, ...settingsPlugins];

@@ -3,9 +3,6 @@ import * as React from "react";
 import styled from "react-emotion";
 import { Menu } from "webiny-app-cms/render/components";
 import { Modules } from "webiny-app/components";
-import { addPlugin } from "webiny-plugins";
-import cookiePolicy from "webiny-cookie-policy/render";
-import googleTagManager from "webiny-google-tag-manager/render";
 
 const Banner = styled("div")({
     backgroundColor: "#666",
@@ -16,8 +13,6 @@ const Banner = styled("div")({
 type Props = {
     children: React.Node
 };
-
-addPlugin(...cookiePolicy, ...googleTagManager);
 
 const Static = ({ children }: Props) => {
     return (

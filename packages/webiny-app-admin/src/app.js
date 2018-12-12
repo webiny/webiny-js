@@ -11,7 +11,7 @@ import ApiTokens from "./views/ApiTokens";
 import Groups from "./views/Groups";
 import Account from "./views/Account";
 import AdminLayout from "webiny-app-admin/components/Layouts/AdminLayout";
-import { SettingsPluginType } from "webiny-app-admin/types";
+import type { SettingsPluginType } from "webiny-app-admin/types";
 
 const t = i18n.namespace("Admin.App");
 const securityManager = "webiny-security-manager";

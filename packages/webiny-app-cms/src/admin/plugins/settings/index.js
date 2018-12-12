@@ -1,20 +1,20 @@
 // @flow
 import * as React from "react";
-import CookiePolicySettings from "./components/CookiePolicySettings";
+import CmsSettings from "./components/CmsSettings";
 import type { SettingsPluginType } from "webiny-app-admin/types";
 
 export default ([
     {
         type: "settings",
-        name: "settings-cookie-policy",
+        name: "settings-cms",
         settings: {
             type: "integration",
-            name: "Cookie Policy",
-            component: <CookiePolicySettings />,
+            name: "Cms",
+            component: <CmsSettings />,
             route: {
-                name: "Settings.CookiePolicy",
-                path: "/cookie-policy",
-                title: "Cookie Policy",
+                name: "Settings.Cms",
+                path: "/cms",
+                title: "CMS",
                 group: undefined
             }
         }
