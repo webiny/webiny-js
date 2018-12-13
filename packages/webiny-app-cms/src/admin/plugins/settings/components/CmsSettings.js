@@ -41,7 +41,7 @@ const CmsSettings = ({ showSnackbar }) => {
                                                 <Bind name={"cms.pages.home"}>
                                                     <PagesAutoComplete
                                                         label={"Homepage"}
-                                                        description={`This page will be shown if none was specified in URL (when "/" is visited).`}
+                                                        description={`This is the homepage of your website.`}
                                                     />
                                                 </Bind>
                                             </Cell>
@@ -49,7 +49,7 @@ const CmsSettings = ({ showSnackbar }) => {
                                                 <Bind name={"cms.pages.notFound"}>
                                                     <PagesAutoComplete
                                                         label={"Not found (404) page"}
-                                                        description={`This page will be shown if URL does not a page assigned to it.`}
+                                                        description={`Shown when the requested page is not found.`}
                                                     />
                                                 </Bind>
                                             </Cell>
@@ -57,7 +57,7 @@ const CmsSettings = ({ showSnackbar }) => {
                                                 <Bind name={"cms.pages.error"}>
                                                     <PagesAutoComplete
                                                         label={"Error page"}
-                                                        description={`If an error occurred during page load, this page will be shown.`}
+                                                        description={`Shown when an error occurs during a page load.`}
                                                     />
                                                 </Bind>
                                             </Cell>
