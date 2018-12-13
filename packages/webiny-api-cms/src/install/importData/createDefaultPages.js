@@ -11,7 +11,7 @@ const createDefaultPage = async ({ page, data, category }) => {
     return page;
 };
 
-const createDefaultPages = async (context, { categories }) => {
+const createDefaultPages = async (context: Object, { categories }: Object) => {
     const { Page, CmsSettings } = context.cms.entities;
 
     // Create default pages - demo blog, error, not found and homepage and also assign to settings.

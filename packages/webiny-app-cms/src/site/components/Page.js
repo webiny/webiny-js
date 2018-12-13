@@ -1,71 +1,57 @@
 // @flow
 import * as React from "react";
 import { Query } from "react-apollo";
-import Element from "webiny-app-cms/render/components/Element";
 import Loader from "./Loader";
-import Layout from "./Layout";
-import { Helmet } from "react-helmet";
-import { Body, GenericErrorPage, GenericNotFoundPage, getQueryProps } from "./Page/index";
+import { GenericErrorPage, GenericNotFoundPage, Content, buildQueryProps } from "./Page/index";
 
-type Props = {
-    match?: Object,
-    isHome?: boolean,
-    error?: Object
+const defaultPages = {
+    error: null,
+    notFound: null
 };
 
-const Page = (props: Props) => (
-    <Query {...getQueryProps(props)}>
-        {({ data, error: gqlError, loading }) => {
-            if (loading) {
-                return <Loader />;
-            }
+const Page = ({ match: { url } }: { match: Object }) => {
+    return (
+        <Query {...buildQueryProps({ url, defaultPages })}>
+            {({ data, error: gqlError, loading }) => {
+                if (loading) {
+                    return <Loader />;
+                }
 
-            if (gqlError) {
-                if (props.error) {
-                    // Let's show a generic system error.
+                if (gqlError) {
                     return <GenericErrorPage />;
                 }
 
-                return <Page error={gqlError} />;
-            }
+                // Not pretty, but "onComplete" callback executed too late. Will be executed only once.
+                if (!defaultPages.error) {
+                    defaultPages.error = data.cms.errorPage;
+                }
 
-            const { data: page, error } = data.cms.page;
-            if (page) {
-                return (
-                    <Body>
-                        <>
-                            <Helmet>
-                                <meta charSet="utf-8" />
-                                <title>{page.title}</title>
-                            </Helmet>
-                            <Layout layout={page.settings.general.layout}>
-                                <Element element={page.content} />
-                            </Layout>
-                        </>
-                    </Body>
-                );
-            }
+                if (!defaultPages.notFound) {
+                    defaultPages.notFound = data.cms.notFoundPage;
+                }
 
-            if (error.code !== "NOT_FOUND") {
-                return <Page error={error} />;
-            }
+                const { data: page, error: pageError } = data.cms.page;
 
-            // Page not found error handling. Note that generic error messages should not be needed
-            // often, since these pages will be defined in the CMS install process.
+                if (page) {
+                    return <Content page={page} />;
+                }
 
-            // If we received an error via props, that means we tried to load error page but it wasn't found.
-            if (props.error) {
+                if (pageError.code === "NOT_FOUND") {
+                    if (defaultPages.notFound) {
+                        return <Content page={defaultPages.notFound.data} />;
+                    }
+
+                    return <GenericNotFoundPage />;
+                }
+
+                if (defaultPages.error) {
+                    return <Content page={defaultPages.error.data} />;
+                }
+
                 return <GenericErrorPage />;
-            }
-
-            // If we didn't receive "match", that means we tried to load 404 page, but again, it wasn't found.
-            if (!props.match) {
-                return <GenericNotFoundPage />;
-            }
-
-            return <Page />;
-        }}
-    </Query>
-);
+            }}
+        </Query>
+    );
+};
 
 export default Page;
