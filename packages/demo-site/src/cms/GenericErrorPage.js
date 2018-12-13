@@ -1,18 +1,17 @@
 // @flow
 import React from "react";
-import Body from "./Body";
 import { Helmet } from "react-helmet";
 
 export default function GenericErrorPage() {
     return (
-        <Body>
+        <div className="webiny-cms-page">
             <>
                 <Helmet>
                     <meta charSet="utf-8" />
-                    <title>Page not found.</title>
+                    <title>An error occurred.</title>
                 </Helmet>
-                <div>Page not found.</div>
+                <div>An error occurred.</div>
             </>
-        </Body>
+        </div>
     );
 }

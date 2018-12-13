@@ -5,6 +5,8 @@
   "dependencies": {
     "apollo-link-batch-http": "^1.2.3",
     "demo-theme": "0.0.0",
+    "invariant": "^2.2.4",
+    "react-helmet": "^5.2.0",
     "react-hot-loader": "^4.3.5",
     "webiny-app": "0.0.0",
     "webiny-app-cms": "0.0.0",

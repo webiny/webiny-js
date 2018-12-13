@@ -1,18 +1,17 @@
 // @flow
 import React from "react";
-import Body from "./Body";
 import { Helmet } from "react-helmet";
 
 export default function GenericErrorPage() {
     return (
-        <Body>
+        <div>
             <>
                 <Helmet>
                     <meta charSet="utf-8" />
-                    <title>An error occurred.</title>
+                    <title>Page not found.</title>
                 </Helmet>
-                <div>An error occurred.</div>
+                <div>Page not found.</div>
             </>
-        </Body>
+        </div>
     );
 }

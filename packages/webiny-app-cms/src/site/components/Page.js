@@ -2,14 +2,25 @@
 import * as React from "react";
 import { Query } from "react-apollo";
 import Loader from "./Loader";
-import { GenericErrorPage, GenericNotFoundPage, Content, buildQueryProps } from "./Page/index";
+import { Content, buildQueryProps } from "./Page/index";
+import { withCms } from "webiny-app-cms/context";
+import type { WithCmsPropsType } from "webiny-app-cms/context";
+import { get } from "lodash";
+import invariant from "invariant";
 
 const defaultPages = {
     error: null,
     notFound: null
 };
 
-const Page = ({ match: { url } }: { match: Object }) => {
+type Props = { match: Object, cms: WithCmsPropsType };
+
+const NO_404_PAGE_DEFAULT =
+    "Could not fetch 404 (not found) page nor a default page was provided (set via CmsProvider).";
+const NO_ERROR_PAGE_DEFAULT =
+    "Could not fetch error page nor a default page was provided (set via CmsProvider).";
+
+const Page = ({ cms, match: { url } }: Props) => {
     return (
         <Query {...buildQueryProps({ url, defaultPages })}>
             {({ data, error: gqlError, loading }) => {
@@ -18,7 +29,10 @@ const Page = ({ match: { url } }: { match: Object }) => {
                 }
 
                 if (gqlError) {
-                    return <GenericErrorPage />;
+                    const Component = get(cms, "defaults.pages.error");
+                    invariant(Component, NO_ERROR_PAGE_DEFAULT);
+
+                    return <Component />;
                 }
 
                 // Not pretty, but "onComplete" callback executed too late. Will be executed only once.
@@ -41,17 +55,21 @@ const Page = ({ match: { url } }: { match: Object }) => {
                         return <Content page={defaultPages.notFound.data} />;
                     }
 
-                    return <GenericNotFoundPage />;
+                    const Component = get(cms, "defaults.pages.notFound");
+                    invariant(Component, NO_404_PAGE_DEFAULT);
+                    return <Component />;
                 }
 
                 if (defaultPages.error) {
                     return <Content page={defaultPages.error.data} />;
                 }
 
-                return <GenericErrorPage />;
+                const Component = get(cms, "defaults.pages.error");
+                invariant(Component, NO_ERROR_PAGE_DEFAULT);
+                return <Component />;
             }}
         </Query>
     );
 };
 
-export default Page;
+export default withCms()(Page);
