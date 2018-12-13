@@ -1,29 +1,5 @@
 // @flow
-import { Model } from "webiny-model";
-import { EntityModel } from "webiny-entity";
-
-import { settingsFactory } from "webiny-api/entities";
-
-const cmsSettingsPagesModelFactory = (settings, { cms: { entities } }) => {
-    return class CmsSettingsModel extends EntityModel {
-        constructor() {
-            super();
-            this.setParentEntity(settings);
-            this.attr("home").entity(entities.Page);
-            this.attr("notFound").entity(entities.Page);
-            this.attr("error").entity(entities.Page);
-        }
-    };
-};
-
-const cmsSettingsModelFactory = (...args) => {
-    return class CmsSettingsModel extends Model {
-        constructor() {
-            super();
-            this.attr("pages").model(cmsSettingsPagesModelFactory(...args));
-        }
-    };
-};
+import { cmsSettingsFactory } from "webiny-api-cms/entities";
 
 export default [
     {
@@ -81,19 +57,7 @@ export default [
         namespace: "cms",
         entity: {
             name: "CmsSettings",
-            factory: (...args: Array<any>) => {
-                return class CmsSettings extends settingsFactory(...args) {
-                    static key = "cms";
-
-                    data: Object;
-                    load: Function;
-
-                    constructor() {
-                        super();
-                        this.attr("data").model(cmsSettingsModelFactory(this, ...args));
-                    }
-                };
-            }
+            factory: cmsSettingsFactory
         }
     }
 ];
