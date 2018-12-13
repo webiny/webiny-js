@@ -20,6 +20,10 @@ export const ConfigConsumer = ({ children }: Object) => (
 class Webiny extends React.Component<WebinyProps> {
     constructor(props: Object) {
         super();
+        getPlugins("webiny-init").forEach(plugin => {
+            plugin.callback();
+        });
+
         // Setup router
         router.configure(props.config.router);
         getPlugins("route").forEach((pl: Object) => {
