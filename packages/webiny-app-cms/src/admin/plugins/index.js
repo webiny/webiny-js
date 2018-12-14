@@ -6,6 +6,7 @@ import pageRevisions from "./pageDetails/pageRevisions";
 import icons from "./icons";
 import menuItems from "./menuItems";
 import globalSearch from "./globalSearch";
+import settings from "./settings";
 
 export default [
     ...header,
@@ -14,5 +15,6 @@ export default [
     pageRevisions,
     icons,
     ...menuItems,
-    ...globalSearch
+    ...globalSearch,
+    ...settings
 ];

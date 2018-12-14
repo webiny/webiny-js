@@ -2,19 +2,14 @@
 import * as React from "react";
 
 const { Provider, Consumer } = React.createContext({});
-
-type ProviderProps = {
-    theme?: Object,
-    isEditor?: boolean,
-    children?: React.Node
-};
+import type { CmsProviderPropsType } from "webiny-app-cms/types";
 
 type ConsumerProps = {
     children: React.Element<any>
 };
 
-export const CmsContextProvider = ({ theme, isEditor, children }: ProviderProps) => (
-    <Provider value={{ theme, isEditor }}>{children}</Provider>
+export const CmsContextProvider = ({ children, ...rest }: CmsProviderPropsType) => (
+    <Provider value={rest}>{children}</Provider>
 );
 
 export const CmsContextConsumer = ({ children }: ConsumerProps) => (

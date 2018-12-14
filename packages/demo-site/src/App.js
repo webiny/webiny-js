@@ -2,11 +2,11 @@
 import { hot } from "react-hot-loader";
 import React from "react";
 import { Webiny, Router } from "webiny-app";
-// import { addPlugin } from "webiny-plugins";
 import { CmsProvider } from "webiny-app-cms/context";
-import { app as cmsApp} from "webiny-app-cms/site";
+import { app as cmsApp } from "webiny-app-cms/site";
 import myTheme from "demo-theme";
 import config from "./config";
+import { GenericNotFoundPage, GenericErrorPage } from "./cms";
 
 cmsApp();
 
@@ -14,7 +14,15 @@ const App = () => {
     return (
         <Webiny config={config}>
             {({ router }) => (
-                <CmsProvider theme={myTheme}>
+                <CmsProvider
+                    theme={myTheme}
+                    defaults={{
+                        pages: {
+                            notFound: GenericNotFoundPage,
+                            error: GenericErrorPage
+                        }
+                    }}
+                >
                     <Router router={router} />
                 </CmsProvider>
             )}

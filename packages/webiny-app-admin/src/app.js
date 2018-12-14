@@ -19,6 +19,84 @@ const securityManager = "webiny-security-manager";
 export default () => {
     addPlugin(...plugins);
 
+    addPlugin({
+        type: "webiny-init",
+        name: "webiny-init-settings",
+        callback() {
+            // Settings
+            // Apps / integrations can register settings plugins and add menu items like the following.
+            let settingsPlugins: Array<SettingsPluginType> = getPlugins("settings");
+
+            settingsPlugins.forEach((sp: SettingsPluginType) => {
+                addPlugin({
+                    type: "route",
+                    name: "route-settings-" + sp.name,
+                    route: {
+                        ...sp.settings.route,
+                        path: "/settings" + sp.settings.route.path,
+                        render() {
+                            return <AdminLayout>{sp.settings.component}</AdminLayout>;
+                        }
+                    }
+                });
+            });
+
+            const sortedSettingsPlugins = {
+                apps: settingsPlugins.filter(sp => sp.settings.type === "app"),
+                integrations: settingsPlugins.filter(sp => sp.settings.type === "integration"),
+                other: settingsPlugins.filter(
+                    sp => !["app", "integration"].includes(sp.settings.type)
+                )
+            };
+
+            addPlugin({
+                type: "menu",
+                name: "menu-settings",
+                render({ Menu }) {
+                    return (
+                        <Menu label={t`Settings`} icon={<SettingsIcon />}>
+                            {sortedSettingsPlugins.apps.length > 0 && (
+                                <Menu label={t`Apps`}>
+                                    {sortedSettingsPlugins.apps.map(sp => (
+                                        <Menu
+                                            key={sp.name}
+                                            label={sp.settings.name}
+                                            route={sp.settings.route.name}
+                                        />
+                                    ))}
+                                </Menu>
+                            )}
+
+                            {sortedSettingsPlugins.integrations.length > 0 && (
+                                <Menu label={t`Integrations`}>
+                                    {sortedSettingsPlugins.integrations.map(sp => (
+                                        <Menu
+                                            key={sp.name}
+                                            label={sp.settings.name}
+                                            route={sp.settings.route.name}
+                                        />
+                                    ))}
+                                </Menu>
+                            )}
+
+                            {sortedSettingsPlugins.other.length > 0 && (
+                                <Menu label={t`Other`}>
+                                    {sortedSettingsPlugins.other.map(sp => (
+                                        <Menu
+                                            key={sp.name}
+                                            label={sp.settings.name}
+                                            route={sp.settings.route.name}
+                                        />
+                                    ))}
+                                </Menu>
+                            )}
+                        </Menu>
+                    );
+                }
+            });
+        }
+    });
+
     // Add menu plugin
     addPlugin({
         name: "security-menu",
@@ -126,76 +204,6 @@ export default () => {
                 );
             },
             group: securityManager
-        }
-    });
-
-    // Settings
-    // Apps / integrations can register settings plugins and add menu items like the following.
-    let settingsPlugins: Array<SettingsPluginType> = getPlugins("settings");
-
-    settingsPlugins.forEach((sp: SettingsPluginType) => {
-        addPlugin({
-            type: "route",
-            name: "route-settings-" + sp.name,
-            route: {
-                ...sp.settings.route,
-                path: "/settings" + sp.settings.route.path,
-                render() {
-                    return <AdminLayout>{sp.settings.component}</AdminLayout>;
-                }
-            }
-        });
-    });
-
-    settingsPlugins = {
-        apps: settingsPlugins.filter(sp => sp.settings.type === "app"),
-        integrations: settingsPlugins.filter(sp => sp.settings.type === "integration"),
-        other: settingsPlugins.filter(sp => !["app", "integration"].includes(sp.settings.type))
-    };
-
-    addPlugin({
-        type: "menu",
-        name: "menu-settings",
-        render({ Menu }) {
-            return (
-                <Menu label={t`Settings`} icon={<SettingsIcon />}>
-                    {settingsPlugins.apps.length > 0 && (
-                        <Menu label={t`Apps`}>
-                            {settingsPlugins.apps.map(sp => (
-                                <Menu
-                                    key={sp.name}
-                                    label={sp.settings.name}
-                                    route={sp.settings.route.name}
-                                />
-                            ))}
-                        </Menu>
-                    )}
-
-                    {settingsPlugins.integrations.length > 0 && (
-                        <Menu label={t`Integrations`}>
-                            {settingsPlugins.integrations.map(sp => (
-                                <Menu
-                                    key={sp.name}
-                                    label={sp.settings.name}
-                                    route={sp.settings.route.name}
-                                />
-                            ))}
-                        </Menu>
-                    )}
-
-                    {settingsPlugins.other.length > 0 && (
-                        <Menu label={t`Other`}>
-                            {settingsPlugins.other.map(sp => (
-                                <Menu
-                                    key={sp.name}
-                                    label={sp.settings.name}
-                                    route={sp.settings.route.name}
-                                />
-                            ))}
-                        </Menu>
-                    )}
-                </Menu>
-            );
         }
     });
 };

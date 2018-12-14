@@ -11,6 +11,9 @@ import createRevisionFrom from "./pageResolvers/createRevisionFrom";
 import listPages from "./pageResolvers/listPages";
 import listPublishedPages from "./pageResolvers/listPublishedPages";
 import getPublishedPage from "./pageResolvers/getPublishedPage";
+import getHomePage from "./pageResolvers/getHomePage";
+import getNotFoundPage from "./pageResolvers/getNotFoundPage";
+import getErrorPage from "./pageResolvers/getErrorPage";
 import oembed from "./pageResolvers/oembed";
 import resolveUser from "./typeResolvers/resolveUser";
 
@@ -127,6 +130,15 @@ export default {
             
             getPublishedPage(url: String!): PageResponse
             
+            # Returns page set as home page (managed in CMS settings).
+            getHomePage: PageResponse
+            
+            # Returns 404 (not found) page (managed in CMS settings).
+            getNotFoundPage: PageResponse
+            
+            # Returns error page (managed in CMS settings).
+            getErrorPage: PageResponse
+            
             listPages(
                 page: Int
                 perPage: Int
@@ -201,6 +213,9 @@ export default {
             listPages: listPages(pageFetcher),
             listPublishedPages: listPublishedPages,
             getPublishedPage: getPublishedPage,
+            getHomePage: getHomePage,
+            getNotFoundPage: getNotFoundPage,
+            getErrorPage: getErrorPage,
             listElements: resolveList(elementFetcher),
             oembedData: oembed
         },

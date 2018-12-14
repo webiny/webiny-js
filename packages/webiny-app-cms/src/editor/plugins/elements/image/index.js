@@ -6,7 +6,7 @@ import { getPlugin } from "webiny-plugins";
 import { addMiddleware } from "webiny-app-cms/editor/redux";
 import { ELEMENT_CREATED } from "webiny-app-cms/editor/actions";
 import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
-import type { ElementPluginType } from "webiny-app-cms/types";
+import type { PluginType } from "webiny-plugins/types";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
@@ -14,7 +14,7 @@ import { Select } from "webiny-ui/Select";
 
 import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
 
-export default (): ElementPluginType => {
+export default (): Array<PluginType> => {
     const PreviewBox = styled("div")({
         textAlign: "center",
         height: 50,
@@ -73,7 +73,7 @@ export default (): ElementPluginType => {
                     if (!onCreate || onCreate !== "skip") {
                         // If source element does not define a specific `onCreate` behavior - continue with the actual element plugin
                         const image = document.querySelector(
-                            `#${element.id} [data-role="select-image"]`
+                            `#${window.CSS.escape(element.id)} [data-role="select-image"]`
                         );
 
                         if (image) {

@@ -1,0 +1,49 @@
+// @flow
+import { notFound, homepage, error } from "./staticPages";
+
+const createDefaultPage = async ({ page, data, category }) => {
+    page.populate({ ...data, category });
+    await page.save();
+
+    page.published = true;
+    await page.save();
+
+    return page;
+};
+
+const createDefaultPages = async (context: Object, { categories }: Object) => {
+    const { Page, CmsSettings } = context.cms.entities;
+
+    // Create default pages - demo blog, error, not found and homepage and also assign to settings.
+    const demoBlogPage = new Page();
+    demoBlogPage.populate({
+        title: "Demo blog post",
+        category: categories.blog
+    });
+    await demoBlogPage.save();
+
+    const cmsSettings = new CmsSettings();
+    cmsSettings.data = {
+        pages: {
+            home: await createDefaultPage({
+                page: new Page(),
+                data: homepage,
+                category: categories.static
+            }),
+            error: await createDefaultPage({
+                page: new Page(),
+                data: error,
+                category: categories.static
+            }),
+            notFound: await createDefaultPage({
+                page: new Page(),
+                data: notFound,
+                category: categories.static
+            })
+        }
+    };
+
+    await cmsSettings.save();
+};
+
+export default createDefaultPages;

@@ -1,9 +1,10 @@
 // @flow
 import setupEntities from "./setupEntities";
+import createDefaultPages from "./importData/createDefaultPages";
 
 export default async (context: Object) => {
     setupEntities(context);
-    const { Category, Element, Page, Tag, Menu } = context.cms.entities;
+    const { Category, Element, Tag, Menu } = context.cms.entities;
 
     const menu = new Menu();
     menu.populate({
@@ -34,31 +35,32 @@ export default async (context: Object) => {
         await t.save();
     });
 
-    const blogCategory = new Category();
-    blogCategory.populate({
-        name: "Blog",
-        slug: "blog",
-        url: "/blog/",
-        layout: "blog"
-    });
-    await blogCategory.save();
+    const categories = {
+        blog: new Category(),
+        static: new Category()
+    };
 
-    const staticCategory = new Category();
-    staticCategory.populate({
-        name: "Static",
-        slug: "static",
-        url: "/",
-        layout: "static"
-    });
-    await staticCategory.save();
+    await categories.blog
+        .populate({
+            name: "Blog",
+            slug: "blog",
+            url: "/blog/",
+            layout: "blog"
+        })
+        .save();
 
-    const page = new Page();
-    page.populate({
-        title: "Demo blog post",
-        category: blogCategory
-    });
-    await page.save();
+    await categories.static
+        .populate({
+            name: "Static",
+            slug: "static",
+            url: "/",
+            layout: "static"
+        })
+        .save();
 
+    await createDefaultPages(context, { categories });
+
+    // Create sample element.
     const element = new Element();
     element.populate({
         name: "Custom text",

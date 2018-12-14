@@ -3,13 +3,10 @@ import React from "react";
 import { compose, lifecycle } from "recompose";
 import WebFont from "webfontloader";
 import { CmsContextProvider } from "./CmsContext";
+import type { CmsProviderPropsType } from "webiny-app-cms/types";
 
-const CmsProvider = ({ theme, element, isEditor, children }) => {
-    return (
-        <CmsContextProvider theme={theme} isEditor={isEditor} element={element}>
-            {children}
-        </CmsContextProvider>
-    );
+const CmsProvider = ({ children, ...rest }: CmsProviderPropsType) => {
+    return <CmsContextProvider {...rest}>{children}</CmsContextProvider>;
 };
 
 export default compose(

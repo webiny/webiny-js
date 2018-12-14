@@ -1,13 +1,8 @@
 // @flow
-import React from "react";
+import * as React from "react";
 import { CmsContextConsumer } from "./CmsContext";
 
-export type WithCmsPropsType = {
-    theme: Object,
-    editor?: boolean
-};
-
-export function withCms() {
+export default function withCms() {
     return function decorator(Component: *) {
         return function withCmsComponent(props: *) {
             return (
