@@ -1,24 +1,10 @@
 // @flow
-import * as React from "react";
 import type { Node, ComponentType } from "react";
 import type { PluginType } from "webiny-plugins/types";
 import type { WithPageDetailsProps } from "webiny-app-cms/admin/components";
+import type { WithCmsPropsType, CmsProviderPropsType } from "webiny-app-cms/context";
 
 export type { WithPageDetailsProps };
-
-type WithCmsPropsType = {
-    theme: Object,
-    isEditor?: boolean,
-    defaults?: {
-        pages?: {
-            notFound?: React.ComponentType<any>,
-            error?: React.ComponentType<any>
-        }
-    }
-};
-
-type CmsProviderPropsType = WithCmsPropsType;
-
 export type { WithCmsPropsType };
 export type { CmsProviderPropsType };
 
