@@ -2,7 +2,7 @@
 import invariant from "invariant";
 import dotProp from "dot-prop-immutable";
 import gql from "graphql-tag";
-import { isEqual, pick, debounce, cloneDeep, merge } from "lodash";
+import { isEqual, pick, debounce, cloneDeep } from "lodash";
 import {
     createAction,
     addMiddleware,
@@ -363,8 +363,12 @@ addReducer([START_SAVING, FINISH_SAVING], "ui.saving", (state, action) => {
 addMiddleware([SAVING_REVISION], ({ store, next, action }) => {
     next(action);
 
-    // Construct page payload
     const data: Object = getPage(store.getState());
+    if (data.locked) {
+        return;
+    }
+
+    // Construct page payload
     const revision = pick(data, ["title", "snippet", "url", "settings"]);
     revision.content = data.content.present;
     revision.category = data.category.id;
