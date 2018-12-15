@@ -54,6 +54,7 @@
     "react-emotion": "^9.2.6",
     "react-image": "^1.5.1",
     "react-loading-skeleton": "^0.5.0",
+    "react-transition-group": "^2.5.1",
     "@svgr/webpack": "^4.1.0",
     "webiny-form": "0.0.0",
     "webiny-storybook-utils": "0.0.0"
