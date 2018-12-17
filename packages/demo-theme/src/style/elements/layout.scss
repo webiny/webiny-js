@@ -1,3 +1,15 @@
+.webiny-cms-layout-block{
+  width: 100%;
+  &__wrapper{
+    @include mobile{
+      width: 100% !important;
+    }
+
+    @include tablet{
+      width: 100% !important;
+    }
+  }
+}
 .webiny-cms-layout-row{
   position: relative;
   display: flex;
@@ -13,6 +25,16 @@
 }
 
 .webiny-cms-layout-column{
-  width: auto;
   box-sizing: border-box;
+  display: block;
+  text-align: center;
+  width: auto;
+  @include tablet{
+    text-align: left;
+    width: 100%;
+  }
+  @include desktop{
+    text-align: left;
+    width: 100%;
+  }
 }

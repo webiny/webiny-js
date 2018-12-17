@@ -20,7 +20,7 @@
   box-sizing: border-box;
   outline: none;
   border: none;
-  width: 100%;
+  min-width: 100px;
   background-color: $webiny-cms-theme-background;
   font-family: $webiny-cms-theme-typography-primary-font-family;
   color: $webiny-cms-theme-on-background;

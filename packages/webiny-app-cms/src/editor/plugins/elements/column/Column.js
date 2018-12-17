@@ -20,7 +20,8 @@ const ColumnContainer = styled("div")({
     boxSizing: "border-box",
     height: "100%",
     width: "100%",
-    zIndex: 20
+    zIndex: 20,
+    display: "flex"
 });
 
 const addIcon = css({
@@ -37,7 +38,10 @@ const addIcon = css({
 const Column = pure(({ element, dropElement, togglePlugin }) => {
     return (
         <ColumnContainer>
-            <ElementStyle {...getElementStyleProps(element)} style={{ height: "100%" }}>
+            <ElementStyle
+                {...getElementStyleProps(element)}
+                style={{ height: "100%", width: "100%" }}
+            >
                 <ConnectedElement elementId={element.id}>
                     {({ id, path, type, elements }) => (
                         <React.Fragment>

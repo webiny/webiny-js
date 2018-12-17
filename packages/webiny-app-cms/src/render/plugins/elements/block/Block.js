@@ -14,10 +14,13 @@ const Block = ({ element }: { element: ElementType }) => {
             {({ elementStyle, customClasses, combineClassNames }) => {
                 const { width, ...containerStyle } = elementStyle;
                 return (
-                    <div style={{ width: "100%" }} className={css(containerStyle)}>
+                    <div className={"webiny-cms-layout-block " + css(containerStyle)}>
                         <div
                             style={{ width, margin: "0 auto" }}
-                            className={combineClassNames(...customClasses)}
+                            className={
+                                "webiny-cms-layout-block__wrapper " +
+                                combineClassNames(...customClasses)
+                            }
                         >
                             {element.elements.map(element => (
                                 <Element key={element.id} element={element} />
