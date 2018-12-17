@@ -3,7 +3,7 @@ import * as React from "react";
 import { compose, withHandlers, withState } from "recompose";
 import { css } from "emotion";
 import styled from "react-emotion";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { set } from "dot-prop-immutable";
 import { get } from "lodash";
 import Resizer from "webiny-app-cms/editor/components/Resizer";

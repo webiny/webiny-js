@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { compose, withHandlers } from "recompose";
 import { withFileUpload } from "webiny-app/components";
 import { SingleImageUpload } from "webiny-ui/ImageUpload";

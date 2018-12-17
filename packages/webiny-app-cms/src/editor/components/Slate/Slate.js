@@ -2,7 +2,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import styled from "react-emotion";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { compose, pure } from "recompose";
 import { get } from "lodash";
 import { Editor } from "slate-react";

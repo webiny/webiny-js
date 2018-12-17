@@ -2,7 +2,7 @@
 import React from "react";
 import styled from "react-emotion";
 import { Carousel } from "webiny-ui/Carousel";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { compose, lifecycle, withHandlers } from "recompose";
 import { deactivatePlugin } from "webiny-app-cms/editor/actions";
 import { isPluginActive } from "webiny-app-cms/editor/selectors";

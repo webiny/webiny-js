@@ -1,6 +1,6 @@
 //@flow
 import * as React from "react";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { compose, withHandlers } from "recompose";
 import Draggable from "webiny-app-cms/editor/components/Draggable";
 import { dragStart, dragEnd, deactivatePlugin, dropElement } from "webiny-app-cms/editor/actions";

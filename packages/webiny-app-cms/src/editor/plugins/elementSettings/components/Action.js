@@ -1,7 +1,7 @@
 //@flow
 import React from "react";
 import { css } from "emotion";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { compose, lifecycle, withHandlers } from "recompose";
 import { togglePlugin } from "webiny-app-cms/editor/actions";
 import { IconButton } from "webiny-ui/Button";

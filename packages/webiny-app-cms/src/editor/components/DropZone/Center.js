@@ -2,7 +2,7 @@
 import * as React from "react";
 import styled from "react-emotion";
 import { getElementProps } from "webiny-app-cms/editor/selectors";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { pure } from "recompose";
 import Droppable from "./../Droppable";
 

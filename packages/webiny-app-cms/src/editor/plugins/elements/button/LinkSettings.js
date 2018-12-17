@@ -1,5 +1,6 @@
+// @flow
 import * as React from "react";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { compose } from "recompose";
 import { isEqual } from "lodash";
 import { get, merge } from "dot-prop-immutable";
@@ -22,7 +23,7 @@ class LinkSettings extends React.Component<*> {
 
         const newElement = merge(element, attrKey, data);
 
-        updateElement({ element: newElement, history });
+        updateElement({ element: newElement });
 
         if (!isEqual(this.historyUpdated, data)) {
             this.historyUpdated = data;

@@ -1,6 +1,6 @@
 // @flow
 import { isEqual } from "lodash";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { getElement } from "webiny-app-cms/editor/selectors";
 
 export default connect(
