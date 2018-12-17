@@ -1,6 +1,6 @@
 //@flow
 import React from "react";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { compose, lifecycle, withHandlers, withState } from "recompose";
 import { omit } from "lodash";
 import { getPlugins } from "webiny-plugins";

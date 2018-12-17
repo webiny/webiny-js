@@ -15,6 +15,8 @@ import type {
     Store
 } from "webiny-app-cms/types";
 
+export { default as connect } from "./connect";
+
 export class Redux {
     actionMeta: Object;
     store: Store;

@@ -4,7 +4,7 @@ import Slate from "webiny-app-cms/render/components/Slate";
 import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
 import type { ElementType } from "webiny-app-cms/types";
 
-const Text = ({ element }: ElementType) => {
+const Text = ({ element }: { element: ElementType }) => {
     return (
         <ElementStyle {...getElementStyleProps(element)} className={className}>
             <Slate value={element.data.text} />

@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { compose, withState, withHandlers, lifecycle, shouldUpdate } from "recompose";
 import { graphql } from "react-apollo";
 import { isEqual, cloneDeep } from "lodash";

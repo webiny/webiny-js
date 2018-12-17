@@ -1,6 +1,6 @@
 //@flow
 import React from "react";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { compose, withProps, withHandlers } from "recompose";
 import { Tabs, Tab } from "webiny-ui/Tabs";
 import { Grid } from "webiny-ui/Grid";

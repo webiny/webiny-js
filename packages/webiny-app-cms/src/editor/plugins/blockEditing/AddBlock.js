@@ -1,6 +1,6 @@
 //@flow
 import React from "react";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import styled from "react-emotion";
 import { togglePlugin } from "webiny-app-cms/editor/actions";
 import { ButtonFloating } from "webiny-ui/Button";

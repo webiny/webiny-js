@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { css } from "emotion";
 import { isEqual } from "lodash";
 import { compose, withHandlers, shouldUpdate, lifecycle } from "recompose";
@@ -98,30 +98,33 @@ export default compose(
         }
     }),
     withHandlers({
-        renderEmpty: () => () => {
-            return <div>You must configure your embed in the settings!</div>;
-        },
-        renderEmbed: ({ renderEmbed, ...props }) => () => {
-            if (typeof renderEmbed === "function") {
-                return renderEmbed(props);
+        renderEmpty: () =>
+            function renderEmpty() {
+                return <div>You must configure your embed in the settings!</div>;
+            },
+        renderEmbed: ({ renderEmbed, ...props }) =>
+            function embedRenderer() {
+                if (typeof renderEmbed === "function") {
+                    return renderEmbed(props);
+                }
+
+                const { element, data } = props;
+
+                if (data && data.loading) {
+                    return "Loading embed data...";
+                }
+
+                return (
+                    <div
+                        id={element.id}
+                        className={
+                            centerAlign +
+                            " cms-editor-dragging--disabled cms-editor-resizing--disabled"
+                        }
+                        dangerouslySetInnerHTML={{ __html: get(element, "data.oembed.html") || "" }}
+                    />
+                );
             }
-
-            const { element, data } = props;
-
-            if (data && data.loading) {
-                return "Loading embed data...";
-            }
-
-            return (
-                <div
-                    id={element.id}
-                    className={
-                        centerAlign + " cms-editor-dragging--disabled cms-editor-resizing--disabled"
-                    }
-                    dangerouslySetInnerHTML={{ __html: get(element, "data.oembed.html") || "" }}
-                />
-            );
-        }
     }),
     lifecycle({
         async componentDidMount() {

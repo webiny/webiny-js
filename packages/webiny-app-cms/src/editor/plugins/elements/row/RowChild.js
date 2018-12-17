@@ -1,14 +1,14 @@
 // @flow
 import * as React from "react";
 import { compose, withHandlers, pure, setDisplayName } from "recompose";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { css } from "emotion";
 import styled from "react-emotion";
 import DropZone from "webiny-app-cms/editor/components/DropZone";
 import Resizer from "webiny-app-cms/editor/components/Resizer";
 import Element from "webiny-app-cms/editor/components/Element";
 import { dropElement } from "webiny-app-cms/editor/actions";
-import { getIsDragging, getElement } from "webiny-app-cms/editor/selectors";
+import { getIsDragging } from "webiny-app-cms/editor/selectors";
 import ResizeHandle from "./ResizeHandle";
 
 const ColumnContainer = styled("div")({

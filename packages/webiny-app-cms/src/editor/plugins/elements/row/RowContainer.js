@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import { css } from "emotion";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { set } from "dot-prop-immutable";
 import { isEqual } from "lodash";
 import { getElement } from "webiny-app-cms/editor/selectors";

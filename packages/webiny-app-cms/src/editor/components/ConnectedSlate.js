@@ -2,7 +2,7 @@
 import * as React from "react";
 import { pure } from "recompose";
 import { get } from "lodash";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { isEqual } from "lodash";
 import { getElement } from "webiny-app-cms/editor/selectors";
 import Slate from "./Slate";

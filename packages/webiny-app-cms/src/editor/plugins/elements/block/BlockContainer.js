@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { css } from "emotion";
 import { isEqual } from "lodash";
 import Element from "webiny-app-cms/editor/components/Element";

@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import classSet from "classnames";
 import { ActionCreators } from "redux-undo";
 import HTML5Backend from "react-dnd-html5-backend";

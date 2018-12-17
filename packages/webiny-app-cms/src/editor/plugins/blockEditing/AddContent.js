@@ -1,7 +1,7 @@
 //@flow
 import React from "react";
 import styled, { keyframes } from "react-emotion";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { pure } from "recompose";
 import { Elevation } from "webiny-ui/Elevation";
 import { ButtonFloating } from "webiny-ui/Button";

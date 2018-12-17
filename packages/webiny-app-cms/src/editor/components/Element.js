@@ -2,7 +2,7 @@
 import * as React from "react";
 import { Transition } from "react-transition-group";
 import { compose, pure, withHandlers, withProps, setDisplayName } from "recompose";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import isEqual from "lodash/isEqual";
 import { getPlugin } from "webiny-plugins";
 import { renderPlugins } from "webiny-app/plugins";
