@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import { get } from "dot-prop-immutable";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import styled from "react-emotion";
 import { css } from "emotion";
 import { compose } from "recompose";

@@ -1,7 +1,7 @@
 //@flow
 import React from "react";
 import { Transition } from "react-transition-group";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import styled from "react-emotion";
 import { Elevation } from "webiny-ui/Elevation";
 import { togglePlugin } from "webiny-app-cms/editor/actions";

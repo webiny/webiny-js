@@ -2,8 +2,7 @@
 import React from "react";
 import styled from "react-emotion";
 import { css } from "emotion";
-import { isEqual } from "lodash";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { compose, withHandlers, pure } from "recompose";
 import { IconButton } from "webiny-ui/Button";
 import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";

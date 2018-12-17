@@ -1,7 +1,8 @@
+// @flow
 import React from "react";
 import { DropTarget } from "react-dnd";
 import { compose, pure } from "recompose";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { getIsDragging } from "webiny-app-cms/editor/selectors";
 
 const defaultVisibility = ({ type, isDragging, item }) => {

@@ -1,7 +1,7 @@
 //@flow
 import * as React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { compose, withHandlers } from "recompose";
 import { isEqual } from "lodash";
 import { getPlugins } from "webiny-plugins";

@@ -1,6 +1,6 @@
 //@flow
 import * as React from "react";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { compose, withHandlers } from "recompose";
 import { Tabs, Tab } from "webiny-ui/Tabs";
 import { get, set } from "dot-prop-immutable";

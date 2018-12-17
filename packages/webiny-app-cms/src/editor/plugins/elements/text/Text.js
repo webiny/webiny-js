@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { compose, withHandlers } from "recompose";
 import { set } from "dot-prop-immutable";
 import ConnectedSlate from "webiny-app-cms/editor/components/ConnectedSlate";

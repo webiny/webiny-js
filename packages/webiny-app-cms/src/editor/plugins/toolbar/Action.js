@@ -1,7 +1,7 @@
 //@flow
 import * as React from "react";
 import { css } from "emotion";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { togglePlugin } from "webiny-app-cms/editor/actions";
 import { isPluginActive } from "webiny-app-cms/editor/selectors";
 import { compose, withHandlers, pure } from "recompose";

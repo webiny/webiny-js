@@ -1,8 +1,7 @@
 //@flow
 import React from "react";
 import { compose, withState, withProps, withHandlers, pure } from "recompose";
-import { get } from "dot-prop-immutable";
-import { connect } from "react-redux";
+import { connect } from "webiny-app-cms/editor/redux";
 import { Input } from "webiny-ui/Input";
 import { updateRevision } from "webiny-app-cms/editor/actions";
 import { getPage } from "webiny-app-cms/editor/selectors";
