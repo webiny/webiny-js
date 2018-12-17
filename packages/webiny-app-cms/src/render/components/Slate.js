@@ -6,11 +6,18 @@ import { getPlugins } from "webiny-plugins";
 import { withCms } from "webiny-app-cms/context";
 
 class SlateEditor extends React.Component<*, *> {
-    plugins = getPlugins("cms-slate-editor").map(pl => pl.slate);
+    plugins: Array<*>;
 
-    state = {
-        value: Value.fromJSON(this.props.value)
-    };
+    constructor(props) {
+        super();
+
+        this.plugins = getPlugins("cms-render-slate-editor").map(pl => pl.slate);
+        
+        this.state = {
+            value: Value.fromJSON(props.value)
+        };
+    }
+
 
     render() {
         return (

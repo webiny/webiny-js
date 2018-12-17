@@ -3,10 +3,10 @@ import React from "react";
 
 export default () => {
     return {
-        name: "typography",
+        name: "cms-slate-editor-typography",
         type: "cms-render-slate-editor",
         slate: {
-            renderNode(props: Object) {
+            renderNode(props: Object, next: Function) {
                 const { attributes, children, node, editor } = props;
                 let { type } = node;
 
@@ -27,6 +27,8 @@ export default () => {
 
                     return <Node {...nodeProps}>{children}</Node>;
                 }
+
+                return next();
             }
         }
     };
