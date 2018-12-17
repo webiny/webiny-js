@@ -5,6 +5,7 @@ import StaticLayout from "./layouts/static";
 import BlogLayout from "./layouts/blog";
 import PageList from "./components/PageList";
 import PageListv2 from "./components/PageListv2";
+import DefaultMenu from "./components/DefaultMenu";
 
 export default {
     layouts: [
@@ -33,6 +34,14 @@ export default {
         green: "#0fcb00",
         yellow: "#fcff00"
     },
+    components: {
+        menu: [
+            {
+                name: "default",
+                component: DefaultMenu
+            }
+        ]
+    },
     elements: {
         button: {
             types: [
@@ -52,17 +61,6 @@ export default {
                     name: "custom",
                     title: "Custom page list",
                     component: PageListv2
-                }
-            ]
-        },
-        mailchimp: {
-            components: [
-                {
-                    name: "custom",
-                    title: "Custom page list",
-                    component() {
-                        return <span>custom</span>;
-                    }
                 }
             ]
         }

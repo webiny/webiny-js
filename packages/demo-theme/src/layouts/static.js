@@ -18,17 +18,7 @@ const Static = ({ children }: Props) => {
     return (
         <div className={"static-page-container"}>
             <Addons />
-            <Menu slug={"demo-menu"}>
-                {({ data }) => (
-                    <ul>
-                        {data.items.map(item => (
-                            <li key={item.id}>
-                                <a href={item.url}>{item.title}</a>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </Menu>
+            <Menu slug={"demo-menu"} component={"default"} />
             <Banner />
             {children}
             <Banner />
