@@ -21,7 +21,7 @@ export default {
     ],
     fonts: {
         google: {
-            families: ["Alegreya", "Lato"]
+            families: ["IBM Plex Sans", "Lato"]
         }
     },
     colors: {

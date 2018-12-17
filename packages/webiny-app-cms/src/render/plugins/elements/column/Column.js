@@ -15,13 +15,11 @@ const ColumnContainer = styled("div")({
 
 const Column = ({ element }: ElementType) => {
     return (
-        <ColumnContainer>
-            <ElementStyle {...getElementStyleProps(element)} style={{ height: "100%" }}>
-                {element.elements.map(element => (
-                    <Element element={element} key={element.id} />
-                ))}
-            </ElementStyle>
-        </ColumnContainer>
+        <ElementStyle className={"webiny-cms-layout-column"} {...getElementStyleProps(element)}>
+            {element.elements.map(element => (
+                <Element element={element} key={element.id} />
+            ))}
+        </ElementStyle>
     );
 };
 

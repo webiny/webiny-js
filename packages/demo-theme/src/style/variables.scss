@@ -1,5 +1,8 @@
-$webiny-cms-theme-typography-primary-font-family: "Alegreya" !default;
+// typography
+$webiny-cms-theme-typography-primary-font-family: "IBM Plex Sans" !default;
 $webiny-cms-theme-typography-secondary-font-family: "Lato" !default;
+
+// colors
 $webiny-cms-theme-primary: #fa5723 !default;
 $webiny-cms-theme-secondary: #00ccb0 !default;
 $webiny-cms-theme-background: #f2f2f2 !default;
@@ -9,6 +12,10 @@ $webiny-cms-theme-on-secondary: #ffffff !default;
 $webiny-cms-theme-on-surface: #000000 !default;
 $webiny-cms-theme-on-background: #131313 !default;
 $webiny-cms-theme-text-primary: rgb(10, 10, 10) !default;
+
+// media queries
+$webiny-cms-theme-tablet-width: 768px;
+$webiny-cms-theme-desktop-width: 1200px;
 
 body{
   --webiny-cms-theme-typography-primary-font-family: #{$webiny-cms-theme-typography-primary-font-family};

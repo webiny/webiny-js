@@ -6,7 +6,7 @@ export default () => {
         name: "cms-render-slate-editor-code",
         type: "cms-render-slate-editor",
         slate: {
-            renderMark(props: Object) {
+            renderMark(props: Object, next: Function) {
                 if (props.mark.type === "code") {
                     return (
                         <code className={"webiny-cms-typography-code"} {...props.attributes}>
@@ -14,6 +14,8 @@ export default () => {
                         </code>
                     );
                 }
+
+                return next();
             }
         }
     };

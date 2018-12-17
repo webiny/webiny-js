@@ -1,5 +1,3 @@
-@import "../variables";
-
 .webiny-cms-element-button{
   display: flex;
   align-items: center;
@@ -24,6 +22,7 @@
   border: none;
   width: 100%;
   background-color: $webiny-cms-theme-background;
+  font-family: $webiny-cms-theme-typography-primary-font-family;
   color: $webiny-cms-theme-on-background;
   &:hover{
     box-shadow: 0 7px 14px rgba(50,50,93,.1), 0 3px 6px rgba(0,0,0,.08);

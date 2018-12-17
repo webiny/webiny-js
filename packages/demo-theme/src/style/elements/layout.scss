@@ -1,0 +1,18 @@
+.webiny-cms-layout-row{
+  position: relative;
+  display: flex;
+  flex: 1 100%;
+  box-sizing: border-box;
+  flex-direction: column;
+  @include tablet{
+    flex-direction: row;
+  }
+  @include desktop{
+    flex-direction: row;
+  }
+}
+
+.webiny-cms-layout-column{
+  width: auto;
+  box-sizing: border-box;
+}

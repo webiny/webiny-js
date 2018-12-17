@@ -6,10 +6,11 @@ export default () => {
         name: "italic",
         type: "cms-slate-editor",
         slate: {
-            renderMark(props: Object) {
+            renderMark(props: Object, next: Function) {
                 if (props.mark.type === "italic") {
                     return <em {...props.attributes}>{props.children}</em>;
                 }
+                return next();
             }
         }
     };

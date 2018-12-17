@@ -6,7 +6,7 @@ export default () => {
         name: "cms-render-slate-editor-lists",
         type: "cms-render-slate-editor",
         slate: {
-            renderNode(props: Object) {
+            renderNode(props: Object, next: Function) {
                 const { attributes, children, node } = props;
 
                 switch (node.type) {
@@ -25,7 +25,7 @@ export default () => {
                             </ol>
                         );
                     default:
-                        break;
+                        return next();
                 }
             }
         }
