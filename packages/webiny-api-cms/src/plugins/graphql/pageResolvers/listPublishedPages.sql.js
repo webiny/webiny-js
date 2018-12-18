@@ -1,6 +1,6 @@
 // @flow
 export default (args: Object, context: Object) => {
-    const { Page, Category, Tag, Tags2Pages } = context.cms;
+    const { Page, Category, Tag, Tags2Pages } = context.cms.entities;
 
     const {
         page = 1,

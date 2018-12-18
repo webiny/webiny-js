@@ -1,9 +1,14 @@
 // @flow
 import React from "react";
+import { css } from "react-emotion";
+
+const ul = css({
+    padding: 20
+});
 
 const DefaultMenu = ({ data }: Object) => {
     return (
-        <ul>
+        <ul className={ul}>
             {data.items.map(item => {
                 if (Array.isArray(item.children)) {
                     return (
