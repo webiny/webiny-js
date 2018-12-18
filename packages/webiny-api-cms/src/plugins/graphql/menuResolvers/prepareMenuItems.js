@@ -63,15 +63,17 @@ export default async ({ entity: menu, context: graphqlContext }: Object) => {
             ({ item, context }) => {
                 switch (item.type) {
                     case "cms-menu-item-page": {
-                        if (!context.distinctPages) {
-                            context.distinctPages = {
+                        if (!context.distinctParents) {
+                            context.distinctParents = {
                                 loaded: false,
                                 data: {}
                             };
                         }
 
-                        if (Entity.isId(item.page) && !context.distinctPages.data[item.page]) {
-                            context.distinctPages.data[item.page] = null;
+                        // "item.page" actually represents "parent" value. This is because once we have parent, we can
+                        // more easily load the right child page (we just need to search published pages in this case).
+                        if (Entity.isId(item.page) && !context.distinctParents.data[item.page]) {
+                            context.distinctParents.data[item.page] = null;
                         }
                         break;
                     }
@@ -80,25 +82,26 @@ export default async ({ entity: menu, context: graphqlContext }: Object) => {
             async ({ context, item }) => {
                 switch (item.type) {
                     case "cms-menu-item-page": {
-                        if (!context.distinctPages.loaded) {
-                            const ids = Object.keys(context.distinctPages.data);
+                        if (!context.distinctParents.loaded) {
+                            const ids = Object.keys(context.distinctParents.data);
 
-                            const sql = `SELECT id, title, url FROM Cms_Pages WHERE deleted = 0 AND published = 1 AND id IN (${ids
-                                .map(() => "?")
-                                .join(",")})`;
+                            const sql = await listPublishedPagesSql(
+                                { parent: ids },
+                                graphqlContext
+                            );
 
                             await Entity.getDriver()
                                 .getConnection()
-                                .query(sql, ids)
+                                .query(sql.query, sql.values)
                                 .then(results => {
                                     for (let i = 0; i < results.length; i++) {
-                                        let result = results[i];
-                                        context.distinctPages.data[result.id] = result;
+                                        let { title, url, parent: id } = results[i];
+                                        context.distinctParents.data[id] = { id, title, url };
                                     }
                                 });
                         }
 
-                        const page = context.distinctPages.data[item.page];
+                        const page = context.distinctParents.data[item.page];
                         if (page) {
                             Object.assign(item, page);
                         } else {

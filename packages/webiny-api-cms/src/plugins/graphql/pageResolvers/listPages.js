@@ -12,10 +12,15 @@ export default (entityFetcher: EntityFetcher) => async (
 ) => {
     const entityClass = entityFetcher(context);
 
-    const { page = 1, perPage = 10, sort = null, search = null } = args;
+    const { page = 1, perPage = 10, sort = null, search = null, parent = null } = args;
     const variables = [];
 
     let where = "WHERE 1=1";
+    if (parent) {
+        where += ` AND parent = ?`;
+        variables.push(parent);
+    }
+
     if (search) {
         where += ` AND MATCH (title) AGAINST (? IN BOOLEAN MODE)`;
         variables.push(search);

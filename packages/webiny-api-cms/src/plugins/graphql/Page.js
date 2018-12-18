@@ -144,6 +144,7 @@ export default {
                 perPage: Int
                 sort: JSON
                 search: String
+                parent: String
             ): PageListResponse
             
             listPublishedPages(
