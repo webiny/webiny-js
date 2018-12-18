@@ -52,13 +52,12 @@ export default (args: Object, context: Object) => {
     let query = [
         "SELECT SQL_CALC_FOUND_ROWS p.*",
         `FROM ${tables.join(", ")}`,
-        `WHERE 1=1`,
+        `WHERE p.published = 1`,
         // If category slug is provided - join and and find by slug.
         category && categorySlug ? `AND p.category = c.id AND c.slug = ?` : "",
         // If category ID is provided, we just use the ID directly.
         category && !categorySlug ? `AND p.category = ?` : "",
-        // Only get published pages.
-        // `AND p.published = 1`,
+
         tagConditions && tagConditions.length ? `AND (${tagConditions.join(tagsOperator)})` : "",
         "GROUP BY p.id",
         orderBy,
