@@ -17,7 +17,7 @@ const Block = pure(({ element }) => {
     return (
         <BlockStyle id={id} style={{ zIndex: 20, position: "relative" }}>
             <ElementStyle
-                style={{ margin: "0 auto", boxSizing: "border-box" }}
+                style={{ margin: "0 auto", boxSizing: "border-box", flexDirection: "column" }}
                 {...getElementStyleProps(element)}
             >
                 {({ elementStyle, customClasses, combineClassNames }) => (

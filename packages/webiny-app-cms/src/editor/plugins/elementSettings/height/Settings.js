@@ -9,6 +9,7 @@ import { Input } from "webiny-ui/Input";
 import { InputContainer } from "webiny-app-cms/editor/plugins/elementSettings/components/StyledComponents";
 import { Typography } from "webiny-ui/Typography";
 import { Grid, Cell } from "webiny-ui/Grid";
+import { Switch } from "webiny-ui/Switch";
 import { Form } from "webiny-form";
 
 import { updateElement } from "webiny-app-cms/editor/actions";
@@ -56,22 +57,52 @@ class Settings extends React.Component<Props> {
         const { settings } = element;
 
         return (
-            <Form data={settings.style || { width: "100%" }} onChange={this.updateSettings}>
-                {({ Bind }) => (
+            <Form data={settings.style || { height: "100%" }} onChange={this.updateSettings}>
+                {({ Bind, data }) => (
                     <Tabs>
                         <Tab label={"height"}>
                             <Grid>
                                 <Cell span={5}>
-                                    <Typography use={"overline"}>height</Typography>
+                                    <Typography use={"overline"}>full height</Typography>
                                 </Cell>
                                 <Cell span={7}>
                                     <InputContainer width={"auto"} margin={0}>
-                                        <Bind name={"height"} validators={[validateHeight]}>
-                                            <Input />
+                                        <Bind
+                                            name={"height"}
+                                            beforeChange={(value, cb) => {
+                                                if (value === false) {
+                                                    cb("100%");
+                                                } else if (value === true) {
+                                                    cb("100vh");
+                                                } else {
+                                                    cb(value);
+                                                }
+                                            }}
+                                        >
+                                            {({ value, onChange }) => (
+                                                <Switch
+                                                    value={value === "100vh"}
+                                                    onChange={onChange}
+                                                />
+                                            )}
                                         </Bind>
                                     </InputContainer>
                                 </Cell>
                             </Grid>
+                            {data.height !== "100vh" && (
+                                <Grid>
+                                    <Cell span={5}>
+                                        <Typography use={"overline"}>height</Typography>
+                                    </Cell>
+                                    <Cell span={7}>
+                                        <InputContainer width={"auto"} margin={0}>
+                                            <Bind name={"height"} validators={[validateHeight]}>
+                                                <Input />
+                                            </Bind>
+                                        </InputContainer>
+                                    </Cell>
+                                </Grid>
+                            )}
                         </Tab>
                     </Tabs>
                 )}

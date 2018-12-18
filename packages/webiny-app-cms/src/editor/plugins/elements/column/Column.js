@@ -39,7 +39,7 @@ const Column = pure(({ element, dropElement, togglePlugin }) => {
         <ColumnContainer>
             <ElementStyle
                 {...getElementStyleProps(element)}
-                style={{ height: "100%", width: "100%" }}
+                style={{ width: "100%", display: "flex", flexDirection: "column" }}
             >
                 <ConnectedElement elementId={element.id}>
                     {({ id, path, type, elements }) => (
