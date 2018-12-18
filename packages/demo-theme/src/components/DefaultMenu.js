@@ -6,7 +6,12 @@ const DefaultMenu = ({ data }: Object) => {
         <ul>
             {data.items.map(item => {
                 if (Array.isArray(item.children)) {
-                    return <DefaultMenu key={item.id} data={{ items: item.children }} />;
+                    return (
+                        <li key={item.id}>
+                            {item.title}
+                            <DefaultMenu data={{ items: item.children }} />
+                        </li>
+                    );
                 }
 
                 return (
