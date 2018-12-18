@@ -14,7 +14,7 @@ import { ReactComponent as AlignBottomIcon } from "./icons/round-border_bottom-2
 // Icons map for dynamic render
 const icons = {
     "flex-start": <AlignTopIcon />,
-    "center": <AlignCenterIcon />,
+    center: <AlignCenterIcon />,
     "flex-end": <AlignBottomIcon />
 };
 
@@ -32,7 +32,9 @@ export default compose(
         state => ({ element: getActiveElement(state) }),
         { updateElement }
     ),
-    withProps(({ element }) => ({ align: get(element, "settings.style.alignItems") || "flex-start" })),
+    withProps(({ element }) => ({
+        align: get(element, "settings.style.justifyContent") || "flex-start"
+    })),
     withHandlers({
         alignElement: ({ updateElement, element, align }) => {
             return () => {
@@ -41,7 +43,7 @@ export default compose(
                 const nextAlign = alignments[alignments.indexOf(align) + 1] || "flex-start";
 
                 updateElement({
-                    element: set(element, "settings.style.alignItems", nextAlign)
+                    element: set(element, "settings.style.justifyContent", nextAlign)
                 });
             };
         }
