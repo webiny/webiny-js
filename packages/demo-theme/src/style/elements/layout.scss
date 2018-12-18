@@ -1,5 +1,7 @@
 .webiny-cms-layout-block{
   width: 100%;
+  display: flex;
+  flex-direction: column;
   &__wrapper{
     @include mobile{
       width: 100% !important;
@@ -26,9 +28,12 @@
 
 .webiny-cms-layout-column{
   box-sizing: border-box;
-  display: block;
   text-align: center;
   width: auto;
+  display: flex;
+  position: relative;
+  flex: 100%;
+  flex-direction: column;
   @include tablet{
     text-align: left;
     width: 100%;
