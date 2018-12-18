@@ -34,7 +34,10 @@ const PreviewBox = styled("div")({
     backgroundColor: "var(--mdc-theme-surface)",
     display: "flex",
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    img: {
+        maxHeight: 500
+    }
 });
 
 class ElementPreview extends React.Component<*> {
