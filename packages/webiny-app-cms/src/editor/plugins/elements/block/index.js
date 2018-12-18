@@ -26,6 +26,8 @@ export default (): ElementPluginType => {
             "cms-element-settings-padding",
             "cms-element-settings-margin",
             "cms-element-settings-width",
+            "cms-element-settings-height",
+            "cms-element-settings-vertical-align",
             "",
             "cms-element-settings-clone",
             "cms-element-settings-delete",

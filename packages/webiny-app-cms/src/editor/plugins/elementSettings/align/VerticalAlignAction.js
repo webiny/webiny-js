@@ -7,20 +7,18 @@ import { set } from "dot-prop-immutable";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { getActiveElement } from "webiny-app-cms/editor/selectors";
 import { get } from "dot-prop-immutable";
-import { ReactComponent as AlignCenterIcon } from "webiny-app-cms/editor/assets/icons/format_align_center.svg";
-import { ReactComponent as AlignLeftIcon } from "webiny-app-cms/editor/assets/icons/format_align_left.svg";
-import { ReactComponent as AlignJustifyIcon } from "webiny-app-cms/editor/assets/icons/format_align_justify.svg";
-import { ReactComponent as AlignRightIcon } from "webiny-app-cms/editor/assets/icons/format_align_right.svg";
+import { ReactComponent as AlignCenterIcon } from "./icons/round-border_horizontal-24px.svg";
+import { ReactComponent as AlignTopIcon } from "./icons/round-border_top-24px.svg";
+import { ReactComponent as AlignBottomIcon } from "./icons/round-border_bottom-24px.svg";
 
 // Icons map for dynamic render
 const icons = {
-    left: <AlignLeftIcon />,
-    center: <AlignCenterIcon />,
-    right: <AlignRightIcon />,
-    justify: <AlignJustifyIcon />
+    "flex-start": <AlignTopIcon />,
+    "center": <AlignCenterIcon />,
+    "flex-end": <AlignBottomIcon />
 };
 
-const CloneAction = ({ element, children, alignElement, align }: Object) => {
+const VerticalAlignAction = ({ element, children, alignElement, align }: Object) => {
     const plugin = getPlugin(element.type);
     if (!plugin) {
         return null;
@@ -34,18 +32,18 @@ export default compose(
         state => ({ element: getActiveElement(state) }),
         { updateElement }
     ),
-    withProps(({ element }) => ({ align: get(element, "settings.style.textAlign") || "left" })),
+    withProps(({ element }) => ({ align: get(element, "settings.style.alignItems") || "flex-start" })),
     withHandlers({
         alignElement: ({ updateElement, element, align }) => {
             return () => {
                 const alignments = Object.keys(icons);
 
-                const nextAlign = alignments[alignments.indexOf(align) + 1] || "left";
+                const nextAlign = alignments[alignments.indexOf(align) + 1] || "flex-start";
 
                 updateElement({
-                    element: set(element, "settings.style.textAlign", nextAlign)
+                    element: set(element, "settings.style.alignItems", nextAlign)
                 });
             };
         }
     })
-)(CloneAction);
+)(VerticalAlignAction);

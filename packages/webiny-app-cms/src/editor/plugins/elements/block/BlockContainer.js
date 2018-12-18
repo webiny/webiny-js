@@ -19,7 +19,7 @@ const BlockContainer = ({
     const { id, type, elements } = element;
 
     return (
-        <div style={{ width: "100%" }} className={css(containerStyle)}>
+        <div style={{ width: "100%", display: "flex" }} className={css(containerStyle)}>
             <div
                 style={{ width, margin: "0 auto" }}
                 className={combineClassNames(...customClasses)}

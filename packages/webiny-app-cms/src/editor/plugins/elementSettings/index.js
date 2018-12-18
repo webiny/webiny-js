@@ -21,7 +21,7 @@ export default [
     shadow,
     padding,
     margin,
-    align,
+    ...align,
     clone,
     deleteElement,
     width,

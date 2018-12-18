@@ -1,16 +1,30 @@
 //@flow
 import React from "react";
 import Action from "../components/Action";
-import AlignAction from "./AlignAction";
+import HorizontalAlignAction from "./HorizontalAlignAction";
+import VerticalAlignAction from "./VerticalAlignAction";
 
-export default {
-    name: "cms-element-settings-align",
-    type: "cms-element-settings",
-    renderAction() {
-        return (
-            <AlignAction>
-                <Action plugin={this.name} tooltip={"Align content"} />
-            </AlignAction>
-        );
+export default [
+    {
+        name: "cms-element-settings-horizontal-align",
+        type: "cms-element-settings",
+        renderAction() {
+            return (
+                <HorizontalAlignAction>
+                    <Action plugin={this.name} tooltip={"Horizontal align"} />
+                </HorizontalAlignAction>
+            );
+        }
+    },
+    {
+        name: "cms-element-settings-vertical-align",
+        type: "cms-element-settings",
+        renderAction() {
+            return (
+                <VerticalAlignAction>
+                    <Action plugin={this.name} tooltip={"Vertical align"} />
+                </VerticalAlignAction>
+            );
+        }
     }
-};
+];
