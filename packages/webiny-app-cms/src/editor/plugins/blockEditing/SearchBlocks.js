@@ -62,20 +62,12 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         this.props.updateElement({ element });
     };
 
-    renderSearchInput = () => {
-        return (
-            <Styled.Input>
-                <Icon className={Styled.searchIcon} icon={<SearchIcon />} />
-                <input
-                    autoFocus
-                    type={"text"}
-                    placeholder="Search blocks..."
-                    value={this.state.search}
-                    onChange={e => this.setState({ search: e.target.value })}
-                />
-            </Styled.Input>
-        );
-    };
+    getCategoryBlocksCount({ plugins, category }) {
+        return this.getBlocksList({
+            blocks: plugins.blocks,
+            categories: { active: { name: category } }
+        }).length;
+    }
 
     /**
      * Renders list of blocks - by selected category and by searched term (if typed).
@@ -115,6 +107,21 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         return output;
     }
 
+    renderSearchInput = () => {
+        return (
+            <Styled.Input>
+                <Icon className={Styled.searchIcon} icon={<SearchIcon />} />
+                <input
+                    autoFocus
+                    type={"text"}
+                    placeholder="Search blocks..."
+                    value={this.state.search}
+                    onChange={e => this.setState({ search: e.target.value })}
+                />
+            </Styled.Input>
+        );
+    };
+
     render() {
         const { active, setActive } = this.props;
 
@@ -148,7 +155,14 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                                         <Icon icon={p.icon} />
                                     </ListItemGraphic>
                                     <TitleContent>
-                                        <ListItemTitle>{p.title}</ListItemTitle>
+                                        <ListItemTitle>
+                                            {p.title} (
+                                            {this.getCategoryBlocksCount({
+                                                plugins,
+                                                category: p.name
+                                            })}
+                                            )
+                                        </ListItemTitle>
                                         <Typography use={"subtitle2"}>{p.description}</Typography>
                                     </TitleContent>
                                 </ListItem>
