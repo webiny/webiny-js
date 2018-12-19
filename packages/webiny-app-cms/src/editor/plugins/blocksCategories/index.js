@@ -10,12 +10,5 @@ export default ([
         title: "General",
         description: "List of general purpose blocks.",
         icon: <GeneralIcon />
-    },
-    {
-        type: "cms-block-category",
-        name: "cms-block-category-colorful",
-        title: "Colorful",
-        description: "List of colorful blocks.",
-        icon: <GeneralIcon />
     }
 ]: Array<CmsBlockCategoryPluginType>);
