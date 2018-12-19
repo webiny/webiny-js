@@ -50,7 +50,7 @@ export default {
             id: ID
             name: String
             type: String
-            group: String
+            category: String
             content: JSON
             keywords: [String]
             preview: File
@@ -59,7 +59,7 @@ export default {
         input ElementInput {
             name: String!
             type: String!
-            group: String
+            category: String
             content: JSON!
             keywords: [String]
             preview: FileInput

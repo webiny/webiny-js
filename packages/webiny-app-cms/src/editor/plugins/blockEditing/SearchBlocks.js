@@ -22,6 +22,7 @@ import { CompactView, LeftPanel, RightPanel } from "webiny-app-admin/components/
 import { Icon } from "webiny-ui/Icon";
 import { List, ListItem, ListItemGraphic } from "webiny-ui/List";
 import { Typography } from "webiny-ui/Typography";
+import { ReactComponent as AllIcon } from "./icons/round-clear_all-24px.svg";
 
 type SearchBarProps = {
     addKeyHandler: Function,
@@ -37,6 +38,14 @@ type SearchBarProps = {
 type SearchBarState = {
     search: string,
     activeTab: number
+};
+
+const allBlockCategory = {
+    type: "cms-block-category",
+    name: "cms-block-category-all",
+    title: "All blocks",
+    description: "List of all available blocks.",
+    icon: <AllIcon />
 };
 
 class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
@@ -124,13 +133,15 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
     render() {
         const { active, setActive } = this.props;
 
-        const plugins = {
+        const plugins: Object = {
             categories: {
-                list: getPlugins("cms-block-category"),
-                active: getPlugins("cms-block-category").find(({ name }) => name === active)
+                list: [allBlockCategory, ...getPlugins("cms-block-category")],
+                active: null
             },
             blocks: getPlugins("cms-block")
         };
+
+        plugins.categories.active = plugins.categories.list.find(({ name }) => name === active);
 
         const blocksList = this.getBlocksList(plugins);
 

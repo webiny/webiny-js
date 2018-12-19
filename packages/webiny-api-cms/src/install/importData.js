@@ -65,6 +65,7 @@ export default async (context: Object) => {
     element.populate({
         name: "Custom text",
         group: "cms-element-group-saved",
+        category: "cms-block-category-general",
         type: "element",
         content: {
             data: {

@@ -140,6 +140,7 @@ const elementFields = `
 id
 name
 type
+category
 content
 keywords
 preview {

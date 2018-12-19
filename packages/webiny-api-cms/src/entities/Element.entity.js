@@ -9,7 +9,7 @@ export interface IElement extends Entity {
     content: Object;
     type: ElementType;
     keywords: Array<string>;
-    group: ?string;
+    category: ?string;
     preview: Object;
 }
 
@@ -22,7 +22,7 @@ export function elementFactory(): Class<IElement> {
         content: Object;
         type: ElementType;
         keywords: Array<string>;
-        group: ?string;
+        category: ?string;
         preview: Object;
 
         constructor() {
@@ -32,7 +32,7 @@ export function elementFactory(): Class<IElement> {
                 .char()
                 .setValidators("required");
 
-            this.attr("group").char();
+            this.attr("category").char();
 
             this.attr("content").object();
 
