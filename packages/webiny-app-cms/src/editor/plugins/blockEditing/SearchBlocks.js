@@ -70,8 +70,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
     }
 
     /**
-     * Renders list of blocks - by selected category and by searched term (if typed).
-     * Will render blank state if no plugins are to be shown.
+     * Returns a list of blocks - by selected category and by searched term (if present).
      * @param blocks
      * @param categories
      * @returns {*}
