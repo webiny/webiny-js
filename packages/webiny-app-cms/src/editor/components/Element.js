@@ -53,6 +53,7 @@ const Element = pure(
         if (!plugin) {
             return null;
         }
+
         return (
             <Transition in={true} timeout={250} appear={true}>
                 {state => (
@@ -63,7 +64,10 @@ const Element = pure(
                         active={active}
                         style={{ ...defaultStyle, ...transitionStyles[state] }}
                     >
-                        <div className={["innerWrapper", className].filter(c => c).join(" ")}>
+                        <div
+                            {...element.settings.attributes}
+                            className={["innerWrapper", className].filter(c => c).join(" ")}
+                        >
                             <Draggable
                                 target={plugin.target}
                                 beginDrag={beginDrag}
