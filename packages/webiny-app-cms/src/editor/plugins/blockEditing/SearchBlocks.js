@@ -151,7 +151,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                 onExited={() => this.props.deactivatePlugin({ name: "cms-search-blocks-bar" })}
             >
                 <CompactView>
-                    <LeftPanel span={5}>
+                    <LeftPanel span={3}>
                         <List twoLine className={listStyle}>
                             {plugins.categories.list.map(p => (
                                 <ListItem
@@ -179,10 +179,13 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                             ))}
                         </List>
                     </LeftPanel>
-                    <RightPanel span={7}>
+                    <RightPanel span={9}>
                         {plugins.categories.active && (
                             <SimpleForm>
-                                <SimpleFormHeader title={plugins.categories.active.title} />
+                                <SimpleFormHeader
+                                    title={plugins.categories.active.title}
+                                    icon={plugins.categories.active.icon}
+                                />
                                 <SimpleFormContent>
                                     <Styled.BlockList>
                                         {blocksList.length > 0 ? (
