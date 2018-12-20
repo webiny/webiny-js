@@ -34,6 +34,7 @@ export const PageTitle = styled("div")({
     overflow: "hidden",
     textOverflow: "ellipsis",
     width: "100%",
+    lineHeight: "120%",
     "&:hover": {
         border: "1px solid var(--mdc-theme-on-background)"
     }
@@ -46,7 +47,8 @@ export const pageTitleWrapper = css({
 export const PageVersion = styled("span")({
     fontSize: 20,
     color: "var(--mdc-theme-text-secondary-on-background)",
-    marginLeft: 5
+    marginLeft: 5,
+    lineHeight: "120%"
 });
 
 export const PageMeta = styled("div")({
