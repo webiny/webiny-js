@@ -5,6 +5,7 @@ import { Typography } from "webiny-ui/Typography";
 import { Elevation } from "webiny-ui/Elevation";
 import styled from "react-emotion";
 import { css } from "emotion";
+import { Icon } from "webiny-ui/src/Icon";
 
 const SimpleFormContainer = styled("div")({
     position: "relative",
@@ -25,6 +26,10 @@ const actions = css({
     textAlign: "right"
 });
 
+const icon = css({
+    marginRight: 15
+});
+
 const footer = css({
     borderTop: "1px solid var(--mdc-theme-on-background)",
     color: "var(--mdc-theme-text-primary-on-background)",
@@ -42,11 +47,18 @@ const SimpleForm = (props: { children: React.Node, noElevation?: boolean }) => {
     );
 };
 
-const SimpleFormHeader = (props: { title: string, children?: React.Node }) => {
+const SimpleFormHeader = (props: {
+    title: string,
+    icon: React.Element<any>,
+    children?: React.Node
+}) => {
     return (
         <Grid className={header}>
             <Cell span={6} className={title}>
-                <Typography use="headline5">{props.title}</Typography>
+                <React.Fragment>
+                    {props.icon && <Icon className={icon} icon={props.icon} />}
+                    <Typography use="headline5">{props.title}</Typography>
+                </React.Fragment>
             </Cell>
             <Cell span={6} className={actions}>
                 {props.children}
