@@ -14,7 +14,10 @@ const Block = ({ element }: { element: ElementType }) => {
             {({ elementStyle, customClasses, combineClassNames }) => {
                 const { width, ...containerStyle } = elementStyle;
                 return (
-                    <div className={"webiny-cms-layout-block " + css(containerStyle)}>
+                    <div
+                        data-aos="fade-up"
+                        className={"webiny-cms-layout-block " + css(containerStyle)}
+                    >
                         <div
                             style={{ width, margin: "0 auto" }}
                             className={
