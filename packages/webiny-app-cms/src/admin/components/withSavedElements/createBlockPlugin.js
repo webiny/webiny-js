@@ -28,7 +28,7 @@ export default (el: Element) => {
         },
         preview() {
             return (
-                <img src={el.preview.src} alt={el.name} style={{ width: 400, height: "auto" }} />
+                <img src={el.preview.src} alt={el.name} style={{ width: "100%", height: "auto" }} />
             );
         }
     });
