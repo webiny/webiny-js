@@ -6,9 +6,14 @@
     margin: 0 auto;
     max-width: 1200px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
     height: 100%;
+    justify-content: space-evenly;
+    flex-direction: column;
+    @include desktop-and-tablet{
+      justify-content: space-between;
+      flex-direction: row;
+    }
     &__logo {
       flex: 1;
     }

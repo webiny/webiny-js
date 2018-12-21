@@ -2,8 +2,14 @@
 import * as React from "react";
 import { Menu } from "webiny-app-cms/src/render/components";
 import HamburgerMenu from "react-hamburger-menu";
+import classNames from "classnames";
 
-class Header extends React.Component {
+type Props = null;
+type State = {
+    mobileMenuOpen: boolean
+};
+
+class Header extends React.Component<Props, State> {
     state = { mobileMenuOpen: false };
 
     toggleMobileMenu = () => {
@@ -19,13 +25,15 @@ class Header extends React.Component {
                     <a href="/">Logo</a>
                 </div>
                 <nav
-                    className={
-                        "webiny-cms-section-header__navigation " +
-                        (this.state.mobileMenuOpen &&
-                            "webiny-cms-section-header__navigation--mobile-active")
-                    }
+                    className={classNames("webiny-cms-section-header__navigation", {
+                        "webiny-cms-section-header__navigation--mobile-active": this.state
+                            .mobileMenuOpen
+                    })}
                 >
                     <Menu slug={"demo-menu"} component={"default"} />
+                    <div className={"webiny-cms-section-header__mobile-site-name"}>
+                        <a href="/">Site Name</a>
+                    </div>
                 </nav>
                 <div
                     onClick={this.toggleMobileMenu}
@@ -45,15 +53,11 @@ class Header extends React.Component {
                 </div>
                 <div
                     onClick={this.toggleMobileMenu}
-                    className={
-                        "webiny-cms-section-header__mobile-overlay " +
-                        (this.state.mobileMenuOpen &&
-                            "webiny-cms-section-header__mobile-overlay--active")
-                    }
+                    className={classNames("webiny-cms-section-header__mobile-overlay", {
+                        "webiny-cms-section-header__mobile-overlay--active": this.state
+                            .mobileMenuOpen
+                    })}
                 />
-                <div className={"webiny-cms-section-header__mobile-logo"}>
-                    <a href="/">Logo</a>
-                </div>
             </div>
         );
     }

@@ -24,11 +24,21 @@
     }
   }
 
-  &__mobile-logo{
+  &__mobile-site-name{
     position: fixed;
-    top: 30px;
-    right: 200px;
+    width: 100%;
+    right: -25px;
+    top: 28px;
     z-index: 12;
+    a{
+      font-size: 1.2rem;
+      color: $webiny-cms-theme-text-primary;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    @include desktop-and-tablet{
+      display: none;
+    }
   }
 
   &__mobile-overlay{
@@ -53,6 +63,10 @@
 
   &__logo{
     flex: 1;
+    margin-left: 25px;
+    @include desktop-and-tablet{
+      margin-left: 0;
+    }
   }
   &__navigation{
     color: $webiny-cms-theme-primary;
@@ -82,13 +96,14 @@
       }
 
       ul{
-        font-size: 1.5rem;
+        font-size: 1.2rem;
         margin-top: 75px;
-        margin-left: 25px;
+        margin-left: 35px;
         box-sizing: border-box;
-        font-weight: 600;
+        font-weight: 400;
+        text-transform: uppercase;
         li{
-          margin-bottom: 10px;
+          margin-bottom: 15px;
           ul{
             margin: 10px 0 0 25px;
           }
@@ -111,21 +126,18 @@
             font-weight: 400;
             cursor: pointer;
             padding: 10px;
-            transition: background-color .2s, border-bottom-color .2s;
-            border-bottom: 2px solid transparent;
+            transition: background-color .2s;
             ul{
               display: none;
             }
             &:hover{
               background-color: $webiny-cms-theme-background;
               border-radius: $webiny-cms-theme-border-radius;
-              border-bottom: 2px solid $webiny-cms-theme-primary;
-              font-weight: 600;
               ul{
                 display: block;
                 position: absolute;
                 top: 35px;
-                left: 0px;
+                left: 0;
                 width: 150px;
                 background-color: $webiny-cms-theme-background;
                 li{
@@ -133,16 +145,6 @@
                   margin: 0;
                   width: 100%;
                   box-sizing: border-box;
-                  border-bottom: none;
-                  &:last-child{
-                    border-bottom: 2px solid $webiny-cms-theme-primary;
-                  }
-                  &:hover{
-                    border-bottom: none;
-                    &:last-child{
-                      border-bottom: 2px solid $webiny-cms-theme-primary;
-                    }
-                  }
                 }
               }
             }

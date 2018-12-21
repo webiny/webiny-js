@@ -22,7 +22,7 @@ export default {
     ],
     fonts: {
         google: {
-            families: ["IBM Plex Sans", "Lato"]
+            families: ["IBM Plex Sans:400,500,700", "Lato:400,500,700"]
         }
     },
     colors: {

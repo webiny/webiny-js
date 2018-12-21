@@ -9,5 +9,8 @@ html{
 }
 .webiny-cms-page-document{
   background-color: var(--webiny-cms-theme-surface);
-  min-height: calc(100vh - 230px);
+  min-height: calc(100vh - 205px);
+  @include desktop-and-tablet{
+    min-height: calc(100vh - 230px);
+  }
 }

@@ -11,6 +11,7 @@
     "@rmwc/card": "^3.0.9"
   },
   "dependencies": {
+    "classnames": "^2.2.6",
     "react-hamburger-menu": "^1.1.1"
   }
 }
