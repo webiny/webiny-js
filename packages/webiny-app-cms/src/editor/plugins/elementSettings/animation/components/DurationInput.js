@@ -7,7 +7,7 @@ import { Icon } from "webiny-ui/Icon";
 import { Slider } from "webiny-ui/Slider";
 import { InputContainer } from "webiny-app-cms/editor/plugins/elementSettings/components/StyledComponents";
 
-const PMPropertyInput = pure(({ value, icon, updateValue, updatePreview }: Object) => {
+const DurationInput = pure(({ value, icon, updateValue, updatePreview }: Object) => {
     return (
         <React.Fragment>
             {icon && (
@@ -21,18 +21,18 @@ const PMPropertyInput = pure(({ value, icon, updateValue, updatePreview }: Objec
                     value={value}
                     onChange={updateValue}
                     onInput={updatePreview}
-                    min={0}
-                    max={100}
-                    step={1}
+                    min={50}
+                    max={3000}
+                    step={50}
                 />
             </Cell>
             <Cell span={4}>
                 <InputContainer>
-                    <Input placeholder={"px"} value={value} onChange={updateValue} />
+                    <Input placeholder={"ms"} value={value} onChange={updateValue} />
                 </InputContainer>
             </Cell>
         </React.Fragment>
     );
 });
 
-export default PMPropertyInput;
+export default DurationInput;
