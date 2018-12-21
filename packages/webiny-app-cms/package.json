@@ -16,6 +16,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.5.0",
     "@fortawesome/react-fontawesome": "^0.1.3",
     "@svgr/webpack": "^4.1.0",
+    "aos": "^2.3.4",
     "dot-prop-immutable": "^1.4.0",
     "downshift": "^2.1.1",
     "dynamics.js": "^1.1.5",
