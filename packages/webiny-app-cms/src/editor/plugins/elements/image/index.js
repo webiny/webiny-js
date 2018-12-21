@@ -5,14 +5,19 @@ import styled from "react-emotion";
 import { getPlugin } from "webiny-plugins";
 import { addMiddleware } from "webiny-app-cms/editor/redux";
 import { ELEMENT_CREATED } from "webiny-app-cms/editor/actions";
-import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
+import {
+    ElementStyle,
+    getElementStyleProps,
+    getElementAttributeProps
+} from "webiny-app-cms/render/components/ElementStyle";
+
 import type { PluginType } from "webiny-plugins/types";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
-
 import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
+import ElementAnimation from "webiny-app-cms/render/components/ElementAnimation";
 
 export default (): Array<PluginType> => {
     const PreviewBox = styled("div")({
@@ -88,9 +93,14 @@ export default (): Array<PluginType> => {
             },
             render({ element }) {
                 return (
-                    <ElementStyle {...getElementStyleProps(element)}>
-                        <Image elementId={element.id} />
-                    </ElementStyle>
+                    <ElementAnimation>
+                        <ElementStyle
+                            {...getElementStyleProps(element)}
+                            {...getElementAttributeProps(element)}
+                        >
+                            <Image elementId={element.id} />
+                        </ElementStyle>
+                    </ElementAnimation>
                 );
             }
         },

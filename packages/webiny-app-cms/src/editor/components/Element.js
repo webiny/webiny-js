@@ -64,10 +64,7 @@ const Element = pure(
                         active={active}
                         style={{ ...defaultStyle, ...transitionStyles[state] }}
                     >
-                        <div
-                            {...element.settings.attributes}
-                            className={["innerWrapper", className].filter(c => c).join(" ")}
-                        >
+                        <div className={["innerWrapper", className].filter(c => c).join(" ")}>
                             <Draggable
                                 target={plugin.target}
                                 beginDrag={beginDrag}

@@ -10,10 +10,7 @@ import { updateElement, setTmp } from "webiny-app-cms/editor/actions";
 import Footer from "./PMFooter";
 import Select from "./Select";
 import Input from "./Input";
-import AOS from "aos";
-import "aos/dist/aos.css";
-
-window.AOS = AOS;
+import ElementAnimation from "webiny-app-cms/render/components/ElementAnimation";
 
 /**
  * PMSettings (Padding/Margin settings).
@@ -24,7 +21,7 @@ type Props = Object & {
     value: Object | number
 };
 
-const PMSettings = ({ title, advanced, setAdvanced, getAttributeValue, getUpdateValue }: Props) => {
+const Settings = ({ title, advanced, setAdvanced, getAttributeValue, getUpdateValue }: Props) => {
     return (
         <React.Fragment>
             <Tabs>
@@ -78,14 +75,14 @@ const PMSettings = ({ title, advanced, setAdvanced, getAttributeValue, getUpdate
     );
 };
 
-export default compose(
+const ConnectedSettings = compose(
     withActiveElement({ shallow: true }),
     connect(
-        null, // TODO: optimize
+        null,
         { updateElement, setTmp }
     ),
     withHandlers({
-        updateSettings: ({ element, updateElement }: Object) => {
+        updateSettings: ({ element, updateElement, animation: { refresh } }: Object) => {
             return (name: string, newValue: mixed, history = false) => {
                 let newElement = { ...element };
                 const attributes = { ...element.settings.attributes };
@@ -95,6 +92,8 @@ export default compose(
                     element: set(newElement, "settings.attributes", attributes),
                     history
                 });
+
+                refresh();
             };
         }
     }),
@@ -119,4 +118,14 @@ export default compose(
         }
     }),
     withState("advanced", "setAdvanced", false)
-)(PMSettings);
+)(Settings);
+
+export default (props: *) => {
+    return (
+        <ElementAnimation>
+            {animation => {
+                return <ConnectedSettings {...props} animation={animation} />;
+            }}
+        </ElementAnimation>
+    );
+};
