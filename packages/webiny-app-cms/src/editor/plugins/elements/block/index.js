@@ -19,6 +19,7 @@ export default (): ElementPluginType => {
         type: "cms-element",
         settings: [
             "cms-element-settings-background",
+            "cms-element-settings-animation",
             "",
             "cms-element-settings-border",
             "cms-element-settings-shadow",

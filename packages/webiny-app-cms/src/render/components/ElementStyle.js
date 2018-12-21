@@ -41,6 +41,7 @@ class ElementStyle extends React.Component<*> {
                 getAllClasses,
                 combineClassNames,
                 elementStyle: finalStyle,
+                elementAttributes,
                 customClasses: classNames.split(" ")
             });
         }
@@ -63,7 +64,9 @@ const getElementStyleProps = (element: Object) => {
 };
 
 const getElementAttributeProps = (element: Object) => {
-    return { elementAttributes: element.settings.attributes };
+    return {
+        elementAttributes: get(element, "settings.attributes", DEF)
+    };
 };
 
 export { ElementStyle, getElementStyleProps, getElementAttributeProps };

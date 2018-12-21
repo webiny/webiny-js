@@ -10,6 +10,7 @@ import { getElement } from "webiny-app-cms/editor/selectors";
 
 const BlockContainer = ({
     elementStyle,
+    elementAttributes,
     customClasses,
     combineClassNames,
     element,
@@ -19,7 +20,7 @@ const BlockContainer = ({
     const { id, type, elements } = element;
 
     return (
-        <div style={{ width: "100%" }} className={css(containerStyle)}>
+        <div style={{ width: "100%" }} className={css(containerStyle)} {...elementAttributes}>
             <div
                 style={{ width, margin: "0 auto" }}
                 className={combineClassNames(...customClasses)}
