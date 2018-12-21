@@ -9,5 +9,8 @@
   },
   "devDependencies": {
     "@rmwc/card": "^3.0.9"
+  },
+  "dependencies": {
+    "react-hamburger-menu": "^1.1.1"
   }
 }

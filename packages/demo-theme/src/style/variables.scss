@@ -19,6 +19,9 @@ $webiny-cms-theme-mobile-width: 480px;
 $webiny-cms-theme-tablet-width: 768px;
 $webiny-cms-theme-desktop-width: 1200px;
 
+// elements
+$webiny-cms-theme-border-radius: 2px;
+
 body{
   --webiny-cms-theme-typography-primary-font-family: #{$webiny-cms-theme-typography-primary-font-family};
   --webiny-cms-theme-typography-secondary-font-family: #{$webiny-cms-theme-typography-secondary-font-family};

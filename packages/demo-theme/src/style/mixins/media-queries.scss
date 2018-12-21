@@ -15,3 +15,9 @@
     @content;
   }
 }
+
+@mixin desktop-and-tablet {
+  @media (min-width: #{$webiny-cms-theme-tablet-width}) {
+    @content;
+  }
+}

@@ -1,14 +1,8 @@
 // @flow
 import * as React from "react";
-import styled from "react-emotion";
-import { Menu } from "webiny-app-cms/render/components";
+import { Header } from "../components/Header";
+import { Footer } from "../components/Footer";
 import { Addons } from "webiny-app/components";
-
-const Banner = styled("div")({
-    backgroundColor: "#666",
-    width: "100%",
-    height: 50
-});
 
 type Props = {
     children: React.Node
@@ -16,13 +10,12 @@ type Props = {
 
 const Static = ({ children }: Props) => {
     return (
-        <div className={"static-page-container"}>
+        <React.Fragment>
             <Addons />
-            <Menu slug={"demo-menu"} component={"default"} />
-            <Banner />
+            <Header />
             {children}
-            <Banner />
-        </div>
+            <Footer />
+        </React.Fragment>
     );
 };
 

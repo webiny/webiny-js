@@ -1,0 +1,20 @@
+.webiny-cms-section-footer {
+  margin: 25px auto 0 auto;
+  background-color: $webiny-cms-theme-background;
+  height: 100px;
+  &__wrapper{
+    margin: 0 auto;
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    &__logo {
+      flex: 1;
+    }
+    &__social {
+      flex: 1;
+    }
+  }
+
+}
