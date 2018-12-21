@@ -17,7 +17,6 @@ import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
 import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
-import ElementAnimation from "webiny-app-cms/render/components/ElementAnimation";
 
 export default (): Array<PluginType> => {
     const PreviewBox = styled("div")({
@@ -46,7 +45,6 @@ export default (): Array<PluginType> => {
             },
             settings: [
                 "cms-element-settings-background",
-                "cms-element-settings-animation",
                 "",
                 "cms-element-settings-border",
                 "cms-element-settings-shadow",
@@ -93,14 +91,12 @@ export default (): Array<PluginType> => {
             },
             render({ element }) {
                 return (
-                    <ElementAnimation>
-                        <ElementStyle
-                            {...getElementStyleProps(element)}
-                            {...getElementAttributeProps(element)}
-                        >
-                            <Image elementId={element.id} />
-                        </ElementStyle>
-                    </ElementAnimation>
+                    <ElementStyle
+                        {...getElementStyleProps(element)}
+                        {...getElementAttributeProps(element)}
+                    >
+                        <Image elementId={element.id} />
+                    </ElementStyle>
                 );
             }
         },

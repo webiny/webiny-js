@@ -1,7 +1,6 @@
 // @flow
 import React from "react";
 import { get } from "lodash";
-import ElementAnimation from "webiny-app-cms/render/components/ElementAnimation";
 import {
     ElementStyle,
     getElementStyleProps,
@@ -23,13 +22,11 @@ const Image = (props: *) => {
     }
 
     return (
-        <ElementAnimation>
-            <ElementStyle {...elementStyles} {...elementAttributes}>
-                <div style={{ ...wrapperStyle, textAlign: align }}>
-                    <img {...rest} style={style} src={src} />
-                </div>
-            </ElementStyle>
-        </ElementAnimation>
+        <ElementStyle {...elementStyles} {...elementAttributes}>
+            <div style={{ ...wrapperStyle, textAlign: align }}>
+                <img {...rest} style={style} src={src} />
+            </div>
+        </ElementStyle>
     );
 };
 

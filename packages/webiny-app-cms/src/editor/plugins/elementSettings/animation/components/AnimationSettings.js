@@ -60,13 +60,22 @@ const Settings = ({ title, advanced, setAdvanced, getAttributeValue, getUpdateVa
                     </Grid>
 
                     {advanced && (
-                        <Grid className={"no-bottom-padding"}>
-                            <Input
-                                label={"Duration (ms)"}
-                                value={getAttributeValue("data-aos-duration")}
-                                updateValue={getUpdateValue("data-aos-duration")}
-                            />
-                        </Grid>
+                        <>
+                            <Grid className={"no-bottom-padding"}>
+                                <Input
+                                    label={"Duration (ms)"}
+                                    value={getAttributeValue("data-aos-duration")}
+                                    updateValue={getUpdateValue("data-aos-duration")}
+                                />
+                            </Grid>
+                            <Grid className={"no-bottom-padding"}>
+                                <Input
+                                    label={"Delay (ms)"}
+                                    value={getAttributeValue("data-aos-delay")}
+                                    updateValue={getUpdateValue("data-aos-delay")}
+                                />
+                            </Grid>
+                        </>
                     )}
                     <Footer advanced={advanced} toggleAdvanced={setAdvanced} />
                 </Tab>
@@ -120,7 +129,7 @@ const ConnectedSettings = compose(
     withState("advanced", "setAdvanced", false)
 )(Settings);
 
-export default (props: *) => {
+export default function AnimationSettings(props: *) {
     return (
         <ElementAnimation>
             {animation => {
@@ -128,4 +137,4 @@ export default (props: *) => {
             }}
         </ElementAnimation>
     );
-};
+}
