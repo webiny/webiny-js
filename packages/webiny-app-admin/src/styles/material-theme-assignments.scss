@@ -164,6 +164,10 @@ Fix the width of input components when inside grids
     opacity: 0.7;
     background-color: var(--mdc-theme-on-surface);
   }
+  .mdc-dialog__body{
+    max-height: 70vh;
+    overflow: scroll;
+  }
 }
 
 // select

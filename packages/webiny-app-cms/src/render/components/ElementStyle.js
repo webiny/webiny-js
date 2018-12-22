@@ -13,7 +13,8 @@ class ElementStyle extends React.Component<*> {
     shouldComponentUpdate(props: Object) {
         return (
             !isEqual(props.elementStyle, this.props.elementStyle) ||
-            !isEqual(props.advancedStyle, this.props.advancedStyle)
+            !isEqual(props.advancedStyle, this.props.advancedStyle) ||
+            !isEqual(props.elementAttributes, this.props.elementAttributes)
         );
     }
 
@@ -22,6 +23,7 @@ class ElementStyle extends React.Component<*> {
             style = {},
             elementStyle = {},
             advancedStyle = {},
+            elementAttributes = {},
             children,
             className = null
         } = this.props;
@@ -39,12 +41,13 @@ class ElementStyle extends React.Component<*> {
                 getAllClasses,
                 combineClassNames,
                 elementStyle: finalStyle,
+                elementAttributes,
                 customClasses: classNames.split(" ")
             });
         }
 
         return (
-            <Node className={getAllClasses()} style={finalStyle}>
+            <Node className={getAllClasses()} style={finalStyle} {...elementAttributes}>
                 {children}
             </Node>
         );
@@ -60,4 +63,10 @@ const getElementStyleProps = (element: Object) => {
     };
 };
 
-export { ElementStyle, getElementStyleProps };
+const getElementAttributeProps = (element: Object) => {
+    return {
+        elementAttributes: get(element, "settings.attributes", DEF)
+    };
+};
+
+export { ElementStyle, getElementStyleProps, getElementAttributeProps };

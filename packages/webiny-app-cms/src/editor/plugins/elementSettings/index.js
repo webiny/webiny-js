@@ -1,4 +1,5 @@
 // @flow
+import animation from "./animation";
 import bar from "./bar";
 import deleteElement from "./delete";
 import clone from "./clone";
@@ -14,6 +15,7 @@ import divider from "./divider";
 import save from "./save";
 
 export default [
+    animation,
     bar,
     divider,
     background,
