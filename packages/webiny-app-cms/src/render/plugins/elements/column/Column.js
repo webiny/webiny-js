@@ -1,6 +1,5 @@
 //@flow
 import React from "react";
-import styled from "react-emotion";
 import Element from "webiny-app-cms/render/components/Element";
 import {
     ElementStyle,
@@ -13,7 +12,11 @@ import ElementAnimation from "webiny-app-cms/render/components/ElementAnimation"
 const Column = ({ element }: { element: ElementType }) => {
     return (
         <ElementAnimation>
-            <ElementStyle className={"webiny-cms-layout-column"} {...getElementStyleProps(element)}>
+            <ElementStyle
+                className={"webiny-cms-layout-column"}
+                {...getElementAttributeProps(element)}
+                {...getElementStyleProps(element)}
+            >
                 {element.elements.map(element => (
                     <Element element={element} key={element.id} />
                 ))}
