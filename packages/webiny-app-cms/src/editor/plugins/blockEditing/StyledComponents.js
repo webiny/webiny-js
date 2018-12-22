@@ -117,3 +117,9 @@ export const Overlay = styled("div")({
         }
     }
 });
+
+export const Title = styled("div")({
+    position: "absolute",
+    left: 10,
+    bottom: 0
+});

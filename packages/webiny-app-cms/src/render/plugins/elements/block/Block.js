@@ -22,13 +22,15 @@ const Block = ({ element }: { element: ElementType }) => {
                     const { width, ...containerStyle } = elementStyle;
                     return (
                         <div
-                            style={{ width: "100%" }}
-                            className={css(containerStyle)}
+                            className={"webiny-cms-layout-block " + css(containerStyle)}
                             {...elementAttributes}
                         >
                             <div
                                 style={{ width, margin: "0 auto" }}
-                                className={combineClassNames(...customClasses)}
+                                className={
+                                    "webiny-cms-layout-block__wrapper " +
+                                    combineClassNames(...customClasses)
+                                }
                             >
                                 {element.elements.map(element => (
                                     <Element key={element.id} element={element} />

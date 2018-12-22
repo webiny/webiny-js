@@ -3,7 +3,7 @@ import React from "react";
 
 export default () => {
     return {
-        name: "cms-slate-editor-typography",
+        name: "cms-render-slate-editor-typography",
         type: "cms-render-slate-editor",
         slate: {
             renderNode(props: Object, next: Function) {

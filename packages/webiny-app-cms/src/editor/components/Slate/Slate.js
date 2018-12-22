@@ -1,7 +1,6 @@
 // @flow
 import React from "react";
 import ReactDOM from "react-dom";
-import styled from "react-emotion";
 import { connect } from "webiny-app-cms/editor/redux";
 import { compose, pure } from "recompose";
 import { get } from "lodash";
@@ -13,11 +12,6 @@ import { withCms } from "webiny-app-cms/context";
 import { createValue } from "./index";
 
 import Menu from "./Menu";
-
-const EditorStyle = styled("div")({
-    fontSize: "1.2em",
-    lineHeight: "150%"
-});
 
 class SlateEditor extends React.Component<*, *> {
     static defaultProps = {
@@ -142,22 +136,20 @@ class SlateEditor extends React.Component<*, *> {
     render() {
         return (
             <React.Fragment>
-                <EditorStyle>
-                    {!this.state.readOnly && this.renderFloatingMenu()}
-                    <Editor
-                        ref={this.editor}
-                        onBlur={this.onBlur}
-                        onFocus={this.onFocus}
-                        readOnly={this.state.readOnly}
-                        autoCorrect={false}
-                        spellCheck={false}
-                        plugins={this.plugins}
-                        placeholder="Enter some text..."
-                        value={this.state.value}
-                        onChange={this.onChange}
-                        theme={this.props.cms.theme}
-                    />
-                </EditorStyle>
+                {!this.state.readOnly && this.renderFloatingMenu()}
+                <Editor
+                    ref={this.editor}
+                    onBlur={this.onBlur}
+                    onFocus={this.onFocus}
+                    readOnly={this.state.readOnly}
+                    autoCorrect={false}
+                    spellCheck={false}
+                    plugins={this.plugins}
+                    placeholder="Enter some text..."
+                    value={this.state.value}
+                    onChange={this.onChange}
+                    theme={this.props.cms.theme}
+                />
             </React.Fragment>
         );
     }

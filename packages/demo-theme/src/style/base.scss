@@ -1,3 +1,16 @@
+html{
+  font-size: 12px;
+  @include tablet{
+    font-size: 14px;
+  }
+  @include desktop{
+    font-size: 16px;
+  }
+}
 .webiny-cms-page-document{
   background-color: var(--webiny-cms-theme-surface);
+  min-height: calc(100vh - 205px);
+  @include desktop-and-tablet{
+    min-height: calc(100vh - 230px);
+  }
 }

@@ -4,7 +4,7 @@ import createDefaultPages from "./importData/createDefaultPages";
 
 export default async (context: Object) => {
     setupEntities(context);
-    const { Category, Element, Tag, Menu } = context.cms.entities;
+    const { Category, Tag, Menu } = context.cms.entities;
 
     const menu = new Menu();
     menu.populate({
@@ -59,50 +59,4 @@ export default async (context: Object) => {
         .save();
 
     await createDefaultPages(context, { categories });
-
-    // Create sample element.
-    const element = new Element();
-    element.populate({
-        name: "Custom text",
-        group: "cms-element-group-saved",
-        type: "element",
-        content: {
-            data: {
-                text: {
-                    object: "value",
-                    document: {
-                        object: "document",
-                        data: {},
-                        nodes: [
-                            {
-                                object: "block",
-                                type: "h4",
-                                data: {},
-                                nodes: [
-                                    {
-                                        object: "text",
-                                        leaves: [
-                                            {
-                                                object: "leaf",
-                                                text: "Second revision",
-                                                marks: []
-                                            }
-                                        ]
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                }
-            },
-            settings: {
-                style: {
-                    padding: "20px"
-                }
-            },
-            elements: [],
-            type: "cms-element-text"
-        }
-    });
-    await element.save();
 };

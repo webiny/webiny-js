@@ -5,6 +5,7 @@ import elements from "./../plugins/elements";
 import elementActions from "./../plugins/elementActions";
 import elementGroups from "./../plugins/elementGroups";
 import blocks from "./../plugins/blocks";
+import blocksCategories from "./../plugins/blocksCategories";
 import toolbar from "./../plugins/toolbar";
 import elementSettings from "./../plugins/elementSettings";
 import defaultBarPlugins from "./../plugins/defaultBar";
@@ -18,6 +19,7 @@ export default [
     ...blockEditing,
     ...elements,
     ...blocks,
+    ...blocksCategories,
     ...toolbar,
     ...elementSettings,
     ...defaultBarPlugins,

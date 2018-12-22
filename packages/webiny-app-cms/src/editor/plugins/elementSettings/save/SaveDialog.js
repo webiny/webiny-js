@@ -3,7 +3,7 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { compose, shouldUpdate } from "recompose";
 import { css } from "emotion";
-import { getPlugin } from "webiny-plugins";
+import { getPlugin, getPlugins } from "webiny-plugins";
 import domToImage from "./domToImage";
 import {
     Dialog,
@@ -16,6 +16,7 @@ import {
 } from "webiny-ui/Dialog";
 import { Input } from "webiny-ui/Input";
 import { Tags } from "webiny-ui/Tags";
+import { Select } from "webiny-ui/Select";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Form } from "webiny-form";
 import styled from "react-emotion";
@@ -133,9 +134,17 @@ type Props = {
 
 const SaveDialog = (props: Props) => {
     const { element, open, onClose, onSubmit, type } = props;
+
+    const blockCategoriesOptions = getPlugins("cms-block-category").map((item: Object) => {
+        return {
+            value: item.name,
+            label: item.title
+        };
+    });
+
     return (
         <Dialog open={open} onClose={onClose} className={narrowDialog}>
-            <Form onSubmit={onSubmit} data={{ type }}>
+            <Form onSubmit={onSubmit} data={{ type, category: "cms-block-category-general" }}>
                 {({ data, submit, Bind }) => (
                     <React.Fragment>
                         <DialogHeader>
@@ -150,16 +159,30 @@ const SaveDialog = (props: Props) => {
                                 </Cell>
                             </Grid>
                             {data.type === "block" && (
-                                <Grid>
-                                    <Cell span={12}>
-                                        <Bind name="keywords">
-                                            <Tags
-                                                label="Keywords"
-                                                description="Enter search keywords"
-                                            />
-                                        </Bind>
-                                    </Cell>
-                                </Grid>
+                                <>
+                                    <Grid>
+                                        <Cell span={12}>
+                                            <Bind name="keywords">
+                                                <Tags
+                                                    label="Keywords"
+                                                    description="Enter search keywords"
+                                                />
+                                            </Bind>
+                                        </Cell>
+                                    </Grid>
+
+                                    <Grid>
+                                        <Cell span={12}>
+                                            <Bind name="category" validators={["required"]}>
+                                                <Select
+                                                    label="Category"
+                                                    description="Select a block category"
+                                                    options={blockCategoriesOptions}
+                                                />
+                                            </Bind>
+                                        </Cell>
+                                    </Grid>
+                                </>
                             )}
                             <Grid>
                                 <Cell span={12}>

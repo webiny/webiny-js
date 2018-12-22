@@ -7,12 +7,14 @@ import gql from "graphql-tag";
 import { get } from "lodash";
 import { Query } from "react-apollo";
 
-const loadPage = gql`
-    query LoadPage($id: ID!) {
+// We utilize the same "listPages" GraphQL field.
+const getPage = gql`
+    query listPages($parent: String) {
         cms {
-            getPage(id: $id) {
+            pages: listPages(parent: $parent) {
                 data {
-                    id
+                    parent
+                    published
                     title
                 }
             }
@@ -20,12 +22,13 @@ const loadPage = gql`
     }
 `;
 
-const loadPages = gql`
-    query LoadPages($search: String) {
+const listPages = gql`
+    query listPages($search: String) {
         cms {
             pages: listPages(search: $search) {
                 data {
-                    id
+                    parent
+                    published
                     title
                 }
             }
@@ -34,16 +37,29 @@ const loadPages = gql`
 `;
 
 const PagesAutoComplete = props => (
-    <Query skip={!props.value} variables={{ id: props.value }} query={loadPage}>
-        {({ data }) => (
-            <AutoComplete {...props} textProp={"title"} value={get(data, "cms.getPage.data")} />
-        )}
+    <Query skip={!props.value} variables={{ parent: props.value }} query={getPage}>
+        {({ data }) => {
+            const value = get(data, "cms.pages.data.0");
+            return (
+                <AutoComplete
+                    {...props}
+                    description={
+                        value &&
+                        !value.published &&
+                        "Warning: page is not published, it will not be visible in the menu."
+                    }
+                    valueProp={"parent"}
+                    textProp={"title"}
+                    value={value}
+                />
+            );
+        }}
     </Query>
 );
 
 export default compose(
     withAutoComplete({
         response: data => get(data, "cms.pages"),
-        query: loadPages
+        query: listPages
     })
 )(PagesAutoComplete);

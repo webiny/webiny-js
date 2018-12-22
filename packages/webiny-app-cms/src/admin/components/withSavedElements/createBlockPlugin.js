@@ -7,6 +7,7 @@ type Element = {
     id: string,
     name: string,
     type: string,
+    category: string,
     content: Object,
     keywords: Array<string>,
     preview: {
@@ -18,6 +19,8 @@ export default (el: Element) => {
     addPlugin({
         name: "cms-saved-block-" + el.id,
         type: "cms-block",
+        title: el.name,
+        category: el.category,
         tags: ["saved"],
         keywords: el.keywords || [],
         create() {
@@ -25,7 +28,7 @@ export default (el: Element) => {
         },
         preview() {
             return (
-                <img src={el.preview.src} alt={el.name} style={{ width: 400, height: "auto" }} />
+                <img src={el.preview.src} alt={el.name} style={{ width: "100%", height: "auto" }} />
             );
         }
     });

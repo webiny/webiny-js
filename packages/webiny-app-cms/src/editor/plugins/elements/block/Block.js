@@ -24,7 +24,7 @@ const Block = pure(({ element }) => {
         <BlockStyle id={id} style={{ zIndex: 20, position: "relative" }}>
             <ElementAnimation>
                 <ElementStyle
-                    style={{ margin: "0 auto", boxSizing: "border-box" }}
+                    style={{ margin: "0 auto", boxSizing: "border-box", flexDirection: "column" }}
                     {...getElementStyleProps(element)}
                     {...getElementAttributeProps(element)}
                 >

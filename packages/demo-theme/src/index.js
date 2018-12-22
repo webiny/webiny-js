@@ -5,6 +5,7 @@ import StaticLayout from "./layouts/static";
 import BlogLayout from "./layouts/blog";
 import PageList from "./components/PageList";
 import PageListv2 from "./components/PageListv2";
+import DefaultMenu from "./components/DefaultMenu";
 
 export default {
     layouts: [
@@ -21,7 +22,7 @@ export default {
     ],
     fonts: {
         google: {
-            families: ["Alegreya", "Lato"]
+            families: ["IBM Plex Sans:400,500,700", "Lato:400,500,700"]
         }
     },
     colors: {
@@ -32,6 +33,14 @@ export default {
         lightGray: "#F7F7F7",
         green: "#0fcb00",
         yellow: "#fcff00"
+    },
+    components: {
+        menu: [
+            {
+                name: "default",
+                component: DefaultMenu
+            }
+        ]
     },
     elements: {
         button: {
@@ -52,17 +61,6 @@ export default {
                     name: "custom",
                     title: "Custom page list",
                     component: PageListv2
-                }
-            ]
-        },
-        mailchimp: {
-            components: [
-                {
-                    name: "custom",
-                    title: "Custom page list",
-                    component() {
-                        return <span>custom</span>;
-                    }
                 }
             ]
         }

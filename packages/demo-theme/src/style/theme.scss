@@ -1,3 +1,9 @@
+@import "variables";
+@import "reset";
+@import "mixins/media-queries";
 @import "elements/typography";
+@import "elements/layout";
 @import "elements/button";
+@import "elements/header-nav";
+@import "elements/footer";
 @import "base";

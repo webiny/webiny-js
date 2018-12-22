@@ -9,10 +9,7 @@ export default () => {
             renderMark(props: Object, next: Function) {
                 if (props.mark.type === "code") {
                     return (
-                        <code
-                            className={"webiny-cms-typography-code"}
-                            {...props.attributes}
-                        >
+                        <code className={"webiny-cms-typography-code"} {...props.attributes}>
                             {props.children}
                         </code>
                     );

@@ -4,6 +4,7 @@ import { ButtonFloating } from "webiny-ui/Button";
 import { Elevation } from "webiny-ui/Elevation";
 import { ReactComponent as AddIcon } from "webiny-app-cms/editor/assets/icons/add.svg";
 import * as Styled from "./StyledComponents";
+import { Typography } from "webiny-ui/Typography";
 
 class BlockPreview extends React.Component<*> {
     shouldComponentUpdate(props: Object) {
@@ -12,7 +13,7 @@ class BlockPreview extends React.Component<*> {
 
     render() {
         const { plugin, addBlockToContent, deactivatePlugin } = this.props;
-        
+
         return (
             <Elevation z={1} key={plugin.name}>
                 <Styled.Block>
@@ -32,9 +33,10 @@ class BlockPreview extends React.Component<*> {
                             />
                         </Styled.AddBlock>
                     </Styled.Overlay>
-                    <Styled.BlockPreview>
-                        {plugin.preview()}
-                    </Styled.BlockPreview>
+                    <Styled.BlockPreview>{plugin.preview()}</Styled.BlockPreview>
+                    <Styled.Title>
+                        <Typography use={"overline"}>{plugin.title}</Typography>
+                    </Styled.Title>
                 </Styled.Block>
             </Elevation>
         );

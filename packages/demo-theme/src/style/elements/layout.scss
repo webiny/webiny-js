@@ -1,0 +1,45 @@
+.webiny-cms-layout-block{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  &__wrapper{
+    @include mobile{
+      width: 100% !important;
+    }
+
+    @include tablet{
+      width: 100% !important;
+    }
+  }
+}
+.webiny-cms-layout-row{
+  position: relative;
+  display: flex;
+  flex: 1 100%;
+  box-sizing: border-box;
+  flex-direction: column;
+  @include tablet{
+    flex-direction: row;
+  }
+  @include desktop{
+    flex-direction: row;
+  }
+}
+
+.webiny-cms-layout-column{
+  box-sizing: border-box;
+  text-align: center;
+  width: auto;
+  display: flex;
+  position: relative;
+  flex: 100%;
+  flex-direction: column;
+  @include tablet{
+    text-align: left;
+    width: 100%;
+  }
+  @include desktop{
+    text-align: left;
+    width: 100%;
+  }
+}
