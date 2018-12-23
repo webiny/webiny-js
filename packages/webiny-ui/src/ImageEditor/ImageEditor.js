@@ -37,6 +37,8 @@ const Toolbar = styled("div")({
     backgroundColor: "var(--mdc-theme-secondary)",
     margin: "-20px -24px 0px -24px",
     padding: 2,
+    position: "absolute",
+    width: "100%",
     "> div.disabled": {
         opacity: 0.5,
         pointerEvents: "none"

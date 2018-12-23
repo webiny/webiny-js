@@ -1,6 +1,5 @@
 // @flow
 import "./style/theme.scss";
-import * as React from "react";
 import StaticLayout from "./layouts/static";
 import BlogLayout from "./layouts/blog";
 import PageList from "./components/PageList";
@@ -29,10 +28,7 @@ export default {
         primary: "var(--webiny-cms-theme-primary)",
         secondary: "var(--webiny-cms-theme-secondary)",
         background: "var(--webiny-cms-theme-background)",
-        white: "#fff",
-        lightGray: "#F7F7F7",
-        green: "#0fcb00",
-        yellow: "#fcff00"
+        surface: "var(--webiny-cms-theme-surface)"
     },
     components: {
         menu: [
@@ -101,23 +97,20 @@ export default {
             component: "p",
             className: "webiny-cms-typography-body"
         },
-        custom: {
-            label: "Pavel 1",
-            component({ attributes, children }: Object) {
-                return (
-                    <div className={"my-custom-class"} {...attributes}>
-                        {children}
-                    </div>
-                );
-            },
-            className: "cms-element-custom"
-            /*style: {
-                fontFamily: "Alegreya",
-                fontSize: 14,
-                lineHeight: "150%",
-                marginBottom: "2em",
-                color: "#bb3825"
-            }*/
+        description: {
+            label: "Description",
+            component: "p",
+            className: "webiny-cms-typography-description"
+        },
+        descriptionWhite: {
+            label: "Description (white)",
+            component: "p",
+            className: "webiny-cms-typography-description-white"
+        },
+        primaryColorText: {
+            label: "Primary color text",
+            component: "p",
+            className: "webiny-cms-typography-primary-color"
         }
     }
 };

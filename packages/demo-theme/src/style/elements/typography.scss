@@ -1,3 +1,11 @@
+strong{
+  font-weight: 700;
+}
+
+em{
+  font-style: italic;
+}
+
 .webiny-cms-typography-h1,
 .webiny-cms-typography-h2,
 .webiny-cms-typography-h3,
@@ -105,4 +113,26 @@
   font-size: 90%;
   background-color: $webiny-cms-theme-on-background;
   border-radius: 3px;
+}
+
+.webiny-cms-typography-description{
+  font-family: $webiny-cms-theme-typography-primary-font-family;
+  color: $webiny-cms-theme-text-secondary;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-size: 0.8rem;
+  line-height: 1.2rem;
+  font-weight: 400;
+  letter-spacing: 0.03125em;
+}
+
+.webiny-cms-typography-description-white{
+  font-family: $webiny-cms-theme-typography-primary-font-family;
+  color: #fff;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-size: 0.8rem;
+  line-height: 1.2rem;
+  font-weight: 400;
+  letter-spacing: 0.03125em;
 }
