@@ -48,7 +48,7 @@ export default (): ElementPluginType => {
                 data: { text: createValue(previewText, content.typography || "paragraph") },
                 settings: {
                     style: {
-                        padding: "20px"
+                        padding: { all: 20 }
                     }
                 },
                 ...options

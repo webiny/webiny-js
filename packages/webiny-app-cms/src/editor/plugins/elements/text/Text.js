@@ -12,7 +12,10 @@ export const className = "webiny-cms-element-text";
 
 const Text = ({ element, onChange }) => {
     return (
-        <ElementStyle {...getElementStyleProps(element)} className={className}>
+        <ElementStyle
+            {...getElementStyleProps(element)}
+            className={className}
+        >
             <ConnectedSlate elementId={element.id} onChange={onChange} />
         </ElementStyle>
     );

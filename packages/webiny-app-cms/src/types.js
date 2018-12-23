@@ -38,9 +38,7 @@ export type ElementGroupPluginType = PluginType & {
 };
 
 export type ElementPluginType = PluginType & {
-    toolbar: {
-        // Element name (used by the editor).
-        name: string,
+    toolbar?: {
         // Element title in the toolbar.
         title?: string,
         // Element group this element belongs to.
@@ -57,7 +55,7 @@ export type ElementPluginType = PluginType & {
     // A function to render an element in the editor.
     render: ({ theme: CmsThemeType, element: ElementType }) => Node,
     // A function to check if an element can be deleted.
-    canDelete: ({ element: ElementType }) => boolean,
+    canDelete?: ({ element: ElementType }) => boolean,
     // Executed when another element is dropped on the drop zones of current element.
     onReceived?: ({
         store: Store,
@@ -114,6 +112,10 @@ export type CmsMenuItemPluginType = PluginType & {
 
 export type CmsElementActionPluginType = PluginType & {
     render: ({ plugin: ElementPluginType }) => Node
+};
+
+export type CmsRenderElementStylePluginType = PluginType & {
+    renderStyle: ({ settings: Object, style: Object }) => Object
 };
 
 // ================= Redux types ===================
