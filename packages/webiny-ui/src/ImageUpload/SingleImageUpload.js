@@ -71,7 +71,12 @@ type State = {
     loading: boolean,
     error: ?FileError,
     imageEditor: {
-        image: ?SelectedFile,
+        image: ?{
+            name: string,
+            type: string,
+            size: number,
+            src: ?string
+        },
         open: boolean
     }
 };
@@ -105,7 +110,13 @@ export class SingleImageUpload extends React.Component<Props, State> {
 
     handleFiles = (images: Array<SelectedFile>) => {
         const { onChange, imageEditor } = this.props;
-        const image = { ...images[0] };
+        const image = {
+            name: images[0].name,
+            type: images[0].type,
+            size: images[0].size,
+            src: images[0].src.base64
+        };
+
         this.setState({ error: null }, () => {
             if (imageEditor && !noImageEditingTypes.includes(image.type)) {
                 this.setState({ imageEditor: { image, open: true } });
@@ -136,7 +147,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
 
         let imageEditorImageSrc = "";
         if (this.state.imageEditor.image) {
-            imageEditorImageSrc = (this.state.imageEditor.image.src.base64: any);
+            imageEditorImageSrc = (this.state.imageEditor.image.src: any);
         }
 
         const src = value ? value.src : null;
