@@ -15,29 +15,27 @@ class BlockPreview extends React.Component<*> {
         const { plugin, addBlockToContent, deactivatePlugin } = this.props;
 
         return (
-            <Elevation z={1} key={plugin.name}>
-                <Styled.Block>
-                    <Styled.Overlay>
-                        <Styled.Backdrop className={"backdrop"} />
-                        <Styled.AddBlock className={"add-block"}>
-                            <ButtonFloating
-                                label={"Click to Add"}
-                                onClick={e => {
-                                    addBlockToContent(plugin);
-                                    !e.shiftKey &&
-                                        deactivatePlugin({
-                                            name: "cms-search-blocks-bar"
-                                        });
-                                }}
-                                icon={<AddIcon />}
-                            />
-                        </Styled.AddBlock>
-                    </Styled.Overlay>
-                    <Styled.BlockPreview>{plugin.preview()}</Styled.BlockPreview>
-                    <Styled.Title>
-                        <Typography use={"overline"}>{plugin.title}</Typography>
-                    </Styled.Title>
-                </Styled.Block>
+            <Elevation z={1} key={plugin.name} className={Styled.blockStyle}>
+                <Styled.Overlay>
+                    <Styled.Backdrop className={"backdrop"} />
+                    <Styled.AddBlock className={"add-block"}>
+                        <ButtonFloating
+                            label={"Click to Add"}
+                            onClick={e => {
+                                addBlockToContent(plugin);
+                                !e.shiftKey &&
+                                    deactivatePlugin({
+                                        name: "cms-search-blocks-bar"
+                                    });
+                            }}
+                            icon={<AddIcon />}
+                        />
+                    </Styled.AddBlock>
+                </Styled.Overlay>
+                <Styled.BlockPreview>{plugin.preview()}</Styled.BlockPreview>
+                <Styled.Title>
+                    <Typography use={"overline"}>{plugin.title}</Typography>
+                </Styled.Title>
             </Elevation>
         );
     }

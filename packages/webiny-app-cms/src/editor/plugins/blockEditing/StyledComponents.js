@@ -54,7 +54,8 @@ export const BlockList = styled("div")({
     padding: 50,
     justifyContent: "space-around",
     maxWidth: 1200,
-    margin: "0 auto"
+    margin: "0 auto",
+    flexWrap: "wrap"
 });
 
 export const BlockPreview = styled("div")({
@@ -67,7 +68,7 @@ export const BlockPreview = styled("div")({
     position: "relative"
 });
 
-export const Block = styled("div")({
+export const blockStyle = css({
     position: "relative",
     width: 335,
     height: 185,
@@ -75,7 +76,8 @@ export const Block = styled("div")({
     overflow: "hidden",
     border: "1px solid var(--mdc-theme-on-background)",
     backgroundColor: "var(--mdc-theme-surface)",
-    padding: 15
+    padding: 15,
+    marginBottom: 25
 });
 
 export const Backdrop = styled("div")({
