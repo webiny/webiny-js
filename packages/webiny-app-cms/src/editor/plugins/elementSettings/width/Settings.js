@@ -2,6 +2,7 @@
 import React from "react";
 import { connect } from "webiny-app-cms/editor/redux";
 import { compose } from "recompose";
+import { get } from "lodash";
 import { set } from "dot-prop-immutable";
 
 import { Tabs, Tab } from "webiny-ui/Tabs";
@@ -45,7 +46,7 @@ class Settings extends React.Component<Props> {
         }
 
         const { element, updateElement } = this.props;
-        const attrKey = `settings.style`;
+        const attrKey = `settings.style.width`;
         const newElement = set(element, attrKey, data);
 
         updateElement({ element: newElement });
@@ -54,9 +55,11 @@ class Settings extends React.Component<Props> {
     render() {
         const { element } = this.props;
         const { settings } = element;
+        
+        const data = get(settings, "style.width", { value: "100%" });
 
         return (
-            <Form data={settings.style || { width: "100%" }} onChange={this.updateSettings}>
+            <Form data={data} onChange={this.updateSettings}>
                 {({ Bind }) => (
                     <Tabs>
                         <Tab label={"Width"}>
@@ -66,7 +69,7 @@ class Settings extends React.Component<Props> {
                                 </Cell>
                                 <Cell span={7}>
                                     <InputContainer width={"auto"} margin={0}>
-                                        <Bind name={"width"} validators={[validateWidth]}>
+                                        <Bind name={"value"} validators={[validateWidth]}>
                                             <Input />
                                         </Bind>
                                     </InputContainer>

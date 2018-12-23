@@ -13,9 +13,9 @@ import { ReactComponent as AlignBottomIcon } from "./icons/round-border_bottom-2
 
 // Icons map for dynamic render
 const icons = {
-    "flex-start": <AlignTopIcon />,
+    start: <AlignTopIcon />,
     center: <AlignCenterIcon />,
-    "flex-end": <AlignBottomIcon />
+    end: <AlignBottomIcon />
 };
 
 const VerticalAlignAction = ({ element, children, alignElement, align }: Object) => {
@@ -33,17 +33,17 @@ export default compose(
         { updateElement }
     ),
     withProps(({ element }) => ({
-        align: get(element, "settings.style.justifyContent") || "flex-start"
+        align: get(element, "settings.style.verticalAlign") || "start"
     })),
     withHandlers({
         alignElement: ({ updateElement, element, align }) => {
             return () => {
                 const alignments = Object.keys(icons);
 
-                const nextAlign = alignments[alignments.indexOf(align) + 1] || "flex-start";
+                const nextAlign = alignments[alignments.indexOf(align) + 1] || "start";
 
                 updateElement({
-                    element: set(element, "settings.style.justifyContent", nextAlign)
+                    element: set(element, "settings.style.verticalAlign", nextAlign)
                 });
             };
         }

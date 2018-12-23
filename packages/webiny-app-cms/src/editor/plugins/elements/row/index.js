@@ -63,8 +63,8 @@ export default (): ElementPluginType => {
                 elements: [],
                 settings: {
                     style: {
-                        margin: "15px",
-                        padding: "15px"
+                        margin: { all: 15 },
+                        padding: { all: 15 }
                     }
                 },
                 ...options

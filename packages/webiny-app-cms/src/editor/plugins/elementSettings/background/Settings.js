@@ -11,127 +11,48 @@ import { Cell, Grid } from "webiny-ui/Grid";
 import Select from "webiny-app-cms/editor/plugins/elementSettings/components/Select";
 import BackgroundImage from "./BackgroundImage";
 import BackgroundPositionSelector from "./BackgroundPositionSelector";
-import { omit } from "lodash";
 import { css } from "emotion";
 
 const imageSelect = css({
     width: "100%"
 });
 
-const backgroundStyles = {
-    scaling: {
-        cover: {
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat"
-        },
-        contain: {
-            backgroundSize: "contain",
-            backgroundRepeat: "no-repeat"
-        },
-        originalSize: {
-            backgroundSize: "auto",
-            backgroundRepeat: "no-repeat"
-        },
-        tile: {
-            backgroundSize: "auto",
-            backgroundRepeat: "repeat"
-        },
-        tileHorizontally: {
-            backgroundSize: "auto",
-            backgroundRepeat: "repeat-x"
-        },
-        tileVertically: {
-            backgroundSize: "auto",
-            backgroundRepeat: "repeat-y"
-        }
-    }
-};
+const root = "settings.style.background";
 
 class Settings extends React.Component<*> {
-    image = {
-        setImage: image => {
-            const { element, updateElement } = this.props;
+    setImage = image => {
+        const { element, updateElement } = this.props;
 
-            let style = { ...element.settings.style };
-            if (image) {
-                style = {
-                    ...style,
-                    ...backgroundStyles.scaling.cover,
-                    backgroundImage: `url("${image.src}")`,
-                    backgroundPosition: "center center"
-                };
-            } else {
-                style = omit(style, ["backgroundImage", "backgroundSize", "backgroundRepeat"]);
-            }
-
-            updateElement({
-                element: set(element, "settings.style", style),
-                history: true
-            });
-        },
-        getSrcFromCss: (value: ?string): ?Object => {
-            if (!value) {
-                return null;
-            }
-
-            const match = value.match(/url\("(.*?)"\)/);
-            return { src: Array.isArray(match) ? match[1] : "" };
-        },
-        setScaling: (value: string) => {
-            const { element, updateElement } = this.props;
-
-            const style = {
-                ...element.settings.style,
-                ...backgroundStyles.scaling[value]
-            };
-            updateElement({
-                element: set(element, "settings.style", style),
-                history: true
-            });
-        },
-        getScaling: () => {
-            const style = get(this.props.element, "settings.style") || {};
-            if (style.backgroundSize !== "auto") {
-                return style.backgroundSize;
-            }
-
-            switch (style.backgroundRepeat) {
-                case "no-repeat":
-                    return "originalSize";
-                case "repeat":
-                    return "tile";
-                case "repeat-x":
-                    return "tileHorizontally";
-                case "repeat-y":
-                    return "tileVertically";
-                default:
-                    return "auto";
-            }
-        },
-        setPosition: (backgroundPosition: string) => {
-            const { element, updateElement } = this.props;
-            updateElement({
-                element: set(element, "settings.style", {
-                    ...element.settings.style,
-                    backgroundPosition
-                }),
-                history: true
-            });
-        },
-        getPosition: () => {
-            const { element } = this.props;
-            return get(element, "settings.style.backgroundPosition");
-        }
+        updateElement({
+            element: set(element, `${root}.image.src`, image ? image.src : null),
+            history: true
+        });
     };
 
-    color = {
-        setColor: (value, history) => {
-            const { element, updateElement } = this.props;
-            updateElement({
-                element: set(element, "settings.style.backgroundColor", value),
-                history
-            });
-        }
+    setScaling = (value: string) => {
+        const { element, updateElement } = this.props;
+
+        updateElement({
+            element: set(element, `${root}.image.scaling`, value),
+            history: true
+        });
+    };
+
+    setPosition = (position: string) => {
+        const { element, updateElement } = this.props;
+
+        updateElement({
+            element: set(element, `${root}.image.position`, position),
+            history: true
+        });
+    };
+
+    setColor = (value, history) => {
+        const { element, updateElement } = this.props;
+        updateElement({
+            element: set(element, `${root}.color`, value),
+            history
+        });
     };
 
     render() {
@@ -139,7 +60,8 @@ class Settings extends React.Component<*> {
             element: { settings }
         } = this.props;
 
-        const hasBackgroundImage = get(settings, "style.backgroundImage");
+        const bg = get(settings, "style.background");
+        const hasImage = get(bg, "image.src");
 
         return (
             <React.Fragment>
@@ -148,9 +70,9 @@ class Settings extends React.Component<*> {
                         <Grid>
                             <Cell span={12}>
                                 <ColorPicker
-                                    value={get(settings, "style.backgroundColor", "#fff")}
-                                    onChange={value => this.color.setColor(value, false)}
-                                    onChangeComplete={value => this.color.setColor(value)}
+                                    value={get(bg, "color", "#fff")}
+                                    onChange={value => this.setColor(value, false)}
+                                    onChangeComplete={value => this.setColor(value)}
                                 />
                             </Cell>
                         </Grid>
@@ -160,19 +82,17 @@ class Settings extends React.Component<*> {
                             <Cell span={12}>
                                 <BackgroundImage
                                     className={imageSelect}
-                                    onChange={this.image.setImage}
-                                    value={this.image.getSrcFromCss(
-                                        get(settings, "style.backgroundImage")
-                                    )}
+                                    onChange={this.setImage}
+                                    value={{ src: hasImage ? bg.image.src : "" }}
                                 />
                             </Cell>
                         </Grid>
                         <Grid>
                             <Select
-                                disabled={!hasBackgroundImage}
+                                disabled={!hasImage}
                                 label="Scaling"
-                                value={this.image.getScaling()}
-                                updateValue={this.image.setScaling}
+                                value={get(bg, "image.scaling")}
+                                updateValue={this.setScaling}
                             >
                                 <option value="cover">Cover</option>
                                 <option value="contain">Contain</option>
@@ -185,9 +105,9 @@ class Settings extends React.Component<*> {
                         <Grid>
                             <Cell span={12}>
                                 <BackgroundPositionSelector
-                                    disabled={!hasBackgroundImage}
-                                    value={this.image.getPosition()}
-                                    onChange={this.image.setPosition}
+                                    disabled={!hasImage}
+                                    value={get(bg, "image.position")}
+                                    onChange={this.setPosition}
                                 />
                             </Cell>
                         </Grid>
