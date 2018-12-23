@@ -82,16 +82,6 @@ const userSettings: EntityPluginType = {
     }
 };
 
-const generalSettings: EntityPluginType = {
-    name: "entity-general-settings",
-    type: "entity",
-    namespace: "api",
-    entity: {
-        name: "GeneralSettings",
-        factory: entities.generalSettingsFactory
-    }
-};
-
 export default [
     apiToken,
     group,
@@ -100,6 +90,5 @@ export default [
     roles2entities,
     settings,
     user,
-    userSettings,
-    generalSettings
+    userSettings
 ];

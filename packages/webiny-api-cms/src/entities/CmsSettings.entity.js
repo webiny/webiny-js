@@ -3,6 +3,16 @@ import { settingsFactory } from "webiny-api/entities";
 
 import { Model } from "webiny-model";
 import { EntityModel } from "webiny-entity";
+import FileModel from "webiny-api/entities/File.model";
+
+class SocialMedia extends Model {
+    constructor() {
+        super();
+        this.attr("facebook").char();
+        this.attr("twitter").char();
+        this.attr("instagram").char();
+    }
+}
 
 const cmsSettingsPagesModelFactory = (settings, { cms: { entities } }) => {
     return class CmsSettingsModel extends EntityModel {
@@ -21,11 +31,15 @@ const cmsSettingsModelFactory = (...args) => {
         constructor() {
             super();
             this.attr("pages").model(cmsSettingsPagesModelFactory(...args));
+            this.attr("name").char();
+            this.attr("favicon").model(FileModel);
+            this.attr("logo").model(FileModel);
+            this.attr("social").model(SocialMedia);
         }
     };
 };
 
-export const cmsSettingsFactory = (...args) => {
+export const cmsSettingsFactory = (...args: Array<*>) => {
     return class CmsSettings extends settingsFactory(...args) {
         static key = "cms";
 
