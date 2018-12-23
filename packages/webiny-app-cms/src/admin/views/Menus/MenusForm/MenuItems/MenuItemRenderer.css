@@ -342,3 +342,6 @@
     right: 50%;
     left: initial;
 }
+.rst__lineHalfHorizontalRight::before, .rst__lineFullVertical::after, .rst__lineHalfVerticalTop::after, .rst__lineHalfVerticalBottom::after, .rst__lineChildren::after{
+    background-color: var(--mdc-theme-on-surface);
+}
