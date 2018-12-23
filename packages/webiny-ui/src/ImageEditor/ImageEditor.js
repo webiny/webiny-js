@@ -39,6 +39,8 @@ const Toolbar = styled("div")({
     padding: 2,
     position: "absolute",
     width: "100%",
+    boxSizing: "border-box",
+    zIndex: 10,
     "> div.disabled": {
         opacity: 0.5,
         pointerEvents: "none"
@@ -46,7 +48,7 @@ const Toolbar = styled("div")({
 });
 
 const ToolOptions = styled("div")({
-    margin: "0 -24px 10px -24px",
+    margin: "25px -24px 10px -24px",
     boxSizing: "border-box",
     padding: 10,
     backgroundColor: "var(--mdc-theme-background)",
