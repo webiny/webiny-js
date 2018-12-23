@@ -7,7 +7,17 @@ export default [
         type: "schema-settings",
         namespace: "cms",
         typeDefs: /* GraphQL */ `
+            type CmsSocialMedia {
+                facebook: String
+                twitter: String
+                instagram: String
+            }
+
             type CmsSettings {
+                name: String
+                favicon: File
+                logo: File
+                social: CmsSocialMedia
                 pages: CmsSettingsPages
             }
 
@@ -22,12 +32,22 @@ export default [
                 title: String
             }
 
+            input CmsSocialMediaInput {
+                facebook: String
+                twitter: String
+                instagram: String
+            }
+
             input CmsDefaultPageInput {
                 id: String
                 title: String
             }
 
             input CmsSettingsInput {
+                name: String
+                favicon: FileInput
+                logo: FileInput
+                social: CmsSocialMediaInput
                 pages: CmsSettingsPagesInput
             }
 

@@ -49,7 +49,7 @@ const SimpleForm = (props: { children: React.Node, noElevation?: boolean }) => {
 
 const SimpleFormHeader = (props: {
     title: string,
-    icon: React.Element<any>,
+    icon?: React.Element<any>,
     children?: React.Node
 }) => {
     return (

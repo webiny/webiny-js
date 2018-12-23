@@ -21,7 +21,7 @@ export type HeaderMiddlePlugin = PluginType & {
 
 export type SettingsPluginType = PluginType & {
     settings: {
-        type?: "app" | "integration",
+        type?: "app" | "integration" | "other",
         component: Element<any>,
         route: {
             name: string,

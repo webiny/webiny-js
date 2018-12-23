@@ -27,7 +27,7 @@ const GeneralSettings = ({ showSnackbar }) => {
                             onSubmit={async data => {
                                 await update({
                                     variables: {
-                                        data: data.general
+                                        data: data.cms
                                     }
                                 });
                                 showSnackbar("Settings updated successfully.");
@@ -41,7 +41,7 @@ const GeneralSettings = ({ showSnackbar }) => {
                                             <Cell span={6}>
                                                 <Grid>
                                                     <Cell span={12}>
-                                                        <Bind name={"general.name"}>
+                                                        <Bind name={"cms.name"}>
                                                             <Input
                                                                 validators={["required", "url"]}
                                                                 label="Website name"
@@ -49,12 +49,12 @@ const GeneralSettings = ({ showSnackbar }) => {
                                                         </Bind>
                                                     </Cell>
                                                     <Cell span={6}>
-                                                        <Bind name={"general.favicon"}>
+                                                        <Bind name={"cms.favicon"}>
                                                             <Image label="Favicon" />
                                                         </Bind>
                                                     </Cell>
                                                     <Cell span={6}>
-                                                        <Bind name={"general.logo"}>
+                                                        <Bind name={"cms.logo"}>
                                                             <Image label="Logo" />
                                                         </Bind>
                                                     </Cell>
@@ -65,7 +65,7 @@ const GeneralSettings = ({ showSnackbar }) => {
                                                 <Grid>
                                                     <Cell span={12}>
                                                         <Bind
-                                                            name={"general.social.facebook"}
+                                                            name={"cms.social.facebook"}
                                                             validators={["url"]}
                                                         >
                                                             <Input label="Facebook" />
@@ -73,7 +73,7 @@ const GeneralSettings = ({ showSnackbar }) => {
                                                     </Cell>
                                                     <Cell span={12}>
                                                         <Bind
-                                                            name={"general.social.twitter"}
+                                                            name={"cms.social.twitter"}
                                                             validators={["url"]}
                                                         >
                                                             <Input label="Twitter" />
@@ -81,7 +81,7 @@ const GeneralSettings = ({ showSnackbar }) => {
                                                     </Cell>
                                                     <Cell span={12}>
                                                         <Bind
-                                                            name={"general.social.instagram"}
+                                                            name={"cms.social.instagram"}
                                                             validators={["url"]}
                                                         >
                                                             <Input label="Instagram" />

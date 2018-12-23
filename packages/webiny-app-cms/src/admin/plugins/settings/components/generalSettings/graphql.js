@@ -22,14 +22,14 @@ const graphql = {
     query: gql`
             query getSettings {
                 settings {
-                    general ${fields}
+                    cms ${fields}
                 }
             }
         `,
     mutation: gql`
-            mutation updateSettings($data: GeneralSettingsInput) {
+            mutation updateSettings($data: CmsSettingsInput) {
                 settings {
-                    general(data: $data) ${fields}
+                    cms(data: $data) ${fields}
                 }
             }
         `
