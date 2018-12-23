@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import type { FormComponentProps } from "./../types";
-import { FileBrowser, type FileBrowserFile, type FileError } from "webiny-ui/FileBrowser";
+import BrowseFiles, { type SelectedFile, type FileError } from "react-browse-files";
 import { FormElementMessage } from "webiny-ui/FormElementMessage";
 import styled from "react-emotion";
 import classNames from "classnames";
@@ -61,7 +61,9 @@ type Props = FormComponentProps & {
     errorMessages: {
         maxSizeExceeded: string,
         unsupportedFileType: string,
-        default: string
+        default: string,
+        multipleNotAllowed: string,
+        multipleMaxSizeExceeded: string
     }
 };
 
@@ -69,7 +71,12 @@ type State = {
     loading: boolean,
     error: ?FileError,
     imageEditor: {
-        image: ?FileBrowserFile,
+        image: ?{
+            name: string,
+            type: string,
+            size: number,
+            src: ?string
+        },
         open: boolean
     }
 };
@@ -85,6 +92,8 @@ export class SingleImageUpload extends React.Component<Props, State> {
         showRemoveImageButton: true,
         errorMessages: {
             maxSizeExceeded: "Max size exceeded.",
+            multipleMaxSizeExceeded: "Selected fields exceed max file size.",
+            multipleNotAllowed: "Multiple selection not allowed.",
             unsupportedFileType: "Unsupported file type.",
             default: "An error occurred."
         }
@@ -99,10 +108,16 @@ export class SingleImageUpload extends React.Component<Props, State> {
         }
     };
 
-    handleFiles = async (images: Array<FileBrowserFile>) => {
+    handleFiles = (images: Array<SelectedFile>) => {
         const { onChange, imageEditor } = this.props;
-        const image = { ...images[0] };
-        this.setState({ error: null }, async () => {
+        const image = {
+            name: images[0].name,
+            type: images[0].type,
+            size: images[0].size,
+            src: images[0].src.base64
+        };
+
+        this.setState({ error: null }, () => {
             if (imageEditor && !noImageEditingTypes.includes(image.type)) {
                 this.setState({ imageEditor: { image, open: true } });
             } else {
@@ -168,27 +183,26 @@ export class SingleImageUpload extends React.Component<Props, State> {
                         });
                     }}
                 />
-                <FileBrowser accept={accept} maxSize={maxSize} convertToBase64>
-                    {({ browseFiles }) => {
-                        const openBrowseFiles = () => {
-                            browseFiles({
-                                onSuccess: files => this.handleFiles(files),
-                                onErrors: errors => this.handleErrors(errors)
-                            });
-                        };
-
-                        return (
+                <BrowseFiles
+                    accept={accept}
+                    maxSize={maxSize}
+                    convertToBase64
+                    onSuccess={this.handleFiles}
+                    onErrors={this.handleErrors}
+                >
+                    {({ browseFiles, getDropZoneProps }) => (
+                        <div {...getDropZoneProps()}>
                             <Image
                                 img={img}
                                 loading={this.state.loading}
                                 value={value}
                                 removeImage={showRemoveImageButton ? onChange : null}
-                                uploadImage={openBrowseFiles}
-                                editImage={openBrowseFiles}
+                                uploadImage={browseFiles}
+                                editImage={browseFiles}
                             />
-                        );
-                    }}
-                </FileBrowser>
+                        </div>
+                    )}
+                </BrowseFiles>
 
                 {validation.isValid === false && (
                     <FormElementMessage error>{validation.message}</FormElementMessage>

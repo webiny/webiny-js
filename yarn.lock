@@ -16240,6 +16240,13 @@ react-app-rewired@^1.5.2:
     cross-spawn "^5.1.0"
     dotenv "^4.0.0"
 
+react-browse-files@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/react-browse-files/-/react-browse-files-1.0.9.tgz#10576a0d253a93f376db9afb98a538aba58aa101"
+  integrity sha512-Eae1456TRoZBW5MRBk+8HZhBJDoV4kYwVYWlzWy417P64kqYs1r1aBxtTMupYNTbYsObqEvk+AYVUB63ErV/xw==
+  dependencies:
+    bytes "^3.0.0"
+
 react-color@^2.14.1:
   version "2.14.1"
   resolved "https://registry.yarnpkg.com/react-color/-/react-color-2.14.1.tgz#db8ad4f45d81e74896fc2e1c99508927c6d084e0"
