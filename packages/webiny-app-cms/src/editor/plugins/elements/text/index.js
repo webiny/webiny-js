@@ -39,7 +39,7 @@ export default (): ElementPluginType => {
             ""
         ],
         target: ["cms-element-column", "cms-element-row", "cms-element-list-item"],
-        create({ content = {}, ...options }) {
+        create({ content = {}, ...options }: Object) {
             const previewText = content.text || loremIpsum(content.lipsum || defaultLipsum);
 
             return {
