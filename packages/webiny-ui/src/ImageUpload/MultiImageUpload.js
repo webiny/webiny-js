@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import type { FormComponentProps } from "./../types";
-import { FileBrowser, type FileBrowserFile, type FileError } from "webiny-ui/FileBrowser";
+import BrowseFiles, { type FileBrowserFile, type FileError } from "react-browse-files";
 import { css } from "emotion";
 import classNames from "classnames";
 import { FormElementMessage } from "webiny-ui/FormElementMessage";
@@ -122,7 +122,7 @@ class MultiImageUpload extends React.Component<Props, State> {
                 for (let i = 0; i < images.length; i++) {
                     const image = images[i];
                     convertedImages.push({
-                        src: image.src,
+                        src: image.src.base64,
                         name: image.name,
                         size: image.size,
                         type: image.type
@@ -207,53 +207,61 @@ class MultiImageUpload extends React.Component<Props, State> {
                     }}
                 />
 
-                <FileBrowser accept={accept} maxSize={maxSize} multiple convertToBase64>
-                    {({ browseFiles }) => {
+                <BrowseFiles
+                    accept={accept}
+                    maxSize={maxSize}
+                    multiple
+                    convertToBase64
+                    onSuccess={files => {
+                        this.handleSelectedImages(files, Array.isArray(value) ? value.length : 0);
+                    }}
+                    onErrors={errors => this.handleErrors(errors)}
+                >
+                    {({ browseFiles, getDropZoneProps }) => {
                         const images = Array.isArray(value) ? [...value] : [];
 
                         return (
-                            <div className={classNames({ disabled })}>
+                            <div {...getDropZoneProps({ className: classNames({ disabled }) })}>
                                 <ul className="images">
-                                    {images.map((image, index) => {
-                                        return (
-                                            <li key={index}>
-                                                <Image
-                                                    loading={
-                                                        this.state.selectedImages[index] &&
-                                                        this.state.loading
-                                                    }
-                                                    value={image.file || image}
-                                                    removeImage={() =>
-                                                        this.removeImage(image.file || image)
-                                                    }
-                                                    editImage={
-                                                        this.state.selectedImages[index] &&
-                                                        (() => {
-                                                            this.setState({
-                                                                imageEditor: {
-                                                                    index,
-                                                                    open: true,
-                                                                    image: this.state
-                                                                        .selectedImages[index]
-                                                                }
-                                                            });
-                                                        })
-                                                    }
-                                                    uploadImage={() => {
-                                                        browseFiles({
-                                                            onSuccess: files =>
-                                                                this.handleSelectedImages(
-                                                                    files,
-                                                                    index + 1
-                                                                ),
-                                                            onErrors: errors =>
-                                                                this.handleErrors(errors)
+                                    {images.map((image, index) => (
+                                        <li key={index}>
+                                            <Image
+                                                loading={
+                                                    this.state.selectedImages[index] &&
+                                                    this.state.loading
+                                                }
+                                                value={image.file || image}
+                                                removeImage={() =>
+                                                    this.removeImage(image.file || image)
+                                                }
+                                                editImage={
+                                                    this.state.selectedImages[index] &&
+                                                    (() => {
+                                                        this.setState({
+                                                            imageEditor: {
+                                                                index,
+                                                                open: true,
+                                                                image: this.state.selectedImages[
+                                                                    index
+                                                                ]
+                                                            }
                                                         });
-                                                    }}
-                                                />
-                                            </li>
-                                        );
-                                    })}
+                                                    })
+                                                }
+                                                uploadImage={() => {
+                                                    browseFiles({
+                                                        onSuccess: files =>
+                                                            this.handleSelectedImages(
+                                                                files,
+                                                                index + 1
+                                                            ),
+                                                        onErrors: errors =>
+                                                            this.handleErrors(errors)
+                                                    });
+                                                }}
+                                            />
+                                        </li>
+                                    ))}
                                     <li>
                                         <Image
                                             disabled={this.state.loading}
@@ -273,7 +281,7 @@ class MultiImageUpload extends React.Component<Props, State> {
                             </div>
                         );
                     }}
-                </FileBrowser>
+                </BrowseFiles>
 
                 {validation.isValid === false && (
                     <FormElementMessage error>{validation.message}</FormElementMessage>

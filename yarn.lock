@@ -16240,10 +16240,10 @@ react-app-rewired@^1.5.2:
     cross-spawn "^5.1.0"
     dotenv "^4.0.0"
 
-react-browse-files@^1.0.8:
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/react-browse-files/-/react-browse-files-1.0.8.tgz#8e7ff6ece30b293a2d798721acdf3dfd91f706c3"
-  integrity sha512-tnQ8ls6BgsEZt9YvznmUhl++A3+l9hfJeYHuMuAWfcxpnZj+CTQag2bFIJx1GIi1FLTpEllXucL9IZzY/SFVRQ==
+react-browse-files@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/react-browse-files/-/react-browse-files-1.0.9.tgz#10576a0d253a93f376db9afb98a538aba58aa101"
+  integrity sha512-Eae1456TRoZBW5MRBk+8HZhBJDoV4kYwVYWlzWy417P64kqYs1r1aBxtTMupYNTbYsObqEvk+AYVUB63ErV/xw==
   dependencies:
     bytes "^3.0.0"
 
