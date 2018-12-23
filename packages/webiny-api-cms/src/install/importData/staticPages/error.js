@@ -15,12 +15,12 @@ export default {
                     {
                         id: "E0j-dyOuLN",
                         data: {},
-                        settings: { style: { margin: "15px", padding: "15px" } },
+                        settings: { style: { margin: { all: 15 }, padding: { all: 15 } } },
                         elements: [
                             {
                                 id: "iwpwZYraMw",
                                 data: { width: 100 },
-                                settings: { style: { margin: "20px" } },
+                                settings: { style: { margin: { all: 20 } } },
                                 elements: [
                                     {
                                         id: "zACl76J1b",
@@ -53,7 +53,7 @@ export default {
                                                 }
                                             }
                                         },
-                                        settings: { style: { padding: "20px" } },
+                                        settings: { style: { padding: { all: 20 } } },
                                         elements: [],
                                         path: "0.0.0.0.0",
                                         type: "cms-element-text"

@@ -2,6 +2,8 @@
 import React from "react";
 import { get } from "dot-prop-immutable";
 import { isEqual } from "lodash";
+import { getPlugins } from "webiny-plugins";
+import type { CmsRenderElementStylePluginType } from "webiny-app-cms/types";
 
 const Node = "div";
 
@@ -10,6 +12,12 @@ const combineClassNames = (...styles) => {
 };
 
 class ElementStyle extends React.Component<*> {
+    plugins: Array<CmsRenderElementStylePluginType>;
+    constructor() {
+        super();
+        this.plugins = getPlugins("cms-render-element-style");
+    }
+
     shouldComponentUpdate(props: Object) {
         return (
             !isEqual(props.elementStyle, this.props.elementStyle) ||
@@ -27,7 +35,11 @@ class ElementStyle extends React.Component<*> {
             children,
             className = null
         } = this.props;
-        const finalStyle = { ...style, ...elementStyle };
+
+        const finalStyle = this.plugins.reduce((style, pl) => {
+            return pl.renderStyle({ settings: elementStyle, style });
+        }, style);
+        
         const { classNames = "" } = advancedStyle;
 
         const getAllClasses = (...extraClasses) => {

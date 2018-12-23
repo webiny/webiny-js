@@ -39,7 +39,7 @@ export default (): ElementPluginType => {
             ""
         ],
         target: ["cms-element-column", "cms-element-row", "cms-element-list-item"],
-        create({ content = {}, ...options }) {
+        create({ content = {}, ...options }: Object) {
             const previewText = content.text || loremIpsum(content.lipsum || defaultLipsum);
 
             return {
@@ -48,7 +48,7 @@ export default (): ElementPluginType => {
                 data: { text: createValue(previewText, content.typography || "paragraph") },
                 settings: {
                     style: {
-                        padding: "20px"
+                        padding: { all: 20 }
                     }
                 },
                 ...options

@@ -31,10 +31,10 @@ const Settings = (props: Props) => {
     } = props;
     const { settings } = element;
 
-    const borderWidth = get(settings, "style.borderWidth", 0);
-    const borderRadius = get(settings, "style.borderRadius", 0);
-    const borderColor = get(settings, "style.borderColor", "#fff");
-    const borderStyle = get(settings, "style.borderStyle", "none");
+    const borderWidth = get(settings, "style.border.width", 0);
+    const borderRadius = get(settings, "style.border.radius", 0);
+    const borderColor = get(settings, "style.border.color", "#fff");
+    const borderStyle = get(settings, "style.border.style", "none");
 
     return (
         <React.Fragment>
@@ -92,7 +92,7 @@ export default compose(
             const historyUpdated = {};
 
             return (name, value, history = true) => {
-                const attrKey = `settings.style.${name}`;
+                const attrKey = `settings.style.border.${name}`;
 
                 if (!history) {
                     updateElement({ element: set(element, attrKey, value), history });
@@ -108,18 +108,18 @@ export default compose(
     }),
     withHandlers({
         updateBorderStyle: ({ updateSettings }) => (value: string) =>
-            updateSettings("borderStyle", value),
+            updateSettings("style", value),
         updateBorderRadius: ({ updateSettings }) => (value: string) =>
-            updateSettings("borderRadius", value),
+            updateSettings("radius", value),
         updateBorderRadiusPreview: ({ updateSettings }) => (value: string) =>
-            updateSettings("borderRadius", value, false),
+            updateSettings("radius", value, false),
         updateBorderColor: ({ updateSettings }) => (value: string) =>
-            updateSettings("borderColor", value),
+            updateSettings("color", value),
         updateBorderColorPreview: ({ updateSettings }) => (value: string) =>
-            updateSettings("borderColor", value, false),
+            updateSettings("color", value, false),
         updateBorderWidth: ({ updateSettings }) => (value: string) =>
-            updateSettings("borderWidth", value),
+            updateSettings("width", value),
         updateBorderWidthPreview: ({ updateSettings }) => (value: string) =>
-            updateSettings("borderWidth", value, false)
+            updateSettings("width", value, false)
     })
 )(Settings);
