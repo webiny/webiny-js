@@ -32,6 +32,10 @@ const Content = ({ page }: { page: Object }) => {
                     <meta key={index} name={name} content={content} />
                 ))}
 
+                {social.image && social.image.src && (
+                    <meta property="og:image" content={social.image.src} />
+                )}
+
                 {social.title && <meta property="og:title" content={social.title} />}
                 {social.description && (
                     <meta property="og:description" content={social.description} />
