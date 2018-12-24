@@ -16,7 +16,7 @@ import { ReactComponent as CreateRevision } from "./icons/round-add-24px.svg";
 type Props = WithPageDetailsProps & WithRouterProps & { gqlCreate: Function } & WithSnackbarProps;
 
 const EditRevision = ({ pageDetails: { page }, router, gqlCreate, showSnackbar }: Props) => {
-    const unpublishedRevision = page.revisions.find(item => !item.published);
+    const unpublishedRevision = page.revisions.find(item => !item.published && !item.locked);
     if (unpublishedRevision) {
         return (
             <Tooltip content={"Edit"} placement={"top"}>
