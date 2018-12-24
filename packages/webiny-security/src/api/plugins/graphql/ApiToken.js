@@ -5,7 +5,7 @@ import {
     resolveGet,
     resolveList,
     resolveUpdate
-} from "webiny-security/api/graphql";
+} from "webiny-api/graphql";
 
 const apiTokenFetcher = ctx => ctx.api.entities.ApiToken;
 

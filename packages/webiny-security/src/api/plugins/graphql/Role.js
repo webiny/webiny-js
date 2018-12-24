@@ -5,7 +5,7 @@ import {
     resolveGet,
     resolveList,
     resolveUpdate
-} from "webiny-security/api/graphql";
+} from "webiny-api/graphql";
 
 const roleFetcher = ctx => ctx.api.entities.Role;
 

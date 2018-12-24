@@ -10,6 +10,7 @@ export default [
         name: "security-menu",
         type: "menu",
         render({ Menu }: Object) {
+            // TODO: @@@ttt123123@@@
             // TODO: icon={<SecurityIcon />}
             return (
                 <Menu label={t`Security`}>

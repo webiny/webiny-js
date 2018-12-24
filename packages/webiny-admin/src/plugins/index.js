@@ -18,6 +18,8 @@ import Help from "webiny-admin/plugins/UserMenu/plugins/Help";
 import SendFeedback from "webiny-admin/plugins/UserMenu/plugins/Feedback";
 import createDivider from "webiny-admin/plugins/UserMenu/plugins/Divider";
 
+import init from "./init";
+
 export default [
     // Layout plugins
     Header,
@@ -35,5 +37,6 @@ export default [
     DarkMode,
     Help,
     SendFeedback,
-    createDivider()
+    createDivider(),
+    ...init
 ];

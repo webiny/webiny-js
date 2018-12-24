@@ -1,11 +1,11 @@
 // @flow
-import { dummyResolver } from "../graphql";
+import { dummyResolver } from "webiny-api/graphql";
 import role from "./graphql/Role";
 import group from "./graphql/Group";
 import user from "./graphql/User";
 import apiToken from "./graphql/ApiToken";
 import { getPlugins } from "webiny-plugins";
-import { type GraphQLSchemaPluginType } from "webiny-security/api/types";
+import { type GraphQLSchemaPluginType } from "webiny-api/types";
 
 export default ({
     type: "graphql",
