@@ -3,7 +3,7 @@ import { hot } from "react-hot-loader";
 import React from "react";
 import { Webiny, Router } from "webiny-app";
 import { addPlugin } from "webiny-plugins";
-import { app as adminApp, Theme as AdminTheme } from "webiny-admin";
+import { Theme as AdminTheme } from "webiny-admin";
 import { app as cmsApp } from "webiny-app-cms/admin";
 import { CmsProvider } from "webiny-app-cms/context";
 import myTheme from "demo-theme";
@@ -16,7 +16,6 @@ import plugins from "./plugins";
 addPlugin(...plugins);
 
 // Initialize apps
-adminApp();
 cmsApp();
 
 const App = () => {

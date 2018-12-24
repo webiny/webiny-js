@@ -1,16 +1,14 @@
 //@flow
 import React from "react";
-import { ReactComponent as SignOutIcon } from "webiny-admin/assets/icons/round-lock_open-24px.svg";
+import { ReactComponent as SignOutIcon } from "webiny-security/admin/assets/icons/round-lock_open-24px.svg";
 import { ListItem, ListItemGraphic } from "webiny-ui/List";
 import { Icon } from "webiny-ui/Icon";
-import { withSecurity } from "webiny-admin/components";
+import { withSecurity } from "webiny-security/admin/components";
 
 const SignOut = (props: Object) => {
     return (
         <ListItem onClick={() => props.security.logout()}>
-            <ListItemGraphic>
-                <Icon icon={<SignOutIcon />} />
-            </ListItemGraphic>
+            <ListItemGraphic>{/*<Icon icon={<SignOutIcon />} />*/}</ListItemGraphic>
             Sign out
         </ListItem>
     );

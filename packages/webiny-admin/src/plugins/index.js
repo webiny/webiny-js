@@ -10,15 +10,12 @@ import dialog from "webiny-admin/plugins/Dialog";
 import Menu from "webiny-admin/plugins/Menu";
 import Logo from "webiny-admin/plugins/Logo";
 import UserMenu from "webiny-admin/plugins/UserMenu";
-import { globalSearch, globalSearchUsers } from "webiny-admin/plugins/GlobalSearch";
+import { globalSearch } from "webiny-admin/plugins/GlobalSearch";
 
 // User menu plugins
-import UserInfo from "webiny-admin/plugins/UserMenu/plugins/UserInfo";
-import UserImage from "webiny-admin/plugins/UserMenu/plugins/UserImage";
 import DarkMode from "webiny-admin/plugins/UserMenu/plugins/DarkMode";
 import Help from "webiny-admin/plugins/UserMenu/plugins/Help";
 import SendFeedback from "webiny-admin/plugins/UserMenu/plugins/Feedback";
-import SignOut from "webiny-admin/plugins/UserMenu/plugins/SignOut";
 import createDivider from "webiny-admin/plugins/UserMenu/plugins/Divider";
 
 export default [
@@ -35,13 +32,8 @@ export default [
     Logo,
     UserMenu,
     globalSearch,
-    globalSearchUsers,
-    // UserMenu plugins
-    UserImage,
-    UserInfo,
     DarkMode,
     Help,
     SendFeedback,
-    createDivider(),
-    SignOut
+    createDivider()
 ];

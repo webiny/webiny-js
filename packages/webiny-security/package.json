@@ -20,7 +20,8 @@
     "md5": "^2.2.1",
     "webiny-plugins": "0.0.0",
     "webiny-sql-table-mysql": "0.0.0",
-    "webiny-sql-table-sync": "0.0.0"
+    "webiny-sql-table-sync": "0.0.0",
+    "@svgr/webpack": "^4.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
@@ -39,5 +40,10 @@
     "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
     "flow-copy-source": "flow-copy-source src ${DEST:-build}",
     "postbuild": "yarn flow-copy-source"
+  },
+  "svgo": {
+    "plugins": {
+      "removeViewBox": false
+    }
   }
 }

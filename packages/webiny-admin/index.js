@@ -1,3 +1,2 @@
 // @flow
-
-export { app, Theme } from "./src";
+export { Theme } from "./src";

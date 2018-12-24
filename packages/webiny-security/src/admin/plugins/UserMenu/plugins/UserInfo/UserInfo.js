@@ -1,12 +1,11 @@
 //@flow
 import React from "react";
 import { css } from "emotion";
-import { withSecurity } from "webiny-admin/components";
+import { withSecurity, type WithSecurityProps } from "webiny-security/admin/components";
 import { ListItem, ListItemGraphic } from "webiny-ui/List";
 import { Typography } from "webiny-ui/Typography";
 import { Link } from "webiny-app/router";
 import { Avatar } from "webiny-ui/Avatar";
-import type { WithSecurityProps } from "webiny-admin/components";
 
 const avatarImage = css({
     height: "40px !important",

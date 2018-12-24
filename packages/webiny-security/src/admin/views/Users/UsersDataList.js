@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import { i18n } from "webiny-app/i18n";
-import { withSecurity, type WithSecurityProps } from "webiny-admin/components";
+import { withSecurity, type WithSecurityProps } from "webiny-security/admin/components";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import { Tooltip } from "webiny-ui/Tooltip";
 import type { WithCrudListProps } from "webiny-admin/components";
