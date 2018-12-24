@@ -132,8 +132,15 @@ export const pageFactory = (context: Object): Class<IPage> => {
                 }
 
                 this.createdBy = user.id;
-                this.title = this.title || "Untitled";
-                this.url = (await this.category).url + "untitled-" + this.id;
+
+                if (!this.title) {
+                    this.title = "Untitled";
+                }
+
+                if (!this.url) {
+                    this.url = (await this.category).url + "untitled-" + this.id;
+                }
+
                 this.version = await this.getNextVersion();
 
                 this.settings = {
