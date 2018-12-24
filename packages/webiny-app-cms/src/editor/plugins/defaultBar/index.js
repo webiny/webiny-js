@@ -1,9 +1,10 @@
 //@flow
 import React from "react";
 import { get } from "lodash";
-import { IconButton, ButtonPrimary } from "webiny-ui/Button";
+import { IconButton } from "webiny-ui/Button";
 import PageSettings from "./components/PageSettings";
 import PageSettingsButton from "./components/PageSettingsButton";
+import PublishPageButton from "./components/PublishPageButton";
 import Divider from "./components/Divider";
 import Title from "./components/Title";
 import BackButton from "./components/BackButton";
@@ -54,7 +55,7 @@ export default [
         name: "cms-default-bar-publish-button",
         type: "cms-default-bar-right",
         render() {
-            return <ButtonPrimary>Publish</ButtonPrimary>;
+            return <PublishPageButton />;
         }
     },
     {
