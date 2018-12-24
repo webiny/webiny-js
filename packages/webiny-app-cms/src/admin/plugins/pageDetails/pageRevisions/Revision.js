@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import { compose, withProps, withState, withHandlers } from "recompose";
+import { compose } from "recompose";
 import { css } from "emotion";
 import TimeAgo from "timeago-react";
 import {
@@ -58,7 +58,6 @@ const getIcon = (rev: Object) => {
 
 const Revision = ({
     rev,
-    pageDetails: { page },
     createRevision,
     editRevision,
     deleteRevision,
@@ -88,7 +87,8 @@ const Revision = ({
                     <ListItemMeta>
                         <Menu handle={<IconButton icon={<MoreVerticalIcon />} />}>
                             <MenuItem onClick={createRevision}>New</MenuItem>
-                            <MenuItem onClick={editRevision}>Edit</MenuItem>
+                            {!rev.locked && <MenuItem onClick={editRevision}>Edit</MenuItem>}
+
                             {!rev.published && (
                                 <MenuItem onClick={() => publishRevision(rev)}>Publish</MenuItem>
                             )}
