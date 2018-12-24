@@ -3,9 +3,9 @@ import * as React from "react";
 import { get } from "dot-prop-immutable";
 import { pick } from "lodash";
 import { i18n } from "webiny-app/i18n";
-import { withCrud, type WithCrudProps } from "webiny-app-admin/components";
-import { CompactView, LeftPanel, RightPanel } from "webiny-app-admin/components/Views/CompactView";
-import FloatingActionButton from "webiny-app-admin/components/FloatingActionButton";
+import { withCrud, type WithCrudProps } from "webiny-admin/components";
+import { CompactView, LeftPanel, RightPanel } from "webiny-admin/components/Views/CompactView";
+import FloatingActionButton from "webiny-admin/components/FloatingActionButton";
 import MenusDataList from "./MenusDataList";
 import MenusForm from "./MenusForm";
 

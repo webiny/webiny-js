@@ -4,7 +4,7 @@ import { Form } from "webiny-form";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ButtonPrimary } from "webiny-ui/Button";
 import { Query, Mutation } from "react-apollo";
-import { withSnackbar } from "webiny-app-admin/components";
+import { withSnackbar } from "webiny-admin/components";
 import graphql from "./graphql";
 import PagesAutoComplete from "./PagesAutoComplete";
 
@@ -13,7 +13,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent,
     SimpleFormHeader
-} from "webiny-app-admin/components/Views/SimpleForm";
+} from "webiny-admin/components/Views/SimpleForm";
 
 const CmsSettings = ({ showSnackbar }) => {
     return (

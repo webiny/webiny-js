@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import { i18n } from "webiny-app/i18n";
-import type { WithCrudListProps } from "webiny-app-admin/components";
+import type { WithCrudListProps } from "webiny-admin/components";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import { DeleteIcon } from "webiny-ui/List/DataList/icons";
 import {

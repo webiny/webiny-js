@@ -1,6 +1,6 @@
 import { withApollo } from "react-apollo";
 import { compose, withHandlers } from "recompose";
-import { withSnackbar } from "webiny-app-admin/components";
+import { withSnackbar } from "webiny-admin/components";
 import gql from "graphql-tag";
 
 const oembedQuery = gql`

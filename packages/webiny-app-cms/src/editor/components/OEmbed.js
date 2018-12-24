@@ -9,7 +9,7 @@ import { set } from "dot-prop-immutable";
 import gql from "graphql-tag";
 import { graphql } from "react-apollo";
 import { updateElement } from "webiny-app-cms/editor/actions";
-import { withSnackbar } from "webiny-app-admin/components";
+import { withSnackbar } from "webiny-admin/components";
 
 function appendSDK(props) {
     const { sdk, global, element } = props;

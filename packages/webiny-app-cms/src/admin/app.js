@@ -3,7 +3,7 @@ import React from "react";
 import "react-sortable-tree/style.css";
 import { i18n } from "webiny-app/i18n";
 import { addPlugin } from "webiny-plugins";
-import AdminLayout from "webiny-app-admin/components/Layouts/AdminLayout";
+import AdminLayout from "webiny-admin/components/Layouts/AdminLayout";
 import editorPlugins from "webiny-app-cms/editor/presets/default";
 import renderPlugins from "webiny-app-cms/render/presets/default";
 import { ReactComponent as PagesIcon } from "./assets/round-ballot-24px.svg";
