@@ -12,9 +12,13 @@ export type ElementType = {
     id: string,
     path: string,
     type: string,
-    elements: Array<ElementType>,
+    elements: Array<string>,
     data: Object,
     settings: Object
+};
+
+export type DeepElementType = ElementType & {
+    elements: Array<DeepElementType>
 };
 
 export type CmsThemeType = {
@@ -141,7 +145,12 @@ export type Store = {
     getState: Function
 };
 
-export type State = Object;
+export type State = Object & {
+    elements: Object,
+    page: Object,
+    revisions: Array<Object>,
+    ui: Object
+};
 
 export type MiddlewareParams = {
     store: Store,

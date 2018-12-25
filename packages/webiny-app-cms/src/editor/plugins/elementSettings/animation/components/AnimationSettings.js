@@ -6,7 +6,7 @@ import { Tabs, Tab } from "webiny-ui/Tabs";
 import { Grid } from "webiny-ui/Grid";
 import { get, set } from "dot-prop-immutable";
 import { withActiveElement } from "webiny-app-cms/editor/components";
-import { updateElement, setTmp } from "webiny-app-cms/editor/actions";
+import { updateElement } from "webiny-app-cms/editor/actions";
 import Footer from "./PMFooter";
 import Select from "./Select";
 import Input from "./Input";
@@ -140,7 +140,7 @@ const ConnectedSettings = compose(
     withActiveElement({ shallow: true }),
     connect(
         null,
-        { updateElement, setTmp }
+        { updateElement }
     ),
     withHandlers({
         updateSettings: ({ element, updateElement, animation }: Object) => {
@@ -150,11 +150,6 @@ const ConnectedSettings = compose(
                 let newElement = { ...element };
                 const attributes = { ...element.settings.attributes };
                 attributes[name] = newValue;
-
-                /*updateElement({
-                    element: set(newElement, "settings.attributes", attributes),
-                    history
-                });*/
 
                 if (!history) {
                     updateElement({
