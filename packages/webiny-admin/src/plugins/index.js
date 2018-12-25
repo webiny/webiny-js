@@ -20,7 +20,6 @@ import SendFeedback from "webiny-admin/plugins/UserMenu/plugins/Feedback";
 
 import init from "./init";
 
-console.log(DefaultHandle)
 export default [
     // Layout plugins
     Header,
