@@ -8,7 +8,7 @@
     "react-apollo": "^2.2.4",
     "react-hot-loader": "^4.3.5",
     "webiny-app": "0.0.0",
-    "webiny-app-admin": "0.0.0",
+    "webiny-admin": "0.0.0",
     "webiny-app-cms": "0.0.0",
     "webiny-ui": "0.0.0",
     "webiny-plugins": "0.0.0"

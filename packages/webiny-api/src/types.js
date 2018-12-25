@@ -14,7 +14,7 @@ export type EntityPluginType = PluginType & {
 
 export type GraphQLSchemaPluginType = PluginType & {
     namespace: string,
-    typedefs: Array<string> | (() => Array<string>),
+    typeDefs: *,
     resolvers: Object | (() => Object)
 };
 

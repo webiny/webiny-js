@@ -6,7 +6,7 @@ import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
 import Image from "./Image";
 import { Query, Mutation } from "react-apollo";
-import { withSnackbar } from "webiny-app-admin/components";
+import { withSnackbar } from "webiny-admin/components";
 import graphql from "./graphql";
 
 import {
@@ -14,7 +14,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent,
     SimpleFormHeader
-} from "webiny-app-admin/components/Views/SimpleForm";
+} from "webiny-admin/components/Views/SimpleForm";
 
 const GeneralSettings = ({ showSnackbar }) => {
     return (

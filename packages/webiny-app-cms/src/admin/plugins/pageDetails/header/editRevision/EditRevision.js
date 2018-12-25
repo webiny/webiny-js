@@ -10,7 +10,7 @@ import withRevisionHandlers from "../../pageRevisions/withRevisionHandlers";
 import { compose } from "recompose";
 import { createRevisionFrom } from "webiny-app-cms/admin/graphql/pages";
 import { graphql } from "react-apollo";
-import { withSnackbar, type WithSnackbarProps } from "webiny-app-admin/components";
+import { withSnackbar, type WithSnackbarProps } from "webiny-admin/components";
 import { ReactComponent as CreateRevision } from "./icons/round-add-24px.svg";
 
 type Props = WithPageDetailsProps & WithRouterProps & { gqlCreate: Function } & WithSnackbarProps;

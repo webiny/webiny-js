@@ -6,7 +6,7 @@ import styled from "react-emotion";
 import { removePlugin } from "webiny-plugins";
 import { Typography } from "webiny-ui/Typography";
 import { IconButton } from "webiny-ui/Button";
-import { withSnackbar } from "webiny-app-admin/components";
+import { withSnackbar } from "webiny-admin/components";
 import { withConfirmation, type WithConfirmationProps } from "webiny-ui/ConfirmationDialog";
 import { ReactComponent as DeleteIcon } from "webiny-app-cms/editor/assets/icons/close.svg";
 import { deleteElement } from "./graphql";

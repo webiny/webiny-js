@@ -7,7 +7,7 @@ import { getContent } from "webiny-app-cms/editor/selectors";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
 import { getPlugins } from "webiny-plugins";
 import { createElement } from "webiny-app-cms/editor/utils";
-import { SecondaryLayout } from "webiny-app-admin/components/Views/SecondaryLayout";
+import { SecondaryLayout } from "webiny-admin/components/Views/SecondaryLayout";
 import { ReactComponent as SearchIcon } from "webiny-app-cms/editor/assets/icons/search.svg";
 import * as Styled from "./StyledComponents";
 import BlockPreview from "./BlockPreview";
@@ -17,8 +17,8 @@ import {
     SimpleForm,
     SimpleFormContent,
     SimpleFormHeader
-} from "webiny-app-admin/components/Views/SimpleForm";
-import { CompactView, LeftPanel, RightPanel } from "webiny-app-admin/components/Views/CompactView";
+} from "webiny-admin/components/Views/SimpleForm";
+import { CompactView, LeftPanel, RightPanel } from "webiny-admin/components/Views/CompactView";
 import { Icon } from "webiny-ui/Icon";
 import { List, ListItem, ListItemGraphic } from "webiny-ui/List";
 import { Typography } from "webiny-ui/Typography";

@@ -1,9 +1,5 @@
 // @flow
 import { dummyResolver } from "../graphql";
-import role from "./graphql/Role";
-import group from "./graphql/Group";
-import user from "./graphql/User";
-import apiToken from "./graphql/ApiToken";
 import { getPlugins } from "webiny-plugins";
 import { type GraphQLSchemaPluginType } from "webiny-api/types";
 
@@ -11,15 +7,7 @@ export default ({
     type: "graphql",
     name: "graphql-api",
     namespace: "api",
-    scopes: ["superadmin", "users:read", "users:write"],
     typeDefs: () => [
-        user.typeDefs,
-        user.typeExtensions,
-        role.typeDefs,
-        role.typeExtensions,
-        group.typeDefs,
-        group.typeExtensions,
-        apiToken.typeDefs,
         ...getPlugins("schema-settings").map(pl => pl.typeDefs),
         /* GraphQL */ `
             type SecurityQuery {
@@ -39,12 +27,10 @@ export default ({
             }
 
             type Query {
-                security: SecurityQuery
                 settings: SettingsQuery
             }
 
             type Mutation {
-                security: SecurityMutation
                 settings: SettingsMutation
             }
         `
@@ -52,18 +38,12 @@ export default ({
     resolvers: () => [
         {
             Query: {
-                security: dummyResolver,
                 settings: dummyResolver
             },
             Mutation: {
-                security: dummyResolver,
                 settings: dummyResolver
             }
         },
-        apiToken.resolvers,
-        group.resolvers,
-        role.resolvers,
-        user.resolvers,
         ...getPlugins("schema-settings").map(plugin => {
             return {
                 SettingsQuery: {

@@ -10,7 +10,7 @@ import { withRouter } from "webiny-app/components";
 import { Query, withApollo } from "react-apollo";
 import { getPage } from "webiny-app-cms/admin/graphql/pages";
 import { withSavedElements } from "webiny-app-cms/admin/components";
-import Snackbar from "webiny-app-admin/plugins/Snackbar/Snackbar";
+import Snackbar from "webiny-admin/plugins/Snackbar/Snackbar";
 import { Typography } from "webiny-ui/Typography";
 import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";
 import editorMock from "webiny-app-cms/admin/assets/editor-mock.png";

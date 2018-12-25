@@ -6,12 +6,12 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
 import MenuItems from "./MenusForm/MenuItems";
-import type { WithCrudFormProps } from "webiny-app-admin/components";
+import type { WithCrudFormProps } from "webiny-admin/components";
 import {
     SimpleForm,
     SimpleFormFooter,
     SimpleFormContent
-} from "webiny-app-admin/components/Views/SimpleForm";
+} from "webiny-admin/components/Views/SimpleForm";
 const t = i18n.namespace("Cms.MenusForm");
 
 type Props = WithCrudFormProps;

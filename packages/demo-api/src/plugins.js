@@ -1,4 +1,5 @@
 // @flow
-import cms from "webiny-api-cms/plugins";
+import securityPlugins from "webiny-security/api/plugins";
+import cmsPlugins from "webiny-api-cms/plugins";
 
-export default [...cms];
+export default [...securityPlugins, ...cmsPlugins];

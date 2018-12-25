@@ -4,7 +4,7 @@ import ApolloClient from "apollo-client";
 import { ApolloLink } from "apollo-link";
 import { HttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import { createAuthLink } from "webiny-app-admin/security";
+import { createAuthLink } from "webiny-admin/security";
 
 export default {
     router: {
@@ -13,10 +13,7 @@ export default {
         middleware: [renderMiddleware()]
     },
     apolloClient: new ApolloClient({
-        link: ApolloLink.from([
-            createAuthLink(),
-            new HttpLink({ uri: "/graphql" })
-        ]),
+        link: ApolloLink.from([createAuthLink(), new HttpLink({ uri: "/graphql" })]),
         cache: new InMemoryCache({
             dataIdFromObject: obj => obj.id || null
         }),

@@ -3,9 +3,9 @@ import { ApolloServer } from "apollo-server-lambda";
 import { applyMiddleware } from "graphql-middleware";
 import { prepareSchema, createGraphqlRunner } from "../graphql/schema";
 import setup from "./setup";
-import authenticate from "./authenticate";
+import { getPlugins } from "webiny-plugins";
 
-const setupHandler = async (config: Object) => {
+const createApolloHandler = async (config: Object) => {
     await setup(config);
     let { schema, context } = prepareSchema();
 
@@ -60,7 +60,7 @@ export const createHandler = (config: Object = {}) => {
         const response = await new Promise(async (resolve, reject) => {
             if (!handler) {
                 try {
-                    handler = await setupHandler(config);
+                    handler = await createApolloHandler(config);
                 } catch (e) {
                     if (process.env.NODE_ENV === "development") {
                         console.log(e); // eslint-disable-line
@@ -69,10 +69,16 @@ export const createHandler = (config: Object = {}) => {
                 }
             }
 
-            try {
-                await authenticate(config, event, context);
-            } catch (error) {
-                return resolve(getErrorResponse(error));
+            const securityPlugins = getPlugins("security");
+            console.log(securityPlugins)
+            for (let i = 0; i < securityPlugins.length; i++) {
+                let securityPlugin = securityPlugins[i];
+                try {
+                    console.log('wohoo')
+                    await securityPlugin.authenticate(config, event, context);
+                } catch (e) {
+                    return resolve(getErrorResponse(e));
+                }
             }
 
             handler(event, context, (error, data) => {

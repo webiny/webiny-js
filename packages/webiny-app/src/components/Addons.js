@@ -21,7 +21,7 @@ export default class Addons extends React.Component<Props, State> {
     }
 
     async init() {
-        const plugins = getPlugins("module-render");
+        const plugins = getPlugins("addon-render");
         for (let i = 0; i < plugins.length; i++) {
             let plugin = plugins[i];
             this.settings[plugin.name] = {};
@@ -38,7 +38,7 @@ export default class Addons extends React.Component<Props, State> {
     render() {
         const { ready } = this.state;
         if (ready) {
-            return getPlugins("module-render").map(plugin => {
+            return getPlugins("addon-render").map(plugin => {
                 return React.cloneElement(plugin.component, {
                     key: plugin.name,
                     settings: this.settings[plugin.name]

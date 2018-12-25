@@ -2,7 +2,7 @@
 import * as React from "react";
 import CmsSettings from "./components/CmsSettings";
 import GeneralSettings from "./components/generalSettings/GeneralSettings";
-import type { SettingsPluginType } from "webiny-app-admin/types";
+import type { SettingsPluginType } from "webiny-admin/types";
 
 export default ([
     {
