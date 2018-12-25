@@ -70,11 +70,9 @@ export const createHandler = (config: Object = {}) => {
             }
 
             const securityPlugins = getPlugins("security");
-            console.log(securityPlugins)
             for (let i = 0; i < securityPlugins.length; i++) {
                 let securityPlugin = securityPlugins[i];
                 try {
-                    console.log('wohoo')
                     await securityPlugin.authenticate(config, event, context);
                 } catch (e) {
                     return resolve(getErrorResponse(e));

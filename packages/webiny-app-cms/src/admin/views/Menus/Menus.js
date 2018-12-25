@@ -61,7 +61,7 @@ export default withCrud({
             variables: data => ({
                 data: pick(data, ["items", "title", "slug", "description"])
             }),
-            snackbar: data => t`Menu {name} saved successfully.`({ name: data.name })
+            snackbar: data => t`Menu {name} saved successfully.`({ name: data.title })
         }
     }
 })(Menus);
