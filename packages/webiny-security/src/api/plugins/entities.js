@@ -1,5 +1,5 @@
 // @flow
-import { type EntityPluginType } from "webiny-security/api/types";
+import { type EntityPluginType } from "webiny-api/types";
 import * as entities from "webiny-security/api/entities";
 
 const apiToken: EntityPluginType = {
