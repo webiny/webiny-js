@@ -6,5 +6,5 @@ export type InstallPluginType = PluginType & {
         name: string,
         description: string
     },
-    install: () => Promise<void>
+    install: (context: Object) => Promise<void>
 };

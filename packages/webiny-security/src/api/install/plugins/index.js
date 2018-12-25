@@ -2,15 +2,14 @@
 import { Entity } from "webiny-entity";
 import createMySQLTables from "./createMySQLTables";
 import importData from "./importData";
-import { addPlugin } from "webiny-plugins";
 import { type InstallPluginType } from "webiny-install/types";
 
 const plugin: InstallPluginType = {
     type: "install",
-    name: "install-api",
+    name: "install-security",
     meta: {
-        name: "Webiny API",
-        description: "Foundation of the Webiny platform."
+        name: "Webiny Security",
+        description: "A complete layer for securing your app / GraphQL."
     },
     install: async context => {
         const { config } = context;
@@ -26,4 +25,4 @@ const plugin: InstallPluginType = {
     }
 };
 
-addPlugin(plugin);
+export default [plugin];

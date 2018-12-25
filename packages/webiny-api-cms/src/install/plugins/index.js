@@ -20,4 +20,4 @@ const plugin: InstallPluginType = {
     }
 };
 
-addPlugin(plugin);
+export default [plugin];

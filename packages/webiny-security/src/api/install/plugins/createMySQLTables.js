@@ -8,7 +8,6 @@ import {
     Groups2EntitiesTable,
     Roles2EntitiesTable,
     RoleTable,
-    SettingsTable,
     UserTable
 } from "./tables";
 
@@ -21,7 +20,6 @@ export default async (config: Object) => {
         ApiTokenTable,
         GroupTable,
         RoleTable,
-        SettingsTable,
         Groups2EntitiesTable,
         Roles2EntitiesTable
     ];

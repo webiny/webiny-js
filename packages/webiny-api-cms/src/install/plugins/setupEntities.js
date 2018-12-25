@@ -1,11 +1,11 @@
 // @flow
-import { categoryFactory } from "./../entities/Category.entity";
-import { menuFactory } from "./../entities/Menu.entity";
-import { pageFactory } from "./../entities/Page.entity";
-import { tagFactory } from "./../entities/Tag.entity";
-import { tags2PagesFactory } from "./../entities/Tags2Pages.entity";
-import { elementFactory } from "./../entities/Element.entity";
-import { cmsSettingsFactory } from "./../entities/CmsSettings.entity";
+import { categoryFactory } from "./../../entities/Category.entity";
+import { menuFactory } from "./../../entities/Menu.entity";
+import { pageFactory } from "./../../entities/Page.entity";
+import { tagFactory } from "./../../entities/Tag.entity";
+import { tags2PagesFactory } from "./../../entities/Tags2Pages.entity";
+import { elementFactory } from "./../../entities/Element.entity";
+import { cmsSettingsFactory } from "./../../entities/CmsSettings.entity";
 
 export default (context: Object) => {
     context.cms = { entities: {} };
