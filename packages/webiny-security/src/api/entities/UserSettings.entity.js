@@ -1,6 +1,6 @@
 // @flow
 import invariant from "invariant";
-import { settingsFactory as Settings } from "webiny-security/api/entities/Settings.entity";
+import { settingsFactory as Settings } from "webiny-api/entities/Settings.entity";
 
 export function userSettingsFactory({ user }: Object) {
     class UserSettings extends Settings({ user }) {

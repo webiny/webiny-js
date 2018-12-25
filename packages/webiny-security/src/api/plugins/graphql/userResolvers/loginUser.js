@@ -1,8 +1,8 @@
 // @flow
 import bcrypt from "bcryptjs";
 import util from "util";
-import { Response, ErrorResponse } from "webiny-security/api/graphql";
-import { JwtToken } from "../../../security/jwtToken";
+import { Response, ErrorResponse } from "webiny-api/graphql";
+import { JwtToken } from "../../authentication/jwtToken";
 import type { Entity } from "webiny-entity";
 type EntityFetcher = (context: Object) => Class<Entity>;
 

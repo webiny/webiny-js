@@ -1,5 +1,5 @@
 // @flow
-import { Response, ErrorResponse } from "webiny-security/api/graphql";
+import { Response, ErrorResponse } from "webiny-api/graphql";
 import type { Entity } from "webiny-entity";
 type EntityFetcher = (context: Object) => Class<Entity>;
 

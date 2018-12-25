@@ -3,7 +3,7 @@ import { settingsFactory } from "webiny-api/entities";
 
 import { Model } from "webiny-model";
 import { EntityModel } from "webiny-entity";
-import FileModel from "webiny-api/entities/File.model";
+import FileModel from "./File.model";
 
 class SocialMedia extends Model {
     constructor() {

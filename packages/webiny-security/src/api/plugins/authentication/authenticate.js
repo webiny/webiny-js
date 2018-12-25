@@ -1,11 +1,10 @@
 // @flow
-import { JwtToken } from "../security/jwtToken";
+import { JwtToken } from "./jwtToken";
 
 export default async (config: Object, event: Object, context: Object) => {
-    // Try decoding JWT
-    // We must do it here since `ApolloServer` does not allow an async context function
     let token = (event.headers.Authorization || "").replace("Bearer ", "");
     let user = null;
+    console.log('weee', token)
     if (token !== "" && event.httpMethod === "POST") {
         const jwt = new JwtToken({ secret: config.security.token.secret });
         user = (await jwt.decode(token)).data;

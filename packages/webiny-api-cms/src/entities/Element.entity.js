@@ -1,6 +1,6 @@
 // @flow
 import { Entity } from "webiny-entity";
-import FileModel from "webiny-api/entities/File.model";
+import FileModel from "./File.model";
 
 type ElementType = "element" | "block";
 

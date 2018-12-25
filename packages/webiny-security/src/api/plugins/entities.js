@@ -52,16 +52,6 @@ const roles2entities: EntityPluginType = {
     }
 };
 
-const settings: EntityPluginType = {
-    name: "entity-settings",
-    type: "entity",
-    namespace: "api",
-    entity: {
-        name: "Settings",
-        factory: entities.settingsFactory
-    }
-};
-
 const user: EntityPluginType = {
     name: "entity-user",
     type: "entity",
@@ -88,7 +78,6 @@ export default [
     groups2entities,
     role,
     roles2entities,
-    settings,
     user,
     userSettings
 ];

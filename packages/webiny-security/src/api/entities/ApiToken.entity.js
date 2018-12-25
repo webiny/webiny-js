@@ -1,6 +1,6 @@
 // @flow
 import { Entity } from "webiny-entity";
-import { JwtToken } from "../security/jwtToken";
+import { JwtToken } from "webiny-security/api/plugins/authentication/jwtToken";
 import type { Group } from "./Group.entity";
 import type { Role } from "./Role.entity";
 import { loadEntityScopes } from "./utils";
@@ -55,18 +55,6 @@ export function apiTokenFactory({
                     return loadEntityScopes.call(this);
                 });
         }
-
-        /*async save(...args): Promise<void> {
-            const createToken = !this.isExisting();
-            await super.save(...args);
-
-            if (createToken) {
-                // 2147483647 = maximum value of unix timestamp (year 2038).
-                const token = new JwtToken({ secret: config.security.token.secret });
-                this.token = await token.encode({ id: this.id, type: "apiToken" }, 2147483647);
-                await super.save();
-            }
-        }*/
 
         async generateJWT(): Promise<void> {
             // 2147483647 = maximum value of unix timestamp (year 2038).
