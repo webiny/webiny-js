@@ -4,7 +4,7 @@ import invariant from "invariant";
 import { getPlugin } from "webiny-plugins";
 import type { PluginType } from "webiny-plugins/types";
 import _ from "lodash";
-import { withAppConfig } from "webiny-app/components/withAppConfig";
+import { withConfig } from "webiny-app/components";
 
 type ImageProps = Object & {
     src: string,
@@ -40,4 +40,4 @@ const Component = (props: ImageProps) => {
     return plugin.instance.render(plugin.props);
 };
 
-export const Image = withAppConfig()(Component);
+export const Image = withConfig()(Component);
