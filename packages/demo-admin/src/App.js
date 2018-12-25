@@ -7,7 +7,7 @@ import { Theme as AdminTheme } from "webiny-admin";
 import { app as cmsApp } from "webiny-app-cms/admin";
 import { CmsProvider } from "webiny-app-cms/context";
 import myTheme from "demo-theme";
-import { Security } from "webiny-security/admin/components";
+import { Security } from "webiny-security/components";
 import Login from "webiny-security/admin/views/Login";
 import "./App.scss";
 import config from "./config";

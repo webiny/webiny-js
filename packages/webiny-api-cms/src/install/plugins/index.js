@@ -1,6 +1,6 @@
 // @flow
 import { type InstallPluginType } from "webiny-install/types";
-
+import { general, seo, social } from "webiny-api-cms/plugins/pageSettings";
 import createMySQLTables from "./createMySQLTables";
 import importData from "./importData";
 
@@ -17,4 +17,4 @@ const plugin: InstallPluginType = {
     }
 };
 
-export default [plugin];
+export default [plugin, general, seo, social];

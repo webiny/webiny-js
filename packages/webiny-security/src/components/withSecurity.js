@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import { SecurityConsumer } from "../security/Security";
+import { SecurityConsumer } from "./Security";
 
 export type WithSecurityProps = {
     security: {

@@ -1,7 +1,7 @@
 //@flow
 import React from "react";
 import { css } from "emotion";
-import { withSecurity, type WithSecurityProps } from "webiny-security/admin/components";
+import { withSecurity, type WithSecurityProps } from "webiny-security/components";
 import { ListItem, ListItemGraphic } from "webiny-ui/List";
 import { Typography } from "webiny-ui/Typography";
 import { Link } from "webiny-app/router";
