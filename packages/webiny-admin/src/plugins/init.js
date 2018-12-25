@@ -2,13 +2,12 @@
 import React from "react";
 import { i18n } from "webiny-app/i18n";
 import { addPlugin, getPlugins } from "webiny-plugins";
-import { ReactComponent as SettingsIcon } from "webiny-admin/assets/images/icons/round-settings-24px.svg";
+import { ReactComponent as SettingsIcon } from "webiny-admin/assets/icons/round-settings-24px.svg";
 import AdminLayout from "webiny-admin/components/Layouts/AdminLayout";
 import type { SettingsPluginType } from "webiny-admin/types";
 
 const t = i18n.namespace("Webiny.Admin.Menus");
 
-// TODO: @@@ttt123123@@@
 export default [
     {
         type: "webiny-init",

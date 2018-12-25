@@ -8,7 +8,7 @@ import { withSecurity } from "webiny-security/admin/components";
 const SignOut = (props: Object) => {
     return (
         <ListItem onClick={() => props.security.logout()}>
-            <ListItemGraphic>{/*<Icon icon={<SignOutIcon />} />*/}</ListItemGraphic>
+            <ListItemGraphic>{<Icon icon={<SignOutIcon />} />}</ListItemGraphic>
             Sign out
         </ListItem>
     );

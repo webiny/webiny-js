@@ -10,10 +10,8 @@ export default [
         name: "security-menu",
         type: "menu",
         render({ Menu }: Object) {
-            // TODO: @@@ttt123123@@@
-            // TODO: icon={<SecurityIcon />}
             return (
-                <Menu label={t`Security`}>
+                <Menu label={t`Security`} icon={<SecurityIcon />}>
                     <Menu label={t`Identities`} group={securityManager}>
                         <Menu label={t`Users`} route="Users" />
                         <Menu label={t`API Tokens`} route="ApiTokens" />

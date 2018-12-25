@@ -20,7 +20,10 @@ const UserMenu = () => {
                 anchor={"topEnd"}
                 handle={<menu-handle>{renderPlugin("user-menu-handle")}</menu-handle>}
             >
-                <List>{renderPlugins("header-user-menu")}</List>
+                <List>
+                    {renderPlugin("header-user-menu-user-info")}
+                    {renderPlugins("header-user-menu")}
+                </List>
             </Menu>
         </TopAppBarActionItem>
     );

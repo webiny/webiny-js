@@ -14,12 +14,13 @@ import { globalSearch } from "webiny-admin/plugins/GlobalSearch";
 
 // User menu plugins
 import DarkMode from "webiny-admin/plugins/UserMenu/plugins/DarkMode";
+import DefaultHandle from "webiny-admin/plugins/UserMenu/plugins/DefaultHandle";
 import Help from "webiny-admin/plugins/UserMenu/plugins/Help";
 import SendFeedback from "webiny-admin/plugins/UserMenu/plugins/Feedback";
-import createDivider from "webiny-admin/plugins/UserMenu/plugins/Divider";
 
 import init from "./init";
 
+console.log(DefaultHandle)
 export default [
     // Layout plugins
     Header,
@@ -35,8 +36,8 @@ export default [
     UserMenu,
     globalSearch,
     DarkMode,
+    DefaultHandle,
     Help,
     SendFeedback,
-    createDivider(),
     ...init
 ];
