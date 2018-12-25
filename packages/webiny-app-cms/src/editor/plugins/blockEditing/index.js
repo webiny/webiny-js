@@ -1,3 +1,4 @@
+// @flow
 import React from "react";
 import { get } from "lodash";
 import AddBlock from "./AddBlock";
@@ -22,7 +23,7 @@ export default [
     {
         name: "cms-search-blocks-bar",
         type: "cms-editor-bar",
-        shouldRender({ plugins }) {
+        shouldRender({ plugins }: Object) {
             const active = get(plugins, "cms-editor-bar") || [];
             return active ? active.find(pl => pl.name === "cms-search-blocks-bar") : false;
         },

@@ -1,6 +1,8 @@
 // @flow
 import _ from "lodash";
+import invariant from "invariant";
 import { getPlugin } from "webiny-plugins";
+import type { ElementType, DeepElementType, State } from "webiny-app-cms/types";
 
 const getPluginType = (name: string) => {
     const plugin = getPlugin(name);
@@ -10,27 +12,22 @@ const getPluginType = (name: string) => {
 /**
  * Get editor `ui` state
  */
-export const getUi = state => state.ui || {};
-
-/**
- * Get editor `tmp` state
- */
-export const getTmp = (state, key) => _.get(state.tmp, key);
+export const getUi = (state: State): Object => state.ui || {};
 
 /**
  * Get editor `page` state
  */
-export const getPage = state => state.page || {};
+export const getPage = (state: State): Object => state.page || {};
 
 /**
  * Get editor `revisions` state
  */
-export const getRevisions = state => state.revisions || [];
+export const getRevisions = (state: State): Array<Object> => state.revisions || [];
 
 /**
  * Get editor content.
  */
-export const getContent = state => {
+export const getContent = (state: State): Object => {
     const page = getPage(state);
     if (page.content && page.content.present) {
         return page.content.present;
@@ -38,23 +35,44 @@ export const getContent = state => {
         return page.content;
     }
 
-    return getPlugin("cms-element-document").create();
+    const document = getPlugin("cms-element-document");
+    invariant(document, `"cms-element-document" plugin must exist for CMS to work!`);
+    return document.create();
 };
 
 /**
- * Get element.
+ * Get element and all of its children recursively.
+ * WARNING: use carefully as this makes render optimization really difficult when used in `connect`!
  */
-export const getElementWithChildren = (state, id) => {
+export const getElementWithChildren = (state: State, id: string): DeepElementType => {
     const element = getElement(state, id);
     const content = getContent(state);
     return _.get(content, element.path.replace(/\./g, ".elements.").slice(2));
 };
 
-export const getElement = (state, id) => {
-    return state.elements[id];
+/**
+ * Get element by ID or path.
+ * @param state
+ * @param id ID or path of the element
+ */
+export const getElement = (state: Object, id: string): ElementType => {
+    if (state.elements.hasOwnProperty(id)) {
+        return state.elements[id];
+    }
+
+    // Find by path
+    // $FlowFixMe
+    return Object.values(state.elements).find(el => el.path === id);
 };
 
-export const getParentElementWithChildren = (state, id) => {
+/**
+ * Get parent element and all of its children recursively
+ * WARNING: use carefully as this makes render optimization really difficult when used in `connect`!
+ * @param state
+ * @param id
+ * @returns {*}
+ */
+export const getParentElementWithChildren = (state: State, id: string): DeepElementType => {
     const element = getElement(state, id);
     const content = getContent(state);
     const parentPaths = element.path.split(".").slice(0, -1);
@@ -65,31 +83,31 @@ export const getParentElementWithChildren = (state, id) => {
     return _.get(content, parentPaths.join(".elements.").slice(2));
 };
 
-export const getActiveElement = state => getElement(state, getActiveElementId(state));
+export const getActiveElement = (state: State) => getElement(state, getActiveElementId(state));
 
 /**
- * Get active element path.
+ * Get active element ID.
  */
-export const getActiveElementId = state => getUi(state).activeElement;
+export const getActiveElementId = (state: State): string => getUi(state).activeElement;
 
 /**
  * Get editor plugins (this mostly contains UI state).
  */
-export const getPlugins = state => getUi(state).plugins || {};
+export const getPlugins = (state: State): Object => getUi(state).plugins || {};
 
 /**
  * Get editor plugins of certain type (this mostly contains UI state).
  */
-export const getPluginsByType = type => {
-    return state => getPlugins(state)[type] || [];
+export const getPluginsByType = (type: string) => {
+    return (state: State) => getPlugins(state)[type] || [];
 };
 
 /**
  * Get an active plugin of the given type.
  */
-export const getActivePlugins = type => {
+export const getActivePlugins = (type: string) => {
     const pluginsByType = getPluginsByType(type);
-    return state => {
+    return (state: State) => {
         return pluginsByType(state) || [];
     };
 };
@@ -97,10 +115,13 @@ export const getActivePlugins = type => {
 /**
  * Get active plugin params
  */
-export const getActivePluginParams = name => {
+export const getActivePluginParams = (name: string) => {
     const type = getPluginType(name);
+    if (typeof type !== "string") {
+        return null;
+    }
     const pluginsByType = getPluginsByType(type);
-    return state => {
+    return (state: State) => {
         const plugins = pluginsByType(state);
         if (plugins) {
             const plugin = plugins.find(pl => pl.name === name);
@@ -110,11 +131,16 @@ export const getActivePluginParams = name => {
     };
 };
 
-export const isPluginActive = name => {
+export const isPluginActive = (name: string) => {
     const type = getPluginType(name);
+    if (typeof type !== "string") {
+        // eslint-disable-next-line
+        return (state: State) => false;
+    }
+
     const pluginsByType = getPluginsByType(type);
 
-    return state => {
+    return (state: State) => {
         return Boolean(pluginsByType(state).find(pl => pl.name === name));
     };
 };
@@ -122,12 +148,12 @@ export const isPluginActive = name => {
 /**
  * Get dragging state.
  */
-export const getIsDragging = state => getUi(state).dragging;
+export const getIsDragging = (state: State) => getUi(state).dragging;
 
 /**
- * Get <Element> props.
+ * Get props that need to be passed to an <Element>.
  */
-export const getElementProps = (state, { id }) => {
+export const getElementProps = (state: State, { id }: Object) => {
     const { activeElement, highlightElement, resizing, dragging } = getUi(state);
     const element = state.elements[id];
 

@@ -33,7 +33,6 @@ export const DEACTIVATE_ELEMENT = `${PREFIX} Deactivate element`;
 export const UPDATE_ELEMENT = `${PREFIX} Update element`;
 export const DELETE_ELEMENT = `${PREFIX} Delete element`;
 export const FLATTEN_ELEMENTS = `${PREFIX} Flatten elements`;
-export const SET_TMP = `${PREFIX} Set tmp`;
 export const SETUP_EDITOR = `${PREFIX} Setup editor`;
 export const UPDATE_REVISION = `${PREFIX} Update revision`;
 export const SAVING_REVISION = `${PREFIX} Save revision`;
@@ -91,11 +90,6 @@ addReducer(
 );
 
 /***************** EDITOR ACTIONS *****************/
-export const setTmp = createAction(SET_TMP);
-addReducer([SET_TMP], "tmp", (state, action) => {
-    return dotProp.set(state, action.payload.key, action.payload.value);
-});
-
 addReducer([SETUP_EDITOR], null, (state, action) => {
     return { ...state, ...action.payload };
 });
