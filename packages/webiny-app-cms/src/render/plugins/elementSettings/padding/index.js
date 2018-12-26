@@ -6,20 +6,19 @@ export default ({
     type: "cms-render-element-style",
     renderStyle({ settings, style }: Object) {
         const { padding } = settings;
+
         if (!padding) {
             return style;
         }
 
-        if (padding.advanced) {
-            return {
-                ...style,
-                paddingTop: padding.top || 0,
-                paddingRight: padding.right || 0,
-                paddingBottom: padding.bottom || 0,
-                paddingLeft: padding.left || 0
-            };
-        }
+        const adv = padding.advanced;
+        const { desktop = {}, mobile = {}} = padding;
 
-        return { ...style, padding: padding.all };
+        ["top", "right", "bottom", "left"].forEach(side => {
+            style[`--desktop-padding-${side}`] = ((adv ? desktop[side] : desktop.all) || 0) + "px";
+            style[`--mobile-padding-${side}`] = ((adv ? mobile[side] : mobile.all) || 0) + "px";
+        });
+
+        return style;
     }
 }: CmsRenderElementStylePluginType);
