@@ -15,7 +15,6 @@ html{
 
   @include desktop-and-tablet{
     min-height: calc(100vh - 230px);
-    margin-top: 50px;
   }
 }
 
