@@ -66,18 +66,19 @@ export const BlockPreview = styled("div")({
     height: "100%",
     alignItems: "center",
     justifyContent: "center",
-    position: "relative"
+    position: "relative",
+    backgroundColor: "#fff"
 });
 
 export const blockStyle = css({
     position: "relative",
     width: 335,
-    height: 185,
+    height: 240,
     boxSizing: "border-box",
     overflow: "hidden",
     border: "1px solid var(--mdc-theme-on-background)",
     backgroundColor: "var(--mdc-theme-surface)",
-    padding: 15,
+    padding: "15px 15px 35px 15px",
     marginBottom: 25
 });
 
@@ -123,6 +124,6 @@ export const Overlay = styled("div")({
 
 export const Title = styled("div")({
     position: "absolute",
-    left: 10,
+    left: 15,
     bottom: 0
 });

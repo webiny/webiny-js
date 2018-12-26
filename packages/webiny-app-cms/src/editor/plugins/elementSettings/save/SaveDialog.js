@@ -32,7 +32,7 @@ const PreviewBox = styled("div")({
     width: 500,
     minHeight: 250,
     border: "1px solid var(--mdc-theme-on-background)",
-    backgroundColor: "var(--mdc-theme-surface)",
+    backgroundColor: "#fff", // this must always be white
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
