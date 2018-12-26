@@ -16,7 +16,7 @@ const excludePlugins = [
     "code-menu-item"
 ];
 
-const ButtonContainer = ({ getAllClasses, element, onChange }) => {
+const ButtonContainer = ({ getAllClasses, elementStyle, elementAttributes, element, onChange }) => {
     const { type = "default", icon = {} } = get(element, "settings.advanced") || {};
     const svg = element.data.icon || null;
 
@@ -25,6 +25,8 @@ const ButtonContainer = ({ getAllClasses, element, onChange }) => {
     return (
         <a
             href={null}
+            style={elementStyle}
+            {...elementAttributes}
             className={getAllClasses(
                 "webiny-cms-element-button",
                 "webiny-cms-element-button--" + type,
