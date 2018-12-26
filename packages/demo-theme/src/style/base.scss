@@ -10,7 +10,18 @@ html{
 .webiny-cms-page-document{
   background-color: var(--webiny-cms-theme-surface);
   min-height: calc(100vh - 205px);
+  max-width: 100%;
+  overflow-x: hidden;
+
   @include desktop-and-tablet{
     min-height: calc(100vh - 230px);
+    margin-top: 50px;
+  }
+}
+
+// make images responsive
+img{
+  @include mobile{
+    max-width: 100%;
   }
 }

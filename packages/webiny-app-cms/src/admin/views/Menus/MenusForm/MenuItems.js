@@ -25,6 +25,11 @@ const menuItems = css({
     width: 170
 });
 
+const MenuHolder = styled("div")({
+    textAlign: "center",
+    color: "var(--mdc-theme-text-primary-on-background)"
+});
+
 const AddMenu = styled("div")({
     width: 180,
     margin: "25px auto 0 auto"
@@ -86,7 +91,7 @@ class MenuItems extends React.Component<Props, State> {
                     <Cell span={6}>
                         {!currentMenuItem && (
                             <>
-                                <div style={{ textAlign: "center" }}>
+                                <MenuHolder>
                                     <Typography use={"body2"}>
                                         To build your menu you need to create menu items! Begin by
                                         clicking the &quot;Add menu item&quot; button
@@ -113,7 +118,7 @@ class MenuItems extends React.Component<Props, State> {
                                             </List>
                                         </Menu>
                                     </AddMenu>
-                                </div>
+                                </MenuHolder>
                             </>
                         )}
                         {currentMenuItem && (

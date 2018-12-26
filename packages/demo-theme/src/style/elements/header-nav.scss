@@ -8,14 +8,31 @@
 }
 
 .webiny-cms-section-header{
-  display: flex;
-  justify-content: space-between;
-  max-width: 1200px;
-  margin: 25px auto 40px auto;
+  position: fixed;
+  top: 0;
+  z-index: 100;
+  background-color: rgb(255, 255, 255);
+  box-shadow: rgba(34, 45, 57, 0.15) 0px 0px 1px 1px;
+  width: 100%;
+  height: 40px;
+  padding-top: 10px;
+
+  &__wrapper{
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  @include desktop-and-tablet{
+    padding: 10px 0 5px 0;
+
+  }
 
   &__mobile-icon{
     position: fixed;
-    top: 25px;
+    top: 18px;
     right: 25px;
     z-index: 12;
 
@@ -62,10 +79,18 @@
   }
 
   &__logo{
-    flex: 1;
     margin-left: 25px;
+    img{
+      max-height: 30px;
+    }
+
     @include desktop-and-tablet{
+      flex: 1;
       margin-left: 0;
+
+    }
+    @include mobile{
+      width: 50%;
     }
   }
   &__navigation{

@@ -96,8 +96,9 @@ class SlateEditor extends React.Component<*, *> {
 
         // Position menu container
         const rect = this.getSelectionRect();
-        menuContainer.style.position = "absolute";
-        menuContainer.style.top = rect.top + "px";
+        menuContainer.style.position = "fixed";
+        menuContainer.style.zIndex = "500";
+        menuContainer.style.top = rect.top - 5 + "px";
         menuContainer.style.left = rect.left + "px";
         menuContainer.style.width = rect.width + "px";
         menuContainer.style.height = rect.height + "px";

@@ -1,7 +1,7 @@
 .webiny-cms-element-button{
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: center;
   margin-right: 0;
   margin-left: 0;
   padding: 14px 20px;
@@ -42,15 +42,27 @@
   &__icon{
     &--left{
       flex-direction: row;
+      svg{
+        margin-right: 5px;
+      }
     }
     &--right{
       flex-direction: row-reverse;
+      svg{
+        margin-left: 5px;
+      }
     }
     &--top{
       flex-direction: column;
+      svg{
+        margin-bottom: 5px;
+      }
     }
     &--bottom{
       flex-direction: column-reverse;
+      svg{
+        margin-top: 5px;
+      }
     }
   }
 }
