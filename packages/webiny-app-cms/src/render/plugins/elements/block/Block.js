@@ -33,6 +33,7 @@ const Block = ({ element }: { element: ElementType }) => {
                                 }
                             >
                                 {element.elements.map(element => (
+                                    /* $FlowFixMe */
                                     <Element key={element.id} element={element} />
                                 ))}
                             </div>

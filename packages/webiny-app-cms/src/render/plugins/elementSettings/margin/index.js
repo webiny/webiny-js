@@ -1,25 +1,26 @@
 // @flow
 import type { CmsRenderElementStylePluginType } from "webiny-app-cms/types";
 
+const unit = "px";
+
 export default ({
     name: "cms-render-element-style-margin",
     type: "cms-render-element-style",
     renderStyle({ settings, style }: Object) {
         const { margin } = settings;
+
         if (!margin) {
             return style;
         }
 
-        if (margin.advanced) {
-            return {
-                ...style,
-                marginTop: margin.top || 0,
-                marginRight: margin.right || 0,
-                marginBottom: margin.bottom || 0,
-                marginLeft: margin.left || 0
-            };
-        }
+        const adv = margin.advanced;
+        const { desktop = {}, mobile = {} } = margin;
 
-        return { ...style, margin: margin.all };
+        ["top", "right", "bottom", "left"].forEach(side => {
+            style[`--desktop-margin-${side}`] = ((adv ? desktop[side] : desktop.all) || 0) + "px";
+            style[`--mobile-margin-${side}`] = ((adv ? mobile[side] : mobile.all) || 0) + "px";
+        });
+
+        return style;
     }
 }: CmsRenderElementStylePluginType);
