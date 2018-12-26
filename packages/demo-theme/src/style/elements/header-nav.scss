@@ -101,7 +101,7 @@
   }
   &__navigation{
     color: $webiny-cms-theme-primary;
-    font-family:$webiny-cms-theme-typography-primary-font-family;
+    font-family: unquote($webiny-cms-theme-typography-primary-font-family);
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
 

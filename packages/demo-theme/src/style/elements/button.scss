@@ -4,7 +4,7 @@
   justify-content: center;
   margin-left: auto !important;
   margin-right: auto !important;
-  padding: 14px 20px;
+  padding: 14px 20px !important;
   vertical-align: top;
   text-align: center;
   font-size: 14px;
@@ -23,7 +23,7 @@
   min-width: 100px;
   width: fit-content;
   background-color: $webiny-cms-theme-background;
-  font-family: $webiny-cms-theme-typography-primary-font-family;
+  font-family: unquote($webiny-cms-theme-typography-primary-font-family);
   color: $webiny-cms-theme-on-background;
   &:hover{
     box-shadow: 0 7px 14px rgba(50,50,93,.1), 0 3px 6px rgba(0,0,0,.08);
@@ -65,5 +65,11 @@
         margin-top: 5px;
       }
     }
+  }
+  > div {
+    // this is a fix for the screen shot tool which changes the font and then breaks button text into multiple lines
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow: hidden !important;
   }
 }

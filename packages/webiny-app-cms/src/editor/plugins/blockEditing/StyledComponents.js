@@ -72,8 +72,8 @@ export const BlockPreview = styled("div")({
 
 export const blockStyle = css({
     position: "relative",
-    width: 335,
-    height: 240,
+    width: "100%",
+    maxWidth: 800,
     boxSizing: "border-box",
     overflow: "hidden",
     border: "1px solid var(--mdc-theme-on-background)",
