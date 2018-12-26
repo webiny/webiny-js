@@ -14,7 +14,10 @@ const Icon = ({ element }: Object) => {
                 <ConnectedElement elementId={element.id}>
                     {element => {
                         const svg = element.data.icon || null;
-                        const className = getAllClasses("webiny-cms-element-icon", center);
+                        const className = getAllClasses(
+                            "webiny-cms-base-element-style webiny-cms-element-icon",
+                            center
+                        );
 
                         return svg ? (
                             <div className={className} dangerouslySetInnerHTML={{ __html: svg }} />

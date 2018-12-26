@@ -22,7 +22,10 @@ const Block = ({ element }: { element: ElementType }) => {
                     const { width, ...containerStyle } = elementStyle;
                     return (
                         <div
-                            className={"webiny-cms-layout-block " + css(containerStyle)}
+                            className={
+                                "webiny-cms-base-element-style webiny-cms-layout-block " +
+                                css(containerStyle)
+                            }
                             {...elementAttributes}
                         >
                             <div

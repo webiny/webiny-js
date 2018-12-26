@@ -8,14 +8,11 @@ import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/compon
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { getElement } from "webiny-app-cms/editor/selectors";
 
-export const className = "webiny-cms-element-text";
+export const className = "webiny-cms-base-element-style webiny-cms-element-text";
 
 const Text = ({ element, onChange }) => {
     return (
-        <ElementStyle
-            {...getElementStyleProps(element)}
-            className={className}
-        >
+        <ElementStyle {...getElementStyleProps(element)} className={className}>
             <ConnectedSlate elementId={element.id} onChange={onChange} />
         </ElementStyle>
     );

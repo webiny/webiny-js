@@ -5,7 +5,7 @@ import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/compon
 
 const center = css({ textAlign: "center" });
 
-const Icon = ({ theme, element }: Object) => {
+const Icon = ({ element }: Object) => {
     const svg = element.data.icon || null;
 
     if (!svg) {
@@ -16,7 +16,10 @@ const Icon = ({ theme, element }: Object) => {
         <ElementStyle {...getElementStyleProps(element)}>
             {({ getAllClasses }) => (
                 <div
-                    className={getAllClasses("webiny-cms-element-icon", center)}
+                    className={getAllClasses(
+                        "webiny-cms-base-element-style webiny-cms-element-icon",
+                        center
+                    )}
                     dangerouslySetInnerHTML={{ __html: svg }}
                 />
             )}

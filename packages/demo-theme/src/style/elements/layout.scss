@@ -2,6 +2,8 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
+
   &__wrapper{
     @include mobile{
       width: 100% !important;
@@ -18,10 +20,7 @@
   flex: 1 100%;
   box-sizing: border-box;
   flex-direction: column;
-  @include tablet{
-    flex-direction: row;
-  }
-  @include desktop{
+  @include desktop-and-tablet{
     flex-direction: row;
   }
 }
@@ -34,11 +33,7 @@
   position: relative;
   flex: 100%;
   flex-direction: column;
-  @include tablet{
-    text-align: left;
-    width: 100%;
-  }
-  @include desktop{
+  @include desktop-and-tablet{
     text-align: left;
     width: 100%;
   }

@@ -2,8 +2,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 0;
-  margin-left: 0;
+  margin-left: auto !important;
+  margin-right: auto !important;
   padding: 14px 20px;
   vertical-align: top;
   text-align: center;
@@ -21,6 +21,7 @@
   outline: none;
   border: none;
   min-width: 100px;
+  width: fit-content;
   background-color: $webiny-cms-theme-background;
   font-family: $webiny-cms-theme-typography-primary-font-family;
   color: $webiny-cms-theme-on-background;

@@ -24,7 +24,7 @@ const Block = pure(({ element }) => {
         <BlockStyle id={id} style={{ zIndex: 20, position: "relative" }}>
             <ElementAnimation>
                 <ElementStyle
-                    style={{ margin: "0 auto", boxSizing: "border-box", flexDirection: "column" }}
+                    style={{ boxSizing: "border-box", flexDirection: "column" }}
                     {...getElementStyleProps(element)}
                     {...getElementAttributeProps(element)}
                 >
@@ -33,7 +33,10 @@ const Block = pure(({ element }) => {
                             elementId={id}
                             elementStyle={elementStyle}
                             elementAttributes={elementAttributes}
-                            customClasses={customClasses}
+                            customClasses={[
+                                "webiny-cms-layout-block webiny-cms-base-element-style",
+                                ...customClasses
+                            ]}
                             combineClassNames={combineClassNames}
                         />
                     )}
