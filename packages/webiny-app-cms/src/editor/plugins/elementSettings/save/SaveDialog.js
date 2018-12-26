@@ -15,7 +15,6 @@ import {
     DialogCancel
 } from "webiny-ui/Dialog";
 import { Input } from "webiny-ui/Input";
-import { Tags } from "webiny-ui/Tags";
 import { Select } from "webiny-ui/Select";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Form } from "webiny-form";
@@ -160,17 +159,6 @@ const SaveDialog = (props: Props) => {
                             </Grid>
                             {data.type === "block" && (
                                 <>
-                                    <Grid>
-                                        <Cell span={12}>
-                                            <Bind name="keywords">
-                                                <Tags
-                                                    label="Keywords"
-                                                    description="Enter search keywords"
-                                                />
-                                            </Bind>
-                                        </Cell>
-                                    </Grid>
-
                                     <Grid>
                                         <Cell span={12}>
                                             <Bind name="category" validators={["required"]}>
