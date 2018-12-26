@@ -27,7 +27,8 @@ const actions = css({
 });
 
 const icon = css({
-    marginRight: 15
+    marginRight: 15,
+    color: "var(--mdc-theme-text-primary-on-background)"
 });
 
 const footer = css({
