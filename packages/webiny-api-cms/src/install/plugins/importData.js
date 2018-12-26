@@ -1,6 +1,7 @@
 // @flow
 import setupEntities from "./setupEntities";
 import createDefaultPages from "./importData/createDefaultPages";
+import createDefaultBlocks from "./importData/createDefaultBlocks";
 
 export default async (context: Object) => {
     setupEntities(context);
@@ -59,4 +60,5 @@ export default async (context: Object) => {
         .save();
 
     await createDefaultPages(context, { categories });
+    await createDefaultBlocks(context);
 };
