@@ -55,7 +55,8 @@ export const BlockList = styled("div")({
     justifyContent: "space-around",
     maxWidth: 1200,
     margin: "0 auto",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
+    color: "var(--mdc-theme-text-secondary-on-background)"
 });
 
 export const BlockPreview = styled("div")({
