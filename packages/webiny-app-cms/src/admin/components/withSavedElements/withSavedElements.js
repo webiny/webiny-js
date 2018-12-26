@@ -5,6 +5,8 @@ import { listElements } from "webiny-app-cms/admin/graphql/pages";
 import createElementPlugin from "./createElementPlugin";
 import createBlockPlugin from "./createBlockPlugin";
 
+let elementsAdded = false;
+
 export const withSavedElements = () =>
     graphql(listElements, {
         props: ({ data }) => {
@@ -13,13 +15,16 @@ export const withSavedElements = () =>
             }
 
             const elements = get(data, "cms.elements.data");
-            elements.forEach(el => {
-                if (el.type === "element") {
-                    createElementPlugin(el);
-                } else {
-                    createBlockPlugin(el);
-                }
-            });
+            if (!elementsAdded) {
+                elements.forEach(el => {
+                    if (el.type === "element") {
+                        createElementPlugin(el);
+                    } else {
+                        createBlockPlugin(el);
+                    }
+                });
+                elementsAdded = true;
+            }
 
             return { elements };
         }

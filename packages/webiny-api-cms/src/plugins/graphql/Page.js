@@ -52,7 +52,6 @@ export default {
             type: String
             category: String
             content: JSON
-            keywords: [String]
             preview: File
         }
         
@@ -61,7 +60,6 @@ export default {
             type: String!
             category: String
             content: JSON!
-            keywords: [String]
             preview: FileInput
         }
         

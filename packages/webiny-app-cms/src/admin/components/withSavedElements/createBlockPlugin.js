@@ -9,7 +9,6 @@ type Element = {
     type: string,
     category: string,
     content: Object,
-    keywords: Array<string>,
     preview: {
         src: string
     }
@@ -17,12 +16,12 @@ type Element = {
 
 export default (el: Element) => {
     addPlugin({
+        id: el.id,
         name: "cms-saved-block-" + el.id,
         type: "cms-block",
         title: el.name,
         category: el.category,
         tags: ["saved"],
-        keywords: el.keywords || [],
         create() {
             return cloneDeep(el.content);
         },

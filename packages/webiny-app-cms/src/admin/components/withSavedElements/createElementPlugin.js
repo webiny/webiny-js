@@ -9,7 +9,6 @@ type Element = {
     name: string,
     type: string,
     content: Object,
-    keywords: Array<string>,
     preview: {
         src: string
     }

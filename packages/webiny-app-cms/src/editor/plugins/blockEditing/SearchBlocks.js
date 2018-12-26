@@ -142,7 +142,6 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         };
 
         plugins.categories.active = plugins.categories.list.find(({ name }) => name === active);
-
         const blocksList = this.getBlocksList(plugins);
 
         return (
@@ -191,6 +190,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                                         {blocksList.length > 0 ? (
                                             blocksList.map(p => (
                                                 <BlockPreview
+                                                    onDelete={() => this.forceUpdate()}
                                                     key={p.name}
                                                     plugin={p}
                                                     addBlockToContent={this.addBlockToContent}
