@@ -8,13 +8,30 @@ import { activateElement, highlightElement } from "webiny-app-cms/editor/actions
 
 const breadcrumbs = css({
     display: "flex",
+    zIndex: 1,
     flexDirection: "row",
-    padding: 5,
+    padding: 0,
     position: "fixed",
     left: 60,
     bottom: 0,
+    width: "calc(100% - 60px)",
+    backgroundColor: "var(--mdc-theme-surface)",
+    borderTop: "1px solid var(--mdc-theme-on-background)",
+    fontSize: "14px",
     "> li": {
-        cursor: "pointer"
+        cursor: "pointer",
+        ".element": {
+            color: "var(--mdc-theme-secondary)",
+            padding: "5px",
+            display: "inline-block",
+            "&:hover": {
+                backgroundColor: "var(--mdc-theme-background)",
+                color: "var(--mdc-theme-on-surface)"
+            }
+        },
+        ".divider": {
+            color: "var(--mdc-theme-text-secondary-on-background)"
+        }
     }
 });
 
@@ -31,8 +48,10 @@ const Breadcrumbs = ({ elements, activateElement, highlightElement }: Object) =>
                     onMouseOver={() => highlightElement({ element: el.id })}
                     onClick={() => activateElement({ element: el.id })}
                 >
-                    {el.type.replace("cms-element-", "")}[{el.index}]
-                    {elements.length - 1 > index ? <span>&nbsp;>&nbsp;</span> : null}
+                    <span className={"element"}>{el.type.replace("cms-element-", "")}</span>
+                    {elements.length - 1 > index ? (
+                        <span className={"divider"}>&nbsp;&gt;&nbsp;</span>
+                    ) : null}
                 </li>
             ))}
         </ul>
