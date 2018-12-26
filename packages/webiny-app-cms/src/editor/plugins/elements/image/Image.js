@@ -41,9 +41,9 @@ export default compose(
     ),
     withFileUpload(),
     withHandlers({
-        onChange: ({ onChange, updateElement, element }) => async data => {
-            updateElement({ element: set(element, "data", data) });
-            await onChange(data);
+        onChange: ({ uploadFile, updateElement, element }) => async data => {
+            const response = await uploadFile(data);
+            updateElement({ element: set(element, "data", response) });
         }
     })
 )(Image);
