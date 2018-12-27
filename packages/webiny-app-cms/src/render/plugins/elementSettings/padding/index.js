@@ -12,7 +12,7 @@ export default ({
         }
 
         const adv = padding.advanced;
-        const { desktop = {}, mobile = {}} = padding;
+        const { desktop = {}, mobile = {} } = padding;
 
         ["top", "right", "bottom", "left"].forEach(side => {
             style[`--desktop-padding-${side}`] = ((adv ? desktop[side] : desktop.all) || 0) + "px";

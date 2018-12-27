@@ -8,7 +8,6 @@ export default {
     type: "cms-block",
     category: "cms-block-category-general",
     title: "Empty block",
-    keywords: ["*"],
     create(options: Object = {}) {
         return createBlock({
             ...options,

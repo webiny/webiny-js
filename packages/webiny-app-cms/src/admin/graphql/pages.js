@@ -142,7 +142,6 @@ name
 type
 category
 content
-keywords
 preview {
     src
 }
