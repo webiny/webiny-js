@@ -62,6 +62,11 @@ export default {
             content: JSON!
             preview: FileInput
         }
+                
+        input UpdateElementInput {
+            name: String
+            category: String
+        }
         
         input UpdatePageInput {
             title: String
@@ -199,6 +204,11 @@ export default {
                 data: ElementInput!
             ): ElementResponse
             
+            updateElement(      
+                id: ID!
+                data: UpdateElementInput!
+            ): ElementResponse
+            
             # Delete element
             deleteElement(
                 id: ID!
@@ -237,6 +247,8 @@ export default {
             deleteRevision: resolveDelete(pageFetcher),
             // Creates a new element
             createElement: resolveCreate(elementFetcher),
+            // Updates an element
+            updateElement: resolveUpdate(elementFetcher),
             // Deletes an element
             deleteElement: resolveDelete(elementFetcher)
         },

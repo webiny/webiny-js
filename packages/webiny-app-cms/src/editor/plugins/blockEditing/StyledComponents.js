@@ -107,7 +107,19 @@ export const DeleteBlock = styled("div")({
     top: 0,
     right: 0,
     zIndex: 100,
-    cursor: "pointer"
+    cursor: "pointer",
+    color: "white"
+});
+
+export const EditBlock = styled("div")({
+    margin: 5,
+    textAlign: "center",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    zIndex: 100,
+    cursor: "pointer",
+    color: "white"
 });
 
 export const Overlay = styled("div")({
