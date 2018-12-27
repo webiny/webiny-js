@@ -5,7 +5,7 @@ import { compose, withHandlers } from "recompose";
 import { Tabs, Tab } from "webiny-ui/Tabs";
 import { Grid } from "webiny-ui/Grid";
 import { get } from "lodash";
-import { set } from "dot-prop-immutable";
+import { set, merge } from "dot-prop-immutable";
 import { withActiveElement } from "webiny-app-cms/editor/components";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { ReactComponent as BorderOuterIcon } from "webiny-app-cms/editor/assets/icons/border_outer.svg";
@@ -143,9 +143,22 @@ export default compose(
                     newValue = parseInt(newValue) || 0;
                 }
 
+                let newElement = set(element, propName, newValue);
+
+                // Update all values in advanced settings
+                if (propName.endsWith(".all")) {
+                    const prefix = propName.includes("desktop") ? "desktop" : "mobile";
+                    newElement = merge(newElement, `${valueKey}.${prefix}`, {
+                        top: newValue,
+                        right: newValue,
+                        bottom: newValue,
+                        left: newValue
+                    });
+                }
+
                 if (!history) {
                     updateElement({
-                        element: set(element, propName, newValue),
+                        element: newElement,
                         history
                     });
                     return;
@@ -153,7 +166,7 @@ export default compose(
 
                 if (historyUpdated[propName] !== newValue) {
                     historyUpdated[propName] = newValue;
-                    updateElement({ element: set(element, propName, newValue) });
+                    updateElement({ element: newElement });
                 }
             };
         }

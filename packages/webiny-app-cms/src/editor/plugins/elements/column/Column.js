@@ -42,7 +42,7 @@ const addIcon = css({
 const Column = pure(({ element, dropElement, togglePlugin }) => {
     return (
         <ElementAnimation>
-            <ColumnContainer>
+            <ColumnContainer style={{ justifyContent: "center" }}>
                 <ElementStyle
                     {...getElementStyleProps(element)}
                     {...getElementAttributeProps(element)}
