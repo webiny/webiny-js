@@ -33,9 +33,13 @@
   position: relative;
   flex: auto 0;
   flex-direction: column;
-  width: auto;
+
+  @include mobile{
+    width: auto !important;
+  }
 
   @include desktop-and-tablet{
     text-align: left;
+    width: auto;
   }
 }
