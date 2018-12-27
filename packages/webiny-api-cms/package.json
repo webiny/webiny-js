@@ -24,7 +24,8 @@
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-flow": "^7.0.0",
     "babel-plugin-dynamic-import-node": "^2.0.0",
-    "flow-copy-source": "^2.0.2"
+    "flow-copy-source": "^2.0.2",
+    "fs-extra": "^7.0.1"
   },
   "scripts": {
     "build": "babel src -d ${DEST:-build} --source-maps --copy-files",

@@ -40,8 +40,6 @@ export function elementFactory(): Class<IElement> {
                 .char()
                 .setValidators("required,in:element:block");
 
-            this.attr("keywords").array();
-
             this.attr("preview").model(FileModel);
         }
     };

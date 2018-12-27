@@ -52,7 +52,6 @@ export default {
             type: String
             category: String
             content: JSON
-            keywords: [String]
             preview: File
         }
         
@@ -61,8 +60,12 @@ export default {
             type: String!
             category: String
             content: JSON!
-            keywords: [String]
             preview: FileInput
+        }
+                
+        input UpdateElementInput {
+            name: String
+            category: String
         }
         
         input UpdatePageInput {
@@ -201,6 +204,11 @@ export default {
                 data: ElementInput!
             ): ElementResponse
             
+            updateElement(      
+                id: ID!
+                data: UpdateElementInput!
+            ): ElementResponse
+            
             # Delete element
             deleteElement(
                 id: ID!
@@ -239,6 +247,8 @@ export default {
             deleteRevision: resolveDelete(pageFetcher),
             // Creates a new element
             createElement: resolveCreate(elementFetcher),
+            // Updates an element
+            updateElement: resolveUpdate(elementFetcher),
             // Deletes an element
             deleteElement: resolveDelete(elementFetcher)
         },

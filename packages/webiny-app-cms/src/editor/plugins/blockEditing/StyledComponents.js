@@ -100,6 +100,28 @@ export const AddBlock = styled("div")({
     textAlign: "center"
 });
 
+export const DeleteBlock = styled("div")({
+    margin: 5,
+    textAlign: "center",
+    position: "absolute",
+    top: 0,
+    right: 0,
+    zIndex: 100,
+    cursor: "pointer",
+    color: "white"
+});
+
+export const EditBlock = styled("div")({
+    margin: 5,
+    textAlign: "center",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    zIndex: 100,
+    cursor: "pointer",
+    color: "white"
+});
+
 export const Overlay = styled("div")({
     position: "absolute",
     display: "flex",
