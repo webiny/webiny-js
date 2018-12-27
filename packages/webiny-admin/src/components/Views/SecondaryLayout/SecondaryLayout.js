@@ -21,7 +21,7 @@ const defaultStyle = {
     opacity: 0,
     transitionProperty: "transform, opacity",
     transitionTimingFunction: "cubic-bezier(0, 0, .2, 1)",
-    transitionDuration: "100ms",
+    transitionDuration: "225ms",
     willChange: "opacity, transform"
 };
 
