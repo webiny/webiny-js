@@ -1,4 +1,6 @@
 //@flowIgnore
+/* eslint-disable */
+
 const util = newUtil();
 const inliner = newInliner();
 const fontFaces = newFontFaces();
