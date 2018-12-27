@@ -34,6 +34,11 @@ img{
 .webiny-cms-base-element-style{
   padding: var(--mobile-padding-top) var(--mobile-padding-right) var(--mobile-padding-bottom) var(--mobile-padding-left);
   margin: var(--mobile-margin-top) var(--mobile-margin-right) var(--mobile-margin-bottom) var(--mobile-margin-left);
+
+  @include mobile{
+    background-size: contain !important;
+  }
+
   @include desktop-and-tablet {
     padding: var(--desktop-padding-top) var(--desktop-padding-right) var(--desktop-padding-bottom) var(--desktop-padding-left);
     margin: var(--desktop-margin-top) var(--desktop-margin-right) var(--desktop-margin-bottom) var(--desktop-margin-left);

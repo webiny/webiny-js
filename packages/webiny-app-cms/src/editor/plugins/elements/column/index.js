@@ -48,6 +48,7 @@ export default (): ElementPluginType => {
             "",
             "cms-element-settings-padding",
             "cms-element-settings-margin",
+            "cms-element-settings-width",
             "cms-element-settings-horizontal-align",
             "cms-element-settings-vertical-align",
             "",
