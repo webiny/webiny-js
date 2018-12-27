@@ -50,6 +50,7 @@ export default (): ElementPluginType => {
             "cms-element-settings-margin",
             "cms-element-settings-horizontal-align",
             "cms-element-settings-vertical-align",
+            "cms-element-settings-column-width",
             "",
             "cms-element-settings-clone",
             "cms-element-settings-delete",
