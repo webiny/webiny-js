@@ -12,7 +12,7 @@ import { ReactComponent as SearchIcon } from "webiny-app-cms/editor/assets/icons
 import * as Styled from "./StyledComponents";
 import BlockPreview from "./BlockPreview";
 import { listItem, ListItemTitle, listStyle, TitleContent } from "./SearchBlocksStyled";
-import EditElementDialog from "./EditElementDialog";
+import EditBlockDialog from "./EditBlockDialog";
 import { Mutation } from "react-apollo";
 import { deleteElement as deleteElementGql, updateElement as updateElementGql } from "./graphql";
 import { withSnackbar, type WithSnackbarProps } from "webiny-admin/components";
@@ -199,7 +199,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                         )}
                     </Styled.BlockList>
 
-                    <EditElementDialog
+                    <EditBlockDialog
                         onClose={() => this.setState({ editingBlock: null })}
                         onSubmit={data => this.updateBlock({ data, updateElement })}
                         open={!!this.state.editingBlock}

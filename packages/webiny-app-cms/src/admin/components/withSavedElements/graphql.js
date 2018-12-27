@@ -14,3 +14,25 @@ export const deleteElement = gql`
         }
     }
 `;
+
+export const updateElement = gql`
+    mutation updateElement($id: ID!, $data: UpdateElementInput!) {
+        cms {
+            updateElement(id: $id, data: $data) {
+                data {
+                    id
+                    name
+                    type
+                    category
+                    content
+                    preview {
+                        src
+                    }
+                }
+                error {
+                    message
+                }
+            }
+        }
+    }
+`;

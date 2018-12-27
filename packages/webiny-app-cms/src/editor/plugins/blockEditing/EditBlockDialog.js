@@ -46,7 +46,7 @@ type Props = {
     onSubmit: Function
 };
 
-const EditElementDialog = (props: Props) => {
+const EditBlockDialog = (props: Props) => {
     const { open, onClose, onSubmit, plugin } = props;
 
     const blockCategoriesOptions = getPlugins("cms-block-category").map((item: Object) => ({
@@ -108,4 +108,4 @@ export default compose(
     shouldUpdate((props, nextProps) => {
         return props.open !== nextProps.open;
     })
-)(EditElementDialog);
+)(EditBlockDialog);
