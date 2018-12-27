@@ -51,6 +51,7 @@ export default (): ElementPluginType => {
             "cms-element-settings-width",
             "cms-element-settings-horizontal-align",
             "cms-element-settings-vertical-align",
+            "cms-element-settings-column-width",
             "",
             "cms-element-settings-clone",
             "cms-element-settings-delete",
@@ -113,9 +114,11 @@ const handleDroppedElement = (source, target, position) => {
 const splitColumn = (source, target) => {
     let dispatchNew = false;
     let row = getParentElementWithChildren(redux.store.getState(), target.id);
+    // $FlowFixMe
     const targetIndex = row.elements.findIndex(el => el.id === target.id);
 
     // Split target column in half
+    // $FlowFixMe
     row.elements[targetIndex].data.width /= 2;
 
     // Create a new column with half of the original target width
@@ -126,6 +129,8 @@ const splitColumn = (source, target) => {
         dispatchNew = true;
         newColumn = createColumn();
     }
+
+    // $FlowFixMe
     newColumn = set(newColumn, "data.width", row.elements[targetIndex].data.width);
 
     row = addElementToParent(newColumn, row, targetIndex + 1);

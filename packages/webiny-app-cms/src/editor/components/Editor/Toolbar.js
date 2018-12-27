@@ -108,6 +108,7 @@ const Toolbar = ({ activePluginsTop }: Object) => {
                     .map(plugin => (
                         <ToolbarDrawer
                             key={plugin.name}
+                            name={plugin.name}
                             active={Boolean(activePluginsTop.includes(plugin.name))}
                         >
                             {plugin.renderDrawer()}
