@@ -42,10 +42,14 @@ const YoutubeEmbed = (props: Object) => {
     }
 
     return (
-        <div className={outerWrapper}>
+        <div
+            className={
+                "webiny-cms-base-element-style webiny-cms-element-embed-youtube " + outerWrapper
+            }
+        >
             <div className={innerWrapper}>
                 <div
-                    id={ element.id}
+                    id={element.id}
                     className={[
                         scaleableVideo,
                         "cms-editor-dragging--disabled",

@@ -94,6 +94,7 @@ export default (): Array<PluginType> => {
                     <ElementStyle
                         {...getElementStyleProps(element)}
                         {...getElementAttributeProps(element)}
+                        className={"webiny-cms-base-element-style webiny-cms-element-image"}
                     >
                         <Image elementId={element.id} />
                     </ElementStyle>

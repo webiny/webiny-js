@@ -19,6 +19,7 @@ const Row = ({ element }: Object) => {
             <ElementStyle
                 {...getElementStyleProps(element)}
                 {...getElementAttributeProps(element)}
+                className={"webiny-cms-base-element-style webiny-cms-layout-row"}
                 style={{ zIndex: 20, position: "relative" }}
             >
                 <ConnectedElement elementId={element.id} withChildElements>

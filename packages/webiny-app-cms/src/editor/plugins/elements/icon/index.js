@@ -10,6 +10,7 @@ export default () => {
     const PreviewBox = styled("div")({
         textAlign: "center",
         height: 50,
+        color: "var(--mdc-theme-text-primary-on-background)",
         svg: {
             height: 50,
             width: 50

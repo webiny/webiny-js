@@ -13,7 +13,7 @@ const Row = ({ element }: { element: ElementType }) => {
     return (
         <ElementAnimation>
             <ElementStyle
-                className={"webiny-cms-layout-row"}
+                className={"webiny-cms-base-element-style webiny-cms-layout-row"}
                 {...getElementAttributeProps(element)}
                 {...getElementStyleProps(element)}
             >

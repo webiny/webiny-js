@@ -12,7 +12,11 @@ import Element from "webiny-app-cms/editor/components/Element";
 import { Elevation } from "webiny-ui/Elevation";
 
 const ContentContainer = styled("div")(({ theme }) => ({
-    backgroundColor: get(theme, "colors.background")
+    backgroundColor: get(theme, "colors.background"),
+    ".webiny-cms-page-document": {
+        overflowY: "visible", // cuts off the block selector tooltip
+        overflowX: "visible"
+    }
 }));
 
 const contentContainerWrapper = css({
@@ -20,7 +24,7 @@ const contentContainerWrapper = css({
     padding: 0,
     position: "absolute",
     width: "calc(100vw - 115px)",
-    overflow: "visible",
+    //overflow: "hidden", // cuts off the block selector tooltip
     top: 0,
     boxSizing: "border-box",
     zIndex: 1

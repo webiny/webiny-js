@@ -18,6 +18,7 @@ const Button = ({ element }: ElementType) => {
                     href={link.href || null}
                     target={link.newTab ? "_blank" : "_self"}
                     className={getAllClasses(
+                        "webiny-cms-base-element-style",
                         "webiny-cms-element-button",
                         "webiny-cms-element-button--" + type,
                         "webiny-cms-element-button__icon--" + position

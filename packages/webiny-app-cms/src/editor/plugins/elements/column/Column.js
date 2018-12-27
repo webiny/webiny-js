@@ -46,6 +46,7 @@ const Column = pure(({ element, dropElement, togglePlugin }) => {
                 <ElementStyle
                     {...getElementStyleProps(element)}
                     {...getElementAttributeProps(element)}
+                    className={"webiny-cms-base-element-style webiny-cms-layout-column"}
                     style={{ width: "100%", display: "flex", flexDirection: "column" }}
                 >
                     <ConnectedElement elementId={element.id}>

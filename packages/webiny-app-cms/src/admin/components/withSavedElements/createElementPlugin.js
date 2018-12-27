@@ -36,7 +36,7 @@ export default (el: Element) => {
                     <img
                         src={el.preview.src}
                         alt={el.name}
-                        style={{ width: 227, height: "auto" }}
+                        style={{ width: 227, height: "auto", backgroundColor: "#fff" }}
                     />
                 );
             }

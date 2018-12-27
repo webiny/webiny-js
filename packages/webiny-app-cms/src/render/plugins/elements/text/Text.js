@@ -12,6 +12,6 @@ const Text = ({ element }: { element: ElementType }) => {
     );
 };
 
-export const className = "webiny-cms-element-text";
+export const className = "webiny-cms-base-element-style webiny-cms-element-text";
 
 export default Text;

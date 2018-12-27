@@ -26,7 +26,7 @@ const BlockContainer = ({
             {...elementAttributes}
         >
             <div
-                style={{ width: width ? width : "100%", margin: "0 auto" }}
+                style={{ width: width ? width : "100%", alignSelf: "center" }}
                 className={combineClassNames(...customClasses)}
             >
                 {!elements.length && (

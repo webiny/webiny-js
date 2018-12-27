@@ -2,7 +2,7 @@
 import type { CmsRenderElementStylePluginType } from "webiny-app-cms/types";
 
 export default ({
-    name: "cms-render-element-style-width",
+    name: "cms-render-element-style-shadow",
     type: "cms-render-element-style",
     renderStyle({ settings, style }: Object) {
         const { shadow } = settings;

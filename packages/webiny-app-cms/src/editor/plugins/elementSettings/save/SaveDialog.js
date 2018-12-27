@@ -31,12 +31,13 @@ const PreviewBox = styled("div")({
     width: 500,
     minHeight: 250,
     border: "1px solid var(--mdc-theme-on-background)",
-    backgroundColor: "var(--mdc-theme-surface)",
+    backgroundColor: "#fff", // this must always be white
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     img: {
-        maxHeight: 500
+        maxHeight: 500,
+        maxWidth: 500
     }
 });
 
@@ -106,7 +107,7 @@ class ElementPreview extends React.Component<*> {
 
             const dataUrl = await domToImage.toPng(node, {
                 onDocument: doc => this.replaceContent(element, doc),
-                width: 500
+                width: 1000
             });
 
             node.classList.remove("no-highlight");

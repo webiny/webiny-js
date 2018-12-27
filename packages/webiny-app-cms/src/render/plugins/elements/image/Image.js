@@ -23,7 +23,10 @@ const Image = (props: *) => {
 
     return (
         <ElementStyle {...elementStyles} {...elementAttributes}>
-            <div style={{ ...wrapperStyle, textAlign: align }}>
+            <div
+                className={"webiny-cms-base-element-style webiny-cms-element-image"}
+                style={{ ...wrapperStyle, textAlign: align }}
+            >
                 <img {...rest} style={style} src={src} />
             </div>
         </ElementStyle>
