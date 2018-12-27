@@ -16,7 +16,7 @@ const BlockContainer = ({
     element,
     dropElement
 }: Object) => {
-    const { width, alignItems, ...containerStyle } = elementStyle;
+    const { width, alignItems, justifyContent, ...containerStyle } = elementStyle;
     const { id, type, elements } = element;
 
     return (
@@ -28,7 +28,7 @@ const BlockContainer = ({
             <div
                 style={{
                     width: width ? width : "100%",
-                    alignSelf: "center",
+                    alignSelf: justifyContent,
                     alignItems: alignItems
                 }}
                 className={combineClassNames(...customClasses)}

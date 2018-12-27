@@ -15,7 +15,7 @@ const Block = ({ element }: { element: ElementType }) => {
         <ElementAnimation>
             <ElementStyle {...getElementStyleProps(element)} {...getElementAttributeProps(element)}>
                 {({ elementStyle, elementAttributes, customClasses, combineClassNames }) => {
-                    const { width, alignItems, ...containerStyle } = elementStyle;
+                    const { width, alignItems, justifyContent, ...containerStyle } = elementStyle;
 
                     return (
                         <div
@@ -26,7 +26,7 @@ const Block = ({ element }: { element: ElementType }) => {
                             <div
                                 style={{
                                     width: width ? width : "100%",
-                                    alignSelf: "center",
+                                    alignSelf: justifyContent,
                                     alignItems: alignItems
                                 }}
                                 className={combineClassNames(

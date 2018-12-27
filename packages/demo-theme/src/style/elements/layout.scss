@@ -13,10 +13,11 @@
   position: relative;
   display: flex;
   box-sizing: border-box;
-  flex-direction: row;
+  flex-direction: column;
 
   @include desktop-and-tablet{
     flex: 100% 1;
+    flex-direction: row;
   }
 
   @include mobile{
