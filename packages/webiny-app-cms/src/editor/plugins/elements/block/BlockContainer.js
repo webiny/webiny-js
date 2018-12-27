@@ -16,17 +16,21 @@ const BlockContainer = ({
     element,
     dropElement
 }: Object) => {
-    const { width, ...containerStyle } = elementStyle;
+    const { width, alignItems, justifyContent, ...containerStyle } = elementStyle;
     const { id, type, elements } = element;
 
     return (
         <div
-            style={{ width: "100%", display: "flex" }}
+            style={{ width: "100%", display: "flex", justifyContent: "center" }}
             className={css(containerStyle)}
             {...elementAttributes}
         >
             <div
-                style={{ width: width ? width : "100%", alignSelf: "center" }}
+                style={{
+                    width: width ? width : "100%",
+                    alignSelf: justifyContent,
+                    alignItems: alignItems
+                }}
                 className={combineClassNames(...customClasses)}
             >
                 {!elements.length && (

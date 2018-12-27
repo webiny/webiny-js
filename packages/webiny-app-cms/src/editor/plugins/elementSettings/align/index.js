@@ -2,6 +2,7 @@
 import React from "react";
 import Action from "../components/Action";
 import HorizontalAlignAction from "./HorizontalAlignAction";
+import HorizontalAlignFlexAction from "./HorizontalAlignFlex";
 import VerticalAlignAction from "./VerticalAlignAction";
 
 export default [
@@ -13,6 +14,17 @@ export default [
                 <HorizontalAlignAction>
                     <Action plugin={this.name} tooltip={"Horizontal align"} />
                 </HorizontalAlignAction>
+            );
+        }
+    },
+    {
+        name: "cms-element-settings-horizontal-align-flex",
+        type: "cms-element-settings",
+        renderAction() {
+            return (
+                <HorizontalAlignFlexAction>
+                    <Action plugin={this.name} tooltip={"Horizontal align"} />
+                </HorizontalAlignFlexAction>
             );
         }
     },

@@ -14,10 +14,6 @@ html{
   max-width: 100%;
   overflow-x: hidden;
 
-  @include mobile{
-    margin: 0 15px;
-  }
-
   @include desktop-and-tablet{
     min-height: calc(100vh - 230px);
   }
