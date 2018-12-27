@@ -4,37 +4,37 @@
   flex-direction: column;
   box-sizing: border-box;
 
-  &__wrapper{
-    @include mobile{
-      width: 100% !important;
-    }
-
-    @include tablet{
-      width: 100% !important;
-    }
+  @include mobile{
+    width: 100% !important;
+    flex: 0 0 auto !important;
   }
 }
 .webiny-cms-layout-row{
   position: relative;
   display: flex;
-  flex: 1 100%;
   box-sizing: border-box;
-  flex-direction: column;
+  flex-direction: row;
+
   @include desktop-and-tablet{
-    flex-direction: row;
+    flex: 100% 1;
+  }
+
+  @include mobile{
+    max-width: 100% !important;
+    flex: 0 auto !important;
   }
 }
 
 .webiny-cms-layout-column{
   box-sizing: border-box;
   text-align: center;
-  width: auto;
   display: flex;
   position: relative;
-  flex: 100%;
+  flex: auto 0;
   flex-direction: column;
+  width: auto;
+
   @include desktop-and-tablet{
     text-align: left;
-    width: 100%;
   }
 }

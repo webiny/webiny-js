@@ -13,27 +13,26 @@ import ElementAnimation from "webiny-app-cms/render/components/ElementAnimation"
 const Block = ({ element }: { element: ElementType }) => {
     return (
         <ElementAnimation>
-            <ElementStyle
-                style={{ margin: "0 auto", boxSizing: "border-box" }}
-                {...getElementStyleProps(element)}
-                {...getElementAttributeProps(element)}
-            >
+            <ElementStyle {...getElementStyleProps(element)} {...getElementAttributeProps(element)}>
                 {({ elementStyle, elementAttributes, customClasses, combineClassNames }) => {
-                    const { width, ...containerStyle } = elementStyle;
+                    const { width, alignItems, ...containerStyle } = elementStyle;
+
                     return (
                         <div
-                            className={
-                                "webiny-cms-base-element-style webiny-cms-layout-block " +
-                                css(containerStyle)
-                            }
+                            style={{ width: "100%", display: "flex", justifyContent: "center" }}
+                            className={css(containerStyle)}
                             {...elementAttributes}
                         >
                             <div
-                                style={{ width, margin: "0 auto" }}
-                                className={
-                                    "webiny-cms-layout-block__wrapper " +
-                                    combineClassNames(...customClasses)
-                                }
+                                style={{
+                                    width: width ? width : "100%",
+                                    alignSelf: "center",
+                                    alignItems: alignItems
+                                }}
+                                className={combineClassNames(
+                                    "webiny-cms-layout-block webiny-cms-base-element-style",
+                                    ...customClasses
+                                )}
                             >
                                 {element.elements.map(element => (
                                     /* $FlowFixMe */
