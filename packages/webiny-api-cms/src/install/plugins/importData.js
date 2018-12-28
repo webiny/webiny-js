@@ -5,7 +5,7 @@ import createDefaultBlocks from "./importData/createDefaultBlocks";
 
 export default async (context: Object) => {
     setupEntities(context);
-    const { Category, Tag, Menu } = context.cms.entities;
+    const { Category, Tag, Menu, CmsSettings } = context.cms.entities;
 
     const menu = new Menu();
     menu.populate({
@@ -59,6 +59,13 @@ export default async (context: Object) => {
         })
         .save();
 
-    await createDefaultPages(context, { categories });
+
     await createDefaultBlocks(context);
+
+    // Settings init.
+    const cmsSettings = new CmsSettings();
+    await createDefaultPages(context, { categories, cmsSettings });
+    cmsSettings.data.domain = "http://localhost:3002";
+
+    await cmsSettings.save();
 };

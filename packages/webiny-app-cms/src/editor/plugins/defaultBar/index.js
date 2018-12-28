@@ -5,6 +5,7 @@ import { IconButton } from "webiny-ui/Button";
 import PageSettings from "./components/PageSettings";
 import PageSettingsButton from "./components/PageSettingsButton";
 import PublishPageButton from "./components/PublishPageButton";
+import PreviewPageButton from "./components/PreviewPageButton";
 import Divider from "./components/Divider";
 import Title from "./components/Title";
 import BackButton from "./components/BackButton";
@@ -52,12 +53,20 @@ export default [
         }
     },
     {
+        name: "cms-default-bar-preview-button",
+        type: "cms-default-bar-right",
+        render() {
+            return <PreviewPageButton />;
+        }
+    },
+    {
         name: "cms-default-bar-publish-button",
         type: "cms-default-bar-right",
         render() {
             return <PublishPageButton />;
         }
     },
+
     {
         name: "cms-default-bar-back-button",
         type: "cms-default-bar-left",

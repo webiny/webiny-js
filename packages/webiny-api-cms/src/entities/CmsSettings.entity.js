@@ -32,6 +32,7 @@ const cmsSettingsModelFactory = (...args) => {
             super();
             this.attr("pages").model(cmsSettingsPagesModelFactory(...args));
             this.attr("name").char();
+            this.attr("domain").char();
             this.attr("favicon").model(FileModel);
             this.attr("logo").model(FileModel);
             this.attr("social").model(SocialMedia);

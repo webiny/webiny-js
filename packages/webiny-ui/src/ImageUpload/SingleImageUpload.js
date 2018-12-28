@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import type { FormComponentProps } from "./../types";
-import BrowseFiles, { type SelectedFile, type FileError } from "react-browse-files";
+import BrowseFiles, { type SelectedFile, type FileError } from "react-butterfiles";
 import { FormElementMessage } from "webiny-ui/FormElementMessage";
 import styled from "react-emotion";
 import classNames from "classnames";
