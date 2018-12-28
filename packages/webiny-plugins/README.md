@@ -11,16 +11,16 @@ However, this simple library has helped us greatly while developing modular APIs
 
 ## Adding a plugin
 ```
-import { addPlugin } from "webiny-plugins";
+import { registerPlugins } from "webiny-plugins";
 
 // Add a plugin
-addPlugin({
+registerPlugins({
     name: "my-plugin",
     type: "say-hi",
     salute: () => "Hi!"
 });
 
-addPlugin({
+registerPlugins({
     name: "my-second-plugin",
     type: "say-hi",
     salute: () => "Yo!"
@@ -52,7 +52,7 @@ plugin.salute();
 ## Removing a plugin
 ```
 // anywhere in your app
-import { removePlugin } from "webiny-plugins";
+import { unregisterPlugin } from "webiny-plugins";
 
-removePlugin("my-plugin");
+unregisterPlugin("my-plugin");
 ```

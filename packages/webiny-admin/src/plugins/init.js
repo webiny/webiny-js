@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import { i18n } from "webiny-app/i18n";
-import { addPlugin, getPlugins } from "webiny-plugins";
+import { registerPlugins, getPlugins } from "webiny-plugins";
 import { ReactComponent as SettingsIcon } from "webiny-admin/assets/icons/round-settings-24px.svg";
 import AdminLayout from "webiny-admin/components/Layouts/AdminLayout";
 import type { SettingsPluginType } from "webiny-admin/types";
@@ -18,7 +18,7 @@ export default [
             let settingsPlugins: Array<SettingsPluginType> = getPlugins("settings");
 
             settingsPlugins.forEach((sp: SettingsPluginType) => {
-                addPlugin({
+                registerPlugins({
                     type: "route",
                     name: "route-settings-" + sp.name,
                     route: {
@@ -39,7 +39,7 @@ export default [
                 )
             };
 
-            addPlugin({
+            registerPlugins({
                 type: "menu",
                 name: "menu-settings",
                 render({ Menu }) {

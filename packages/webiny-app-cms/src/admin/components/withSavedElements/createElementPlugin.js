@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import cloneDeep from "lodash/cloneDeep";
-import { addPlugin, getPlugin } from "webiny-plugins";
+import { registerPlugins, getPlugin } from "webiny-plugins";
 import Title from "./Title";
 
 type Element = {
@@ -22,7 +22,7 @@ export default (el: Element) => {
 
     const name = "cms-saved-element-" + el.id;
 
-    addPlugin({
+    registerPlugins({
         name,
         title: el.name,
         type: "cms-element",

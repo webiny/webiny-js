@@ -4,13 +4,13 @@ import React from "react";
 import { Webiny, Router } from "webiny-app";
 import { CmsProvider } from "webiny-app-cms/context";
 import plugins from "./plugins";
-import { addPlugin } from "webiny-plugins";
+import { registerPlugins } from "webiny-plugins";
 
 import myTheme from "demo-theme";
 import config from "./config";
 import { GenericNotFoundPage, GenericErrorPage } from "./cms";
 
-addPlugin(...plugins);
+registerPlugins(...plugins);
 
 const App = () => {
     return (
