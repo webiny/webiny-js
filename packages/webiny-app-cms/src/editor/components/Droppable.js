@@ -35,7 +35,7 @@ const Droppable = pure(
         }
 
         return connectDropTarget(
-            <div data-type="droppable">
+            <div data-type="droppable" style={{ position: "relative" }}>
                 {children({ isDragging, isOver, isDroppable: isDroppable(item) })}
             </div>
         );
