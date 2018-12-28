@@ -136,3 +136,10 @@ em{
   font-weight: 400;
   letter-spacing: 0.03125em;
 }
+
+// force center align on mobile
+@include mobile{
+  .webiny-cms-element-text{
+    text-align: center;
+  }
+}
