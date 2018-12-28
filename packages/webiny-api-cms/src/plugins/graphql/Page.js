@@ -131,7 +131,7 @@ export default {
                 sort: String
             ): PageResponse
             
-            getPublishedPage(url: String!): PageResponse
+            getPublishedPage(id: String, url: String): PageResponse
             
             # Returns page set as home page (managed in CMS settings).
             getHomePage: PageResponse

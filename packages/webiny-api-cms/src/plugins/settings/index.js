@@ -17,6 +17,7 @@ export default [
                 name: String
                 favicon: File
                 logo: File
+                domain: String
                 social: CmsSocialMedia
                 pages: CmsSettingsPages
             }
