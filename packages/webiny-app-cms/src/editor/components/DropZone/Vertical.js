@@ -4,7 +4,7 @@ import { pure } from "recompose";
 import styled from "react-emotion";
 import Droppable from "./../Droppable";
 
-const InnerDiv = styled("div")({
+const InnerDivVertical = styled("div")({
     position: "absolute",
     width: 5,
     height: "100%",
@@ -13,7 +13,7 @@ const InnerDiv = styled("div")({
     display: "none"
 });
 
-const OuterDiv = pure(
+const OuterDivVertical = pure(
     styled("div")(
         {
             position: "absolute",
@@ -26,7 +26,7 @@ const OuterDiv = pure(
         props => ({
             [props.last ? "right" : "left"]: -2,
             textAlign: props.last ? "right" : "left",
-            [InnerDiv]: {
+            [InnerDivVertical]: {
                 backgroundColor: props.isOver
                     ? "var(--mdc-theme-primary)"
                     : "var(--mdc-theme-secondary)",
@@ -48,9 +48,19 @@ const Vertical = pure(({ last, onDrop, isVisible, type }: Props) => {
     return (
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>
             {({ isOver }) => (
-                <OuterDiv isOver={isOver} last={last}>
-                    <InnerDiv />
-                </OuterDiv>
+                <div
+                    style={{
+                        width: "30%",
+                        height: "100%",
+                        position: "absolute",
+                        top: 0,
+                        [last ? "right" : "left"]: 0
+                    }}
+                >
+                    <OuterDivVertical isOver={isOver} last={last}>
+                        <InnerDivVertical />
+                    </OuterDivVertical>
+                </div>
             )}
         </Droppable>
     );
