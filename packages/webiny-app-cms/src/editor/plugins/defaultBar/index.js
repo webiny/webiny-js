@@ -1,16 +1,15 @@
 //@flow
 import React from "react";
 import { get } from "lodash";
-import { IconButton } from "webiny-ui/Button";
 import PageSettings from "./components/PageSettings";
 import PageSettingsButton from "./components/PageSettingsButton";
 import PublishPageButton from "./components/PublishPageButton";
 import PreviewPageButton from "./components/PreviewPageButton";
+import PageOptionsMenu from "./components/PageOptionsMenu";
 import Divider from "./components/Divider";
 import Title from "./components/Title";
 import BackButton from "./components/BackButton";
 import Revisions from "./components/Revisions";
-import { ReactComponent as MoreVerticalIcon } from "webiny-app-cms/editor/assets/icons/more_vert.svg";
 
 export default [
     {
@@ -25,42 +24,44 @@ export default [
         }
     },
     {
-        name: "cms-default-bar-revisions-select",
+        name: "cms-default-bar-right-revisions-select",
         type: "cms-default-bar-right",
         render() {
             return <Revisions />;
         }
     },
     {
-        name: "cms-default-bar-revisions-divider",
+        name: "cms-default-bar-right-revisions-divider",
         type: "cms-default-bar-right",
         render() {
             return <Divider />;
         }
     },
     {
-        name: "cms-default-bar-page-settings-button",
+        name: "cms-default-bar-right-page-settings-button",
         type: "cms-default-bar-right",
         render() {
             return <PageSettingsButton />;
         }
     },
-    {
-        name: "cms-default-bar-more-actions-button",
-        type: "cms-default-bar-right",
-        render() {
-            return <IconButton icon={<MoreVerticalIcon />} />;
+    [
+        {
+            name: "cms-default-bar-right-page-options",
+            type: "cms-default-bar-right",
+            render() {
+                return <PageOptionsMenu />;
+            }
+        },
+        {
+            name: "cms-default-bar-right-page-options-preview",
+            type: "cms-default-bar-right-page-options-option",
+            render() {
+                return <PreviewPageButton />;
+            }
         }
-    },
+    ],
     {
-        name: "cms-default-bar-preview-button",
-        type: "cms-default-bar-right",
-        render() {
-            return <PreviewPageButton />;
-        }
-    },
-    {
-        name: "cms-default-bar-publish-button",
+        name: "cms-default-bar-right-publish-button",
         type: "cms-default-bar-right",
         render() {
             return <PublishPageButton />;
@@ -68,21 +69,21 @@ export default [
     },
 
     {
-        name: "cms-default-bar-back-button",
+        name: "cms-default-bar-left-back-button",
         type: "cms-default-bar-left",
         render() {
             return <BackButton />;
         }
     },
     {
-        name: "cms-default-bar-divider",
+        name: "cms-default-bar-left-divider",
         type: "cms-default-bar-left",
         render() {
             return <Divider />;
         }
     },
     {
-        name: "cms-default-bar-title",
+        name: "cms-default-bar-left-title",
         type: "cms-default-bar-left",
         render() {
             return <Title />;

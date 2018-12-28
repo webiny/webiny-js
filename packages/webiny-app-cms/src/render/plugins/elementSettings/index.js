@@ -8,4 +8,4 @@ import shadow from "./shadow";
 import padding from "./padding";
 import margin from "./margin";
 
-export default [...align, background, border, height, width, shadow, padding, margin];
+export default [align, background, border, height, width, shadow, padding, margin];

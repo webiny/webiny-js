@@ -14,7 +14,23 @@ test("plugins - registerPlugins, unregisterPlugin, getPlugin, getPlugins", async
             {
                 type: "test",
                 name: "test-3"
-            }
+            },
+            [
+                {
+                    type: "test",
+                    name: "test-5"
+                },
+                {
+                    type: "test",
+                    name: "test-6"
+                },
+                [
+                    {
+                        type: "test",
+                        name: "test-7"
+                    }
+                ]
+            ]
         ],
         {
             _name: "test-4",
@@ -23,8 +39,9 @@ test("plugins - registerPlugins, unregisterPlugin, getPlugin, getPlugins", async
         }
     );
 
-    expect(getPlugins().length).toBe(4);
-    expect(getPlugins("test").length).toBe(4);
+    expect(getPlugins().length).toBe(7);
+
+    expect(getPlugins("test").length).toBe(7);
     expect(getPlugins("testXYZ").length).toBe(0);
 
     expect(getPlugin("test-1")).toEqual({
@@ -44,8 +61,8 @@ test("plugins - registerPlugins, unregisterPlugin, getPlugin, getPlugins", async
 
     unregisterPlugin("test-3");
 
-    expect(getPlugins().length).toBe(3);
-    expect(getPlugins("test").length).toBe(3);
+    expect(getPlugins().length).toBe(6);
+    expect(getPlugins("test").length).toBe(6);
     expect(getPlugins("testXYZ").length).toBe(0);
 
     expect(getPlugin("test-1")).toEqual({

@@ -1,7 +1,6 @@
 // @flow
 import React from "react";
 import { connect } from "webiny-app-cms/editor/redux";
-import { ButtonSecondary } from "webiny-ui/Button";
 import { getPage } from "webiny-app-cms/editor/selectors";
 import { compose } from "recompose";
 import { omit } from "lodash";
@@ -10,6 +9,7 @@ import { withRouter } from "webiny-app/components";
 import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import { get, trimEnd } from "lodash";
+import { MenuItem } from "webiny-ui/Menu";
 
 const createPreviewUrl = ({ page: { url, id }, domain }: Object) => {
     if (!domain) {
@@ -46,11 +46,7 @@ const PublishPageButton = ({ page }: Object) => {
                     page
                 });
 
-                return (
-                    <ButtonSecondary onClick={() => window.open(url, "_blank")}>
-                        Preview
-                    </ButtonSecondary>
-                );
+                return <MenuItem onClick={() => window.open(url, "_blank")}>Preview</MenuItem>;
             }}
         </Query>
     );
