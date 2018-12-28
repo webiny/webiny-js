@@ -1,6 +1,6 @@
-import { registerPlugins, removePlugin, getPlugin, getPlugins } from "webiny-plugins";
+import { registerPlugins, unregisterPlugin, getPlugin, getPlugins } from "webiny-plugins";
 
-test("plugins - registerPlugins, removePlugin, getPlugin, getPlugins", async () => {
+test("plugins - registerPlugins, unregisterPlugin, getPlugin, getPlugins", async () => {
     registerPlugins(
         {
             type: "test",
@@ -37,7 +37,7 @@ test("plugins - registerPlugins, removePlugin, getPlugin, getPlugins", async () 
         name: "test-3"
     });
 
-    removePlugin("test-3");
+    unregisterPlugin("test-3");
 
     expect(getPlugins().length).toBe(2);
     expect(getPlugins("test").length).toBe(2);

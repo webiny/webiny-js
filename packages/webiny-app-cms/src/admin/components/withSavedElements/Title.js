@@ -3,7 +3,7 @@ import * as React from "react";
 import { graphql } from "react-apollo";
 import { compose, withHandlers, withState } from "recompose";
 import styled from "react-emotion";
-import { removePlugin } from "webiny-plugins";
+import { unregisterPlugin } from "webiny-plugins";
 import { Typography } from "webiny-ui/Typography";
 import { IconButton } from "webiny-ui/Button";
 import { withSnackbar } from "webiny-admin/components";
@@ -103,7 +103,7 @@ export default compose(
                     return showSnackbar(error.message);
                 }
 
-                removePlugin(plugin);
+                unregisterPlugin(plugin);
 
                 refresh();
 

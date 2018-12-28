@@ -22,6 +22,6 @@ export const getPlugin = (name: string): ?PluginType => {
     return plugins[name];
 };
 
-export const removePlugin = (name: string): void => {
+export const unregisterPlugin = (name: string): void => {
     delete plugins[name];
 };

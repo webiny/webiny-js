@@ -52,7 +52,7 @@ plugin.salute();
 ## Removing a plugin
 ```
 // anywhere in your app
-import { removePlugin } from "webiny-plugins";
+import { unregisterPlugin } from "webiny-plugins";
 
-removePlugin("my-plugin");
+unregisterPlugin("my-plugin");
 ```
