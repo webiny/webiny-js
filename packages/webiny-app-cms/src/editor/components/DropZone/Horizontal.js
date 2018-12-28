@@ -23,7 +23,8 @@ const OuterDiv = pure(
             zIndex: 10,
             backgroundColor: "transparent",
             position: "absolute",
-            display: "flex"
+            display: "flex",
+            justifyContent: "center"
         },
         props => ({
             alignItems: props.below ? "flex-end" : "flex-start",
