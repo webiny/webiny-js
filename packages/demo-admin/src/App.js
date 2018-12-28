@@ -2,7 +2,7 @@
 import { hot } from "react-hot-loader";
 import React from "react";
 import { Webiny, Router } from "webiny-app";
-import { addPlugin } from "webiny-plugins";
+import { registerPlugins } from "webiny-plugins";
 import { Theme as AdminTheme } from "webiny-admin";
 import { app as cmsApp } from "webiny-app-cms/admin";
 import { CmsProvider } from "webiny-app-cms/context";
@@ -13,7 +13,7 @@ import "./App.scss";
 import config from "./config";
 import plugins from "./plugins";
 
-addPlugin(...plugins);
+registerPlugins(...plugins);
 
 // Initialize apps
 cmsApp();

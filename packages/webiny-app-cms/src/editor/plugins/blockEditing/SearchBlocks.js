@@ -5,7 +5,7 @@ import { compose, withState } from "recompose";
 import { deactivatePlugin, updateElement } from "webiny-app-cms/editor/actions";
 import { getContent } from "webiny-app-cms/editor/selectors";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
-import { getPlugins, removePlugin } from "webiny-plugins";
+import { getPlugins, unregisterPlugin } from "webiny-plugins";
 import { createElement } from "webiny-app-cms/editor/utils";
 import { SecondaryLayout } from "webiny-admin/components/Views/SecondaryLayout";
 import { ReactComponent as SearchIcon } from "webiny-app-cms/editor/assets/icons/search.svg";
@@ -135,7 +135,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
             return;
         }
 
-        removePlugin(plugin.name);
+        unregisterPlugin(plugin.name);
         showSnackbar("Block " + plugin.title + " successfully deleted.");
     };
 

@@ -8,7 +8,6 @@ class ElementTable extends MySQLTable {
         this.column("type").varChar(50);
         this.column("content").text();
         this.column("preview").text();
-        this.column("keywords").text();
         this.column("category").varChar(255);
     }
 }

@@ -11,8 +11,8 @@ const createDefaultPage = async ({ page, data, category }) => {
     return page;
 };
 
-const createDefaultPages = async (context: Object, { categories }: Object) => {
-    const { Page, CmsSettings } = context.cms.entities;
+const createDefaultPages = async (context: Object, { categories, cmsSettings }: Object) => {
+    const { Page } = context.cms.entities;
 
     // Create default pages - demo blog, error, not found and homepage and also assign to settings.
     const demoBlogPage = new Page();
@@ -22,7 +22,6 @@ const createDefaultPages = async (context: Object, { categories }: Object) => {
     });
     await demoBlogPage.save();
 
-    const cmsSettings = new CmsSettings();
     cmsSettings.data = {
         pages: {
             home: await createDefaultPage({
@@ -42,8 +41,6 @@ const createDefaultPages = async (context: Object, { categories }: Object) => {
             })
         }
     };
-
-    await cmsSettings.save();
 };
 
 export default createDefaultPages;

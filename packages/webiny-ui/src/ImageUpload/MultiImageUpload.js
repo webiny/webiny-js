@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import type { FormComponentProps } from "./../types";
-import BrowseFiles, { type FileBrowserFile, type FileError } from "react-browse-files";
+import BrowseFiles, { type SelectedFile, type FileError } from "react-butterfiles";
 import { css } from "emotion";
 import classNames from "classnames";
 import { FormElementMessage } from "webiny-ui/FormElementMessage";
@@ -72,7 +72,7 @@ type State = {
     selectedImages: Object,
     loading: boolean,
     imageEditor: {
-        image: ?FileBrowserFile,
+        image: ?SelectedFile,
         open: boolean,
         index: ?number
     }
@@ -107,7 +107,7 @@ class MultiImageUpload extends React.Component<Props, State> {
         validate && (await validate());
     };
 
-    handleSelectedImages = async (images: Array<FileBrowserFile>, selectedIndex: number = 0) => {
+    handleSelectedImages = async (images: Array<SelectedFile>, selectedIndex: number = 0) => {
         this.setState({ errors: null, loading: true }, async () => {
             const selectedImages = {};
             for (let i = 0; i < images.length; i++) {
@@ -140,7 +140,7 @@ class MultiImageUpload extends React.Component<Props, State> {
         this.setState({ errors });
     };
 
-    removeImage = (image: FileBrowserFile) => {
+    removeImage = (image: SelectedFile) => {
         const { value, onChange } = this.props;
         if (!onChange) {
             return;
@@ -250,11 +250,12 @@ class MultiImageUpload extends React.Component<Props, State> {
                                                 }
                                                 uploadImage={() => {
                                                     browseFiles({
-                                                        onSuccess: files =>
+                                                        onSuccess: files => {
                                                             this.handleSelectedImages(
                                                                 files,
                                                                 index + 1
-                                                            ),
+                                                            );
+                                                        },
                                                         onErrors: errors =>
                                                             this.handleErrors(errors)
                                                     });
@@ -267,11 +268,12 @@ class MultiImageUpload extends React.Component<Props, State> {
                                             disabled={this.state.loading}
                                             uploadImage={() => {
                                                 browseFiles({
-                                                    onSuccess: files =>
+                                                    onSuccess: files => {
                                                         this.handleSelectedImages(
                                                             files,
                                                             Array.isArray(value) ? value.length : 0
-                                                        ),
+                                                        );
+                                                    },
                                                     onErrors: errors => this.handleErrors(errors)
                                                 });
                                             }}

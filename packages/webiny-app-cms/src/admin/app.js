@@ -2,7 +2,7 @@
 import React from "react";
 import "react-sortable-tree/style.css";
 import { i18n } from "webiny-app/i18n";
-import { addPlugin } from "webiny-plugins";
+import { registerPlugins } from "webiny-plugins";
 import AdminLayout from "webiny-admin/components/Layouts/AdminLayout";
 import editorPlugins from "webiny-app-cms/editor/presets/default";
 import renderPlugins from "webiny-app-cms/render/presets/default";
@@ -17,10 +17,10 @@ const t = i18n.namespace("Cms.Admin.Menu");
 
 export default () => {
     // CMS plugins
-    addPlugin(...editorPlugins, ...renderPlugins, ...plugins);
+    registerPlugins(...editorPlugins, ...renderPlugins, ...plugins);
 
     // Navigation plugin
-    addPlugin({
+    registerPlugins({
         name: "cms-menu",
         type: "menu",
         render({ Menu }) {
@@ -36,7 +36,7 @@ export default () => {
         }
     });
 
-    addPlugin({
+    registerPlugins({
         name: "route-cms-categories",
         type: "route",
         route: {
@@ -52,7 +52,7 @@ export default () => {
         }
     });
 
-    addPlugin({
+    registerPlugins({
         name: "route-cms-menus",
         type: "route",
         route: {
@@ -69,7 +69,7 @@ export default () => {
         }
     });
 
-    addPlugin({
+    registerPlugins({
         name: "route-cms-pages",
         type: "route",
         route: {
@@ -85,7 +85,7 @@ export default () => {
         }
     });
 
-    addPlugin({
+    registerPlugins({
         name: "route-cms-editor",
         type: "route",
         route: {
