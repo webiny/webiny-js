@@ -8,25 +8,31 @@ import type { ElementType } from "webiny-app-cms/types";
 const Button = ({ element }: ElementType) => {
     const { type = "default", icon = {}, link = {} } = get(element, "settings.advanced") || {};
     const svg = element.data.icon || null;
+    const alignItems = get(element, "settings.style.horizontalAlignFlex") || "flex-start";
 
     const { position = "left" } = icon;
 
     return (
         <ElementStyle {...getElementStyleProps(element)}>
-            {({ getAllClasses }) => (
-                <a
-                    href={link.href || null}
-                    target={link.newTab ? "_blank" : "_self"}
-                    className={getAllClasses(
-                        "webiny-cms-base-element-style",
-                        "webiny-cms-element-button",
-                        "webiny-cms-element-button--" + type,
-                        "webiny-cms-element-button__icon--" + position
-                    )}
+            {({ getAllClasses, elementStyle, elementAttributes }) => (
+                <div
+                    style={{ ...elementStyle, display: "flex", justifyContent: alignItems }}
+                    {...elementAttributes}
                 >
-                    {svg && <span dangerouslySetInnerHTML={{ __html: svg }} />}
-                    <Slate value={element.data.text} />
-                </a>
+                    <a
+                        href={link.href || null}
+                        target={link.newTab ? "_blank" : "_self"}
+                        className={getAllClasses(
+                            "webiny-cms-base-element-style",
+                            "webiny-cms-element-button",
+                            "webiny-cms-element-button--" + type,
+                            "webiny-cms-element-button__icon--" + position
+                        )}
+                    >
+                        {svg && <span dangerouslySetInnerHTML={{ __html: svg }} />}
+                        <Slate value={element.data.text} />
+                    </a>
+                </div>
             )}
         </ElementStyle>
     );
