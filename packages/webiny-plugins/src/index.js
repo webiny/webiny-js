@@ -7,7 +7,11 @@ export const registerPlugins = (...args: Array<PluginType | Array<PluginType>>):
     args.forEach(plugin => {
         const list = Array.isArray(plugin) ? plugin : [plugin];
         list.forEach(plugin => {
-            plugins[plugin.name] = plugin;
+            const name = plugin._name || plugin.name;
+            if (!name) {
+                throw Error(`Plugin must have a "name" or "_name" key.`);
+            }
+            plugins[name] = plugin;
             plugin.init && plugin.init();
         });
     });

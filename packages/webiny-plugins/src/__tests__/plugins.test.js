@@ -15,11 +15,16 @@ test("plugins - registerPlugins, unregisterPlugin, getPlugin, getPlugins", async
                 type: "test",
                 name: "test-3"
             }
-        ]
+        ],
+        {
+            _name: "test-4",
+            name: "Something...",
+            type: "test"
+        }
     );
 
-    expect(getPlugins().length).toBe(3);
-    expect(getPlugins("test").length).toBe(3);
+    expect(getPlugins().length).toBe(4);
+    expect(getPlugins("test").length).toBe(4);
     expect(getPlugins("testXYZ").length).toBe(0);
 
     expect(getPlugin("test-1")).toEqual({
@@ -39,8 +44,8 @@ test("plugins - registerPlugins, unregisterPlugin, getPlugin, getPlugins", async
 
     unregisterPlugin("test-3");
 
-    expect(getPlugins().length).toBe(2);
-    expect(getPlugins("test").length).toBe(2);
+    expect(getPlugins().length).toBe(3);
+    expect(getPlugins("test").length).toBe(3);
     expect(getPlugins("testXYZ").length).toBe(0);
 
     expect(getPlugin("test-1")).toEqual({
@@ -53,7 +58,27 @@ test("plugins - registerPlugins, unregisterPlugin, getPlugin, getPlugins", async
         name: "test-2"
     });
 
+    expect(getPlugin("test-4")).toEqual({
+        type: "test",
+        name: "Something...",
+        _name: "test-4"
+    });
+
     expect(getPlugin("test-3")).toEqual(undefined);
+});
+
+test("plugins - registerPlugins, unregisterPlugin, getPlugin, getPlugins", async () => {
+    try {
+        registerPlugins({
+            type: "test",
+            __name: "test-1",
+            namE: "test-1"
+        });
+    } catch (e) {
+        return;
+    }
+
+    throw Error(`Error should've been thrown.`);
 });
 
 test(`plugins - if present, "init" method must be executed upon adding`, async () => {
