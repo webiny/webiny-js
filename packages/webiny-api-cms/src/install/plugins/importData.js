@@ -59,11 +59,11 @@ export default async (context: Object) => {
         })
         .save();
 
-    const cmsSettings = new CmsSettings();
 
     await createDefaultBlocks(context);
 
     // Settings init.
+    const cmsSettings = new CmsSettings();
     await createDefaultPages(context, { categories, cmsSettings });
     cmsSettings.data.domain = "http://localhost:3002";
 
