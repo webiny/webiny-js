@@ -3,7 +3,7 @@ import type { PluginType } from "webiny-plugins/types";
 
 const plugins = {};
 
-export const addPlugin = (...args: Array<PluginType | Array<PluginType>>): void => {
+export const registerPlugins = (...args: Array<PluginType | Array<PluginType>>): void => {
     args.forEach(plugin => {
         const list = Array.isArray(plugin) ? plugin : [plugin];
         list.forEach(plugin => {

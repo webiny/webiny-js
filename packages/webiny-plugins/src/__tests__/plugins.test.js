@@ -1,7 +1,7 @@
-import { addPlugin, removePlugin, getPlugin, getPlugins } from "webiny-plugins";
+import { registerPlugins, removePlugin, getPlugin, getPlugins } from "webiny-plugins";
 
-test("plugins - addPlugin, removePlugin, getPlugin, getPlugins", async () => {
-    addPlugin(
+test("plugins - registerPlugins, removePlugin, getPlugin, getPlugins", async () => {
+    registerPlugins(
         {
             type: "test",
             name: "test-1"
@@ -58,7 +58,7 @@ test("plugins - addPlugin, removePlugin, getPlugin, getPlugins", async () => {
 
 test(`plugins - if present, "init" method must be executed upon adding`, async () => {
     let initialized = false;
-    addPlugin({
+    registerPlugins({
         type: "test",
         name: "test-1",
         init: () => (initialized = true)
