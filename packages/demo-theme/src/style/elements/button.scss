@@ -1,9 +1,7 @@
 .webiny-cms-element-button{
   display: flex;
-  align-items: center;
+  align-items: center !important;
   justify-content: center;
-  margin-left: auto !important;
-  margin-right: auto !important;
   padding: 14px 20px !important;
   vertical-align: top;
   text-align: center;
@@ -21,10 +19,15 @@
   outline: none;
   border: none;
   min-width: 100px;
-  width: fit-content;
+  width: auto;
   background-color: $webiny-cms-theme-background;
   font-family: unquote($webiny-cms-theme-typography-primary-font-family);
   color: $webiny-cms-theme-on-background;
+  >span{
+    display: block;
+    font-size: 1px;
+    line-height: 100%;
+  }
   &:hover{
     box-shadow: 0 7px 14px rgba(50,50,93,.1), 0 3px 6px rgba(0,0,0,.08);
     transform: translateY(-1px);
@@ -71,5 +74,10 @@
     white-space: nowrap !important;
     word-break: keep-all !important;
     overflow: hidden !important;
+  }
+
+  // force center align on mobile
+  @include mobile{
+    margin: 20px auto !important;
   }
 }

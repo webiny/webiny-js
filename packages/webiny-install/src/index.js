@@ -30,5 +30,5 @@ export default async (context: Object) => {
         const end = (+new Date() - start) / 1000;
         log(chalk.green(`Installation completed in ${end}s.`));
         process.exit(0);
-    }, 500);
+    }, 200);
 };

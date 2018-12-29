@@ -126,13 +126,13 @@ em{
   letter-spacing: 0.03125em;
 }
 
-.webiny-cms-typography-description-white{
-  font-family: unquote($webiny-cms-theme-typography-primary-font-family);
+.webiny-cms-typography--white{
   color: #fff;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  font-size: 0.8rem;
-  line-height: 1.2rem;
-  font-weight: 400;
-  letter-spacing: 0.03125em;
+}
+
+// force center align on mobile
+@include mobile{
+  .webiny-cms-element-text{
+    text-align: center;
+  }
 }

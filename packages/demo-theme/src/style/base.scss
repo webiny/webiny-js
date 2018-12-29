@@ -1,5 +1,8 @@
 html{
   font-size: 12px;
+
+  overflow-x: hidden; // fixes the overflow created by the animation library
+
   @include tablet{
     font-size: 14px;
   }
@@ -12,11 +15,6 @@ html{
   background-color: var(--webiny-cms-theme-surface);
   min-height: calc(100vh - 205px);
   max-width: 100%;
-  overflow-x: hidden;
-
-  @include mobile{
-    margin: 0 15px;
-  }
 
   @include desktop-and-tablet{
     min-height: calc(100vh - 230px);

@@ -32,6 +32,7 @@ export default (): ElementPluginType => {
                 "",
                 "cms-element-settings-padding",
                 "cms-element-settings-margin",
+                "cms-element-settings-horizontal-align-flex",
                 "",
                 "cms-element-settings-clone",
                 "cms-element-settings-delete",

@@ -6,7 +6,7 @@ import { pure } from "recompose";
 
 const InnerDiv = styled("div")({
     height: 5,
-    width: "calc(100% - 50px)",
+    width: "100%", //"calc(100% - 50px)",
     zIndex: 3,
     borderRadius: 5,
     boxSizing: "border-box",
@@ -16,17 +16,19 @@ const InnerDiv = styled("div")({
 const OuterDiv = pure(
     styled("div")(
         {
-            height: 20,
+            //height: 20,
             margin: 0,
             padding: 0,
             width: "100%",
             zIndex: 10,
             backgroundColor: "transparent",
             position: "absolute",
-            display: "flex"
+            display: "flex",
+            justifyContent: "center"
         },
         props => ({
-            alignItems: props.below ? "flex-end" : "flex-start",
+            //alignItems: props.below ? "flex-end" : "flex-start",
+            [props.below ? "bottom" : "top"]: 0,
             //[props.below ? "bottom" : "top"]: 0,
             [InnerDiv]: {
                 backgroundColor: props.isOver
@@ -49,9 +51,19 @@ const Horizontal = pure(({ below, onDrop, isVisible, type }: Props) => {
     return (
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>
             {({ isOver }) => (
-                <OuterDiv isOver={isOver} below={below}>
-                    <InnerDiv />
-                </OuterDiv>
+                <div
+                    style={{
+                        height: "10px",
+                        width: "100%",
+                        position: "absolute",
+                        [below ? "bottom" : "top"]: 0,
+                        left: 0
+                    }}
+                >
+                    <OuterDiv isOver={isOver} below={below}>
+                        <InnerDiv />
+                    </OuterDiv>
+                </div>
             )}
         </Droppable>
     );

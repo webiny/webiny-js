@@ -951,7 +951,7 @@
   dependencies:
     regenerator-runtime "^0.12.0"
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.2.0":
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.2.0.tgz#b03e42eeddf5898e00646e4c840fa07ba8dcad7f"
   integrity sha512-oouEibCbHMVdZSDlJBO6bZmID/zA/G/Qx3H1d3rSNPTD+L8UNKvCat7aKWSJ74zYbm5zWGh0GQN0hKj8zYFTCg==
@@ -16240,11 +16240,12 @@ react-app-rewired@^1.5.2:
     cross-spawn "^5.1.0"
     dotenv "^4.0.0"
 
-react-browse-files@^1.0.9:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/react-browse-files/-/react-browse-files-1.0.9.tgz#10576a0d253a93f376db9afb98a538aba58aa101"
-  integrity sha512-Eae1456TRoZBW5MRBk+8HZhBJDoV4kYwVYWlzWy417P64kqYs1r1aBxtTMupYNTbYsObqEvk+AYVUB63ErV/xw==
+react-butterfiles@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/react-butterfiles/-/react-butterfiles-1.1.2.tgz#44eb76b674a9e41c5d029e53e1a526adf322cb27"
+  integrity sha512-2EEXmCv7rKGrFEEimdMDrPwvF9W21KwLhmTMKg+SvlTIzSP6hYAtyCYlgZ6i0vhvUOX4OIpfopU49ogjT8g4Aw==
   dependencies:
+    "@babel/runtime" "^7.2.0"
     bytes "^3.0.0"
 
 react-color@^2.14.1:
@@ -18158,6 +18159,11 @@ slugify@^1.2.9:
   version "1.3.3"
   resolved "https://registry.yarnpkg.com/slugify/-/slugify-1.3.3.tgz#86200672a4ad7e88dc5190210176b62f9c19ecdf"
   integrity sha512-aFvcXobuowA7RqU4IBVJvqmhkREDIqsj4oIJKk6JuZ5EO1PCwtAAwDCl8TdsMs4J9zCoDAVkB9FLUElDjNcRSg==
+
+slugify@^1.3.4:
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/slugify/-/slugify-1.3.4.tgz#78d2792d7222b55cd9fc81fa018df99af779efeb"
+  integrity sha512-KP0ZYk5hJNBS8/eIjGkFDCzGQIoZ1mnfQRYS5WM3273z+fxGWXeN0fkwf2ebEweydv9tioZIHGZKoF21U07/nw==
 
 smart-buffer@^4.0.1:
   version "4.0.1"
@@ -20966,7 +20972,7 @@ yargs@^11.0.0:
     y18n "^3.2.1"
     yargs-parser "^9.0.2"
 
-yargs@^12.0.1, yargs@^12.0.2:
+yargs@^12.0.1, yargs@^12.0.2, yargs@^12.0.5:
   version "12.0.5"
   resolved "https://registry.yarnpkg.com/yargs/-/yargs-12.0.5.tgz#05f5997b609647b64f66b81e3b4b10a368e7ad13"
   integrity sha512-Lhz8TLaYnxq/2ObqHDql8dX8CJi97oHxrjUcYtzKbbykPtVW9WB+poxI+NM2UIzsMgNCZTIf0AQwsjK5yMAqZw==

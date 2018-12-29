@@ -80,7 +80,8 @@ export const ElementContainer = pure(
             },
             "> .innerWrapper": {
                 width: "100%",
-                height: "100%"
+                height: "auto",
+                boxSizing: "border-box"
             },
             "> .innerWrapper > .type": {
                 display: highlight ? "block" : "none",

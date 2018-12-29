@@ -20,6 +20,17 @@ export default ([
         }
     },
     {
+        name: "cms-render-element-style-horizontal-align-flex",
+        type: "cms-render-element-style",
+        renderStyle({ settings, style }: Object) {
+            const { horizontalAlignFlex } = settings;
+            if (!horizontalAlignFlex) {
+                return style;
+            }
+            return { ...style, alignItems: horizontalAlignFlex };
+        }
+    },
+    {
         name: "cms-render-element-style-vertical-align",
         type: "cms-render-element-style",
         renderStyle({ settings, style }: Object) {

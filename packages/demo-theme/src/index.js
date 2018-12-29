@@ -77,10 +77,20 @@ export default {
             component: "h3",
             className: "webiny-cms-typography-h3"
         },
+        h3White: {
+            label: "Heading 3 (white)",
+            component: "h3",
+            className: "webiny-cms-typography-h3 webiny-cms-typography--white"
+        },
         h4: {
             label: "Heading 4",
             component: "h4",
             className: "webiny-cms-typography-h4"
+        },
+        h4White: {
+            label: "Heading 4 (white)",
+            component: "h4",
+            className: "webiny-cms-typography-h4 webiny-cms-typography--white"
         },
         h5: {
             label: "Heading 5",
@@ -97,6 +107,11 @@ export default {
             component: "p",
             className: "webiny-cms-typography-body"
         },
+        paragraphWhite: {
+            label: "Paragraph (white)",
+            component: "p",
+            className: "webiny-cms-typography-body webiny-cms-typography--white"
+        },
         description: {
             label: "Description",
             component: "p",
@@ -105,7 +120,7 @@ export default {
         descriptionWhite: {
             label: "Description (white)",
             component: "p",
-            className: "webiny-cms-typography-description-white"
+            className: "webiny-cms-typography-description webiny-cms-typography--white"
         },
         primaryColorText: {
             label: "Primary color text",

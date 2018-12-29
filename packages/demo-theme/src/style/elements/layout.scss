@@ -3,38 +3,44 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  align-self: flex-start;
 
-  &__wrapper{
-    @include mobile{
-      width: 100% !important;
-    }
-
-    @include tablet{
-      width: 100% !important;
-    }
+  @include mobile{
+    width: 100% !important;
+    flex: 0 0 auto !important;
   }
 }
 .webiny-cms-layout-row{
   position: relative;
   display: flex;
-  flex: 1 100%;
   box-sizing: border-box;
   flex-direction: column;
+
   @include desktop-and-tablet{
+    flex: 100% 1;
     flex-direction: row;
+  }
+
+  @include mobile{
+    max-width: 100% !important;
+    flex: 0 auto !important;
   }
 }
 
 .webiny-cms-layout-column{
   box-sizing: border-box;
   text-align: center;
-  width: auto;
   display: flex;
   position: relative;
-  flex: 100%;
+  flex: auto 0;
   flex-direction: column;
+
+  @include mobile{
+    width: auto !important;
+  }
+
   @include desktop-and-tablet{
     text-align: left;
-    width: 100%;
+    width: auto;
   }
 }

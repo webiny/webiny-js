@@ -28,6 +28,7 @@ export default (): ElementPluginType => {
             "cms-element-settings-margin",
             "cms-element-settings-width",
             "cms-element-settings-height",
+            "cms-element-settings-horizontal-align-flex",
             "cms-element-settings-vertical-align",
             "",
             "cms-element-settings-clone",

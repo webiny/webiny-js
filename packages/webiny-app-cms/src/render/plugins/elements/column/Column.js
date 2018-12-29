@@ -16,6 +16,7 @@ const Column = ({ element }: { element: ElementType }) => {
                 className={"webiny-cms-base-element-style webiny-cms-layout-column"}
                 {...getElementAttributeProps(element)}
                 {...getElementStyleProps(element)}
+                style={{ width: (element.data.width || 100) + "%" }}
             >
                 {element.elements.map(element => (
                     <Element element={element} key={element.id} />
