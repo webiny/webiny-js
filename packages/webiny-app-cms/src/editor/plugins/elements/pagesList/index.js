@@ -26,7 +26,11 @@ export default () => {
                     type: "cms-element-pages-list",
                     settings: {
                         limit: 3,
-                        component: "default"
+                        component: "default",
+                        style: {
+                            margin: { all: 0 },
+                            padding: { all: 0 }
+                        }
                     },
                     ...options
                 };

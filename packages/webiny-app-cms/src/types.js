@@ -7,6 +7,7 @@ import type { WithCmsPropsType, CmsProviderPropsType } from "webiny-app-cms/cont
 export type { WithPageDetailsProps };
 export type { WithCmsPropsType };
 export type { CmsProviderPropsType };
+export type { PluginType };
 
 export type ElementType = {
     id: string,

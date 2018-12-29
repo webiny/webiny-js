@@ -87,7 +87,17 @@ export default (): Array<PluginType> => {
                 });
             },
             create(options) {
-                return { type: "cms-element-image", elements: [], ...options };
+                return {
+                    type: "cms-element-image",
+                    elements: [],
+                    settings: {
+                        style: {
+                            margin: { all: 0 },
+                            padding: { all: 0 }
+                        }
+                    },
+                    ...options
+                };
             },
             render({ element }) {
                 return (

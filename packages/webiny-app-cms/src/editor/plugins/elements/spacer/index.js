@@ -35,7 +35,10 @@ export default (): ElementPluginType => {
         create(options = {}) {
             return {
                 type: "cms-element-spacer",
-                settings: { style: { height: INIT_HEIGHT } },
+                settings: {
+                    style: { height: INIT_HEIGHT, margin: { all: 0 }, padding: { all: 0 } }
+                },
+
                 ...options
             };
         },
