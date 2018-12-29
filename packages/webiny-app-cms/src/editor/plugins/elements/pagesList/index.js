@@ -13,7 +13,7 @@ export default () => {
             type: "cms-element",
             toolbar: {
                 title: "Pages List",
-                group: "cms-element-group-text",
+                group: "cms-element-group-basic",
                 preview() {
                     return "List sample";
                 }
@@ -26,7 +26,11 @@ export default () => {
                     type: "cms-element-pages-list",
                     settings: {
                         limit: 3,
-                        component: "default"
+                        component: "default",
+                        style: {
+                            margin: { all: 0 },
+                            padding: { all: 0 }
+                        }
                     },
                     ...options
                 };

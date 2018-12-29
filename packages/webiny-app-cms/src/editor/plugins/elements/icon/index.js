@@ -48,6 +48,12 @@ export default () => {
                     type: "cms-element-icon",
                     elements: [],
                     data: {},
+                    settings: {
+                        style: {
+                            margin: { all: 0 },
+                            padding: { all: 0 }
+                        }
+                    },
                     ...options
                 };
             },
