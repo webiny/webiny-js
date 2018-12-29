@@ -46,7 +46,10 @@ export default (): ElementPluginType => {
                 settings: {
                     style: {
                         width: { value: "1000px" },
-                        margin: { all: 0 },
+                        margin: {
+                            mobile: { top: 15, left: 15, right: 15, bottom: 15 },
+                            desktop: { top: 25, left: 0, right: 0, bottom: 25 }
+                        },
                         padding: { all: 0 }
                     }
                 },
