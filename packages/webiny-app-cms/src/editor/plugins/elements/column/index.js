@@ -61,7 +61,8 @@ export default (): ElementPluginType => {
                 type: "cms-element-column",
                 settings: {
                     style: {
-                        margin: "20px"
+                        margin: { all: 0 },
+                        padding: { all: 0 }
                     }
                 },
                 ...options

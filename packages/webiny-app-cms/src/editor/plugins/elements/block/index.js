@@ -43,6 +43,12 @@ export default (): ElementPluginType => {
                         elements: [createColumn({ data: { width: 100 } })]
                     })
                 ],
+                settings: {
+                    style: {
+                        margin: { all: 0 },
+                        padding: { all: 0 }
+                    }
+                },
                 ...options
             };
         },

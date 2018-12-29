@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import { createValue } from "webiny-app-cms/editor/components/Slate";
-import type { ElementPluginType } from "webiny-app-cms/types";
+import type { PluginType } from "webiny-app-cms/types";
 import { ReactComponent as ButtonIcon } from "./round-toggle_on-24px.svg";
 import { ReactComponent as LinkIcon } from "./round-link-24px.svg";
 import ButtonSettings from "./ButtonSettings";
@@ -9,7 +9,7 @@ import LinkSettings from "./LinkSettings";
 import Button from "./Button";
 import Action from "../../elementSettings/components/Action";
 
-export default (): ElementPluginType => {
+export default (): Array<PluginType> => {
     return [
         {
             name: "cms-element-button",
@@ -44,6 +44,12 @@ export default (): ElementPluginType => {
                     type: "cms-element-button",
                     elements: [],
                     data: { text: createValue("Click me", "button") },
+                    settings: {
+                        style: {
+                            margin: { all: 0 },
+                            padding: { all: 0 }
+                        }
+                    },
                     ...options
                 };
             },
