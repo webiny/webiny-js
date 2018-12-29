@@ -1,6 +1,9 @@
 {
   "version": "independent",
   "packages": ["addons/*"],
+  "publishConfig": {
+    "repository": "http://localhost:4873"
+  },
   "changelog": {
     "repo": "webiny/webiny-js",
     "labels": {
