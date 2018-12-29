@@ -150,7 +150,7 @@ preview {
 export const listElements = gql`
     query CmsListElements {
         cms {
-            elements: listElements {
+            elements: listElements(perPage: 1000) {
                 data {
                     ${elementFields}
                 }

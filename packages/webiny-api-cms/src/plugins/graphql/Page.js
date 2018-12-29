@@ -159,7 +159,7 @@ export default {
                 perPage: Int
             ): PageListResponse
             
-            listElements: ElementListResponse
+            listElements(perPage: Int): ElementListResponse
             
             oembedData(
                 url: String! 

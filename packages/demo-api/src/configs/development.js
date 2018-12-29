@@ -26,7 +26,7 @@ export default {
         crud: {
             logs: true,
             read: {
-                maxPerPage: 100
+                maxPerPage: 1000
             },
             delete: {
                 soft: true
