@@ -13,7 +13,7 @@ export default () => {
             type: "cms-element",
             toolbar: {
                 title: "Pages List",
-                group: "cms-element-group-text",
+                group: "cms-element-group-basic",
                 preview() {
                     return "List sample";
                 }
