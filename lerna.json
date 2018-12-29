@@ -1,4 +1,6 @@
 {
+  "version": "independent",
+  "packages": ["addons/*"],
   "changelog": {
     "repo": "webiny/webiny-js",
     "labels": {
