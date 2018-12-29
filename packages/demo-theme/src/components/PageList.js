@@ -60,12 +60,14 @@ const pageItem = css({
     padding: 20
 });
 
-const PageList = ({ data }: Object) => {
+const PageList = ({ data, nextPage, prevPage }: Object) => {
     return (
         <div className={pageList}>
             {data.map(page => (
                 <PageItem className={pageItem} key={page.id} data={page} />
             ))}
+            {prevPage && <button onClick={prevPage}>Prev</button>}
+            {nextPage && <button onClick={nextPage}>Next</button>}
         </div>
     );
 };

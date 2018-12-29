@@ -220,11 +220,11 @@ export default {
         CmsQuery: {
             getPage: resolveGet(pageFetcher),
             listPages: listPages(pageFetcher),
-            listPublishedPages: listPublishedPages,
-            getPublishedPage: getPublishedPage,
-            getHomePage: getHomePage,
-            getNotFoundPage: getNotFoundPage,
-            getErrorPage: getErrorPage,
+            listPublishedPages,
+            getPublishedPage,
+            getHomePage,
+            getNotFoundPage,
+            getErrorPage,
             listElements: resolveList(elementFetcher),
             oembedData: oembed
         },
