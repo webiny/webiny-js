@@ -80,7 +80,7 @@ export const ElementContainer = pure(
             },
             "> .innerWrapper": {
                 width: "100%",
-                height: "auto",
+                height: "100%", // note "auto" fixes the odd hover bug which resizes the column, but causes a bug with column vertical align
                 boxSizing: "border-box"
             },
             "> .innerWrapper > .type": {
