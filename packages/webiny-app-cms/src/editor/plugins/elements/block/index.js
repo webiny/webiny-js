@@ -45,6 +45,7 @@ export default (): ElementPluginType => {
                 ],
                 settings: {
                     style: {
+                        width: { value: "1000px" },
                         margin: { all: 0 },
                         padding: { all: 0 }
                     }
