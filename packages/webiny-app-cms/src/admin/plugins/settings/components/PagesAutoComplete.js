@@ -5,13 +5,16 @@ import { withAutoComplete } from "webiny-app/components";
 import { compose } from "recompose";
 import gql from "graphql-tag";
 import { get } from "lodash";
+import { Query } from "react-apollo";
 
-const loadPages = gql`
-    query LoadPages($search: String) {
+// We utilize the same "listPages" GraphQL field.
+const getPage = gql`
+    query listPages($parent: String) {
         cms {
-            pages: listPages(search: $search) {
+            pages: listPages(parent: $parent) {
                 data {
-                    id
+                    parent
+                    published
                     title
                 }
             }
@@ -19,11 +22,44 @@ const loadPages = gql`
     }
 `;
 
-const PagesAutoComplete = props => <AutoComplete {...props} textProp={"title"} />;
+const listPages = gql`
+    query listPages($search: String) {
+        cms {
+            pages: listPages(search: $search) {
+                data {
+                    parent
+                    published
+                    title
+                }
+            }
+        }
+    }
+`;
+
+const PagesAutoComplete = props => (
+    <Query skip={!props.value} variables={{ parent: props.value }} query={getPage}>
+        {({ data }) => {
+            const value = get(data, "cms.pages.data.0");
+            return (
+                <AutoComplete
+                    {...props}
+                    description={
+                        value &&
+                        !value.published &&
+                        "Warning: page is not published, it will not be visible in the menu."
+                    }
+                    valueProp={"parent"}
+                    textProp={"title"}
+                    value={value}
+                />
+            );
+        }}
+    </Query>
+);
 
 export default compose(
     withAutoComplete({
         response: data => get(data, "cms.pages"),
-        query: loadPages
+        query: listPages
     })
 )(PagesAutoComplete);

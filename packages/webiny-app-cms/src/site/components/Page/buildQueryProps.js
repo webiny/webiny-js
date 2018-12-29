@@ -18,9 +18,9 @@ export default ({ url, query, defaultPages }: Props) => {
     if (query.preview) {
         return {
             query: gql`
-                query CmsGetPage($id: String!) {
+                query CmsGetPage($id: ID!) {
                     cms {
-                        page: getPublishedPage(id: $id) {
+                        page: getPage(id: $id) {
                             data ${getDataFields()}
                             error {
                                 code

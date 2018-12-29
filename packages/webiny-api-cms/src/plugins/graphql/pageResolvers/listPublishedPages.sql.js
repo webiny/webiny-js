@@ -44,27 +44,27 @@ export default (args: Object, context: Object) => {
             where.push(`AND p.parent IN (${parent.map(() => "?").join(",")})`);
             variables.push(...parent);
         } else {
-            where.push(`AND p.parent = ${parent})`);
+            where.push(`AND p.parent = ?`);
             variables.push(parent);
         }
-    } 
-    
+    }
+
     if (id) {
         if (Array.isArray(id)) {
             where.push(`AND p.id IN (${id.map(() => "?").join(",")})`);
             variables.push(...id);
         } else {
-            where.push(`AND p.id = ${id})`);
+            where.push(`AND p.id = ?`);
             variables.push(id);
         }
-    }   
-    
+    }
+
     if (url) {
         if (Array.isArray(url)) {
             where.push(`AND p.url IN (${url.map(() => "?").join(",")})`);
             variables.push(...url);
         } else {
-            where.push(`AND p.url = ${url})`);
+            where.push(`AND p.url = ?`);
             variables.push(url);
         }
     }
