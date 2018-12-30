@@ -201,9 +201,12 @@ class AddElement extends React.Component<Props, State> {
 
 export default compose(
     connect(
-        state => ({
-            params: getActivePluginParams("cms-toolbar-add-element")(state)
-        }),
+        state => {
+            const getParams = getActivePluginParams("cms-toolbar-add-element");
+            return {
+                params: getParams ? getParams(state) : null
+            };
+        },
         { dragStart, dragEnd, deactivatePlugin, dropElement }
     ),
     withCms(),

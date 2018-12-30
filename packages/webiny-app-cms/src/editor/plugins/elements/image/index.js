@@ -45,6 +45,7 @@ export default (): Array<PluginType> => {
             },
             settings: [
                 "cms-element-settings-background",
+                "cms-element-settings-link",
                 "",
                 "cms-element-settings-border",
                 "cms-element-settings-shadow",

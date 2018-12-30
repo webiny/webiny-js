@@ -1,4 +1,5 @@
 // @flow
+import { get, startCase } from "lodash";
 import type { CmsRenderElementStylePluginType } from "webiny-app-cms/types";
 
 export default ({
@@ -15,10 +16,16 @@ export default ({
         }
 
         ["top", "right", "bottom", "left"].forEach(side => {
-            if (border.borders[side]) {
-                style[`border-${side}-style`] = border.style;
-                style[`border-${side}-color`] = border.color;
-                style[`border-${side}-width`] = border.width;
+            let sideEnabled = get(border, `borders.${side}`);
+            if (typeof sideEnabled === "undefined") {
+                sideEnabled = true;
+            }
+
+            if (sideEnabled) {
+                const Side = startCase(side);
+                style[`border${Side}Style`] = border.style;
+                style[`border${Side}Color`] = border.color;
+                style[`border${Side}Width`] = border.width;
             }
         });
 
