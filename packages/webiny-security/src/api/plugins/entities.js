@@ -5,7 +5,7 @@ import * as entities from "webiny-security/api/entities";
 const apiToken: EntityPluginType = {
     name: "entity-api-token",
     type: "entity",
-    namespace: "api",
+    namespace: "security",
     entity: {
         name: "ApiToken",
         factory: entities.apiTokenFactory
@@ -15,7 +15,7 @@ const apiToken: EntityPluginType = {
 const group: EntityPluginType = {
     name: "entity-group",
     type: "entity",
-    namespace: "api",
+    namespace: "security",
     entity: {
         name: "Group",
         factory: entities.groupFactory
@@ -25,7 +25,7 @@ const group: EntityPluginType = {
 const groups2entities: EntityPluginType = {
     name: "entity-groups-2-entities",
     type: "entity",
-    namespace: "api",
+    namespace: "security",
     entity: {
         name: "Groups2Entities",
         factory: entities.groups2entitiesFactory
@@ -35,7 +35,7 @@ const groups2entities: EntityPluginType = {
 const role: EntityPluginType = {
     name: "entity-role",
     type: "entity",
-    namespace: "api",
+    namespace: "security",
     entity: {
         name: "Role",
         factory: entities.roleFactory
@@ -45,7 +45,7 @@ const role: EntityPluginType = {
 const roles2entities: EntityPluginType = {
     name: "entity-roles-2-entities",
     type: "entity",
-    namespace: "api",
+    namespace: "security",
     entity: {
         name: "Roles2Entities",
         factory: entities.roles2entitiesFactory
@@ -55,7 +55,7 @@ const roles2entities: EntityPluginType = {
 const user: EntityPluginType = {
     name: "entity-user",
     type: "entity",
-    namespace: "api",
+    namespace: "security",
     entity: {
         name: "User",
         factory: entities.userFactory
@@ -65,19 +65,11 @@ const user: EntityPluginType = {
 const userSettings: EntityPluginType = {
     name: "entity-user-settings",
     type: "entity",
-    namespace: "api",
+    namespace: "security",
     entity: {
         name: "UserSettings",
         factory: entities.userSettingsFactory
     }
 };
 
-export default [
-    apiToken,
-    group,
-    groups2entities,
-    role,
-    roles2entities,
-    user,
-    userSettings
-];
+export default [apiToken, group, groups2entities, role, roles2entities, user, userSettings];

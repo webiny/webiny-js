@@ -1,18 +1,10 @@
 // @flow
-import { Response, ErrorResponse } from "webiny-api/graphql/responses";
+import getPublishedPage from "./getPublishedPage";
 
 export default async (root: any, args: Object, context: Object) => {
     const { CmsSettings } = context.cms.entities;
-
     const settings = await CmsSettings.load();
-    const page = await settings.get("data.pages.error");
+    const parent = await settings.get("data.pages.error");
 
-    if (!page) {
-        return new ErrorResponse({
-            code: "NOT_FOUND",
-            message: "The requested page was not found!"
-        });
-    }
-
-    return new Response(page);
+    return getPublishedPage(root, { ...args, parent }, context);
 };

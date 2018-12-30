@@ -23,13 +23,14 @@ export default [
             }
 
             type CmsSettingsPages {
-                home: CmsDefaultPage
-                notFound: CmsDefaultPage
-                error: CmsDefaultPage
+                home: ID
+                notFound: ID
+                error: ID
             }
 
             type CmsDefaultPage {
                 id: String
+                parent: String
                 title: String
             }
 

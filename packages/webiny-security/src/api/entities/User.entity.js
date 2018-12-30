@@ -23,7 +23,7 @@ export class User extends Entity {
 User.classId = "SecurityUser";
 User.storageClassId = "Security_Users";
 
-export function userFactory({ api: { entities } }: Object) {
+export function userFactory({ security: { entities } }: Object) {
     return class extends User {
         constructor() {
             super();
