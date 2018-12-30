@@ -43,6 +43,15 @@
     background-color: $webiny-cms-theme-secondary;
     color: $webiny-cms-theme-on-secondary;
   }
+  &--simple{
+    background-color: transparent;
+    color: $webiny-cms-theme-primary;
+    &:hover{
+      box-shadow: none;
+      transform: none;
+      text-decoration: underline;
+    }
+  }
   &__icon{
     &--left{
       flex-direction: row;

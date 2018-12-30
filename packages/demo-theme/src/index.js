@@ -43,7 +43,8 @@ export default {
             types: [
                 { className: "", label: "Default" },
                 { className: "primary", label: "Primary" },
-                { className: "secondary", label: "Secondary" }
+                { className: "secondary", label: "Secondary" },
+                { className: "simple", label: "Simple" }
             ]
         },
         pagesList: {
