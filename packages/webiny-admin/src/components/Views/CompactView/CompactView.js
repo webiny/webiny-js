@@ -26,7 +26,16 @@ const RightPanelWrapper = styled("div")({
 });
 
 const leftPanel = css({
-    backgroundColor: "var(--mdc-theme-surface)"
+    backgroundColor: "var(--mdc-theme-surface)",
+    ".webiny-data-list": {
+        display: "flex",
+        flexDirection: "column",
+        maxHeight: "calc(100vh - 70px)",
+        ".mdc-list": {
+            height: "100%",
+            overflow: "scroll"
+        }
+    }
 });
 
 const CompactView = (props: {
