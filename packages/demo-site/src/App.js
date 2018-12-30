@@ -4,13 +4,12 @@ import React from "react";
 import { Webiny, Router } from "webiny-app";
 import { registerPlugins } from "webiny-plugins";
 import { CmsProvider } from "webiny-app-cms/context";
-import cookiePolicyPlugins from "webiny-integration-cookie-policy/plugins/admin";
 import plugins from "./plugins";
 import myTheme from "demo-theme";
 import config from "./config";
 import { GenericNotFoundPage, GenericErrorPage } from "./cms";
 
-registerPlugins(plugins, cookiePolicyPlugins);
+registerPlugins(plugins);
 
 const App = () => {
     return (

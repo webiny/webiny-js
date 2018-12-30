@@ -8,12 +8,11 @@ import { CmsProvider } from "webiny-app-cms/context";
 import myTheme from "demo-theme";
 import { Security } from "webiny-security/components";
 import Login from "webiny-security/admin/views/Login";
-import cookiePolicyPlugins from "webiny-integration-cookie-policy/plugins/admin";
 import "./App.scss";
 import config from "./config";
 import plugins from "./plugins";
 
-registerPlugins(plugins, cookiePolicyPlugins);
+registerPlugins(plugins);
 
 const App = () => {
     return (
