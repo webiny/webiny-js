@@ -43,11 +43,7 @@ const PagesAutoComplete = props => (
             return (
                 <AutoComplete
                     {...props}
-                    description={
-                        value &&
-                        !value.published &&
-                        "Warning: page is not published, it will not be visible in the menu."
-                    }
+                    description={value && !value.published && "Warning: page is not published."}
                     valueProp={"parent"}
                     textProp={"title"}
                     value={value}

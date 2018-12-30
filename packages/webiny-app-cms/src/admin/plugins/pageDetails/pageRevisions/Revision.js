@@ -24,6 +24,7 @@ import { ReactComponent as LockIcon } from "webiny-app-cms/admin/assets/lock.svg
 import { ReactComponent as BeenHereIcon } from "webiny-app-cms/admin/assets/beenhere.svg";
 import { ReactComponent as GestureIcon } from "webiny-app-cms/admin/assets/gesture.svg";
 import withRevisionHandlers from "./withRevisionHandlers";
+import { withCmsSettings } from "webiny-app-cms/admin/components";
 
 type RevisionProps = WithPageDetailsProps & {
     rev: Object,
@@ -31,7 +32,8 @@ type RevisionProps = WithPageDetailsProps & {
     editRevision: Function,
     deleteRevision: Function,
     publishRevision: Function,
-    submitCreateRevision: Function
+    submitCreateRevision: Function,
+    cmsSettings: { getPagePreviewUrl: Function }
 };
 
 const primaryColor = css({ color: "var(--mdc-theme-primary)" });
@@ -56,13 +58,15 @@ const getIcon = (rev: Object) => {
     }
 };
 
-const Revision = ({
-    rev,
-    createRevision,
-    editRevision,
-    deleteRevision,
-    publishRevision
-}: RevisionProps) => {
+const Revision = (props: RevisionProps) => {
+    const {
+        rev,
+        createRevision,
+        editRevision,
+        deleteRevision,
+        publishRevision,
+        cmsSettings: { getPagePreviewUrl }
+    } = props;
     const { icon, text: tooltipText } = getIcon(rev);
 
     return (
@@ -92,6 +96,11 @@ const Revision = ({
                             {!rev.published && (
                                 <MenuItem onClick={() => publishRevision(rev)}>Publish</MenuItem>
                             )}
+
+                            <MenuItem onClick={() => window.open(getPagePreviewUrl(rev), "_blank")}>
+                                Preview
+                            </MenuItem>
+
                             {!rev.locked && (
                                 <React.Fragment>
                                     <MenuDivider />
@@ -112,5 +121,6 @@ export default compose(
     withRouter(),
     withSnackbar(),
     withPageDetails(),
-    withRevisionHandlers
+    withRevisionHandlers,
+    withCmsSettings()
 )(Revision);
