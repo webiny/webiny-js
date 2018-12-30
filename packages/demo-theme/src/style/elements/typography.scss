@@ -130,6 +130,10 @@ em{
   color: #fff;
 }
 
+.webiny-cms-typography--primary{
+  color: $webiny-cms-theme-primary;
+}
+
 // force center align on mobile
 @include mobile{
   .webiny-cms-element-text{
