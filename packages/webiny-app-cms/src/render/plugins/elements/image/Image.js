@@ -20,7 +20,7 @@ const Link = ({ link, children }: Object) => {
 
 const Image = (props: *) => {
     const { src } = props.element.data;
-    const { img = {}, link = {} } = get(props, "element.settings.advanced");
+    const { img = {}, link = {} } = get(props, "element.settings.advanced", {});
     const { width, height, align, rest } = img;
     const wrapperStyle = get(props, "element.settings.style", {});
     const elementStyles = getElementStyleProps(props.element);
