@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 const execa = require("execa");
-const { readdirSync, statSync } = require("fs");
-const { join } = require("path");
+const { basename } = require("path");
 const chalk = require("chalk");
+const getPackages = require("get-yarn-workspaces");
 
 const blacklist = [
     // Client
@@ -14,19 +14,23 @@ const blacklist = [
     "webiny-react-router"
 ];
 
-function listPackages(p) {
-    return readdirSync(p)
-        .filter(f => statSync(join(p, f)).isDirectory())
-        .filter(f => !blacklist.includes(f));
+/**
+ * Get a list of packages in form: `packages/webiny-ui` and `addons/webiny-integration-....`
+ * @returns Array<String>
+ */
+function listPackages() {
+    return getPackages()
+        .filter(path => !blacklist.includes(basename(path)))
+        .map(dir => dir.replace(process.cwd() + "/", ""));
 }
 
-function checkPackage(name) {
-    const command = `cd packages/${name}/src && find . -type f | xargs grep -H -c '@flow' | grep 0$ | cut -d':' -f1`;
+function checkPackage(path) {
+    const command = `cd ${path}/src && find . -type f | xargs grep -H -c '@flow' | grep 0$ | cut -d':' -f1`;
     return execa.shellSync(command);
 }
 
 const packages = {
-    list: listPackages("./packages"),
+    list: listPackages(),
     invalid: []
 };
 
@@ -44,7 +48,7 @@ if (packages.invalid.length) {
     // eslint-disable-next-line
     console.log(
         chalk.red(
-            `Following packages (${packages.invalid.length}) are missing @flow implementation:`
+            `The following packages (${packages.invalid.length}) are missing @flow implementation:`
         )
     );
 

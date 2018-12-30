@@ -2,15 +2,15 @@
 import { hot } from "react-hot-loader";
 import React from "react";
 import { Webiny, Router } from "webiny-app";
-import { CmsProvider } from "webiny-app-cms/context";
-import plugins from "./plugins";
 import { registerPlugins } from "webiny-plugins";
-
+import { CmsProvider } from "webiny-app-cms/context";
+import cookiePolicyPlugins from "webiny-integration-cookie-policy/plugins/admin";
+import plugins from "./plugins";
 import myTheme from "demo-theme";
 import config from "./config";
 import { GenericNotFoundPage, GenericErrorPage } from "./cms";
 
-registerPlugins(...plugins);
+registerPlugins(plugins, cookiePolicyPlugins);
 
 const App = () => {
     return (
