@@ -14,16 +14,15 @@
   },
   "devDependencies": {
     "node-sass": "^4.9.3",
-    "react-app-rewired": "^1.5.2",
     "react-scripts": "^2.0.5",
     "source-map-explorer": "^1.6.0"
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
-    "start": "SKIP_PREFLIGHT_CHECK=true PORT=3002 react-app-rewired start",
-    "build": "SKIP_PREFLIGHT_CHECK=true react-app-rewired build",
-    "test": "react-app-rewired test --env=jsdom",
-    "eject": "react-app-rewired eject"
+    "start": "SKIP_PREFLIGHT_CHECK=true PORT=3002 rescripts start",
+    "build": "SKIP_PREFLIGHT_CHECK=true rescripts build",
+    "test": "rescripts test --env=jsdom",
+    "eject": "react-scripts eject"
   },
   "browserslist": {
     "development": [
