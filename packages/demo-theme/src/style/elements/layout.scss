@@ -23,6 +23,7 @@
 
   @include mobile{
     max-width: 100% !important;
+    width: 100% !important; // added for Content #6
     flex: 0 auto !important;
   }
 }
