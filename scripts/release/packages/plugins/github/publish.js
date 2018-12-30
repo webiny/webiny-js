@@ -1,6 +1,6 @@
 const execa = require("execa");
 const parseGithubUrl = require("parse-github-url");
-const GithubFactory = require("./utils/githubClient");
+const GithubFactory = require("../../utils/githubClient");
 
 module.exports = (pluginConfig = {}) => {
     return async ({ lastRelease, nextRelease, config, git, logger, packages }, next, finish) => {

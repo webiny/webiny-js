@@ -7,7 +7,7 @@ String.prototype.format = function() {
 /**
  * Logger with `log` and `error` function.
  */
-const formatString = (format, rest) => {
+const formatString = (format, rest = []) => {
     return `${format.replace(/%[^%]/g, seq => chalk.magenta(seq))}`.format(...rest);
 };
 module.exports = () => {
