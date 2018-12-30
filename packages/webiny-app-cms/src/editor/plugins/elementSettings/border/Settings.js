@@ -6,15 +6,11 @@ import { Tabs, Tab } from "webiny-ui/Tabs";
 import { get, set } from "dot-prop-immutable";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { getActiveElement } from "webiny-app-cms/editor/selectors";
-import { Grid, Cell } from "webiny-ui/Grid";
-import { IconButton } from "webiny-ui/Button";
+import { Grid } from "webiny-ui/Grid";
 import ColorPicker from "webiny-app-cms/editor/plugins/elementSettings/components/ColorPicker";
 import Select from "webiny-app-cms/editor/plugins/elementSettings/components/Select";
 import Slider from "webiny-app-cms/editor/plugins/elementSettings/components/Slider";
-import { ReactComponent as TopIcon } from "./icons/round-border_top-24px.svg";
-import { ReactComponent as RightIcon } from "./icons/round-border_right-24px.svg";
-import { ReactComponent as BottomIcon } from "./icons/round-border_bottom-24px.svg";
-import { ReactComponent as LeftIcon } from "./icons/round-border_left-24px.svg";
+import Selector from "./Selector";
 
 type Props = Object & {
     element: Object,
@@ -32,7 +28,8 @@ const Settings = (props: Props) => {
         updateBorderColor,
         updateBorderColorPreview,
         updateBorderWidth,
-        updateBorderWidthPreview
+        updateBorderWidthPreview,
+        updateBorders
     } = props;
     const { settings } = element;
 
@@ -40,6 +37,7 @@ const Settings = (props: Props) => {
     const borderRadius = get(settings, "style.border.radius", 0);
     const borderColor = get(settings, "style.border.color", "#fff");
     const borderStyle = get(settings, "style.border.style", "none");
+    const borders = get(settings, "style.border.borders", {});
 
     return (
         <React.Fragment>
@@ -78,18 +76,7 @@ const Settings = (props: Props) => {
                             updateValue={updateBorderStyle}
                             options={options}
                         />
-                        <Cell span={3}>
-                            <IconButton icon={<TopIcon />} />
-                        </Cell>
-                        <Cell span={3}>
-                            <IconButton icon={<RightIcon />} />
-                        </Cell>
-                        <Cell span={3}>
-                            <IconButton icon={<BottomIcon />} />
-                        </Cell>
-                        <Cell span={3}>
-                            <IconButton icon={<LeftIcon />} />
-                        </Cell>
+                        <Selector label={"Borders"} value={borders} updateValue={updateBorders} />
                     </Grid>
                 </Tab>
             </Tabs>
@@ -137,6 +124,7 @@ export default compose(
         updateBorderWidth: ({ updateSettings }) => (value: string) =>
             updateSettings("width", value),
         updateBorderWidthPreview: ({ updateSettings }) => (value: string) =>
-            updateSettings("width", value, false)
+            updateSettings("width", value, false),
+        updateBorders: ({ updateSettings }) => (value: string) => updateSettings("borders", value)
     })
 )(Settings);

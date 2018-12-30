@@ -10,22 +10,18 @@ export default ({
             return style;
         }
 
-        if (border.style) {
-            style.borderStyle = border.style;
-        }
-
-        if (border.width) {
-            style.borderWidth = border.width;
-        }
-
         if (border.radius) {
             style.borderRadius = border.radius;
         }
 
-        if (border.color) {
-            style.borderColor = border.color;
-        }
-        
+        ["top", "right", "bottom", "left"].forEach(side => {
+            if (border.borders[side]) {
+                style[`border-${side}-style`] = border.style;
+                style[`border-${side}-color`] = border.color;
+                style[`border-${side}-width`] = border.width;
+            }
+        });
+
         return style;
     }
 }: CmsRenderElementStylePluginType);
