@@ -46,6 +46,8 @@
   &--simple{
     background-color: transparent;
     color: $webiny-cms-theme-primary;
+    padding: 0 !important;
+    min-width: 0;
     &:hover{
       box-shadow: none;
       transform: none;
