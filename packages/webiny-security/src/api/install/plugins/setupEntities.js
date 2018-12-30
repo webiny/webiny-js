@@ -8,12 +8,12 @@ import { roles2entitiesFactory } from "./../../entities/Roles2Entities.entity";
 import { userSettingsFactory } from "./../../entities/UserSettings.entity";
 
 export default (context: Object) => {
-    context.api = { entities: {} };
-    context.api.entities.User = userFactory(context);
-    context.api.entities.ApiToken = apiTokenFactory(context);
-    context.api.entities.Group = groupFactory(context);
-    context.api.entities.Role = roleFactory(context);
-    context.api.entities.Groups2Entities = groups2entitiesFactory(context);
-    context.api.entities.Roles2Entities = roles2entitiesFactory(context);
-    context.api.entities.UserSettings = userSettingsFactory(context);
+    context.security = { entities: {} };
+    context.security.entities.User = userFactory(context);
+    context.security.entities.ApiToken = apiTokenFactory(context);
+    context.security.entities.Group = groupFactory(context);
+    context.security.entities.Role = roleFactory(context);
+    context.security.entities.Groups2Entities = groups2entitiesFactory(context);
+    context.security.entities.Roles2Entities = roles2entitiesFactory(context);
+    context.security.entities.UserSettings = userSettingsFactory(context);
 };
