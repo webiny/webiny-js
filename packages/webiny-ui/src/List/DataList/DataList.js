@@ -331,13 +331,13 @@ export const DataList = (props: Props) => {
             </Grid>
 
             <Grid className={listSubHeader}>
-                <Cell span={6}>
+                <Cell span={5}>
                     <MultiSelectActions {...props} />
                     <RefreshButton {...props} />
                     <Sorters {...props} />
                 </Cell>
 
-                <Cell span={6} style={{ textAlign: "right" }}>
+                <Cell span={7} style={{ textAlign: "right" }}>
                     <Pagination {...props} />
                 </Cell>
             </Grid>
