@@ -81,10 +81,12 @@ const ListContainer = styled("div")({
 
 const listHeader = css({
     borderBottom: "1px solid var(--mdc-theme-on-background)",
-    color: "var(--mdc-theme-text-primary-on-background)"
+    color: "var(--mdc-theme-text-primary-on-background)",
+    width: "100%"
 });
 
 const listSubHeader = css({
+    width: "100%",
     "&.mdc-layout-grid": {
         borderBottom: "1px solid var(--mdc-theme-on-background)",
         padding: "10px 24px 10px 12px",
@@ -246,14 +248,11 @@ const Pagination = (props: Props) => {
 
     return (
         <React.Fragment>
-            {typeof meta.totalCount !== "undefined" &&
-                meta.totalCount > 0 &&
-                meta.from &&
-                meta.to && (
-                    <ListHeaderItem>
-                        {meta.from} - {meta.to} of {meta.totalCount}
-                    </ListHeaderItem>
-                )}
+            {typeof meta.totalCount !== "undefined" && meta.totalCount > 0 && meta.from && meta.to && (
+                <ListHeaderItem>
+                    {meta.from} - {meta.to} of {meta.totalCount}
+                </ListHeaderItem>
+            )}
 
             {props.setPage && (
                 <React.Fragment>
@@ -287,24 +286,21 @@ const Pagination = (props: Props) => {
                 </React.Fragment>
             )}
 
-            {props.setPerPage &&
-                Array.isArray(props.perPageOptions) && (
-                    <ListHeaderItem>
-                        <Menu handle={<OptionsIcon />}>
-                            {props.setPerPage &&
-                                props.perPageOptions.map(perPage => (
-                                    <MenuItem
-                                        key={perPage}
-                                        onClick={() =>
-                                            props.setPerPage && props.setPerPage(perPage)
-                                        }
-                                    >
-                                        {perPage}
-                                    </MenuItem>
-                                ))}
-                        </Menu>
-                    </ListHeaderItem>
-                )}
+            {props.setPerPage && Array.isArray(props.perPageOptions) && (
+                <ListHeaderItem>
+                    <Menu handle={<OptionsIcon />}>
+                        {props.setPerPage &&
+                            props.perPageOptions.map(perPage => (
+                                <MenuItem
+                                    key={perPage}
+                                    onClick={() => props.setPerPage && props.setPerPage(perPage)}
+                                >
+                                    {perPage}
+                                </MenuItem>
+                            ))}
+                    </Menu>
+                </ListHeaderItem>
+            )}
         </React.Fragment>
     );
 };
