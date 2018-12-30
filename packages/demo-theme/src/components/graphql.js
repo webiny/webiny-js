@@ -4,7 +4,7 @@ import gql from "graphql-tag";
 export const getHeaderData = gql`
     query {
         settings {
-            general {
+            cms {
                 name
                 logo {
                     src
@@ -17,7 +17,7 @@ export const getHeaderData = gql`
 export const getFooterData = gql`
     query {
         settings {
-            general {
+            cms {
                 social {
                     facebook
                     instagram

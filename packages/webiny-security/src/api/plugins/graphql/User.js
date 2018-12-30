@@ -13,8 +13,8 @@ import resolveUpdateCurrentUser from "./userResolvers/updateCurrentUser";
 import resolveGetCurrentUserSettings from "./userResolvers/getCurrentUserSettings";
 import resolveUpdateCurrentUserSettings from "./userResolvers/updateCurrentUserSettings";
 
-const userFetcher = ctx => ctx.api.entities.User;
-const userSettingsFetcher = ctx => ctx.api.entities.UserSettings;
+const userFetcher = ctx => ctx.security.entities.User;
+const userSettingsFetcher = ctx => ctx.security.entities.UserSettings;
 
 import Role from "./Role";
 import Group from "./Group";

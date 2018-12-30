@@ -7,34 +7,28 @@ export default ({
     type: "graphql",
     name: "graphql-api",
     namespace: "api",
-    typeDefs: () => [
-        ...getPlugins("schema-settings").map(pl => pl.typeDefs),
-        /* GraphQL */ `
-            type SecurityQuery {
-                scopes: [String]
-            }
+    typeDefs: () => {
+        return [
+            /* GraphQL */ `
+                type SettingsQuery {
+                    _empty: String
+                }
 
-            type SecurityMutation {
-                _empty: String
-            }
+                type SettingsMutation {
+                    _empty: String
+                }
 
-            type SettingsQuery {
-                _empty: String
-            }
+                type Query {
+                    settings: SettingsQuery
+                }
 
-            type SettingsMutation {
-                _empty: String
-            }
-
-            type Query {
-                settings: SettingsQuery
-            }
-
-            type Mutation {
-                settings: SettingsMutation
-            }
-        `
-    ],
+                type Mutation {
+                    settings: SettingsMutation
+                }
+            `,
+            ...getPlugins("schema-settings").map(pl => pl.typeDefs)
+        ];
+    },
     resolvers: () => [
         {
             Query: {
@@ -66,7 +60,7 @@ export default ({
                         if (!settings) {
                             settings = new entityClass();
                         }
-                        settings.data = data;
+                        settings.data.populate(data);
                         await settings.save();
 
                         return settings.data;

@@ -4,18 +4,9 @@ import gql from "graphql-tag";
 const fields = /* GraphQL */ `
     {
         pages {
-            home {
-                id
-                title
-            }
-            notFound {
-                id
-                title
-            }
-            error {
-                id
-                title
-            }
+            home
+            notFound
+            error
         }
     }
 `;

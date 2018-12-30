@@ -1,7 +1,7 @@
 // @flow
 import { Entity } from "webiny-entity";
 
-export function tags2PagesFactory({ api: { entities } }: Object) {
+export function tags2PagesFactory({ cms: { entities } }: Object) {
     return class Tags2Pages extends Entity {
         static classId = "CmsTags2Pages";
         static storageClassId = "Cms_Tags2Pages";
