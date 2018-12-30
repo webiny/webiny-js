@@ -16,9 +16,12 @@ jobs:
   include:
     - stage: test
       script: yarn build && yarn test:build
-    - stage: release
+    - stage: release-core
       if: branch = "master" AND type = "push"
       script: yarn build && yarn release
+    - stage: release-addons
+      if: branch = "master" AND type = "push"
+      script: yarn build && yarn release-addons
 notifications:
   slack:
     on_success: change

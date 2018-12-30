@@ -25,7 +25,6 @@ module.name_mapper='^webiny-api/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-api
 module.name_mapper='^webiny-api-cms/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-api-cms/src/\1'
 module.name_mapper='^webiny-app/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-app/src/\1'
 module.name_mapper='^webiny-admin/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-admin/src/\1'
-module.name_mapper='^webiny-security/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-security/src/\1'
 module.name_mapper='^webiny-app-cms/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-app-cms/src/\1'
 module.name_mapper='^webiny-cms-editor/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-cms-editor/src/\1'
 module.name_mapper='^webiny-ui/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-ui/src/\1'
@@ -47,12 +46,17 @@ module.name_mapper='^webiny-model/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-m
 module.name_mapper='^webiny-mysql-connection/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-mysql-connection/src/\1'
 module.name_mapper='^webiny-plugins/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-plugins/src/\1'
 module.name_mapper='^webiny-react-router/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-react-router/src/\1'
+module.name_mapper='^webiny-security/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-security/src/\1'
 module.name_mapper='^webiny-service-manager/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-service-manager/src/\1'
 module.name_mapper='^webiny-sql-table-mysql/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-sql-table-mysql/src/\1'
 module.name_mapper='^webiny-sql-table-sync/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-sql-table-sync/src/\1'
 module.name_mapper='^webiny-sql-table/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-sql-table/src/\1'
 module.name_mapper='^webiny-storybook-utils/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-storybook-utils/src/\1'
 module.name_mapper='^webiny-validation/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-validation/src/\1'
+module.name_mapper='^webiny-integration-cookie-policy/?\(.*\)$' -> '<PROJECT_ROOT>/addons/webiny-integration-cookie-policy/src/\1'
+module.name_mapper='^webiny-integration-google-tag-manager/?\(.*\)$' -> '<PROJECT_ROOT>/addons/webiny-integration-google-tag-manager/src/\1'
+module.name_mapper='^webiny-integration-mailchimp/?\(.*\)$' -> '<PROJECT_ROOT>/addons/webiny-integration-mailchimp/src/\1'
+module.name_mapper='^webiny-integration-typeform/?\(.*\)$' -> '<PROJECT_ROOT>/addons/webiny-integration-typeform/src/\1'
 
 [strict]
 

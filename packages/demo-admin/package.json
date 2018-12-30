@@ -7,24 +7,23 @@
     "demo-theme": "0.0.0",
     "react-apollo": "^2.2.4",
     "react-hot-loader": "^4.3.5",
-    "webiny-app": "0.0.0",
     "webiny-admin": "0.0.0",
+    "webiny-app": "0.0.0",
     "webiny-app-cms": "0.0.0",
-    "webiny-ui": "0.0.0",
-    "webiny-plugins": "0.0.0"
+    "webiny-plugins": "0.0.0",
+    "webiny-ui": "0.0.0"
   },
   "devDependencies": {
+    "@rescripts/cli": "^0.0.7",
     "node-sass": "^4.9.3",
-    "react-app-rewired": "^1.5.2",
-    "react-scripts": "^2.0.5",
     "source-map-explorer": "^1.6.0"
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
-    "start": "SKIP_PREFLIGHT_CHECK=true PORT=3001 react-app-rewired start",
-    "build": "SKIP_PREFLIGHT_CHECK=true react-app-rewired build",
-    "test": "react-app-rewired test --env=jsdom",
-    "eject": "react-app-rewired eject"
+    "start": "SKIP_PREFLIGHT_CHECK=true PORT=3001 rescripts start",
+    "build": "SKIP_PREFLIGHT_CHECK=true rescripts build",
+    "test": "rescripts test --env=jsdom",
+    "eject": "react-scripts eject"
   },
   "browserslist": {
     "development": [
