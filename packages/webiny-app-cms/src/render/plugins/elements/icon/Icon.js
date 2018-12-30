@@ -14,8 +14,9 @@ const Icon = ({ element }: Object) => {
 
     return (
         <ElementStyle {...getElementStyleProps(element)}>
-            {({ getAllClasses }) => (
+            {({ getAllClasses, elementStyle }) => (
                 <div
+                    style={elementStyle}
                     className={getAllClasses(
                         "webiny-cms-base-element-style webiny-cms-element-icon",
                         center
