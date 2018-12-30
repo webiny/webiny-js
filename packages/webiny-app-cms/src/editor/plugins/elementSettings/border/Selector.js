@@ -22,7 +22,17 @@ const enabled = css({
 
 const cellStyle = { marginBottom: 0 };
 
+const getValue = (value, side) => {
+    const enabled = value[side];
+    return typeof enabled === "undefined" ? true : enabled;
+};
+
 export default pure(({ label, value, updateValue }: Props) => {
+    const top = getValue(value, "top");
+    const right = getValue(value, "right");
+    const bottom = getValue(value, "bottom");
+    const left = getValue(value, "left");
+
     return (
         <React.Fragment>
             <Cell span={4}>
@@ -32,29 +42,29 @@ export default pure(({ label, value, updateValue }: Props) => {
                 <Grid>
                     <Cell span={3} style={cellStyle}>
                         <IconButton
-                            onClick={() => updateValue({ ...value, top: !value.top })}
-                            className={value.top && enabled}
+                            onClick={() => updateValue({ ...value, top: !top })}
+                            className={top && enabled}
                             icon={<TopIcon />}
                         />
                     </Cell>
                     <Cell span={3} style={cellStyle}>
                         <IconButton
-                            onClick={() => updateValue({ ...value, right: !value.right })}
-                            className={value.right && enabled}
+                            onClick={() => updateValue({ ...value, right: !right })}
+                            className={right && enabled}
                             icon={<RightIcon />}
                         />
                     </Cell>
                     <Cell span={3} style={cellStyle}>
                         <IconButton
-                            onClick={() => updateValue({ ...value, bottom: !value.bottom })}
-                            className={value.bottom && enabled}
+                            onClick={() => updateValue({ ...value, bottom: !bottom })}
+                            className={bottom && enabled}
                             icon={<BottomIcon />}
                         />
                     </Cell>
                     <Cell span={3} style={cellStyle}>
                         <IconButton
-                            onClick={() => updateValue({ ...value, left: !value.left })}
-                            className={value.left && enabled}
+                            onClick={() => updateValue({ ...value, left: !left })}
+                            className={left && enabled}
                             icon={<LeftIcon />}
                         />
                     </Cell>
