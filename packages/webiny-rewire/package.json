@@ -10,12 +10,13 @@
     "get-yarn-workspaces": "^1.0.2",
     "lodash.clonedeep": "^4.5.0",
     "lodash.isobject": "^3.0.2",
+    "lodash.get": "^4.4.2",
     "react-hot-loader": "^4.3.12",
     "@svgr/webpack": "^4.1.0"
   },
   "peerDependencies": {
     "babel-preset-react-app": "^6.1.0",
-    "react-app-rewired": "^1.6.2",
+    "@rescripts/cli": "^0.0.7",
     "react-scripts": "^2.1.1"
   }
 }

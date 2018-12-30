@@ -1738,6 +1738,22 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
+"@rescripts/cli@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@rescripts/cli/-/cli-0.0.7.tgz#7c059133f98c02fd9cc2abf597f6f0459518f1ea"
+  integrity sha512-BZOJaqeODSTIcEk6Gq5iSIB5tnx6nLb3BJ9oqkq2BRivylqlitW+fHAf+D7dkK6IQm9oIz0XNOtbCCSez+ag1Q==
+  dependencies:
+    "@rescripts/utilities" "^0.0.4"
+    ramda "^0.26.0"
+    react-dev-utils "^7.0.0"
+
+"@rescripts/utilities@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@rescripts/utilities/-/utilities-0.0.4.tgz#f50830e629b603b4afa6e2f9b513ddfec97b07f7"
+  integrity sha512-JsdYzuzTvnisjEn2CEb1JgZ7d68vulUjZk5MDP4/t9QUm+wiS/CWVDxLjbji0uwjT/zOHmKJk5BL0Q6fQVfGyg==
+  dependencies:
+    ramda "^0.26.0"
+
 "@rmwc/base@^2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@rmwc/base/-/base-2.2.0.tgz#431077cd5df8261c072faff98a00f83b48b1e4c2"
@@ -16166,6 +16182,11 @@ ramda@^0.25.0:
   version "0.25.0"
   resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.25.0.tgz#8fdf68231cffa90bc2f9460390a0cb74a29b29a9"
   integrity sha512-GXpfrYVPwx3K7RQ6aYT8KPS8XViSXUVJT1ONhoKPE9VAleW42YE+U+8VEyGWt41EnEQW7gwecYJriTI0pKoecQ==
+
+ramda@^0.26.0:
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.26.1.tgz#8d41351eb8111c55353617fc3bbffad8e4d35d06"
+  integrity sha512-hLWjpy7EnsDBb0p+Z3B7rPi3GDeRG5ZtiI33kJhTt+ORCd38AbAIjB/9zRIUoeTbE/AVX5ZkU7m6bznsvrf8eQ==
 
 random-color@^1.0.1:
   version "1.0.1"
