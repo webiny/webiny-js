@@ -10,6 +10,7 @@ import { Grid } from "webiny-ui/Grid";
 import ColorPicker from "webiny-app-cms/editor/plugins/elementSettings/components/ColorPicker";
 import Select from "webiny-app-cms/editor/plugins/elementSettings/components/Select";
 import Slider from "webiny-app-cms/editor/plugins/elementSettings/components/Slider";
+import Selector from "./Selector";
 
 type Props = Object & {
     element: Object,
@@ -27,7 +28,8 @@ const Settings = (props: Props) => {
         updateBorderColor,
         updateBorderColorPreview,
         updateBorderWidth,
-        updateBorderWidthPreview
+        updateBorderWidthPreview,
+        updateBorders
     } = props;
     const { settings } = element;
 
@@ -35,6 +37,7 @@ const Settings = (props: Props) => {
     const borderRadius = get(settings, "style.border.radius", 0);
     const borderColor = get(settings, "style.border.color", "#fff");
     const borderStyle = get(settings, "style.border.style", "none");
+    const borders = get(settings, "style.border.borders", {});
 
     return (
         <React.Fragment>
@@ -73,6 +76,7 @@ const Settings = (props: Props) => {
                             updateValue={updateBorderStyle}
                             options={options}
                         />
+                        <Selector label={"Borders"} value={borders} updateValue={updateBorders} />
                     </Grid>
                 </Tab>
             </Tabs>
@@ -120,6 +124,7 @@ export default compose(
         updateBorderWidth: ({ updateSettings }) => (value: string) =>
             updateSettings("width", value),
         updateBorderWidthPreview: ({ updateSettings }) => (value: string) =>
-            updateSettings("width", value, false)
+            updateSettings("width", value, false),
+        updateBorders: ({ updateSettings }) => (value: string) => updateSettings("borders", value)
     })
 )(Settings);
