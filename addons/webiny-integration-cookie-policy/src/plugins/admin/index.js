@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import CookiePolicySettings from "./components/CookiePolicySettings";
-import type { SettingsPluginType } from "webiny-app-admin/types";
+import type { SettingsPluginType } from "webiny-admin/types";
 
 export default ([
     {
