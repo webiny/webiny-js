@@ -24,7 +24,7 @@ class Header extends React.Component<{}, State> {
         return (
             <Query query={getHeaderData}>
                 {({ data: response }) => {
-                    const { name, logo } = get(response, "settings.general") || {};
+                    const { name, logo } = get(response, "settings.cms") || {};
 
                     return (
                         <React.Fragment>

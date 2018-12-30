@@ -3,7 +3,7 @@ import setupEntities from "./setupEntities";
 
 export default async (context: Object) => {
     setupEntities(context);
-    const { User, Role } = context.api.entities;
+    const { User, Role } = context.security.entities;
 
     const user = new User();
 

@@ -16,7 +16,7 @@ html{
 
   // fixes the overflow created by the animation library (fix pending)
   // https://github.com/michalsnik/aos/issues/416
-  overflow-x: hidden;
+  overflow: hidden;
   width: 100vw;
 
   @include desktop-and-tablet{

@@ -16,9 +16,16 @@ const Image = (props: *) => {
     const elementAttributes = getElementAttributeProps(props.element);
 
     const style = { width, height };
-    if (!style.width && !style.height) {
+    if (!style.width) {
         style.width = "100%";
+    } else {
+        style.width += "px";
+    }
+
+    if (!style.height) {
         style.height = "100%";
+    } else {
+        style.height += "px";
     }
 
     return (

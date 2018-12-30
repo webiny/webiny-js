@@ -7,7 +7,7 @@
 
   @include mobile{
     width: 100% !important;
-    flex: 0 0 auto !important;
+    // flex: 0 0 auto !important; // removed because Content #2
   }
 }
 .webiny-cms-layout-row{
@@ -17,7 +17,7 @@
   flex-direction: column;
 
   @include desktop-and-tablet{
-    flex: 100% 1;
+    // flex: 100% 1; // removed because Content #2
     flex-direction: row;
   }
 

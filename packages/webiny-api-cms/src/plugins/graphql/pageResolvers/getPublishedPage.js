@@ -1,27 +1,20 @@
 // @flow
 import { Response, ErrorResponse } from "webiny-api/graphql/responses";
+import listPublishedPagesSql from "./listPublishedPages.sql";
 
 export default async (root: any, args: Object, context: Object) => {
-    const { Page } = context.cms.entities;
-
-    const query = {};
-
-    const { id, url } = args;
-    if (!id && !url) {
+    if (!args.parent && !args.url) {
         return new ErrorResponse({
             code: "NOT_FOUND",
-            message: "Page URL or ID missing."
+            message: "Page parent or URL missing."
         });
     }
 
-    if (id) {
-        query.id = id;
-    } else {
-        query.url = url;
-        query.published = true;
-    }
+    // We utilize the same query used for listing published pages (single source of truth = less maintenance).
+    const sql = listPublishedPagesSql({ ...args, perPage: 1 }, context);
+    const { Page } = context.cms.entities;
+    const [page] = await Page.find({ sql });
 
-    const page = await Page.findOne({ query });
     if (!page) {
         return new ErrorResponse({
             code: "NOT_FOUND",

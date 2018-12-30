@@ -10,7 +10,7 @@ import {
 } from "./entityAttributes";
 
 import type Entity from "./entity";
-import type { EntityAttributeOptions } from "../types";
+import type { EntityAttributeOptions } from "./types";
 
 class EntityAttributesContainer extends DefaultAttributesContainer {
     entity(

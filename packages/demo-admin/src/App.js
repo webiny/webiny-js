@@ -4,7 +4,6 @@ import React from "react";
 import { Webiny, Router } from "webiny-app";
 import { registerPlugins } from "webiny-plugins";
 import { Theme as AdminTheme } from "webiny-admin";
-import { app as cmsApp } from "webiny-app-cms/admin";
 import { CmsProvider } from "webiny-app-cms/context";
 import myTheme from "demo-theme";
 import { Security } from "webiny-security/components";
@@ -13,10 +12,7 @@ import "./App.scss";
 import config from "./config";
 import plugins from "./plugins";
 
-registerPlugins(...plugins);
-
-// Initialize apps
-cmsApp();
+registerPlugins(plugins);
 
 const App = () => {
     return (

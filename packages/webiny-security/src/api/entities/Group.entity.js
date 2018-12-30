@@ -12,7 +12,7 @@ export class Group extends Entity {
 Group.classId = "SecurityGroup";
 Group.storageClassId = "Security_Groups";
 
-export function groupFactory({ user = {}, api: { entities } }: Object) {
+export function groupFactory({ user = {}, security: { entities } }: Object) {
     return class extends Group {
         constructor() {
             super();

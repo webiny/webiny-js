@@ -18,7 +18,7 @@ export interface IApiToken extends Entity {
 export function apiTokenFactory({
     user = {},
     config,
-    api: { entities }
+    security: { entities }
 }: Object): Class<IApiToken> {
     return class extends Entity {
         static classId = "SecurityApiToken";

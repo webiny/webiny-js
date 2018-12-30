@@ -1,8 +1,6 @@
 // @flow
 import { settingsFactory } from "webiny-api/entities";
-
 import { Model } from "webiny-model";
-import { EntityModel } from "webiny-entity";
 import FileModel from "./File.model";
 
 class SocialMedia extends Model {
@@ -14,23 +12,21 @@ class SocialMedia extends Model {
     }
 }
 
-const cmsSettingsPagesModelFactory = (settings, { cms: { entities } }) => {
-    return class CmsSettingsModel extends EntityModel {
-        constructor() {
-            super();
-            this.setParentEntity(settings);
-            this.attr("home").entity(entities.Page);
-            this.attr("notFound").entity(entities.Page);
-            this.attr("error").entity(entities.Page);
-        }
-    };
-};
+class CmsSettingsPagesModel extends Model {
+    constructor() {
+        super();
+        // These are actually parents, not the ID of the actual page.
+        this.attr("home").char();
+        this.attr("notFound").char();
+        this.attr("error").char();
+    }
+}
 
-const cmsSettingsModelFactory = (...args) => {
+const cmsSettingsModelFactory = () => {
     return class CmsSettingsModel extends Model {
         constructor() {
             super();
-            this.attr("pages").model(cmsSettingsPagesModelFactory(...args));
+            this.attr("pages").model(CmsSettingsPagesModel);
             this.attr("name").char();
             this.attr("domain").char();
             this.attr("favicon").model(FileModel);

@@ -125,7 +125,7 @@ export default {
         primaryColorText: {
             label: "Primary color text",
             component: "p",
-            className: "webiny-cms-typography-primary-color"
+            className: "webiny-cms-typography-body webiny-cms-typography--primary"
         }
     }
 };

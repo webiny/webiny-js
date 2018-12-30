@@ -12,7 +12,7 @@ const Footer = () => {
     return (
         <Query query={getFooterData}>
             {({ data: response }) => {
-                const { name, logo, social } = get(response, "settings.general") || {};
+                const { name, logo, social } = get(response, "settings.cms") || {};
 
                 return (
                     <div className={"webiny-cms-section-footer"}>
