@@ -24,21 +24,21 @@ const createDefaultPages = async (context: Object, { categories, cmsSettings }: 
 
     cmsSettings.data = {
         pages: {
-            home: await createDefaultPage({
+            home: (await createDefaultPage({
                 page: new Page(),
                 data: homepage,
                 category: categories.static
-            }),
-            error: await createDefaultPage({
+            })).id,
+            error: (await createDefaultPage({
                 page: new Page(),
                 data: error,
                 category: categories.static
-            }),
-            notFound: await createDefaultPage({
+            })).id,
+            notFound: (await createDefaultPage({
                 page: new Page(),
                 data: notFound,
                 category: categories.static
-            })
+            })).id
         }
     };
 };
