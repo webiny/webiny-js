@@ -29,7 +29,8 @@ export default {
         primary: "var(--webiny-cms-theme-primary)",
         secondary: "var(--webiny-cms-theme-secondary)",
         background: "var(--webiny-cms-theme-background)",
-        surface: "var(--webiny-cms-theme-surface)"
+        surface: "var(--webiny-cms-theme-surface)",
+        textPrimary: "var(--webiny-cms-theme-text-primary)"
     },
     components: {
         menu: [
@@ -44,7 +45,8 @@ export default {
             types: [
                 { className: "", label: "Default" },
                 { className: "primary", label: "Primary" },
-                { className: "secondary", label: "Secondary" }
+                { className: "secondary", label: "Secondary" },
+                { className: "simple", label: "Simple" }
             ]
         },
         pagesList: {

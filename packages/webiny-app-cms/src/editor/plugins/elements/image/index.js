@@ -45,6 +45,7 @@ export default (): Array<PluginType> => {
             },
             settings: [
                 "cms-element-settings-background",
+                "cms-element-settings-link",
                 "",
                 "cms-element-settings-border",
                 "cms-element-settings-shadow",
@@ -92,8 +93,15 @@ export default (): Array<PluginType> => {
                     elements: [],
                     settings: {
                         style: {
-                            margin: { all: 0 },
-                            padding: { all: 0 }
+                            margin: {
+                                desktop: { all: 0 },
+                                mobile: { top: 0, left: 0, right: 0, bottom: 15 },
+                                advanced: true
+                            },
+                            padding: {
+                                desktop: { all: 0 },
+                                mobile: { all: 0 }
+                            }
                         }
                     },
                     ...options

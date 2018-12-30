@@ -3,9 +3,7 @@ import React from "react";
 import { createValue } from "webiny-app-cms/editor/components/Slate";
 import type { PluginType } from "webiny-app-cms/types";
 import { ReactComponent as ButtonIcon } from "./round-toggle_on-24px.svg";
-import { ReactComponent as LinkIcon } from "./round-link-24px.svg";
 import ButtonSettings from "./ButtonSettings";
-import LinkSettings from "./LinkSettings";
 import Button from "./Button";
 import Action from "../../elementSettings/components/Action";
 
@@ -26,10 +24,6 @@ export default (): Array<PluginType> => {
                 "cms-element-settings-icon",
                 "cms-element-settings-link",
                 "",
-                "cms-element-settings-background",
-                "cms-element-settings-border",
-                "cms-element-settings-shadow",
-                "",
                 "cms-element-settings-padding",
                 "cms-element-settings-margin",
                 "cms-element-settings-horizontal-align-flex",
@@ -46,8 +40,14 @@ export default (): Array<PluginType> => {
                     data: { text: createValue("Click me", "button") },
                     settings: {
                         style: {
-                            margin: { all: 0 },
-                            padding: { all: 0 }
+                            margin: {
+                                desktop: { all: 0 },
+                                mobile: { all: 0 }
+                            },
+                            padding: {
+                                desktop: { all: 0 },
+                                mobile: { all: 0 }
+                            }
                         }
                     },
                     ...options
@@ -65,16 +65,6 @@ export default (): Array<PluginType> => {
             },
             renderMenu() {
                 return <ButtonSettings />;
-            }
-        },
-        {
-            name: "cms-element-settings-link",
-            type: "cms-element-settings",
-            renderAction() {
-                return <Action plugin={this.name} tooltip={"Link"} icon={<LinkIcon />} />;
-            },
-            renderMenu() {
-                return <LinkSettings />;
             }
         }
     ];

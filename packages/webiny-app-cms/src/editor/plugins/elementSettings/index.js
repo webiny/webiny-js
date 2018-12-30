@@ -14,6 +14,7 @@ import height from "./height";
 import align from "./align";
 import divider from "./divider";
 import save from "./save";
+import link from "./link";
 
 export default [
     animation,
@@ -30,5 +31,6 @@ export default [
     width,
     columnWidth,
     height,
-    save
+    save,
+    link
 ];

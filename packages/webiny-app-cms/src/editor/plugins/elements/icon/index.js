@@ -37,6 +37,7 @@ export default () => {
                 "",
                 "cms-element-settings-padding",
                 "cms-element-settings-margin",
+                "cms-element-settings-horizontal-align",
                 "",
                 "cms-element-settings-clone",
                 "cms-element-settings-delete",
@@ -50,8 +51,14 @@ export default () => {
                     data: {},
                     settings: {
                         style: {
-                            margin: { all: 0 },
-                            padding: { all: 0 }
+                            margin: {
+                                desktop: { all: 0 },
+                                mobile: { all: 0 }
+                            },
+                            padding: {
+                                desktop: { all: 0 },
+                                mobile: { all: 0 }
+                            }
                         }
                     },
                     ...options

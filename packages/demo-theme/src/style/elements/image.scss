@@ -2,4 +2,8 @@
   img{
     max-width: 100%;
   }
+
+  @include mobile{
+    text-align: center !important;
+  }
 }
