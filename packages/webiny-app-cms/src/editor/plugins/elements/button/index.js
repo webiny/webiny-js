@@ -46,8 +46,14 @@ export default (): Array<PluginType> => {
                     data: { text: createValue("Click me", "button") },
                     settings: {
                         style: {
-                            margin: { all: 0 },
-                            padding: { all: 0 }
+                            margin: {
+                                desktop: { all: 0 },
+                                mobile: { all: 0 }
+                            },
+                            padding: {
+                                desktop: { all: 0 },
+                                mobile: { all: 0 }
+                            }
                         }
                     },
                     ...options

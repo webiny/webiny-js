@@ -64,8 +64,14 @@ export default (): ElementPluginType => {
                 elements: [],
                 settings: {
                     style: {
-                        margin: { all: 15 },
-                        padding: { all: 15 }
+                        margin: {
+                            desktop: { all: 0 },
+                            mobile: { all: 0 }
+                        },
+                        padding: {
+                            desktop: { all: 0 },
+                            mobile: { all: 0 }
+                        }
                     }
                 },
                 ...options
