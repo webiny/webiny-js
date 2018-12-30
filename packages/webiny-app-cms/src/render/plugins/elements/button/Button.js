@@ -5,7 +5,7 @@ import Slate from "webiny-app-cms/render/components/Slate";
 import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
 import type { ElementType } from "webiny-app-cms/types";
 
-const Button = ({ element }: ElementType) => {
+const Button = ({ element }: { element: ElementType }) => {
     const { type = "default", icon = {}, link = {} } = get(element, "settings.advanced") || {};
     const svg = element.data.icon || null;
     const alignItems = get(element, "settings.style.horizontalAlignFlex") || "flex-start";

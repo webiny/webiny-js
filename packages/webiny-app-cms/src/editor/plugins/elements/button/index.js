@@ -3,9 +3,7 @@ import React from "react";
 import { createValue } from "webiny-app-cms/editor/components/Slate";
 import type { PluginType } from "webiny-app-cms/types";
 import { ReactComponent as ButtonIcon } from "./round-toggle_on-24px.svg";
-import { ReactComponent as LinkIcon } from "./round-link-24px.svg";
 import ButtonSettings from "./ButtonSettings";
-import LinkSettings from "./LinkSettings";
 import Button from "./Button";
 import Action from "../../elementSettings/components/Action";
 
@@ -71,16 +69,6 @@ export default (): Array<PluginType> => {
             },
             renderMenu() {
                 return <ButtonSettings />;
-            }
-        },
-        {
-            name: "cms-element-settings-link",
-            type: "cms-element-settings",
-            renderAction() {
-                return <Action plugin={this.name} tooltip={"Link"} icon={<LinkIcon />} />;
-            },
-            renderMenu() {
-                return <LinkSettings />;
             }
         }
     ];

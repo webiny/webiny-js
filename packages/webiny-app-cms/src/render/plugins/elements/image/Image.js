@@ -7,11 +7,22 @@ import {
     getElementAttributeProps
 } from "webiny-app-cms/render/components/ElementStyle";
 
+const Link = ({ link, children }: Object) => {
+    if (link && link.href) {
+        return (
+            <a href={link.href} target={link.newTab ? "_blank" : "_self"}>
+                {children}
+            </a>
+        );
+    }
+    return children;
+};
+
 const Image = (props: *) => {
     const { src } = props.element.data;
-    const { width, height, align, rest } = get(props, "element.settings.advanced.img", {});
+    const { img = {}, link = {} } = get(props, "element.settings.advanced");
+    const { width, height, align, rest } = img;
     const wrapperStyle = get(props, "element.settings.style", {});
-
     const elementStyles = getElementStyleProps(props.element);
     const elementAttributes = getElementAttributeProps(props.element);
 
@@ -34,7 +45,9 @@ const Image = (props: *) => {
                 className={"webiny-cms-base-element-style webiny-cms-element-image"}
                 style={{ ...wrapperStyle, textAlign: align }}
             >
-                <img {...rest} style={style} src={src} />
+                <Link link={link}>
+                    <img {...rest} style={style} src={src} />
+                </Link>
             </div>
         </ElementStyle>
     );
