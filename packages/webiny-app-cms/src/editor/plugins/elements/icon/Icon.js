@@ -10,7 +10,7 @@ const center = css({ textAlign: "center" });
 const Icon = ({ element }: Object) => {
     return (
         <ElementStyle {...getElementStyleProps(element)}>
-            {({ getAllClasses }) => (
+            {({ getAllClasses, elementStyle }) => (
                 <ConnectedElement elementId={element.id}>
                     {element => {
                         const svg = element.data.icon || null;
@@ -20,9 +20,13 @@ const Icon = ({ element }: Object) => {
                         );
 
                         return svg ? (
-                            <div className={className} dangerouslySetInnerHTML={{ __html: svg }} />
+                            <div
+                                style={elementStyle}
+                                className={className}
+                                dangerouslySetInnerHTML={{ __html: svg }}
+                            />
                         ) : (
-                            <div className={className}>
+                            <div style={elementStyle} className={className}>
                                 <FontAwesomeIcon icon={["far", "star"]} size={"4x"} />
                             </div>
                         );
