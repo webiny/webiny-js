@@ -136,7 +136,7 @@ em{
 
 // force center align on mobile
 @include mobile{
-  .webiny-cms-element-text{
+  .webiny-cms-element-text, .webiny-cms-element-icon{
     text-align: center !important;
     > div > *{
       text-align: center !important;
