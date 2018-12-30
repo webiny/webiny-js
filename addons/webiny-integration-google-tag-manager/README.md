@@ -11,9 +11,9 @@ To setup, you must register a set of plugins. For more information on plugins, p
 #### API
 ```
 import gtmPlugins from "webiny-integration-google-tag-manager/plugins/api"
-import { addPlugin } from "webiny-plugins";
+import { registerPlugins } from "webiny-plugins";
 
-addPlugin(...gtmPlugins);
+registerPlugins(gtmPlugins);
 ```
 
 Exposes necessary GraphQL fields for updating integration settings.
@@ -22,9 +22,9 @@ Exposes necessary GraphQL fields for updating integration settings.
 #### Admin
 ```
 import gtmPlugins from "webiny-integration-google-tag-manager/plugins/admin"
-import { addPlugin } from "webiny-plugins";
+import { registerPlugins } from "webiny-plugins";
 
-addPlugin(...gtmPlugins);
+registerPlugins(gtmPlugins);
 ```
 
 Enables management of GTM settings, which can be accessed via Settings section in the main menu. You will paste
@@ -34,9 +34,9 @@ your GTM "Container ID" here (this is required in order for the integration to w
 #### Site
 ```
 import gtmPlugins from "webiny-integration-google-tag-manager/plugins/render"
-import { addPlugin } from "webiny-plugins";
+import { registerPlugins } from "webiny-plugins";
 
-addPlugin(...gtmPlugins);
+registerPlugins(gtmPlugins);
 ```
 
 Initializes Google Tag Manager. Use in your public website.

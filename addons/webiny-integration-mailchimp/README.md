@@ -11,9 +11,9 @@ To setup, you must register a set of plugins. For more information on plugins, p
 #### API
 ```
 import mailchimpPlugins from "webiny-integration-mailchimp/plugins/api"
-import { addPlugin } from "webiny-plugins";
+import { registerPlugins } from "webiny-plugins";
 
-addPlugin(...mailchimpPlugins);
+registerPlugins(...mailchimpPlugins);
 ```
 
 Exposes necessary GraphQL fields that handle integration settings and newsletter signup form submits. 
@@ -24,9 +24,9 @@ Exposes necessary GraphQL fields that handle integration settings and newsletter
 
 ```
 import mailchimpPlugins from "webiny-integration-mailchimp/plugins/admin"
-import { addPlugin } from "webiny-plugins";
+import { registerPlugins } from "webiny-plugins";
 
-addPlugin(...mailchimpPlugins);
+registerPlugins(...mailchimpPlugins);
 ```
 
 Enables management of Mailchimp settings, which can be accessed via Settings section in the main menu. You will paste
@@ -90,9 +90,9 @@ Use `Bind` component to bind form elements and `submit` callback to submit the f
 #### Site
 ```
 import mailchimpPlugins from "webiny-integration-mailchimp/plugins/render"
-import { addPlugin } from "webiny-plugins";
+import { registerPlugins } from "webiny-plugins";
 
-addPlugin(...mailchimpPlugins);
+registerPlugins(mailchimpPlugins);
 ```
 
 Enables Mailchimp newsletter signup form render in your public website.

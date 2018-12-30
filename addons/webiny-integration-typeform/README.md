@@ -12,9 +12,9 @@ To setup, you must register a set of plugins. For more information on plugins, p
 
 ```
 import typeformPlugins from "webiny-integration-typeform/plugins/admin"
-import { addPlugin } from "webiny-plugins";
+import { registerPlugins } from "webiny-plugins";
 
-addPlugin(...typeformPlugins);
+registerPlugins(typeformPlugins);
 ```
 
 Registers Typeform element in CMS editor, which will enable you to embed forms in your pages. 
@@ -23,9 +23,9 @@ The element will be registered under the "Form" element category.
 #### Site
 ```
 import typeformPlugins from "webiny-integration-typeform/plugins/render"
-import { addPlugin } from "webiny-plugins";
+import { registerPlugins } from "webiny-plugins";
 
-addPlugin(...typeformPlugins);
+registerPlugins(typeformPlugins);
 ```
 
 Enables Typeform form render in your public website.

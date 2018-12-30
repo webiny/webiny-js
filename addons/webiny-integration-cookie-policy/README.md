@@ -11,9 +11,9 @@ To setup, you must register a set of plugins. For more information on plugins, p
 #### API
 ```
 import cookiePolicyPlugins from "webiny-integration-cookie-policy/plugins/api"
-import { addPlugin } from "webiny-plugins";
+import { registerPlugins } from "webiny-plugins";
 
-addPlugin(...cookiePolicyPlugins);
+registerPlugins(cookiePolicyPlugins);
 ```
 
 Exposes necessary GraphQL fields for updating integration settings.
@@ -22,9 +22,9 @@ Exposes necessary GraphQL fields for updating integration settings.
 #### Admin
 ```
 import cookiePolicyPlugins from "webiny-integration-cookie-policy/plugins/admin"
-import { addPlugin } from "webiny-plugins";
+import { registerPlugins } from "webiny-plugins";
 
-addPlugin(...cookiePolicyPlugins);
+registerPlugins(cookiePolicyPlugins);
 ```
 
 Enables management of cookie policy settings, which can be accessed via Settings section in the main menu. Here you
@@ -34,9 +34,9 @@ can edit things like banner position, colors and labels.
 #### Site
 ```
 import cookiePolicyPlugins from "webiny-integration-cookie-policy/plugins/render"
-import { addPlugin } from "webiny-plugins";
+import { registerPlugins } from "webiny-plugins";
 
-addPlugin(...cookiePolicyPlugins);
+registerPlugins(cookiePolicyPlugins);
 ```
 
 Renders cookie policy banner. Use in your public website.
