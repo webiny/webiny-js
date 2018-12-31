@@ -6,6 +6,14 @@ em{
   font-style: italic;
 }
 
+a{
+  color: $webiny-cms-theme-primary;
+  text-decoration: none;
+  &:hover{
+    text-decoration: underline;
+  }
+}
+
 .webiny-cms-typography-h1,
 .webiny-cms-typography-h2,
 .webiny-cms-typography-h3,

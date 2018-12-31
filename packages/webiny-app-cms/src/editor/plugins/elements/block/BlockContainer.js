@@ -22,7 +22,7 @@ const BlockContainer = ({
     return (
         <div
             style={{ width: "100%", display: "flex", justifyContent: "center" }}
-            className={css(containerStyle)}
+            className={"webiny-cms-layout-block-container " + css(containerStyle)}
             {...elementAttributes}
         >
             <div
