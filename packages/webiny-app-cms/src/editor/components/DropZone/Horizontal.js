@@ -57,7 +57,8 @@ const Horizontal = pure(({ below, onDrop, isVisible, type }: Props) => {
                         width: "100%",
                         position: "absolute",
                         [below ? "bottom" : "top"]: 0,
-                        left: 0
+                        left: 0,
+                        zIndex: 10
                     }}
                 >
                     <OuterDiv isOver={isOver} below={below}>
