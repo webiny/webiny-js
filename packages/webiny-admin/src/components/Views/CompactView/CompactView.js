@@ -27,7 +27,7 @@ const RightPanelWrapper = styled("div")({
 
 const leftPanel = css({
     backgroundColor: "var(--mdc-theme-surface)",
-    ".webiny-data-list": {
+    ">.webiny-data-list": {
         display: "flex",
         flexDirection: "column",
         maxHeight: "calc(100vh - 70px)",
@@ -35,6 +35,12 @@ const leftPanel = css({
             height: "100%",
             overflow: "scroll"
         }
+    },
+    ">.mdc-list": {
+        display: "flex",
+        flexDirection: "column",
+        maxHeight: "calc(100vh - 70px)",
+        overflow: "scroll"
     }
 });
 
