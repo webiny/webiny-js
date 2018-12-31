@@ -111,10 +111,20 @@ export default {
             component: "h5",
             className: "webiny-cms-typography-h5"
         },
+        h5White: {
+            label: "Heading 5 (white)",
+            component: "h5",
+            className: "webiny-cms-typography-h5 webiny-cms-typography--white"
+        },
         h6: {
             label: "Heading 6",
             component: "h6",
             className: "webiny-cms-typography-h6"
+        },
+        h6White: {
+            label: "Heading 6 (white)",
+            component: "h6",
+            className: "webiny-cms-typography-h6 webiny-cms-typography--white"
         },
         paragraph: {
             label: "Paragraph",
