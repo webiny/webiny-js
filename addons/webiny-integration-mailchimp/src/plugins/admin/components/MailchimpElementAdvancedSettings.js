@@ -29,17 +29,21 @@ const MailchimpElementAdvancedSettings = ({ cms, Bind }: Object) => {
                     >
                         {({ data }) => (
                             <Bind name={"settings.list"} validators={["required"]}>
-                                {({ value, onChange }) => {
+                                {({ value: id, onChange }) => {
+                                    const options = get(data, "mailchimp.listLists.data", []).map(
+                                        ({ id, name }) => {
+                                            return { id, name };
+                                        }
+                                    );
+
+                                    const value = options.find(item => item.id === id);
+
                                     return (
                                         <AutoComplete
-                                            value={{ id: value }}
+                                            options={options}
+                                            value={value}
                                             onChange={onChange}
                                             label={"Mailchimp list"}
-                                            options={get(data, "mailchimp.listLists.data", []).map(
-                                                ({ id, name }) => {
-                                                    return { id, name };
-                                                }
-                                            )}
                                         />
                                     );
                                 }}
@@ -48,20 +52,24 @@ const MailchimpElementAdvancedSettings = ({ cms, Bind }: Object) => {
                     </Query>
 
                     <Bind name={"settings.component"} validators={["required"]}>
-                        {({ onChange, value }) => {
+                        {({ onChange, value: name }) => {
+                            const options = cms.theme.elements.mailchimp.components.map(
+                                ({ name, title }) => {
+                                    return { name, title };
+                                }
+                            );
+
+                            const value = options.find(item => item.name === name);
+
                             return (
                                 <AutoComplete
+                                    value={value}
+                                    options={options}
                                     onChange={onChange}
-                                    value={{ name: value }}
                                     textProp="title"
                                     valueProp="name"
-                                    options={cms.theme.elements.mailchimp.components.map(
-                                        ({ name, title }) => {
-                                            return { name, title };
-                                        }
-                                    )}
-                                    label={"Mailchimp component"}
-                                    description={"Select a component that renders the signup form."}
+                                    label="Mailchimp component"
+                                    description="Select a component that renders the signup form."
                                 />
                             );
                         }}

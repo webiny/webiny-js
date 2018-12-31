@@ -60,6 +60,11 @@ export default ({
                         if (!settings) {
                             settings = new entityClass();
                         }
+
+                        if (!settings.data) {
+                            settings.data = {};
+                        }
+
                         settings.data.populate(data);
                         await settings.save();
 
