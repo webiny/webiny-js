@@ -30,6 +30,9 @@ const SaveAction = ({
     onSubmit,
     element
 }: Props) => {
+    if (!element) {
+        return null;
+    }
     const plugin = getPlugin(element.type);
     if (!plugin) {
         return null;
