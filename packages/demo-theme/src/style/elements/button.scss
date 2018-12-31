@@ -43,6 +43,18 @@
     background-color: $webiny-cms-theme-secondary;
     color: $webiny-cms-theme-on-secondary;
   }
+  &--outline-primary{
+    border: 2px solid $webiny-cms-theme-primary;
+    color: $webiny-cms-theme-primary;
+    padding: 10px 16px !important;
+    background-color: transparent;
+  }
+  &--outline-secondary{
+    border: 2px solid $webiny-cms-theme-secondary;
+    color: $webiny-cms-theme-secondary;
+    padding: 10px 16px !important;
+    background-color: transparent;
+  }
   &--simple{
     background-color: transparent;
     color: $webiny-cms-theme-primary;

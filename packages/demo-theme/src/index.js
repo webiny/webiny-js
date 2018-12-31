@@ -45,6 +45,8 @@ export default {
                 { className: "", label: "Default" },
                 { className: "primary", label: "Primary" },
                 { className: "secondary", label: "Secondary" },
+                { className: "outline-primary", label: "Outline Primary" },
+                { className: "outline-secondary", label: "Outline Secondary" },
                 { className: "simple", label: "Simple" }
             ]
         },
