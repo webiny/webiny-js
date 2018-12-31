@@ -1,3 +1,9 @@
+.webiny-cms-layout-block-container{
+  @include mobile{
+    background-size: cover !important;
+  }
+}
+
 .webiny-cms-layout-block{
   width: 100%;
   display: flex;
@@ -10,6 +16,7 @@
     // flex: 0 0 auto !important; // removed because Content #2
   }
 }
+
 .webiny-cms-layout-row{
   position: relative;
   display: flex;
