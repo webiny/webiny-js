@@ -24,13 +24,6 @@ html{
   }
 }
 
-// make images responsive
-img{
-  @include mobile{
-    max-width: 100%;
-  }
-}
-
 // base css class that applies to all elements created by the page editor
 .webiny-cms-base-element-style{
   padding: var(--mobile-padding-top) var(--mobile-padding-right) var(--mobile-padding-bottom) var(--mobile-padding-left);
