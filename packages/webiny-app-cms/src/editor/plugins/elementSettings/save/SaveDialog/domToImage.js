@@ -10,8 +10,8 @@ const images = newImages();
 const defaultOptions = {
     // Default is to fail on error, no placeholder
     imagePlaceholder: undefined,
-    // Default cache bust is false, it will use the cache
-    cacheBust: false
+    // No caching by default
+    cacheBust: true
 };
 
 const domtoimage = {
