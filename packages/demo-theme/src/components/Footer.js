@@ -18,7 +18,9 @@ const Footer = () => {
                     <div className={"webiny-cms-section-footer"}>
                         <div className="webiny-cms-section-footer__wrapper">
                             <div className={"webiny-cms-section-footer__logo"}>
-                                <a href="/">{logo && <img src={logo.src} alt={name} />}</a>
+                                <a href="/">
+                                    {logo && logo.src && <img src={logo.src} alt={name} />}
+                                </a>
                                 <div
                                     className={
                                         "webiny-cms-section-footer__copy webiny-cms-typography-description"
