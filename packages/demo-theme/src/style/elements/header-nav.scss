@@ -13,7 +13,7 @@
   width: 100%;
 }
 
-.webiny-cms-section-header{
+.webiny-cms-section-header {
   position: fixed;
   top: 0;
   z-index: 100;
@@ -30,87 +30,131 @@
     justify-content: space-between;
     align-items: center;
   }
+}
 
-  @include desktop-and-tablet{
+// desktop header
+@include desktop-and-tablet{
+  .webiny-cms-section-header {
     padding: 10px 0 5px 0;
 
-  }
-
-  &__mobile-icon{
-    position: fixed;
-    top: 18px;
-    right: 25px;
-    z-index: 12;
-
-    @include desktop-and-tablet{
-      display: none;
-    }
-  }
-
-  &__mobile-site-name{
-    position: fixed;
-    width: 100%;
-    right: -25px;
-    top: 28px;
-    z-index: 12;
-    a{
-      font-size: 1.2rem;
-      color: $webiny-cms-theme-text-primary;
-      text-transform: uppercase;
-      font-weight: 700;
-    }
-    @include desktop-and-tablet{
-      display: none;
-    }
-  }
-
-  &__mobile-overlay{
-    opacity: 0;
-    transition: opacity .25s ease-in-out;
-    background-color: $webiny-cms-theme-on-background;
-    &--active{
-      opacity: 0.5;
-      position: fixed;
-      width: 100vw;
-      height: 100vh;
-      z-index: 10;
-      overflow: hidden;
-      top:0;
-      left: 0;
-    }
-
-    @include desktop-and-tablet{
-      display: none;
-    }
-  }
-
-  &__logo{
-    margin-left: 25px;
-    img{
-      max-height: 30px;
-    }
-
-    @include desktop-and-tablet{
+    &__logo{
       flex: 1;
       margin-left: 0;
-
+      img{
+        max-height: 30px;
+      }
     }
-    @include mobile{
-      width: 50%;
+
+    &__navigation {
+      color: $webiny-cms-theme-primary;
+      font-family: unquote($webiny-cms-theme-typography-primary-font-family);
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-font-smoothing: antialiased;
+      flex: 1;
+
+      a {
+        color: $webiny-cms-theme-primary;
+        text-decoration: none;
+      }
+
+      ul{
+        display: flex;
+        justify-content: flex-end;
+
+        li{
+          display: inline-block;
+          position: relative;
+          margin-left: 25px;
+          font-size: 1rem;
+          line-height: 1rem;
+          font-weight: 400;
+          cursor: pointer;
+          padding: 10px;
+          transition: background-color .2s;
+          ul{
+            display: none;
+          }
+          &:hover{
+            background-color: $webiny-cms-theme-background;
+            border-radius: $webiny-cms-theme-border-radius;
+            ul{
+              display: block;
+              position: absolute;
+              top: 35px;
+              left: 0;
+              width: 150px;
+              background-color: $webiny-cms-theme-background;
+              li{
+                padding: 10px;
+                margin: 0;
+                width: 100%;
+                box-sizing: border-box;
+              }
+            }
+          }
+        }
+      }
     }
   }
-  &__navigation{
-    color: $webiny-cms-theme-primary;
-    font-family: unquote($webiny-cms-theme-typography-primary-font-family);
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
+}
 
-    a{
-      color: $webiny-cms-theme-primary;
-      text-decoration: none;
+// mobile header
+@include mobile{
+  .webiny-cms-section-header {
+    &__wrapper{
+      height: 30px;
     }
 
-    @include mobile{
+    &__mobile-icon{
+      position: fixed;
+      top: 18px;
+      right: 25px;
+      z-index: 12;
+    }
+
+    &__mobile-site-name{
+      position: fixed;
+      width: 100%;
+      right: -25px;
+      top: 28px;
+      z-index: 12;
+      a{
+        font-size: 1.2rem;
+        color: $webiny-cms-theme-text-primary;
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+    }
+
+    &__mobile-overlay{
+      opacity: 0;
+      transition: opacity .25s ease-in-out;
+      background-color: $webiny-cms-theme-on-background;
+      &--active{
+        opacity: 0.5;
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        z-index: 10;
+        overflow: hidden;
+        top:0;
+        left: 0;
+      }
+    }
+
+    &__logo{
+      margin-left: 25px;
+      width: 50%;
+      img{
+        max-height: 30px;
+      }
+    }
+
+    &__navigation {
+      color: $webiny-cms-theme-primary;
+      font-family: unquote($webiny-cms-theme-typography-primary-font-family);
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-font-smoothing: antialiased;
       animation: slide-out 0.5s forwards;
       animation-timing-function: ease-in-out;
       position: fixed;
@@ -124,6 +168,11 @@
       &--mobile-active{
         animation: slide-in 0.5s forwards;
         display: block;
+      }
+
+      a {
+        color: $webiny-cms-theme-primary;
+        text-decoration: none;
       }
 
       ul{
@@ -140,47 +189,8 @@
           }
         }
       }
+
     }
 
-    @include desktop-and-tablet{
-      flex: 1;
-      ul{
-          display: flex;
-          justify-content: flex-end;
-
-          li{
-            display: inline-block;
-            position: relative;
-            margin-left: 25px;
-            font-size: 1rem;
-            line-height: 1rem;
-            font-weight: 400;
-            cursor: pointer;
-            padding: 10px;
-            transition: background-color .2s;
-            ul{
-              display: none;
-            }
-            &:hover{
-              background-color: $webiny-cms-theme-background;
-              border-radius: $webiny-cms-theme-border-radius;
-              ul{
-                display: block;
-                position: absolute;
-                top: 35px;
-                left: 0;
-                width: 150px;
-                background-color: $webiny-cms-theme-background;
-                li{
-                  padding: 10px;
-                  margin: 0;
-                  width: 100%;
-                  box-sizing: border-box;
-                }
-              }
-            }
-          }
-        }
-    }
   }
 }

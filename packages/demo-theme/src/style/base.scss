@@ -38,3 +38,15 @@ html{
     margin: var(--desktop-margin-top) var(--desktop-margin-right) var(--desktop-margin-bottom) var(--desktop-margin-left);
   }
 }
+
+.hide-on-mobile{
+  @include mobile{
+    display: none;
+  }
+}
+
+.hide-on-desktop-and-tablet{
+  @include desktop-and-tablet{
+    display: none;
+  }
+}
