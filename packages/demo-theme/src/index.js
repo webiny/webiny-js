@@ -81,10 +81,20 @@ export default {
             component: "h1",
             className: "webiny-cms-typography-h1"
         },
+        h1White: {
+            label: "Heading 1 (white)",
+            component: "h1",
+            className: "webiny-cms-typography-h1 webiny-cms-typography--white"
+        },
         h2: {
             label: "Heading 2",
             component: "h2",
             className: "webiny-cms-typography-h2"
+        },
+        h2White: {
+            label: "Heading 2 (white)",
+            component: "h2",
+            className: "webiny-cms-typography-h2 webiny-cms-typography--white"
         },
         h3: {
             label: "Heading 3",
