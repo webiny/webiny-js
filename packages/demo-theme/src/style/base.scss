@@ -1,5 +1,6 @@
 html{
   font-size: 12px;
+  font-family: unquote($webiny-cms-theme-typography-secondary-font-family);
 
   @include tablet{
     font-size: 14px;
