@@ -11,7 +11,7 @@ export default ([
         middleware: () => {
             const middleware = [];
             getPlugins("graphql").forEach(plugin => {
-                plugin.security && middleware.push(shield(plugin.security));
+                plugin.shield && middleware.push(shield(plugin.shield));
             });
 
             return middleware;

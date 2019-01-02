@@ -53,7 +53,7 @@ export default ([
             role.resolvers,
             user.resolvers
         ],
-        security: {
+        shield: {
             SecurityQuery: {
                 getApiToken: hasScope("api:read")
             }
