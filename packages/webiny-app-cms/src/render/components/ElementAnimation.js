@@ -4,7 +4,7 @@ import aos from "aos";
 import "aos/dist/aos.css";
 import { throttle, once } from "lodash";
 
-const init = once(aos.init);
+const init = once(() => setTimeout(aos.init, 500));
 const refresh = throttle(aos.refreshHard, 250);
 
 type RenderPropParams = { init: Function, refresh: Function };
