@@ -2,10 +2,10 @@
 import * as React from "react";
 import aos from "aos";
 import "aos/dist/aos.css";
-import { debounce, once } from "lodash";
+import { throttle, once } from "lodash";
 
 const init = once(aos.init);
-const refresh = debounce(aos.refreshHard, 500);
+const refresh = throttle(aos.refreshHard, 250);
 
 type RenderPropParams = { init: Function, refresh: Function };
 type Props = {
