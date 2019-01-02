@@ -6,8 +6,7 @@ export async function createFile(event: Object) {
     event.body = event.body ? JSON.parse(event.body) : {};
 
     try {
-        const { src, name } = event.body;
-        const file = await create(src, { name });
+        const file = await create(event.body);
         return {
             statusCode: 200,
             headers: {

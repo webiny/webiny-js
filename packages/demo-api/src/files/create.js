@@ -6,9 +6,38 @@ import mime from "mime-types";
 import sanitizeFilename from "sanitize-filename";
 import sharp from "sharp";
 
-const create = async (src: string, options: Object = {}) => {
+const supportedImageTypes = ["image/jpg", "image/jpeg", "image/png"];
+
+const compressImage = async ({ buffer, type }): Promise<{ buffer: Buffer, type: string }> => {
+    if (type === "image/png") {
+        return {
+            buffer: await sharp(buffer)
+                .resize({ width: 1920, height: 1440, withoutEnlargement: true, fit: "inside" })
+                .png({ compressionLevel: 9, adaptiveFiltering: true, force: true })
+                .withMetadata()
+                .toBuffer(),
+            type
+        };
+    }
+
+    return {
+        buffer: await sharp(buffer)
+            .resize({ width: 1920, height: 1440, withoutEnlargement: true, fit: "inside" })
+            .toFormat("jpeg", { quality: 90 })
+            .toBuffer(),
+        type: "image/jpeg"
+    };
+};
+
+const create = async (options: Object) => {
+    let { src, type } = options;
+
     if (!src) {
-        throw Error(`Cannot create image, "src" is missing.`);
+        throw Error(`Cannot create file, "src" is missing.`);
+    }
+
+    if (!type) {
+        throw Error(`Cannot create file, "type" is missing.`);
     }
 
     const pwd: string = (process.env.PWD: any);
@@ -19,16 +48,13 @@ const create = async (src: string, options: Object = {}) => {
 
     fs.ensureDir(paths.folder);
 
-    let { buffer, type } = decodeBase64Src(src);
+    let { buffer } = decodeBase64Src(options.src);
 
     // If we are dealing with an image, compress it.
-    const supportedImageTypes = ["image/jpg", "image/jpeg", "image/png"];
     if (supportedImageTypes.includes(type)) {
-        buffer = await sharp(buffer)
-            .resize({ width: 1920, height: 1440, withoutEnlargement: true, fit: "inside" })
-            .toFormat("jpeg", { quality: 90 })
-            .toBuffer();
-        type = "image/jpeg";
+        const image = await compressImage({ buffer, type });
+        buffer = image.buffer;
+        type = image.type;
     }
 
     // Generate unique filename.

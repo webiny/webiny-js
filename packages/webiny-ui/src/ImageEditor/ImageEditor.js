@@ -123,7 +123,16 @@ class ImageEditor extends React.Component<Props, State> {
 
     getCanvasDataUrl = () => {
         const { current: canvas } = this.canvas;
-        return canvas ? canvas.toDataURL() : "";
+        if (canvas) {
+            const { src } = this.props;
+            if (src.startsWith("data:image/jpeg;")) {
+                return canvas.toDataURL("image/jpeg", 1.0);
+            }
+
+            return canvas.toDataURL();
+        }
+
+        return "";
     };
 
     applyActiveTool = async () => {
