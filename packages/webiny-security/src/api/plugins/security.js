@@ -7,7 +7,7 @@ import { shield } from "graphql-shield";
 export default ([
     {
         type: "graphql-middleware",
-        name: "graphql-middleware-security",
+        name: "graphql-middleware-shield",
         middleware: () => {
             const middleware = [];
             getPlugins("graphql").forEach(plugin => {
