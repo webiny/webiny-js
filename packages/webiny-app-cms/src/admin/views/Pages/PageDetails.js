@@ -12,6 +12,7 @@ import { getPage } from "webiny-app-cms/admin/graphql/pages";
 import editorMock from "webiny-app-cms/admin/assets/editor-mock.png";
 import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";
 import { PageDetailsProvider, PageDetailsConsumer } from "../../components/PageDetailsContext";
+import { ElementAnimation } from "webiny-app-cms/render/components";
 
 type Props = WithRouterProps & {
     pageId: string,
@@ -76,17 +77,21 @@ const PageDetails = ({ pageId }: Props) => {
                 const details = { page: loading ? {} : data.cms.page.data, loading };
 
                 return (
-                    <DetailsContainer>
-                        <PageDetailsProvider value={details}>
-                            <PageDetailsConsumer>
-                                {pageDetails => (
-                                    <React.Fragment>
-                                        {renderPlugins("cms-page-details", { pageDetails })}
-                                    </React.Fragment>
-                                )}
-                            </PageDetailsConsumer>
-                        </PageDetailsProvider>
-                    </DetailsContainer>
+                    <ElementAnimation>
+                        {({ refresh }) => (
+                            <DetailsContainer onScroll={refresh}>
+                                <PageDetailsProvider value={details}>
+                                    <PageDetailsConsumer>
+                                        {pageDetails => (
+                                            <React.Fragment>
+                                                {renderPlugins("cms-page-details", { pageDetails })}
+                                            </React.Fragment>
+                                        )}
+                                    </PageDetailsConsumer>
+                                </PageDetailsProvider>
+                            </DetailsContainer>
+                        )}
+                    </ElementAnimation>
                 );
             }}
         </Query>
