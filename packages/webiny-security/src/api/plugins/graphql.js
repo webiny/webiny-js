@@ -5,14 +5,13 @@ import group from "./graphql/Group";
 import user from "./graphql/User";
 import apiToken from "./graphql/ApiToken";
 import { type PluginType } from "webiny-api/types";
-import { hasScope } from "webiny-security/api";
+import { getRegisteredScopes, hasScope } from "webiny-security/api";
 
 export default ([
     {
         type: "graphql",
         name: "graphql-security",
         namespace: "security",
-        scopes: ["superadmin", "users:read", "users:write"],
         typeDefs: () => [
             user.typeDefs,
             user.typeExtensions,
@@ -23,6 +22,7 @@ export default ([
             apiToken.typeDefs,
             /* GraphQL */ `
                 type SecurityQuery {
+                    # Returns all scopes that were used throughout the schema.
                     scopes: [String]
                 }
 
@@ -46,6 +46,9 @@ export default ([
                 },
                 Mutation: {
                     security: dummyResolver
+                },
+                SecurityQuery: {
+                    scopes: getRegisteredScopes
                 }
             },
             apiToken.resolvers,
@@ -53,9 +56,32 @@ export default ([
             role.resolvers,
             user.resolvers
         ],
-        shield: {
-            SecurityQuery: {
-                getApiToken: hasScope("api:read")
+        security: {
+            shield: {
+                SecurityQuery: {
+                    getApiToken: hasScope("security:api_token:get"),
+                    listApiTokens: hasScope("security:api_token:list"),
+                    getGroup: hasScope("security:group:get"),
+                    listGroups: hasScope("security:group:list"),
+                    getRole: hasScope("security:role:get"),
+                    listRoles: hasScope("security:role:list"),
+                    getUser: hasScope("security:user:get"),
+                    listUsers: hasScope("security:user:list")
+                },
+                SecurityMutation: {
+                    createApiToken: hasScope("security:api_token:create"),
+                    updateApiToken: hasScope("security:api_token:update"),
+                    deleteApiToken: hasScope("security:api_token:delete"),
+                    createGroup: hasScope("security:group:create"),
+                    updateGroup: hasScope("security:group:update"),
+                    deleteGroup: hasScope("security:group:delete"),
+                    createRole: hasScope("security:role:create"),
+                    updateRole: hasScope("security:role:update"),
+                    deleteRole: hasScope("security:role:delete"),
+                    createUser: hasScope("security:user:create"),
+                    updateUser: hasScope("security:user:update"),
+                    deleteUser: hasScope("security:user:delete")
+                }
             }
         }
     }

@@ -8,7 +8,6 @@ export interface IElement extends Entity {
     name: string;
     content: Object;
     type: ElementType;
-    keywords: Array<string>;
     category: ?string;
     preview: Object;
 }
@@ -21,7 +20,6 @@ export function elementFactory(): Class<IElement> {
         name: string;
         content: Object;
         type: ElementType;
-        keywords: Array<string>;
         category: ?string;
         preview: Object;
 

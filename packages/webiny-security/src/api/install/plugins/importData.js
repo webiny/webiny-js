@@ -1,31 +1,20 @@
 // @flow
 import setupEntities from "./setupEntities";
+import * as data from "./data";
 
 export default async (context: Object) => {
     setupEntities(context);
-    const { User, Role } = context.security.entities;
+    const { User, Role, Group } = context.security.entities;
 
     const user = new User();
 
     const superAdminRole = new Role();
-    superAdminRole.populate({
-        name: "Super Admin",
-        slug: "super-admin",
-        description:
-            "This role gives super admin privileges. Be careful when assigning this role to users!",
-        scopes: ["superadmin"]
-    });
+    await superAdminRole.populate(data.superAdminRole).save();
 
-    await superAdminRole.save();
+    await user.populate({ ...data.superAdminUser, roles: [superAdminRole] }).save();
 
-    user.populate({
-        firstName: "John",
-        lastName: "Doe",
-        password: "12345678",
-        email: "admin@webiny.com",
-        roles: [superAdminRole]
-    });
-
-    await user.save();
     context.user = user;
+
+    const group = new Group();
+    await group.populate({ ...data.fullAccessGroup, roles: data.roles }).save();
 };

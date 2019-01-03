@@ -2,10 +2,17 @@
 import setupEntities from "./setupEntities";
 import createDefaultPages from "./importData/createDefaultPages";
 import createDefaultBlocks from "./importData/createDefaultBlocks";
+import * as data from "./data";
 
 export default async (context: Object) => {
     setupEntities(context);
     const { Category, Tag, Menu, CmsSettings } = context.cms.entities;
+
+    const { Group } = context.security.entities;
+
+    // Create Full Access security group with all of the necessary roles.
+    const group = new Group();
+    group.populate({ ...data.group, roles: data.roles }).save();
 
     const menu = new Menu();
     menu.populate({
@@ -58,7 +65,6 @@ export default async (context: Object) => {
             layout: "static"
         })
         .save();
-
 
     await createDefaultBlocks(context);
 
