@@ -17,7 +17,7 @@ const imageSelect = css({
     width: "100%"
 });
 
-const root = "settings.style.background";
+const root = "data.settings.background";
 
 class Settings extends React.Component<*> {
     setImage = image => {
@@ -56,11 +56,9 @@ class Settings extends React.Component<*> {
     };
 
     render() {
-        const {
-            element: { settings }
-        } = this.props;
+        const { element } = this.props;
 
-        const bg = get(settings, "style.background");
+        const bg = get(element, "data.settings.background");
         const hasImage = get(bg, "image.src");
 
         return (
@@ -87,21 +85,19 @@ class Settings extends React.Component<*> {
                                 />
                             </Cell>
                         </Grid>
-                        <Grid>
-                            <Select
-                                disabled={!hasImage}
-                                label="Scaling"
-                                value={get(bg, "image.scaling")}
-                                updateValue={this.setScaling}
-                            >
-                                <option value="cover">Cover</option>
-                                <option value="contain">Contain</option>
-                                <option value="originalSize">Original size</option>
-                                <option value="tile">Tile</option>
-                                <option value="tileHorizontally">Tile Horizontally</option>
-                                <option value="tileVertically">Tile Vertically</option>
-                            </Select>
-                        </Grid>
+                        <Select
+                            disabled={!hasImage}
+                            label="Scaling"
+                            value={get(bg, "image.scaling")}
+                            updateValue={this.setScaling}
+                        >
+                            <option value="cover">Cover</option>
+                            <option value="contain">Contain</option>
+                            <option value="originalSize">Original size</option>
+                            <option value="tile">Tile</option>
+                            <option value="tileHorizontally">Tile Horizontally</option>
+                            <option value="tileVertically">Tile Vertically</option>
+                        </Select>
                         <Grid>
                             <Cell span={12}>
                                 <BackgroundPositionSelector

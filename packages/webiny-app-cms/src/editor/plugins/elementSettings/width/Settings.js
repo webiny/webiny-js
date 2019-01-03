@@ -46,7 +46,7 @@ class Settings extends React.Component<Props> {
         }
 
         const { element, updateElement } = this.props;
-        const attrKey = `settings.style.width`;
+        const attrKey = `data.settings.width`;
         const newElement = set(element, attrKey, data);
 
         updateElement({ element: newElement });
@@ -54,12 +54,12 @@ class Settings extends React.Component<Props> {
 
     render() {
         const { element } = this.props;
-        const { settings } = element;
+        const { data } = element;
         
-        const data = get(settings, "style.width", { value: "100%" });
+        const settings = get(data, "settings.width", { value: "100%" });
 
         return (
-            <Form data={data} onChange={this.updateSettings}>
+            <Form data={settings} onChange={this.updateSettings}>
                 {({ Bind }) => (
                     <Tabs>
                         <Tab label={"Width"}>

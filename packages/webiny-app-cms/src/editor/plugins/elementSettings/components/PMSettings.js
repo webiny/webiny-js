@@ -3,7 +3,6 @@ import React from "react";
 import { connect } from "webiny-app-cms/editor/redux";
 import { compose, withHandlers } from "recompose";
 import { Tabs, Tab } from "webiny-ui/Tabs";
-import { Grid } from "webiny-ui/Grid";
 import { get } from "lodash";
 import { set, merge } from "dot-prop-immutable";
 import { withActiveElement } from "webiny-app-cms/editor/components";
@@ -31,16 +30,15 @@ const PMSettings = ({ value, getUpdateValue, getUpdatePreview }: Props) => {
             <Tabs>
                 <Tab label={"Desktop"}>
                     {!value.advanced ? (
-                        <Grid className={"no-bottom-padding"}>
-                            <PMPropertyInput
-                                icon={<BorderOuterIcon />}
-                                value={get(value, "desktop.all", 0)}
-                                updateValue={getUpdateValue("desktop.all")}
-                                updatePreview={getUpdatePreview("desktop.all")}
-                            />
-                        </Grid>
+                        <PMPropertyInput
+                            className={"no-bottom-padding"}
+                            icon={<BorderOuterIcon />}
+                            value={get(value, "desktop.all", 0)}
+                            updateValue={getUpdateValue("desktop.all")}
+                            updatePreview={getUpdatePreview("desktop.all")}
+                        />
                     ) : (
-                        <Grid className={"no-bottom-padding"}>
+                        <React.Fragment>
                             <PMPropertyInput
                                 icon={<BorderTopIcon />}
                                 value={get(value, "desktop.top", 0)}
@@ -60,12 +58,13 @@ const PMSettings = ({ value, getUpdateValue, getUpdatePreview }: Props) => {
                                 updatePreview={getUpdatePreview("desktop.bottom")}
                             />
                             <PMPropertyInput
+                                className={"no-bottom-padding"}
                                 icon={<BorderLeftIcon />}
                                 value={get(value, "desktop.left", 0)}
                                 updateValue={getUpdateValue("desktop.left")}
                                 updatePreview={getUpdatePreview("desktop.left")}
                             />
-                        </Grid>
+                        </React.Fragment>
                     )}
                     <Footer
                         advanced={value.advanced || false}
@@ -74,16 +73,15 @@ const PMSettings = ({ value, getUpdateValue, getUpdatePreview }: Props) => {
                 </Tab>
                 <Tab label={"Mobile"}>
                     {!value.advanced ? (
-                        <Grid className={"no-bottom-padding"}>
-                            <PMPropertyInput
-                                icon={<BorderOuterIcon />}
-                                value={get(value, "mobile.all", 0)}
-                                updateValue={getUpdateValue("mobile.all")}
-                                updatePreview={getUpdatePreview("mobile.all")}
-                            />
-                        </Grid>
+                        <PMPropertyInput
+                            className={"no-bottom-padding"}
+                            icon={<BorderOuterIcon />}
+                            value={get(value, "mobile.all", 0)}
+                            updateValue={getUpdateValue("mobile.all")}
+                            updatePreview={getUpdatePreview("mobile.all")}
+                        />
                     ) : (
-                        <Grid className={"no-bottom-padding"}>
+                        <React.Fragment>
                             <PMPropertyInput
                                 icon={<BorderTopIcon />}
                                 value={get(value, "mobile.top", 0)}
@@ -103,12 +101,13 @@ const PMSettings = ({ value, getUpdateValue, getUpdatePreview }: Props) => {
                                 updatePreview={getUpdatePreview("mobile.bottom")}
                             />
                             <PMPropertyInput
+                                className={"no-bottom-padding"}
                                 icon={<BorderLeftIcon />}
                                 value={get(value, "mobile.left", 0)}
                                 updateValue={getUpdateValue("mobile.left")}
                                 updatePreview={getUpdatePreview("mobile.left")}
                             />
-                        </Grid>
+                        </React.Fragment>
                     )}
                     <Footer
                         advanced={value.advanced || false}
@@ -124,7 +123,7 @@ export default compose(
     withActiveElement({ shallow: true }),
     connect(
         (state, { element, styleAttribute }: Object) => {
-            const valueKey = "settings.style." + styleAttribute;
+            const valueKey = "data.settings." + styleAttribute;
             return {
                 valueKey,
                 value: get(element, valueKey, {})

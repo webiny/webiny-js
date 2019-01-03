@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import { css } from "emotion";
-import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
+import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 
 const center = css({ textAlign: "center" });
 
@@ -13,7 +13,7 @@ const Icon = ({ element }: Object) => {
     }
 
     return (
-        <ElementStyle {...getElementStyleProps(element)}>
+        <ElementRoot element={element}>
             {({ getAllClasses, elementStyle }) => (
                 <div
                     style={elementStyle}
@@ -24,7 +24,7 @@ const Icon = ({ element }: Object) => {
                     dangerouslySetInnerHTML={{ __html: svg }}
                 />
             )}
-        </ElementStyle>
+        </ElementRoot>
     );
 };
 

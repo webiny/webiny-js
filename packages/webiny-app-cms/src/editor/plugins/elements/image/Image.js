@@ -11,7 +11,8 @@ import { getElement } from "webiny-app-cms/editor/selectors";
 import isNumeric from "isnumeric";
 
 const Image = ({ element, onChange }) => {
-    const { width, height } = get(element, "settings.advanced.img", {});
+    const { image = {} } = element.data;
+    const { width, height } = image;
     const imgStyle = {};
     if (width) {
         imgStyle.width = isNumeric(width) ? parseInt(width) : width;
@@ -24,7 +25,7 @@ const Image = ({ element, onChange }) => {
         <div id={element.id}>
             <SingleImageUpload
                 onChange={onChange}
-                value={element.data}
+                value={image}
                 img={{ style: imgStyle }}
                 showRemoveImageButton={false}
             />
@@ -43,7 +44,7 @@ export default compose(
     withHandlers({
         onChange: ({ uploadFile, updateElement, element }) => async data => {
             const response = await uploadFile(data);
-            updateElement({ element: set(element, "data", response) });
+            updateElement({ element: set(element, "data.image", response) });
         }
     })
 )(Image);

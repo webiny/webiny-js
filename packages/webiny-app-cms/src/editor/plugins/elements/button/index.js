@@ -21,7 +21,6 @@ export default (): Array<PluginType> => {
             },
             settings: [
                 "cms-element-settings-button",
-                "cms-element-settings-icon",
                 "cms-element-settings-link",
                 "",
                 "cms-element-settings-padding",
@@ -37,9 +36,9 @@ export default (): Array<PluginType> => {
                 return {
                     type: "cms-element-button",
                     elements: [],
-                    data: { text: createValue("Click me", "button") },
-                    settings: {
-                        style: {
+                    data: {
+                        text: createValue("Click me", "button"),
+                        settings: {
                             margin: {
                                 desktop: { all: 0 },
                                 mobile: { all: 0 }

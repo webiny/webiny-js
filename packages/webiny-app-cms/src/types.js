@@ -14,8 +14,7 @@ export type ElementType = {
     path: string,
     type: string,
     elements: Array<string>,
-    data: Object,
-    settings: Object
+    data: Object
 };
 
 export type DeepElementType = ElementType & {
@@ -120,7 +119,11 @@ export type CmsElementActionPluginType = PluginType & {
 };
 
 export type CmsRenderElementStylePluginType = PluginType & {
-    renderStyle: ({ settings: Object, style: Object }) => Object
+    renderStyle: ({ element: ElementType, style: Object }) => Object
+};
+
+export type CmsRenderElementAttributesPluginType = PluginType & {
+    renderAttributes: ({ element: ElementType, attributes: Object }) => Object
 };
 
 // ================= Redux types ===================

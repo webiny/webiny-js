@@ -5,8 +5,8 @@ import { Query } from "react-apollo";
 import { withCms } from "webiny-app-cms/context";
 import { loadPages } from "./graphql";
 
-const PagesList = pure(({ settings, cms: { theme } }: Object = {}) => {
-    const { component, ...vars } = settings;
+const PagesList = pure(({ data, cms: { theme } }: Object = {}) => {
+    const { component, ...vars } = data;
     const pageList = theme.elements.pagesList.components.find(cmp => cmp.name === component);
 
     if (!pageList) {

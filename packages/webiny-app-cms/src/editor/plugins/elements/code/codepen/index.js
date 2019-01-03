@@ -44,7 +44,7 @@ export default (): Array<PluginType> => [
                 <Tab icon={<CodeIcon />} label="CodePen">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"data.source.url"} validators={["required", "url"]}>
+                            <Bind name={"source.url"} validators={["required", "url"]}>
                                 <Input label={"CodePen URL"} description={"Enter a CodePen URL"} />
                             </Bind>
                         </Cell>

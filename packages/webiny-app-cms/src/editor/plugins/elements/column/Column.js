@@ -5,11 +5,7 @@ import { css } from "emotion";
 import { connect } from "webiny-app-cms/editor/redux";
 import { compose, withHandlers, pure } from "recompose";
 import { IconButton } from "webiny-ui/Button";
-import {
-    ElementStyle,
-    getElementStyleProps,
-    getElementAttributeProps
-} from "webiny-app-cms/render/components/ElementStyle";
+import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 import DropZone from "webiny-app-cms/editor/components/DropZone";
 import ConnectedElement from "webiny-app-cms/editor/components/ConnectedElement";
 import { ReactComponent as AddCircleOutline } from "webiny-app-cms/editor/assets/icons/baseline-add_circle-24px.svg";
@@ -43,9 +39,8 @@ const Column = pure(({ element, dropElement, togglePlugin }) => {
     return (
         <ElementAnimation>
             <ColumnContainer style={{ justifyContent: "center" }}>
-                <ElementStyle
-                    {...getElementStyleProps(element)}
-                    {...getElementAttributeProps(element)}
+                <ElementRoot
+                    element={element}
                     className={"webiny-cms-base-element-style webiny-cms-layout-column"}
                     style={{ width: "100%", display: "flex", flexDirection: "column" }}
                 >
@@ -79,7 +74,7 @@ const Column = pure(({ element, dropElement, togglePlugin }) => {
                             </React.Fragment>
                         )}
                     </ConnectedElement>
-                </ElementStyle>
+                </ElementRoot>
             </ColumnContainer>
         </ElementAnimation>
     );

@@ -65,7 +65,6 @@ export const createElement = (type, options = {}, parent = null) => {
     return {
         id: shortid.generate(),
         data: {},
-        settings: {},
         elements: [],
         path: "",
         ...plugin.create(options, parent)

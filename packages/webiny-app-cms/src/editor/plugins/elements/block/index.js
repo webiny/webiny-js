@@ -43,8 +43,8 @@ export default (): ElementPluginType => {
                         elements: [createColumn({ data: { width: 100 } })]
                     })
                 ],
-                settings: {
-                    style: {
+                data: {
+                    settings: {
                         width: { value: "1000px" },
                         margin: {
                             mobile: { top: 15, left: 15, right: 15, bottom: 15 },

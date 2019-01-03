@@ -46,7 +46,7 @@ class Settings extends React.Component<Props> {
         }
 
         const { element, updateElement } = this.props;
-        const attrKey = `settings.style.columnWidth`;
+        const attrKey = `data.settings.columnWidth`;
         const newElement = set(element, attrKey, data);
 
         updateElement({ element: newElement });
