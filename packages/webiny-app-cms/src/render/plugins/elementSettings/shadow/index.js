@@ -6,7 +6,7 @@ export default ({
     name: "cms-render-element-style-shadow",
     type: "cms-render-element-style",
     renderStyle({ element, style }: Object) {
-        const { shadow } = get(element, "data.settings");
+        const { shadow } = get(element, "data.settings", {});
         if (!shadow) {
             return style;
         }

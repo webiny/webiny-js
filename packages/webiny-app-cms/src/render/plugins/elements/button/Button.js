@@ -6,8 +6,8 @@ import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 import type { ElementType } from "webiny-app-cms/types";
 
 const Button = ({ element }: { element: ElementType }) => {
-    const { type = "default", icon = {}, link = {} } = get(element, "data.settings") || {};
-    const svg = element.data.icon || null;
+    const { type = "default", icon = {}, link = {} } = element.data || {};
+    const { svg = null } = icon;
     const alignItems = get(element, "data.settings.horizontalAlignFlex") || "flex-start";
 
     const { position = "left" } = icon;

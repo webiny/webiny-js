@@ -6,7 +6,7 @@ export default ({
     name: "cms-render-element-attributes-animation",
     type: "cms-render-element-attributes",
     renderAttributes({ element, attributes }) {
-        const { animation } = get(element, "data.settings");
+        const { animation } = get(element, "data.settings", {});
         if (!animation) {
             return attributes;
         }

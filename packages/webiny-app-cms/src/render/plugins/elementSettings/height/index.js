@@ -6,7 +6,7 @@ export default ({
     name: "cms-render-element-style-height",
     type: "cms-render-element-style",
     renderStyle({ element, style }) {
-        const { height } = get(element, "data.settings");
+        const { height } = get(element, "data.settings", {});
         if (!height) {
             return style;
         }

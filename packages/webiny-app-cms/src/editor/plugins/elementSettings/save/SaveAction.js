@@ -10,7 +10,7 @@ import { withSnackbar } from "webiny-admin/components";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
 import { getActiveElementId, getElementWithChildren } from "webiny-app-cms/editor/selectors";
 import { createElementPlugin, createBlockPlugin } from "webiny-app-cms/admin/components";
-import { createElement } from "webiny-app-cms/admin/graphql/pages";
+import { createElement, updateElement } from "webiny-app-cms/admin/graphql/pages";
 import { withFileUpload } from "webiny-app/components";
 
 type Props = {
@@ -86,14 +86,34 @@ export default compose(
         hideDialog: ({ setOpenDialog }) => () => setOpenDialog(false)
     }),
     graphql(createElement, { name: "createElement" }),
+    graphql(updateElement, { name: "updateElement" }),
     withSnackbar(),
     withHandlers({
-        onSubmit: ({ element, hideDialog, createElement, showSnackbar, uploadFile }) => async (
-            formData: Object
-        ) => {
-            formData.preview = await uploadFile({ src: formData.preview });
+        onSubmit: ({
+            element,
+            hideDialog,
+            createElement,
+            updateElement,
+            showSnackbar,
+            uploadFile
+        }) => async (formData: Object) => {
+            formData.preview = await uploadFile({
+                src: formData.preview,
+                type: "image/png",
+                name: "cms-element-" + element.source + ".png"
+            });
             formData.content = removeIdsAndPaths(cloneDeep(element));
-            const { data: res } = await createElement({ variables: { data: formData } });
+
+            let mutation = formData.overwrite ? updateElement : createElement;
+            const { data: res } = await mutation({
+                variables: formData.overwrite
+                    ? {
+                          id: element.source,
+                          data: { content: formData.content, preview: formData.preview }
+                      }
+                    : { data: formData }
+            });
+
             hideDialog();
             const { data } = res.cms.element;
             if (data.type === "block") {

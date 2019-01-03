@@ -15,6 +15,7 @@ import {
     DialogCancel
 } from "webiny-ui/Dialog";
 import { Input } from "webiny-ui/Input";
+import { Switch } from "webiny-ui/Switch";
 import { Select } from "webiny-ui/Select";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Form } from "webiny-form";
@@ -68,14 +69,25 @@ const SaveDialog = (props: Props) => {
                             <DialogHeaderTitle>Save {type}</DialogHeaderTitle>
                         </DialogHeader>
                         <DialogBody>
-                            <Grid>
-                                <Cell span={12}>
-                                    <Bind name={"name"} validators={"required"}>
-                                        <Input label={"Name"} autoFocus />
-                                    </Bind>
-                                </Cell>
-                            </Grid>
-                            {data.type === "block" && (
+                            {element.source && (
+                                <Grid>
+                                    <Cell span={12}>
+                                        <Bind name="overwrite">
+                                            <Switch label="Update existing" />
+                                        </Bind>
+                                    </Cell>
+                                </Grid>
+                            )}
+                            {!data.overwrite && (
+                                <Grid>
+                                    <Cell span={12}>
+                                        <Bind name={"name"} validators={"required"}>
+                                            <Input label={"Name"} autoFocus />
+                                        </Bind>
+                                    </Cell>
+                                </Grid>
+                            )}
+                            {data.type === "block" && !data.overwrite && (
                                 <>
                                     <Grid>
                                         <Cell span={12}>

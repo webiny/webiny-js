@@ -33,7 +33,7 @@ export default ({
     name: "cms-render-element-style-background",
     type: "cms-render-element-style",
     renderStyle({ element, style }: Object) {
-        const { background } = get(element, "data.settings");
+        const { background } = get(element, "data.settings", {});
         if (!background) {
             return style;
         }

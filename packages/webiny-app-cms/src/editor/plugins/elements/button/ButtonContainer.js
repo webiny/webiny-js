@@ -17,9 +17,9 @@ const excludePlugins = [
 ];
 
 const ButtonContainer = ({ getAllClasses, elementStyle, elementAttributes, element, onChange }) => {
-    const { type = "default", icon = {} } = get(element, "data.button", {});
+    const { type = "default", icon = {}, } = element.data || {};
     const svg = icon.svg || null;
-    const { alignItems } = elementStyle; // TODO: check what exactly is this?!
+    const { alignItems } = elementStyle;
 
     const { position = "left" } = icon;
 

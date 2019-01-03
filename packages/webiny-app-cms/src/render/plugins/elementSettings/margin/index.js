@@ -6,7 +6,7 @@ export default ({
     name: "cms-render-element-style-margin",
     type: "cms-render-element-style",
     renderStyle({ element, style }) {
-        const { margin } = get(element, "data.settings");
+        const { margin } = get(element, "data.settings", {});
 
         if (!margin) {
             return style;

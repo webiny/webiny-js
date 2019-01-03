@@ -28,7 +28,7 @@ const ButtonSettings = ({
     updateIconPosition
 }: Object) => {
     const { types } = get(theme, "elements.button", []);
-    const { type = get(types, "0.name", ""), icon = {} } = get(element, "data.button", {});
+    const { type = get(types, "0.name", ""), icon = {} } = get(element, "data", {});
 
     return (
         <React.Fragment>

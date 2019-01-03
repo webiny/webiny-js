@@ -6,7 +6,7 @@ export default ({
     name: "cms-render-element-style-width",
     type: "cms-render-element-style",
     renderStyle({ element, style }) {
-        const { width } = get(element, "data.settings");
+        const { width } = get(element, "data.settings", {});
 
         if (!width) {
             return style;

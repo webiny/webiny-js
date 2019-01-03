@@ -6,7 +6,7 @@ export default ({
     name: "cms-render-element-style-padding",
     type: "cms-render-element-style",
     renderStyle({ element, style }) {
-        const { padding } = get(element, "data.settings");
+        const { padding } = get(element, "data.settings", {});
 
         if (!padding) {
             return style;

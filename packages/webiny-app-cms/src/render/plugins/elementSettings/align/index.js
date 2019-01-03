@@ -13,7 +13,7 @@ export default ([
         name: "cms-render-element-style-horizontal-align",
         type: "cms-render-element-style",
         renderStyle({ element, style }: Object) {
-            const { horizontalAlign } = get(element, "data.settings");
+            const { horizontalAlign } = get(element, "data.settings", {});
             if (!horizontalAlign) {
                 return style;
             }
@@ -24,7 +24,7 @@ export default ([
         name: "cms-render-element-style-horizontal-align-flex",
         type: "cms-render-element-style",
         renderStyle({ element, style }: Object) {
-            const { horizontalAlignFlex } = get(element, "data.settings");
+            const { horizontalAlignFlex } = get(element, "data.settings", {});
             if (!horizontalAlignFlex) {
                 return style;
             }
@@ -35,7 +35,7 @@ export default ([
         name: "cms-render-element-style-vertical-align",
         type: "cms-render-element-style",
         renderStyle({ element, style }: Object) {
-            const { verticalAlign } = get(element, "data.settings");
+            const { verticalAlign } = get(element, "data.settings", {});
             if (!verticalAlign) {
                 return style;
             }
