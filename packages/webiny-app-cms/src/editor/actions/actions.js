@@ -204,6 +204,7 @@ addMiddleware([DELETE_ELEMENT], ({ store, next, action }) => {
     let parent = getParentElementWithChildren(state, element.id);
 
     // Remove child from parent
+    // $FlowFixMe
     const index = parent.elements.findIndex(el => el.id === element.id);
     parent = dotProp.delete(parent, "elements." + index);
     store.dispatch(updateElement({ element: parent }));
@@ -283,10 +284,10 @@ const flattenContent = el => {
     return els;
 };
 
-// TODO: remove elements flattening
 addReducer([FLATTEN_ELEMENTS], "elements", (state, action) => {
     return action.payload;
 });
+
 addMiddleware(
     [UPDATE_ELEMENT, DELETE_ELEMENT, "@@redux-undo/UNDO", "@@redux-undo/REDO", "@@redux-undo/INIT"],
     ({ store, next, action }) => {

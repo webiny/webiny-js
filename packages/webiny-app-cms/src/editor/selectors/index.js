@@ -2,7 +2,7 @@
 import _ from "lodash";
 import invariant from "invariant";
 import { getPlugin } from "webiny-plugins";
-import type { ElementType, DeepElementType, State } from "webiny-app-cms/types";
+import type { ElementType, State } from "webiny-app-cms/types";
 
 const getPluginType = (name: string) => {
     const plugin = getPlugin(name);
@@ -44,7 +44,7 @@ export const getContent = (state: State): Object => {
  * Get element and all of its children recursively.
  * WARNING: use carefully as this makes render optimization really difficult when used in `connect`!
  */
-export const getElementWithChildren = (state: State, id: string): DeepElementType => {
+export const getElementWithChildren = (state: State, id: string): ElementType => {
     const element = getElement(state, id);
     const content = getContent(state);
     return _.get(content, element.path.replace(/\./g, ".elements.").slice(2));
@@ -72,7 +72,7 @@ export const getElement = (state: Object, id: string): ElementType => {
  * @param id
  * @returns {*}
  */
-export const getParentElementWithChildren = (state: State, id: string): DeepElementType => {
+export const getParentElementWithChildren = (state: State, id: string): ElementType => {
     const element = getElement(state, id);
     const content = getContent(state);
     const parentPaths = element.path.split(".").slice(0, -1);

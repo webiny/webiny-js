@@ -13,12 +13,8 @@ export type ElementType = {
     id: string,
     path: string,
     type: string,
-    elements: Array<string>,
+    elements: Array<Object>,
     data: Object
-};
-
-export type DeepElementType = ElementType & {
-    elements: Array<DeepElementType>
 };
 
 export type CmsThemeType = {
@@ -131,7 +127,8 @@ export type { Redux } from "webiny-app-cms/editor/redux";
 
 export type Action = {
     type: string,
-    payload: Object
+    payload: Object,
+    meta: Object
 };
 
 export type ActionOptions = {
@@ -163,4 +160,4 @@ export type MiddlewareParams = {
 };
 
 export type MiddlewareFunction = MiddlewareParams => any;
-export type ActionCreator = (payload?: Object) => Action;
+export type ActionCreator = (payload?: any, meta?: Object) => Action;
