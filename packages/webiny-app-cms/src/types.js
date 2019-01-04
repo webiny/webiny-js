@@ -61,7 +61,7 @@ export type ElementPluginType = PluginType & {
         store: Store,
         source: ElementType | { type: string },
         target: ElementType,
-        position: Number | null
+        position: number | null
     }) => void,
     // Executed when an immediate child element is deleted
     onChildDeleted?: ({ element: ElementType, child: ElementType }) => void
