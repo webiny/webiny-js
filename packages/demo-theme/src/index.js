@@ -69,7 +69,7 @@ export default {
             components: [
                 {
                     name: "default",
-                    title: "Default page list",
+                    title: "Default newsletter form",
                     component: MailchimpDefaultForm
                 }
             ]

@@ -1,9 +1,9 @@
 // @flow
 import React from "react";
 import { Avatar } from "webiny-ui/Avatar";
-import { withSecurity, type WithSecurityProps } from "webiny-security/components";
+import { withSecurity, type WithSecurityPropsType } from "webiny-security/components";
 
-class UserAvatar extends React.Component<WithSecurityProps> {
+class UserAvatar extends React.Component<WithSecurityPropsType> {
     render() {
         const { security } = this.props;
         if (!security || !security.user) {

@@ -305,6 +305,10 @@ class Navigation extends React.Component<Props> {
     };
 
     addMenu = (menu: React.Element<typeof Menu>) => {
+        if (!menu) {
+            return this;
+        }
+
         // Make sure we have a menu ID
         menu = React.cloneElement(menu, { id: menu.props.id || menu.props.label });
 

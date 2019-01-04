@@ -25,18 +25,6 @@ export default [
         ]
     },
     {
-        name: "CMS Tags",
-        description: "Grants complete access to tags.",
-        slug: "cms-tags",
-        scopes: [
-            "cms:tag:create",
-            "cms:tag:get",
-            "cms:tag:list",
-            "cms:tag:update",
-            "cms:tag:delete"
-        ]
-    },
-    {
         name: "CMS Pages",
         description: "Grants complete access to CMS pages.",
         slug: "cms-pages",
@@ -46,7 +34,12 @@ export default [
             "cms:page:delete",
             "cms:page:revision:create",
             "cms:page:revision:update",
-            "cms:page:revision:delete"
+            "cms:page:revision:delete",
+            "cms:tag:get",
+            "cms:tag:list",
+            "cms:tag:create",
+            "cms:tag:update",
+            "cms:tag:delete"
         ]
     }
 ];

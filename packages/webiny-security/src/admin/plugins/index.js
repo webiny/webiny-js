@@ -8,6 +8,6 @@ export default [
     // Layout plugins
     UserMenu,
     globalSearchUsers,
-    ...routes,
-    ...menus
+    routes,
+    menus
 ];

@@ -2,7 +2,7 @@
 import * as React from "react";
 import { SecurityConsumer } from "./Security";
 
-export type WithSecurityProps = {
+export type WithSecurityPropsType = {
     security: {
         user: Object,
         logout: Function
@@ -11,7 +11,7 @@ export type WithSecurityProps = {
 
 export const withSecurity = (): Function => {
     return (Component: typeof React.Component) => {
-        return props => {
+        return function WithSecurity(props) {
             return (
                 <SecurityConsumer>
                     <Component {...props} />

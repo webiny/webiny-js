@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import { i18n } from "webiny-app/i18n";
-import { withSecurity, type WithSecurityProps } from "webiny-security/components";
+import { withSecurity, type WithSecurityPropsType } from "webiny-security/components";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import { Tooltip } from "webiny-ui/Tooltip";
 import type { WithCrudListProps } from "webiny-admin/components";
@@ -22,7 +22,7 @@ import { Avatar } from "webiny-ui/Avatar";
 
 const t = i18n.namespace("Security.UsersDataList");
 
-type Props = WithCrudListProps & WithSecurityProps;
+type Props = WithCrudListProps & WithSecurityPropsType;
 
 const UsersDataList = ({ dataList, router, security, deleteRecord }: Props) => {
     return (
