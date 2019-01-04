@@ -4,12 +4,7 @@ import { ReactComponent as SecurityIcon } from "./../assets/icons/baseline-secur
 import { i18n } from "webiny-app/i18n";
 import { hasScopes } from "webiny-app-security";
 
-import {
-    SCOPES_API_TOKENS,
-    SCOPES_GROUPS,
-    SCOPES_ROLES,
-    SCOPES_USERS
-} from "webiny-app-security/admin";
+import { SCOPES_GROUPS, SCOPES_ROLES, SCOPES_USERS } from "webiny-app-security/admin";
 
 const t = i18n.namespace("Cms.Categories");
 
@@ -18,14 +13,13 @@ export default [
         name: "security-menu",
         type: "menu",
         render({ Menu }: Object) {
-            const { apiTokens, groups, roles, users }: Object = (hasScopes({
-                apiTokens: SCOPES_API_TOKENS,
+            const { groups, roles, users }: Object = (hasScopes({
                 groups: SCOPES_GROUPS,
                 roles: SCOPES_ROLES,
                 users: SCOPES_USERS
             }): any);
 
-            const identities = apiTokens || users;
+            const identities = users;
             const rolesGroups = groups || roles;
 
             if (identities || rolesGroups) {
@@ -34,7 +28,6 @@ export default [
                         {identities && (
                             <Menu label={t`Identities`}>
                                 {users && <Menu label={t`Users`} route="Users" />}
-                                {apiTokens && <Menu label={t`API Tokens`} route="ApiTokens" />}
                             </Menu>
                         )}
 

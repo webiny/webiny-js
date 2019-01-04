@@ -35,17 +35,5 @@ export default [
             "security:user:update",
             "security:user:delete"
         ]
-    },
-    {
-        name: "Security - API tokens",
-        description: "Allows management of API tokens.",
-        slug: "security-api-tokens",
-        scopes: [
-            "security:api_token:get",
-            "security:api_token:list",
-            "security:api_token:create",
-            "security:api_token:update",
-            "security:api_token:delete"
-        ]
     }
 ];

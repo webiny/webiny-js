@@ -3,7 +3,6 @@ import { dummyResolver } from "webiny-api/graphql";
 import role from "./graphql/Role";
 import group from "./graphql/Group";
 import user from "./graphql/User";
-import apiToken from "./graphql/ApiToken";
 import { type PluginType } from "webiny-api/types";
 import { getRegisteredScopes, hasScope } from "webiny-api-security";
 
@@ -19,7 +18,6 @@ export default ([
             role.typeExtensions,
             group.typeDefs,
             group.typeExtensions,
-            apiToken.typeDefs,
             /* GraphQL */ `
                 type SecurityQuery {
                     # Returns all scopes that were used throughout the schema.
@@ -51,7 +49,6 @@ export default ([
                     scopes: getRegisteredScopes
                 }
             },
-            apiToken.resolvers,
             group.resolvers,
             role.resolvers,
             user.resolvers
@@ -59,8 +56,6 @@ export default ([
         security: {
             shield: {
                 SecurityQuery: {
-                    getApiToken: hasScope("security:api_token:get"),
-                    listApiTokens: hasScope("security:api_token:list"),
                     getGroup: hasScope("security:group:get"),
                     listGroups: hasScope("security:group:list"),
                     getRole: hasScope("security:role:get"),
@@ -69,9 +64,6 @@ export default ([
                     listUsers: hasScope("security:user:list")
                 },
                 SecurityMutation: {
-                    createApiToken: hasScope("security:api_token:create"),
-                    updateApiToken: hasScope("security:api_token:update"),
-                    deleteApiToken: hasScope("security:api_token:delete"),
                     createGroup: hasScope("security:group:create"),
                     updateGroup: hasScope("security:group:update"),
                     deleteGroup: hasScope("security:group:delete"),

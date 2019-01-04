@@ -22,11 +22,3 @@ export const SCOPES_USERS = [
     "security:user:update",
     "security:user:delete"
 ];
-
-export const SCOPES_API_TOKENS = [
-    "security:api_token:get",
-    "security:api_token:list",
-    "security:api_token:create",
-    "security:api_token:update",
-    "security:api_token:delete"
-];

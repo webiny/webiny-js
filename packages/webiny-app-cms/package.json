@@ -67,10 +67,11 @@
   "peerDependencies": {
     "react": "^16.6.0",
     "react-dom": "^16.6.0",
+    "react-helmet": "^5.2.0",
     "webiny-app": "0.0.0",
     "webiny-app-security": "0.0.0",
-    "webiny-ui": "0.0.0",
-    "webiny-plugins": "0.0.0"
+    "webiny-plugins": "0.0.0",
+    "webiny-ui": "0.0.0"
   },
   "scripts": {
     "build": "babel src -d ${DEST:-build} --source-maps --copy-files",

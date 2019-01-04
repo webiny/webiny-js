@@ -2,16 +2,6 @@
 import { type EntityPluginType } from "webiny-api/types";
 import * as entities from "webiny-api-security/entities";
 
-const apiToken: EntityPluginType = {
-    name: "entity-api-token",
-    type: "entity",
-    namespace: "security",
-    entity: {
-        name: "ApiToken",
-        factory: entities.apiTokenFactory
-    }
-};
-
 const group: EntityPluginType = {
     name: "entity-group",
     type: "entity",
@@ -72,4 +62,4 @@ const userSettings: EntityPluginType = {
     }
 };
 
-export default [apiToken, group, groups2entities, role, roles2entities, user, userSettings];
+export default [group, groups2entities, role, roles2entities, user, userSettings];

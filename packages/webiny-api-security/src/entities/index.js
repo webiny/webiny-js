@@ -1,6 +1,5 @@
 // @flow
 export { userFactory } from "webiny-api-security/entities/User.entity";
-export { apiTokenFactory } from "webiny-api-security/entities/ApiToken.entity";
 export { groupFactory } from "webiny-api-security/entities/Group.entity";
 export { groups2entitiesFactory } from "webiny-api-security/entities/Groups2Entities.entity";
 export { roleFactory } from "webiny-api-security/entities/Role.entity";

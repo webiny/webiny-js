@@ -3,16 +3,11 @@ import AdminLayout from "webiny-admin/components/Layouts/AdminLayout";
 import React from "react";
 import Roles from "webiny-app-security/admin/views/Roles";
 import Groups from "webiny-app-security/admin/views/Groups";
-import ApiTokens from "webiny-app-security/admin/views/ApiTokens";
 import Users from "webiny-app-security/admin/views/Users";
 import Account from "webiny-app-security/admin/views/Account";
 import { SecureRoute } from "webiny-app-security/components";
-import {
-    SCOPES_API_TOKENS,
-    SCOPES_GROUPS,
-    SCOPES_ROLES,
-    SCOPES_USERS
-} from "webiny-app-security/admin";
+import { SCOPES_GROUPS, SCOPES_ROLES, SCOPES_USERS } from "webiny-app-security/admin";
+import Helmet from "react-helmet";
 
 export default [
     {
@@ -26,6 +21,9 @@ export default [
                 return (
                     <SecureRoute scopes={SCOPES_ROLES}>
                         <AdminLayout>
+                            <Helmet>
+                                <title>Security - Roles</title>
+                            </Helmet>
                             <Roles />
                         </AdminLayout>
                     </SecureRoute>
@@ -44,6 +42,9 @@ export default [
                 return (
                     <SecureRoute scopes={SCOPES_GROUPS}>
                         <AdminLayout>
+                            <Helmet>
+                                <title>Security - Groups</title>
+                            </Helmet>
                             <Groups />
                         </AdminLayout>
                     </SecureRoute>
@@ -62,25 +63,10 @@ export default [
                 return (
                     <SecureRoute scopes={SCOPES_USERS}>
                         <AdminLayout>
+                            <Helmet>
+                                <title>Security - Users</title>
+                            </Helmet>
                             <Users />
-                        </AdminLayout>
-                    </SecureRoute>
-                );
-            }
-        }
-    },
-    {
-        name: "route-api-tokens",
-        type: "route",
-        route: {
-            name: "ApiTokens",
-            path: "/api-tokens",
-            title: "Security - Identities - API Tokens",
-            render() {
-                return (
-                    <SecureRoute scopes={SCOPES_API_TOKENS}>
-                        <AdminLayout>
-                            <ApiTokens />
                         </AdminLayout>
                     </SecureRoute>
                 );
@@ -98,6 +84,9 @@ export default [
                 return (
                     <SecureRoute>
                         <AdminLayout>
+                            <Helmet>
+                                <title>CMS - Categories</title>
+                            </Helmet>
                             <Account />
                         </AdminLayout>
                     </SecureRoute>
