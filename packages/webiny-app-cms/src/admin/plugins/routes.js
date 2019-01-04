@@ -5,6 +5,8 @@ import Categories from "webiny-app-cms/admin/views/Categories/Categories";
 import Menus from "webiny-app-cms/admin/views/Menus/Menus";
 import Pages from "webiny-app-cms/admin/views/Pages/Pages";
 import Editor from "webiny-app-cms/admin/views/Pages/Editor";
+import { SecureRoute } from "webiny-app-security/components";
+import { SCOPES_PAGES, SCOPES_CATEGORIES, SCOPES_MENUS } from "webiny-app-cms";
 
 export default [
     {
@@ -15,9 +17,11 @@ export default [
             path: "/cms/categories",
             render() {
                 return (
-                    <AdminLayout>
-                        <Categories />
-                    </AdminLayout>
+                    <SecureRoute scopes={SCOPES_CATEGORIES}>
+                        <AdminLayout>
+                            <Categories />
+                        </AdminLayout>
+                    </SecureRoute>
                 );
             }
         }
@@ -31,9 +35,11 @@ export default [
             exact: true,
             render() {
                 return (
-                    <AdminLayout>
-                        <Menus />
-                    </AdminLayout>
+                    <SecureRoute scopes={SCOPES_MENUS}>
+                        <AdminLayout>
+                            <Menus />
+                        </AdminLayout>
+                    </SecureRoute>
                 );
             }
         }
@@ -46,9 +52,11 @@ export default [
             path: "/cms/pages",
             render() {
                 return (
-                    <AdminLayout>
-                        <Pages />
-                    </AdminLayout>
+                    <SecureRoute scopes={SCOPES_PAGES}>
+                        <AdminLayout>
+                            <Pages />
+                        </AdminLayout>
+                    </SecureRoute>
                 );
             }
         }
@@ -60,7 +68,11 @@ export default [
             name: "Cms.Editor",
             path: "/cms/editor/:id",
             render() {
-                return <Editor />;
+                return (
+                    <SecureRoute scopes={SCOPES_PAGES}>
+                        <Editor />
+                    </SecureRoute>
+                );
             }
         }
     }

@@ -1,7 +1,7 @@
 // @flow
 import { getPlugins } from "webiny-plugins";
 import { dummyResolver } from "webiny-api/graphql";
-import { hasScope } from "webiny-security/api";
+import { hasScope } from "webiny-api-security";
 
 import page from "./graphql/Page";
 import category from "./graphql/Category";

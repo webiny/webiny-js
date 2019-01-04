@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import { ReactComponent as PagesIcon } from "webiny-app-cms/admin/assets/round-ballot-24px.svg";
-import { hasScopes } from "webiny-security/components";
+import { hasScopes } from "webiny-app-security";
 import { SCOPES_MENUS, SCOPES_CATEGORIES, SCOPES_PAGES } from "webiny-app-cms";
 
 export default [
