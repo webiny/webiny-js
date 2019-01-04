@@ -85,7 +85,7 @@ export default [
                     <SecureRoute>
                         <AdminLayout>
                             <Helmet>
-                                <title>CMS - Categories</title>
+                                <title>User Account</title>
                             </Helmet>
                             <Account />
                         </AdminLayout>
