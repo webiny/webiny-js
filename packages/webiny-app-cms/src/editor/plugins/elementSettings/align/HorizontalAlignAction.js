@@ -34,7 +34,7 @@ export default compose(
         state => ({ element: getActiveElement(state) }),
         { updateElement }
     ),
-    withProps(({ element }) => ({ align: get(element, "settings.style.horizontalAlign") || "left" })),
+    withProps(({ element }) => ({ align: get(element, "data.settings.horizontalAlign") || "left" })),
     withHandlers({
         alignElement: ({ updateElement, element, align }) => {
             return () => {
@@ -43,7 +43,7 @@ export default compose(
                 const nextAlign = alignments[alignments.indexOf(align) + 1] || "left";
 
                 updateElement({
-                    element: set(element, "settings.style.horizontalAlign", nextAlign)
+                    element: set(element, "data.settings.horizontalAlign", nextAlign)
                 });
             };
         }

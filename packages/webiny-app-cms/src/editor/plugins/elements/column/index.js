@@ -59,8 +59,9 @@ export default (): ElementPluginType => {
         create(options = {}) {
             return {
                 type: "cms-element-column",
-                settings: {
-                    style: {
+                data: {
+                    ...(options.data || {}),
+                    settings: {
                         margin: {
                             desktop: { all: 0 },
                             mobile: { all: 0 }
@@ -71,7 +72,7 @@ export default (): ElementPluginType => {
                         }
                     }
                 },
-                ...options
+                elements: options.elements || []
             };
         },
         render(props) {

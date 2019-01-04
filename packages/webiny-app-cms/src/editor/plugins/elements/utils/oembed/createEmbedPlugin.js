@@ -35,11 +35,10 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): ElementPluginType 
             return {
                 type: "cms-element-" + config.type,
                 elements: [],
-                data: {},
-                settings: {
-                    style: {
-                        margin: { all: 0 },
-                        padding: { all: 0 }
+                data: {
+                    settings: {
+                        margin: { desktop: { all: 0 }, mobile: { all: 0 } },
+                        padding: { desktop: { all: 0 }, mobile: { all: 0 } }
                     }
                 },
                 ...options

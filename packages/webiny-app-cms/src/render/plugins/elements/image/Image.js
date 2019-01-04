@@ -1,11 +1,7 @@
 // @flow
 import React from "react";
 import { get } from "lodash";
-import {
-    ElementStyle,
-    getElementStyleProps,
-    getElementAttributeProps
-} from "webiny-app-cms/render/components/ElementStyle";
+import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 
 const Link = ({ link, children }: Object) => {
     if (link && link.href) {
@@ -19,12 +15,8 @@ const Link = ({ link, children }: Object) => {
 };
 
 const Image = (props: *) => {
-    const { src } = props.element.data;
-    const { img = {}, link = {} } = get(props, "element.settings.advanced", {});
-    const { width, height, align, rest } = img;
-    const wrapperStyle = get(props, "element.settings.style", {});
-    const elementStyles = getElementStyleProps(props.element);
-    const elementAttributes = getElementAttributeProps(props.element);
+    const { image = {}, link = {} } = get(props, "element.data", {});
+    const { width, height, align, rest, src } = image;
 
     const style = { width, height };
     if (!style.width) {
@@ -40,16 +32,13 @@ const Image = (props: *) => {
     }
 
     return (
-        <ElementStyle {...elementStyles} {...elementAttributes}>
-            <div
-                className={"webiny-cms-base-element-style webiny-cms-element-image"}
-                style={{ ...wrapperStyle, textAlign: align }}
-            >
+        <ElementRoot element={props.element} style={{ textAlign: align }}>
+            <div className={"webiny-cms-base-element-style webiny-cms-element-image"}>
                 <Link link={link}>
                     <img {...rest} style={style} src={src} />
                 </Link>
             </div>
-        </ElementStyle>
+        </ElementRoot>
     );
 };
 

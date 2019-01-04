@@ -1,11 +1,7 @@
 //@flow
 import React from "react";
 import ConnectedElement from "webiny-app-cms/editor/components/ConnectedElement";
-import {
-    ElementStyle,
-    getElementStyleProps,
-    getElementAttributeProps
-} from "webiny-app-cms/render/components/ElementStyle";
+import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 import RowContainer from "./RowContainer";
 import ElementAnimation from "webiny-app-cms/render/components/ElementAnimation";
 
@@ -16,16 +12,15 @@ import ElementAnimation from "webiny-app-cms/render/components/ElementAnimation"
 const Row = ({ element }: Object) => {
     return (
         <ElementAnimation>
-            <ElementStyle
-                {...getElementStyleProps(element)}
-                {...getElementAttributeProps(element)}
+            <ElementRoot
+                element={element}
                 className={"webiny-cms-base-element-style webiny-cms-layout-row"}
                 style={{ zIndex: 20, position: "relative" }}
             >
                 <ConnectedElement elementId={element.id} withChildElements>
                     {element => <RowContainer elementId={element.id} />}
                 </ConnectedElement>
-            </ElementStyle>
+            </ElementRoot>
         </ElementAnimation>
     );
 };

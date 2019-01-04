@@ -2,7 +2,7 @@
 import * as React from "react";
 import { pure } from "recompose";
 import { Typography } from "webiny-ui/Typography";
-import { Cell } from "webiny-ui/Grid";
+import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { InputContainer } from "./StyledComponents";
 
@@ -14,7 +14,7 @@ type Props = {
 
 export default pure(({ label, value, updateValue }: Props) => {
     return (
-        <React.Fragment>
+        <Grid>
             <Cell span={4}>
                 <Typography use={"overline"}>{label}</Typography>
             </Cell>
@@ -23,6 +23,6 @@ export default pure(({ label, value, updateValue }: Props) => {
                     <Input value={value} onChange={updateValue} />
                 </InputContainer>
             </Cell>
-        </React.Fragment>
+        </Grid>
     );
 });

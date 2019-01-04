@@ -33,7 +33,7 @@ export default compose(
         { updateElement }
     ),
     withProps(({ element }) => ({
-        align: get(element, "settings.style.horizontalAlignFlex") || "flex-start"
+        align: get(element, "data.settings.horizontalAlignFlex") || "flex-start"
     })),
     withHandlers({
         alignElement: ({ updateElement, element, align }) => {
@@ -43,7 +43,7 @@ export default compose(
                 const nextAlign = alignments[alignments.indexOf(align) + 1] || "flex-start";
 
                 updateElement({
-                    element: set(element, "settings.style.horizontalAlignFlex", nextAlign)
+                    element: set(element, "data.settings.horizontalAlignFlex", nextAlign)
                 });
             };
         }

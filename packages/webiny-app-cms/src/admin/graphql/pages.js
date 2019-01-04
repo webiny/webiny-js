@@ -171,3 +171,18 @@ export const createElement = gql`
         }
     }
 `;
+
+export const updateElement = gql`
+    mutation CmsUpdateElement($id: ID!, $data: UpdateElementInput!) {
+        cms {
+            element: updateElement(id: $id, data: $data) {
+                data {
+                    ${elementFields}
+                }
+                ${error}
+            }
+        }
+    }
+`;
+
+

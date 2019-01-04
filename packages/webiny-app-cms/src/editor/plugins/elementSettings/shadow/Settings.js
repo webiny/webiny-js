@@ -19,36 +19,34 @@ const Settings = ({
     updateBlur,
     updateSpread
 }: Object) => {
-    const shadow = get(element, "settings.style.shadow", {});
+    const shadow = get(element, "data.settings.shadow", {});
     const { horizontal = 0, vertical = 0, blur = 0, spread = 0, color = "#000" } = shadow;
     return (
         <React.Fragment>
             <Tabs>
                 <Tab label={"Shadow"}>
-                    <Grid>
-                        <ColorPicker
-                            label={"Color"}
-                            value={color}
-                            updateValue={updateColor}
-                            updatePreview={updateColorPreview}
-                        />
+                    <ColorPicker
+                        label={"Color"}
+                        value={color}
+                        updateValue={updateColor}
+                        updatePreview={updateColorPreview}
+                    />
 
-                        <Input
-                            label={"Horizontal offset"}
-                            value={horizontal}
-                            updateValue={updateHorizontalOffset}
-                        />
+                    <Input
+                        label={"Horizontal offset"}
+                        value={horizontal}
+                        updateValue={updateHorizontalOffset}
+                    />
 
-                        <Input
-                            label={"Vertical offset"}
-                            value={vertical}
-                            updateValue={updateVerticalOffset}
-                        />
+                    <Input
+                        label={"Vertical offset"}
+                        value={vertical}
+                        updateValue={updateVerticalOffset}
+                    />
 
-                        <Input label={"Blur"} value={blur} updateValue={updateBlur} />
+                    <Input label={"Blur"} value={blur} updateValue={updateBlur} />
 
-                        <Input label={"Spread"} value={spread} updateValue={updateSpread} />
-                    </Grid>
+                    <Input label={"Spread"} value={spread} updateValue={updateSpread} />
                 </Tab>
             </Tabs>
         </React.Fragment>
@@ -64,7 +62,7 @@ export default compose(
             let historyUpdated = {};
 
             return (name, value, history = true) => {
-                const newElement = set(element, `settings.style.shadow.${name}`, value);
+                const newElement = set(element, `data.settings.shadow.${name}`, value);
 
                 if (!history) {
                     updateElement({ element: newElement, history });

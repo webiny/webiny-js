@@ -2,14 +2,14 @@
 import * as React from "react";
 import { pure } from "recompose";
 import { Input } from "webiny-ui/Input";
-import { Cell } from "webiny-ui/Grid";
+import { Grid, Cell } from "webiny-ui/Grid";
 import { Icon } from "webiny-ui/Icon";
 import { Slider } from "webiny-ui/Slider";
 import { InputContainer } from "webiny-app-cms/editor/plugins/elementSettings/components/StyledComponents";
 
-const PMPropertyInput = pure(({ value, icon, updateValue, updatePreview }: Object) => {
+const PMPropertyInput = pure(({ value, icon, updateValue, updatePreview, className }: Object) => {
     return (
-        <React.Fragment>
+        <Grid className={className}>
             <Cell span={2}>
                 <Icon icon={icon} />
             </Cell>
@@ -28,7 +28,7 @@ const PMPropertyInput = pure(({ value, icon, updateValue, updatePreview }: Objec
                     <Input placeholder={"px"} value={value} onChange={updateValue} />
                 </InputContainer>
             </Cell>
-        </React.Fragment>
+        </Grid>
     );
 });
 

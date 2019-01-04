@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import styled from "react-emotion";
-import type { ElementPluginType } from "webiny-app-cms/types";
+import type { PluginType } from "webiny-app-cms/types";
 import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
@@ -23,7 +23,7 @@ const PreviewBox = styled("div")({
     }
 });
 
-export default (): Array<ElementPluginType> => [
+export default (): Array<PluginType> => [
     createEmbedPlugin({
         type: "twitter",
         toolbar: {
@@ -55,7 +55,7 @@ export default (): Array<ElementPluginType> => [
                 <Tab icon={<SocialIcon />} label="Twitter">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"data.source.url"} validators={["required", "url"]}>
+                            <Bind name={"source.url"} validators={["required", "url"]}>
                                 <Input label={"Tweet URL"} description={"Enter a Tweet URL"} />
                             </Bind>
                         </Cell>

@@ -23,7 +23,7 @@ export default (el: Element) => {
         category: el.category,
         tags: ["saved"],
         create() {
-            return cloneDeep(el.content);
+            return cloneDeep({ ...el.content, source: el.id });
         },
         preview() {
             return (

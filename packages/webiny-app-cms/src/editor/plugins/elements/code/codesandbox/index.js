@@ -50,7 +50,7 @@ export default (): Array<PluginType> => [
                 <Tab icon={<CodeIcon />} label="CodeSandbox">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"data.source.url"} validators={["required", "url"]}>
+                            <Bind name={"source.url"} validators={["required", "url"]}>
                                 <Input
                                     label={"CodeSandbox URL"}
                                     description={"Enter a CodeSandbox URL"}

@@ -1,4 +1,5 @@
 // @flow
+import { get } from "lodash";
 import type { CmsRenderElementStylePluginType } from "webiny-app-cms/types";
 
 const vertical = {
@@ -11,8 +12,8 @@ export default ([
     {
         name: "cms-render-element-style-horizontal-align",
         type: "cms-render-element-style",
-        renderStyle({ settings, style }: Object) {
-            const { horizontalAlign } = settings;
+        renderStyle({ element, style }: Object) {
+            const { horizontalAlign } = get(element, "data.settings", {});
             if (!horizontalAlign) {
                 return style;
             }
@@ -22,8 +23,8 @@ export default ([
     {
         name: "cms-render-element-style-horizontal-align-flex",
         type: "cms-render-element-style",
-        renderStyle({ settings, style }: Object) {
-            const { horizontalAlignFlex } = settings;
+        renderStyle({ element, style }: Object) {
+            const { horizontalAlignFlex } = get(element, "data.settings", {});
             if (!horizontalAlignFlex) {
                 return style;
             }
@@ -33,8 +34,8 @@ export default ([
     {
         name: "cms-render-element-style-vertical-align",
         type: "cms-render-element-style",
-        renderStyle({ settings, style }: Object) {
-            const { verticalAlign } = settings;
+        renderStyle({ element, style }: Object) {
+            const { verticalAlign } = get(element, "data.settings", {});
             if (!verticalAlign) {
                 return style;
             }

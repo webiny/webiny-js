@@ -1,7 +1,7 @@
 //@flow
 import React from "react";
 import styled from "react-emotion";
-import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
+import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 import SpacerContainer from "./SpacerContainer";
 export { MIN_HEIGHT, INIT_HEIGHT } from "./SpacerContainer";
 
@@ -23,7 +23,7 @@ const SpacerElement = styled("div")({
 const Spacer = ({ element }: Object) => {
     return (
         <SpacerElement>
-            <ElementStyle {...getElementStyleProps(element)}>
+            <ElementRoot element={element}>
                 {({ elementStyle, customClasses, combineClassNames }) => (
                     <SpacerContainer
                         elementId={element.id}
@@ -32,7 +32,7 @@ const Spacer = ({ element }: Object) => {
                         combineClassNames={combineClassNames}
                     />
                 )}
-            </ElementStyle>
+            </ElementRoot>
         </SpacerElement>
     );
 };

@@ -24,7 +24,7 @@ type Props = Object & {
     element: Object
 };
 
-const emptyElement = { data: {}, settings: {}, type: null };
+const emptyElement = { data: {}, type: null };
 
 const dialogBody = css({
     "&.mdc-dialog__body": {
@@ -45,10 +45,10 @@ class AdvancedSettings extends React.Component<Props> {
 
     render() {
         const { element, open, onClose, onSubmit } = this.props;
-        const { data, settings, type } = element || cloneDeep(emptyElement);
+        const { data, type } = element || cloneDeep(emptyElement);
         return (
             <Dialog open={open} onClose={onClose}>
-                <Form key={element && element.id} data={{ data, settings }} onSubmit={onSubmit}>
+                <Form key={element && element.id} data={data} onSubmit={onSubmit}>
                     {({ submit, Bind }) => (
                         <React.Fragment>
                             <DialogBody className={dialogBody}>
@@ -61,7 +61,7 @@ class AdvancedSettings extends React.Component<Props> {
                                     <Tab icon={<SettingsIcon />} label="Style">
                                         <Grid>
                                             <Cell span={12}>
-                                                <Bind name={"settings.advanced.style.classNames"}>
+                                                <Bind name={"settings.className"}>
                                                     <Input
                                                         label={"CSS class"}
                                                         description={"Custom CSS class names"}
@@ -111,9 +111,8 @@ export default compose(
                 return formData;
             }, formData);
 
-            const newElement = merge(element, "data", formData.data);
             updateElement({
-                element: merge(newElement, "settings", formData.settings)
+                element: merge(element, "data", formData)
             });
             closeDialog();
         },

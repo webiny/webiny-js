@@ -5,7 +5,7 @@ import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ReactComponent as SocialIcon } from "./../../../elementGroups/social/round-people-24px.svg";
-import type { ElementPluginType } from "webiny-app-cms/types";
+import type { PluginType } from "webiny-app-cms/types";
 import placeholder from "./placeholder.jpg";
 import {
     createEmbedPlugin,
@@ -23,7 +23,7 @@ const PreviewBox = styled("div")({
     }
 });
 
-export default (): Array<ElementPluginType> => [
+export default (): Array<PluginType> => [
     createEmbedPlugin({
         type: "instagram",
         toolbar: {
@@ -55,7 +55,7 @@ export default (): Array<ElementPluginType> => [
                 <Tab icon={<SocialIcon />} label="Instagram">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"data.source.url"} validators={["required", "url"]}>
+                            <Bind name={"source.url"} validators={["required", "url"]}>
                                 <Input
                                     label={"Instagram URL"}
                                     description={"Enter an Instagram URL"}

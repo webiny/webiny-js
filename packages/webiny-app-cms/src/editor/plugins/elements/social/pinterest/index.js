@@ -6,7 +6,7 @@ import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ReactComponent as SocialIcon } from "./../../../elementGroups/social/round-people-24px.svg";
-import type { ElementPluginType } from "webiny-app-cms/types";
+import type { PluginType } from "webiny-app-cms/types";
 import {
     createEmbedPlugin,
     createEmbedSettingsPlugin
@@ -24,7 +24,7 @@ const PreviewBox = styled("div")({
     }
 });
 
-export default (): Array<ElementPluginType> => [
+export default (): Array<PluginType> => [
     createEmbedPlugin({
         type: "pinterest",
         toolbar: {
@@ -49,7 +49,7 @@ export default (): Array<ElementPluginType> => [
                 <Tab icon={<SocialIcon />} label="Pinterest">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"data.source.url"} validators={["required", "url"]}>
+                            <Bind name={"source.url"} validators={["required", "url"]}>
                                 <Input
                                     label={"Pinterest URL"}
                                     description={"Enter a Pinterest URL"}
@@ -57,7 +57,7 @@ export default (): Array<ElementPluginType> => [
                             </Bind>
                         </Cell>
                         <Cell span={12}>
-                            <Bind defaultValue="small" name={"data.source.size"}>
+                            <Bind defaultValue="small" name={"source.size"}>
                                 <Select label={"Size"}>
                                     <option value="small">Small</option>
                                     <option value="medium">Medium</option>

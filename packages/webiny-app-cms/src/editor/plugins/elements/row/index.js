@@ -62,8 +62,8 @@ export default (): ElementPluginType => {
             const row = {
                 type: "cms-element-row",
                 elements: [],
-                settings: {
-                    style: {
+                data: {
+                    settings: {
                         margin: {
                             desktop: { all: 0 },
                             mobile: { all: 0 }
@@ -95,6 +95,7 @@ export default (): ElementPluginType => {
             let dispatchNew = false;
             let element;
             if (source.path) {
+                // $FlowFixMe
                 element = cloneElement(source);
             } else {
                 dispatchNew = true;

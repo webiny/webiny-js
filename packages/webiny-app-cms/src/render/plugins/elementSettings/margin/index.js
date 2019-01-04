@@ -1,13 +1,12 @@
 // @flow
+import { get } from "lodash";
 import type { CmsRenderElementStylePluginType } from "webiny-app-cms/types";
-
-const unit = "px";
 
 export default ({
     name: "cms-render-element-style-margin",
     type: "cms-render-element-style",
-    renderStyle({ settings, style }: Object) {
-        const { margin } = settings;
+    renderStyle({ element, style }) {
+        const { margin } = get(element, "data.settings", {});
 
         if (!margin) {
             return style;

@@ -36,7 +36,7 @@ export class Redux {
     }
 
     createAction(type: string, options?: ActionOptions = {}): ActionCreator {
-        return (payload?: Object = {}, meta: Object = {}) => {
+        return (payload?: Object = {}, meta?: Object = {}) => {
             return {
                 type,
                 payload,
@@ -73,8 +73,6 @@ export class Redux {
                     predicate: (state, action) => _.get(action, "meta.log", true)
                 })) ||
             compose;
-
-        this.store = null;
 
         this.store = createStore(
             createRootReducer(INIT_STATE, this),
