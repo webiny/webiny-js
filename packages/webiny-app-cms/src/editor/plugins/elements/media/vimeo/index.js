@@ -4,7 +4,7 @@ import styled from "react-emotion";
 import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
-import type { ElementPluginType } from "webiny-app-cms/types";
+import type { PluginType } from "webiny-app-cms/types";
 import {
     createEmbedPlugin,
     createEmbedSettingsPlugin
@@ -23,7 +23,7 @@ const PreviewBox = styled("div")({
     }
 });
 
-export default (): Array<ElementPluginType> => [
+export default (): Array<PluginType> => [
     createEmbedPlugin({
         type: "vimeo",
         toolbar: {
@@ -53,7 +53,7 @@ export default (): Array<ElementPluginType> => [
                 <Tab icon={<MediaIcon />} label="Vimeo">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"data.source.url"} validators={["required", "url"]}>
+                            <Bind name={"source.url"} validators={["required", "url"]}>
                                 <Input label={"Video URL"} description={"Enter a video URL"} />
                             </Bind>
                         </Cell>

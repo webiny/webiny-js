@@ -13,13 +13,8 @@ export type ElementType = {
     id: string,
     path: string,
     type: string,
-    elements: Array<string>,
-    data: Object,
-    settings: Object
-};
-
-export type DeepElementType = ElementType & {
-    elements: Array<DeepElementType>
+    elements: Array<Object>,
+    data: Object
 };
 
 export type CmsThemeType = {
@@ -66,7 +61,7 @@ export type ElementPluginType = PluginType & {
         store: Store,
         source: ElementType | { type: string },
         target: ElementType,
-        position: Number | null
+        position: number | null
     }) => void,
     // Executed when an immediate child element is deleted
     onChildDeleted?: ({ element: ElementType, child: ElementType }) => void
@@ -120,7 +115,11 @@ export type CmsElementActionPluginType = PluginType & {
 };
 
 export type CmsRenderElementStylePluginType = PluginType & {
-    renderStyle: ({ settings: Object, style: Object }) => Object
+    renderStyle: ({ element: ElementType, style: Object }) => Object
+};
+
+export type CmsRenderElementAttributesPluginType = PluginType & {
+    renderAttributes: ({ element: ElementType, attributes: Object }) => Object
 };
 
 // ================= Redux types ===================
@@ -128,7 +127,8 @@ export type { Redux } from "webiny-app-cms/editor/redux";
 
 export type Action = {
     type: string,
-    payload: Object
+    payload: Object,
+    meta: Object
 };
 
 export type ActionOptions = {
@@ -160,4 +160,4 @@ export type MiddlewareParams = {
 };
 
 export type MiddlewareFunction = MiddlewareParams => any;
-export type ActionCreator = (payload?: Object) => Action;
+export type ActionCreator = (payload?: any, meta?: Object) => Action;

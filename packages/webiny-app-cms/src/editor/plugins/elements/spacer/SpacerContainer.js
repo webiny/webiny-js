@@ -79,11 +79,11 @@ export default compose(
     withHandlers({
         onResizeStart: ({ element, setHeight, resizeStart }) => () => {
             resizeStart();
-            setHeight(get(element, "settings.style.height", INIT_HEIGHT));
+            setHeight(get(element, "data.settings.height.value", MIN_HEIGHT));
         },
         onResizeStop: ({ resizeStop, updateElement, element, setHeight, localHeight }) => () => {
             resizeStop();
-            updateElement({ element: set(element, "settings.style.height", localHeight) });
+            updateElement({ element: set(element, "data.settings.height.value", localHeight) });
             setHeight(null);
         },
         onResize: ({ setHeight, localHeight }) => diff => {

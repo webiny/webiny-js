@@ -34,7 +34,7 @@ export default pure(({ label, value, updateValue }: Props) => {
     const left = getValue(value, "left");
 
     return (
-        <React.Fragment>
+        <Grid>
             <Cell span={4}>
                 <Typography use={"overline"}>{label}</Typography>
             </Cell>
@@ -70,6 +70,6 @@ export default pure(({ label, value, updateValue }: Props) => {
                     </Cell>
                 </Grid>
             </Cell>
-        </React.Fragment>
+        </Grid>
     );
 });

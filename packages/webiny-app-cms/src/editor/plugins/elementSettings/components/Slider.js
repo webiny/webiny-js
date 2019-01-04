@@ -2,7 +2,7 @@
 import * as React from "react";
 import { pure } from "recompose";
 import { Typography } from "webiny-ui/Typography";
-import { Cell } from "webiny-ui/Grid";
+import { Grid, Cell } from "webiny-ui/Grid";
 import { Slider } from "webiny-ui/Slider";
 
 type Props = {
@@ -18,7 +18,7 @@ type Props = {
 export default pure(
     ({ label, value, updatePreview, updateValue, min = 0, max = 100, step = 1 }: Props) => {
         return (
-            <React.Fragment>
+            <Grid>
                 <Cell span={4}>
                     <Typography use={"overline"}>{label}</Typography>
                 </Cell>
@@ -33,7 +33,7 @@ export default pure(
                         step={step}
                     />
                 </Cell>
-            </React.Fragment>
+            </Grid>
         );
     }
 );

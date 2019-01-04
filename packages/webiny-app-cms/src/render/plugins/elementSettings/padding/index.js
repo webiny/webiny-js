@@ -1,11 +1,12 @@
 // @flow
+import { get } from "lodash";
 import type { CmsRenderElementStylePluginType } from "webiny-app-cms/types";
 
 export default ({
     name: "cms-render-element-style-padding",
     type: "cms-render-element-style",
-    renderStyle({ settings, style }: Object) {
-        const { padding } = settings;
+    renderStyle({ element, style }) {
+        const { padding } = get(element, "data.settings", {});
 
         if (!padding) {
             return style;

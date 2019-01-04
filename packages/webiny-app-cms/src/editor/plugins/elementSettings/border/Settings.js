@@ -43,41 +43,39 @@ const Settings = (props: Props) => {
         <React.Fragment>
             <Tabs>
                 <Tab label={"Border"}>
-                    <Grid>
-                        <ColorPicker
-                            label={"Color"}
-                            value={borderColor}
-                            updateValue={updateBorderColor}
-                            updatePreview={updateBorderColorPreview}
-                        />
-                        <Slider
-                            label={"Width"}
-                            value={borderWidth}
-                            updateValue={updateBorderWidth}
-                            updatePreview={updateBorderWidthPreview}
-                            min={0}
-                            max={20}
-                            discrete
-                            step={1}
-                        />
-                        <Slider
-                            label={"Radius"}
-                            value={borderRadius}
-                            updateValue={updateBorderRadius}
-                            updatePreview={updateBorderRadiusPreview}
-                            min={0}
-                            max={100}
-                            discrete
-                            step={1}
-                        />
-                        <Select
-                            label={"Style"}
-                            value={borderStyle}
-                            updateValue={updateBorderStyle}
-                            options={options}
-                        />
-                        <Selector label={"Borders"} value={borders} updateValue={updateBorders} />
-                    </Grid>
+                    <ColorPicker
+                        label={"Color"}
+                        value={borderColor}
+                        updateValue={updateBorderColor}
+                        updatePreview={updateBorderColorPreview}
+                    />
+                    <Slider
+                        label={"Width"}
+                        value={borderWidth}
+                        updateValue={updateBorderWidth}
+                        updatePreview={updateBorderWidthPreview}
+                        min={0}
+                        max={20}
+                        discrete
+                        step={1}
+                    />
+                    <Slider
+                        label={"Radius"}
+                        value={borderRadius}
+                        updateValue={updateBorderRadius}
+                        updatePreview={updateBorderRadiusPreview}
+                        min={0}
+                        max={100}
+                        discrete
+                        step={1}
+                    />
+                    <Select
+                        label={"Style"}
+                        value={borderStyle}
+                        updateValue={updateBorderStyle}
+                        options={options}
+                    />
+                    <Selector label={"Borders"} value={borders} updateValue={updateBorders} />
                 </Tab>
             </Tabs>
         </React.Fragment>
@@ -96,7 +94,7 @@ export default compose(
             const historyUpdated = {};
 
             return (name, value, history = true) => {
-                const attrKey = `settings.style.border.${name}`;
+                const attrKey = `data.settings.border.${name}`;
 
                 if (!history) {
                     updateElement({ element: set(element, attrKey, value), history });

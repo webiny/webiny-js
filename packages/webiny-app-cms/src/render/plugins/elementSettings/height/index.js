@@ -1,11 +1,12 @@
 // @flow
+import { get } from "lodash";
 import type { CmsRenderElementStylePluginType } from "webiny-app-cms/types";
 
 export default ({
     name: "cms-render-element-style-height",
     type: "cms-render-element-style",
-    renderStyle({ settings, style }: Object) {
-        const { height } = settings;
+    renderStyle({ element, style }) {
+        const { height } = get(element, "data.settings", {});
         if (!height) {
             return style;
         }

@@ -2,18 +2,14 @@
 import React from "react";
 import { css } from "emotion";
 import Element from "webiny-app-cms/render/components/Element";
-import {
-    ElementStyle,
-    getElementStyleProps,
-    getElementAttributeProps
-} from "webiny-app-cms/render/components/ElementStyle";
+import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 import type { ElementType } from "webiny-app-cms/types";
 import ElementAnimation from "webiny-app-cms/render/components/ElementAnimation";
 
 const Block = ({ element }: { element: ElementType }) => {
     return (
         <ElementAnimation>
-            <ElementStyle {...getElementStyleProps(element)} {...getElementAttributeProps(element)}>
+            <ElementRoot element={element}>
                 {({ elementStyle, elementAttributes, customClasses, combineClassNames }) => {
                     const { width, alignItems, justifyContent, ...containerStyle } = elementStyle;
 
@@ -42,7 +38,7 @@ const Block = ({ element }: { element: ElementType }) => {
                         </div>
                     );
                 }}
-            </ElementStyle>
+            </ElementRoot>
         </ElementAnimation>
     );
 };

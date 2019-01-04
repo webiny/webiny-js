@@ -1,14 +1,11 @@
 // @flow
 import React from "react";
-import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
+import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 import ButtonContainer from "./ButtonContainer";
 
 const Button = ({ element }: Object) => {
     return (
-        <ElementStyle
-            className={"webiny-cms-base-element-style"}
-            {...getElementStyleProps(element)}
-        >
+        <ElementRoot className={"webiny-cms-base-element-style"} element={element}>
             {({ getAllClasses, elementStyle, elementAttributes }) => (
                 <ButtonContainer
                     elementId={element.id}
@@ -17,7 +14,7 @@ const Button = ({ element }: Object) => {
                     elementAttributes={elementAttributes}
                 />
             )}
-        </ElementStyle>
+        </ElementRoot>
     );
 };
 

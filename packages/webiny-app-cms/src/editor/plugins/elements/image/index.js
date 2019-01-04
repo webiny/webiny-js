@@ -5,11 +5,7 @@ import styled from "react-emotion";
 import { getPlugin } from "webiny-plugins";
 import { addMiddleware } from "webiny-app-cms/editor/redux";
 import { ELEMENT_CREATED } from "webiny-app-cms/editor/actions";
-import {
-    ElementStyle,
-    getElementStyleProps,
-    getElementAttributeProps
-} from "webiny-app-cms/render/components/ElementStyle";
+import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 
 import type { PluginType } from "webiny-plugins/types";
 import { Grid, Cell } from "webiny-ui/Grid";
@@ -91,8 +87,8 @@ export default (): Array<PluginType> => {
                 return {
                     type: "cms-element-image",
                     elements: [],
-                    settings: {
-                        style: {
+                    data: {
+                        settings: {
                             margin: {
                                 desktop: { all: 0 },
                                 mobile: { top: 0, left: 0, right: 0, bottom: 15 },
@@ -109,13 +105,12 @@ export default (): Array<PluginType> => {
             },
             render({ element }) {
                 return (
-                    <ElementStyle
-                        {...getElementStyleProps(element)}
-                        {...getElementAttributeProps(element)}
+                    <ElementRoot
+                        element={element}
                         className={"webiny-cms-base-element-style webiny-cms-element-image"}
                     >
                         <Image elementId={element.id} />
-                    </ElementStyle>
+                    </ElementRoot>
                 );
             }
         },
@@ -128,14 +123,14 @@ export default (): Array<PluginType> => {
                     <Tab icon={<ImageIcon />} label="Image">
                         <Grid>
                             <Cell span={12}>
-                                <Bind name={"settings.advanced.img.title"} defaultValue={""}>
+                                <Bind name={"image.title"} defaultValue={""}>
                                     <Input label="Image title" />
                                 </Bind>
                             </Cell>
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name={"settings.advanced.img.alt"} defaultValue={""}>
+                                <Bind name={"image.alt"} defaultValue={""}>
                                     <Input
                                         label="Alternate text (alt)"
                                         description={
@@ -147,7 +142,7 @@ export default (): Array<PluginType> => {
                         </Grid>
                         <Grid>
                             <Cell span={6}>
-                                <Bind name={"settings.advanced.img.width"} defaultValue={""}>
+                                <Bind name={"image.width"} defaultValue={""}>
                                     <Input
                                         label="Width"
                                         placeholder="auto"
@@ -156,7 +151,7 @@ export default (): Array<PluginType> => {
                                 </Bind>
                             </Cell>
                             <Cell span={6}>
-                                <Bind name={"settings.advanced.img.height"} defaultValue={""}>
+                                <Bind name={"image.height"} defaultValue={""}>
                                     <Input
                                         label="Height"
                                         placeholder="auto"
@@ -167,7 +162,7 @@ export default (): Array<PluginType> => {
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name={"settings.advanced.img.align"} defaultValue={"center"}>
+                                <Bind name={"image.align"} defaultValue={"center"}>
                                     <Select label="Align">
                                         <option value="left">Left</option>
                                         <option value="center">Center</option>

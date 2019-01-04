@@ -1,7 +1,7 @@
 //@flow
 import React from "react";
 import { connect } from "webiny-app-cms/editor/redux";
-import { compose, withHandlers, withState, lifecycle } from "recompose";
+import { compose, withHandlers } from "recompose";
 import { Tabs, Tab } from "webiny-ui/Tabs";
 import { Grid } from "webiny-ui/Grid";
 import { get, set } from "dot-prop-immutable";
@@ -24,14 +24,9 @@ type Props = Object & {
     value: Object | number
 };
 
-const Settings = ({
-    title,
-    advanced,
-    setAdvanced,
-    getAttributeValue,
-    getUpdateValue,
-    getUpdatePreview
-}: Props) => {
+const Settings = ({ title, getValue, getUpdateValue, getUpdatePreview }: Props) => {
+    const advanced = getValue("advanced");
+
     return (
         <React.Fragment>
             <Tabs>
@@ -39,8 +34,8 @@ const Settings = ({
                     <Grid>
                         <Select
                             label={"Animation"}
-                            value={getAttributeValue("data-aos")}
-                            updateValue={getUpdateValue("data-aos")}
+                            value={getValue("name")}
+                            updateValue={getUpdateValue("name")}
                         >
                             <option value="">No animation</option>
                             <optgroup label="Fade">
@@ -75,17 +70,17 @@ const Settings = ({
                                 <DurationInput
                                     label={"Duration"}
                                     icon={<TimerIcon />}
-                                    value={getAttributeValue("data-aos-duration")}
-                                    updateValue={getUpdateValue("data-aos-duration")}
-                                    updatePreview={getUpdatePreview("data-aos-duration")}
+                                    value={getValue("duration")}
+                                    updateValue={getUpdateValue("duration")}
+                                    updatePreview={getUpdatePreview("duration")}
                                 />
                             </Grid>
                             <Grid className={"no-bottom-padding"}>
                                 <Input
                                     placeholder={"ms"}
                                     label={"Delay"}
-                                    value={getAttributeValue("data-aos-delay")}
-                                    updateValue={getUpdateValue("data-aos-delay")}
+                                    value={getValue("delay")}
+                                    updateValue={getUpdateValue("delay")}
                                 />
                             </Grid>
 
@@ -93,16 +88,16 @@ const Settings = ({
                                 <Input
                                     placeholder={"px"}
                                     label={"offset"}
-                                    value={getAttributeValue("data-aos-offset")}
-                                    updateValue={getUpdateValue("data-aos-offset")}
+                                    value={getValue("offset")}
+                                    updateValue={getUpdateValue("offset")}
                                 />
                             </Grid>
 
                             <Grid>
                                 <Select
                                     label={"Easing"}
-                                    value={getAttributeValue("data-aos-easing")}
-                                    updateValue={getUpdateValue("data-aos-easing")}
+                                    value={getValue("easing")}
+                                    updateValue={getUpdateValue("easing")}
                                 >
                                     <option value="">Default</option>
                                     <option value="linear">Linear </option>
@@ -129,7 +124,7 @@ const Settings = ({
                             </Grid>
                         </>
                     )}
-                    <Footer advanced={advanced} toggleAdvanced={setAdvanced} />
+                    <Footer advanced={advanced} toggleAdvanced={getUpdateValue("advanced")} />
                 </Tab>
             </Tabs>
         </React.Fragment>
@@ -147,20 +142,20 @@ const ConnectedSettings = compose(
             let historyUpdated = false;
 
             return (name: string, newValue: mixed, history = false) => {
-                let newElement = { ...element };
-                const attributes = { ...element.settings.attributes };
-                attributes[name] = newValue;
+                const attrName = `data.settings.animation.${name}`;
+
+                const newElement = set(element, attrName, newValue);
 
                 if (!history) {
                     updateElement({
-                        element: set(newElement, "settings.attributes", attributes),
+                        element: newElement,
                         history
                     });
                 } else {
                     if (historyUpdated !== newValue) {
                         historyUpdated = newValue;
                         updateElement({
-                            element: set(newElement, "settings.attributes", attributes),
+                            element: newElement,
                             history: true
                         });
                     }
@@ -193,33 +188,7 @@ const ConnectedSettings = compose(
             };
         },
         getValue: ({ element }: Object) => {
-            return name => get(element, `settings.attributes.${name}`) || "";
-        }
-    }),
-    withHandlers({
-        getAttributeValue: ({ element }: Object) => {
-            return name => get(element, `settings.attributes.${name}`) || "";
-        }
-    }),
-    withState("advanced", "setAdvanced", false),
-    lifecycle({
-        componentDidMount() {
-            // Check if we have some of the advanced settings set. If so, immediately show advanced fields.
-            const { setAdvanced, element } = this.props;
-            let attributes = element.settings.attributes;
-            if (!attributes) {
-                return;
-            }
-
-            attributes = Object.keys(attributes);
-
-            for (let i = 0; i < attributes.length; i++) {
-                let attribute = attributes[i];
-                if (attribute.startsWith("data-aos-")) {
-                    setAdvanced(true);
-                    break;
-                }
-            }
+            return name => get(element, `data.settings.animation.${name}`) || "";
         }
     })
 )(Settings);

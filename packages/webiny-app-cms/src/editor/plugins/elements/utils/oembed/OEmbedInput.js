@@ -8,10 +8,10 @@ const OEmbedInput = ({ Bind, urlPlaceholder, urlDescription, getOEmbedData }) =>
     return (
         <Grid>
             <Cell span={12}>
-                <Bind name={"data.oembed"}>
+                <Bind name={"oembed"}>
                     {({ onChange }) => (
                         <Bind
-                            name={"data.url"}
+                            name={"url"}
                             defaultValue={""}
                             validators={["required"]}
                             beforeChange={async (value, cb) => {

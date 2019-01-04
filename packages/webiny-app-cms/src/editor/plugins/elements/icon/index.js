@@ -4,6 +4,7 @@ import { ReactComponent as IconSvg } from "./round-star_border-24px.svg";
 import IconSettings from "./IconSettings";
 import styled from "react-emotion";
 import Icon from "./Icon";
+import { getSvg } from "./utils";
 import Action from "./../../elementSettings/components/Action";
 
 export default () => {
@@ -48,9 +49,13 @@ export default () => {
                 return {
                     type: "cms-element-icon",
                     elements: [],
-                    data: {},
-                    settings: {
-                        style: {
+                    data: {
+                        icon: {
+                            id: ["far", "star"],
+                            svg: getSvg(["far", "star"]),
+                            width: 50
+                        },
+                        settings: {
                             margin: {
                                 desktop: { all: 0 },
                                 mobile: { all: 0 }

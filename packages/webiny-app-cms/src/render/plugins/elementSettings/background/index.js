@@ -1,4 +1,5 @@
 // @flow
+import { get } from "lodash";
 import type { CmsRenderElementStylePluginType } from "webiny-app-cms/types";
 
 const scaling = {
@@ -31,8 +32,8 @@ const scaling = {
 export default ({
     name: "cms-render-element-style-background",
     type: "cms-render-element-style",
-    renderStyle({ settings, style }: Object) {
-        const { background } = settings;
+    renderStyle({ element, style }: Object) {
+        const { background } = get(element, "data.settings", {});
         if (!background) {
             return style;
         }

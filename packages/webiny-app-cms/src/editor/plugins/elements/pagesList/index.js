@@ -24,10 +24,10 @@ export default () => {
             create(options = {}) {
                 return {
                     type: "cms-element-pages-list",
-                    settings: {
+                    data: {
                         limit: 3,
                         component: "default",
-                        style: {
+                        settings: {
                             margin: {
                                 desktop: { all: 0 },
                                 mobile: { all: 0 }
@@ -42,7 +42,7 @@ export default () => {
                 };
             },
             render({ element }) {
-                return <PagesList settings={element.settings} />;
+                return <PagesList data={element.data} />;
             }
         }: ElementPluginType),
         {

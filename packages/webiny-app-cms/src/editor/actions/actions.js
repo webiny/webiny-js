@@ -18,26 +18,25 @@ import {
 import { updateChildPaths } from "webiny-app-cms/editor/utils";
 import undoable from "./history";
 
-export const PREFIX = "[CMS]";
-export const DRAG_START = `${PREFIX} Drag start`;
-export const DRAG_END = `${PREFIX} Drag end`;
-export const ELEMENT_CREATED = `${PREFIX} Element created`;
-export const ELEMENT_DROPPED = `${PREFIX} Element dropped`;
-export const TOGGLE_PLUGIN = `${PREFIX} Toggle plugin`;
-export const DEACTIVATE_PLUGIN = `${PREFIX} Deactivate plugin`;
-export const FOCUS_SLATE_EDITOR = `${PREFIX} Focus slate editor`;
-export const BLUR_SLATE_EDITOR = `${PREFIX} Blur slate editor`;
-export const HIGHLIGHT_ELEMENT = `${PREFIX} Highlight element`;
-export const ACTIVATE_ELEMENT = `${PREFIX} Activate element`;
-export const DEACTIVATE_ELEMENT = `${PREFIX} Deactivate element`;
-export const UPDATE_ELEMENT = `${PREFIX} Update element`;
-export const DELETE_ELEMENT = `${PREFIX} Delete element`;
-export const FLATTEN_ELEMENTS = `${PREFIX} Flatten elements`;
-export const SETUP_EDITOR = `${PREFIX} Setup editor`;
-export const UPDATE_REVISION = `${PREFIX} Update revision`;
-export const SAVING_REVISION = `${PREFIX} Save revision`;
-export const START_SAVING = `${PREFIX} Started saving`;
-export const FINISH_SAVING = `${PREFIX} Finished saving`;
+export const DRAG_START = `Drag start`;
+export const DRAG_END = `Drag end`;
+export const ELEMENT_CREATED = `Element created`;
+export const ELEMENT_DROPPED = `Element dropped`;
+export const TOGGLE_PLUGIN = `Toggle plugin`;
+export const DEACTIVATE_PLUGIN = `Deactivate plugin`;
+export const FOCUS_SLATE_EDITOR = `Focus slate editor`;
+export const BLUR_SLATE_EDITOR = `Blur slate editor`;
+export const HIGHLIGHT_ELEMENT = `Highlight element`;
+export const ACTIVATE_ELEMENT = `Activate element`;
+export const DEACTIVATE_ELEMENT = `Deactivate element`;
+export const UPDATE_ELEMENT = `Update element`;
+export const DELETE_ELEMENT = `Delete element`;
+export const FLATTEN_ELEMENTS = `Flatten elements`;
+export const SETUP_EDITOR = `Setup editor`;
+export const UPDATE_REVISION = `Update revision`;
+export const SAVING_REVISION = `Save revision`;
+export const START_SAVING = `Started saving`;
+export const FINISH_SAVING = `Finished saving`;
 
 /***************** HISTORY REDUCER *****************/
 const horStatePath = "page.content";
@@ -205,6 +204,7 @@ addMiddleware([DELETE_ELEMENT], ({ store, next, action }) => {
     let parent = getParentElementWithChildren(state, element.id);
 
     // Remove child from parent
+    // $FlowFixMe
     const index = parent.elements.findIndex(el => el.id === element.id);
     parent = dotProp.delete(parent, "elements." + index);
     store.dispatch(updateElement({ element: parent }));
@@ -284,10 +284,10 @@ const flattenContent = el => {
     return els;
 };
 
-// TODO: remove elements flattening
 addReducer([FLATTEN_ELEMENTS], "elements", (state, action) => {
     return action.payload;
 });
+
 addMiddleware(
     [UPDATE_ELEMENT, DELETE_ELEMENT, "@@redux-undo/UNDO", "@@redux-undo/REDO", "@@redux-undo/INIT"],
     ({ store, next, action }) => {

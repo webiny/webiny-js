@@ -33,7 +33,7 @@ export default compose(
         { updateElement }
     ),
     withProps(({ element }) => ({
-        align: get(element, "settings.style.verticalAlign") || "start"
+        align: get(element, "data.settings.verticalAlign") || "start"
     })),
     withHandlers({
         alignElement: ({ updateElement, element, align }) => {
@@ -43,7 +43,7 @@ export default compose(
                 const nextAlign = alignments[alignments.indexOf(align) + 1] || "start";
 
                 updateElement({
-                    element: set(element, "settings.style.verticalAlign", nextAlign)
+                    element: set(element, "data.settings.verticalAlign", nextAlign)
                 });
             };
         }

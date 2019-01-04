@@ -4,7 +4,7 @@ import { connect } from "webiny-app-cms/editor/redux";
 import { compose, withHandlers } from "recompose";
 import { set } from "dot-prop-immutable";
 import ConnectedSlate from "webiny-app-cms/editor/components/ConnectedSlate";
-import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
+import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { getElement } from "webiny-app-cms/editor/selectors";
 
@@ -12,9 +12,9 @@ export const className = "webiny-cms-base-element-style webiny-cms-element-text"
 
 const Text = ({ element, onChange }) => {
     return (
-        <ElementStyle {...getElementStyleProps(element)} className={className}>
+        <ElementRoot element={element} className={className}>
             <ConnectedSlate elementId={element.id} onChange={onChange} />
-        </ElementStyle>
+        </ElementRoot>
     );
 };
 

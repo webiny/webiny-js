@@ -45,9 +45,9 @@ export default (): ElementPluginType => {
             return {
                 type: "cms-element-text",
                 elements: [],
-                data: { text: createValue(previewText, content.typography || "paragraph") },
-                settings: {
-                    style: {
+                data: {
+                    text: createValue(previewText, content.typography || "paragraph"),
+                    settings: {
                         margin: {
                             mobile: { top: 0, left: 0, right: 0, bottom: 15 },
                             desktop: { top: 0, left: 0, right: 0, bottom: 25 },

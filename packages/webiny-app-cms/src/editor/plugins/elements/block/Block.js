@@ -2,11 +2,7 @@
 import React from "react";
 import styled from "react-emotion";
 import { pure } from "recompose";
-import {
-    ElementStyle,
-    getElementStyleProps,
-    getElementAttributeProps
-} from "webiny-app-cms/render/components/ElementStyle";
+import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 import BlockContainer from "./BlockContainer";
 import ElementAnimation from "webiny-app-cms/render/components/ElementAnimation";
 
@@ -23,10 +19,7 @@ const Block = pure(({ element }) => {
     return (
         <BlockStyle id={id} style={{ zIndex: 20, position: "relative" }}>
             <ElementAnimation>
-                <ElementStyle
-                    {...getElementStyleProps(element)}
-                    {...getElementAttributeProps(element)}
-                >
+                <ElementRoot element={element}>
                     {({ elementStyle, elementAttributes, customClasses, combineClassNames }) => (
                         <BlockContainer
                             elementId={id}
@@ -39,7 +32,7 @@ const Block = pure(({ element }) => {
                             combineClassNames={combineClassNames}
                         />
                     )}
-                </ElementStyle>
+                </ElementRoot>
             </ElementAnimation>
         </BlockStyle>
     );
