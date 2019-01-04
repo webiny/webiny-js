@@ -66,6 +66,8 @@ export default {
         input UpdateElementInput {
             name: String
             category: String
+            content: JSON
+            preview: FileInput
         }
         
         input UpdatePageInput {

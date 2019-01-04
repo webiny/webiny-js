@@ -4,7 +4,7 @@ import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ReactComponent as CodeIcon } from "./round-text_format-24px.svg";
-import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
+import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 import TypeFormEmbed from "./TypeFormEmbed";
 import render from "./../render";
 
@@ -25,12 +25,12 @@ export default [
         onCreate: "open-settings",
         render({ element }: Object) {
             return (
-                <ElementStyle
-                    {...getElementStyleProps(element)}
+                <ElementRoot
+                    element={element}
                     className={"webiny-cms-element-typeform"}
                 >
                     <TypeFormEmbed elementId={element.id} />
-                </ElementStyle>
+                </ElementRoot>
             );
         },
         create() {
