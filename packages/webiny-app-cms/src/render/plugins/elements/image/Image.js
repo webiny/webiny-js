@@ -15,8 +15,8 @@ const Link = ({ link, children }: Object) => {
 };
 
 const Image = (props: *) => {
-    const { src, image = {}, link = {} } = get(props, "element.data", {});
-    const { width, height, align, rest } = image;
+    const { image = {}, link = {} } = get(props, "element.data", {});
+    const { width, height, align, rest, src } = image;
 
     const style = { width, height };
     if (!style.width) {
