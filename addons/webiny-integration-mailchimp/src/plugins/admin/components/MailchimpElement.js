@@ -2,7 +2,7 @@
 import * as React from "react";
 import { pure } from "recompose";
 import { withCms } from "webiny-app-cms/context";
-import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
+import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 import { Form } from "webiny-form";
 import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
@@ -53,13 +53,13 @@ const MailchimpElement = pure((props: Object) => {
     }
 
     return (
-        <ElementStyle
+        <ElementRoot
             key={component ? component.name : "no-component"}
-            {...getElementStyleProps(element)}
+            element={element}
             className={"webiny-cms-element-mailchimp"}
         >
             {render}
-        </ElementStyle>
+        </ElementRoot>
     );
 });
 
