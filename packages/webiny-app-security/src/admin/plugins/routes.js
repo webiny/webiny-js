@@ -82,14 +82,12 @@ export default [
             title: "Account",
             render() {
                 return (
-                    <SecureRoute>
-                        <AdminLayout>
-                            <Helmet>
-                                <title>User Account</title>
-                            </Helmet>
-                            <Account />
-                        </AdminLayout>
-                    </SecureRoute>
+                    <AdminLayout>
+                        <Helmet>
+                            <title>User Account</title>
+                        </Helmet>
+                        <Account />
+                    </AdminLayout>
                 );
             }
         }

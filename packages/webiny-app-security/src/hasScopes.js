@@ -2,6 +2,14 @@
 import { getUser } from "./userContainer";
 
 export default (scopes: Array<string> | { [string]: Array<string> }): Object | boolean => {
+    if (!scopes) {
+        throw new Error(
+            "Scopes missing (received " +
+                scopes +
+                "). First argument must be a list of scopes or a plain object with multiple lists of scopes."
+        );
+    }
+
     const user = getUser();
     if (Array.isArray(scopes)) {
         if (!user || !user.scopes) {
