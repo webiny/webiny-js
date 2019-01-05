@@ -75,7 +75,7 @@ export default {
             ]
         }
     },
-    styles: {
+    typography: {
         h1: {
             label: "Heading 1",
             component: "h1",
