@@ -9,8 +9,6 @@ import { ReactComponent as EditIcon } from "./icons/round-edit-24px.svg";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import { ReactComponent as DeleteIcon } from "./icons/round-close-24px.svg";
 import { Tooltip } from "webiny-ui/Tooltip";
-import { compose } from "recompose";
-import { withSavedElements } from "webiny-app-cms/admin/components";
 import { isEqual } from "lodash";
 
 class BlockPreview extends React.Component<*> {
@@ -83,4 +81,4 @@ class BlockPreview extends React.Component<*> {
     }
 }
 
-export default compose(withSavedElements())(BlockPreview);
+export default BlockPreview;
