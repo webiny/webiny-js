@@ -59,6 +59,7 @@ export default () => {
                             width: 50
                         },
                         settings: {
+                            horizontalAlign: "center",
                             margin: {
                                 desktop: { all: 0 },
                                 mobile: { all: 0 }

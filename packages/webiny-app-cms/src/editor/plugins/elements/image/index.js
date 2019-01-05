@@ -90,6 +90,7 @@ export default (): Array<PluginType> => {
                     elements: [],
                     data: {
                         settings: {
+                            horizontalAlign: "center",
                             margin: {
                                 desktop: { all: 0 },
                                 mobile: { top: 0, left: 0, right: 0, bottom: 15 },
