@@ -54,36 +54,44 @@ export default {
     security: {
         shield: {
             CmsQuery: {
-                getMenu: hasScope("cms:menu:get"),
-                listMenus: hasScope("cms:menu:list"),
-                getTag: hasScope("cms:tag:get"),
-                listTags: hasScope("cms:tag:list"),
-                getCategory: hasScope("cms:category:get"),
-                listCategories: hasScope("cms:category:list"),
-                listPages: hasScope("cms:page:list"),
-                listElements: hasScope("cms:element:list"),
-                oembedData: hasScope("cms:oembed:get")
+                getMenu: hasScope("cms:menu:crud"),
+                listMenus: hasScope("cms:menu:crud"),
+                getTag: hasScope("cms:tag:crud"),
+                listTags: hasScope("cms:tag:crud"),
+                getCategory: hasScope("cms:category:crud"),
+                listCategories: hasScope("cms:category:crud"),
+                listPages: hasScope("cms:page:crud"),
+                listElements: hasScope("cms:element:crud"),
+                oembedData: hasScope("cms:oembed:read")
             },
             CmsMutation: {
-                createMenu: hasScope("cms:menu:create"),
-                updateMenu: hasScope("cms:menu:update"),
-                deleteMenu: hasScope("cms:menu:delete"),
-                createTag: hasScope("cms:tag:create"),
-                updateTag: hasScope("cms:tag:update"),
-                deleteTag: hasScope("cms:tag:delete"),
-                createCategory: hasScope("cms:category:create"),
-                updateCategory: hasScope("cms:category:update"),
-                deleteCategory: hasScope("cms:category:delete"),
-                // Pages:
-                createPage: hasScope("cms:page:create"),
-                deletePage: hasScope("cms:page:delete"),
+                createMenu: hasScope("cms:menu:crud"),
+                updateMenu: hasScope("cms:menu:crud"),
+                deleteMenu: hasScope("cms:menu:crud"),
+                createTag: hasScope("cms:tag:crud"),
+                updateTag: hasScope("cms:tag:crud"),
+                deleteTag: hasScope("cms:tag:crud"),
+                createCategory: hasScope("cms:category:crud"),
+                updateCategory: hasScope("cms:category:crud"),
+                deleteCategory: hasScope("cms:category:crud"),
+
+                createPage: hasScope("cms:page:crud"),
+                deletePage: hasScope("cms:page:crud"),
+
                 createRevisionFrom: hasScope("cms:page:revision:create"),
                 updateRevision: hasScope("cms:page:revision:update"),
-                publishRevision: hasScope("cms:page:revision:update"),
+                publishRevision: hasScope("cms:page:revision:publish"),
                 deleteRevision: hasScope("cms:page:revision:delete"),
-                createElement: hasScope("cms:element:create"),
-                updateElement: hasScope("cms:element:update"),
-                deleteElement: hasScope("cms:element:delete")
+
+                createElement: hasScope("cms:element:crud"),
+                updateElement: hasScope("cms:element:crud"),
+                deleteElement: hasScope("cms:element:crud")
+            },
+            SettingsQuery: {
+                cms: hasScope("cms:settings")
+            },
+            SettingsMutation: {
+                cms: hasScope("cms:settings")
             }
         }
     }

@@ -1,7 +1,7 @@
 // @flow
 import { getUser } from "./userContainer";
 
-export default (scopes: Array<string> | { [string]: Array<string> }): Object | boolean => {
+export default (scopes: Array<string> | { [string]: Array<string> }): any => {
     if (!scopes) {
         throw new Error(
             "Scopes missing (received " +

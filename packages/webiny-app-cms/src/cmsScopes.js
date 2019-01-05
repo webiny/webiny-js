@@ -1,33 +1,14 @@
 // @flow
-export const SCOPES_MENUS = [
-    "cms:menu:get",
-    "cms:menu:list",
-    "cms:menu:create",
-    "cms:menu:update",
-    "cms:menu:delete"
-];
-
-export const SCOPES_CATEGORIES = [
-    "cms:category:get",
-    "cms:category:list",
-    "cms:category:create",
-    "cms:category:update",
-    "cms:category:delete"
-];
-
-export const SCOPES_TAGS = [
-    "cms:tag:create",
-    "cms:tag:get",
-    "cms:tag:list",
-    "cms:tag:update",
-    "cms:tag:delete"
-];
+export const SCOPES_MENUS = ["cms:menu:crud"];
+export const SCOPES_CATEGORIES = ["cms:category:crud"];
+export const SCOPES_TAGS = ["cms:tag:crud"];
+export const SCOPES_ELEMENTS = ["cms:element:crud"];
+export const SCOPES_SETTINGS = ["cms:settings"];
 
 export const SCOPES_PAGES = [
-    ...SCOPES_TAGS,
-    "cms:page:get",
-    "cms:page:list",
-    "cms:page:create",
-    "cms:page:update",
-    "cms:page:delete"
+    "cms:page:crud",
+    "cms:page:revision:create",
+    "cms:page:revision:update",
+    "cms:page:revision:publish",
+    "cms:page:revision:delete"
 ];

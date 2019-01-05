@@ -56,23 +56,23 @@ export default ([
         security: {
             shield: {
                 SecurityQuery: {
-                    getGroup: hasScope("security:group:get"),
-                    listGroups: hasScope("security:group:list"),
-                    getRole: hasScope("security:role:get"),
-                    listRoles: hasScope("security:role:list"),
-                    getUser: hasScope("security:user:get"),
-                    listUsers: hasScope("security:user:list")
+                    getGroup: hasScope("security:group:crud"),
+                    listGroups: hasScope("security:group:crud"),
+                    getRole: hasScope("security:role:crud"),
+                    listRoles: hasScope("security:role:crud"),
+                    getUser: hasScope("security:user:crud"),
+                    listUsers: hasScope("security:user:crud")
                 },
                 SecurityMutation: {
-                    createGroup: hasScope("security:group:create"),
-                    updateGroup: hasScope("security:group:update"),
-                    deleteGroup: hasScope("security:group:delete"),
-                    createRole: hasScope("security:role:create"),
-                    updateRole: hasScope("security:role:update"),
-                    deleteRole: hasScope("security:role:delete"),
-                    createUser: hasScope("security:user:create"),
-                    updateUser: hasScope("security:user:update"),
-                    deleteUser: hasScope("security:user:delete")
+                    createGroup: hasScope("security:group:crud"),
+                    updateGroup: hasScope("security:group:crud"),
+                    deleteGroup: hasScope("security:group:crud"),
+                    createRole: hasScope("security:role:crud"),
+                    updateRole: hasScope("security:role:crud"),
+                    deleteRole: hasScope("security:role:crud"),
+                    createUser: hasScope("security:user:crud"),
+                    updateUser: hasScope("security:user:crud"),
+                    deleteUser: hasScope("security:user:crud")
                 }
             }
         }

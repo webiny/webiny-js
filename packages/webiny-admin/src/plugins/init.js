@@ -47,37 +47,61 @@ export default [
                         <Menu label={t`Settings`} icon={<SettingsIcon />}>
                             {sortedSettingsPlugins.apps.length > 0 && (
                                 <Menu label={t`Apps`}>
-                                    {sortedSettingsPlugins.apps.map(sp => (
-                                        <Menu
-                                            key={sp.name}
-                                            label={sp.settings.name}
-                                            route={sp.settings.route.name}
-                                        />
-                                    ))}
+                                    {sortedSettingsPlugins.apps.map(sp => {
+                                        if (
+                                            typeof sp.settings.show === "function" &&
+                                            !sp.settings.show()
+                                        ) {
+                                            return null;
+                                        }
+                                        return (
+                                            <Menu
+                                                key={sp.name}
+                                                label={sp.settings.name}
+                                                route={sp.settings.route.name}
+                                            />
+                                        );
+                                    })}
                                 </Menu>
                             )}
 
                             {sortedSettingsPlugins.integrations.length > 0 && (
                                 <Menu label={t`Integrations`}>
-                                    {sortedSettingsPlugins.integrations.map(sp => (
-                                        <Menu
-                                            key={sp.name}
-                                            label={sp.settings.name}
-                                            route={sp.settings.route.name}
-                                        />
-                                    ))}
+                                    {sortedSettingsPlugins.integrations.map(sp => {
+                                        if (
+                                            typeof sp.settings.show === "function" &&
+                                            !sp.settings.show()
+                                        ) {
+                                            return null;
+                                        }
+                                        return (
+                                            <Menu
+                                                key={sp.name}
+                                                label={sp.settings.name}
+                                                route={sp.settings.route.name}
+                                            />
+                                        );
+                                    })}
                                 </Menu>
                             )}
 
                             {sortedSettingsPlugins.other.length > 0 && (
                                 <Menu label={t`Other`}>
-                                    {sortedSettingsPlugins.other.map(sp => (
-                                        <Menu
-                                            key={sp.name}
-                                            label={sp.settings.name}
-                                            route={sp.settings.route.name}
-                                        />
-                                    ))}
+                                    {sortedSettingsPlugins.other.map(sp => {
+                                        if (
+                                            typeof sp.settings.show === "function" &&
+                                            !sp.settings.show()
+                                        ) {
+                                            return null;
+                                        }
+                                        return (
+                                            <Menu
+                                                key={sp.name}
+                                                label={sp.settings.name}
+                                                route={sp.settings.route.name}
+                                            />
+                                        );
+                                    })}
                                 </Menu>
                             )}
                         </Menu>
