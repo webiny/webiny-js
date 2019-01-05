@@ -29,18 +29,27 @@ const HorizontalAlignAction = ({ element, children, alignElement, align }: Objec
     return React.cloneElement(children, { onClick: alignElement, icon: icons[align] });
 };
 
+const defaultOptions = { alignments: ["left", "center", "right", "justify"] };
+
 export default compose(
     connect(
         state => ({ element: getActiveElement(state) }),
         { updateElement }
     ),
-    withProps(({ element }) => ({ align: get(element, "data.settings.horizontalAlign") || "left" })),
+    withProps(({ element }) => ({
+        align: get(element, "data.settings.horizontalAlign") || "left"
+    })),
     withHandlers({
-        alignElement: ({ updateElement, element, align }) => {
+        alignElement: ({
+            updateElement,
+            element,
+            align,
+            options: { alignments } = defaultOptions
+        }) => {
             return () => {
-                const alignments = Object.keys(icons);
+                const types = Object.keys(icons).filter(key => alignments.includes(key));
 
-                const nextAlign = alignments[alignments.indexOf(align) + 1] || "left";
+                const nextAlign = types[types.indexOf(align) + 1] || "left";
 
                 updateElement({
                     element: set(element, "data.settings.horizontalAlign", nextAlign)

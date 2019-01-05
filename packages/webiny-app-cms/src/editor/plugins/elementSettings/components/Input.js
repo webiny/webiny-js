@@ -8,18 +8,19 @@ import { InputContainer } from "./StyledComponents";
 
 type Props = {
     label: string,
-    value: string,
-    updateValue: Function
+    value: string | number,
+    updateValue: Function,
+    inputWidth?: number
 };
 
-export default pure(({ label, value, updateValue }: Props) => {
+export default pure(({ label, value, updateValue, inputWidth }: Props) => {
     return (
         <Grid>
             <Cell span={4}>
                 <Typography use={"overline"}>{label}</Typography>
             </Cell>
             <Cell span={8}>
-                <InputContainer>
+                <InputContainer width={inputWidth}>
                     <Input value={value} onChange={updateValue} />
                 </InputContainer>
             </Cell>

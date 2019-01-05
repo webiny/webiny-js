@@ -1,18 +1,14 @@
 // @flow
 import React from "react";
-import Image from "./Image";
 import styled from "react-emotion";
 import { getPlugin } from "webiny-plugins";
 import { addMiddleware } from "webiny-app-cms/editor/redux";
 import { ELEMENT_CREATED } from "webiny-app-cms/editor/actions";
-import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
-
 import type { PluginType } from "webiny-plugins/types";
-import { Grid, Cell } from "webiny-ui/Grid";
-import { Tab } from "webiny-ui/Tabs";
-import { Input } from "webiny-ui/Input";
-import { Select } from "webiny-ui/Select";
 import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
+import ImageSettings from "./ImageSettings";
+import Image from "./Image";
+import Action from "../../elementSettings/components/Action";
 
 export default (): Array<PluginType> => {
     const PreviewBox = styled("div")({
@@ -40,12 +36,17 @@ export default (): Array<PluginType> => {
                 }
             },
             settings: [
-                "cms-element-settings-background",
+                "cms-element-settings-image",
+                ["cms-element-settings-background", { image: false }],
                 "cms-element-settings-link",
                 "",
                 "cms-element-settings-border",
                 "cms-element-settings-shadow",
                 "",
+                [
+                    "cms-element-settings-horizontal-align",
+                    { alignments: ["left", "center", "right"] }
+                ],
                 "cms-element-settings-padding",
                 "cms-element-settings-margin",
                 "",
@@ -104,75 +105,17 @@ export default (): Array<PluginType> => {
                 };
             },
             render({ element }) {
-                return (
-                    <ElementRoot
-                        element={element}
-                        className={"webiny-cms-base-element-style webiny-cms-element-image"}
-                    >
-                        <Image elementId={element.id} />
-                    </ElementRoot>
-                );
+                return <Image elementId={element.id} />;
             }
         },
         {
-            name: "cms-element-advanced-settings-image",
-            type: "cms-element-advanced-settings",
-            element: "cms-element-image",
-            render({ Bind }) {
-                return (
-                    <Tab icon={<ImageIcon />} label="Image">
-                        <Grid>
-                            <Cell span={12}>
-                                <Bind name={"image.title"} defaultValue={""}>
-                                    <Input label="Image title" />
-                                </Bind>
-                            </Cell>
-                        </Grid>
-                        <Grid>
-                            <Cell span={12}>
-                                <Bind name={"image.alt"} defaultValue={""}>
-                                    <Input
-                                        label="Alternate text (alt)"
-                                        description={
-                                            "Specifies an alternate text for an image, if the image cannot be displayed."
-                                        }
-                                    />
-                                </Bind>
-                            </Cell>
-                        </Grid>
-                        <Grid>
-                            <Cell span={6}>
-                                <Bind name={"image.width"} defaultValue={""}>
-                                    <Input
-                                        label="Width"
-                                        placeholder="auto"
-                                        description="eg. 300 or 50%"
-                                    />
-                                </Bind>
-                            </Cell>
-                            <Cell span={6}>
-                                <Bind name={"image.height"} defaultValue={""}>
-                                    <Input
-                                        label="Height"
-                                        placeholder="auto"
-                                        description="eg. 300 or 50%"
-                                    />
-                                </Bind>
-                            </Cell>
-                        </Grid>
-                        <Grid>
-                            <Cell span={12}>
-                                <Bind name={"image.align"} defaultValue={"center"}>
-                                    <Select label="Align">
-                                        <option value="left">Left</option>
-                                        <option value="center">Center</option>
-                                        <option value="right">Right</option>
-                                    </Select>
-                                </Bind>
-                            </Cell>
-                        </Grid>
-                    </Tab>
-                );
+            name: "cms-element-settings-image",
+            type: "cms-element-settings",
+            renderAction() {
+                return <Action plugin={this.name} tooltip={"Image"} icon={<ImageIcon />} />;
+            },
+            renderMenu() {
+                return <ImageSettings />;
             }
         }
     ];

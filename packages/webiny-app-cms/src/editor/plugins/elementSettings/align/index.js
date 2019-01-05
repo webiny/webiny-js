@@ -9,9 +9,9 @@ export default [
     {
         name: "cms-element-settings-horizontal-align",
         type: "cms-element-settings",
-        renderAction() {
+        renderAction({ options }: Object) {
             return (
-                <HorizontalAlignAction>
+                <HorizontalAlignAction options={options}>
                     <Action plugin={this.name} tooltip={"Horizontal align"} />
                 </HorizontalAlignAction>
             );

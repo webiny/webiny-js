@@ -38,7 +38,10 @@ export default () => {
                 "",
                 "cms-element-settings-padding",
                 "cms-element-settings-margin",
-                "cms-element-settings-horizontal-align",
+                [
+                    "cms-element-settings-horizontal-align",
+                    { alignments: ["left", "center", "right"] }
+                ],
                 "",
                 "cms-element-settings-clone",
                 "cms-element-settings-delete",
