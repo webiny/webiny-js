@@ -8,7 +8,7 @@ export const List = styled("div")({
     left: 0,
     width: "100%",
     height: "100%",
-    overflow: "scroll",
+    //overflow: "scroll",
     backgroundColor: "#fff",
     zIndex: 10000
 });
@@ -45,7 +45,7 @@ export const searchIcon = css({
 
 export const wrapper = css({
     height: "100vh",
-    overflow: "scroll",
+    //overflow: "scroll",
     backgroundColor: "var(--mdc-theme-background)"
 });
 

@@ -18,6 +18,11 @@ export default {
             ]
         });
     },
+    image: {
+        width: 500,
+        height: 73,
+        aspectRatio: 500 / 73
+    },
     preview() {
         return <img src={preview} alt={"Empty block"} />;
     }

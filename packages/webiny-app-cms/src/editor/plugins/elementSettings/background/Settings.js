@@ -56,7 +56,7 @@ class Settings extends React.Component<*> {
     };
 
     render() {
-        const { element } = this.props;
+        const { element, options } = this.props;
 
         const bg = get(element, "data.settings.background");
         const hasImage = get(bg, "image.src");
@@ -75,39 +75,41 @@ class Settings extends React.Component<*> {
                             </Cell>
                         </Grid>
                     </Tab>
-                    <Tab label={"Image"}>
-                        <Grid>
-                            <Cell span={12}>
-                                <BackgroundImage
-                                    className={imageSelect}
-                                    onChange={this.setImage}
-                                    value={{ src: hasImage ? bg.image.src : "" }}
-                                />
-                            </Cell>
-                        </Grid>
-                        <Select
-                            disabled={!hasImage}
-                            label="Scaling"
-                            value={get(bg, "image.scaling")}
-                            updateValue={this.setScaling}
-                        >
-                            <option value="cover">Cover</option>
-                            <option value="contain">Contain</option>
-                            <option value="originalSize">Original size</option>
-                            <option value="tile">Tile</option>
-                            <option value="tileHorizontally">Tile Horizontally</option>
-                            <option value="tileVertically">Tile Vertically</option>
-                        </Select>
-                        <Grid>
-                            <Cell span={12}>
-                                <BackgroundPositionSelector
-                                    disabled={!hasImage}
-                                    value={get(bg, "image.position")}
-                                    onChange={this.setPosition}
-                                />
-                            </Cell>
-                        </Grid>
-                    </Tab>
+                    {options.image !== false && (
+                        <Tab label={"Image"}>
+                            <Grid>
+                                <Cell span={12}>
+                                    <BackgroundImage
+                                        className={imageSelect}
+                                        onChange={this.setImage}
+                                        value={{ src: hasImage ? bg.image.src : "" }}
+                                    />
+                                </Cell>
+                            </Grid>
+                            <Select
+                                disabled={!hasImage}
+                                label="Scaling"
+                                value={get(bg, "image.scaling")}
+                                updateValue={this.setScaling}
+                            >
+                                <option value="cover">Cover</option>
+                                <option value="contain">Contain</option>
+                                <option value="originalSize">Original size</option>
+                                <option value="tile">Tile</option>
+                                <option value="tileHorizontally">Tile Horizontally</option>
+                                <option value="tileVertically">Tile Vertically</option>
+                            </Select>
+                            <Grid>
+                                <Cell span={12}>
+                                    <BackgroundPositionSelector
+                                        disabled={!hasImage}
+                                        value={get(bg, "image.position")}
+                                        onChange={this.setPosition}
+                                    />
+                                </Cell>
+                            </Grid>
+                        </Tab>
+                    )}
                 </Tabs>
             </React.Fragment>
         );

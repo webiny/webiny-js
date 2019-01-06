@@ -144,6 +144,8 @@ category
 content
 preview {
     src
+    width
+    height
 }
 `;
 

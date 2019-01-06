@@ -15,27 +15,28 @@ const Link = ({ link, children }: Object) => {
 };
 
 const Image = (props: *) => {
-    const { image = {}, link = {} } = get(props, "element.data", {});
-    const { width, height, align, rest, src } = image;
+    const { image = {}, link = {}, settings = {} } = get(props, "element.data", {});
+    const { width, height, title, src } = image;
+    const { horizontalAlign = "center" } = settings;
 
     const style = { width, height };
     if (!style.width) {
         style.width = "100%";
     } else {
-        style.width += "px";
+        style.width += style.width.endsWith("px") ? "" : "px";
     }
 
     if (!style.height) {
         style.height = "100%";
     } else {
-        style.height += "px";
+        style.height += style.height.endsWith("px") ? "" : "px";
     }
 
     return (
-        <ElementRoot element={props.element} style={{ textAlign: align }}>
+        <ElementRoot element={props.element} style={{ textAlign: horizontalAlign }}>
             <div className={"webiny-cms-base-element-style webiny-cms-element-image"}>
                 <Link link={link}>
-                    <img {...rest} style={style} src={src} />
+                    <img title={title} alt={title} style={style} src={src} />
                 </Link>
             </div>
         </ElementRoot>

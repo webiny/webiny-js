@@ -2,6 +2,7 @@
 import React from "react";
 import cloneDeep from "lodash/cloneDeep";
 import { registerPlugins } from "webiny-plugins";
+import { Image } from "webiny-ui/Image";
 
 type Element = {
     id: string,
@@ -10,7 +11,9 @@ type Element = {
     category: string,
     content: Object,
     preview: {
-        src: string
+        src: string,
+        width: number,
+        height: number
     }
 };
 
@@ -22,12 +25,20 @@ export default (el: Element) => {
         title: el.name,
         category: el.category,
         tags: ["saved"],
+        image: {
+            ...el.preview,
+            aspectRatio: el.preview.width / el.preview.height
+        },
         create() {
             return cloneDeep({ ...el.content, source: el.id });
         },
         preview() {
             return (
-                <img src={el.preview.src} alt={el.name} style={{ width: "100%", height: "auto" }} />
+                <Image
+                    src={el.preview.src}
+                    alt={el.name}
+                    style={{ width: "100%", height: "auto" }}
+                />
             );
         }
     });

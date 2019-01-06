@@ -10,7 +10,7 @@ export default {
     renderAction() {
         return <Action plugin={this.name} tooltip={"Background"} icon={<InvertColorsIcon />} />;
     },
-    renderMenu() {
-        return <Settings />;
+    renderMenu({ options }: Object) {
+        return <Settings options={options} />;
     }
 };

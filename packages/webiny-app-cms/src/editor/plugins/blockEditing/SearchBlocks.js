@@ -1,7 +1,8 @@
 //@flow
 import * as React from "react";
-import { connect } from "webiny-app-cms/editor/redux";
 import { compose, withState } from "recompose";
+import { Mutation } from "react-apollo";
+import { connect } from "webiny-app-cms/editor/redux";
 import { deactivatePlugin, updateElement } from "webiny-app-cms/editor/actions";
 import { getContent } from "webiny-app-cms/editor/selectors";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
@@ -10,10 +11,8 @@ import { createElement } from "webiny-app-cms/editor/utils";
 import { SecondaryLayout } from "webiny-admin/components/Views/SecondaryLayout";
 import { ReactComponent as SearchIcon } from "webiny-app-cms/editor/assets/icons/search.svg";
 import * as Styled from "./StyledComponents";
-import BlockPreview from "./BlockPreview";
 import { listItem, ListItemTitle, listStyle, TitleContent } from "./SearchBlocksStyled";
 import EditBlockDialog from "./EditBlockDialog";
-import { Mutation } from "react-apollo";
 import { deleteElement as deleteElementGql, updateElement as updateElementGql } from "./graphql";
 import { withSnackbar, type WithSnackbarProps } from "webiny-admin/components";
 import {
@@ -27,6 +26,7 @@ import { List, ListItem, ListItemGraphic } from "webiny-ui/List";
 import { Typography } from "webiny-ui/Typography";
 import { ReactComponent as AllIcon } from "./icons/round-clear_all-24px.svg";
 import createBlockPlugin from "webiny-app-cms/admin/components/withSavedElements/createBlockPlugin";
+import BlocksList from "./BlocksList";
 
 type SearchBarProps = {
     addKeyHandler: Function,
@@ -178,25 +178,18 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                 />
                 <SimpleFormContent>
                     <Styled.BlockList>
-                        {blocksList.length > 0 ? (
-                            blocksList.map(plugin => (
-                                <BlockPreview
-                                    key={plugin.name}
-                                    plugin={plugin}
-                                    onEdit={() => this.setState({ editingBlock: plugin })}
-                                    onDelete={() =>
-                                        this.deleteBlock({
-                                            plugin,
-                                            deleteElement
-                                        })
-                                    }
-                                    addBlockToContent={this.addBlockToContent}
-                                    deactivatePlugin={this.props.deactivatePlugin}
-                                />
-                            ))
-                        ) : (
-                            <div>Nothing to show :/</div>
-                        )}
+                        <BlocksList
+                            addBlock={this.addBlockToContent}
+                            deactivatePlugin={this.props.deactivatePlugin}
+                            blocks={blocksList}
+                            onEdit={plugin => this.setState({ editingBlock: plugin })}
+                            onDelete={plugin =>
+                                this.deleteBlock({
+                                    plugin,
+                                    deleteElement
+                                })
+                            }
+                        />
                     </Styled.BlockList>
 
                     <EditBlockDialog

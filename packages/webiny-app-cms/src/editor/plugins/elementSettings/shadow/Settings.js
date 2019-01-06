@@ -6,7 +6,6 @@ import { Tabs, Tab } from "webiny-ui/Tabs";
 import { get, set } from "dot-prop-immutable";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { getActiveElement } from "webiny-app-cms/editor/selectors";
-import { Grid } from "webiny-ui/Grid";
 import ColorPicker from "webiny-app-cms/editor/plugins/elementSettings/components/ColorPicker";
 import Input from "webiny-app-cms/editor/plugins/elementSettings/components/Input";
 
