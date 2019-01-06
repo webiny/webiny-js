@@ -18,6 +18,10 @@ export default [
         slug: "cms-editor",
         scopes: [
             "cms:element:crud",
+            "cms:tag:crud",
+            "cms:settings",
+            "cms:menu:crud",
+            "cms:category:crud",
             "cms:page:crud",
             "cms:page:revision:create",
             "cms:page:revision:update",
