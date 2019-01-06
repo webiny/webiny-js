@@ -66,7 +66,9 @@ const RightPanel = (props: Props) => {
     const { children, ...rest } = props;
     return (
         <Cell span={props.span ? props.span : 7} {...rest}>
-            <RightPanelWrapper>{children}</RightPanelWrapper>
+            <RightPanelWrapper id={"webiny-secondary-view-right-panel"}>
+                {children}
+            </RightPanelWrapper>
         </Cell>
     );
 };
