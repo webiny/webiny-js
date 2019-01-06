@@ -4,11 +4,21 @@ import { get } from "lodash";
 import { List, WindowScroller } from "react-virtualized";
 import BlockPreview from "./BlockPreview";
 
+const listWidth = 800;
+
 class BlocksList extends React.Component<*, *> {
     state = { listHeight: 0 };
 
     getRowHeight = ({ index }: Object) => {
-        return get(this.props.blocks[index], "image.height", 300) + 75;
+        let height = get(this.props.blocks[index], "image.height", 50);
+        let width = get(this.props.blocks[index], "image.width", 50);
+
+        if (width > listWidth) {
+            let downscaleRatio = width / listWidth;
+            height = height / downscaleRatio;
+        }
+
+        return height + 100;
     };
 
     renderRow = ({ index, key, style }: Object) => {
@@ -51,7 +61,7 @@ class BlocksList extends React.Component<*, *> {
                                 rowHeight={this.getRowHeight}
                                 rowRenderer={this.renderRow}
                                 scrollTop={scrollTop}
-                                width={800}
+                                width={listWidth}
                                 overscanRowCount={2}
                             />
                         </div>
