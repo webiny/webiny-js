@@ -1,2 +1,1 @@
 // @flow
-export * from "./securityScopes";

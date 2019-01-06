@@ -1,6 +1,5 @@
 // @flow
 import { rule } from "graphql-shield";
-
 /**
  * Contains a list of all registered scopes throughout GraphQL Schema.
  * @type {Array}
@@ -18,11 +17,27 @@ export const hasScope = (scope: string) => {
             return false;
         }
 
-        if (ctx.user.scopes.includes("super_admin")) {
+        const access = await ctx.user.access;
+        if (access.fullAccess) {
             return true;
         }
 
-        return ctx.user.scopes.includes(scope);
+        return access.scopes.includes(scope);
+    });
+};
+
+export const hasRole = (role: string) => {
+    return rule()(async (parent, args, ctx) => {
+        if (!ctx.user) {
+            return false;
+        }
+
+        const access = await ctx.user.access;
+        if (access.fullAccess) {
+            return true;
+        }
+
+        return access.roles.includes(role);
     });
 };
 

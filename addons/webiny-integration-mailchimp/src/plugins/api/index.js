@@ -4,6 +4,7 @@ import { settingsFactory } from "webiny-api/entities";
 import { dummyResolver } from "webiny-api/graphql";
 import { ListErrorResponse, ListResponse, Response, ErrorResponse } from "webiny-api/graphql";
 import Mailchimp from "mailchimp-api-v3";
+import { hasScope } from "webiny-api-security";
 
 class MailchimpSettingsModel extends Model {
     constructor() {
@@ -68,6 +69,22 @@ export default [
         type: "graphql",
         name: "graphql-mailchimp",
         namespace: "mailchimp",
+        security: {
+            shield: {
+                SettingsQuery: {
+                    mailchimp: hasScope("cms:settings")
+                },
+                SettingsMutation: {
+                    mailchimp: hasScope("cms:settings")
+                },
+                MailchimpQuery: {
+                    listLists: hasScope("cms:editor")
+                },
+                MailchimpMutation: {
+                    addToList: hasScope("cms:editor")
+                }
+            }
+        },
         typeDefs: () => [
             /* GraphQL */ `
                 type AddToListResponse {
@@ -112,7 +129,11 @@ export default [
                     mailchimp: dummyResolver
                 },
                 MailchimpQuery: {
-                    listLists: async (_, args: Object, { mailchimp: { entities } }: Object) => {
+                    listLists: async (
+                        _: any,
+                        args: Object,
+                        { mailchimp: { entities } }: Object
+                    ) => {
                         const { MailchimpSettings } = entities;
                         const settings = await MailchimpSettings.load();
                         const mailchimp = new Mailchimp(settings.data.apiKey);

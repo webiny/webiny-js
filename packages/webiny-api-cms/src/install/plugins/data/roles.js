@@ -9,26 +9,21 @@ export default [
     {
         name: "CMS Page Categories",
         description: "Grants complete access to CMS page categories.",
-        slug: "cms-page-categories",
+        slug: "cms-categories",
         scopes: ["cms:category:crud"]
     },
     {
-        name: "CMS Pages",
+        name: "CMS Editor",
         description: "Grants complete access to CMS pages.",
-        slug: "cms-pages",
+        slug: "cms-editor",
         scopes: [
+            "cms:element:crud",
             "cms:page:crud",
             "cms:page:revision:create",
             "cms:page:revision:update",
             "cms:page:revision:delete",
             "cms:page:revision:publish"
         ]
-    },
-    {
-        name: "CMS Page Elements",
-        description: "Grants complete access to CMS page elements.",
-        slug: "cms-elements",
-        scopes: ["cms:element:crud"]
     },
     {
         name: "CMS Settings",

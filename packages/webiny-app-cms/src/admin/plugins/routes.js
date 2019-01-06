@@ -6,7 +6,6 @@ import Menus from "webiny-app-cms/admin/views/Menus/Menus";
 import Pages from "webiny-app-cms/admin/views/Pages/Pages";
 import Editor from "webiny-app-cms/admin/views/Pages/Editor";
 import { SecureRoute } from "webiny-app-security/components";
-import { SCOPES_PAGES, SCOPES_CATEGORIES, SCOPES_MENUS } from "webiny-app-cms";
 import Helmet from "react-helmet";
 
 export default [
@@ -18,7 +17,7 @@ export default [
             path: "/cms/categories",
             render() {
                 return (
-                    <SecureRoute scopes={SCOPES_CATEGORIES}>
+                    <SecureRoute roles={["cms-categories"]}>
                         <Helmet>
                             <title>CMS - Categories</title>
                         </Helmet>
@@ -39,7 +38,7 @@ export default [
             exact: true,
             render() {
                 return (
-                    <SecureRoute scopes={SCOPES_MENUS}>
+                    <SecureRoute roles={["cms-menus"]}>
                         <Helmet>
                             <title>CMS - Menus</title>
                         </Helmet>
@@ -59,7 +58,7 @@ export default [
             path: "/cms/pages",
             render() {
                 return (
-                    <SecureRoute scopes={SCOPES_PAGES}>
+                    <SecureRoute roles={["cms-editor"]}>
                         <Helmet>
                             <title>CMS - Pages</title>
                         </Helmet>
@@ -79,7 +78,7 @@ export default [
             path: "/cms/editor/:id",
             render() {
                 return (
-                    <SecureRoute scopes={SCOPES_PAGES}>
+                    <SecureRoute roles={["cms-editor"]}>
                         <Helmet>
                             <title>CMS - Edit page</title>
                         </Helmet>

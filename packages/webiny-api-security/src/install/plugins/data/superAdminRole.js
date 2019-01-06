@@ -1,8 +1,8 @@
 // @flow
 export default {
-    name: "Super Admin",
-    slug: "super-admin",
+    name: "Full Access",
+    slug: "full-access",
     description:
-        "This role gives super admin privileges. Be careful when assigning this role to users!",
-    scopes: ["super_admin"]
+        "This role gives full access to all available resources. Be careful to whom you assign this role!",
+    scopes: []
 };

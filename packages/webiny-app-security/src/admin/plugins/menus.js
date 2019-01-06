@@ -2,9 +2,7 @@
 import React from "react";
 import { ReactComponent as SecurityIcon } from "./../assets/icons/baseline-security-24px.svg";
 import { i18n } from "webiny-app/i18n";
-import { hasScopes } from "webiny-app-security";
-
-import { SCOPES_GROUPS, SCOPES_ROLES, SCOPES_USERS } from "webiny-app-security/admin";
+import { hasRoles } from "webiny-app-security";
 
 const t = i18n.namespace("Cms.Categories");
 
@@ -13,10 +11,10 @@ export default [
         name: "security-menu",
         type: "menu",
         render({ Menu }: Object) {
-            const { groups, roles, users }: Object = (hasScopes({
-                groups: SCOPES_GROUPS,
-                roles: SCOPES_ROLES,
-                users: SCOPES_USERS
+            const { groups, roles, users }: Object = (hasRoles({
+                groups: ["security-groups"],
+                roles: ["security-roles"],
+                users: ["security-users"]
             }): any);
 
             const identities = users;

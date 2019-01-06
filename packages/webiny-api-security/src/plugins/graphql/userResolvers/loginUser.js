@@ -40,9 +40,14 @@ export default (entityFetcher: EntityFetcher) => async (
     }
 
     const jwt = new JwtToken({ secret: context.config.security.token.secret });
+    const access = await user.access;
     const token = await jwt.encode(
         // $FlowFixMe - instance that will be validated will have "password" attribute.
-        { id: user.id, type: "user", scopes: await user.scopes },
+        {
+            id: user.id,
+            type: "user",
+            access
+        },
         // 2147483647 = maximum value of unix timestamp (year 2038).
         2147483647
     );

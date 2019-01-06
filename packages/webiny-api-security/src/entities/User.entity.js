@@ -5,7 +5,12 @@ import { Entity } from "webiny-entity";
 import type { Group } from "./Group.entity";
 import type { Role } from "./Role.entity";
 import FileModel from "./File.model";
-import { loadEntityScopes } from "./utils";
+
+type AccessType = {
+    scopes: Array<string>,
+    roles: Array<string>,
+    fullAccess: boolean
+};
 
 export class User extends Entity {
     email: string;
@@ -18,6 +23,7 @@ export class User extends Entity {
     groups: Promise<Array<Group>>;
     roles: Promise<Array<Role>>;
     scopes: Promise<Array<string>>;
+    access: Promise<AccessType>;
 }
 
 User.classId = "SecurityUser";
@@ -25,8 +31,12 @@ User.storageClassId = "Security_Users";
 
 export function userFactory({ security: { entities } }: Object) {
     return class extends User {
+        __access: ?AccessType;
         constructor() {
             super();
+            // Once we load access attribute, we cache it here.
+            this.__access = null;
+
             this.attr("email")
                 .char()
                 .setValidators("required,email")
@@ -78,10 +88,56 @@ export function userFactory({ security: { entities } }: Object) {
                 .entities(entities.Group, "entity")
                 .setUsing(entities.Groups2Entities, "group");
 
-            this.attr("scopes")
-                .array()
-                .setDynamic(() => {
-                    return loadEntityScopes.call(this);
+            /**
+             * Returns all scopes and roles.
+             */
+            this.attr("access")
+                .object()
+                .setDynamic(async () => {
+                    if (this.__access) {
+                        return this.__access;
+                    }
+
+                    const access = {
+                        scopes: [],
+                        roles: [],
+                        fullAccess: false
+                    };
+
+                    const groups = await this.groups;
+                    // Get scopes via `groups` relation
+                    for (let i = 0; i < groups.length; i++) {
+                        const group = groups[i];
+                        const roles = await group.roles;
+                        for (let j = 0; j < roles.length; j++) {
+                            const role = roles[j];
+                            !access.roles.includes(role.slug) && access.roles.push(role.slug);
+                            role.scopes.forEach(scope => {
+                                !access.scopes.includes(scope) && access.scopes.push(scope);
+                            });
+                        }
+                    }
+
+                    // Get scopes via `roles` relation
+                    const roles = await this.roles;
+                    for (let j = 0; j < roles.length; j++) {
+                        const role = roles[j];
+                        !access.roles.includes(role.slug) && access.roles.push(role.slug);
+                        role.scopes.forEach(scope => {
+                            !access.scopes.includes(scope) && access.scopes.push(scope);
+                        });
+                    }
+
+                    // If full access, no need to send any scopes / roles.
+                    access.fullAccess = access.roles.includes("full-access");
+                    if (access.fullAccess) {
+                        access.scopes = [];
+                        access.roles = [];
+                    }
+
+                    this.__access = access;
+
+                    return access;
                 });
         }
     };

@@ -6,7 +6,6 @@ import Groups from "webiny-app-security/admin/views/Groups";
 import Users from "webiny-app-security/admin/views/Users";
 import Account from "webiny-app-security/admin/views/Account";
 import { SecureRoute } from "webiny-app-security/components";
-import { SCOPES_GROUPS, SCOPES_ROLES, SCOPES_USERS } from "webiny-app-security/admin";
 import Helmet from "react-helmet";
 
 export default [
@@ -19,7 +18,7 @@ export default [
             title: "Security - Roles",
             render() {
                 return (
-                    <SecureRoute scopes={SCOPES_ROLES}>
+                    <SecureRoute roles={["security-roles"]}>
                         <AdminLayout>
                             <Helmet>
                                 <title>Security - Roles</title>
@@ -40,7 +39,7 @@ export default [
             title: "Security - Groups",
             render() {
                 return (
-                    <SecureRoute scopes={SCOPES_GROUPS}>
+                    <SecureRoute roles={["security-groups"]}>
                         <AdminLayout>
                             <Helmet>
                                 <title>Security - Groups</title>
@@ -61,7 +60,7 @@ export default [
             title: "Security - Users",
             render() {
                 return (
-                    <SecureRoute scopes={SCOPES_USERS}>
+                    <SecureRoute roles={["security-users"]}>
                         <AdminLayout>
                             <Helmet>
                                 <title>Security - Users</title>

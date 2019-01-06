@@ -9,7 +9,11 @@ export default gql`
                     id
                     email
                     fullName
-                    scopes
+                    access {
+                        scopes
+                        roles
+                        fullAccess
+                    }
                     avatar {
                         src
                     }

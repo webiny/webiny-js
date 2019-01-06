@@ -1,28 +1,21 @@
 // @flow
 import * as React from "react";
-import { hasScopes } from "webiny-app-security";
+import { hasScopes, hasRoles } from "webiny-app-security";
 import { getPlugin } from "webiny-plugins";
 
-export default ({ children, scopes }: Object): React.Node => {
-    const result = hasScopes(scopes);
+export default ({ children, scopes, roles }: Object): React.Node => {
+    const checks = {
+        scopes: scopes ? hasScopes(scopes, { forceBoolean: true }) : true,
+        roles: roles ? hasRoles(roles, { forceBoolean: true }) : true
+    };
 
-    const errorPlugin = getPlugin("secure-route-error");
-    let error = null;
-    if (!errorPlugin) {
-        error = <span>You are not authorized to view this route.</span>;
-    } else {
-        error = errorPlugin.render();
+    if (checks.scopes && checks.roles) {
+        return children;
     }
 
-    if (typeof result === "boolean") {
-        return result ? children : error;
+    const plugin = getPlugin("secure-route-error");
+    if (!plugin) {
+        return <span>You are not authorized to view this route.</span>;
     }
-
-    for (let resultKey in result) {
-        if (!result[resultKey]) {
-            return error;
-        }
-    }
-
-    return children;
+    return plugin.render();
 };

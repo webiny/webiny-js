@@ -5,7 +5,7 @@ import { withApollo, type WithApolloClient } from "react-apollo";
 import localStorage from "store";
 import observe from "store/plugins/observe";
 import authQuery from "./defaultAuthQuery";
-import { setUser } from "webiny-app-security";
+import { setIdentity } from "webiny-app-security";
 const { Provider, Consumer } = React.createContext();
 
 localStorage.addPlugin(observe);
@@ -73,18 +73,18 @@ class Security extends React.Component<Props, State> {
     componentDidMount() {
         localStorage.observe(AUTH_TOKEN, async (token: any) => {
             if (!token) {
-                return this.setState({ user: null }, () => setUser(null));
+                return this.setState({ user: null }, () => setIdentity(null));
             }
             const user = await this.getUser();
 
-            this.setState({ user, firstLoad: false }, () => setUser(user));
+            this.setState({ user, firstLoad: false }, () => setIdentity(user));
         });
     }
 
     onToken = async (token: string) => {
         this.setToken(token);
         const user = await this.getUser();
-        this.setState({ user }, () => setUser(user));
+        this.setState({ user }, () => setIdentity(user));
     };
 
     logout = () => {

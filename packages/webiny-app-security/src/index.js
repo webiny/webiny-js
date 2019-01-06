@@ -1,3 +1,4 @@
 // @flow
 export { default as hasScopes } from "./hasScopes";
-export * from "./userContainer";
+export { default as hasRoles } from "./hasRoles";
+export * from "./identity";

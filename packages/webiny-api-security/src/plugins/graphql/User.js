@@ -23,85 +23,92 @@ export default {
     typeDefs: () => [
         Role.typeDefs,
         Group.typeDefs,
+        /* GraphQL */ `
+            type Avatar {
+                name: String
+                size: Int
+                type: String
+                src: String
+            }
+
+            input AvatarInput {
+                name: String
+                size: Int
+                type: String
+                src: String
+            }
+
+            type UserLogin {
+                token: String
+                expiresOn: Int
+                user: User
+            }
+
+            type UserAccess {
+                scopes: [String]
+                roles: [String]
+                fullAccess: Boolean
+            }
+
+            type User {
+                id: ID
+                email: String
+                firstName: String
+                lastName: String
+                fullName: String
+                gravatar: String
+                avatar: Avatar
+                enabled: Boolean
+                groups: [Group]
+                roles: [Role]
+                scopes: [String]
+                access: UserAccess
+                createdOn: DateTime
+            }
+
+            # Contains user settings by specific key, ex: search-filters.
+            type UserSettings {
+                key: String
+                data: JSON
+            }
+
+            # This input type is used by administrators to update other user's accounts
+            input UserInput {
+                email: String
+                password: String
+                firstName: String
+                lastName: String
+                avatar: AvatarInput
+                enabled: Boolean
+                groups: [ID]
+                roles: [ID]
+            }
+
+            # This input type is used by the user who is updating his own account
+            input CurrentUserInput {
+                email: String
+                firstName: String
+                lastName: String
+                avatar: AvatarInput
+                password: String
+            }
+
+            type UserResponse {
+                data: User
+                error: Error
+            }
+
+            type UserListResponse {
+                data: [User]
+                meta: ListMeta
+                error: Error
+            }
+
+            type UserLoginResponse {
+                data: UserLogin
+                error: Error
+            }
         `
-        type Avatar {
-            name: String
-            size: Int
-            type: String
-            src: String
-        }
-        
-        input AvatarInput {
-            name: String
-            size: Int
-            type: String
-            src: String
-        }
-        
-        type UserLogin {
-            token: String
-            expiresOn: Int
-            user: User
-        }
-         
-        type User {
-            id: ID
-            email: String
-            firstName: String
-            lastName: String
-            fullName: String
-            gravatar: String
-            avatar: Avatar
-            enabled: Boolean
-            groups: [Group]
-            roles: [Role]
-            scopes: [String]
-            createdOn: DateTime
-        }
-        
-        "Contains user settings by specific key, ex: search-filters."
-        type UserSettings {
-            key: String
-            data: JSON
-        }
-        
-        # This input type is used by administrators to update other user's accounts 
-        input UserInput {
-            email: String
-            password: String
-            firstName: String
-            lastName: String
-            avatar: AvatarInput
-            enabled: Boolean
-            groups: [ID]
-            roles: [ID]
-        }
-        
-        # This input type is used by the user who is updating his own account
-        input CurrentUserInput {
-            email: String
-            firstName: String
-            lastName: String
-            avatar: AvatarInput
-            password: String
-        }
-        
-        type UserResponse {
-            data: User
-            error: Error
-        }
-        
-        type UserListResponse {
-            data: [User]
-            meta: ListMeta
-            error: Error
-        }
-        
-        type UserLoginResponse {
-            data: UserLogin
-            error: Error
-        }
-    `
     ],
     typeExtensions: `
         extend type SecurityQuery {

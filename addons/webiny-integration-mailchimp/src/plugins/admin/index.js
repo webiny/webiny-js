@@ -4,8 +4,12 @@ import { Tab } from "webiny-ui/Tabs";
 import MailchimpSettings from "./components/MailchimpSettings";
 import MailchimpElementAdvancedSettings from "./components/MailchimpElementAdvancedSettings";
 import MailchimpElement from "./components/MailchimpElement";
+import { hasRoles } from "webiny-app-security";
+import { SecureRoute } from "webiny-app-security/components";
 
 import render from "./../render";
+
+const roles = ["cms-settings"];
 
 export default [
     ...render,
@@ -50,9 +54,14 @@ export default [
         type: "settings",
         name: "settings-mailchimp",
         settings: {
+            show: () => hasRoles(roles),
             type: "integration",
             name: "Mailchimp",
-            component: <MailchimpSettings />,
+            component: (
+                <SecureRoute roles={roles}>
+                    <MailchimpSettings />
+                </SecureRoute>
+            ),
             route: {
                 name: "Settings.Mailchimp",
                 path: "/mailchimp",

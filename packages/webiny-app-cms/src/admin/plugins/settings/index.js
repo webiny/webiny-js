@@ -3,8 +3,7 @@ import * as React from "react";
 import CmsSettings from "./components/CmsSettings";
 import GeneralSettings from "./components/generalSettings/GeneralSettings";
 import type { SettingsPluginType } from "webiny-admin/types";
-import { SCOPES_SETTINGS } from "webiny-app-cms";
-import { hasScopes } from "webiny-app-security";
+import { hasRoles } from "webiny-app-security";
 import { SecureRoute } from "webiny-app-security/components";
 
 export default ([
@@ -13,12 +12,12 @@ export default ([
         name: "settings-cms",
         settings: {
             show: () => {
-                return hasScopes(SCOPES_SETTINGS);
+                return hasRoles(["cms-settings", "cms-editor"]);
             },
             type: "app",
             name: "CMS",
             component: (
-                <SecureRoute scopes={SCOPES_SETTINGS}>
+                <SecureRoute roles={["cms-settings", "cms-editor"]}>
                     <CmsSettings />
                 </SecureRoute>
             ),
@@ -34,12 +33,12 @@ export default ([
         name: "settings-general-settings",
         settings: {
             show: () => {
-                return hasScopes(SCOPES_SETTINGS);
+                return hasRoles(["cms-settings"]);
             },
             type: "other",
             name: "General settings",
             component: (
-                <SecureRoute scopes={SCOPES_SETTINGS}>
+                <SecureRoute roles={["cms-settings"]}>
                     <GeneralSettings />
                 </SecureRoute>
             ),
