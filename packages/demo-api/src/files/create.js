@@ -73,12 +73,21 @@ const create = async (options: Object) => {
 
     await fs.writeFile(paths.folder + name, buffer);
 
-    return {
+    const metadata = await sharp(buffer).metadata();
+
+    const data: Object = {
         name,
         type,
         size: buffer.byteLength,
         src: paths.url + name
     };
+
+    if (supportedImageTypes.includes(type)) {
+        data.width = metadata.width;
+        data.height = metadata.height;
+    }
+
+    return data;
 };
 
 export default create;
