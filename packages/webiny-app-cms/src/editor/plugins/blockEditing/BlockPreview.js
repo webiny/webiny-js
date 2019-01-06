@@ -17,7 +17,14 @@ class BlockPreview extends React.Component<*> {
     }
 
     render() {
-        const { plugin, addBlockToContent, deactivatePlugin, onEdit, onDelete } = this.props;
+        const {
+            plugin,
+            addBlockToContent,
+            deactivatePlugin,
+            onEdit,
+            onDelete,
+            loadImage
+        } = this.props;
 
         return (
             <Elevation z={1} key={plugin.name} className={Styled.blockStyle}>

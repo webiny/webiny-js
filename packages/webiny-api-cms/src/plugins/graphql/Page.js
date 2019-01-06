@@ -6,6 +6,7 @@ import {
     resolveGet,
     resolveList
 } from "webiny-api/graphql";
+import { Response } from "webiny-api/graphql/responses";
 import UserType from "webiny-security/api/plugins/graphql/User";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
 import listPages from "./pageResolvers/listPages";
@@ -46,13 +47,31 @@ export default {
             _empty: String
         }
         
+        type PreviewFile {
+            name: String
+            size: Int
+            type: String
+            src: String
+            width: Int
+            height: Int
+        }
+        
+        input PreviewFileInput {
+            name: String
+            size: Int
+            type: String
+            src: String
+            width: Int
+            height: Int
+        }
+        
         type Element {
             id: ID
             name: String
             type: String
             category: String
             content: JSON
-            preview: File
+            preview: PreviewFile
         }
         
         input ElementInput {
@@ -60,14 +79,14 @@ export default {
             type: String!
             category: String
             content: JSON!
-            preview: FileInput
+            preview: PreviewFileInput
         }
                 
         input UpdateElementInput {
             name: String
             category: String
             content: JSON
-            preview: FileInput
+            preview: PreviewFileInput
         }
         
         input UpdatePageInput {
@@ -215,6 +234,8 @@ export default {
             deleteElement(
                 id: ID!
             ): DeleteResponse
+            
+            updateImageSize: DeleteResponse
         },
     `
     ],
@@ -252,7 +273,16 @@ export default {
             // Updates an element
             updateElement: resolveUpdate(elementFetcher),
             // Deletes an element
-            deleteElement: resolveDelete(elementFetcher)
+            deleteElement: resolveDelete(elementFetcher),
+            /* TODO: remove this resolver before release! */
+            updateImageSize: async (_, args, ctx) => {
+                const Element = ctx.cms.entities.Element;
+                const elements = await Element.find({ perPage: 100 });
+                elements.forEach(async el => {
+                    await el.updateImage();
+                });
+                return new Response(true);
+            }
         },
         Page: {
             createdBy: resolveUser("createdBy"),

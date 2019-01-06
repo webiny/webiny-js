@@ -1,6 +1,7 @@
 //@flow
 import * as React from "react";
-import { compose, withState, withHandlers } from "recompose";
+import { compose, withState } from "recompose";
+import { Mutation } from "react-apollo";
 import { connect } from "webiny-app-cms/editor/redux";
 import { deactivatePlugin, updateElement } from "webiny-app-cms/editor/actions";
 import { getContent } from "webiny-app-cms/editor/selectors";
@@ -12,7 +13,6 @@ import { ReactComponent as SearchIcon } from "webiny-app-cms/editor/assets/icons
 import * as Styled from "./StyledComponents";
 import { listItem, ListItemTitle, listStyle, TitleContent } from "./SearchBlocksStyled";
 import EditBlockDialog from "./EditBlockDialog";
-import { Mutation } from "react-apollo";
 import { deleteElement as deleteElementGql, updateElement as updateElementGql } from "./graphql";
 import { withSnackbar, type WithSnackbarProps } from "webiny-admin/components";
 import {

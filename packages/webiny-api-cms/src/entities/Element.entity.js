@@ -1,6 +1,16 @@
 // @flow
 import { Entity } from "webiny-entity";
+import sizeOf from "image-size";
 import FileModel from "./File.model";
+
+class PreviewModel extends FileModel {
+    constructor() {
+        super();
+
+        this.attr("width").integer();
+        this.attr("height").integer();
+    }
+}
 
 type ElementType = "element" | "block";
 
@@ -40,7 +50,17 @@ export function elementFactory(): Class<IElement> {
                 .char()
                 .setValidators("required,in:element:block");
 
-            this.attr("preview").model(FileModel);
+            this.attr("preview").model(PreviewModel);
+        }
+
+        /* TODO: remove this method before release! */
+        async updateImage() {
+            const fileName = this.preview.name;
+            const dimensions = await sizeOf(process.cwd() + "/static/" + fileName);
+            console.log(process.cwd() + "/static/" + fileName);
+            this.preview.width = dimensions.width;
+            this.preview.height = dimensions.height;
+            await this.save();
         }
     };
 }
