@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import { get } from "lodash";
-import { List, WindowScroller, AutoSizer } from "react-virtualized";
+import { List, WindowScroller } from "react-virtualized";
 import BlockPreview from "./BlockPreview";
 
 class BlocksList extends React.Component<*, *> {
@@ -41,24 +41,20 @@ class BlocksList extends React.Component<*, *> {
             <WindowScroller scrollElement={rightPanelElement}>
                 {({ isScrolling, registerChild, onChildScroll, scrollTop }) => (
                     <div style={{ flex: "1 1 auto" }}>
-                        <AutoSizer disableHeight>
-                            {({ width }) => (
-                                <div ref={registerChild}>
-                                    <List
-                                        autoHeight
-                                        height={window.innerHeight - 70} /* TODO: @sven */
-                                        isScrolling={isScrolling}
-                                        onScroll={onChildScroll}
-                                        rowCount={blocks.length}
-                                        rowHeight={this.getRowHeight}
-                                        rowRenderer={this.renderRow}
-                                        scrollTop={scrollTop}
-                                        width={width}
-                                        overscanRowCount={2}
-                                    />
-                                </div>
-                            )}
-                        </AutoSizer>
+                        <div ref={registerChild}>
+                            <List
+                                autoHeight
+                                height={window.innerHeight - 70} /* TODO: @sven */
+                                isScrolling={isScrolling}
+                                onScroll={onChildScroll}
+                                rowCount={blocks.length}
+                                rowHeight={this.getRowHeight}
+                                rowRenderer={this.renderRow}
+                                scrollTop={scrollTop}
+                                width={800}
+                                overscanRowCount={2}
+                            />
+                        </div>
                     </div>
                 )}
             </WindowScroller>
