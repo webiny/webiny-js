@@ -5,6 +5,7 @@ export class Role extends Entity {
     createdBy: ?string;
     name: string;
     slug: string;
+    system: string;
     description: string;
     scopes: Array<string>;
 }
@@ -26,6 +27,7 @@ export function roleFactory({ user = {} }: Object) {
                 .setOnce();
 
             this.attr("description").char();
+            this.attr("system").boolean();
 
             this.attr("scopes").array();
 
@@ -34,6 +36,12 @@ export function roleFactory({ user = {} }: Object) {
                 const existingRole = await Role.findOne({ query: { slug: this.slug } });
                 if (existingRole) {
                     throw Error(`Role with slug "${this.slug}" already exists.`);
+                }
+            });
+
+            this.on("beforeDelete", async () => {
+                if (this.system) {
+                    throw Error(`Cannot delete system role.`);
                 }
             });
         }

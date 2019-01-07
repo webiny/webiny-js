@@ -8,13 +8,13 @@ export default async (context: Object) => {
 
     const user = new User();
 
-    const superAdminRole = new Role();
-    await superAdminRole.populate(data.superAdminRole).save();
+    const fullAccess = new Role();
+    await fullAccess.populate(data.fullAccessRole).save();
 
-    await user.populate({ ...data.superAdminUser, roles: [superAdminRole] }).save();
+    await user.populate({ ...data.superAdminUser, roles: [fullAccess] }).save();
 
     context.user = user;
 
     const group = new Group();
-    await group.populate({ ...data.fullAccessGroup, roles: data.roles }).save();
+    await group.populate({ ...data.securityFullAccessGroup, roles: data.roles }).save();
 };

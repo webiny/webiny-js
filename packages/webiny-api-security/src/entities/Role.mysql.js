@@ -11,6 +11,9 @@ class Role extends MySQLTable {
         this.column("description")
             .varChar(200)
             .setNotNull();
+        this.column("system")
+            .tinyInt(1)
+            .setDefault(0);
         this.column("slug")
             .varChar(50)
             .setNotNull();
