@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="812px" height="348px" viewBox="0 0 812 348" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
+    <title>Browser mock</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="34" width="812" height="314"></rect>
+        <rect id="path-3" x="2" y="34" width="808" height="314"></rect>
+        <linearGradient x1="100%" y1="75.7294004%" x2="0%" y2="24.2389356%" id="linearGradient-5">
+            <stop stop-color="#FBAB7E" offset="0%"></stop>
+            <stop stop-color="#F7CE68" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Mockups" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Browser-cutout" transform="translate(-55.000000, -90.000000)">
+            <g id="Browser-mock" transform="translate(55.000000, 90.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <rect stroke="#D3D3D3" stroke-width="2" x="1" y="35" width="810" height="312"></rect>
+                <mask id="mask-4" fill="white">
+                    <use xlink:href="#path-3"></use>
+                </mask>
+                <rect stroke="#979797" x="2.5" y="34.5" width="807" height="313"></rect>
+                <g id="Group" mask="url(#mask-4)">
+                    <g transform="translate(-361.000000, -520.000000)">
+                        <rect id="Rectangle" fill="url(#linearGradient-5)" x="344" y="550" width="1000" height="562"></rect>
+                        <path d="M515.321233,968.666265 C757.470227,873.37414 1011.78657,1011.61694 1011.78657,834.204335 C1011.78657,744.805012 949.915632,672.891684 765.546297,648.764585 C679.449378,637.497695 561.268598,687.475787 454.027408,683.746977 C335.181014,679.61465 112.251878,606.044477 71.4257858,660.320516 C1.71979317,752.990791 79.5903844,816.585218 88.110415,869.722748 C98.7257073,935.927957 45.070678,987.268237 -31.4731968,1074.28334 C-169.452605,1231.13839 273.17224,1063.95839 515.321233,968.666265 Z" id="Oval" fill="#FFFFFF" opacity="0.246884301" transform="translate(477.110967, 889.549630) rotate(-241.000000) translate(-477.110967, -889.549630) "></path>
+                        <path d="M1154.1237,624.516193 C1380.648,535.344374 1618.55456,664.708289 1618.55456,498.690318 C1618.55456,415.032824 1560.67584,347.738257 1388.20296,325.160763 C1307.66145,314.61751 1197.1063,361.385671 1096.78486,357.89635 C985.607042,354.029429 777.062432,285.18443 738.870648,335.974495 C673.662442,422.692858 746.508425,482.20282 754.4787,531.927498 C764.40904,593.880561 714.216107,641.923421 642.611233,723.349829 C513.534961,870.130581 927.599391,713.688013 1154.1237,624.516193 Z" id="Oval-Copy" fill="#FFFFFF" opacity="0.246884301" transform="translate(1118.378950, 550.480964) rotate(-241.000000) translate(-1118.378950, -550.480964) "></path>
+                    </g>
+                </g>
+                <g id="Browser">
+                    <path d="M7.00442219,0 C3.13598664,0 0,3.13681838 0,6.99865244 L0,35 L812,35 L812,6.99865244 C812,3.13340343 808.875471,0 804.995578,0 L7.00442219,0 Z" id="background" fill="#D3D3D3"></path>
+                    <ellipse id="object" fill="#E96E4C" cx="16.5" cy="17" rx="4.5" ry="5"></ellipse>
+                    <path d="M30.5,22 C32.9852814,22 35,19.7614237 35,17 C35,14.2385763 32.9852814,12 30.5,12 C28.0147186,12 26,14.2385763 26,17 C26,19.7614237 28.0147186,22 30.5,22 Z" id="object" fill="#E6A935"></path>
+                    <ellipse id="object" fill="#85C33D" cx="45.5" cy="17" rx="4.5" ry="5"></ellipse>
+                    <rect id="search" fill="#FFFFFF" opacity="0.85" x="61" y="9" width="742" height="17"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
