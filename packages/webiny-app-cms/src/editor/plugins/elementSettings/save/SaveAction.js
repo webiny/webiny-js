@@ -3,7 +3,7 @@ import * as React from "react";
 import { connect } from "webiny-app-cms/editor/redux";
 import { compose, withState, withHandlers, lifecycle, shouldUpdate } from "recompose";
 import { graphql } from "react-apollo";
-import { isEqual, cloneDeep } from "lodash";
+import { cloneDeep } from "lodash";
 import { getPlugin } from "webiny-plugins";
 import SaveDialog from "./SaveDialog";
 import { withSnackbar } from "webiny-admin/components";
@@ -74,10 +74,7 @@ export default compose(
     connect(state => ({ element: getElementWithChildren(state, getActiveElementId(state)) })),
     withState("isDialogOpened", "setOpenDialog", false),
     shouldUpdate((props, nextProps) => {
-        return (
-            props.isDialogOpened !== nextProps.isDialogOpened ||
-            !isEqual(props.element, nextProps.element)
-        );
+        return props.isDialogOpened !== nextProps.isDialogOpened;
     }),
     withFileUpload(),
     withKeyHandler(),
