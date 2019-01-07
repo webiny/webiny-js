@@ -54,9 +54,8 @@ class Settings extends React.Component<Props> {
 
     render() {
         const { element } = this.props;
-        const { settings } = element;
-        
-        const data = get(settings, "style.columnWidth", { value: "100%" });
+
+        const data = get(element.data, "settings.columnWidth", { value: "100%" });
 
         return (
             <Form data={data} onChange={this.updateSettings}>

@@ -3,17 +3,17 @@ import React from "react";
 import { connect } from "webiny-app-cms/editor/redux";
 import { compose, withHandlers } from "recompose";
 import { Tabs, Tab } from "webiny-ui/Tabs";
-import { get } from "lodash";
+import { get, isEqual } from "lodash";
 import { set, merge } from "dot-prop-immutable";
-import { withActiveElement } from "webiny-app-cms/editor/components";
 import { updateElement } from "webiny-app-cms/editor/actions";
+import { getActiveElement } from "webiny-app-cms/editor/selectors";
 import { ReactComponent as BorderOuterIcon } from "webiny-app-cms/editor/assets/icons/border_outer.svg";
 import { ReactComponent as BorderLeftIcon } from "webiny-app-cms/editor/assets/icons/border_left.svg";
 import { ReactComponent as BorderRightIcon } from "webiny-app-cms/editor/assets/icons/border_right.svg";
 import { ReactComponent as BorderTopIcon } from "webiny-app-cms/editor/assets/icons/border_top.svg";
 import { ReactComponent as BorderBottomIcon } from "webiny-app-cms/editor/assets/icons/border_bottom.svg";
-import PMPropertyInput from "./PMPropertyInput";
-import Footer from "./PMFooter";
+import SliderWithInput from "./SliderWithInput";
+import Footer from "./Footer";
 
 /**
  * PMSettings (Padding/Margin settings).
@@ -24,112 +24,113 @@ type Props = Object & {
     value: Object | number
 };
 
-const PMSettings = ({ value, getUpdateValue, getUpdatePreview }: Props) => {
+const PMSettings = ({ advanced, valueKey, getUpdateValue, getUpdatePreview }: Props) => {
     return (
-        <React.Fragment>
-            <Tabs>
-                <Tab label={"Desktop"}>
-                    {!value.advanced ? (
-                        <PMPropertyInput
-                            className={"no-bottom-padding"}
-                            icon={<BorderOuterIcon />}
-                            value={get(value, "desktop.all", 0)}
-                            updateValue={getUpdateValue("desktop.all")}
-                            updatePreview={getUpdatePreview("desktop.all")}
-                        />
-                    ) : (
-                        <React.Fragment>
-                            <PMPropertyInput
-                                icon={<BorderTopIcon />}
-                                value={get(value, "desktop.top", 0)}
-                                updateValue={getUpdateValue("desktop.top")}
-                                updatePreview={getUpdatePreview("desktop.top")}
-                            />
-                            <PMPropertyInput
-                                icon={<BorderRightIcon />}
-                                value={get(value, "desktop.right", 0)}
-                                updateValue={getUpdateValue("desktop.right")}
-                                updatePreview={getUpdatePreview("desktop.right")}
-                            />
-                            <PMPropertyInput
-                                icon={<BorderBottomIcon />}
-                                value={get(value, "desktop.bottom", 0)}
-                                updateValue={getUpdateValue("desktop.bottom")}
-                                updatePreview={getUpdatePreview("desktop.bottom")}
-                            />
-                            <PMPropertyInput
-                                className={"no-bottom-padding"}
-                                icon={<BorderLeftIcon />}
-                                value={get(value, "desktop.left", 0)}
-                                updateValue={getUpdateValue("desktop.left")}
-                                updatePreview={getUpdatePreview("desktop.left")}
-                            />
-                        </React.Fragment>
-                    )}
-                    <Footer
-                        advanced={value.advanced || false}
-                        toggleAdvanced={getUpdateValue("advanced")}
+        <Tabs>
+            <Tab label={"Desktop"}>
+                {!advanced ? (
+                    <SliderWithInput
+                        className={"no-bottom-padding"}
+                        icon={<BorderOuterIcon />}
+                        valueKey={valueKey + ".desktop.all"}
+                        updateValue={getUpdateValue("desktop.all")}
+                        updatePreview={getUpdatePreview("desktop.all")}
                     />
-                </Tab>
-                <Tab label={"Mobile"}>
-                    {!value.advanced ? (
-                        <PMPropertyInput
-                            className={"no-bottom-padding"}
-                            icon={<BorderOuterIcon />}
-                            value={get(value, "mobile.all", 0)}
-                            updateValue={getUpdateValue("mobile.all")}
-                            updatePreview={getUpdatePreview("mobile.all")}
+                ) : (
+                    <React.Fragment>
+                        <SliderWithInput
+                            icon={<BorderTopIcon />}
+                            valueKey={valueKey + ".desktop.top"}
+                            updateValue={getUpdateValue("desktop.top")}
+                            updatePreview={getUpdatePreview("desktop.top")}
                         />
-                    ) : (
-                        <React.Fragment>
-                            <PMPropertyInput
-                                icon={<BorderTopIcon />}
-                                value={get(value, "mobile.top", 0)}
-                                updateValue={getUpdateValue("mobile.top")}
-                                updatePreview={getUpdatePreview("mobile.top")}
-                            />
-                            <PMPropertyInput
-                                icon={<BorderRightIcon />}
-                                value={get(value, "mobile.right", 0)}
-                                updateValue={getUpdateValue("mobile.right")}
-                                updatePreview={getUpdatePreview("mobile.right")}
-                            />
-                            <PMPropertyInput
-                                icon={<BorderBottomIcon />}
-                                value={get(value, "mobile.bottom", 0)}
-                                updateValue={getUpdateValue("mobile.bottom")}
-                                updatePreview={getUpdatePreview("mobile.bottom")}
-                            />
-                            <PMPropertyInput
-                                className={"no-bottom-padding"}
-                                icon={<BorderLeftIcon />}
-                                value={get(value, "mobile.left", 0)}
-                                updateValue={getUpdateValue("mobile.left")}
-                                updatePreview={getUpdatePreview("mobile.left")}
-                            />
-                        </React.Fragment>
-                    )}
-                    <Footer
-                        advanced={value.advanced || false}
-                        toggleAdvanced={getUpdateValue("advanced")}
+                        <SliderWithInput
+                            icon={<BorderRightIcon />}
+                            valueKey={valueKey + ".desktop.right"}
+                            updateValue={getUpdateValue("desktop.right")}
+                            updatePreview={getUpdatePreview("desktop.right")}
+                        />
+                        <SliderWithInput
+                            icon={<BorderBottomIcon />}
+                            valueKey={valueKey + ".desktop.bottom"}
+                            updateValue={getUpdateValue("desktop.bottom")}
+                            updatePreview={getUpdatePreview("desktop.bottom")}
+                        />
+                        <SliderWithInput
+                            className={"no-bottom-padding"}
+                            icon={<BorderLeftIcon />}
+                            valueKey={valueKey + ".desktop.left"}
+                            updateValue={getUpdateValue("desktop.left")}
+                            updatePreview={getUpdatePreview("desktop.left")}
+                        />
+                    </React.Fragment>
+                )}
+                <Footer advanced={advanced || false} toggleAdvanced={getUpdateValue("advanced")} />
+            </Tab>
+            <Tab label={"Mobile"}>
+                {!advanced ? (
+                    <SliderWithInput
+                        className={"no-bottom-padding"}
+                        icon={<BorderOuterIcon />}
+                        valueKey={valueKey + ".mobile.all"}
+                        updateValue={getUpdateValue("mobile.all")}
+                        updatePreview={getUpdatePreview("mobile.all")}
                     />
-                </Tab>
-            </Tabs>
-        </React.Fragment>
+                ) : (
+                    <React.Fragment>
+                        <SliderWithInput
+                            icon={<BorderTopIcon />}
+                            valueKey={valueKey + ".mobile.top"}
+                            updateValue={getUpdateValue("mobile.top")}
+                            updatePreview={getUpdatePreview("mobile.top")}
+                        />
+                        <SliderWithInput
+                            icon={<BorderRightIcon />}
+                            valueKey={valueKey + ".mobile.right"}
+                            updateValue={getUpdateValue("mobile.right")}
+                            updatePreview={getUpdatePreview("mobile.right")}
+                        />
+                        <SliderWithInput
+                            icon={<BorderBottomIcon />}
+                            valueKey={valueKey + ".mobile.bottom"}
+                            updateValue={getUpdateValue("mobile.bottom")}
+                            updatePreview={getUpdatePreview("mobile.bottom")}
+                        />
+                        <SliderWithInput
+                            className={"no-bottom-padding"}
+                            icon={<BorderLeftIcon />}
+                            valueKey={valueKey + ".mobile.left"}
+                            updateValue={getUpdateValue("mobile.left")}
+                            updatePreview={getUpdatePreview("mobile.left")}
+                        />
+                    </React.Fragment>
+                )}
+                <Footer advanced={advanced || false} toggleAdvanced={getUpdateValue("advanced")} />
+            </Tab>
+        </Tabs>
     );
 };
 
 export default compose(
-    withActiveElement({ shallow: true }),
     connect(
-        (state, { element, styleAttribute }: Object) => {
+        (state, { styleAttribute }: Object) => {
             const valueKey = "data.settings." + styleAttribute;
+            const element = getActiveElement(state);
             return {
                 valueKey,
-                value: get(element, valueKey, {})
+                advanced: get(element, valueKey + ".advanced", false),
+                element: {
+                    id: element.id,
+                    type: element.type,
+                    path: element.path
+                }
             };
         },
-        { updateElement }
+        { updateElement },
+        null,
+        {
+            areStatePropsEqual: isEqual
+        }
     ),
     withHandlers({
         updateSettings: ({ element, updateElement, valueKey }: Object) => {
@@ -158,14 +159,15 @@ export default compose(
                 if (!history) {
                     updateElement({
                         element: newElement,
-                        history
+                        history,
+                        merge: true
                     });
                     return;
                 }
 
                 if (historyUpdated[propName] !== newValue) {
                     historyUpdated[propName] = newValue;
-                    updateElement({ element: newElement });
+                    updateElement({ element: newElement, merge: true });
                 }
             };
         }

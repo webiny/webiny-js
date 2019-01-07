@@ -5,7 +5,7 @@ import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import { ButtonPrimary } from "webiny-ui/Button";
 import { getPage } from "webiny-app-cms/editor/selectors";
 import { compose } from "recompose";
-import { omit } from "lodash";
+import { omit, isEqual } from "lodash";
 import { Mutation } from "react-apollo";
 import { withSnackbar } from "webiny-admin/components";
 import { withRouter } from "webiny-app/components";
@@ -56,7 +56,12 @@ const PublishPageButton = ({ page, showSnackbar, router }) => {
 };
 
 export default compose(
-    connect(state => ({ page: omit(getPage(state), ["content"]) })),
+    connect(
+        state => ({ page: omit(getPage(state), ["content"]) }),
+        null,
+        null,
+        { areStatePropsEqual: isEqual }
+    ),
     withSnackbar(),
     withRouter()
 )(PublishPageButton);
