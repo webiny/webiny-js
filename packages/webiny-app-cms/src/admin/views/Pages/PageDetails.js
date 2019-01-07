@@ -13,12 +13,15 @@ import editorMock from "webiny-app-cms/admin/assets/editor-mock.png";
 import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";
 import { PageDetailsProvider, PageDetailsConsumer } from "../../components/PageDetailsContext";
 import { ElementAnimation } from "webiny-app-cms/render/components";
+import { withSnackbar, type WithSnackbarProps } from "webiny-admin/components";
+import { get } from "lodash";
 
-type Props = WithRouterProps & {
-    pageId: string,
-    page: Object,
-    loading: boolean
-};
+type Props = WithRouterProps &
+    WithSnackbarProps & {
+        pageId: string,
+        page: Object,
+        loading: boolean
+    };
 
 const EmptySelect = styled("div")({
     width: "100%",
@@ -45,19 +48,36 @@ const DetailsContainer = styled("div")({
     }
 });
 
-const PageDetails = ({ pageId }: Props) => {
+const EmptyPageDetails = () => {
+    return (
+        <EmptySelect>
+            <Elevation z={2} className={"select-page"}>
+                Select a page on the left side, or click the green button to create a new one.
+            </Elevation>
+        </EmptySelect>
+    );
+};
+
+const PageDetails = ({ pageId, router, showSnackbar }: Props) => {
     if (!pageId) {
-        return (
-            <EmptySelect>
-                <Elevation z={2} className={"select-page"}>
-                    Select a page on the left side, or click the green button to create a new one.
-                </Elevation>
-            </EmptySelect>
-        );
+        return <EmptyPageDetails />;
     }
 
     return (
-        <Query query={getPage()} variables={{ id: pageId }}>
+        <Query
+            query={getPage()}
+            variables={{ id: pageId }}
+            onCompleted={data => {
+                const error = get(data, "cms.page.error.message");
+                if (error) {
+                    router.goToRoute({
+                        params: { id: null },
+                        merge: true
+                    });
+                    showSnackbar(error);
+                }
+            }}
+        >
             {({ data, loading }) => {
                 if (loading) {
                     return (
@@ -75,6 +95,9 @@ const PageDetails = ({ pageId }: Props) => {
                 }
 
                 const details = { page: loading ? {} : data.cms.page.data, loading };
+                if (!details.page) {
+                    return <EmptyPageDetails />;
+                }
 
                 return (
                     <ElementAnimation>
@@ -100,6 +123,7 @@ const PageDetails = ({ pageId }: Props) => {
 
 export default compose(
     withRouter(),
+    withSnackbar(),
     withProps(({ router }) => ({
         pageId: router.getQuery("id")
     }))

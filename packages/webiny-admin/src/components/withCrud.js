@@ -3,6 +3,8 @@ import * as React from "react";
 import { setDisplayName, compose, withProps, mapProps, withHandlers, withState } from "recompose";
 import { graphql } from "react-apollo";
 import { withDataList, withRouter, type WithRouterProps } from "webiny-app/components";
+import getFormData from "./withCrud/getFormData";
+
 import {
     withSnackbar,
     withDialog,
@@ -142,12 +144,23 @@ export const withCrud = ({ list, form }: Object): Function => {
             list.delete && withDeleteHandler(list.delete),
             // Form GET query
             graphql(form.get.query, {
+                options: ({ showSnackbar, router }) => ({
+                    onCompleted(data) {
+                        const { error } = getFormData({ data, form });
+                        if (error) {
+                            router.goToRoute({
+                                params: { id: null },
+                                merge: true
+                            });
+                            showSnackbar(error.message);
+                        }
+                    }
+                }),
                 variables: props => ({ id: props.id }),
                 skip: props => !props.id,
-                props: ({ data }: Object) => ({
-                    // Get form data/error from query response
-                    formData: form.get.response(data)
-                })
+                props: ({ data }: Object) => {
+                    return { formData: getFormData({ data, form }) };
+                }
             }),
             withSaveHandler(form.save),
             mapProps(
