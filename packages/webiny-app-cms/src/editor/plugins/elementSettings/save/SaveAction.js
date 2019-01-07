@@ -99,8 +99,7 @@ export default compose(
         }) => async (formData: Object) => {
             formData.preview = await uploadFile({
                 src: formData.preview,
-                type: "image/png",
-                name: "cms-element-" + element.source + ".png"
+                name: "cms-element-" + element.id
             });
             formData.content = removeIdsAndPaths(cloneDeep(element));
 
@@ -108,7 +107,7 @@ export default compose(
             const { data: res } = await mutation({
                 variables: formData.overwrite
                     ? {
-                          id: element.source,
+                          id: element.id,
                           data: { content: formData.content, preview: formData.preview }
                       }
                     : { data: formData }
