@@ -1,67 +1,32 @@
 // @flow
 import React from "react";
-import AdminLayout from "webiny-admin/components/Layouts/AdminLayout";
-import Categories from "webiny-app-cms/admin/views/Categories/Categories";
-import Menus from "webiny-app-cms/admin/views/Menus/Menus";
-import Pages from "webiny-app-cms/admin/views/Pages/Pages";
-import Editor from "webiny-app-cms/admin/views/Pages/Editor";
+import { ReactComponent as PagesIcon } from "webiny-app-cms/admin/assets/round-ballot-24px.svg";
+import { hasRoles } from "webiny-app-security";
 
 export default [
     {
-        name: "route-cms-categories",
-        type: "route",
-        route: {
-            name: "Cms.Categories",
-            path: "/cms/categories",
-            render() {
+        name: "cms-menu",
+        type: "menu",
+        render({ Menu }: Object) {
+            const { menus, categories, editor }: Object = (hasRoles({
+                menus: ["cms-menus"],
+                categories: ["cms-categories"],
+                editor: ["cms-editor"]
+            }): any);
+
+            if (menus || categories || editor) {
                 return (
-                    <AdminLayout>
-                        <Categories />
-                    </AdminLayout>
+                    <Menu label={`Content`} icon={<PagesIcon />}>
+                        <Menu label={`Pages`}>
+                            {categories && <Menu label={`Categories`} route="Cms.Categories" />}
+                            {editor && <Menu label={`Pages`} route="Cms.Pages" />}
+                            {menus && <Menu label={`Menus`} route="Cms.Menus" />}
+                        </Menu>
+                    </Menu>
                 );
             }
-        }
-    },
-    {
-        name: "route-cms-menus",
-        type: "route",
-        route: {
-            name: "Cms.Menus",
-            path: "/cms/menus",
-            exact: true,
-            render() {
-                return (
-                    <AdminLayout>
-                        <Menus />
-                    </AdminLayout>
-                );
-            }
-        }
-    },
-    {
-        name: "route-cms-pages",
-        type: "route",
-        route: {
-            name: "Cms.Pages",
-            path: "/cms/pages",
-            render() {
-                return (
-                    <AdminLayout>
-                        <Pages />
-                    </AdminLayout>
-                );
-            }
-        }
-    },
-    {
-        name: "route-cms-editor",
-        type: "route",
-        route: {
-            name: "Cms.Editor",
-            path: "/cms/editor/:id",
-            render() {
-                return <Editor />;
-            }
+
+            return null;
         }
     }
 ];

@@ -44,9 +44,7 @@ const leftPanel = css({
     }
 });
 
-const CompactView = (props: {
-    children: React.ChildrenArray<React.Element<typeof LeftPanel | typeof RightPanel | *>>
-}) => {
+const CompactView = (props: { children: React.ChildrenArray<React.Element<any>> }) => {
     return (
         <Grid className={grid}>
             <GridInner className={gridInner}>{props.children}</GridInner>

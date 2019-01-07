@@ -7,7 +7,7 @@ import {
     resolveList
 } from "webiny-api/graphql";
 import { Response } from "webiny-api/graphql/responses";
-import UserType from "webiny-security/api/plugins/graphql/User";
+import UserType from "webiny-api-security/plugins/graphql/User";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
 import listPages from "./pageResolvers/listPages";
 import listPublishedPages from "./pageResolvers/listPublishedPages";

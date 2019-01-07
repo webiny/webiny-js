@@ -34,7 +34,7 @@ export default {
         }
     },
     security: {
-        enabled: false,
+        enabled: true,
         token: {
             secret: process.env.JWT_SECRET || "MyS3cr3tK3Y",
             expiresOn: (args: Object) => addDays(new Date(), args.remember ? 30 : 1)

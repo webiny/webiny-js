@@ -1,6 +1,7 @@
 // @flow
 import { Model } from "webiny-model";
 import { settingsFactory } from "webiny-api/entities";
+import { hasScope } from "webiny-api-security";
 
 class ColorsModel extends Model {
     constructor() {
@@ -41,6 +42,22 @@ class CookiePolicySettingsModel extends Model {
 }
 
 export default [
+    {
+        name: "graphql-schema-settings-cookie-policy",
+        type: "graphql",
+        typeDefs: ``,
+        resolvers: {},
+        security: {
+            shield: {
+                SettingsQuery: {
+                    cookiePolicy: hasScope("cms:settings")
+                },
+                SettingsMutation: {
+                    cookiePolicy: hasScope("cms:settings")
+                }
+            }
+        }
+    },
     {
         name: "schema-settings-cookie-policy",
         type: "schema-settings",

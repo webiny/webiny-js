@@ -23,7 +23,12 @@ const ImageSettings = ({
     return (
         <Tabs>
             <Tab icon={<ImageIcon />} label="Image">
-                <Input label="Title" value={image.title || ""} updateValue={updateTitle} inputWidth={"max-content"}/>
+                <Input
+                    label="Title"
+                    value={image.title || ""}
+                    updateValue={updateTitle}
+                    inputWidth={"max-content"}
+                />
                 <Input
                     label="Width"
                     placeholder="auto"

@@ -23,6 +23,7 @@ export type SettingsPluginType = PluginType & {
     settings: {
         type?: "app" | "integration" | "other",
         component: Element<any>,
+        show?: () => boolean,
         route: {
             name: string,
             path: string,

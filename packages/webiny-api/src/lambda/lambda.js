@@ -1,6 +1,7 @@
 // @flow
 import { ApolloServer } from "apollo-server-lambda";
 import { applyMiddleware } from "graphql-middleware";
+import type { GraphQLMiddlewarePluginType } from "webiny-api/types";
 import { prepareSchema, createGraphqlRunner } from "../graphql/schema";
 import setup from "./setup";
 import { getPlugins } from "webiny-plugins";
@@ -9,7 +10,27 @@ const createApolloHandler = async (config: Object) => {
     await setup(config);
     let { schema, context } = prepareSchema();
 
-    schema = config.middleware ? applyMiddleware(schema, ...config.middleware) : schema;
+    const registeredMiddleware: Array<GraphQLMiddlewarePluginType> = [];
+
+    const middlewarePlugins = getPlugins("graphql-middleware");
+    for (let i = 0; i < middlewarePlugins.length; i++) {
+        let plugin = middlewarePlugins[i];
+        const middleware =
+            typeof plugin.middleware === "function"
+                ? await plugin.middleware({ context, config })
+                : plugin.middleware;
+        if (Array.isArray(middleware)) {
+            registeredMiddleware.push(...middleware);
+        } else {
+            registeredMiddleware.push(middleware);
+        }
+    }
+
+    config.middleware && registeredMiddleware.push(config.middleware);
+
+    if (registeredMiddleware.length) {
+        schema = applyMiddleware(schema, ...registeredMiddleware);
+    }
 
     const apollo = new ApolloServer({
         schema,

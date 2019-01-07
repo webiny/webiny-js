@@ -8,6 +8,17 @@ import type { SettingsPluginType } from "webiny-admin/types";
 
 const t = i18n.namespace("Webiny.Admin.Menus");
 
+const renderPlugins = ({ plugins, Menu }) => {
+    return plugins
+        .map(sp => {
+            if (typeof sp.settings.show === "function" && !sp.settings.show()) {
+                return null;
+            }
+            return <Menu key={sp.name} label={sp.settings.name} route={sp.settings.route.name} />;
+        })
+        .filter(item => item);
+};
+
 export default [
     {
         type: "webiny-init",
@@ -43,45 +54,34 @@ export default [
                 type: "menu",
                 name: "menu-settings",
                 render({ Menu }) {
-                    return (
-                        <Menu label={t`Settings`} icon={<SettingsIcon />}>
-                            {sortedSettingsPlugins.apps.length > 0 && (
-                                <Menu label={t`Apps`}>
-                                    {sortedSettingsPlugins.apps.map(sp => (
-                                        <Menu
-                                            key={sp.name}
-                                            label={sp.settings.name}
-                                            route={sp.settings.route.name}
-                                        />
-                                    ))}
-                                </Menu>
-                            )}
+                    const render = {
+                        apps: renderPlugins({ plugins: sortedSettingsPlugins.apps, Menu }),
+                        integrations: renderPlugins({
+                            plugins: sortedSettingsPlugins.integrations,
+                            Menu
+                        }),
+                        other: renderPlugins({ plugins: sortedSettingsPlugins.other, Menu })
+                    };
 
-                            {sortedSettingsPlugins.integrations.length > 0 && (
-                                <Menu label={t`Integrations`}>
-                                    {sortedSettingsPlugins.integrations.map(sp => (
-                                        <Menu
-                                            key={sp.name}
-                                            label={sp.settings.name}
-                                            route={sp.settings.route.name}
-                                        />
-                                    ))}
-                                </Menu>
-                            )}
+                    if (render.apps.length || render.integrations.length || render.other.length) {
+                        return (
+                            <Menu label={t`Settings`} icon={<SettingsIcon />}>
+                                {render.apps.length > 0 && (
+                                    <Menu label={t`Apps`}>{render.apps}</Menu>
+                                )}
 
-                            {sortedSettingsPlugins.other.length > 0 && (
-                                <Menu label={t`Other`}>
-                                    {sortedSettingsPlugins.other.map(sp => (
-                                        <Menu
-                                            key={sp.name}
-                                            label={sp.settings.name}
-                                            route={sp.settings.route.name}
-                                        />
-                                    ))}
-                                </Menu>
-                            )}
-                        </Menu>
-                    );
+                                {render.integrations.length > 0 && (
+                                    <Menu label={t`Integrations`}>{render.integrations}</Menu>
+                                )}
+
+                                {render.other.length > 0 && (
+                                    <Menu label={t`Other`}>{render.other}</Menu>
+                                )}
+                            </Menu>
+                        );
+                    }
+
+                    return null;
                 }
             });
         }

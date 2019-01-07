@@ -74,7 +74,6 @@ const withSaveHandler = ({ create, update, response, variables, snackbar }): Fun
     return (Component: typeof React.Component) => {
         return compose(
             setDisplayName("saveHandler"),
-            withState("formError", "setFormError", null),
             withState("invalidFields", "setInvalidFields", {}),
             graphql(create, { name: "createRecord" }),
             graphql(update, { name: "updateRecord" }),
@@ -83,7 +82,6 @@ const withSaveHandler = ({ create, update, response, variables, snackbar }): Fun
                     createRecord,
                     updateRecord,
                     setInvalidFields,
-                    setFormError,
                     showSnackbar,
                     showDialog,
                     router,
@@ -92,7 +90,6 @@ const withSaveHandler = ({ create, update, response, variables, snackbar }): Fun
                 }: Object) => {
                     return async (formData: Object) => {
                         // Reset errors
-                        setFormError(null);
                         setInvalidFields(null);
                         // Get variables
                         const gqlVariables = variables(formData);
@@ -161,7 +158,6 @@ export const withCrud = ({ list, form }: Object): Function => {
                         saveRecord,
                         formData,
                         invalidFields,
-                        formError,
                         showSnackbar,
                         showDialog,
                         deleteRecord
@@ -184,8 +180,7 @@ export const withCrud = ({ list, form }: Object): Function => {
                             onSubmit: saveRecord,
                             router,
                             showSnackbar,
-                            showDialog,
-                            error: formError
+                            showDialog
                         }
                     };
                 }

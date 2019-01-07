@@ -18,6 +18,10 @@ export type GraphQLSchemaPluginType = PluginType & {
     resolvers: Object | (() => Object)
 };
 
+export type GraphQLMiddlewarePluginType = PluginType & {
+    middleware: () => Object
+};
+
 export type GraphQLContextPluginType = PluginType & {
     apply: (context: Object) => any
 };

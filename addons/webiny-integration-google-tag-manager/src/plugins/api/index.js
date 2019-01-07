@@ -1,6 +1,7 @@
 // @flow
 import { Model } from "webiny-model";
 import { settingsFactory } from "webiny-api/entities";
+import { hasScope } from "webiny-api-security";
 
 class GoogleTagManagerSettingsModel extends Model {
     constructor() {
@@ -11,6 +12,22 @@ class GoogleTagManagerSettingsModel extends Model {
 }
 
 export default [
+    {
+        name: "graphql-schema-settings-google-tag-manager",
+        type: "graphql",
+        typeDefs: ``,
+        resolvers: {},
+        security: {
+            shield: {
+                SettingsQuery: {
+                    googleTagManager: hasScope("cms:settings")
+                },
+                SettingsMutation: {
+                    googleTagManager: hasScope("cms:settings")
+                }
+            }
+        }
+    },
     {
         type: "schema-settings",
         name: "schema-settings-google-tag-manager",

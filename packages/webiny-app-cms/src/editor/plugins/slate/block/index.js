@@ -55,7 +55,9 @@ export default () => {
 
                     return (
                         // eslint-disable-next-line react/jsx-no-bind
-                        <MenuButton onClick={() => setAlign(nextAlign, block.type, onChange, editor)}>
+                        <MenuButton
+                            onClick={() => setAlign(nextAlign, block.type, onChange, editor)}
+                        >
                             {React.createElement(icons[align])}
                         </MenuButton>
                     );
