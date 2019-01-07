@@ -20,7 +20,7 @@ export default ([
             group.typeExtensions,
             /* GraphQL */ `
                 type SecurityQuery {
-                    # Returns all scopes that were used throughout the schema.
+                    # Returns all scopes that were registered throughout the schema.
                     scopes: [String]
                 }
 

@@ -16,7 +16,9 @@ const createApolloHandler = async (config: Object) => {
     for (let i = 0; i < middlewarePlugins.length; i++) {
         let plugin = middlewarePlugins[i];
         const middleware =
-            typeof plugin.middleware === "function" ? await plugin.middleware() : plugin.middleware;
+            typeof plugin.middleware === "function"
+                ? await plugin.middleware({ context, config })
+                : plugin.middleware;
         if (Array.isArray(middleware)) {
             registeredMiddleware.push(...middleware);
         } else {
