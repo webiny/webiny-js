@@ -99,8 +99,7 @@ export default compose(
         }) => async (formData: Object) => {
             formData.preview = await uploadFile({
                 src: formData.preview,
-                type: "image/png",
-                name: "cms-element-" + element.source + ".png"
+                name: "cms-element-" + element.source
             });
             formData.content = removeIdsAndPaths(cloneDeep(element));
 
