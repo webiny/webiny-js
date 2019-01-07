@@ -75,7 +75,7 @@ const Revision = (props: RevisionProps) => {
             message={<span>Are you sure you want to delete this revision?</span>}
         >
             {({ showConfirmation }) => (
-                <ListItem style={{ overflow: "visible" }}>
+                <ListItem>
                     <ListItemGraphic>
                         <Tooltip content={tooltipText} placement={"bottom"}>
                             {icon}
