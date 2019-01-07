@@ -29,15 +29,15 @@ const compressImage = async ({ buffer, type }): Promise<{ buffer: Buffer, type: 
     };
 };
 
+const filenameWithoutExtension = (value: ?string) => {
+    return typeof value === "string" ? value.replace(/\.[^/.]+$/, "") : "";
+};
+
 const create = async (options: Object) => {
-    let { src, type } = options;
+    const { src } = options;
 
     if (!src) {
         throw Error(`Cannot create file, "src" is missing.`);
-    }
-
-    if (!type) {
-        throw Error(`Cannot create file, "type" is missing.`);
     }
 
     const pwd: string = (process.env.PWD: any);
@@ -48,7 +48,7 @@ const create = async (options: Object) => {
 
     fs.ensureDir(paths.folder);
 
-    let { buffer } = decodeBase64Src(options.src);
+    let { buffer, type } = decodeBase64Src(options.src);
 
     // If we are dealing with an image, compress it.
     if (supportedImageTypes.includes(type)) {
@@ -58,18 +58,11 @@ const create = async (options: Object) => {
     }
 
     // Generate unique filename.
-    let name = options.name || "";
     const extension: string = mime.extension(type);
-    if (name) {
-        // Remove extension.
-        name =
-            name
-                .split(".")
-                .slice(0, -1)
-                .join(".") + "_";
-    }
+    let name = filenameWithoutExtension(options.name);
+    name += name ? "_" : "";
     name += `${uniqueId()}.${extension}`;
-    name = sanitizeFilename(name).replace(/\s/g, "");
+    name = sanitizeFilename(name);
 
     await fs.writeFile(paths.folder + name, buffer);
 
