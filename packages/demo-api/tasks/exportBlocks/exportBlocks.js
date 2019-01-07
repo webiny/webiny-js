@@ -29,7 +29,7 @@ export default async () => {
     fs.emptyDirSync(`${pwd}/../webiny-api-cms/src/install/plugins/importData/blocks`);
 
     const blocks = await config.database.connection.query(
-        "SELECT id, name, type, content, preview, category FROM Cms_Elements_Backup WHERE deleted = ? AND type = ?",
+        "SELECT id, name, type, content, preview, category FROM Cms_Elements WHERE deleted = ? AND type = ?",
         [0, "block"]
     );
 
