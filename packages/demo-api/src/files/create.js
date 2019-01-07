@@ -42,7 +42,7 @@ const create = async (options: Object) => {
 
     const pwd: string = (process.env.PWD: any);
     const paths = {
-        url: `http://localhost:9000/files/`,
+        url: `/files/`,
         folder: `${pwd}/static/`
     };
 
@@ -72,12 +72,13 @@ const create = async (options: Object) => {
         name,
         type,
         size: buffer.byteLength,
-        src: paths.url + name
+        src: paths.url + name,
+        meta: {}
     };
 
     if (supportedImageTypes.includes(type)) {
-        data.width = metadata.width;
-        data.height = metadata.height;
+        data.meta.width = metadata.width;
+        data.meta.height = metadata.height;
     }
 
     return data;

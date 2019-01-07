@@ -62,7 +62,7 @@ export default {
                                     name: "test1BlockImage.png",
                                     type: "image/png",
                                     size: 74516,
-                                    src: "http://localhost:9000/files/test1BlockImage.png"
+                                    src: "/files/test1BlockImage.png"
                                 },
                                 settings: {},
                                 elements: [],
@@ -80,7 +80,7 @@ export default {
     preview: {
         name: "test1BlockImagePreview.png",
         size: 18405,
-        src: "http://localhost:9000/files/test1BlockImagePreview.png",
+        src: "/files/test1BlockImagePreview.png",
         type: "image/png"
     },
     keywords: null,
