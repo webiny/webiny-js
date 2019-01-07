@@ -79,6 +79,7 @@ const create = async (options: Object) => {
     if (supportedImageTypes.includes(type)) {
         data.meta.width = metadata.width;
         data.meta.height = metadata.height;
+        data.meta.aspectRatio = metadata.width / metadata.height;
     }
 
     return data;

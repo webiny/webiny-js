@@ -10,8 +10,8 @@ class BlocksList extends React.Component<*, *> {
     state = { listHeight: 0 };
 
     getRowHeight = ({ index }: Object) => {
-        let height = get(this.props.blocks[index], "image.height", 50);
-        let width = get(this.props.blocks[index], "image.width", 50);
+        let height = get(this.props.blocks[index], "image.meta.height", 50);
+        let width = get(this.props.blocks[index], "image.meta.width", 50);
 
         if (width > listWidth) {
             let downscaleRatio = width / listWidth;

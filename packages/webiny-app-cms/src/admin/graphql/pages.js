@@ -136,7 +136,7 @@ export const deletePage = gql`
     }
 `;
 
-const elementFields = `
+const elementFields = /*GraphQL*/ `
 id
 name
 type
@@ -144,8 +144,7 @@ category
 content
 preview {
     src
-    width
-    height
+    meta
 }
 `;
 

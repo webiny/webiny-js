@@ -12,5 +12,6 @@ export default class FileModel extends Model {
         this.attr("size").integer();
         this.attr("src").char();
         this.attr("type").char();
+        this.attr("meta").object();
     }
 }

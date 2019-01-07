@@ -25,10 +25,7 @@ export default (el: Element) => {
         title: el.name,
         category: el.category,
         tags: ["saved"],
-        image: {
-            ...el.preview,
-            aspectRatio: el.preview.width / el.preview.height
-        },
+        image: el.preview,
         create() {
             return cloneDeep({ ...el.content, source: el.id });
         },

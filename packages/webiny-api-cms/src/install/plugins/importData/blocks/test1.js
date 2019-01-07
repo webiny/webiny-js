@@ -62,7 +62,12 @@ export default {
                                     name: "test1BlockImage.png",
                                     type: "image/png",
                                     size: 74516,
-                                    src: "/files/test1BlockImage.png"
+                                    src: "/files/test1BlockImage.png",
+                                    meta: {
+                                        width: 1200,
+                                        height: 1200,
+                                        aspectRatio: 1
+                                    }
                                 },
                                 settings: {},
                                 elements: [],
@@ -81,7 +86,12 @@ export default {
         name: "test1BlockImagePreview.png",
         size: 18405,
         src: "/files/test1BlockImagePreview.png",
-        type: "image/png"
+        type: "image/png",
+        meta: {
+            width: 500,
+            height: 263,
+            aspectRatio: 1.9
+        }
     },
     keywords: null,
     category: "cms-block-category-general"

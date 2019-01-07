@@ -47,31 +47,13 @@ export default {
             _empty: String
         }
         
-        type PreviewFile {
-            name: String
-            size: Int
-            type: String
-            src: String
-            width: Int
-            height: Int
-        }
-        
-        input PreviewFileInput {
-            name: String
-            size: Int
-            type: String
-            src: String
-            width: Int
-            height: Int
-        }
-        
         type Element {
             id: ID
             name: String
             type: String
             category: String
             content: JSON
-            preview: PreviewFile
+            preview: File
         }
         
         input ElementInput {
@@ -79,14 +61,14 @@ export default {
             type: String!
             category: String
             content: JSON!
-            preview: PreviewFileInput
+            preview: FileInput
         }
                 
         input UpdateElementInput {
             name: String
             category: String
             content: JSON
-            preview: PreviewFileInput
+            preview: FileInput
         }
         
         input UpdatePageInput {
