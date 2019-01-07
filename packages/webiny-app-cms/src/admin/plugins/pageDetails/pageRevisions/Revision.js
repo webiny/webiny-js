@@ -25,6 +25,11 @@ import { ReactComponent as BeenHereIcon } from "webiny-app-cms/admin/assets/been
 import { ReactComponent as GestureIcon } from "webiny-app-cms/admin/assets/gesture.svg";
 import withRevisionHandlers from "./withRevisionHandlers";
 import { withCmsSettings } from "webiny-app-cms/admin/components";
+import { ReactComponent as AddIcon } from "webiny-app-cms/admin/assets/add.svg";
+import { ReactComponent as EditIcon } from "webiny-app-cms/admin/assets/edit.svg";
+import { ReactComponent as PublishIcon } from "webiny-app-cms/admin/assets/round-publish-24px.svg";
+import { ReactComponent as DeleteIcon } from "webiny-app-cms/admin/assets/delete.svg";
+import { ReactComponent as PreviewIcon } from "webiny-app-cms/admin/assets/visibility.svg";
 
 type RevisionProps = WithPageDetailsProps & {
     rev: Object,
@@ -37,6 +42,12 @@ type RevisionProps = WithPageDetailsProps & {
 };
 
 const primaryColor = css({ color: "var(--mdc-theme-primary)" });
+
+const revisionsMenu = css({
+    width: 250,
+    right: -105,
+    left: "auto !important"
+});
 
 const getIcon = (rev: Object) => {
     switch (true) {
@@ -89,15 +100,39 @@ const Revision = (props: RevisionProps) => {
                         </ListItemTextSecondary>
                     </ListItemText>
                     <ListItemMeta>
-                        <Menu handle={<IconButton icon={<MoreVerticalIcon />} />}>
-                            <MenuItem onClick={createRevision}>New</MenuItem>
-                            {!rev.locked && <MenuItem onClick={editRevision}>Edit</MenuItem>}
+                        <Menu
+                            handle={<IconButton icon={<MoreVerticalIcon />} />}
+                            className={revisionsMenu}
+                            openSide={"left"}
+                        >
+                            <MenuItem onClick={createRevision}>
+                                <ListItemGraphic>
+                                    <Icon icon={<AddIcon />} />
+                                </ListItemGraphic>
+                                New from current
+                            </MenuItem>
+                            {!rev.locked && (
+                                <MenuItem onClick={editRevision}>
+                                    <ListItemGraphic>
+                                        <Icon icon={<EditIcon />} />
+                                    </ListItemGraphic>
+                                    Edit
+                                </MenuItem>
+                            )}
 
                             {!rev.published && (
-                                <MenuItem onClick={() => publishRevision(rev)}>Publish</MenuItem>
+                                <MenuItem onClick={() => publishRevision(rev)}>
+                                    <ListItemGraphic>
+                                        <Icon icon={<PublishIcon />} />
+                                    </ListItemGraphic>
+                                    Publish
+                                </MenuItem>
                             )}
 
                             <MenuItem onClick={() => window.open(getPagePreviewUrl(rev), "_blank")}>
+                                <ListItemGraphic>
+                                    <Icon icon={<PreviewIcon />} />
+                                </ListItemGraphic>
                                 Preview
                             </MenuItem>
 
@@ -105,6 +140,9 @@ const Revision = (props: RevisionProps) => {
                                 <React.Fragment>
                                     <MenuDivider />
                                     <MenuItem onClick={() => showConfirmation(deleteRevision)}>
+                                        <ListItemGraphic>
+                                            <Icon icon={<DeleteIcon />} />
+                                        </ListItemGraphic>
                                         Delete
                                     </MenuItem>
                                 </React.Fragment>
