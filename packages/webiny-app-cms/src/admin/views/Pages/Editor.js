@@ -11,10 +11,12 @@ import { Query, withApollo } from "react-apollo";
 import { getPage } from "webiny-app-cms/admin/graphql/pages";
 import { withSavedElements } from "webiny-app-cms/admin/components";
 import Snackbar from "webiny-admin/plugins/Snackbar/Snackbar";
+import { withSnackbar } from "webiny-admin/components";
+
 import { Typography } from "webiny-ui/Typography";
 import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";
 import editorMock from "webiny-app-cms/admin/assets/editor-mock.png";
-
+import { get } from "lodash";
 const getEmptyData = (page = {}, revisions = []) => {
     return {
         ui: {
@@ -32,9 +34,23 @@ const getEmptyData = (page = {}, revisions = []) => {
 
 let pageSet = null;
 
-const Editor = ({ renderEditor, router }: Object) => {
+const Editor = ({ renderEditor, router, showSnackbar }: Object) => {
     return (
-        <Query query={getPage()} variables={{ id: router.getParams("id") }}>
+        <Query
+            query={getPage()}
+            variables={{ id: router.getParams("id") }}
+            onCompleted={data => {
+                const error = get(data, "cms.page.error.message");
+                if (error) {
+                    router.goToRoute({
+                        name: "Cms.Pages",
+                        params: { id: null },
+                        merge: true
+                    });
+                    showSnackbar(error);
+                }
+            }}
+        >
             {renderEditor}
         </Query>
     );
@@ -43,6 +59,7 @@ const Editor = ({ renderEditor, router }: Object) => {
 export default compose(
     withApollo,
     withRouter(),
+    withSnackbar(),
     withSavedElements(),
     withHandlers({
         // eslint-disable-next-line react/display-name
@@ -60,6 +77,10 @@ export default compose(
                         </LoadingTitle>
                     </LoadingEditor>
                 );
+            }
+
+            if (!get(data, "cms.page.data")) {
+                return null;
             }
 
             if (!redux.store) {
