@@ -7,7 +7,7 @@
     "build": "webpack-cli --config webpack.config.js",
     "start": "cross-env NODE_ENV=development npx sls offline start --port=9000 --dontPrintOutput --useSeparateProcesses",
     "setup": "node src/install.js",
-    "import-block": "node src/blockImporter.js"
+    "export-blocks": "node tasks/exportBlocks/index"
   },
   "author": "",
   "license": "MIT",

@@ -55,9 +55,8 @@ class Settings extends React.Component<Props> {
 
     render() {
         const { element } = this.props;
-        const { settings } = element;
 
-        const data = get(settings, "style.height", { fullHeight: false, value: "100%" });
+        const data = get(element.data, "settings.height", { fullHeight: false, value: "100%" });
 
         return (
             <Form data={data} onChange={this.updateSettings}>

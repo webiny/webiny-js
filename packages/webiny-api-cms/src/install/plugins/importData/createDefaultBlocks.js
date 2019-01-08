@@ -13,7 +13,7 @@ const createDefaultBlocks = async (context: Object) => {
     }
 
     // Copy images.
-    const pwd: string = (process.env.PWD: any);
+    const pwd: string = (process.cwd(): any);
     await fs.copy(`${__dirname}/blocks/images`, pwd + "/static");
 };
 

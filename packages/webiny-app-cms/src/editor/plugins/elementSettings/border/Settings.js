@@ -1,59 +1,44 @@
 //@flow
 import * as React from "react";
 import { connect } from "webiny-app-cms/editor/redux";
-import { compose, withHandlers } from "recompose";
+import { compose } from "recompose";
 import { Tabs, Tab } from "webiny-ui/Tabs";
-import { get, set } from "dot-prop-immutable";
+import { isEqual } from "lodash";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { getActiveElement } from "webiny-app-cms/editor/selectors";
-import { Grid } from "webiny-ui/Grid";
 import ColorPicker from "webiny-app-cms/editor/plugins/elementSettings/components/ColorPicker";
 import Select from "webiny-app-cms/editor/plugins/elementSettings/components/Select";
 import Slider from "webiny-app-cms/editor/plugins/elementSettings/components/Slider";
 import Selector from "./Selector";
+import withUpdateHandlers from "../components/withUpdateHandlers";
 
 type Props = Object & {
-    element: Object,
-    updateElement: Function
+    getUpdateValue: Function,
+    getUpdatePreview: Function
 };
 
 const options = ["none", "solid", "dashed", "dotted"];
+const DATA_NAMESPACE = "data.settings.border";
+const EMPTY_OBJECT = {};
 
-const Settings = (props: Props) => {
-    const {
-        element,
-        updateBorderStyle,
-        updateBorderRadius,
-        updateBorderRadiusPreview,
-        updateBorderColor,
-        updateBorderColorPreview,
-        updateBorderWidth,
-        updateBorderWidthPreview,
-        updateBorders
-    } = props;
-    const { settings } = element;
-
-    const borderWidth = get(settings, "style.border.width", 0);
-    const borderRadius = get(settings, "style.border.radius", 0);
-    const borderColor = get(settings, "style.border.color", "#fff");
-    const borderStyle = get(settings, "style.border.style", "none");
-    const borders = get(settings, "style.border.borders", {});
-
+const Settings = ({ getUpdateValue, getUpdatePreview }: Props) => {
     return (
         <React.Fragment>
             <Tabs>
                 <Tab label={"Border"}>
                     <ColorPicker
                         label={"Color"}
-                        value={borderColor}
-                        updateValue={updateBorderColor}
-                        updatePreview={updateBorderColorPreview}
+                        valueKey={DATA_NAMESPACE + ".color"}
+                        defaultValue={"#fff"}
+                        updateValue={getUpdateValue("color")}
+                        updatePreview={getUpdatePreview("color")}
                     />
                     <Slider
                         label={"Width"}
-                        value={borderWidth}
-                        updateValue={updateBorderWidth}
-                        updatePreview={updateBorderWidthPreview}
+                        valueKey={DATA_NAMESPACE + ".width"}
+                        defaultValue={0}
+                        updateValue={getUpdateValue("width")}
+                        updatePreview={getUpdatePreview("width")}
                         min={0}
                         max={20}
                         discrete
@@ -61,9 +46,10 @@ const Settings = (props: Props) => {
                     />
                     <Slider
                         label={"Radius"}
-                        value={borderRadius}
-                        updateValue={updateBorderRadius}
-                        updatePreview={updateBorderRadiusPreview}
+                        valueKey={DATA_NAMESPACE + ".radius"}
+                        defaultValue={0}
+                        updateValue={getUpdateValue("radius")}
+                        updatePreview={getUpdatePreview("radius")}
                         min={0}
                         max={100}
                         discrete
@@ -71,11 +57,17 @@ const Settings = (props: Props) => {
                     />
                     <Select
                         label={"Style"}
-                        value={borderStyle}
-                        updateValue={updateBorderStyle}
+                        valueKey={DATA_NAMESPACE + ".style"}
+                        defaultValue={"none"}
+                        updateValue={getUpdateValue("style")}
                         options={options}
                     />
-                    <Selector label={"Borders"} value={borders} updateValue={updateBorders} />
+                    <Selector
+                        label={"Borders"}
+                        valueKey={DATA_NAMESPACE + ".borders"}
+                        defaultValue={EMPTY_OBJECT}
+                        updateValue={getUpdateValue("borders")}
+                    />
                 </Tab>
             </Tabs>
         </React.Fragment>
@@ -84,45 +76,13 @@ const Settings = (props: Props) => {
 
 export default compose(
     connect(
-        state => ({
-            element: getActiveElement(state)
-        }),
-        { updateElement }
+        state => {
+            const { id, type, path } = getActiveElement(state);
+            return { element: { id, type, path } };
+        },
+        { updateElement },
+        null,
+        { areStatePropsEqual: isEqual }
     ),
-    withHandlers({
-        updateSettings: ({ updateElement, element }) => {
-            const historyUpdated = {};
-
-            return (name, value, history = true) => {
-                const attrKey = `data.settings.border.${name}`;
-
-                if (!history) {
-                    updateElement({ element: set(element, attrKey, value), history });
-                    return;
-                }
-
-                if (historyUpdated[name] !== value) {
-                    historyUpdated[name] = value;
-                    updateElement({ element: set(element, attrKey, value) });
-                }
-            };
-        }
-    }),
-    withHandlers({
-        updateBorderStyle: ({ updateSettings }) => (value: string) =>
-            updateSettings("style", value),
-        updateBorderRadius: ({ updateSettings }) => (value: string) =>
-            updateSettings("radius", value),
-        updateBorderRadiusPreview: ({ updateSettings }) => (value: string) =>
-            updateSettings("radius", value, false),
-        updateBorderColor: ({ updateSettings }) => (value: string) =>
-            updateSettings("color", value),
-        updateBorderColorPreview: ({ updateSettings }) => (value: string) =>
-            updateSettings("color", value, false),
-        updateBorderWidth: ({ updateSettings }) => (value: string) =>
-            updateSettings("width", value),
-        updateBorderWidthPreview: ({ updateSettings }) => (value: string) =>
-            updateSettings("width", value, false),
-        updateBorders: ({ updateSettings }) => (value: string) => updateSettings("borders", value)
-    })
+    withUpdateHandlers({ namespace: DATA_NAMESPACE })
 )(Settings);

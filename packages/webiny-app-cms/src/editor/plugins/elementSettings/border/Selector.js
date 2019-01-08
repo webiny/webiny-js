@@ -1,10 +1,13 @@
 // @flow
 import * as React from "react";
+import { connect } from "react-redux";
+import { get, isEqual } from "lodash";
 import { pure } from "recompose";
 import { css } from "emotion";
 import { Typography } from "webiny-ui/Typography";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { IconButton } from "webiny-ui/Button";
+import { getActiveElement } from "webiny-app-cms/editor/selectors";
 import { ReactComponent as TopIcon } from "./icons/round-border_top-24px.svg";
 import { ReactComponent as RightIcon } from "./icons/round-border_right-24px.svg";
 import { ReactComponent as BottomIcon } from "./icons/round-border_bottom-24px.svg";
@@ -27,7 +30,7 @@ const getValue = (value, side) => {
     return typeof enabled === "undefined" ? true : enabled;
 };
 
-export default pure(({ label, value, updateValue }: Props) => {
+const Selector = pure(({ label, value, updateValue }: Props) => {
     const top = getValue(value, "top");
     const right = getValue(value, "right");
     const bottom = getValue(value, "bottom");
@@ -73,3 +76,14 @@ export default pure(({ label, value, updateValue }: Props) => {
         </Grid>
     );
 });
+
+export default connect(
+    (state, { valueKey }: Object) => {
+        return {
+            value: get(getActiveElement(state), valueKey, 0)
+        };
+    },
+    null,
+    null,
+    { areStatePropsEqual: isEqual }
+)(Selector);
