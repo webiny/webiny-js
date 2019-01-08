@@ -2,9 +2,10 @@
 import * as React from "react";
 import { css } from "emotion";
 import styled from "react-emotion";
-import RenderElement from "webiny-app-cms/render/components/Element";
 import { Typography } from "webiny-ui/src/Typography";
 import { Select } from "webiny-ui/src/Select";
+import RenderElement from "webiny-app-cms/render/components/Element";
+import Zoom from "./Zoom";
 
 const pageInnerWrapper = css({
     overflowY: "scroll",
@@ -39,64 +40,29 @@ type Props = {
     pageDetails: Object
 };
 
-type State = {
-    zoom: number
+const PagePreview = ({ pageDetails }: Props) => {
+    return (
+        <Zoom>
+            {({ zoom, setZoom }) => (
+                <div
+                    className={pageInnerWrapper}
+                    style={{ "--webiny-cms-page-preview-scale": zoom }}
+                >
+                    <RenderElement element={pageDetails.page.content} />
+                    <PagePreviewToolbar>
+                        <span>
+                            <Typography use={"overline"}>Zoom:&nbsp;</Typography>
+                        </span>
+                        <Select value={zoom.toString()} onChange={setZoom}>
+                            <option value={"1"}>100%</option>
+                            <option value={"0.75"}>75%</option>
+                            <option value={"0.5"}>50%</option>
+                        </Select>
+                    </PagePreviewToolbar>
+                </div>
+            )}
+        </Zoom>
+    );
 };
-
-class PagePreview extends React.Component<Props, State> {
-    previewWrapperRef: Object;
-
-    constructor(props: Object) {
-        super(props);
-
-        this.state = { zoom: this.getZoomLevel() };
-        this.previewWrapperRef = React.createRef();
-    }
-
-    componentDidMount() {
-        this.setZoomLevel(this.getZoomLevel());
-    }
-
-    getZoomLevel = () => {
-        let zoom = 1;
-        if (window.innerWidth < 1600) {
-            zoom = 0.75;
-        } else if (window.innerWidth < 1200) {
-            zoom = 0.5;
-        }
-
-        return zoom;
-    };
-
-    setZoomLevel = (zoom: number) => {
-        if (!this.previewWrapperRef.current) {
-            return;
-        }
-        this.setState({ zoom });
-
-        const el = this.previewWrapperRef.current;
-
-        el.style.setProperty("--webiny-cms-page-preview-scale", zoom);
-    };
-
-    render() {
-        const pageDetails = this.props.pageDetails;
-        return (
-            <div className={pageInnerWrapper} ref={this.previewWrapperRef}>
-                <RenderElement element={pageDetails.page.content} />
-                <PagePreviewToolbar>
-                    <span>
-                        <Typography use={"overline"}>Zoom:</Typography>
-                    </span>
-                    <Select value={this.state.zoom} onChange={zoom => this.setZoomLevel(zoom)}>
-                        <option value={1}>100%</option>
-                        <option value={0.75}>75%</option>
-                        <option value={0.5}>50%</option>
-                    </Select>
-                </PagePreviewToolbar>
-            </div>
-        );
-    }
-}
 
 export default PagePreview;
