@@ -134,8 +134,16 @@ export const resolveDelete = (entityFetcher: EntityFetcher) => async (
         return notFound(args.id);
     }
 
-    await entity.delete();
-    return new Response(true);
+    return entity
+        .delete()
+        .then(() => new Response(true))
+        .catch(
+            e =>
+                new ErrorResponse({
+                    code: e.code,
+                    message: e.message
+                })
+        );
 };
 
 const resolveMap = {
