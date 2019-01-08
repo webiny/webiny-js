@@ -15,7 +15,7 @@ module.exports = (pluginConfig = {}) => {
     /**
      * Analyze commits for all packages and determine next release version
      */
-    return async (params, next, finish) => {
+    return async (params, next) => {
         const { packages, logger, config, git } = params;
 
         const getLastRelease = getLastReleaseFactory({ logger, git });
