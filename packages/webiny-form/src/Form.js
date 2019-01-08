@@ -12,6 +12,7 @@ type Props = {
     data?: Object,
     disabled?: boolean,
     validateOnFirstSubmit?: boolean,
+    submitOnEnter?: boolean,
     onSubmit?: (data: Object, form: Form) => void,
     onInvalid?: () => void,
     onChange?: (data: Object, form: Form) => void,
@@ -265,9 +266,10 @@ class Form extends React.Component<Props, State> {
     };
 
     __onKeyDown = (e: SyntheticKeyboardEvent<*>) => {
+        const { submitOnEnter = false } = this.props;
         if (
-            (e.metaKey || e.ctrlKey) &&
-            ["s", "Enter"].indexOf(e.key) > -1 &&
+            (submitOnEnter || e.metaKey || e.ctrlKey) &&
+            e.key === "Enter" &&
             !e.isDefaultPrevented()
         ) {
             // Need to blur current target in case of input fields to trigger validation
