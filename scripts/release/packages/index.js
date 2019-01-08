@@ -1,6 +1,8 @@
 require("dotenv").config();
+const path = require("path");
 const hookStd = require("hook-std");
 const { argv } = require("yargs");
+const getWorkspaces = require("get-yarn-workspaces");
 const buildParams = require("../utils/buildParams");
 const stdOut = require("../utils/stdOut");
 const compose = require("../utils/compose");
@@ -13,7 +15,6 @@ const githubPublish = require("./plugins/github/publish");
 const npmVerify = require("./plugins/npm/verify");
 const npmPublish = require("./plugins/npm/publish");
 const updatePackages = require("./plugins/updatePackages");
-
 
 const release = async config => {
     const { params, plugins } = await buildParams(config);
@@ -36,11 +37,19 @@ const release = async config => {
     unhook();
 };
 
+// Get `addons` packages
+const addons = getWorkspaces()
+    .filter(dir => dir.startsWith(process.cwd() + "/addons/"))
+    .map(dir => path.basename(dir));
+
+// Only include non-addons packages
+const packages = getPackages("build/node_modules/*").filter(pkg => !addons.includes(pkg.name));
+
 release({
     ci: true,
     preview: argv.preview || false,
     branch: argv.branch || "master",
-    packages: getPackages("build/node_modules/*"),
+    packages,
     plugins: [
         verifyEnvironment(),
         githubVerify(),
