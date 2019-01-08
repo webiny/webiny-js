@@ -29,7 +29,7 @@
     "react-dom": "^16.4.0"
   },
   "scripts": {
-    "build": "babel src types.js -d ${DEST:-build} --source-maps --copy-files --ignore types.js",
+    "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
     "flow-copy-source": "flow-copy-source src ${DEST:-build}",
     "postbuild": "yarn flow-copy-source"
   }

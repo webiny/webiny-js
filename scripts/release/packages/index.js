@@ -1,10 +1,10 @@
 require("dotenv").config();
 const hookStd = require("hook-std");
 const { argv } = require("yargs");
-const buildParams = require("./utils/buildParams");
-const stdOut = require("./utils/stdOut");
-const compose = require("./utils/compose");
-const getPackages = require("./utils/getPackages");
+const buildParams = require("../utils/buildParams");
+const stdOut = require("../utils/stdOut");
+const compose = require("../utils/compose");
+const getPackages = require("../utils/getPackages");
 
 const analyzeCommits = require("./plugins/analyzeCommits");
 const verifyEnvironment = require("./plugins/verifyEnvironment");
