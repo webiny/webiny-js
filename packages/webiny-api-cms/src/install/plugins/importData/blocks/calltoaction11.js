@@ -198,10 +198,9 @@ export default {
     preview: {
         name: "cms-element-5c27a9b0a0b03cca5047aecd_13ynjq9pxoic.png",
         size: 11923,
-        src: "http://localhost:9000/files/cms-element-5c27a9b0a0b03cca5047aecd_13ynjq9pxoic.png",
+        src: "/files/cms-element-5c27a9b0a0b03cca5047aecd_13ynjq9pxoic.png",
         type: "image/png",
-        width: 1000,
-        height: 131
+        meta: { width: 1000, height: 131 }
     },
     category: "cms-block-category-cta"
 };

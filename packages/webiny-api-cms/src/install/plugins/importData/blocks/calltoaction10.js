@@ -187,8 +187,7 @@ export default {
                                         name: "phone-desktop_13fojq9otp2v.svg",
                                         type: "image/svg+xml",
                                         size: 18238,
-                                        src:
-                                            "http://localhost:9000/files/phone-desktop_13fojq9otp2v.svg"
+                                        src: "/files/phone-desktop_13fojq9otp2v.svg"
                                     }
                                 },
                                 elements: [],
@@ -206,10 +205,9 @@ export default {
     preview: {
         name: "cms-element-5c27aacaa0b03ccb18372e40_1447jq9q3qat.png",
         size: 48531,
-        src: "http://localhost:9000/files/cms-element-5c27aacaa0b03ccb18372e40_1447jq9q3qat.png",
+        src: "/files/cms-element-5c27aacaa0b03ccb18372e40_1447jq9q3qat.png",
         type: "image/png",
-        width: 1000,
-        height: 603
+        meta: { width: 1000, height: 603 }
     },
     category: "cms-block-category-cta"
 };

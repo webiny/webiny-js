@@ -13,7 +13,7 @@ export default {
                 height: { fullHeight: false, value: "100%" },
                 background: {
                     image: {
-                        src: "http://localhost:9000/files/bg-2_k7xjq8418m8.svg",
+                        src: "/files/bg-2_k7xjq8418m8.svg",
                         scaling: "contain",
                         position: "center"
                     }
@@ -191,10 +191,9 @@ export default {
     preview: {
         name: "cms-element-5c27a9f2a0b03cca7a7e097b_13ztjq9pz3ck.png",
         size: 56813,
-        src: "http://localhost:9000/files/cms-element-5c27a9f2a0b03cca7a7e097b_13ztjq9pz3ck.png",
+        src: "/files/cms-element-5c27a9f2a0b03cca7a7e097b_13ztjq9pz3ck.png",
         type: "image/png",
-        width: 1000,
-        height: 459
+        meta: { width: 1000, height: 459 }
     },
     category: "cms-block-category-cta"
 };

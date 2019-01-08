@@ -115,8 +115,7 @@ export default {
                                         name: "undraw_mobile_browsers_lib5_r4ajqcr4ofq.svg",
                                         type: "image/svg+xml",
                                         size: 100300,
-                                        src:
-                                            "http://localhost:9000/files/undraw_mobile_browsers_lib5_r4ajqcr4ofq.svg",
+                                        src: "/files/undraw_mobile_browsers_lib5_r4ajqcr4ofq.svg",
                                         height: "300",
                                         title: "",
                                         width: ""
@@ -436,8 +435,7 @@ export default {
                                         name: "undraw_static_assets_rpm6(1)_r5djqcr6qmb.svg",
                                         type: "image/svg+xml",
                                         size: 36759,
-                                        src:
-                                            "http://localhost:9000/files/undraw_static_assets_rpm6(1)_r5djqcr6qmb.svg",
+                                        src: "/files/undraw_static_assets_rpm6(1)_r5djqcr6qmb.svg",
                                         height: "300",
                                         title: "",
                                         width: ""
@@ -488,8 +486,7 @@ export default {
                                         name: "undraw_mobile_life_381t_r5sjqcr7604.svg",
                                         type: "image/svg+xml",
                                         size: 15269,
-                                        src:
-                                            "http://localhost:9000/files/undraw_mobile_life_381t_r5sjqcr7604.svg",
+                                        src: "/files/undraw_mobile_life_381t_r5sjqcr7604.svg",
                                         height: "300",
                                         title: "",
                                         width: ""
@@ -651,10 +648,9 @@ export default {
     preview: {
         name: "cms-element-5c2a76bea0b03c89968233ab_r6djqcr8553.png",
         size: 205497,
-        src: "http://localhost:9000/files/cms-element-5c2a76bea0b03c89968233ab_r6djqcr8553.png",
+        src: "/files/cms-element-5c2a76bea0b03c89968233ab_r6djqcr8553.png",
         type: "image/png",
-        width: 1000,
-        height: 988
+        meta: { width: 1000, height: 988 }
     },
     category: "cms-block-category-features"
 };

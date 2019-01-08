@@ -910,10 +910,9 @@ export default {
     preview: {
         name: "cms-element-5c2a5a5aa0b03c807c4797d2_pdnjqcmwcy4.png",
         size: 43373,
-        src: "http://localhost:9000/files/cms-element-5c2a5a5aa0b03c807c4797d2_pdnjqcmwcy4.png",
+        src: "/files/cms-element-5c2a5a5aa0b03c807c4797d2_pdnjqcmwcy4.png",
         type: "image/png",
-        width: 1000,
-        height: 344
+        meta: { width: 1000, height: 344 }
     },
     category: "cms-block-category-features"
 };

@@ -127,8 +127,7 @@ export default {
                                         name: "logo-set-small_8frjqb41mgk.svg",
                                         type: "image/svg+xml",
                                         size: 12766,
-                                        src:
-                                            "http://localhost:9000/files/logo-set-small_8frjqb41mgk.svg",
+                                        src: "/files/logo-set-small_8frjqb41mgk.svg",
                                         width: "200",
                                         title: "",
                                         alt: "",
@@ -168,8 +167,7 @@ export default {
                                         name: "undraw_map_1r69_8ndjqb4ksje.svg",
                                         type: "image/svg+xml",
                                         size: 6591,
-                                        src:
-                                            "http://localhost:9000/files/undraw_map_1r69_8ndjqb4ksje.svg",
+                                        src: "/files/undraw_map_1r69_8ndjqb4ksje.svg",
                                         width: "300",
                                         title: "",
                                         alt: "",
@@ -196,10 +194,9 @@ export default {
     preview: {
         name: "cms-element-5c28f705a0b03c2c477f3d4d_8qujqb4qo0y.png",
         size: 54752,
-        src: "http://localhost:9000/files/cms-element-5c28f705a0b03c2c477f3d4d_8qujqb4qo0y.png",
+        src: "/files/cms-element-5c28f705a0b03c2c477f3d4d_8qujqb4qo0y.png",
         type: "image/png",
-        width: 1000,
-        height: 307
+        meta: { width: 1000, height: 307 }
     },
     category: "cms-block-category-content"
 };

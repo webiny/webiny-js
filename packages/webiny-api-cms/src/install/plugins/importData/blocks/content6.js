@@ -43,8 +43,7 @@ export default {
                                         name: "undraw_mobile_life_381t_8bzjqb3ucwi.svg",
                                         type: "image/svg+xml",
                                         size: 15269,
-                                        src:
-                                            "http://localhost:9000/files/undraw_mobile_life_381t_8bzjqb3ucwi.svg"
+                                        src: "/files/undraw_mobile_life_381t_8bzjqb3ucwi.svg"
                                     },
                                     settings: {
                                         padding: { desktop: { all: 0 }, mobile: { all: 0 } },
@@ -219,8 +218,7 @@ export default {
                                                         name: "Appstore_89djqb3p38k.svg",
                                                         type: "image/svg+xml",
                                                         size: 14377,
-                                                        src:
-                                                            "http://localhost:9000/files/Appstore_89djqb3p38k.svg"
+                                                        src: "/files/Appstore_89djqb3p38k.svg"
                                                     },
                                                     settings: {
                                                         margin: {
@@ -258,8 +256,7 @@ export default {
                                                         name: "GooglePlay_89rjqb3pati.svg",
                                                         type: "image/svg+xml",
                                                         size: 9800,
-                                                        src:
-                                                            "http://localhost:9000/files/GooglePlay_89rjqb3pati.svg"
+                                                        src: "/files/GooglePlay_89rjqb3pati.svg"
                                                     },
                                                     settings: {
                                                         margin: {
@@ -293,10 +290,9 @@ export default {
     preview: {
         name: "cms-element-5c28f1f1a0b03c2a75aa50f3_8dwjqb3yt7t.png",
         size: 72969,
-        src: "http://localhost:9000/files/cms-element-5c28f1f1a0b03c2a75aa50f3_8dwjqb3yt7t.png",
+        src: "/files/cms-element-5c28f1f1a0b03c2a75aa50f3_8dwjqb3yt7t.png",
         type: "image/png",
-        width: 1000,
-        height: 351
+        meta: { width: 1000, height: 351 }
     },
     category: "cms-block-category-content"
 };

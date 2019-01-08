@@ -12,7 +12,7 @@ export default {
                     advanced: true
                 },
                 padding: { mobile: { all: 10 }, desktop: { all: 0 } },
-                background: { image: { src: "http://localhost:9000/files/bg-1_n3wjqchkdl4.svg" } }
+                background: { image: { src: "/files/bg-1_n3wjqchkdl4.svg" } }
             }
         },
         elements: [
@@ -572,10 +572,9 @@ export default {
     preview: {
         name: "cms-element-5c2a3e6da0b03c772f71f2b1_njijqcin4s6.png",
         size: 147481,
-        src: "http://localhost:9000/files/cms-element-5c2a3e6da0b03c772f71f2b1_njijqcin4s6.png",
+        src: "/files/cms-element-5c2a3e6da0b03c772f71f2b1_njijqcin4s6.png",
         type: "image/png",
-        width: 1000,
-        height: 478
+        meta: { width: 1000, height: 478 }
     },
     category: "cms-block-category-features"
 };

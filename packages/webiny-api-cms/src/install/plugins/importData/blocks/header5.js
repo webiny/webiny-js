@@ -206,8 +206,7 @@ export default {
                                         name: "browser-mock-cutout_11wrjqdt4cav.svg",
                                         type: "image/svg+xml",
                                         size: 3937,
-                                        src:
-                                            "http://localhost:9000/files/browser-mock-cutout_11wrjqdt4cav.svg"
+                                        src: "/files/browser-mock-cutout_11wrjqdt4cav.svg"
                                     },
                                     settings: {
                                         horizontalAlign: "center",
@@ -229,10 +228,9 @@ export default {
     preview: {
         name: "cms-element-5c2b6f97a0b03cc004e8f774_11xfjqdt5jud.png",
         size: 98365,
-        src: "http://localhost:9000/files/cms-element-5c2b6f97a0b03cc004e8f774_11xfjqdt5jud.png",
+        src: "/files/cms-element-5c2b6f97a0b03cc004e8f774_11xfjqdt5jud.png",
         type: "image/png",
-        width: 1000,
-        height: 720
+        meta: { width: 1000, height: 720 }
     },
     category: "cms-block-category-header"
 };

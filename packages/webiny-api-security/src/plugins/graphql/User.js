@@ -31,13 +31,6 @@ export default {
                 src: String
             }
 
-            input AvatarInput {
-                name: String
-                size: Int
-                type: String
-                src: String
-            }
-
             type UserLogin {
                 token: String
                 expiresOn: Int
@@ -57,7 +50,7 @@ export default {
                 lastName: String
                 fullName: String
                 gravatar: String
-                avatar: Avatar
+                avatar: File
                 enabled: Boolean
                 groups: [Group]
                 roles: [Role]
@@ -78,7 +71,7 @@ export default {
                 password: String
                 firstName: String
                 lastName: String
-                avatar: AvatarInput
+                avatar: FileInput
                 enabled: Boolean
                 groups: [ID]
                 roles: [ID]
@@ -89,7 +82,7 @@ export default {
                 email: String
                 firstName: String
                 lastName: String
-                avatar: AvatarInput
+                avatar: FileInput
                 password: String
             }
 

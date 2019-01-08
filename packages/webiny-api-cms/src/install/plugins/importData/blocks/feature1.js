@@ -661,10 +661,9 @@ export default {
     preview: {
         name: "cms-element-5c2a32f9a0b03c72b4ae8151_mnnjqcgwalx.png",
         size: 37445,
-        src: "http://localhost:9000/files/cms-element-5c2a32f9a0b03c72b4ae8151_mnnjqcgwalx.png",
+        src: "/files/cms-element-5c2a32f9a0b03c72b4ae8151_mnnjqcgwalx.png",
         type: "image/png",
-        width: 1000,
-        height: 330
+        meta: { width: 1000, height: 330 }
     },
     category: "cms-block-category-features"
 };

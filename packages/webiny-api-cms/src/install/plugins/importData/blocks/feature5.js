@@ -496,8 +496,7 @@ export default {
                                         name: "undraw_to_do_list_a49b_od0jqcjbscy.svg",
                                         type: "image/svg+xml",
                                         size: 33363,
-                                        src:
-                                            "http://localhost:9000/files/undraw_to_do_list_a49b_od0jqcjbscy.svg"
+                                        src: "/files/undraw_to_do_list_a49b_od0jqcjbscy.svg"
                                     },
                                     settings: {
                                         margin: {
@@ -523,10 +522,9 @@ export default {
     preview: {
         name: "cms-element-5c2a4331a0b03c7b862a9470_oedjqcjda8o.png",
         size: 85456,
-        src: "http://localhost:9000/files/cms-element-5c2a4331a0b03c7b862a9470_oedjqcjda8o.png",
+        src: "/files/cms-element-5c2a4331a0b03c7b862a9470_oedjqcjda8o.png",
         type: "image/png",
-        width: 1000,
-        height: 395
+        meta: { width: 1000, height: 395 }
     },
     category: "cms-block-category-features"
 };

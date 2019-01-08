@@ -3,15 +3,6 @@ import { Entity } from "webiny-entity";
 import sizeOf from "image-size";
 import FileModel from "./File.model";
 
-class PreviewModel extends FileModel {
-    constructor() {
-        super();
-
-        this.attr("width").integer();
-        this.attr("height").integer();
-    }
-}
-
 type ElementType = "element" | "block";
 
 export interface IElement extends Entity {
@@ -48,16 +39,19 @@ export function elementFactory(): Class<IElement> {
                 .char()
                 .setValidators("required,in:element:block");
 
-            this.attr("preview").model(PreviewModel);
+            this.attr("preview").model(FileModel);
         }
 
         /* TODO: remove this method before release! */
         async updateImage() {
             const fileName = this.preview.name;
             const dimensions = await sizeOf(process.cwd() + "/static/" + fileName);
+            // eslint-disable-next-line
             console.log(process.cwd() + "/static/" + fileName);
-            this.preview.width = dimensions.width;
-            this.preview.height = dimensions.height;
+            this.preview.meta = {
+                width: dimensions.width,
+                height: dimensions.height
+            };
             await this.save();
         }
     };

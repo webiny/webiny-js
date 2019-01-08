@@ -20,10 +20,7 @@ export default {
                 verticalAlign: "center",
                 horizontalAlignFlex: "center",
                 background: {
-                    image: {
-                        src:
-                            "http://localhost:9000/files/background-1462755_1920-min_11b2jqdrh62g.png"
-                    }
+                    image: { src: "/files/background-1462755_1920-min_11b2jqdrh62g.png" }
                 }
             }
         },
@@ -230,10 +227,9 @@ export default {
     preview: {
         name: "cms-element-5c2b69bca0b03cbe22aedc7e_11k1jqds9fba.png",
         size: 980072,
-        src: "http://localhost:9000/files/cms-element-5c2b69bca0b03cbe22aedc7e_11k1jqds9fba.png",
+        src: "/files/cms-element-5c2b69bca0b03cbe22aedc7e_11k1jqds9fba.png",
         type: "image/png",
-        width: 1000,
-        height: 597
+        meta: { width: 1000, height: 597 }
     },
     category: "cms-block-category-header"
 };

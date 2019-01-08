@@ -395,7 +395,7 @@ export default {
                                         name: "X_phyjqcn5v5x.svg",
                                         type: "image/svg+xml",
                                         size: 7286,
-                                        src: "http://localhost:9000/files/X_phyjqcn5v5x.svg",
+                                        src: "/files/X_phyjqcn5v5x.svg",
                                         height: "500",
                                         title: "",
                                         width: ""
@@ -425,10 +425,9 @@ export default {
     preview: {
         name: "cms-element-5c2a66eca0b03c854eec58c9_qbxjqcotbx7.png",
         size: 98813,
-        src: "http://localhost:9000/files/cms-element-5c2a66eca0b03c854eec58c9_qbxjqcotbx7.png",
+        src: "/files/cms-element-5c2a66eca0b03c854eec58c9_qbxjqcotbx7.png",
         type: "image/png",
-        width: 1000,
-        height: 519
+        meta: { width: 1000, height: 519 }
     },
     category: "cms-block-category-features"
 };

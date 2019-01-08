@@ -148,7 +148,7 @@ export default {
                                                         type: "image/svg+xml",
                                                         size: 3140,
                                                         src:
-                                                            "http://localhost:9000/files/image-placeholder_15bdjq9trsoh.svg"
+                                                            "/files/image-placeholder_15bdjq9trsoh.svg"
                                                     },
                                                     settings: {
                                                         margin: {
@@ -194,7 +194,7 @@ export default {
                                                         type: "image/svg+xml",
                                                         size: 3140,
                                                         src:
-                                                            "http://localhost:9000/files/image-placeholder_15bvjq9ts6mv.svg"
+                                                            "/files/image-placeholder_15bvjq9ts6mv.svg"
                                                     },
                                                     settings: {
                                                         margin: {
@@ -232,7 +232,7 @@ export default {
                                                         type: "image/svg+xml",
                                                         size: 3140,
                                                         src:
-                                                            "http://localhost:9000/files/image-placeholder_15c7jq9tsaag.svg"
+                                                            "/files/image-placeholder_15c7jq9tsaag.svg"
                                                     },
                                                     settings: {
                                                         margin: {
@@ -562,10 +562,9 @@ export default {
     preview: {
         name: "cms-element-5c27c7c6a0b03cd30e21c851_15otjq9uirp1.png",
         size: 74069,
-        src: "http://localhost:9000/files/cms-element-5c27c7c6a0b03cd30e21c851_15otjq9uirp1.png",
+        src: "/files/cms-element-5c27c7c6a0b03cd30e21c851_15otjq9uirp1.png",
         type: "image/png",
-        width: 1000,
-        height: 519
+        meta: { width: 1000, height: 519 }
     },
     category: "cms-block-category-content"
 };

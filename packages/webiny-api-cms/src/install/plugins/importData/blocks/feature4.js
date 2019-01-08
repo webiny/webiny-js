@@ -59,8 +59,7 @@ export default {
                                         name: "undraw_server_status_5pbv_nwijqciww87.svg",
                                         type: "image/svg+xml",
                                         size: 22885,
-                                        src:
-                                            "http://localhost:9000/files/undraw_server_status_5pbv_nwijqciww87.svg"
+                                        src: "/files/undraw_server_status_5pbv_nwijqciww87.svg"
                                     },
                                     settings: {
                                         margin: {
@@ -718,10 +717,9 @@ export default {
     preview: {
         name: "cms-element-5c2a4063a0b03c79300dbe63_nxrjqcixwcf.png",
         size: 82746,
-        src: "http://localhost:9000/files/cms-element-5c2a4063a0b03c79300dbe63_nxrjqcixwcf.png",
+        src: "/files/cms-element-5c2a4063a0b03c79300dbe63_nxrjqcixwcf.png",
         type: "image/png",
-        width: 1000,
-        height: 448
+        meta: { width: 1000, height: 448 }
     },
     category: "cms-block-category-features"
 };

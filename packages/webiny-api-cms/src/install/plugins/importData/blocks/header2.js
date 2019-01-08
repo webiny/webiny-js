@@ -20,10 +20,7 @@ export default {
                 verticalAlign: "center",
                 horizontalAlignFlex: "center",
                 background: {
-                    image: {
-                        src:
-                            "http://localhost:9000/files/architecture-1846684_1920-min_10lujqdqhae9.png"
-                    }
+                    image: { src: "/files/architecture-1846684_1920-min_10lujqdqhae9.png" }
                 }
             }
         },
@@ -184,7 +181,7 @@ export default {
                                         name: "58px_10jrjqdqchjd.svg",
                                         type: "image/svg+xml",
                                         size: 1823,
-                                        src: "http://localhost:9000/files/58px_10jrjqdqchjd.svg",
+                                        src: "/files/58px_10jrjqdqchjd.svg",
                                         width: "50",
                                         title: "",
                                         height: ""
@@ -214,10 +211,9 @@ export default {
     preview: {
         name: "cms-element-5c2b5f49a0b03cba4b21c45f_10sqjqdqo39k.png",
         size: 1199469,
-        src: "http://localhost:9000/files/cms-element-5c2b5f49a0b03cba4b21c45f_10sqjqdqo39k.png",
+        src: "/files/cms-element-5c2b5f49a0b03cba4b21c45f_10sqjqdqo39k.png",
         type: "image/png",
-        width: 1000,
-        height: 597
+        meta: { width: 1000, height: 597 }
     },
     category: "cms-block-category-header"
 };

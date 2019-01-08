@@ -45,8 +45,7 @@ export default {
                                         name: "hummans-template-1_8vujqb51kzg.svg",
                                         type: "image/svg+xml",
                                         size: 26692,
-                                        src:
-                                            "http://localhost:9000/files/hummans-template-1_8vujqb51kzg.svg",
+                                        src: "/files/hummans-template-1_8vujqb51kzg.svg",
                                         width: "350",
                                         title: "",
                                         alt: "",
@@ -397,10 +396,9 @@ export default {
     preview: {
         name: "cms-element-5c28f984a0b03c2d354b30a4_8xgjqb54cu2.png",
         size: 100358,
-        src: "http://localhost:9000/files/cms-element-5c28f984a0b03c2d354b30a4_8xgjqb54cu2.png",
+        src: "/files/cms-element-5c28f984a0b03c2d354b30a4_8xgjqb54cu2.png",
         type: "image/png",
-        width: 1000,
-        height: 492
+        meta: { width: 1000, height: 492 }
     },
     category: "cms-block-category-content"
 };

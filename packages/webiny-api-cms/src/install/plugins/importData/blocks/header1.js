@@ -204,8 +204,7 @@ export default {
                                         name: "undraw_wind_turbine_x2k4_xkfjqdobeei.svg",
                                         type: "image/svg+xml",
                                         size: 20936,
-                                        src:
-                                            "http://localhost:9000/files/undraw_wind_turbine_x2k4_xkfjqdobeei.svg"
+                                        src: "/files/undraw_wind_turbine_x2k4_xkfjqdobeei.svg"
                                     },
                                     settings: {
                                         horizontalAlign: "center",
@@ -232,10 +231,9 @@ export default {
     preview: {
         name: "cms-element-5c2b5025a0b03caa0e00212d_xl9jqdod0e2.png",
         size: 70602,
-        src: "http://localhost:9000/files/cms-element-5c2b5025a0b03caa0e00212d_xl9jqdod0e2.png",
+        src: "/files/cms-element-5c2b5025a0b03caa0e00212d_xl9jqdod0e2.png",
         type: "image/png",
-        width: 1000,
-        height: 428
+        meta: { width: 1000, height: 428 }
     },
     category: "cms-block-category-header"
 };

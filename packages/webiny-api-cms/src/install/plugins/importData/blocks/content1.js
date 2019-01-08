@@ -616,8 +616,7 @@ export default {
                                         name: "image-placeholder_146fjq9q90jt.svg",
                                         type: "image/svg+xml",
                                         size: 3140,
-                                        src:
-                                            "http://localhost:9000/files/image-placeholder_146fjq9q90jt.svg"
+                                        src: "/files/image-placeholder_146fjq9q90jt.svg"
                                     },
                                     settings: {
                                         margin: { desktop: { all: 0 }, mobile: { all: 0 } },
@@ -639,10 +638,9 @@ export default {
     preview: {
         name: "cms-element-5c2918aea0b03c430ebc1e22_d8tjqb9vcvq.png",
         size: 72954,
-        src: "http://localhost:9000/files/cms-element-5c2918aea0b03c430ebc1e22_d8tjqb9vcvq.png",
+        src: "/files/cms-element-5c2918aea0b03c430ebc1e22_d8tjqb9vcvq.png",
         type: "image/png",
-        width: 1000,
-        height: 415
+        meta: { width: 1000, height: 415 }
     },
     category: "cms-block-category-content"
 };

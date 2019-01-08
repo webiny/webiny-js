@@ -149,7 +149,7 @@ export default {
                                         name: "bg-1_qfgjqcp2um2.svg",
                                         type: "image/svg+xml",
                                         size: 4745,
-                                        src: "http://localhost:9000/files/bg-1_qfgjqcp2um2.svg"
+                                        src: "/files/bg-1_qfgjqcp2um2.svg"
                                     },
                                     settings: {
                                         margin: {
@@ -272,7 +272,7 @@ export default {
                                         name: "bg-2_qgjjqcp4wvp.svg",
                                         type: "image/svg+xml",
                                         size: 2155,
-                                        src: "http://localhost:9000/files/bg-2_qgjjqcp4wvp.svg"
+                                        src: "/files/bg-2_qgjjqcp4wvp.svg"
                                     },
                                     settings: {
                                         margin: {
@@ -395,7 +395,7 @@ export default {
                                         name: "bg-3_qj8jqcpc0ad.svg",
                                         type: "image/svg+xml",
                                         size: 6777,
-                                        src: "http://localhost:9000/files/bg-3_qj8jqcpc0ad.svg"
+                                        src: "/files/bg-3_qj8jqcpc0ad.svg"
                                     },
                                     settings: {
                                         margin: {
@@ -508,10 +508,9 @@ export default {
     preview: {
         name: "cms-element-5c2a6a78a0b03c866f58d8f5_qjyjqcpcsk3.png",
         size: 98201,
-        src: "http://localhost:9000/files/cms-element-5c2a6a78a0b03c866f58d8f5_qjyjqcpcsk3.png",
+        src: "/files/cms-element-5c2a6a78a0b03c866f58d8f5_qjyjqcpcsk3.png",
         type: "image/png",
-        width: 1000,
-        height: 465
+        meta: { width: 1000, height: 465 }
     },
     category: "cms-block-category-features"
 };

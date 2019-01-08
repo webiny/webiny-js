@@ -278,8 +278,7 @@ export default {
                                         name: "sitting-1_l4ijq87wlrw.svg",
                                         type: "image/svg+xml",
                                         size: 9851,
-                                        src:
-                                            "http://localhost:9000/files/sitting-1_l4ijq87wlrw.svg",
+                                        src: "/files/sitting-1_l4ijq87wlrw.svg",
                                         width: "300",
                                         title: "",
                                         alt: "",
@@ -302,10 +301,9 @@ export default {
     preview: {
         name: "cms-element-5c27aa25a0b03cca9d24a68b_140sjq9q06nh.png",
         size: 71297,
-        src: "http://localhost:9000/files/cms-element-5c27aa25a0b03cca9d24a68b_140sjq9q06nh.png",
+        src: "/files/cms-element-5c27aa25a0b03cca9d24a68b_140sjq9q06nh.png",
         type: "image/png",
-        width: 1000,
-        height: 496
+        meta: { width: 1000, height: 496 }
     },
     category: "cms-block-category-cta"
 };

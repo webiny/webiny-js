@@ -310,8 +310,7 @@ export default {
                                         name: "undraw_wireframing_nxyi_m4hjqcfh1t9.svg",
                                         type: "image/svg+xml",
                                         size: 31993,
-                                        src:
-                                            "http://localhost:9000/files/undraw_wireframing_nxyi_m4hjqcfh1t9.svg"
+                                        src: "/files/undraw_wireframing_nxyi_m4hjqcfh1t9.svg"
                                     },
                                     settings: {
                                         margin: {
@@ -337,10 +336,9 @@ export default {
     preview: {
         name: "cms-element-5c2a2a1da0b03c7026ebe52d_m5hjqcfjos6.png",
         size: 50225,
-        src: "http://localhost:9000/files/cms-element-5c2a2a1da0b03c7026ebe52d_m5hjqcfjos6.png",
+        src: "/files/cms-element-5c2a2a1da0b03c7026ebe52d_m5hjqcfjos6.png",
         type: "image/png",
-        width: 1000,
-        height: 240
+        meta: { width: 1000, height: 240 }
     },
     category: "cms-block-category-content"
 };

@@ -42,8 +42,7 @@ export default {
                                         name: "undraw_teaching_f1cm_1dgxjqarr6hu.svg",
                                         type: "image/svg+xml",
                                         size: 27415,
-                                        src:
-                                            "http://localhost:9000/files/undraw_teaching_f1cm_1dgxjqarr6hu.svg",
+                                        src: "/files/undraw_teaching_f1cm_1dgxjqarr6hu.svg",
                                         width: "",
                                         title: "",
                                         alt: "",
@@ -233,8 +232,7 @@ export default {
                                         name: "undraw_meditating_0nae_1dhejqars1z0.svg",
                                         type: "image/svg+xml",
                                         size: 24229,
-                                        src:
-                                            "http://localhost:9000/files/undraw_meditating_0nae_1dhejqars1z0.svg",
+                                        src: "/files/undraw_meditating_0nae_1dhejqars1z0.svg",
                                         width: "",
                                         title: "",
                                         alt: "",
@@ -417,10 +415,9 @@ export default {
     preview: {
         name: "cms-element-5c28e1b24527ee1c69754907_5m0jqb1hnhv.png",
         size: 53184,
-        src: "http://localhost:9000/files/cms-element-5c28e1b24527ee1c69754907_5m0jqb1hnhv.png",
+        src: "/files/cms-element-5c28e1b24527ee1c69754907_5m0jqb1hnhv.png",
         type: "image/png",
-        width: 1000,
-        height: 363
+        meta: { width: 1000, height: 363 }
     },
     category: "cms-block-category-content"
 };

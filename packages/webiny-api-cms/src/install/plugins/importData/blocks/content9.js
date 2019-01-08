@@ -132,8 +132,7 @@ export default {
                                         name: "undraw_user_flow_vr6w_bxbjqb6nqbl.svg",
                                         type: "image/svg+xml",
                                         size: 29770,
-                                        src:
-                                            "http://localhost:9000/files/undraw_user_flow_vr6w_bxbjqb6nqbl.svg",
+                                        src: "/files/undraw_user_flow_vr6w_bxbjqb6nqbl.svg",
                                         width: "250",
                                         title: "",
                                         alt: "",
@@ -171,8 +170,7 @@ export default {
                                         name: "undraw_static_assets_rpm6(1)_bxqjqb6nwmz.svg",
                                         type: "image/svg+xml",
                                         size: 36759,
-                                        src:
-                                            "http://localhost:9000/files/undraw_static_assets_rpm6(1)_bxqjqb6nwmz.svg",
+                                        src: "/files/undraw_static_assets_rpm6(1)_bxqjqb6nwmz.svg",
                                         width: "250",
                                         title: "",
                                         alt: "",
@@ -210,8 +208,7 @@ export default {
                                         name: "undraw_mobile_browsers_lib5_by2jqb6o1ez.svg",
                                         type: "image/svg+xml",
                                         size: 100300,
-                                        src:
-                                            "http://localhost:9000/files/undraw_mobile_browsers_lib5_by2jqb6o1ez.svg",
+                                        src: "/files/undraw_mobile_browsers_lib5_by2jqb6o1ez.svg",
                                         width: "250",
                                         title: "",
                                         alt: "",
@@ -242,10 +239,9 @@ export default {
     preview: {
         name: "cms-element-5c29048aa0b03c3d5f5e9861_c4ejqb6sue0.png",
         size: 85893,
-        src: "http://localhost:9000/files/cms-element-5c29048aa0b03c3d5f5e9861_c4ejqb6sue0.png",
+        src: "/files/cms-element-5c29048aa0b03c3d5f5e9861_c4ejqb6sue0.png",
         type: "image/png",
-        width: 1000,
-        height: 343
+        meta: { width: 1000, height: 343 }
     },
     category: "cms-block-category-content"
 };

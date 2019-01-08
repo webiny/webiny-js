@@ -5,12 +5,7 @@ export default {
     content: {
         data: {
             settings: {
-                background: {
-                    image: {
-                        src: "http://localhost:9000/files/bg1_o7xjq8cvx9o.svg",
-                        position: "center"
-                    }
-                },
+                background: { image: { src: "/files/bg1_o7xjq8cvx9o.svg", position: "center" } },
                 margin: { advanced: true, desktop: { top: 100, bottom: 100 } },
                 width: { value: "1000px" },
                 padding: { mobile: { all: 25, top: 25, right: 25, bottom: 25, left: 25 } },
@@ -177,10 +172,9 @@ export default {
     preview: {
         name: "cms-element-5c27aa6da0b03ccad1fc57c2_1428jq9q1qjn.png",
         size: 219727,
-        src: "http://localhost:9000/files/cms-element-5c27aa6da0b03ccad1fc57c2_1428jq9q1qjn.png",
+        src: "/files/cms-element-5c27aa6da0b03ccad1fc57c2_1428jq9q1qjn.png",
         type: "image/png",
-        width: 1000,
-        height: 597
+        meta: { width: 1000, height: 597 }
     },
     category: "cms-block-category-cta"
 };

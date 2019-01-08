@@ -632,10 +632,9 @@ export default {
     preview: {
         name: "cms-element-5c2a73b8a0b03c881190553d_qvkjqcqrjog.png",
         size: 53723,
-        src: "http://localhost:9000/files/cms-element-5c2a73b8a0b03c881190553d_qvkjqcqrjog.png",
+        src: "/files/cms-element-5c2a73b8a0b03c881190553d_qvkjqcqrjog.png",
         type: "image/png",
-        width: 1000,
-        height: 529
+        meta: { width: 1000, height: 529 }
     },
     category: "cms-block-category-features"
 };
