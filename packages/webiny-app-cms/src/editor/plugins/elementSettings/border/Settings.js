@@ -41,7 +41,6 @@ const Settings = ({ getUpdateValue, getUpdatePreview }: Props) => {
                         updatePreview={getUpdatePreview("width")}
                         min={0}
                         max={20}
-                        discrete
                         step={1}
                     />
                     <Slider
@@ -52,7 +51,6 @@ const Settings = ({ getUpdateValue, getUpdatePreview }: Props) => {
                         updatePreview={getUpdatePreview("radius")}
                         min={0}
                         max={100}
-                        discrete
                         step={1}
                     />
                     <Select

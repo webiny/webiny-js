@@ -106,7 +106,7 @@ export default (): Array<PluginType> => {
                 };
             },
             render({ element }) {
-                return <Image elementId={element.id} />;
+                return <Image element={element} />;
             }
         },
         {

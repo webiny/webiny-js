@@ -23,8 +23,6 @@ export default (): Array<PluginType> => {
                 "cms-element-settings-button",
                 "cms-element-settings-link",
                 "",
-                "cms-element-settings-padding",
-                "cms-element-settings-margin",
                 "cms-element-settings-horizontal-align-flex",
                 "",
                 "cms-element-settings-clone",
