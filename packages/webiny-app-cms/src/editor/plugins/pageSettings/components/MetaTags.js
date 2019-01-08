@@ -24,6 +24,10 @@ const controlButtons = css({
     }
 });
 
+const textStyling = css({
+    color: "var(--mdc-theme-text-secondary-on-background)"
+});
+
 const MetaTags = ({ prefix, value, onChange, Bind, ...other }: Props) => {
     return (
         <DynamicFieldset value={value} onChange={onChange} {...other}>
@@ -31,7 +35,7 @@ const MetaTags = ({ prefix, value, onChange, Bind, ...other }: Props) => {
                 <React.Fragment>
                     {header(() => (
                         <Grid style={{ paddingTop: 0, paddingBottom: 0 }}>
-                            <Cell span={12}>
+                            <Cell span={12} className={textStyling}>
                                 <Typography use={"button"}>Meta tags</Typography>
                             </Cell>
                         </Grid>
@@ -68,7 +72,7 @@ const MetaTags = ({ prefix, value, onChange, Bind, ...other }: Props) => {
                     ))}
                     {empty(() => (
                         <Grid>
-                            <Cell span={12}>
+                            <Cell span={12} className={textStyling}>
                                 <Typography use={"button"}>
                                     To add other meta tags, click{" "}
                                     <ButtonPrimary onClick={actions.add()}>

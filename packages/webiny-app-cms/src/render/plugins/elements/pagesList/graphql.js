@@ -25,6 +25,16 @@ export const loadPages = gql`
                         name
                     }
                 }
+                meta {
+                    from
+                    to
+                    nextPage
+                    previousPage
+                    page
+                    perPage
+                    totalCount
+                    totalPages
+                }
             }
         }
     }

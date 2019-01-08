@@ -1,0 +1,16 @@
+// make images responsive
+img{
+  @include mobile{
+    max-width: 100%;
+  }
+}
+
+.webiny-cms-element-image{
+  img{
+    max-width: 100%;
+  }
+
+  @include mobile{
+    text-align: center !important;
+  }
+}

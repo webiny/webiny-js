@@ -6,4 +6,4 @@ import entities from "./entities";
 import settings from "./settings";
 import graphql from "./graphql";
 
-export default [...general, ...seo, ...social, ...entities, graphql, ...settings];
+export default [general, seo, social, entities, graphql, settings];

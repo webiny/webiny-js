@@ -55,7 +55,9 @@ export default () => {
 
                     return (
                         // eslint-disable-next-line react/jsx-no-bind
-                        <MenuButton onClick={() => setAlign(nextAlign, block.type, onChange, editor)}>
+                        <MenuButton
+                            onClick={() => setAlign(nextAlign, block.type, onChange, editor)}
+                        >
                             {React.createElement(icons[align])}
                         </MenuButton>
                     );
@@ -71,10 +73,10 @@ export default () => {
                         const { attributes, children, node, editor } = props;
                         let { type } = node;
 
-                        const { styles } = editor.props.theme;
+                        const { typography } = editor.props.theme;
 
-                        if (styles.hasOwnProperty(type) && styles[type].component) {
-                            const { component: Node, className = null } = styles[type];
+                        if (typography.hasOwnProperty(type) && typography[type].component) {
+                            const { component: Node, className = null } = typography[type];
 
                             let nodeProps = {
                                 ...attributes,

@@ -7,8 +7,8 @@ const Handle = pure(
     styled("div")(({ isResizing }) => ({
         position: "absolute",
         left: -5,
-        top: 25,
-        height: "calc(100% - 50px)",
+        top: "10%",
+        height: "80%",
         minHeight: 25,
         translate: "width 0.5s",
         zIndex: 3,

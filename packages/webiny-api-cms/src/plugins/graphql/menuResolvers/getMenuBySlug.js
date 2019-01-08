@@ -1,6 +1,7 @@
 // @flow
-import type { Entity } from "webiny-entity";
+import { Entity } from "webiny-entity";
 import { Response, ErrorResponse } from "webiny-api/graphql/responses";
+import prepareMenuItems from "./prepareMenuItems";
 
 type EntityFetcher = (context: Object) => Class<Entity>;
 
@@ -19,5 +20,10 @@ export default (entityFetcher: EntityFetcher) => async (
             message: "Menu not found."
         });
     }
-    return new Response(entity);
+
+    return new Response({
+        id: entity.id,
+        title: entity.title,
+        items: prepareMenuItems({ entity, context })
+    });
 };

@@ -1,15 +1,36 @@
 // @flow
 import { ApolloServer } from "apollo-server-lambda";
 import { applyMiddleware } from "graphql-middleware";
+import type { GraphQLMiddlewarePluginType } from "webiny-api/types";
 import { prepareSchema, createGraphqlRunner } from "../graphql/schema";
 import setup from "./setup";
-import authenticate from "./authenticate";
+import { getPlugins } from "webiny-plugins";
 
-const setupHandler = async (config: Object) => {
+const createApolloHandler = async (config: Object) => {
     await setup(config);
     let { schema, context } = prepareSchema();
 
-    schema = config.middleware ? applyMiddleware(schema, ...config.middleware) : schema;
+    const registeredMiddleware: Array<GraphQLMiddlewarePluginType> = [];
+
+    const middlewarePlugins = getPlugins("graphql-middleware");
+    for (let i = 0; i < middlewarePlugins.length; i++) {
+        let plugin = middlewarePlugins[i];
+        const middleware =
+            typeof plugin.middleware === "function"
+                ? await plugin.middleware({ context, config })
+                : plugin.middleware;
+        if (Array.isArray(middleware)) {
+            registeredMiddleware.push(...middleware);
+        } else {
+            registeredMiddleware.push(middleware);
+        }
+    }
+
+    config.middleware && registeredMiddleware.push(config.middleware);
+
+    if (registeredMiddleware.length) {
+        schema = applyMiddleware(schema, ...registeredMiddleware);
+    }
 
     const apollo = new ApolloServer({
         schema,
@@ -60,7 +81,7 @@ export const createHandler = (config: Object = {}) => {
         const response = await new Promise(async (resolve, reject) => {
             if (!handler) {
                 try {
-                    handler = await setupHandler(config);
+                    handler = await createApolloHandler(config);
                 } catch (e) {
                     if (process.env.NODE_ENV === "development") {
                         console.log(e); // eslint-disable-line
@@ -69,10 +90,14 @@ export const createHandler = (config: Object = {}) => {
                 }
             }
 
-            try {
-                await authenticate(config, event, context);
-            } catch (error) {
-                return resolve(getErrorResponse(error));
+            const securityPlugins = getPlugins("security");
+            for (let i = 0; i < securityPlugins.length; i++) {
+                let securityPlugin = securityPlugins[i];
+                try {
+                    await securityPlugin.authenticate(config, event, context);
+                } catch (e) {
+                    return resolve(getErrorResponse(e));
+                }
             }
 
             handler(event, context, (error, data) => {

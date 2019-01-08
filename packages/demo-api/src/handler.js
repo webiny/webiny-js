@@ -1,9 +1,11 @@
 // @flow
-import { addPlugin } from "webiny-plugins";
+import "source-map-support/register";
+
+import { registerPlugins } from "webiny-plugins";
 import { createHandler } from "webiny-api";
 import config from "./configs";
 import plugins from "./plugins";
 
-addPlugin(...plugins);
+registerPlugins(plugins);
 
 export const api = createHandler(config);

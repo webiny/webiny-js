@@ -105,9 +105,9 @@ class Menu extends React.Component<*, *> {
     }
 
     render() {
-        const { active, plugin, togglePlugin } = this.props;
+        const { active, plugin, options, togglePlugin } = this.props;
 
-        const content = plugin.renderMenu();
+        const content = plugin.renderMenu({ options });
 
         return (
             <Transition in={active} timeout={125} appear={true} unmountOnExit={true}>

@@ -1,15 +1,13 @@
 // @flow
 import React from "react";
 import { createValue } from "webiny-app-cms/editor/components/Slate";
-import type { ElementPluginType } from "webiny-app-cms/types";
+import type { PluginType } from "webiny-app-cms/types";
 import { ReactComponent as ButtonIcon } from "./round-toggle_on-24px.svg";
-import { ReactComponent as LinkIcon } from "./round-link-24px.svg";
 import ButtonSettings from "./ButtonSettings";
-import LinkSettings from "./LinkSettings";
 import Button from "./Button";
 import Action from "../../elementSettings/components/Action";
 
-export default (): ElementPluginType => {
+export default (): Array<PluginType> => {
     return [
         {
             name: "cms-element-button",
@@ -23,15 +21,9 @@ export default (): ElementPluginType => {
             },
             settings: [
                 "cms-element-settings-button",
-                "cms-element-settings-icon",
                 "cms-element-settings-link",
                 "",
-                "cms-element-settings-background",
-                "cms-element-settings-border",
-                "cms-element-settings-shadow",
-                "",
-                "cms-element-settings-padding",
-                "cms-element-settings-margin",
+                "cms-element-settings-horizontal-align-flex",
                 "",
                 "cms-element-settings-clone",
                 "cms-element-settings-delete",
@@ -42,7 +34,19 @@ export default (): ElementPluginType => {
                 return {
                     type: "cms-element-button",
                     elements: [],
-                    data: { text: createValue("Click me", "button") },
+                    data: {
+                        text: createValue("Click me", "button"),
+                        settings: {
+                            margin: {
+                                desktop: { all: 0 },
+                                mobile: { all: 0 }
+                            },
+                            padding: {
+                                desktop: { all: 0 },
+                                mobile: { all: 0 }
+                            }
+                        }
+                    },
                     ...options
                 };
             },
@@ -58,16 +62,6 @@ export default (): ElementPluginType => {
             },
             renderMenu() {
                 return <ButtonSettings />;
-            }
-        },
-        {
-            name: "cms-element-settings-link",
-            type: "cms-element-settings",
-            renderAction() {
-                return <Action plugin={this.name} tooltip={"Link"} icon={<LinkIcon />} />;
-            },
-            renderMenu() {
-                return <LinkSettings />;
             }
         }
     ];

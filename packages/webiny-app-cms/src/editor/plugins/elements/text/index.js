@@ -39,16 +39,24 @@ export default (): ElementPluginType => {
             ""
         ],
         target: ["cms-element-column", "cms-element-row", "cms-element-list-item"],
-        create({ content = {}, ...options }) {
+        create({ content = {}, ...options }: Object) {
             const previewText = content.text || loremIpsum(content.lipsum || defaultLipsum);
 
             return {
                 type: "cms-element-text",
                 elements: [],
-                data: { text: createValue(previewText, content.typography || "paragraph") },
-                settings: {
-                    style: {
-                        padding: "20px"
+                data: {
+                    text: createValue(previewText, content.typography || "paragraph"),
+                    settings: {
+                        margin: {
+                            mobile: { top: 0, left: 0, right: 0, bottom: 15 },
+                            desktop: { top: 0, left: 0, right: 0, bottom: 25 },
+                            advanced: true
+                        },
+                        padding: {
+                            desktop: { all: 0 },
+                            mobile: { all: 0 }
+                        }
                     }
                 },
                 ...options

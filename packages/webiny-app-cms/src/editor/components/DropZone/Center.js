@@ -48,9 +48,11 @@ const Center = pure(({ type, onDrop, children, active, highlight }: Props) => {
     return (
         <Droppable onDrop={onDrop} type={type} isVisible={isVisible}>
             {({ isOver, isDroppable }) => (
-                <Container isOver={(isOver && isDroppable) || active} highlight={highlight}>
-                    <Add>{children}</Add>
-                </Container>
+                <div style={{ width: "100%", height: "100%" }}>
+                    <Container isOver={(isOver && isDroppable) || active} highlight={highlight}>
+                        <Add>{children}</Add>
+                    </Container>
+                </div>
             )}
         </Droppable>
     );

@@ -8,7 +8,7 @@ export const List = styled("div")({
     left: 0,
     width: "100%",
     height: "100%",
-    overflow: "scroll",
+    //overflow: "scroll",
     backgroundColor: "#fff",
     zIndex: 10000
 });
@@ -45,7 +45,7 @@ export const searchIcon = css({
 
 export const wrapper = css({
     height: "100vh",
-    overflow: "scroll",
+    //overflow: "scroll",
     backgroundColor: "var(--mdc-theme-background)"
 });
 
@@ -54,7 +54,9 @@ export const BlockList = styled("div")({
     padding: 50,
     justifyContent: "space-around",
     maxWidth: 1200,
-    margin: "0 auto"
+    margin: "0 auto",
+    flexWrap: "wrap",
+    color: "var(--mdc-theme-text-secondary-on-background)"
 });
 
 export const BlockPreview = styled("div")({
@@ -64,18 +66,20 @@ export const BlockPreview = styled("div")({
     height: "100%",
     alignItems: "center",
     justifyContent: "center",
-    position: "relative"
+    position: "relative",
+    backgroundColor: "#fff"
 });
 
-export const Block = styled("div")({
+export const blockStyle = css({
     position: "relative",
-    width: 335,
-    height: 185,
+    width: "100%",
+    maxWidth: 800,
     boxSizing: "border-box",
     overflow: "hidden",
     border: "1px solid var(--mdc-theme-on-background)",
     backgroundColor: "var(--mdc-theme-surface)",
-    padding: 15
+    padding: "15px 15px 35px 15px",
+    marginBottom: 25
 });
 
 export const Backdrop = styled("div")({
@@ -94,6 +98,28 @@ export const AddBlock = styled("div")({
     width: 300,
     margin: 5,
     textAlign: "center"
+});
+
+export const DeleteBlock = styled("div")({
+    margin: 5,
+    textAlign: "center",
+    position: "absolute",
+    top: 0,
+    right: 0,
+    zIndex: 100,
+    cursor: "pointer",
+    color: "white"
+});
+
+export const EditBlock = styled("div")({
+    margin: 5,
+    textAlign: "center",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    zIndex: 100,
+    cursor: "pointer",
+    color: "white"
 });
 
 export const Overlay = styled("div")({
@@ -116,4 +142,10 @@ export const Overlay = styled("div")({
             display: "block"
         }
     }
+});
+
+export const Title = styled("div")({
+    position: "absolute",
+    left: 15,
+    bottom: 0
 });

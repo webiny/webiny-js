@@ -1,9 +1,12 @@
 // @flow
 import * as React from "react";
+import { connect } from "react-redux";
+import { get } from "lodash";
 import { pure } from "recompose";
 import { Typography } from "webiny-ui/Typography";
-import { Cell } from "webiny-ui/Grid";
-import { Slider } from "webiny-ui/Slider";
+import { Grid, Cell } from "webiny-ui/Grid";
+import { Slider as SliderCmp } from "webiny-ui/Slider";
+import { getActiveElement } from "webiny-app-cms/editor/selectors";
 
 type Props = {
     label: string,
@@ -15,15 +18,15 @@ type Props = {
     step: number
 };
 
-export default pure(
+const Slider = pure(
     ({ label, value, updatePreview, updateValue, min = 0, max = 100, step = 1 }: Props) => {
         return (
-            <React.Fragment>
+            <Grid>
                 <Cell span={4}>
                     <Typography use={"overline"}>{label}</Typography>
                 </Cell>
                 <Cell span={8}>
-                    <Slider
+                    <SliderCmp
                         value={value}
                         onChange={updateValue}
                         onInput={updatePreview}
@@ -33,7 +36,13 @@ export default pure(
                         step={step}
                     />
                 </Cell>
-            </React.Fragment>
+            </Grid>
         );
     }
 );
+
+export default connect((state, { valueKey }: Object) => {
+    return {
+        value: get(getActiveElement(state), valueKey, 0)
+    };
+})(Slider);

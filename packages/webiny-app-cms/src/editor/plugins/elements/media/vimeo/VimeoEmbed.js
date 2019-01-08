@@ -1,3 +1,4 @@
+//@flow
 import * as React from "react";
 import { css } from "emotion";
 import { get } from "dot-prop-immutable";
@@ -34,7 +35,7 @@ const scaleableVideo = css({
     }
 });
 
-const VimeoEmbed = props => {
+const VimeoEmbed = (props: Object) => {
     const { element, data } = props;
 
     if (data && data.loading) {
@@ -42,10 +43,14 @@ const VimeoEmbed = props => {
     }
 
     return (
-        <div className={outerWrapper}>
+        <div
+            className={
+                "webiny-cms-base-element-style webiny-cms-element-embed-youtube " + outerWrapper
+            }
+        >
             <div className={innerWrapper}>
                 <div
-                    id={ element.id}
+                    id={element.id}
                     className={[
                         scaleableVideo,
                         "cms-editor-dragging--disabled",

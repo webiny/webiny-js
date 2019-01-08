@@ -20,9 +20,9 @@ const NO_404_PAGE_DEFAULT =
 const NO_ERROR_PAGE_DEFAULT =
     "Could not fetch error page nor a default page was provided (set via CmsProvider).";
 
-const Page = ({ cms, match: { url } }: Props) => {
+const Page = ({ cms, match: { url, query } }: Props) => {
     return (
-        <Query {...buildQueryProps({ url, defaultPages })}>
+        <Query {...buildQueryProps({ url, query, defaultPages })}>
             {({ data, error: gqlError, loading }) => {
                 if (loading) {
                     return <Loader />;

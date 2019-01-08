@@ -19,6 +19,7 @@ export default (): ElementPluginType => {
         type: "cms-element",
         settings: [
             "cms-element-settings-background",
+            "cms-element-settings-animation",
             "",
             "cms-element-settings-border",
             "cms-element-settings-shadow",
@@ -26,6 +27,9 @@ export default (): ElementPluginType => {
             "cms-element-settings-padding",
             "cms-element-settings-margin",
             "cms-element-settings-width",
+            "cms-element-settings-height",
+            "cms-element-settings-horizontal-align-flex",
+            "cms-element-settings-vertical-align",
             "",
             "cms-element-settings-clone",
             "cms-element-settings-delete",
@@ -39,6 +43,20 @@ export default (): ElementPluginType => {
                         elements: [createColumn({ data: { width: 100 } })]
                     })
                 ],
+                data: {
+                    settings: {
+                        width: { value: "1000px" },
+                        margin: {
+                            mobile: { top: 15, left: 15, right: 15, bottom: 15 },
+                            desktop: { top: 25, left: 0, right: 0, bottom: 25 },
+                            advanced: true
+                        },
+                        padding: {
+                            mobile: { all: 10 },
+                            desktop: { all: 0 }
+                        }
+                    }
+                },
                 ...options
             };
         },

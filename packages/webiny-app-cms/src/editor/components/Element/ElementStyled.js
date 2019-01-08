@@ -10,9 +10,9 @@ export const typeStyle = css({
         position: "absolute",
         cursor: "pointer",
         display: "flex",
-        top: -20,
+        top: 0, //-22,
         boxSizing: "border-box",
-        right: 0,
+        right: 0, //-2,
         fontSize: 10,
         padding: 0,
         color: "#fff",
@@ -61,8 +61,9 @@ export const ElementContainer = pure(
                 content: "''",
                 position: "absolute",
                 zIndex: -1,
-                top: 0,
-                left: 0,
+                padding: 2,
+                top: -2,
+                left: -2,
                 width: "100%",
                 height: "100%",
                 boxShadow: highlight ? "inset 0px 0px 0px 2px " + color : "none",
@@ -78,15 +79,17 @@ export const ElementContainer = pure(
                 }
             },
             "> .innerWrapper": {
-                width: "100%"
+                width: "100%",
+                height: "100%", // note "auto" fixes the odd hover bug which resizes the column, but causes a bug with column vertical align
+                boxSizing: "border-box"
             },
             "> .innerWrapper > .type": {
                 display: highlight ? "block" : "none",
                 width: !active ? "100%" : "100px",
                 height: !active ? "100%" : "25px",
-                [!active ? "left" : "right"]: 0,
+                [!active ? "left" : "right"]: -2,
                 position: "absolute",
-                top: 0,
+                top: -22, //0,
                 zIndex: 10,
                 transition: "background-color 0.2s",
                 ".background": {
@@ -97,7 +100,7 @@ export const ElementContainer = pure(
                     width: "100%",
                     height: "100%",
                     cursor: "pointer",
-                    top: 0,
+                    top: 22,
                     left: 0,
                     transition: "background-color 0.2s"
                 },

@@ -4,12 +4,14 @@ import { ReactComponent as IconSvg } from "./round-star_border-24px.svg";
 import IconSettings from "./IconSettings";
 import styled from "react-emotion";
 import Icon from "./Icon";
+import { getSvg } from "./utils";
 import Action from "./../../elementSettings/components/Action";
 
 export default () => {
     const PreviewBox = styled("div")({
         textAlign: "center",
         height: 50,
+        color: "var(--mdc-theme-text-primary-on-background)",
         svg: {
             height: 50,
             width: 50
@@ -36,6 +38,10 @@ export default () => {
                 "",
                 "cms-element-settings-padding",
                 "cms-element-settings-margin",
+                [
+                    "cms-element-settings-horizontal-align",
+                    { alignments: ["left", "center", "right"] }
+                ],
                 "",
                 "cms-element-settings-clone",
                 "cms-element-settings-delete",
@@ -46,7 +52,24 @@ export default () => {
                 return {
                     type: "cms-element-icon",
                     elements: [],
-                    data: {},
+                    data: {
+                        icon: {
+                            id: ["far", "star"],
+                            svg: getSvg(["far", "star"]),
+                            width: 50
+                        },
+                        settings: {
+                            horizontalAlign: "center",
+                            margin: {
+                                desktop: { all: 0 },
+                                mobile: { all: 0 }
+                            },
+                            padding: {
+                                desktop: { all: 0 },
+                                mobile: { all: 0 }
+                            }
+                        }
+                    },
                     ...options
                 };
             },

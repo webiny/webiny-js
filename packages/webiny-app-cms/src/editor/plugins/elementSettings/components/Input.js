@@ -1,28 +1,40 @@
 // @flow
 import * as React from "react";
+import { connect } from "react-redux";
+import { get } from "lodash";
 import { pure } from "recompose";
 import { Typography } from "webiny-ui/Typography";
-import { Cell } from "webiny-ui/Grid";
-import { Input } from "webiny-ui/Input";
+import { Grid, Cell } from "webiny-ui/Grid";
+import { Input as InputCmp } from "webiny-ui/Input";
 import { InputContainer } from "./StyledComponents";
+import { getActiveElement } from "webiny-app-cms/editor/selectors";
 
 type Props = {
     label: string,
-    value: string,
-    updateValue: Function
+    placeholder: string,
+    value?: string | number,
+    valueKey?: string,
+    updateValue: Function,
+    inputWidth?: number
 };
 
-export default pure(({ label, value, updateValue }: Props) => {
+const Input = pure(({ label, value, placeholder, updateValue, inputWidth }: Props) => {
     return (
-        <React.Fragment>
+        <Grid>
             <Cell span={4}>
                 <Typography use={"overline"}>{label}</Typography>
             </Cell>
             <Cell span={8}>
-                <InputContainer>
-                    <Input value={value} onChange={updateValue} />
+                <InputContainer width={inputWidth}>
+                    <InputCmp placeholder={placeholder} value={value} onChange={updateValue} />
                 </InputContainer>
             </Cell>
-        </React.Fragment>
+        </Grid>
     );
 });
+
+export default connect((state, { value, valueKey, defaultValue }: Object) => {
+    return {
+        value: valueKey ? get(getActiveElement(state), valueKey, defaultValue) : value
+    };
+})(Input);

@@ -3,14 +3,14 @@ import * as React from "react";
 import { connect } from "webiny-app-cms/editor/redux";
 import { compose, withState, withHandlers, lifecycle, shouldUpdate } from "recompose";
 import { graphql } from "react-apollo";
-import { isEqual, cloneDeep } from "lodash";
+import { cloneDeep } from "lodash";
 import { getPlugin } from "webiny-plugins";
 import SaveDialog from "./SaveDialog";
-import { withSnackbar } from "webiny-app-admin/components";
+import { withSnackbar } from "webiny-admin/components";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
 import { getActiveElementId, getElementWithChildren } from "webiny-app-cms/editor/selectors";
 import { createElementPlugin, createBlockPlugin } from "webiny-app-cms/admin/components";
-import { createElement } from "webiny-app-cms/admin/graphql/pages";
+import { createElement, updateElement } from "webiny-app-cms/admin/graphql/pages";
 import { withFileUpload } from "webiny-app/components";
 
 type Props = {
@@ -30,6 +30,9 @@ const SaveAction = ({
     onSubmit,
     element
 }: Props) => {
+    if (!element) {
+        return null;
+    }
     const plugin = getPlugin(element.type);
     if (!plugin) {
         return null;
@@ -71,10 +74,7 @@ export default compose(
     connect(state => ({ element: getElementWithChildren(state, getActiveElementId(state)) })),
     withState("isDialogOpened", "setOpenDialog", false),
     shouldUpdate((props, nextProps) => {
-        return (
-            props.isDialogOpened !== nextProps.isDialogOpened ||
-            !isEqual(props.element, nextProps.element)
-        );
+        return props.isDialogOpened !== nextProps.isDialogOpened;
     }),
     withFileUpload(),
     withKeyHandler(),
@@ -83,14 +83,33 @@ export default compose(
         hideDialog: ({ setOpenDialog }) => () => setOpenDialog(false)
     }),
     graphql(createElement, { name: "createElement" }),
+    graphql(updateElement, { name: "updateElement" }),
     withSnackbar(),
     withHandlers({
-        onSubmit: ({ element, hideDialog, createElement, showSnackbar, uploadFile }) => async (
-            formData: Object
-        ) => {
-            formData.preview = await uploadFile({ src: formData.preview });
+        onSubmit: ({
+            element,
+            hideDialog,
+            createElement,
+            updateElement,
+            showSnackbar,
+            uploadFile
+        }) => async (formData: Object) => {
+            formData.preview = await uploadFile({
+                src: formData.preview,
+                name: "cms-element-" + element.source
+            });
             formData.content = removeIdsAndPaths(cloneDeep(element));
-            const { data: res } = await createElement({ variables: { data: formData } });
+
+            let mutation = formData.overwrite ? updateElement : createElement;
+            const { data: res } = await mutation({
+                variables: formData.overwrite
+                    ? {
+                          id: element.id,
+                          data: { content: formData.content, preview: formData.preview }
+                      }
+                    : { data: formData }
+            });
+
             hideDialog();
             const { data } = res.cms.element;
             if (data.type === "block") {

@@ -11,14 +11,26 @@ import { withKeyHandler } from "webiny-app-cms/editor/components";
 import Menu from "./components/Menu";
 import { ReactComponent as NavigateBeforeIcon } from "webiny-app-cms/editor/assets/icons/navigate_before.svg";
 
+const divider = "cms-element-settings-divider";
+
 const getElementActions = (plugin: Object) => {
     if (!plugin.settings) {
         return [];
     }
 
-    const actions = plugin.settings.map(name => getPlugin(name || "cms-element-settings-divider"));
+    const actions = plugin.settings.map(pl => {
+        if (typeof pl === "string") {
+            return { plugin: getPlugin(pl || divider), options: {} };
+        }
 
-    return [...actions, getPlugin("cms-element-settings-save")].filter(pl => pl);
+        if (Array.isArray(pl)) {
+            return { plugin: getPlugin(pl[0] || divider), options: pl[1] };
+        }
+
+        return null;
+    });
+
+    return [...actions, { plugin: getPlugin("cms-element-settings-save") }].filter(pl => pl);
 };
 
 const ElementSettingsBar = pure(({ elementType, deactivateElement }) => {
@@ -47,12 +59,12 @@ const ElementSettingsBar = pure(({ elementType, deactivateElement }) => {
                     Each `element` can have different `element-settings` plugins.
                     If no `settings` array is defined in an `element` plugin, all settings are shown.
                     */}
-                    {actions.map((plugin, index) => {
+                    {actions.map(({ plugin, options }, index) => {
                         return (
                             <div key={plugin.name + "-" + index} style={{ position: "relative" }}>
-                                {plugin.renderAction({})}
+                                {plugin.renderAction({ options })}
                                 {typeof plugin.renderMenu === "function" && (
-                                    <Menu plugin={plugin} />
+                                    <Menu plugin={plugin} options={options} />
                                 )}
                             </div>
                         );

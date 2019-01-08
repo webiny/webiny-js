@@ -1,26 +1,31 @@
 // @flow
 import React from "react";
+import { get } from "lodash";
 import { css } from "emotion";
-import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
+import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 
 const center = css({ textAlign: "center" });
 
-const Icon = ({ theme, element }: Object) => {
-    const svg = element.data.icon || null;
+const Icon = ({ element }: Object) => {
+    const { svg = null } = get(element, "data.icon", {});
 
     if (!svg) {
         return null;
     }
 
     return (
-        <ElementStyle {...getElementStyleProps(element)}>
-            {({ getAllClasses }) => (
+        <ElementRoot element={element}>
+            {({ getAllClasses, elementStyle }) => (
                 <div
-                    className={getAllClasses("webiny-cms-element-icon", center)}
+                    style={elementStyle}
+                    className={getAllClasses(
+                        "webiny-cms-base-element-style webiny-cms-element-icon",
+                        center
+                    )}
                     dangerouslySetInnerHTML={{ __html: svg }}
                 />
             )}
-        </ElementStyle>
+        </ElementRoot>
     );
 };
 

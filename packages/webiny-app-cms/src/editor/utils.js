@@ -1,10 +1,12 @@
 // @flow
 import shortid from "shortid";
+import invariant from "invariant";
 import { set } from "dot-prop-immutable";
 import { isPlainObject, omit } from "lodash";
 import { getPlugin } from "webiny-plugins";
+import type { ElementType } from "webiny-app-cms/types";
 
-export const updateChildPaths = element => {
+export const updateChildPaths = (element: ElementType) => {
     if (!element.id) {
         element.id = shortid.generate();
     }
@@ -31,7 +33,11 @@ export const updateChildPaths = element => {
     }
 };
 
-export const addElementToParent = (element, parent, position) => {
+export const addElementToParent = (
+    element: ElementType,
+    parent: ElementType,
+    position: ?number
+) => {
     let newParent;
     if (position === null) {
         newParent = set(parent, "elements", [...parent.elements, element]);
@@ -47,32 +53,33 @@ export const addElementToParent = (element, parent, position) => {
     return newParent;
 };
 
-export const createBlock = (options = {}, parent = null) => {
+export const createBlock = (options: Object = {}, parent: ?ElementType) => {
     return createElement("cms-element-block", options, parent);
 };
 
-export const createRow = (options = {}, parent = null) => {
+export const createRow = (options: Object = {}, parent: ?ElementType) => {
     return createElement("cms-element-row", options, parent);
 };
 
-export const createColumn = (options = {}, parent = null) => {
+export const createColumn = (options: Object = {}, parent: ?ElementType) => {
     return createElement("cms-element-column", options, parent);
 };
 
-export const createElement = (type, options = {}, parent = null) => {
+export const createElement = (type: string, options: Object = {}, parent: ?ElementType) => {
     const plugin = getPlugin(type);
+
+    invariant(plugin, `Missing element plugin "${type}"!`);
 
     return {
         id: shortid.generate(),
         data: {},
-        settings: {},
         elements: [],
         path: "",
         ...plugin.create(options, parent)
     };
 };
 
-export const cloneElement = element => {
+export const cloneElement = (element: ElementType) => {
     const clone = omit(element, ["id", "path"]);
 
     clone.elements = clone.elements.map(el => cloneElement(el));

@@ -1,12 +1,8 @@
-@import "../variables";
-
 .webiny-cms-element-button{
   display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-  margin-right: 0;
-  margin-left: 0;
-  padding: 14px 20px;
+  align-items: center !important;
+  justify-content: center;
+  padding: 14px 20px !important;
   vertical-align: top;
   text-align: center;
   font-size: 14px;
@@ -22,9 +18,16 @@
   box-sizing: border-box;
   outline: none;
   border: none;
-  width: 100%;
+  min-width: 100px;
+  width: auto;
   background-color: $webiny-cms-theme-background;
+  font-family: unquote($webiny-cms-theme-typography-primary-font-family);
   color: $webiny-cms-theme-on-background;
+  >span{
+    display: block;
+    font-size: 1px;
+    line-height: 100%;
+  }
   &:hover{
     box-shadow: 0 7px 14px rgba(50,50,93,.1), 0 3px 6px rgba(0,0,0,.08);
     transform: translateY(-1px);
@@ -40,18 +43,64 @@
     background-color: $webiny-cms-theme-secondary;
     color: $webiny-cms-theme-on-secondary;
   }
+  &--outline-primary{
+    border: 2px solid $webiny-cms-theme-primary;
+    color: $webiny-cms-theme-primary;
+    padding: 10px 16px !important;
+    background-color: transparent;
+  }
+  &--outline-secondary{
+    border: 2px solid $webiny-cms-theme-secondary;
+    color: $webiny-cms-theme-secondary;
+    padding: 10px 16px !important;
+    background-color: transparent;
+  }
+  &--simple{
+    background-color: transparent;
+    color: $webiny-cms-theme-primary;
+    padding: 0 !important;
+    min-width: 0;
+    &:hover{
+      box-shadow: none;
+      transform: none;
+      text-decoration: underline;
+    }
+  }
   &__icon{
     &--left{
       flex-direction: row;
+      svg{
+        margin-right: 5px;
+      }
     }
     &--right{
       flex-direction: row-reverse;
+      svg{
+        margin-left: 5px;
+      }
     }
     &--top{
       flex-direction: column;
+      svg{
+        margin-bottom: 5px;
+      }
     }
     &--bottom{
       flex-direction: column-reverse;
+      svg{
+        margin-top: 5px;
+      }
     }
+  }
+  > div {
+    // this is a fix for the screen shot tool which changes the font and then breaks button text into multiple lines
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow: hidden !important;
+  }
+
+  // force center align on mobile
+  @include mobile{
+    margin: 20px auto !important;
   }
 }

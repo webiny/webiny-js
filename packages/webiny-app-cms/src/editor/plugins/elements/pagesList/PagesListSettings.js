@@ -15,19 +15,19 @@ const PagesListSettings = ({ cms: { theme }, Bind }: Object) => {
         <React.Fragment>
             <Grid>
                 <Cell span={6}>
-                    <Bind name={"settings.category"}>
+                    <Bind name={"data.category"}>
                         <CategoriesAutoComplete label="Category" />
                     </Bind>
                 </Cell>
                 <Cell span={6}>
-                    <Bind name={"settings.limit"} validators={["required", "numeric"]}>
+                    <Bind name={"data.limit"} validators={["required", "numeric"]}>
                         <Input label={"Number of pages"} />
                     </Bind>
                 </Cell>
             </Grid>
             <Grid>
                 <Cell span={6}>
-                    <Bind name={"settings.sortBy"} defaultValue={"publishedOn"}>
+                    <Bind name={"data.sortBy"} defaultValue={"publishedOn"}>
                         <Select label={"Sort by"}>
                             <option value={"publishedOn"}>Publishing date</option>
                             <option value={"title"}>Title</option>
@@ -35,7 +35,7 @@ const PagesListSettings = ({ cms: { theme }, Bind }: Object) => {
                     </Bind>
                 </Cell>
                 <Cell span={6}>
-                    <Bind name={"settings.sortDirection"} defaultValue={-1}>
+                    <Bind name={"data.sortDirection"} defaultValue={-1}>
                         <Select label={"Sort direction"}>
                             <option value={-1}>Descending</option>
                             <option value={1}>Ascending</option>
@@ -46,7 +46,7 @@ const PagesListSettings = ({ cms: { theme }, Bind }: Object) => {
 
             <Grid>
                 <Cell span={6}>
-                    <Bind name="settings.tags">
+                    <Bind name="data.tags">
                         <SimpleTagsMultiAutoComplete
                             label="Filter by tags"
                             description="Enter tags to filter pages"
@@ -54,7 +54,7 @@ const PagesListSettings = ({ cms: { theme }, Bind }: Object) => {
                     </Bind>
                 </Cell>
                 <Cell span={6}>
-                    <Bind name={"settings.tagsRule"} defaultValue={"ALL"}>
+                    <Bind name={"data.tagsRule"} defaultValue={"ALL"}>
                         <Select label={"Filter by tags rule"}>
                             <option value={"ALL"}>Page must include all tags</option>
                             <option value={"ANY"}>Page must include any of the tags</option>
@@ -65,7 +65,7 @@ const PagesListSettings = ({ cms: { theme }, Bind }: Object) => {
             <Grid>
                 <Cell span={12}>
                     <Bind
-                        name={"settings.component"}
+                        name={"data.component"}
                         defaultValue={theme.elements.pagesList.components[0].name}
                     >
                         <Select
@@ -83,8 +83,8 @@ const PagesListSettings = ({ cms: { theme }, Bind }: Object) => {
             </Grid>
             <Grid>
                 <Cell span={12} style={{ overflowY: "scroll" }}>
-                    <Bind name={"settings"}>
-                        {({ value }) => <PagesList settings={value} theme={theme} />}
+                    <Bind name={"data"}>
+                        {({ value }) => <PagesList data={value} theme={theme} />}
                     </Bind>
                 </Cell>
             </Grid>

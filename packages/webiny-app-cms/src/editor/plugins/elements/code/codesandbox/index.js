@@ -5,7 +5,7 @@ import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ReactComponent as CodeIcon } from "./../../../elementGroups/code/code.svg";
-import type { ElementPluginType } from "webiny-app-cms/types";
+import type { PluginType } from "webiny-app-cms/types";
 import {
     createEmbedPlugin,
     createEmbedSettingsPlugin
@@ -22,7 +22,7 @@ const PreviewBox = styled("div")({
     }
 });
 
-export default (): Array<ElementPluginType> => [
+export default (): Array<PluginType> => [
     createEmbedPlugin({
         type: "codesandbox",
         toolbar: {
@@ -50,7 +50,7 @@ export default (): Array<ElementPluginType> => [
                 <Tab icon={<CodeIcon />} label="CodeSandbox">
                     <Grid>
                         <Cell span={12}>
-                            <Bind name={"data.source.url"} validators={["required", "url"]}>
+                            <Bind name={"source.url"} validators={["required", "url"]}>
                                 <Input
                                     label={"CodeSandbox URL"}
                                     description={"Enter a CodeSandbox URL"}

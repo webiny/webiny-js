@@ -3,9 +3,9 @@ import * as React from "react";
 import { renderPlugins } from "webiny-app/plugins";
 import type { CmsPageDetailsPluginType, WithPageDetailsProps } from "webiny-app-cms/types";
 import { Tab } from "webiny-ui/Tabs";
-import RenderElement from "webiny-app-cms/render/components/Element";
 import styled from "react-emotion";
 import { Elevation } from "webiny-ui/Elevation";
+import PagePreview from "./PagePreview";
 
 const RenderBlock = styled("div")({
     position: "relative",
@@ -14,12 +14,6 @@ const RenderBlock = styled("div")({
     height: "100%",
     overflow: "scroll",
     padding: 25
-});
-
-const PageInnerWrapper = styled("div")({
-    overflow: "scroll",
-    height: "calc(100vh - 265px)",
-    position: "relative"
 });
 
 export default ([
@@ -44,11 +38,7 @@ export default ([
         name: "cms-page-details-revision-render",
         type: "cms-page-details-revision-content-preview",
         render({ pageDetails }: WithPageDetailsProps) {
-            return (
-                <PageInnerWrapper>
-                    <RenderElement element={pageDetails.page.content} />
-                </PageInnerWrapper>
-            );
+            return <PagePreview pageDetails={pageDetails} />;
         }
     }
 ]: Array<CmsPageDetailsPluginType>);

@@ -6,7 +6,8 @@ import preview from "./preview.png";
 export default {
     name: "cms-block-empty",
     type: "cms-block",
-    keywords: ["*"],
+    category: "cms-block-category-general",
+    title: "Empty block",
     create(options: Object = {}) {
         return createBlock({
             ...options,
@@ -17,7 +18,12 @@ export default {
             ]
         });
     },
+    image: {
+        width: 500,
+        height: 73,
+        aspectRatio: 500 / 73
+    },
     preview() {
-        return <img src={preview} alt={"Empty block"}/>;
+        return <img src={preview} alt={"Empty block"} />;
     }
 };

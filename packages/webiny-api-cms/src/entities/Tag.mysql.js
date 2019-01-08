@@ -1,5 +1,5 @@
 // @flow
-import MySQLTable from "../install/tables/mysqlTable";
+import { MySQLTable } from "webiny-api";
 
 class TagTable extends MySQLTable {
     constructor() {

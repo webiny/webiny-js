@@ -1,9 +1,10 @@
 // @flow
 import { type PluginType } from "webiny-plugins/types";
+
 export type InstallPluginType = PluginType & {
     meta: {
         name: string,
-        description: name
+        description: string
     },
-    install: () => Promise<void>
+    install: (context: Object) => Promise<void>
 };

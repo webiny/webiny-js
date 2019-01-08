@@ -1,27 +1,24 @@
 //@flow
 import React from "react";
-import styled from "react-emotion";
 import Element from "webiny-app-cms/render/components/Element";
-import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
+import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 import type { ElementType } from "webiny-app-cms/types";
+import ElementAnimation from "webiny-app-cms/render/components/ElementAnimation";
 
-const ColumnContainer = styled("div")({
-    position: "relative",
-    flex: "1 100%",
-    boxSizing: "border-box",
-    height: "100%",
-    width: "100%"
-});
-
-const Column = ({ element }: ElementType) => {
+const Column = ({ element }: { element: ElementType }) => {
     return (
-        <ColumnContainer>
-            <ElementStyle {...getElementStyleProps(element)} style={{ height: "100%" }}>
+        <ElementAnimation>
+            <ElementRoot
+                element={element}
+                className={"webiny-cms-base-element-style webiny-cms-layout-column"}
+                style={{ width: (element.data.width || 100) + "%" }}
+            >
                 {element.elements.map(element => (
+                    /* $FlowFixMe */
                     <Element element={element} key={element.id} />
                 ))}
-            </ElementStyle>
-        </ColumnContainer>
+            </ElementRoot>
+        </ElementAnimation>
     );
 };
 

@@ -34,7 +34,8 @@ export const genericTypes = () => {
             name: String
             size: Int
             type: String
-            src: String
+            src: String,
+            meta: JSON
         }
         
         input FileInput {
@@ -42,6 +43,7 @@ export const genericTypes = () => {
             size: Int
             type: String
             src: String
+            meta: JSON
         }
   `
     ];

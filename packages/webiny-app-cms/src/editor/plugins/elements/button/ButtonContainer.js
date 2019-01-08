@@ -16,24 +16,38 @@ const excludePlugins = [
     "code-menu-item"
 ];
 
-const ButtonContainer = ({ getAllClasses, element, onChange }) => {
-    const { type = "default", icon = {} } = get(element, "settings.advanced") || {};
-    const svg = element.data.icon || null;
+const ButtonContainer = ({ getAllClasses, elementStyle, elementAttributes, element, onChange }) => {
+    const { type = "default", icon = {}, } = element.data || {};
+    const svg = icon.svg || null;
+    const { alignItems } = elementStyle;
 
     const { position = "left" } = icon;
 
     return (
-        <a
-            href={null}
-            className={getAllClasses(
-                "webiny-cms-element-button",
-                "webiny-cms-element-button--" + type,
-                "webiny-cms-element-button__icon--" + position
-            )}
+        <div
+            style={{
+                display: "flex",
+                justifyContent: alignItems
+            }}
         >
-            {svg && <span dangerouslySetInnerHTML={{ __html: svg }} />}
-            <ConnectedSlate elementId={element.id} onChange={onChange} exclude={excludePlugins} />
-        </a>
+            <a
+                href={null}
+                style={elementStyle}
+                {...elementAttributes}
+                className={getAllClasses(
+                    "webiny-cms-element-button",
+                    "webiny-cms-element-button--" + type,
+                    "webiny-cms-element-button__icon--" + position
+                )}
+            >
+                {svg && <span dangerouslySetInnerHTML={{ __html: svg }} />}
+                <ConnectedSlate
+                    elementId={element.id}
+                    onChange={onChange}
+                    exclude={excludePlugins}
+                />
+            </a>
+        </div>
     );
 };
 

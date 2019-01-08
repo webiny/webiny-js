@@ -6,13 +6,13 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
 import { ButtonPrimary } from "webiny-ui/Button";
-import type { WithCrudFormProps } from "webiny-app-admin/components";
+import type { WithCrudFormProps } from "webiny-admin/components";
 import { withCms, type WithCmsPropsType } from "webiny-app-cms/context";
 import {
     SimpleForm,
     SimpleFormFooter,
     SimpleFormContent
-} from "webiny-app-admin/components/Views/SimpleForm";
+} from "webiny-admin/components/Views/SimpleForm";
 import { categoryUrlValidator } from "./validators";
 
 const t = i18n.namespace("Cms.CategoriesForm");

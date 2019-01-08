@@ -13,7 +13,7 @@ export default () => {
             type: "cms-element",
             toolbar: {
                 title: "Pages List",
-                group: "cms-element-group-text",
+                group: "cms-element-group-basic",
                 preview() {
                     return "List sample";
                 }
@@ -24,15 +24,25 @@ export default () => {
             create(options = {}) {
                 return {
                     type: "cms-element-pages-list",
-                    settings: {
+                    data: {
                         limit: 3,
-                        component: "default"
+                        component: "default",
+                        settings: {
+                            margin: {
+                                desktop: { all: 0 },
+                                mobile: { all: 0 }
+                            },
+                            padding: {
+                                desktop: { all: 0 },
+                                mobile: { all: 0 }
+                            }
+                        }
                     },
                     ...options
                 };
             },
             render({ element }) {
-                return <PagesList settings={element.settings} />;
+                return <PagesList data={element.data} />;
             }
         }: ElementPluginType),
         {

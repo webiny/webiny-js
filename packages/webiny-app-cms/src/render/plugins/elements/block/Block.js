@@ -2,31 +2,44 @@
 import React from "react";
 import { css } from "emotion";
 import Element from "webiny-app-cms/render/components/Element";
-import { ElementStyle, getElementStyleProps } from "webiny-app-cms/render/components/ElementStyle";
+import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 import type { ElementType } from "webiny-app-cms/types";
+import ElementAnimation from "webiny-app-cms/render/components/ElementAnimation";
 
 const Block = ({ element }: { element: ElementType }) => {
     return (
-        <ElementStyle
-            style={{ margin: "0 auto", boxSizing: "border-box" }}
-            {...getElementStyleProps(element)}
-        >
-            {({ elementStyle, customClasses, combineClassNames }) => {
-                const { width, ...containerStyle } = elementStyle;
-                return (
-                    <div style={{ width: "100%" }} className={css(containerStyle)}>
+        <ElementAnimation>
+            <ElementRoot element={element}>
+                {({ elementStyle, elementAttributes, customClasses, combineClassNames }) => {
+                    const { width, alignItems, justifyContent, ...containerStyle } = elementStyle;
+
+                    return (
                         <div
-                            style={{ width, margin: "0 auto" }}
-                            className={combineClassNames(...customClasses)}
+                            style={{ width: "100%", display: "flex", justifyContent: "center" }}
+                            className={"webiny-cms-layout-block-container " + css(containerStyle)}
+                            {...elementAttributes}
                         >
-                            {element.elements.map(element => (
-                                <Element key={element.id} element={element} />
-                            ))}
+                            <div
+                                style={{
+                                    width: width ? width : "100%",
+                                    alignSelf: justifyContent,
+                                    alignItems: alignItems
+                                }}
+                                className={combineClassNames(
+                                    "webiny-cms-layout-block webiny-cms-base-element-style",
+                                    ...customClasses
+                                )}
+                            >
+                                {element.elements.map(element => (
+                                    /* $FlowFixMe */
+                                    <Element key={element.id} element={element} />
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                );
-            }}
-        </ElementStyle>
+                    );
+                }}
+            </ElementRoot>
+        </ElementAnimation>
     );
 };
 

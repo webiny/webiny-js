@@ -42,12 +42,14 @@ export default (): ElementPluginType => {
         },
         settings: [
             "cms-element-settings-background",
+            "cms-element-settings-animation",
             "",
             "cms-element-settings-border",
             "cms-element-settings-shadow",
             "",
             "cms-element-settings-padding",
             "cms-element-settings-margin",
+            "cms-element-settings-width",
             "",
             "cms-element-settings-clone",
             "cms-element-settings-delete",
@@ -60,10 +62,16 @@ export default (): ElementPluginType => {
             const row = {
                 type: "cms-element-row",
                 elements: [],
-                settings: {
-                    style: {
-                        margin: "15px",
-                        padding: "15px"
+                data: {
+                    settings: {
+                        margin: {
+                            desktop: { all: 0 },
+                            mobile: { all: 0 }
+                        },
+                        padding: {
+                            desktop: { all: 0 },
+                            mobile: { all: 0 }
+                        }
                     }
                 },
                 ...options
@@ -87,6 +95,7 @@ export default (): ElementPluginType => {
             let dispatchNew = false;
             let element;
             if (source.path) {
+                // $FlowFixMe
                 element = cloneElement(source);
             } else {
                 dispatchNew = true;

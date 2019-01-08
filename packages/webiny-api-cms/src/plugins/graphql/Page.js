@@ -6,7 +6,8 @@ import {
     resolveGet,
     resolveList
 } from "webiny-api/graphql";
-import UserType from "webiny-api/plugins/graphql/User";
+import { Response } from "webiny-api/graphql/responses";
+import UserType from "webiny-api-security/plugins/graphql/User";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
 import listPages from "./pageResolvers/listPages";
 import listPublishedPages from "./pageResolvers/listPublishedPages";
@@ -50,18 +51,23 @@ export default {
             id: ID
             name: String
             type: String
-            group: String
+            category: String
             content: JSON
-            keywords: [String]
             preview: File
         }
         
         input ElementInput {
             name: String!
             type: String!
-            group: String
+            category: String
             content: JSON!
-            keywords: [String]
+            preview: FileInput
+        }
+                
+        input UpdateElementInput {
+            name: String
+            category: String
+            content: JSON
             preview: FileInput
         }
         
@@ -128,7 +134,7 @@ export default {
                 sort: String
             ): PageResponse
             
-            getPublishedPage(url: String!): PageResponse
+            getPublishedPage(id: String, url: String): PageResponse
             
             # Returns page set as home page (managed in CMS settings).
             getHomePage: PageResponse
@@ -144,6 +150,7 @@ export default {
                 perPage: Int
                 sort: JSON
                 search: String
+                parent: String
             ): PageListResponse
             
             listPublishedPages(
@@ -155,7 +162,7 @@ export default {
                 perPage: Int
             ): PageListResponse
             
-            listElements: ElementListResponse
+            listElements(perPage: Int): ElementListResponse
             
             oembedData(
                 url: String! 
@@ -200,10 +207,17 @@ export default {
                 data: ElementInput!
             ): ElementResponse
             
+            updateElement(      
+                id: ID!
+                data: UpdateElementInput!
+            ): ElementResponse
+            
             # Delete element
             deleteElement(
                 id: ID!
             ): DeleteResponse
+            
+            updateImageSize: DeleteResponse
         },
     `
     ],
@@ -211,11 +225,11 @@ export default {
         CmsQuery: {
             getPage: resolveGet(pageFetcher),
             listPages: listPages(pageFetcher),
-            listPublishedPages: listPublishedPages,
-            getPublishedPage: getPublishedPage,
-            getHomePage: getHomePage,
-            getNotFoundPage: getNotFoundPage,
-            getErrorPage: getErrorPage,
+            listPublishedPages,
+            getPublishedPage,
+            getHomePage,
+            getNotFoundPage,
+            getErrorPage,
             listElements: resolveList(elementFetcher),
             oembedData: oembed
         },
@@ -238,8 +252,19 @@ export default {
             deleteRevision: resolveDelete(pageFetcher),
             // Creates a new element
             createElement: resolveCreate(elementFetcher),
+            // Updates an element
+            updateElement: resolveUpdate(elementFetcher),
             // Deletes an element
-            deleteElement: resolveDelete(elementFetcher)
+            deleteElement: resolveDelete(elementFetcher),
+            /* TODO: remove this resolver before release! */
+            updateImageSize: async (_, args, ctx) => {
+                const Element = ctx.cms.entities.Element;
+                const elements = await Element.find({ perPage: 100 });
+                elements.forEach(async el => {
+                    await el.updateImage();
+                });
+                return new Response(true);
+            }
         },
         Page: {
             createdBy: resolveUser("createdBy"),

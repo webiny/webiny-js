@@ -25,11 +25,11 @@ const ColumnChild = ({
     dropElementBelow
 }: Props) => {
     return (
-        <React.Fragment>
+        <div style={{ width: "100%", position: "relative" }}>
             <DropZone.Above type={target.type} onDrop={dropElementAbove} />
             <Element id={element.id} />
             {last && <DropZone.Below type={target.type} onDrop={dropElementBelow} />}
-        </React.Fragment>
+        </div>
     );
 };
 

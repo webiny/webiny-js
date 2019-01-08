@@ -53,7 +53,7 @@ const RowChild = pure(
         return (
             <ColumnContainer
                 data-type="row-column-container"
-                style={{ width: (element.data.width || 100) + "%" }}
+                style={{ width: (element.data.width || 100) + "%", position: "relative" }}
             >
                 {index > 0 && (
                     <Resizer

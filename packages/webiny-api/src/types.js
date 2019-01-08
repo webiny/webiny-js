@@ -14,8 +14,12 @@ export type EntityPluginType = PluginType & {
 
 export type GraphQLSchemaPluginType = PluginType & {
     namespace: string,
-    typedefs: Array<string> | (() => Array<string>),
+    typeDefs: *,
     resolvers: Object | (() => Object)
+};
+
+export type GraphQLMiddlewarePluginType = PluginType & {
+    middleware: () => Object
 };
 
 export type GraphQLContextPluginType = PluginType & {

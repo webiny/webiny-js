@@ -1,5 +1,4 @@
 // @flow
-import React from "react";
 import { DropTarget } from "react-dnd";
 import { compose, pure } from "recompose";
 import { connect } from "webiny-app-cms/editor/redux";
@@ -34,11 +33,7 @@ const Droppable = pure(
             return null;
         }
 
-        return connectDropTarget(
-            <div data-type="droppable">
-                {children({ isDragging, isOver, isDroppable: isDroppable(item) })}
-            </div>
-        );
+        return connectDropTarget(children({ isDragging, isOver, isDroppable: isDroppable(item) }));
     }
 );
 

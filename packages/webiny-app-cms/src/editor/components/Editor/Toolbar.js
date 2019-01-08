@@ -27,7 +27,7 @@ const ToolbarContainer = styled("div")({
     top: 64,
     height: "calc(100vh - 68px)",
     backgroundColor: "var(--mdc-theme-surface)",
-    boxShadow: "1px 0px 5px 0px rgba(128,128,128,1)",
+    boxShadow: "1px 0px 5px 0px var(--mdc-theme-on-background)",
     zIndex: 3
 });
 
@@ -108,6 +108,7 @@ const Toolbar = ({ activePluginsTop }: Object) => {
                     .map(plugin => (
                         <ToolbarDrawer
                             key={plugin.name}
+                            name={plugin.name}
                             active={Boolean(activePluginsTop.includes(plugin.name))}
                         >
                             {plugin.renderDrawer()}

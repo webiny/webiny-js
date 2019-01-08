@@ -7,19 +7,37 @@ export default [
         type: "schema-settings",
         namespace: "cms",
         typeDefs: /* GraphQL */ `
+            type CmsSocialMedia {
+                facebook: String
+                twitter: String
+                instagram: String
+            }
+
             type CmsSettings {
+                name: String
+                favicon: File
+                logo: File
+                domain: String
+                social: CmsSocialMedia
                 pages: CmsSettingsPages
             }
 
             type CmsSettingsPages {
-                home: CmsDefaultPage
-                notFound: CmsDefaultPage
-                error: CmsDefaultPage
+                home: ID
+                notFound: ID
+                error: ID
             }
 
             type CmsDefaultPage {
                 id: String
+                parent: String
                 title: String
+            }
+
+            input CmsSocialMediaInput {
+                facebook: String
+                twitter: String
+                instagram: String
             }
 
             input CmsDefaultPageInput {
@@ -28,6 +46,10 @@ export default [
             }
 
             input CmsSettingsInput {
+                name: String
+                favicon: FileInput
+                logo: FileInput
+                social: CmsSocialMediaInput
                 pages: CmsSettingsPagesInput
             }
 

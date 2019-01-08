@@ -26,7 +26,7 @@ export default compose(
         },
         deleteRevision: ({
             rev,
-            pageDetails: { page, revisions },
+            pageDetails: { page },
             gqlDelete,
             showSnackbar,
             router

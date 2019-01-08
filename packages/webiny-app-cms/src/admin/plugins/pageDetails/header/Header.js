@@ -19,20 +19,17 @@ const headerTitle = css({
     }
 });
 
-const headerActions = css({
-    "&.mdc-layout-grid": {
-        borderBottom: "1px solid var(--mdc-theme-on-background)",
-        height: 50,
-        padding: "3px 5px 0 25px",
-        background: "var(--mdc-theme-surface)",
-        ".right": {
-            textAlign: "right"
-        }
-    }
+const pageTitle = css({
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis"
 });
 
-const pageVersion = css({
-    color: "var(--mdc-theme-text-secondary-on-background)"
+const headerActions = css({
+    justifyContent: "flex-end",
+    marginRight: "-15px",
+    display: "flex",
+    alignItems: "center"
 });
 
 type Props = WithPageDetailsProps;
@@ -41,22 +38,11 @@ const PageActions = ({ pageDetails, pageDetails: { page } }: Props) => {
     return (
         <React.Fragment>
             <Grid className={headerTitle}>
-                <Cell span={12}>
-                    <Typography use="headline5">
-                        {page.title}{" "}
-                        <span className={pageVersion}>
-                            (v
-                            {page.version})
-                        </span>
-                    </Typography>
-                    <br />
+                <Cell span={8} className={pageTitle}>
+                    <Typography use="headline5">{page.title}</Typography>
                 </Cell>
-            </Grid>
-            <Grid className={headerActions}>
-                <Cell span={6}>
+                <Cell span={4} className={headerActions}>
                     {renderPlugins("cms-page-details-header-left", { pageDetails })}
-                </Cell>
-                <Cell span={6} className={"right"}>
                     {renderPlugins("cms-page-details-header-right", { pageDetails })}
                 </Cell>
             </Grid>

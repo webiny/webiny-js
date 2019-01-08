@@ -1,126 +1,67 @@
 //@flow
-import React from "react";
+import * as React from "react";
 import { connect } from "webiny-app-cms/editor/redux";
-import { compose, withHandlers, withProps } from "recompose";
-import { Tabs, Tab } from "webiny-ui/Tabs";
-import { get, set } from "dot-prop-immutable";
-import { updateElement } from "webiny-app-cms/editor/actions";
+import { compose } from "recompose";
+import { isEqual } from "lodash";
 import { getActiveElement } from "webiny-app-cms/editor/selectors";
-import { Grid } from "webiny-ui/Grid";
+import { Tabs, Tab } from "webiny-ui/Tabs";
+import { updateElement } from "webiny-app-cms/editor/actions";
 import ColorPicker from "webiny-app-cms/editor/plugins/elementSettings/components/ColorPicker";
 import Input from "webiny-app-cms/editor/plugins/elementSettings/components/Input";
+import withUpdateHandlers from "webiny-app-cms/editor/plugins/elementSettings/components/withUpdateHandlers";
 
-const Settings = ({
-    color,
-    horizontal,
-    vertical,
-    spread,
-    blur,
-    updateColor,
-    updateColorPreview,
-    updateHorizontalOffset,
-    updateVerticalOffset,
-    updateBlur,
-    updateSpread
-}: Object) => {
+const DATA_NAMESPACE = "data.settings.shadow";
+
+const Settings = ({ getUpdateValue, getUpdatePreview }: Object) => {
     return (
         <React.Fragment>
             <Tabs>
                 <Tab label={"Shadow"}>
-                    <Grid>
-                        <ColorPicker
-                            label={"Color"}
-                            value={color}
-                            updateValue={updateColor}
-                            updatePreview={updateColorPreview}
-                        />
+                    <ColorPicker
+                        label={"Color"}
+                        valueKey={DATA_NAMESPACE + ".color"}
+                        updateValue={getUpdateValue("color")}
+                        updatePreview={getUpdatePreview("color")}
+                    />
 
-                        <Input
-                            label={"Horizontal offset"}
-                            value={horizontal}
-                            updateValue={updateHorizontalOffset}
-                        />
+                    <Input
+                        label={"Horizontal offset"}
+                        valueKey={DATA_NAMESPACE + ".horizontal"}
+                        updateValue={getUpdateValue("horizontal")}
+                    />
 
-                        <Input
-                            label={"Vertical offset"}
-                            value={vertical}
-                            updateValue={updateVerticalOffset}
-                        />
+                    <Input
+                        label={"Vertical offset"}
+                        valueKey={DATA_NAMESPACE + ".vertical"}
+                        updateValue={getUpdateValue("vertical")}
+                    />
 
-                        <Input label={"Blur"} value={blur} updateValue={updateBlur} />
+                    <Input
+                        label={"Blur"}
+                        valueKey={DATA_NAMESPACE + ".blur"}
+                        updateValue={getUpdateValue("blur")}
+                    />
 
-                        <Input label={"Spread"} value={spread} updateValue={updateSpread} />
-                    </Grid>
+                    <Input
+                        label={"Spread"}
+                        valueKey={DATA_NAMESPACE + ".spread"}
+                        updateValue={getUpdateValue("spread")}
+                    />
                 </Tab>
             </Tabs>
         </React.Fragment>
     );
 };
+
 export default compose(
     connect(
-        state => ({ element: getActiveElement(state) }),
-        { updateElement }
-    ),
-    withHandlers({
-        getShadowObject: ({ element }) => () => {
-            // box-shadow: none|h-offset v-offset blur spread color |inset|initial|inherit;
-            const value = get(element, "settings.style.boxShadow") || "";
-            const arr = value.split(" ");
-            const boxShadow = arr.splice(0, 4);
-            boxShadow.push(arr.join(" "));
-
-            return {
-                horizontal: parseInt(boxShadow[0]) || 0,
-                vertical: parseInt(boxShadow[1]) || 0,
-                blur: parseInt(boxShadow[2]) || 0,
-                spread: parseInt(boxShadow[3]) || 0,
-                color: boxShadow[4] || "#000"
-            };
+        state => {
+            const { id, type, path } = getActiveElement(state);
+            return { element: { id, type, path } };
         },
-
-        getShadowCss: () => values => {
-            return [
-                values.horizontal + "px",
-                values.vertical + "px",
-                values.blur + "px",
-                values.spread + "px",
-                values.color
-            ].join(" ");
-        }
-    }),
-    withHandlers({
-        updateSettings: ({ getShadowObject, getShadowCss, updateElement, element }) => {
-            let historyUpdated = null;
-
-            return (name, value, history = true) => {
-                const shadow = getShadowObject();
-                shadow[name] = value === "" ? 0 : value;
-                const shadowValue = getShadowCss(shadow);
-
-                const newElement = set(element, "settings.style.boxShadow", shadowValue);
-
-                if (!history) {
-                    updateElement({ element: newElement, history });
-                    return;
-                }
-
-                if (historyUpdated !== shadowValue) {
-                    historyUpdated = shadowValue;
-                    updateElement({ element: newElement });
-                }
-            };
-        }
-    }),
-    withHandlers({
-        updateColor: ({ updateSettings }) => (value: string) => updateSettings("color", value),
-        updateColorPreview: ({ updateSettings }) => (value: string) =>
-            updateSettings("color", value, false),
-        updateHorizontalOffset: ({ updateSettings }) => (value: string) =>
-            updateSettings("horizontal", value),
-        updateVerticalOffset: ({ updateSettings }) => (value: string) =>
-            updateSettings("vertical", value),
-        updateBlur: ({ updateSettings }) => (value: string) => updateSettings("blur", value),
-        updateSpread: ({ updateSettings }) => (value: string) => updateSettings("spread", value)
-    }),
-    withProps(({ getShadowObject }) => ({ ...getShadowObject() }))
+        { updateElement },
+        null,
+        { areStatePropsEqual: isEqual }
+    ),
+    withUpdateHandlers({ namespace: DATA_NAMESPACE })
 )(Settings);

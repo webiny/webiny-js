@@ -1,4 +1,5 @@
 // @flow
+import animation from "./animation";
 import bar from "./bar";
 import deleteElement from "./delete";
 import clone from "./clone";
@@ -8,12 +9,15 @@ import shadow from "./shadow";
 import padding from "./padding";
 import margin from "./margin";
 import width from "./width";
+import columnWidth from "./columnWidth";
 import height from "./height";
 import align from "./align";
 import divider from "./divider";
 import save from "./save";
+import link from "./link";
 
 export default [
+    animation,
     bar,
     divider,
     background,
@@ -21,10 +25,12 @@ export default [
     shadow,
     padding,
     margin,
-    align,
+    ...align,
     clone,
     deleteElement,
     width,
+    columnWidth,
     height,
-    save
+    save,
+    link
 ];

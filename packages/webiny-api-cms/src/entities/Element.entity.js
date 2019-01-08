@@ -1,6 +1,7 @@
 // @flow
 import { Entity } from "webiny-entity";
-import FileModel from "webiny-api/entities/File.model";
+import sizeOf from "image-size";
+import FileModel from "./File.model";
 
 type ElementType = "element" | "block";
 
@@ -8,8 +9,7 @@ export interface IElement extends Entity {
     name: string;
     content: Object;
     type: ElementType;
-    keywords: Array<string>;
-    group: ?string;
+    category: ?string;
     preview: Object;
 }
 
@@ -21,8 +21,7 @@ export function elementFactory(): Class<IElement> {
         name: string;
         content: Object;
         type: ElementType;
-        keywords: Array<string>;
-        group: ?string;
+        category: ?string;
         preview: Object;
 
         constructor() {
@@ -32,7 +31,7 @@ export function elementFactory(): Class<IElement> {
                 .char()
                 .setValidators("required");
 
-            this.attr("group").char();
+            this.attr("category").char();
 
             this.attr("content").object();
 
@@ -40,9 +39,22 @@ export function elementFactory(): Class<IElement> {
                 .char()
                 .setValidators("required,in:element:block");
 
-            this.attr("keywords").array();
-
             this.attr("preview").model(FileModel);
+        }
+
+        /* TODO: remove this method before release! */
+        async updateImage() {
+            const fileName = this.preview.name;
+            const dimensions = await sizeOf(process.cwd() + "/static/" + fileName);
+            // eslint-disable-next-line
+            console.log(process.cwd() + "/static/" + fileName);
+            this.preview.meta = {
+                width: dimensions.width,
+                height: dimensions.height
+            };
+            await this.save();
         }
     };
 }
+
+// select name from Cms_Elements ORDER BY LENGTH(`name`), `name`;

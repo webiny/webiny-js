@@ -7,7 +7,7 @@ import type {
     EntityFindParams,
     EntityDeleteParams,
     EntityFindOneParams
-} from "../types";
+} from "./types";
 
 class Driver {
     connection: any;
@@ -57,7 +57,7 @@ class Driver {
         return new QueryResult(0);
     }
 
-    getConnection(): mixed {
+    getConnection(): any {
         return this.connection;
     }
 

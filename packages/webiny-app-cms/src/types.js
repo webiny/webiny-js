@@ -7,14 +7,14 @@ import type { WithCmsPropsType, CmsProviderPropsType } from "webiny-app-cms/cont
 export type { WithPageDetailsProps };
 export type { WithCmsPropsType };
 export type { CmsProviderPropsType };
+export type { PluginType };
 
 export type ElementType = {
     id: string,
     path: string,
     type: string,
-    elements: Array<ElementType>,
-    data: Object,
-    settings: Object
+    elements: Array<Object>,
+    data: Object
 };
 
 export type CmsThemeType = {
@@ -38,9 +38,7 @@ export type ElementGroupPluginType = PluginType & {
 };
 
 export type ElementPluginType = PluginType & {
-    toolbar: {
-        // Element name (used by the editor).
-        name: string,
+    toolbar?: {
         // Element title in the toolbar.
         title?: string,
         // Element group this element belongs to.
@@ -57,13 +55,13 @@ export type ElementPluginType = PluginType & {
     // A function to render an element in the editor.
     render: ({ theme: CmsThemeType, element: ElementType }) => Node,
     // A function to check if an element can be deleted.
-    canDelete: ({ element: ElementType }) => boolean,
+    canDelete?: ({ element: ElementType }) => boolean,
     // Executed when another element is dropped on the drop zones of current element.
     onReceived?: ({
         store: Store,
         source: ElementType | { type: string },
         target: ElementType,
-        position: Number | null
+        position: number | null
     }) => void,
     // Executed when an immediate child element is deleted
     onChildDeleted?: ({ element: ElementType, child: ElementType }) => void
@@ -92,6 +90,11 @@ export type CmsPageSettingsPluginType = PluginType & {
     render: (params: { Bind: ComponentType<*> }) => Node
 };
 
+export type CmsBlockCategoryPluginType = PluginType & {
+    title: string,
+    description?: string
+};
+
 export type CmsPageSettingsFieldsPluginType = PluginType & {
     fields: string
 };
@@ -111,12 +114,21 @@ export type CmsElementActionPluginType = PluginType & {
     render: ({ plugin: ElementPluginType }) => Node
 };
 
+export type CmsRenderElementStylePluginType = PluginType & {
+    renderStyle: ({ element: ElementType, style: Object }) => Object
+};
+
+export type CmsRenderElementAttributesPluginType = PluginType & {
+    renderAttributes: ({ element: ElementType, attributes: Object }) => Object
+};
+
 // ================= Redux types ===================
 export type { Redux } from "webiny-app-cms/editor/redux";
 
 export type Action = {
     type: string,
-    payload: Object
+    payload: Object,
+    meta: Object
 };
 
 export type ActionOptions = {
@@ -134,7 +146,12 @@ export type Store = {
     getState: Function
 };
 
-export type State = Object;
+export type State = Object & {
+    elements: Object,
+    page: Object,
+    revisions: Array<Object>,
+    ui: Object
+};
 
 export type MiddlewareParams = {
     store: Store,
@@ -143,4 +160,4 @@ export type MiddlewareParams = {
 };
 
 export type MiddlewareFunction = MiddlewareParams => any;
-export type ActionCreator = (payload?: Object) => Action;
+export type ActionCreator = (payload?: any, meta?: Object) => Action;

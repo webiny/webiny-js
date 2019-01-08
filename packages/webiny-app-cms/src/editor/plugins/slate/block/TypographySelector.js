@@ -88,7 +88,7 @@ class TypographySelector extends React.Component<*, { showMenu: boolean }> {
         } = this.props;
 
         let blockType = editor.value.blocks.first().type;
-        const style = theme.styles[blockType] || theme.styles.paragraph;
+        const style = theme.typography[blockType] || theme.typography.paragraph;
 
         return (
             <Downshift
@@ -109,8 +109,8 @@ class TypographySelector extends React.Component<*, { showMenu: boolean }> {
                             <Elevation z={2} className={dropDownDialog}>
                                 <div ref={this.dropdown}>
                                     <List>
-                                        {Object.keys(theme.styles).map((name, index) => {
-                                            const style = theme.styles[name];
+                                        {Object.keys(theme.typography).map((name, index) => {
+                                            const style = theme.typography[name];
 
                                             return (
                                                 <Item

@@ -2,7 +2,8 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "packages/*"
+      "packages/*",
+      "addons/*"
     ],
     "nohoist": [
       "**/inquirer/**"
@@ -20,7 +21,7 @@
   "dependencies": {
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
-    "react-scripts": "^2.1.1"
+    "react-scripts": "^2.1.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
@@ -98,8 +99,10 @@
     "commit:check": "yarn lint-staged",
     "lint-staged": "lint-staged",
     "prettier": "prettier --config .prettierrc.js --write",
-    "release": "node scripts/release",
-    "release:dry": "node scripts/release --preview",
+    "release": "node scripts/release/packages",
+    "release:dry": "node scripts/release/packages --preview",
+    "release-addons": "node scripts/release/addons",
+    "release-addons:dry": "node scripts/release/addons --preview",
     "webiny-ui-build-storybook": "cd packages/webiny-ui && cross-env OUT=../../netlify-static yarn build-storybook"
   },
   "pre-commit": [

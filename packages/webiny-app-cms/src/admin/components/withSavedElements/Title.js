@@ -1,35 +1,72 @@
 // @flow
 import * as React from "react";
 import { graphql } from "react-apollo";
-import { compose, withHandlers } from "recompose";
+import { compose, withHandlers, withState } from "recompose";
 import styled from "react-emotion";
-import { removePlugin } from "webiny-plugins";
+import { unregisterPlugin } from "webiny-plugins";
 import { Typography } from "webiny-ui/Typography";
 import { IconButton } from "webiny-ui/Button";
-import { withSnackbar } from "webiny-app-admin/components";
+import { withSnackbar } from "webiny-admin/components";
 import { withConfirmation, type WithConfirmationProps } from "webiny-ui/ConfirmationDialog";
 import { ReactComponent as DeleteIcon } from "webiny-app-cms/editor/assets/icons/close.svg";
+import { ReactComponent as EditIcon } from "webiny-app-cms/editor/assets/icons/edit.svg";
 import { deleteElement } from "./graphql";
+import EditElementDialog from "./EditElementDialog";
+import createElementPlugin from "webiny-app-cms/admin/components/withSavedElements/createElementPlugin";
+import { updateElement } from "./graphql";
 
-const Icon = styled("div")({
+const EditIconWrapper = styled("div")({
     position: "absolute",
     top: 0,
-    right: 15
+    right: 48
+});
+const DeleteIconWrapper = styled("div")({
+    position: "absolute",
+    top: 0,
+    right: 16
 });
 
 type Props = WithConfirmationProps & {
     title: string,
-    onDelete: Function
+    plugin: string,
+    refresh: Function,
+    deleteElement: Function,
+    updateElement: Function,
+    editDialogOpened: Function,
+    openEditDialog: Function
 };
 
-const Title = ({ title, onDelete }: Props) => {
+const Title = (props: Props) => {
+    const {
+        plugin: pluginName,
+        deleteElement,
+        title,
+        updateElement,
+        editDialogOpened,
+        openEditDialog
+    } = props;
+
     return (
-        <Typography use="overline">
-            {title}
-            <Icon>
-                <IconButton icon={<DeleteIcon />} onClick={onDelete} />
-            </Icon>
-        </Typography>
+        <>
+            <Typography use="overline">
+                {title}
+                <>
+                    <EditIconWrapper>
+                        <IconButton icon={<EditIcon />} onClick={() => openEditDialog(true)} />
+                    </EditIconWrapper>{" "}
+                    <EditElementDialog
+                        onSubmit={updateElement}
+                        plugin={pluginName}
+                        open={!!editDialogOpened}
+                        onClose={() => openEditDialog(false)}
+                    />
+                </>
+
+                <DeleteIconWrapper>
+                    <IconButton icon={<DeleteIcon />} onClick={deleteElement} />
+                </DeleteIconWrapper>
+            </Typography>
+        </>
     );
 };
 
@@ -43,16 +80,18 @@ export default compose(
         )
     })),
     withSnackbar(),
+    withState("editDialogOpened", "openEditDialog", false),
     graphql(deleteElement, { name: "deleteElement" }),
+    graphql(updateElement, { name: "updateElement" }),
     withHandlers({
-        onDelete: ({
+        deleteElement: ({
             id,
             title,
             plugin,
             showConfirmation,
             showSnackbar,
             deleteElement,
-            onDelete
+            refresh
         }) => () => {
             showConfirmation(async () => {
                 const { data: res } = await deleteElement({
@@ -64,11 +103,9 @@ export default compose(
                     return showSnackbar(error.message);
                 }
 
-                removePlugin(plugin);
+                unregisterPlugin(plugin);
 
-                if (typeof onDelete === "function") {
-                    onDelete();
-                }
+                refresh();
 
                 showSnackbar(
                     <span>
@@ -76,6 +113,42 @@ export default compose(
                     </span>
                 );
             });
+        },
+        updateElement: ({
+            id,
+            showSnackbar,
+            updateElement,
+            openEditDialog,
+            refresh
+        }) => async plugin => {
+            const { title: name } = plugin;
+            const response = await updateElement({
+                variables: {
+                    id,
+                    data: { name }
+                }
+            });
+
+            const { error, data } = response.data.cms.updateElement;
+            if (error) {
+                openEditDialog(false);
+                setTimeout(() => {
+                    // For better UX, success message is shown after 300ms has passed.
+                    showSnackbar(error.message);
+                }, 300);
+
+                return;
+            }
+
+            // This will replace previously registered block plugin.
+            createElementPlugin(data);
+            openEditDialog(false);
+            refresh();
+
+            setTimeout(() => {
+                // For better UX, success message is shown after 300ms has passed.
+                showSnackbar("Element " + plugin.title + " successfully saved.");
+            }, 300);
         }
     })
 )(Title);

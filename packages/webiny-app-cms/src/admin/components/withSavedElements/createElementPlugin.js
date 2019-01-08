@@ -1,7 +1,7 @@
 // @flow
 import React from "react";
 import cloneDeep from "lodash/cloneDeep";
-import { addPlugin, getPlugin } from "webiny-plugins";
+import { registerPlugins, getPlugin } from "webiny-plugins";
 import Title from "./Title";
 
 type Element = {
@@ -9,7 +9,6 @@ type Element = {
     name: string,
     type: string,
     content: Object,
-    keywords: Array<string>,
     preview: {
         src: string
     }
@@ -23,13 +22,14 @@ export default (el: Element) => {
 
     const name = "cms-saved-element-" + el.id;
 
-    addPlugin({
+    registerPlugins({
         name,
+        title: el.name,
         type: "cms-element",
         target: rootPlugin.target,
         toolbar: {
             title({ refresh }) {
-                return <Title plugin={name} title={el.name} id={el.id} onDelete={refresh} />;
+                return <Title plugin={name} title={el.name} id={el.id} refresh={refresh} />;
             },
             group: "cms-element-group-saved",
             preview() {
@@ -37,7 +37,7 @@ export default (el: Element) => {
                     <img
                         src={el.preview.src}
                         alt={el.name}
-                        style={{ width: 227, height: "auto" }}
+                        style={{ width: 227, height: "auto", backgroundColor: "#fff" }}
                     />
                 );
             }

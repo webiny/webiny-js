@@ -37,6 +37,10 @@ const Toolbar = styled("div")({
     backgroundColor: "var(--mdc-theme-secondary)",
     margin: "-20px -24px 0px -24px",
     padding: 2,
+    position: "absolute",
+    width: "100%",
+    boxSizing: "border-box",
+    zIndex: 10,
     "> div.disabled": {
         opacity: 0.5,
         pointerEvents: "none"
@@ -44,7 +48,7 @@ const Toolbar = styled("div")({
 });
 
 const ToolOptions = styled("div")({
-    margin: "0 -24px 10px -24px",
+    margin: "25px -24px 10px -24px",
     boxSizing: "border-box",
     padding: 10,
     backgroundColor: "var(--mdc-theme-background)",
@@ -119,7 +123,16 @@ class ImageEditor extends React.Component<Props, State> {
 
     getCanvasDataUrl = () => {
         const { current: canvas } = this.canvas;
-        return canvas ? canvas.toDataURL() : "";
+        if (canvas) {
+            const { src } = this.props;
+            if (src.startsWith("data:image/jpeg;")) {
+                return canvas.toDataURL("image/jpeg", 1.0);
+            }
+
+            return canvas.toDataURL();
+        }
+
+        return "";
     };
 
     applyActiveTool = async () => {

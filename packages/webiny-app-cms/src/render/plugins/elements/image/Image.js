@@ -1,22 +1,45 @@
 // @flow
 import React from "react";
 import { get } from "lodash";
+import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
+
+const Link = ({ link, children }: Object) => {
+    if (link && link.href) {
+        return (
+            <a href={link.href} target={link.newTab ? "_blank" : "_self"}>
+                {children}
+            </a>
+        );
+    }
+    return children;
+};
 
 const Image = (props: *) => {
-    const { src } = props.element.data;
-    const { width, height, align, rest } = get(props, "element.settings.advanced.img", {});
-    const wrapperStyle = get(props, "element.settings.style", {});
+    const { image = {}, link = {}, settings = {} } = get(props, "element.data", {});
+    const { width, height, title, src } = image;
+    const { horizontalAlign = "center" } = settings;
 
     const style = { width, height };
-    if (!style.width && !style.height) {
+    if (!style.width) {
         style.width = "100%";
+    } else {
+        style.width += style.width.endsWith("px") ? "" : "px";
+    }
+
+    if (!style.height) {
         style.height = "100%";
+    } else {
+        style.height += style.height.endsWith("px") ? "" : "px";
     }
 
     return (
-        <div style={{ ...wrapperStyle, textAlign: align }}>
-            <img {...rest} style={style} src={src} />
-        </div>
+        <ElementRoot element={props.element} style={{ textAlign: horizontalAlign }}>
+            <div className={"webiny-cms-base-element-style webiny-cms-element-image"}>
+                <Link link={link}>
+                    <img title={title} alt={title} style={style} src={src} />
+                </Link>
+            </div>
+        </ElementRoot>
     );
 };
 

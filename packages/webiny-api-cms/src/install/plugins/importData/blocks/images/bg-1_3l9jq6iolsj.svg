@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="957px" height="550px" viewBox="0 0 957 550" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
+    <title>Oval</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="100%" y1="0%" x2="0%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#65379B" offset="0%"></stop>
+            <stop stop-color="#886AEA" offset="52.7841996%"></stop>
+            <stop stop-color="#6457C6" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Shapes" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard" transform="translate(-17.000000, -178.000000)" fill="url(#linearGradient-1)">
+            <path d="M525.899099,727.078125 C719.01279,727.078125 973.238281,575.135309 973.238281,381.962386 C973.238281,188.789464 747.002431,103.273218 625.511438,257.973324 C504.020445,412.673429 17.3945312,504.55798 17.3945312,597.628839 C17.3945313,690.699698 332.785407,727.078125 525.899099,727.078125 Z" id="Oval"></path>
+        </g>
+    </g>
+</svg>

@@ -10,18 +10,27 @@ import { getElement } from "webiny-app-cms/editor/selectors";
 
 const BlockContainer = ({
     elementStyle,
+    elementAttributes,
     customClasses,
     combineClassNames,
     element,
     dropElement
 }: Object) => {
-    const { width, ...containerStyle } = elementStyle;
+    const { width, alignItems, justifyContent, ...containerStyle } = elementStyle;
     const { id, type, elements } = element;
 
     return (
-        <div style={{ width: "100%" }} className={css(containerStyle)}>
+        <div
+            style={{ width: "100%", display: "flex", justifyContent: "center" }}
+            className={"webiny-cms-layout-block-container " + css(containerStyle)}
+            {...elementAttributes}
+        >
             <div
-                style={{ width, margin: "0 auto" }}
+                style={{
+                    width: width ? width : "100%",
+                    alignSelf: justifyContent,
+                    alignItems: alignItems
+                }}
                 className={combineClassNames(...customClasses)}
             >
                 {!elements.length && (

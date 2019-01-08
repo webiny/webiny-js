@@ -61,22 +61,13 @@ export function prepareSchema() {
     const dataSources = getPlugins("graphql");
     const schemas = mapSourcesToExecutableSchemas(dataSources);
 
-    const securityScopes = [
-        ...new Set(dataSources.reduce((res, item) => res.concat(item.scopes || []), []))
-    ];
     const sourcesWithStitching = dataSources.filter(source => source.stitching);
     const linkTypeDefs = sourcesWithStitching.map(source => source.stitching.linkTypeDefs);
     const resolvers = sourcesWithStitching.map(source => source.stitching.resolvers);
 
     const schema = mergeSchemas({
         schemas: [...Object.values(schemas), ...linkTypeDefs],
-        resolvers: {
-            ...resolvers,
-            // Add all scopes to the schema
-            SecurityQuery: {
-                scopes: () => securityScopes
-            }
-        }
+        resolvers
     });
 
     return {

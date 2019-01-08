@@ -7,9 +7,9 @@ import { getPlugins } from "webiny-plugins";
 import { deactivatePlugin, updateRevision } from "webiny-app-cms/editor/actions";
 import { getPage } from "webiny-app-cms/editor/selectors";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
-import { withSnackbar } from "webiny-app-admin/components";
-import { SecondaryLayout } from "webiny-app-admin/components/Views/SecondaryLayout";
-import { CompactView, LeftPanel, RightPanel } from "webiny-app-admin/components/Views/CompactView";
+import { withSnackbar } from "webiny-admin/components";
+import { SecondaryLayout } from "webiny-admin/components/Views/SecondaryLayout";
+import { CompactView, LeftPanel, RightPanel } from "webiny-admin/components/Views/CompactView";
 import { Typography } from "webiny-ui/Typography";
 import { Form } from "webiny-form";
 import { Icon } from "webiny-ui/Icon";
@@ -20,7 +20,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent,
     SimpleFormHeader
-} from "webiny-app-admin/components/Views/SimpleForm";
+} from "webiny-admin/components/Views/SimpleForm";
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./PageSettingsStyled";
 import type { CmsPageSettingsPluginType } from "webiny-app-cms/types";
 

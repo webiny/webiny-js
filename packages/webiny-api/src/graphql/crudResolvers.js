@@ -10,7 +10,7 @@ type EntityFetcher = (context: Object) => Class<Entity>;
 const notFound = (id?: string) =>
     new ErrorResponse({
         code: "NOT_FOUND",
-        message: id ? `Entity with id "${id}" was not found!` : "Entity not found!"
+        message: id ? `Record "${id}" not found!` : "Record not found!"
     });
 
 export const resolveGet = (entityFetcher: EntityFetcher) => async (
@@ -134,8 +134,16 @@ export const resolveDelete = (entityFetcher: EntityFetcher) => async (
         return notFound(args.id);
     }
 
-    await entity.delete();
-    return new Response(true);
+    return entity
+        .delete()
+        .then(() => new Response(true))
+        .catch(
+            e =>
+                new ErrorResponse({
+                    code: e.code,
+                    message: e.message
+                })
+        );
 };
 
 const resolveMap = {

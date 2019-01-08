@@ -136,21 +136,22 @@ export const deletePage = gql`
     }
 `;
 
-const elementFields = `
+const elementFields = /*GraphQL*/ `
 id
 name
 type
+category
 content
-keywords
 preview {
     src
+    meta
 }
 `;
 
 export const listElements = gql`
     query CmsListElements {
         cms {
-            elements: listElements {
+            elements: listElements(perPage: 1000) {
                 data {
                     ${elementFields}
                 }
@@ -163,6 +164,19 @@ export const createElement = gql`
     mutation CmsCreateElement($data: ElementInput!) {
         cms {
             element: createElement(data: $data) {
+                data {
+                    ${elementFields}
+                }
+                ${error}
+            }
+        }
+    }
+`;
+
+export const updateElement = gql`
+    mutation CmsUpdateElement($id: ID!, $data: UpdateElementInput!) {
+        cms {
+            element: updateElement(id: $id, data: $data) {
                 data {
                     ${elementFields}
                 }

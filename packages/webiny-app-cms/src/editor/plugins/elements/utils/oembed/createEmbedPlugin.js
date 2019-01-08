@@ -5,10 +5,10 @@ import type { ElementPluginType } from "webiny-app-cms/types";
 
 type EmbedPluginConfig = {
     type: string,
-    toolbar: {
-        title: string,
-        group: string,
-        preview: () => React.Node
+    toolbar?: {
+        title?: string,
+        group?: string,
+        preview?: () => React.Node
     },
     render?: ({ element: Object }) => React.Node,
     oembed?: {
@@ -31,12 +31,16 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): ElementPluginType 
         settings: config.settings || ["cms-element-settings-delete", ""],
         target: config.target || ["cms-element-column", "cms-element-row", "cms-element-list-item"],
         // eslint-disable-next-line
-        create({ content = {}, ...options }) {
+        create({ content = {}, ...options }: Object) {
             return {
                 type: "cms-element-" + config.type,
                 elements: [],
-                data: {},
-                settings: {},
+                data: {
+                    settings: {
+                        margin: { desktop: { all: 0 }, mobile: { all: 0 } },
+                        padding: { desktop: { all: 0 }, mobile: { all: 0 } }
+                    }
+                },
                 ...options
             };
         },
@@ -54,7 +58,7 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): ElementPluginType 
 
 type EmbedPluginSidebarConfig = {
     type: string,
-    render?: (params: { Bind: React.ComponentType<*> }) => React.Node
+    render?: ({ Bind: React.ComponentType<*> }) => React.Node
 };
 export const createEmbedSettingsPlugin = ({ type, render }: EmbedPluginSidebarConfig) => {
     return {

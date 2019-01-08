@@ -12,10 +12,7 @@ export default () => {
                 switch (node.type) {
                     case "unordered-list":
                         return (
-                            <ul
-                                className={"webiny-cms-typography-unordered-list"}
-                                {...attributes}
-                            >
+                            <ul className={"webiny-cms-typography-unordered-list"} {...attributes}>
                                 {children}
                             </ul>
                         );
@@ -23,10 +20,7 @@ export default () => {
                         return <li {...attributes}>{children}</li>;
                     case "ordered-list":
                         return (
-                            <ol
-                                className={"webiny-cms-typography-ordered-list"}
-                                {...attributes}
-                            >
+                            <ol className={"webiny-cms-typography-ordered-list"} {...attributes}>
                                 {children}
                             </ol>
                         );

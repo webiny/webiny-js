@@ -41,13 +41,15 @@ export default (): ElementPluginType => {
         },
         settings: [
             "cms-element-settings-background",
+            "cms-element-settings-animation",
             "",
             "cms-element-settings-border",
             "cms-element-settings-shadow",
             "",
             "cms-element-settings-padding",
             "cms-element-settings-margin",
-            "cms-element-settings-align",
+            "cms-element-settings-horizontal-align",
+            "cms-element-settings-vertical-align",
             "",
             "cms-element-settings-clone",
             "cms-element-settings-delete",
@@ -57,12 +59,20 @@ export default (): ElementPluginType => {
         create(options = {}) {
             return {
                 type: "cms-element-column",
-                settings: {
-                    style: {
-                        margin: "20px"
+                data: {
+                    ...(options.data || {}),
+                    settings: {
+                        margin: {
+                            desktop: { all: 0 },
+                            mobile: { all: 0 }
+                        },
+                        padding: {
+                            desktop: { all: 0 },
+                            mobile: { all: 0 }
+                        }
                     }
                 },
-                ...options
+                elements: options.elements || []
             };
         },
         render(props) {
@@ -110,9 +120,11 @@ const handleDroppedElement = (source, target, position) => {
 const splitColumn = (source, target) => {
     let dispatchNew = false;
     let row = getParentElementWithChildren(redux.store.getState(), target.id);
+    // $FlowFixMe
     const targetIndex = row.elements.findIndex(el => el.id === target.id);
 
     // Split target column in half
+    // $FlowFixMe
     row.elements[targetIndex].data.width /= 2;
 
     // Create a new column with half of the original target width
@@ -123,6 +135,8 @@ const splitColumn = (source, target) => {
         dispatchNew = true;
         newColumn = createColumn();
     }
+
+    // $FlowFixMe
     newColumn = set(newColumn, "data.width", row.elements[targetIndex].data.width);
 
     row = addElementToParent(newColumn, row, targetIndex + 1);

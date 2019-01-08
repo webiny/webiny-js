@@ -1,5 +1,5 @@
 // @flow
-import MySQLTable from "../install/tables/mysqlTable";
+import { MySQLTable } from "webiny-api";
 
 class ElementTable extends MySQLTable {
     constructor() {
@@ -8,8 +8,7 @@ class ElementTable extends MySQLTable {
         this.column("type").varChar(50);
         this.column("content").text();
         this.column("preview").text();
-        this.column("keywords").text();
-        this.column("group").varChar(100);
+        this.column("category").varChar(255);
     }
 }
 
