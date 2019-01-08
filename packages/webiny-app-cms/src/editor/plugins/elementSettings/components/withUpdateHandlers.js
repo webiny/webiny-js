@@ -6,7 +6,10 @@ import { updateElement } from "webiny-app-cms/editor/actions";
 
 export default ({ namespace }: Object) => {
     return compose(
-        connect(null, { updateElement }),
+        connect(
+            null,
+            { updateElement }
+        ),
         withHandlers({
             updateSettings: ({ element, updateElement }: Object) => {
                 let historyUpdated = {};

@@ -104,7 +104,7 @@ export default compose(
             const { data: res } = await mutation({
                 variables: formData.overwrite
                     ? {
-                          id: element.source,
+                          id: element.id,
                           data: { content: formData.content, preview: formData.preview }
                       }
                     : { data: formData }

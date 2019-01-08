@@ -48,8 +48,10 @@ export function elementFactory(): Class<IElement> {
             const dimensions = await sizeOf(process.cwd() + "/static/" + fileName);
             // eslint-disable-next-line
             console.log(process.cwd() + "/static/" + fileName);
-            this.preview.width = dimensions.width;
-            this.preview.height = dimensions.height;
+            this.preview.meta = {
+                width: dimensions.width,
+                height: dimensions.height
+            };
             await this.save();
         }
     };
