@@ -10,7 +10,7 @@ import type { Props as BindProps } from "./Bind";
 type Props = {
     invalidFields?: Object,
     data?: Object,
-    disabled?: boolean,
+    disabled?: boolean | Function,
     validateOnFirstSubmit?: boolean,
     submitOnEnter?: boolean,
     onSubmit?: (data: Object, form: Form) => void,
@@ -51,6 +51,7 @@ class Form extends React.Component<Props, State> {
     lastRender = [];
     validateFns = {};
     onChangeFns = {};
+    // $FlowFixMe
     Bind = createBind(this);
 
     static getDerivedStateFromProps({ data, invalidFields = {} }: Props, state: State) {
@@ -277,7 +278,9 @@ class Form extends React.Component<Props, State> {
             e.target && e.target.blur();
             e.preventDefault();
             e.stopPropagation();
-            this.submit();
+            // Fire submit with a small delay to allow input validation to complete.
+            // Not an ideal solution but works fine at this point. Will revisit this later.
+            setTimeout(() => this.submit(), 100);
         }
     };
 
