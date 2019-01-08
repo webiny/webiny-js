@@ -417,14 +417,6 @@ class Navigation extends React.Component<Props> {
                                 >
                                     Webiny.com
                                 </a>
-                                ,{" "}
-                                <a
-                                    href="https://docs.webiny.com/credits"
-                                    rel="noopener noreferrer"
-                                    target="_blank"
-                                >
-                                    Credits
-                                </a>
                                 <p>© {new Date().getFullYear()} Webiny, Ltd</p>
                             </div>
                         </ListItem>
