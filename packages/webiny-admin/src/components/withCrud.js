@@ -37,14 +37,7 @@ const withDeleteHandler = ({ mutation, response, snackbar }): Function => {
             setDisplayName("deleteHandler"),
             graphql(mutation, { name: "deleteRecord" }),
             withHandlers({
-                deleteRecord: ({
-                    deleteRecord,
-                    showSnackbar,
-                    showDialog,
-                    router,
-                    dataList,
-                    id
-                }: Object) => {
+                deleteRecord: ({ deleteRecord, showSnackbar, router, dataList, id }: Object) => {
                     return async (item: Object) => {
                         const res = await deleteRecord({ variables: { id: item.id } });
                         const { data, error } = response(res.data);
@@ -52,7 +45,7 @@ const withDeleteHandler = ({ mutation, response, snackbar }): Function => {
                         if (data) {
                             showSnackbar(snackbar(item));
                         } else {
-                            showDialog(error.message, {
+                            showSnackbar(error.message, {
                                 title: "Something unexpected happened"
                             });
                         }

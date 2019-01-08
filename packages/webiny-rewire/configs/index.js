@@ -2,6 +2,7 @@
 const cloneDeep = require("lodash.clonedeep");
 const packages = require("./../packages");
 const aliases = require("./../aliases");
+const set = require("lodash.set");
 
 module.exports = {
     webpack(config) {
@@ -21,6 +22,10 @@ module.exports = {
         config["moduleNameMapper"] = config["moduleNameMapper"] || {};
         config["moduleNameMapper"]["^@svgr/webpack!.*$"] = __dirname + "/svgImportMock";
 
+        return config;
+    },
+    devServer: config => {
+        set(config, "proxy./files", "http://localhost:9000");
         return config;
     }
 };

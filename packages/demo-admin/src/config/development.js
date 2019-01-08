@@ -42,7 +42,7 @@ export default {
             plugin: "image-component"
         },
         withFileUpload: {
-            plugin: ["with-file-upload", { uri: "http://localhost:9000/files" }]
+            plugin: ["with-file-upload", { uri: "/files" }]
         }
     }
 };

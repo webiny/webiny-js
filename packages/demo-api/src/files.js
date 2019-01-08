@@ -16,6 +16,7 @@ export async function createFile(event: Object) {
         };
     } catch (e) {
         return {
+            body: JSON.stringify({ error: e.message }),
             statusCode: 500,
             headers: {
                 "Access-Control-Allow-Origin": "*"
