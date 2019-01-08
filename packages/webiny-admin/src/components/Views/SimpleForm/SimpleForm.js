@@ -23,7 +23,9 @@ const title = css({
 });
 
 const actions = css({
-    textAlign: "right"
+    display: "flex",
+    justifyContent: "flex-end",
+    alignItems: "center"
 });
 
 const icon = css({

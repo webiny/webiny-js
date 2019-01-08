@@ -14,7 +14,11 @@ const smallerIcon = css({
 
 const Feedback = () => {
     return (
-        <ListItem>
+        <ListItem
+            onClick={() => {
+                window.open("https://www.webiny.com/contact-us", "_blank");
+            }}
+        >
             <ListItemGraphic>
                 <Icon icon={<SendFeedbackIcon />} />
             </ListItemGraphic>

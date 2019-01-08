@@ -3,6 +3,8 @@ import * as React from "react";
 import TimeAgo from "timeago-react";
 import { withRouter } from "webiny-app/components";
 import { i18n } from "webiny-app/i18n";
+import { css } from "emotion";
+import { Typography } from "webiny-ui/Typography";
 import {
     DataList,
     List,
@@ -14,6 +16,10 @@ import {
 } from "webiny-ui/List";
 
 const t = i18n.namespace("Cms.PagesDataList");
+
+const rightAlign = css({
+    alignItems: "flex-end !important"
+});
 
 const PagesDataList = props => {
     const { dataList, router } = props;
@@ -62,7 +68,11 @@ const PagesDataList = props => {
                                     </ListItemTextSecondary>
                                 )}
                             </ListItemText>
-                            <ListItemMeta>{page.locked ? "Published" : "Draft"}</ListItemMeta>
+                            <ListItemMeta className={rightAlign}>
+                                <Typography use={"subtitle2"}>
+                                    {page.locked ? "Published" : "Draft"} (v{page.version})
+                                </Typography>
+                            </ListItemMeta>
                         </ListItem>
                     ))}
                 </List>

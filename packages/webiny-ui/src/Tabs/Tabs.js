@@ -59,7 +59,7 @@ class Tabs extends React.Component<Props, State> {
         return (
             <React.Fragment>
                 {content}
-                {children}
+                <div className={"mdc-tab-content"}>{children}</div>
             </React.Fragment>
         );
     }
