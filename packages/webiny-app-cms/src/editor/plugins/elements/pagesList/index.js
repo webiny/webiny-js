@@ -5,17 +5,32 @@ import { Tab } from "webiny-ui/Tabs";
 import { ReactComponent as ListIcon } from "./round-list-24px.svg";
 import PagesList from "./PagesList";
 import PagesListSettings from "./PagesListSettings";
+import styled from "react-emotion";
+import { ReactComponent as PageListIcon } from "./page-list-icon.svg";
 
 export default () => {
+    const PreviewBox = styled("div")({
+        textAlign: "center",
+        margin: "0 auto",
+        width: 100,
+        svg: {
+            width: 100
+        }
+    });
+
     return [
         ({
             name: "cms-element-pages-list",
             type: "cms-element",
             toolbar: {
-                title: "Pages List",
+                title: "List of pages",
                 group: "cms-element-group-basic",
                 preview() {
-                    return "List sample";
+                    return (
+                        <PreviewBox>
+                            <PageListIcon />
+                        </PreviewBox>
+                    );
                 }
             },
             settings: ["cms-element-settings-delete"],
