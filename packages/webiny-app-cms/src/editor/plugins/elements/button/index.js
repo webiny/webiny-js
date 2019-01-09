@@ -6,6 +6,12 @@ import { ReactComponent as ButtonIcon } from "./round-toggle_on-24px.svg";
 import ButtonSettings from "./ButtonSettings";
 import Button from "./Button";
 import Action from "../../elementSettings/components/Action";
+import { css } from "emotion";
+
+const buttonWrapper = css({
+    display: "flex",
+    justifyContent: "center"
+});
 
 export default (): Array<PluginType> => {
     return [
@@ -16,7 +22,11 @@ export default (): Array<PluginType> => {
                 title: "Button",
                 group: "cms-element-group-basic",
                 preview() {
-                    return <button className={"webiny-cms-element-button"}>Click me</button>;
+                    return (
+                        <div className={buttonWrapper}>
+                            <button className={"webiny-cms-element-button"}>Click me</button>
+                        </div>
+                    );
                 }
             },
             settings: [
