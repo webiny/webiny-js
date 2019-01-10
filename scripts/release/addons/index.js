@@ -54,18 +54,17 @@ const packages = getPackages("build/node_modules/*").map(pkg => {
 });
 
 release({
-    ci: !!argv.ci,
+    ci: true,
     preview: argv.preview || false,
     branch: argv.branch || "master",
-    registryUrl: "http://localhost:4873",
     packages,
     plugins: [
         verifyEnvironment(),
         githubVerify(),
-        //npmVerify(),
+        npmVerify(),
         analyzeCommits(),
         updatePackages(),
-        //npmPublish(),
+        npmPublish(),
         githubPublish()
     ]
 });

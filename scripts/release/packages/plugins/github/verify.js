@@ -1,5 +1,5 @@
 const parseGithubUrl = require("parse-github-url");
-const GithubFactory = require("../../utils/githubClient");
+const GithubFactory = require("./utils/githubClient");
 
 module.exports = (pluginConfig = {}) => {
     return async ({ logger, config }, next) => {

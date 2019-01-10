@@ -1,7 +1,8 @@
+// @flow
 import React from "react";
 const { Provider, Consumer } = React.createContext();
 
-export class UiProvider extends React.Component {
+export class UiProvider extends React.Component<*, *> {
     state = { ui: {} };
 
     setData = (setter: Function) => {
@@ -19,6 +20,6 @@ export class UiProvider extends React.Component {
     }
 }
 
-export const UiConsumer = ({ children }) => {
+export const UiConsumer = ({ children }: Object) => {
     return <Consumer>{ui => React.cloneElement(children, { ui })}</Consumer>;
 };

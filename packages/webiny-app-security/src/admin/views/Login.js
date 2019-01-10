@@ -28,7 +28,7 @@ const Login = ({ login, error }: { login: Function, error?: Object }) => {
     return (
         <Wrapper>
             <Logo src={logoOrange} />
-            <Form onSubmit={login}>
+            <Form onSubmit={login} submitOnEnter>
                 {({ form, Bind }) => (
                     <React.Fragment>
                         <LoginContent>

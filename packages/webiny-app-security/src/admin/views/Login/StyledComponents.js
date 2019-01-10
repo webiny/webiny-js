@@ -48,5 +48,8 @@ export const alignRight = css({
 });
 
 export const errorMessage = css({
-    color: "red"
+    color: "red",
+    margin: "25px 0 0 0",
+    width: "100%",
+    textAlign: "center"
 });

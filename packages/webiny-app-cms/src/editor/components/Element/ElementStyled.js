@@ -87,7 +87,7 @@ export const ElementContainer = pure(
                 display: highlight ? "block" : "none",
                 width: !active ? "100%" : "100px",
                 height: !active ? "100%" : "25px",
-                [!active ? "left" : "right"]: -2,
+                [!active ? "left" : "right"]: !active ? 2 : -2,
                 position: "absolute",
                 top: -22, //0,
                 zIndex: 10,

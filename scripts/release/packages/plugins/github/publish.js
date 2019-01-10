@@ -1,6 +1,6 @@
 const execa = require("execa");
 const parseGithubUrl = require("parse-github-url");
-const GithubFactory = require("../../utils/githubClient");
+const GithubFactory = require("./utils/githubClient");
 
 module.exports = (pluginConfig = {}) => {
     return async ({ lastRelease, nextRelease, config, git, logger, packages }, next, finish) => {
@@ -11,10 +11,8 @@ module.exports = (pluginConfig = {}) => {
         // Need this variable for lerna-changelog
         process.env.GITHUB_AUTH = githubToken;
 
-        if (!config.preview) {
-            const githubClientConfig = { ...pluginConfig.githubClient, githubToken };
-            github = GithubFactory(githubClientConfig);
-        }
+        const githubClientConfig = { ...pluginConfig.githubClient, githubToken };
+        github = GithubFactory(githubClientConfig);
 
         const { name: repo, owner } = parseGithubUrl(config.repositoryUrl);
 

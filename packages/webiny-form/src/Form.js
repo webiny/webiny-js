@@ -10,8 +10,9 @@ import type { Props as BindProps } from "./Bind";
 type Props = {
     invalidFields?: Object,
     data?: Object,
-    disabled?: boolean,
+    disabled?: boolean | Function,
     validateOnFirstSubmit?: boolean,
+    submitOnEnter?: boolean,
     onSubmit?: (data: Object, form: Form) => void,
     onInvalid?: () => void,
     onChange?: (data: Object, form: Form) => void,
@@ -50,6 +51,7 @@ class Form extends React.Component<Props, State> {
     lastRender = [];
     validateFns = {};
     onChangeFns = {};
+    // $FlowFixMe
     Bind = createBind(this);
 
     static getDerivedStateFromProps({ data, invalidFields = {} }: Props, state: State) {
@@ -265,9 +267,10 @@ class Form extends React.Component<Props, State> {
     };
 
     __onKeyDown = (e: SyntheticKeyboardEvent<*>) => {
+        const { submitOnEnter = false } = this.props;
         if (
-            (e.metaKey || e.ctrlKey) &&
-            ["s", "Enter"].indexOf(e.key) > -1 &&
+            (submitOnEnter || e.metaKey || e.ctrlKey) &&
+            e.key === "Enter" &&
             !e.isDefaultPrevented()
         ) {
             // Need to blur current target in case of input fields to trigger validation
@@ -275,7 +278,9 @@ class Form extends React.Component<Props, State> {
             e.target && e.target.blur();
             e.preventDefault();
             e.stopPropagation();
-            this.submit();
+            // Fire submit with a small delay to allow input validation to complete.
+            // Not an ideal solution but works fine at this point. Will revisit this later.
+            setTimeout(() => this.submit(), 100);
         }
     };
 

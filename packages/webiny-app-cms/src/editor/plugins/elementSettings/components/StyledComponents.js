@@ -4,6 +4,7 @@ import styled from "react-emotion";
 export const Footer = styled("div")({
     backgroundColor: "var(--mdc-theme-background)",
     paddingBottom: 10,
+    margin: "0 -15px -15px -15px",
     ".mdc-layout-grid": {
         padding: "15px 10px 10px 15px",
         ".mdc-layout-grid__cell.mdc-layout-grid__cell--span-4": {
