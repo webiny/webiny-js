@@ -80,11 +80,6 @@ class MongoDbDriver extends Driver {
         MongoDbDriver.__preparePageOption(clonedOptions);
         MongoDbDriver.__prepareSearchOption(clonedOptions);
 
-
-        console.log("cname", this.getCollectionName(entity));
-        console.log("opts", clonedOptions);
-
-
         // Get first documents from cursor using each
         const results= await this.getDatabase()
             .collection(this.getCollectionName(entity))
@@ -94,7 +89,6 @@ class MongoDbDriver extends Driver {
             .sort(clonedOptions.sort)
             .toArray()
 
-        console.log('reza', results)
         const totalCount = await this.getDatabase()
             .collection(this.getCollectionName(entity))
             .countDocuments(clonedOptions.query);
@@ -105,7 +99,6 @@ class MongoDbDriver extends Driver {
             perPage: options.perPage
         });
 
-        console.log("results", "asd", results, meta);
         return new QueryResult(results, meta);
     }
 

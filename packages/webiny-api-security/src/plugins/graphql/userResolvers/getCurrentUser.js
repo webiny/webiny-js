@@ -10,6 +10,7 @@ export default (entityFetcher: EntityFetcher) => async (
 ) => {
     const User = entityFetcher(context);
 
+    console.log(context)
     const { user } = context;
 
     if (user) {

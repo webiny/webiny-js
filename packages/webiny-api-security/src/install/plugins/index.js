@@ -19,7 +19,6 @@ const plugin: InstallPluginType = {
             Entity.crud = config.entity.crud;
         }
 
-        console.log('krece security')
         await importData(context);
     }
 };
