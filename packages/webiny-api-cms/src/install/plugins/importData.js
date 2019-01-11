@@ -6,7 +6,7 @@ import * as data from "./data";
 
 export default async (context: Object) => {
     setupEntities(context);
-    const { Category, Tag, Menu, CmsSettings } = context.cms.entities;
+    const { Category, Menu, CmsSettings } = context.cms.entities;
 
     const { Group } = context.security.entities;
 
@@ -36,12 +36,6 @@ export default async (context: Object) => {
     });
 
     await menu.save();
-
-    ["nodejs", "graphql", "marketing"].forEach(async tag => {
-        const t = new Tag();
-        t.populate({ name: tag });
-        await t.save();
-    });
 
     const categories = {
         blog: new Category(),

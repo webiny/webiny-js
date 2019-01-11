@@ -72,8 +72,8 @@ class MongoDbDriver extends Driver {
 
     async find(entity, options) {
         if (options.aggregation) {
-            if (typeof options.aggregation === "function") {
-                return options.aggregation({
+            if (typeof options.pipeline === "function") {
+                return options.pipeline({
                     aggregate: async pipeline => {
                         const arrayResults = await this.getDatabase()
                             .collection(this.getCollectionName(entity))
@@ -89,7 +89,7 @@ class MongoDbDriver extends Driver {
             // Get first documents from cursor using each
             const results = await this.getDatabase()
                 .collection(this.getCollectionName(entity))
-                .aggregate(options.aggregation)
+                .aggregate(options.pipeline)
                 .toArray();
 
             return new QueryResult(results);

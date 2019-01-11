@@ -1,7 +1,8 @@
 // @flow
 import { Entity } from "webiny-entity";
 import { cloneDeep } from "lodash";
-import listPublishedPagesSql from "../pageResolvers/listPublishedPages.sql";
+
+import { listPublishedPages } from "webiny-api-cms/plugins/graphql/pageResolvers/listPublishedPages";
 
 const applyCleanup = async items => {
     if (!Array.isArray(items)) {
@@ -85,20 +86,17 @@ export default async ({ entity: menu, context: graphqlContext }: Object) => {
                         if (!context.distinctParents.loaded) {
                             const ids = Object.keys(context.distinctParents.data);
 
-                            const sql = await listPublishedPagesSql(
-                                { parent: ids },
-                                graphqlContext
-                            );
-
-                            await Entity.getDriver()
-                                .getConnection()
-                                .query(sql.query, sql.values)
-                                .then(results => {
-                                    for (let i = 0; i < results.length; i++) {
-                                        let { title, url, parent: id } = results[i];
-                                        context.distinctParents.data[id] = { id, title, url };
-                                    }
-                                });
+                            const { Page, Category } = graphqlContext.cms.entities;
+                            listPublishedPages({
+                                args: { parent: ids },
+                                Page,
+                                Category
+                            }).then(results => {
+                                for (let i = 0; i < results.length; i++) {
+                                    let { title, url, parent: id } = results[i];
+                                    context.distinctParents.data[id] = { id, title, url };
+                                }
+                            });
                         }
 
                         const page = context.distinctParents.data[item.page];
@@ -113,14 +111,12 @@ export default async ({ entity: menu, context: graphqlContext }: Object) => {
                     case "cms-menu-item-page-list": {
                         const { category, sortBy, sortDir } = item;
 
-                        const sql = await listPublishedPagesSql(
-                            { category, sort: { [sortBy]: sortDir } },
-                            graphqlContext
-                        );
-
-                        item.children = await Entity.getDriver()
-                            .getConnection()
-                            .query(sql.query, sql.values);
+                        const { Page, Category } = graphqlContext.cms.entities;
+                        item.children = await listPublishedPages({
+                            args: { category, sort: { [sortBy]: sortDir } },
+                            Page,
+                            Category
+                        });
 
                         break;
                     }
