@@ -46,20 +46,22 @@ export const resolveList = (entityFetcher: EntityFetcher) => async (
     parseBoolean(args);
 
     const query = { ...args.where };
-    if (args.search && args.search.query) {
-        query.$search = {
-            query: args.search.query,
-            columns: args.search.fields,
-            operator: args.search.operator || "or"
-        };
-    }
-
-    const data: EntityCollection<Entity> = await entityClass.find({
+    const find: Object = {
         query,
         page: args.page,
         perPage: args.perPage,
         sort: args.sort
-    });
+    };
+
+    if (args.search && args.search.query) {
+        find.search = {
+            query: args.search.query,
+            fields: args.search.fields,
+            operator: args.search.operator || "or"
+        };
+    }
+
+    const data: EntityCollection<Entity> = await entityClass.find(find);
 
     return new ListResponse(data, data.getMeta());
 };

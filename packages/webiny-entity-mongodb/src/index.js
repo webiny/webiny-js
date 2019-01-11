@@ -81,13 +81,13 @@ class MongoDbDriver extends Driver {
         MongoDbDriver.__prepareSearchOption(clonedOptions);
 
         // Get first documents from cursor using each
-        const results= await this.getDatabase()
+        const results = await this.getDatabase()
             .collection(this.getCollectionName(entity))
             .find(clonedOptions.query)
             .limit(clonedOptions.limit)
             .skip(clonedOptions.offset)
             .sort(clonedOptions.sort)
-            .toArray()
+            .toArray();
 
         const totalCount = await this.getDatabase()
             .collection(this.getCollectionName(entity))
@@ -190,7 +190,7 @@ class MongoDbDriver extends Driver {
 
     static __prepareSearchOption(clonedOptions) {
         // Here we handle search (if passed) - we transform received arguments into linked LIKE statements.
-        if (clonedOptions.search instanceof Object) {
+        if (clonedOptions.search && clonedOptions.search.query) {
             const { query, operator, fields } = clonedOptions.search;
 
             const searches = [];
