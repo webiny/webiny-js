@@ -3,8 +3,11 @@ import { Model } from "webiny-model";
 import { settingsFactory } from "webiny-api/entities";
 import { dummyResolver } from "webiny-api/graphql";
 import { ListErrorResponse, ListResponse, Response, ErrorResponse } from "webiny-api/graphql";
-import Mailchimp from "mailchimp-api-v3";
 import { hasScope } from "webiny-api-security";
+
+const mailchimp = {
+    post: () => {}
+};
 
 class MailchimpSettingsModel extends Model {
     constructor() {
@@ -136,7 +139,6 @@ export default [
                     ) => {
                         const { MailchimpSettings } = entities;
                         const settings = await MailchimpSettings.load();
-                        const mailchimp = new Mailchimp(settings.data.apiKey);
 
                         try {
                             const { lists } = await mailchimp.get({
@@ -162,7 +164,6 @@ export default [
                     ) => {
                         const { MailchimpSettings } = entities;
                         const settings = await MailchimpSettings.load();
-                        const mailchimp = new Mailchimp(settings.data.apiKey);
 
                         try {
                             const list = await mailchimp.get({
