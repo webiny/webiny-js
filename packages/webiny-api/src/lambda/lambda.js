@@ -5,9 +5,9 @@ import type { GraphQLMiddlewarePluginType } from "webiny-api/types";
 import { prepareSchema, createGraphqlRunner } from "../graphql/schema";
 import setup from "./setup";
 import { getPlugins } from "webiny-plugins";
-import debug from "debug";
+import * as debugLogger from "debug";
 
-export const log = debug("webiny");
+export const debug = debugLogger("webiny");
 
 const createApolloHandler = async (config: Object) => {
     await setup(config);
@@ -15,7 +15,6 @@ const createApolloHandler = async (config: Object) => {
 
     const registeredMiddleware: Array<GraphQLMiddlewarePluginType> = [];
 
-    log('createApolloHandler:mw:start')
     const middlewarePlugins = getPlugins("graphql-middleware");
     for (let i = 0; i < middlewarePlugins.length; i++) {
         let plugin = middlewarePlugins[i];
@@ -29,8 +28,7 @@ const createApolloHandler = async (config: Object) => {
             registeredMiddleware.push(middleware);
         }
     }
-    log('createApolloHandler:mw:end')
-    
+
     config.middleware && registeredMiddleware.push(config.middleware);
 
     if (registeredMiddleware.length) {
@@ -75,15 +73,13 @@ function getErrorResponse(error: Error & Object) {
 let handler = null;
 
 export const createHandler = (config: () => Promise<Object>) => {
-    log("createHandler:start");
     return async (event: Object, context: Object) => {
         config = await config();
+
         return await new Promise(async (resolve, reject) => {
             if (!handler) {
                 try {
-                    log("createApolloHandler:before");
                     handler = await createApolloHandler(config);
-                    log("createApolloHandler:after");
                 } catch (e) {
                     if (process.env.NODE_ENV === "development") {
                         console.log(e); // eslint-disable-line
@@ -101,7 +97,6 @@ export const createHandler = (config: () => Promise<Object>) => {
                     return resolve(getErrorResponse(e));
                 }
             }
-            log("security plugins:done");
 
             handler(event, context, (error, data) => {
                 if (error) {
@@ -112,7 +107,7 @@ export const createHandler = (config: () => Promise<Object>) => {
                     data.body = JSON.stringify(JSON.parse(data.body), null, 2);
                 }
 
-                log("resolve:data");
+                debug("FINISH: " + data.body);
                 resolve(data);
             });
         });

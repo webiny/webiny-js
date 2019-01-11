@@ -4,7 +4,6 @@ import type { Entity, EntityCollection } from "webiny-entity";
 import parseBoolean from "./parseBoolean";
 import InvalidAttributesError from "./InvalidAttributesError";
 import { ListResponse, ErrorResponse, Response } from "./responses";
-import { log } from "webiny-api/lambda/lambda";
 
 type EntityFetcher = (context: Object) => Class<Entity>;
 
@@ -55,14 +54,12 @@ export const resolveList = (entityFetcher: EntityFetcher) => async (
         };
     }
 
-    log("entity.find(...):start");
     const data: EntityCollection<Entity> = await entityClass.find({
         query,
         page: args.page,
         perPage: args.perPage,
         sort: args.sort
     });
-    log("entity.find(...):finish");
 
     return new ListResponse(data, data.getMeta());
 };
