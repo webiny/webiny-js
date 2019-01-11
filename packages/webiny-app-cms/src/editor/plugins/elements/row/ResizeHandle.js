@@ -17,7 +17,11 @@ const Handle = pure(
         cursor: "col-resize",
         backgroundColor: isResizing ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)",
         display: "none",
-        transition: "background-color 0.5s"
+        transition: "background-color 0.5s, opacity 0.2s",
+        opacity: 0.2,
+        "&:hover": {
+            opacity: 1
+        }
     }))
 );
 

@@ -14,12 +14,7 @@ const innerElement = css({
     position: "relative",
     display: "flex",
     flex: "1 100%",
-    boxSizing: "border-box",
-    "&:hover": {
-        ".resize-handle": {
-            display: "block !important"
-        }
-    }
+    boxSizing: "border-box"
 });
 
 const RowContainer = ({

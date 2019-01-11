@@ -13,7 +13,12 @@ import ResizeHandle from "./ResizeHandle";
 
 const ColumnContainer = styled("div")({
     position: "relative",
-    display: "flex"
+    display: "flex",
+    "&:hover": {
+        ">.resize-handle": {
+            display: "block !important"
+        }
+    }
 });
 
 type Props = {
