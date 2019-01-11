@@ -5,9 +5,6 @@ import type { GraphQLMiddlewarePluginType } from "webiny-api/types";
 import { prepareSchema, createGraphqlRunner } from "../graphql/schema";
 import setup from "./setup";
 import { getPlugins } from "webiny-plugins";
-import * as debugLogger from "debug";
-
-export const debug = debugLogger("webiny");
 
 const createApolloHandler = async (config: Object) => {
     await setup(config);
@@ -107,7 +104,6 @@ export const createHandler = (config: () => Promise<Object>) => {
                     data.body = JSON.stringify(JSON.parse(data.body), null, 2);
                 }
 
-                debug("FINISH: " + data.body);
                 resolve(data);
             });
         });
