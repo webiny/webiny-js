@@ -2,6 +2,7 @@
 import { Response, ErrorResponse } from "webiny-api/graphql";
 import type { Entity } from "webiny-entity";
 type EntityFetcher = (context: Object) => Class<Entity>;
+import { log } from "webiny-api/lambda/lambda";
 
 export default (entityFetcher: EntityFetcher) => async (
     root: any,
@@ -10,10 +11,10 @@ export default (entityFetcher: EntityFetcher) => async (
 ) => {
     const User = entityFetcher(context);
 
-    console.log(context)
     const { user } = context;
 
     if (user) {
+        log("currentUser:start");
         const instance = await User.findById(user.id);
         if (!instance) {
             return new ErrorResponse({
@@ -22,6 +23,7 @@ export default (entityFetcher: EntityFetcher) => async (
             });
         }
 
+        log("currentUser:end");
         return new Response(instance);
     }
 
