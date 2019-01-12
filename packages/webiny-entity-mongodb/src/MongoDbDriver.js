@@ -37,7 +37,9 @@ class MongoDbDriver extends Driver {
     // eslint-disable-next-line
     async save(entity) {
         if (!entity.isExisting()) {
-            entity.id = MongoDbDriver.__generateID();
+            if (!entity.id) {
+                entity.id = MongoDbDriver.__generateID();
+            }
 
             const data = await entity.toStorage();
             data._id = new mongodb.ObjectID(entity.id);
@@ -72,8 +74,8 @@ class MongoDbDriver extends Driver {
 
     async find(entity, options) {
         if (options.aggregation) {
-            if (typeof options.pipeline === "function") {
-                return options.pipeline({
+            if (typeof options.aggregation === "function") {
+                return options.aggregation({
                     aggregate: async pipeline => {
                         const arrayResults = await this.getDatabase()
                             .collection(this.getCollectionName(entity))
@@ -89,7 +91,7 @@ class MongoDbDriver extends Driver {
             // Get first documents from cursor using each
             const results = await this.getDatabase()
                 .collection(this.getCollectionName(entity))
-                .aggregate(options.pipeline)
+                .aggregate(options.aggregation)
                 .toArray();
 
             return new QueryResult(results);

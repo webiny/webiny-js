@@ -14,7 +14,7 @@ export default (entityFetcher: EntityFetcher) => async (
 
     const { page = 1, perPage = 10, sort = null, search = null, parent = null } = args;
 
-    const aggregation = [
+    const pipeline = [
         {
             $sort: {
                 version: -1
@@ -36,7 +36,7 @@ export default (entityFetcher: EntityFetcher) => async (
     ];
 
     if (parent) {
-        aggregation.push({
+        pipeline.push({
             $match: {
                 parent
             }
@@ -44,7 +44,7 @@ export default (entityFetcher: EntityFetcher) => async (
     }
 
     if (search) {
-        aggregation.push({
+        pipeline.push({
             $match: {
                 title: { $regex: `.*${search}.*`, $options: "i" }
             }
@@ -52,12 +52,12 @@ export default (entityFetcher: EntityFetcher) => async (
     }
 
     if (sort) {
-        aggregation.push({
+        pipeline.push({
             $sort: sort
         });
     }
 
-    aggregation.push({
+    pipeline.push({
         $facet: {
             results: [{ $skip: (page - 1) * perPage }, { $limit: perPage }],
             totalCount: [
@@ -70,7 +70,7 @@ export default (entityFetcher: EntityFetcher) => async (
 
     const pages: EntityCollection<Entity> = await entityClass.find({
         aggregation: async ({ aggregate, QueryResult }) => {
-            const results = await aggregate(aggregation);
+            const results = await aggregate(pipeline);
             const meta = createPaginationMeta({
                 totalCount: results.totalCount[0].count,
                 page,
