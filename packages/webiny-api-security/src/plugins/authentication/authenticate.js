@@ -1,7 +1,8 @@
 // @flow
 import { JwtToken } from "./jwtToken";
 
-export default async (config: Object, event: Object, context: Object) => {
+export default async (context: Object) => {
+    const { config, event } = context;
     let token = (event.headers.Authorization || "").replace("Bearer ", "");
     let user = null;
     if (token !== "" && event.httpMethod === "POST") {
