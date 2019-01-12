@@ -45,7 +45,7 @@ export default compose(
     connect(
         (state, { elementId }) => {
             const element = getElement(state, elementId);
-            const { image, settings } = element.data;
+            const { image = {}, settings } = element.data;
 
             return {
                 element: { id: element.id, type: element.type, path: element.path },

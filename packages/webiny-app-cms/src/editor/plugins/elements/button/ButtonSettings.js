@@ -109,14 +109,14 @@ export default compose(
             const historyUpdated = {};
 
             return (name, value, history = true) => {
-                const attrKey = `data.button.${name}`;
+                const attrKey = `data.${name}`;
 
                 let newElement = set(element, attrKey, value);
                 if (name.startsWith("icon")) {
-                    const { id, width, color } = get(newElement, "data.button.icon");
+                    const { id, width, color } = get(newElement, "data.icon");
                     newElement = set(
                         newElement,
-                        "data.button.icon.svg",
+                        "data.icon.svg",
                         getSvg(id, { width, color })
                     );
                 }
