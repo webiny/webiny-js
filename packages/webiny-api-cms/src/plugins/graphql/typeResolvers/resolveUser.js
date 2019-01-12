@@ -1,4 +1,5 @@
 // @flow
+import { get } from "lodash";
 const { print } = require("graphql/language/printer");
 
 const getUserQuery = fields => `
@@ -21,5 +22,5 @@ export default (attr: string) => async (parent, args, ctx, info) => {
         info
     });
 
-    return data.security.getUser.data;
+    return get(data, "security.getUser.data", null);
 };

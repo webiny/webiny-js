@@ -51,7 +51,11 @@ const createApolloHandler = async (config: Object) => {
             // Add `runQuery` function to be able to easily run queries against schemas from within a resolver
             ctx.graphql = createGraphqlRunner(schema, ctx);
             return ctx;
-        }
+        },
+        formatError: error => {
+            console.log(error);
+            return error;
+        },
     });
 
     return apollo.createHandler();
