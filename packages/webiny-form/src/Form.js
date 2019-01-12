@@ -64,13 +64,14 @@ class Form extends React.Component<Props, State> {
         let validation = _.cloneDeep(state.validation);
         if (_.isPlainObject(invalidFields) && Object.keys(invalidFields).length) {
             _.each(invalidFields, (message, name) => {
-                validation = {
-                    ...validation,
-                    [name]: {
+                validation = set(
+                    name,
+                    {
                         isValid: false,
                         message
-                    }
-                };
+                    },
+                    validation
+                );
             });
         }
 
@@ -175,22 +176,24 @@ class Form extends React.Component<Props, State> {
             data: { ...this.state.data }
         };
 
+        this.setState(state => {
+            return set(`validation.${name}.isValidating`, true, state);
+        });
+
         return Promise.resolve(validation.validate(value, validators, formData))
             .then(validationResults => {
                 const isValid = hasValidators ? (value === null ? null : true) : null;
 
                 this.setState(state => {
-                    return {
-                        ...state,
-                        validation: {
-                            ...state.validation,
-                            [name]: {
-                                isValid,
-                                message: null,
-                                results: validationResults
-                            }
-                        }
-                    };
+                    return set(
+                        `validation.${name}`,
+                        {
+                            isValid,
+                            message: null,
+                            results: validationResults
+                        },
+                        state
+                    );
                 });
 
                 return validationResults;
@@ -204,17 +207,15 @@ class Form extends React.Component<Props, State> {
 
                 // Set component state to reflect validation error
                 this.setState(state => {
-                    return {
-                        ...state,
-                        validation: {
-                            ...state.validation,
-                            [name]: {
-                                isValid: false,
-                                message: validationError.getMessage(),
-                                results: false
-                            }
-                        }
-                    };
+                    return set(
+                        `validation.${name}`,
+                        {
+                            isValid: false,
+                            message: validationError.getMessage(),
+                            results: false
+                        },
+                        state
+                    );
                 });
 
                 return false;
