@@ -11,12 +11,13 @@ function init() {
         return Promise.resolve(database);
     }
 
-    const dbName = "webinyjs";
+    const server = process.env.MONGODB_SERVER;
+    const databaseName = process.env.MONGODB_DB_NAME;
     return MongoClient.connect(
-        "mongodb://localhost:8014",
+        server,
         { useNewUrlParser: true }
     ).then(client => {
-        return client.db(dbName);
+        return client.db(databaseName);
     });
 }
 
@@ -40,7 +41,7 @@ export default async () => ({
     security: {
         enabled: false,
         token: {
-            secret: process.env.JWT_SECRET || "MyS3cr3tK3Y",
+            secret: process.env.WEBINY_JWT_SECRET,
             expiresOn: (args: Object) => addDays(new Date(), args.remember ? 30 : 1)
         }
     }
