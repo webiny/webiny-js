@@ -1,11 +1,11 @@
 // @flow
 import * as React from "react";
 import { getPlugin } from "webiny-plugins";
-import { redux, addMiddleware } from "webiny-app-cms/editor/redux";
+import { addMiddleware } from "webiny-app-cms/editor/redux";
 import { ELEMENT_CREATED, activateElement, togglePlugin } from "webiny-app-cms/editor/actions";
 import { ReactComponent as SettingsIcon } from "webiny-app-cms/editor/assets/icons/settings.svg";
-import type { CmsElementActionPluginType } from "webiny-app-cms/types";
 import AdvancedSettings from "./AdvancedSettings";
+import Action from "../components/Action";
 
 export default [
     {
@@ -32,7 +32,7 @@ export default [
                     const { onCreate } = plugin;
                     if (onCreate && onCreate === "open-settings") {
                         store.dispatch(activateElement({ element: element.id }));
-                        store.dispatch(togglePlugin({ name: "cms-element-action-advanced" }));
+                        store.dispatch(togglePlugin({ name: "cms-element-settings-advanced" }));
                     }
                 }
             });
@@ -41,17 +41,13 @@ export default [
             return <AdvancedSettings />;
         }
     },
-    ({
-        name: "cms-element-action-advanced",
-        type: "cms-element-action",
-        render() {
+    {
+        name: "cms-element-settings-advanced",
+        type: "cms-element-settings",
+        renderAction() {
             return (
-                <SettingsIcon
-                    onClick={() => {
-                        redux.store.dispatch(togglePlugin({ name: "cms-element-action-advanced" }));
-                    }}
-                />
+                <Action plugin={this.name} icon={<SettingsIcon />} tooltip={"Advanced settings"} />
             );
         }
-    }: CmsElementActionPluginType)
+    }
 ];

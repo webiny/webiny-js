@@ -87,7 +87,7 @@ class AdvancedSettings extends React.Component<Props> {
 export default compose(
     connect(
         state => ({
-            open: isPluginActive("cms-element-action-advanced")(state)
+            open: isPluginActive("cms-element-settings-advanced")(state)
         }),
         { updateElement, deactivatePlugin }
     ),
@@ -95,7 +95,7 @@ export default compose(
     withKeyHandler(),
     withHandlers({
         closeDialog: ({ deactivatePlugin }) => () => {
-            deactivatePlugin({ name: "cms-element-action-advanced" });
+            deactivatePlugin({ name: "cms-element-settings-advanced" });
         }
     }),
     withHandlers({

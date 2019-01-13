@@ -1,4 +1,5 @@
 // @flow
+import advanced from "./advanced";
 import animation from "./animation";
 import bar from "./bar";
 import deleteElement from "./delete";
@@ -17,6 +18,7 @@ import save from "./save";
 import link from "./link";
 
 export default [
+    advanced,
     animation,
     bar,
     divider,
