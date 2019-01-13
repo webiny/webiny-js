@@ -33,16 +33,10 @@ const createApolloHandler = async (config: Object) => {
         schema = applyMiddleware(schema, ...registeredMiddleware);
     }
 
-    // Security plugins are processed in the top-level resolver
     addSchemaLevelResolveFunction(schema, async (root, args, context) => {
         getPlugins("graphql-context").forEach(plugin => {
             plugin.apply(context);
         });
-
-        const securityPlugins = getPlugins("security");
-        for (let i = 0; i < securityPlugins.length; i++) {
-            await securityPlugins[i].authenticate(context);
-        }
     });
 
     const apollo = new ApolloServer({
