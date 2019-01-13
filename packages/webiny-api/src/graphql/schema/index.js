@@ -65,21 +65,10 @@ export function prepareSchema() {
     const linkTypeDefs = sourcesWithStitching.map(source => source.stitching.linkTypeDefs);
     const resolvers = sourcesWithStitching.map(source => source.stitching.resolvers);
 
-    const schema = mergeSchemas({
+    return mergeSchemas({
         schemas: [...Object.values(schemas), ...linkTypeDefs],
         resolvers
     });
-
-    return {
-        schema,
-        context: (globalContext: Object) => {
-            getPlugins("graphql-context").forEach(plugin => {
-                plugin.apply(globalContext);
-            });
-
-            return globalContext;
-        }
-    };
 }
 
 export function createGraphqlRunner(schema: Object, ctx: Object) {

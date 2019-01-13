@@ -9,7 +9,7 @@ import { getPlugins } from "webiny-plugins";
 
 const createApolloHandler = async (config: Object) => {
     await setup(config);
-    let { schema, context } = prepareSchema();
+    let schema = prepareSchema();
 
     const registeredMiddleware: Array<GraphQLMiddlewarePluginType> = [];
 
@@ -18,7 +18,7 @@ const createApolloHandler = async (config: Object) => {
         let plugin = middlewarePlugins[i];
         const middleware =
             typeof plugin.middleware === "function"
-                ? await plugin.middleware({ context, config })
+                ? await plugin.middleware({ config })
                 : plugin.middleware;
         if (Array.isArray(middleware)) {
             registeredMiddleware.push(...middleware);
@@ -35,6 +35,10 @@ const createApolloHandler = async (config: Object) => {
 
     // Security plugins are processed in the top-level resolver
     addSchemaLevelResolveFunction(schema, async (root, args, context) => {
+        getPlugins("graphql-context").forEach(plugin => {
+            plugin.apply(context);
+        });
+
         const securityPlugins = getPlugins("security");
         for (let i = 0; i < securityPlugins.length; i++) {
             await securityPlugins[i].authenticate(context);
@@ -47,15 +51,11 @@ const createApolloHandler = async (config: Object) => {
             origin: "*",
             methods: "GET,HEAD,POST"
         },
-        context: ({ event, context: { token, user } }) => {
-            let ctx = {
+        context: ({ event }) => {
+            const ctx: Object = {
                 event,
-                config,
-                user,
-                token
+                config
             };
-
-            ctx = { ...ctx, ...context(ctx) };
 
             // Add `runQuery` function to be able to easily run queries against schemas from within a resolver
             ctx.graphql = createGraphqlRunner(schema, ctx);
