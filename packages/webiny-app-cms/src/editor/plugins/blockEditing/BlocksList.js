@@ -51,7 +51,7 @@ class BlocksList extends React.Component<*, *> {
             <WindowScroller scrollElement={rightPanelElement}>
                 {({ isScrolling, registerChild, onChildScroll, scrollTop }) => (
                     <div style={{ flex: "1 1 auto" }}>
-                        <div ref={registerChild}>
+                        <div style={{ width: "800px", margin: "0 auto" }} ref={registerChild}>
                             <List
                                 autoHeight
                                 height={window.innerHeight - 70} /* TODO: @sven */
