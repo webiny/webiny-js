@@ -38,11 +38,6 @@ const createApolloHandler = async (config: Object) => {
         getPlugins("graphql-context").forEach(plugin => {
             plugin.apply(context);
         });
-
-        const securityPlugins = getPlugins("security");
-        for (let i = 0; i < securityPlugins.length; i++) {
-            await securityPlugins[i].authenticate(context);
-        }
     });
 
     const apollo = new ApolloServer({

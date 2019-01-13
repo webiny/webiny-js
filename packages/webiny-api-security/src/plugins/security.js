@@ -33,5 +33,15 @@ export default ([
             return middleware;
         }
     },
-    { type: "security", name: "security", authenticate }
+    {
+        type: "graphql-context",
+        name: "graphql-context-security",
+        apply: async (...args) => {
+            const securityPlugins: Array<PluginType> = getPlugins("graphql-security");
+            for (let i = 0; i < securityPlugins.length; i++) {
+                await securityPlugins[i].authenticate(...args);
+            }
+        }
+    },
+    { type: "graphql-security", name: "graphql-security", authenticate }
 ]: Array<PluginType>);
