@@ -5,10 +5,9 @@ import { pure } from "recompose";
 import { Query } from "react-apollo";
 import { loadPages } from "./graphql";
 
-const PagesList = pure(({ settings, theme }: Object = {}) => {
+const PagesList = pure(({ settings = {}, theme }: Object = {}) => {
     const { component, ...vars } = settings;
     const pageList = theme.elements.pagesList.components.find(cmp => cmp.name === component);
-
     if (!pageList) {
         warning(false, `Pages list component "${component}" is missing!`);
         return null;

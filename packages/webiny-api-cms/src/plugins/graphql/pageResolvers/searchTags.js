@@ -7,7 +7,8 @@ export default async (root: any, args: Object, context: Object) => {
         { $replaceRoot: { newRoot: "$settings.general" } },
         { $project: { tags: 1 } },
         { $unwind: "$tags" },
-        { $match: { tags: { $regex: `.*${query}.*`, $options: "i" } } }
+        { $match: { tags: { $regex: `.*${query}.*`, $options: "i" } } },
+        { $group: { _id: "$tags" } }
     ];
 
     const results = await Page.getDriver()
@@ -17,6 +18,6 @@ export default async (root: any, args: Object, context: Object) => {
         .toArray();
 
     return {
-        data: results.map(item => item.tags)
+        data: results.map(item => item._id)
     };
 };

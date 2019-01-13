@@ -1,8 +1,7 @@
 // @flow
-import type { Entity, EntityCollection } from "webiny-entity";
 import { createPaginationMeta } from "webiny-entity";
 import { ListResponse } from "webiny-api/graphql/responses";
-
+import { get } from "lodash";
 export const listPublishedPages = async ({ args, Page, Category }: Object) => {
     const {
         page = 1,
@@ -16,7 +15,7 @@ export const listPublishedPages = async ({ args, Page, Category }: Object) => {
         tagsRule = null
     } = args;
 
-    const baseFilters = [];
+    const baseFilters = [{ deleted: false }];
 
     if (parent) {
         if (Array.isArray(parent)) {
@@ -53,9 +52,9 @@ export const listPublishedPages = async ({ args, Page, Category }: Object) => {
 
     if (Array.isArray(tags)) {
         if (tagsRule === "ALL") {
-            baseFilters.push({ tags: { $all: tags } });
+            baseFilters.push({ "settings.general.tags": { $all: tags } });
         } else {
-            baseFilters.push({ tags: { $in: tags } });
+            baseFilters.push({ "settings.general.tags": { $in: tags } });
         }
     }
 
@@ -77,15 +76,17 @@ export const listPublishedPages = async ({ args, Page, Category }: Object) => {
         }
     });
 
+    console.log("--->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify(pipeline));
+
     return Page.find({
         aggregation: async ({ aggregate, QueryResult }) => {
             const results = await aggregate(pipeline);
             const meta = createPaginationMeta({
-                totalCount: results.totalCount[0].count,
+                totalCount: get(results, "totalCount.0.count") || 0,
                 page,
                 perPage
             });
-            return new QueryResult(results.results, meta);
+            return new QueryResult(get(results, "results") || [], meta);
         }
     });
 };
