@@ -33,7 +33,6 @@ const createApolloHandler = async (config: Object) => {
         schema = applyMiddleware(schema, ...registeredMiddleware);
     }
 
-    // Security plugins are processed in the top-level resolver
     addSchemaLevelResolveFunction(schema, async (root, args, context) => {
         getPlugins("graphql-context").forEach(plugin => {
             plugin.apply(context);
