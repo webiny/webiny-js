@@ -41,18 +41,14 @@ describe("toStorage test", function() {
 
         assert.equal(userStorageValue.firstName, "test");
         assert.equal(userStorageValue.lastName, "tester");
-        assert.deepEqual(
-            userStorageValue.verification,
-            {"verified":true,"documentType":"driversLicense"}
-        );
-        assert.deepEqual(
-            userStorageValue.tags,
-            [{"slug":"no-name","label":"No Name"},{"slug":"adult-user","label":"Adult User"}]
-        );
+        assert.deepEqual(userStorageValue.verification, {
+            verified: true,
+            documentType: "driversLicense"
+        });
+        assert.deepEqual(userStorageValue.tags, [
+            { slug: "no-name", label: "No Name" },
+            { slug: "adult-user", label: "Adult User" }
+        ]);
         assert.equal(userStorageValue.simpleEntity, "000000000000000000000001");
-        assert.deepEqual(
-            userStorageValue.simpleEntities,
-            ["54759eb3c090d83494e2d804","54759eb3c090d83494e2d805","54759eb3c090d83494e2d806"]
-        );
     });
 });

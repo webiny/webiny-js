@@ -5,7 +5,7 @@ import { collection } from "./database";
 
 describe("count error test", function() {
     it("count - an error must be thrown", async () => {
-        const countStub = sandbox.stub(collection, "count").callsFake(() => {
+        const countStub = sandbox.stub(collection, "countDocuments").callsFake(() => {
             throw Error("This is an error.");
         });
 

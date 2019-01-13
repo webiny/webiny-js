@@ -63,17 +63,13 @@ describe("populateFromStorage test", function() {
         assert.equal(simpleEntity.id, "01234567890123456789adee");
         assert.equal(simpleEntity.name, "Test-1");
 
-        assert.equal(user.getAttribute("simpleEntities").value.getCurrent()[0], 22);
-        assert.equal(user.getAttribute("simpleEntities").value.getCurrent()[1], 33);
-        assert.equal(user.getAttribute("simpleEntities").value.getCurrent()[2], 44);
-
         findCursor.data = [
             { id: 2, name: "Test-2" },
             { id: 3, name: "Test-3" },
             { id: 4, name: "Test-4" }
         ];
 
-        const countStub = sandbox.stub(collection, "count").callsFake(() => 3);
+        const countStub = sandbox.stub(collection, "countDocuments").callsFake(() => 3);
 
         assert.lengthOf(await user.simpleEntities, 3);
 

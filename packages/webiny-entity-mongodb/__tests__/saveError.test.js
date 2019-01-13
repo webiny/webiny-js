@@ -4,7 +4,7 @@ import SimpleEntity from "./entities/simpleEntity";
 import CustomIdEntity from "./entities/customIdEntity";
 const sandbox = sinon.sandbox.create();
 import { database, collection, findCursor } from "./database";
-import mdbid from 'mdbid';
+import mdbid from "mdbid";
 
 describe("save error test", function() {
     afterEach(() => sandbox.restore());
@@ -43,6 +43,7 @@ describe("save error test", function() {
         });
 
         try {
+            simpleEntity.name = "test2";
             await simpleEntity.save();
         } catch (e) {
             return;

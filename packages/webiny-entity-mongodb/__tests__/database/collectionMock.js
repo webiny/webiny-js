@@ -1,10 +1,10 @@
-import find from './findCursorMock';
+import find from "./findCursorMock";
 
 export default {
     find: () => find,
     findOne: () => {},
     deleteOne: () => {},
-    count: () => {},
+    countDocuments: () => {},
     updateOne: () => {},
     insertOne: () => {}
 };

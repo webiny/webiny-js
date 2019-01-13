@@ -1,9 +1,9 @@
 import { assert } from "chai";
 import sinon from "sinon";
 import SimpleEntity from "./entities/simpleEntity";
-import {  collection} from "./database";
-import mongodb from 'mongodb';
-import mdbid from 'mdbid';
+import { collection } from "./database";
+import mongodb from "mongodb";
+import mdbid from "mdbid";
 
 const sandbox = sinon.sandbox.create();
 
@@ -18,30 +18,25 @@ describe("save test", function() {
 
         const saveData = insertOneSpy.getCall(0).args[0];
         assert.deepEqual(saveData, {
-            "id": simpleEntity.id,
-            "name": null,
-            "slug": "",
-            "enabled": true,
-            "tags": null,
-            "_id": saveData._id
+            id: simpleEntity.id,
+            slug: "",
+            enabled: true,
+            _id: saveData._id
         });
 
         assert.instanceOf(saveData._id, mongodb.ObjectID);
 
         insertOneSpy.restore();
 
+        simpleEntity.name = "test2";
         const updateOneSpy = sandbox.stub(collection, "updateOne");
         await simpleEntity.save();
 
-
-        assert.deepEqual(updateOneSpy.getCall(0).args[0], {id: simpleEntity.id});
+        assert.deepEqual(updateOneSpy.getCall(0).args[0], { id: simpleEntity.id });
         assert.deepEqual(updateOneSpy.getCall(0).args[1], {
-            "$set": {
-                "id": simpleEntity.id,
-                "name": null,
-                "slug": "",
-                "enabled": true,
-                "tags": null
+            $set: {
+                name: "test2",
+                slug: "test2"
             }
         });
 
@@ -58,9 +53,11 @@ describe("save test", function() {
 
     it("should update existing entity", async () => {
         const newId = mdbid();
-        const generateIdStub = sandbox.stub(SimpleEntity.getDriver().constructor, "__generateID").callsFake(() => {
-            return newId;
-        });
+        const generateIdStub = sandbox
+            .stub(SimpleEntity.getDriver().constructor, "__generateID")
+            .callsFake(() => {
+                return newId;
+            });
 
         const simpleEntity = new SimpleEntity();
         await simpleEntity.save();

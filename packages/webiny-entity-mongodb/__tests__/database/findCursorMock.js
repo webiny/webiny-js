@@ -18,6 +18,9 @@ class FindCursorMock {
             callback(err, item);
         });
     }
+    toArray() {
+        return this.data;
+    }
 }
 
 export default new FindCursorMock();

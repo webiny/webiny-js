@@ -46,9 +46,7 @@ class ComplexEntity extends Entity {
         this.attr("verification").model(VerificationModel);
         this.attr("tags").models(TagModel);
         this.attr("simpleEntity").entity(SimpleEntity);
-        this.attr("simpleEntities")
-            .entities(SimpleEntity)
-            .setToStorage();
+        this.attr("simpleEntities").entities(SimpleEntity);
         this.attr("simpleEntitiesLoadedFromTable")
             .entities(SimpleEntity)
             .setAutoSave(false);

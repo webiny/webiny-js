@@ -9,7 +9,7 @@ describe("count test", function() {
     afterEach(() => sandbox.restore());
 
     it("must generate correct query", async () => {
-        const countSpy = sandbox.spy(collection, 'count');
+        const countSpy = sandbox.spy(collection, "countDocuments");
         const limitSpy = sandbox.spy(findCursor, "limit");
         const skipSpy = sandbox.spy(findCursor, "skip");
 
@@ -17,7 +17,7 @@ describe("count test", function() {
 
         await SimpleEntity.count();
 
-        assert.isUndefined(countSpy.getCall(0).args[0])
+        assert.isUndefined(countSpy.getCall(0).args[0]);
         assert.equal(limitSpy.getCall(0).args[0], 10);
         assert.equal(skipSpy.getCall(0).args[0], 0);
 
@@ -25,7 +25,7 @@ describe("count test", function() {
     });
 
     it("should count entities", async () => {
-        const countStub = sandbox.stub(collection, "count").callsFake(() => {
+        const countStub = sandbox.stub(collection, "countDocuments").callsFake(() => {
             return 1;
         });
 
@@ -36,7 +36,7 @@ describe("count test", function() {
     });
 
     it("should include search query if passed", async () => {
-        const countSpy = sandbox.stub(collection, "count");
+        const countSpy = sandbox.stub(collection, "countDocuments");
         await SimpleEntity.count({
             query: {
                 age: { $gt: 30 }
@@ -48,20 +48,20 @@ describe("count test", function() {
         });
 
         assert.deepEqual(countSpy.getCall(0).args[0], {
-            "$and": [
+            $and: [
                 {
-                    "$or": [
+                    $or: [
                         {
-                            "name": {
-                                "$regex": ".*this is.*",
-                                "$options": "i"
+                            name: {
+                                $regex: ".*this is.*",
+                                $options: "i"
                             }
                         }
                     ]
                 },
                 {
-                    "age": {
-                        "$gt": 30
+                    age: {
+                        $gt: 30
                     }
                 }
             ]

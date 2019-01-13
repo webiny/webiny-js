@@ -11,7 +11,7 @@ describe("delete error test", function() {
         simpleEntity.name = "This is a test";
         await simpleEntity.save();
 
-        const deleteStub = sandbox.stub(collection, "delete").callsFake(() => {
+        const deleteOneStub = sandbox.stub(collection, "deleteOne").callsFake(() => {
             throw Error("This is an error.");
         });
 
@@ -20,7 +20,7 @@ describe("delete error test", function() {
         } catch (e) {
             return;
         } finally {
-            deleteStub.restore();
+            deleteOneStub.restore();
         }
         throw Error(`Error should've been thrown.`);
     });

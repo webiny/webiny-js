@@ -7,7 +7,7 @@ describe("findByIds error test", function() {
     afterEach(() => sandbox.restore());
 
     it("findByIds - should throw an error", async () => {
-        const findStub = sandbox.stub(collection, "find").callsFake(() => {
+        const findOneStub = sandbox.stub(collection, "findOne").callsFake(() => {
             throw Error("This is an error.");
         });
 
@@ -16,7 +16,7 @@ describe("findByIds error test", function() {
         } catch (e) {
             return;
         } finally {
-            findStub.restore();
+            findOneStub.restore();
         }
         throw Error(`Error should've been thrown.`);
     });
