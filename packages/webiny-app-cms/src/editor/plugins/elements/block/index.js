@@ -68,6 +68,7 @@ export default (): ElementPluginType => {
             let dispatchNew = false;
             let element;
             if (source.path) {
+                // $FlowFixMe
                 element = cloneElement(source);
             } else {
                 dispatchNew = true;
