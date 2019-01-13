@@ -1,6 +1,5 @@
 // @flow
 import { Entity } from "webiny-entity";
-import sizeOf from "image-size";
 import FileModel from "./File.model";
 
 type ElementType = "element" | "block";
@@ -41,20 +40,5 @@ export function elementFactory(): Class<IElement> {
 
             this.attr("preview").model(FileModel);
         }
-
-        /* TODO: remove this method before release! */
-        async updateImage() {
-            const fileName = this.preview.name;
-            const dimensions = await sizeOf(process.cwd() + "/static/" + fileName);
-            // eslint-disable-next-line
-            console.log(process.cwd() + "/static/" + fileName);
-            this.preview.meta = {
-                width: dimensions.width,
-                height: dimensions.height
-            };
-            await this.save();
-        }
     };
 }
-
-// select name from Cms_Elements ORDER BY LENGTH(`name`), `name`;

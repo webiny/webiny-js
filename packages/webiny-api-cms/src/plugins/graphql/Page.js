@@ -17,7 +17,6 @@ import getNotFoundPage from "./pageResolvers/getNotFoundPage";
 import getErrorPage from "./pageResolvers/getErrorPage";
 import searchTags from "./pageResolvers/searchTags";
 import oembed from "./pageResolvers/oembed";
-import resolveUser from "./typeResolvers/resolveUser";
 
 const pageFetcher = ctx => ctx.cms.entities.Page;
 const elementFetcher = ctx => ctx.cms.entities.Element;
@@ -264,20 +263,7 @@ export default {
             // Updates an element
             updateElement: resolveUpdate(elementFetcher),
             // Deletes an element
-            deleteElement: resolveDelete(elementFetcher),
-            /* TODO: remove this resolver before release! */
-            updateImageSize: async (_, args, ctx) => {
-                const Element = ctx.cms.entities.Element;
-                const elements = await Element.find({ perPage: 100 });
-                elements.forEach(async el => {
-                    await el.updateImage();
-                });
-                return new Response(true);
-            }
-        },
-        Page: {
-            createdBy: resolveUser("createdBy"),
-            updatedBy: resolveUser("updatedBy")
+            deleteElement: resolveDelete(elementFetcher)
         },
         PageSettings: {
             _empty: () => ""
