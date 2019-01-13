@@ -11,6 +11,8 @@ type State = {
 };
 
 class Zoom extends React.Component<*, State> {
+    watchId: any;
+
     constructor() {
         super();
 
@@ -20,9 +22,13 @@ class Zoom extends React.Component<*, State> {
     }
 
     componentDidMount() {
-        store.observe(LOCAL_STORAGE_KEY, async (zoom: string) => {
+        this.watchId = store.observe(LOCAL_STORAGE_KEY, async (zoom: string) => {
             this.setState({ zoom: parseFloat(zoom) });
         });
+    }
+
+    componentWillUnmount() {
+        store.unobserve(this.watchId);
     }
 
     setZoomLevel = (zoom: number) => {

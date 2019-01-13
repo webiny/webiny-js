@@ -18,7 +18,8 @@ const createDefaultPages = async (context: Object, { categories, cmsSettings }: 
     const demoBlogPage = new Page();
     demoBlogPage.populate({
         title: "Demo blog post",
-        category: categories.blog
+        category: categories.blog,
+        tags: ["page", "demo"]
     });
     await demoBlogPage.save();
 
@@ -27,17 +28,20 @@ const createDefaultPages = async (context: Object, { categories, cmsSettings }: 
             home: (await createDefaultPage({
                 page: new Page(),
                 data: homepage,
-                category: categories.static
+                category: categories.static,
+                tags: ["page", "homepage"]
             })).id,
             error: (await createDefaultPage({
                 page: new Page(),
                 data: error,
-                category: categories.static
+                category: categories.static,
+                tags: ["page", "error"]
             })).id,
             notFound: (await createDefaultPage({
                 page: new Page(),
                 data: notFound,
-                category: categories.static
+                category: categories.static,
+                tags: ["page", "not-found", "404"]
             })).id
         }
     };

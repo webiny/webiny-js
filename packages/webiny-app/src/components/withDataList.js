@@ -41,6 +41,7 @@ export const withDataList = (withDataListParams: Object): Function => {
 
                 const dataListProps: Object = {
                     ...withDataListParams.response(queryData),
+                    loading: queryData.loading,
                     init(): void {
                         this.refresh();
                     },

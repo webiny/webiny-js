@@ -99,6 +99,7 @@ const handleDroppedElement = (source, target, position) => {
     let dispatchNew = false;
     let element;
     if (source.path) {
+        // $FlowFixMe
         element = cloneElement(source);
     } else {
         dispatchNew = true;
@@ -130,6 +131,7 @@ const splitColumn = (source, target) => {
     // Create a new column with half of the original target width
     let newColumn;
     if (source.path) {
+        // $FlowFixMe
         newColumn = cloneElement(source);
     } else {
         dispatchNew = true;

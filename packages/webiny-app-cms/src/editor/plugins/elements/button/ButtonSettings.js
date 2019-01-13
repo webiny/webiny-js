@@ -59,10 +59,10 @@ const ButtonSettings = ({
                         updatePreview={updateIconColorPreview}
                     />
                     <Grid>
-                        <Cell span={4}>
+                        <Cell span={6}>
                             <Typography use={"overline"}>Position</Typography>
                         </Cell>
-                        <Cell span={8}>
+                        <Cell span={6}>
                             <Select value={icon.position || "left"} onChange={updateIconPosition}>
                                 <option value={"left"}>Left</option>
                                 <option value={"right"}>Right</option>
@@ -109,12 +109,12 @@ export default compose(
             const historyUpdated = {};
 
             return (name, value, history = true) => {
-                const attrKey = `data.button.${name}`;
+                const attrKey = `data.${name}`;
 
                 let newElement = set(element, attrKey, value);
                 if (name.startsWith("icon")) {
-                    const { id, width, color } = get(newElement, "data.button.icon");
-                    newElement = set(newElement, "data.button.icon.svg", getSvg(id, { width, color }));
+                    const { id, width, color } = get(newElement, "data.icon");
+                    newElement = set(newElement, "data.icon.svg", getSvg(id, { width, color }));
                 }
 
                 if (!history) {

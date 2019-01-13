@@ -24,6 +24,9 @@ const linkStyles = css({
     paddingBottom: 15,
     textDecoration: "none",
     display: "block",
+    "&:hover": {
+        textDecoration: "none"
+    },
     "h3, h3>.mdc-typography--headline6": {
         lineHeight: "1em !important"
     },

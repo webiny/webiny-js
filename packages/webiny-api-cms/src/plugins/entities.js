@@ -42,24 +42,4 @@ const page: EntityPluginType = {
     }
 };
 
-const tag: EntityPluginType = {
-    name: "entity-cms-tag",
-    type: "entity",
-    namespace: "cms",
-    entity: {
-        name: "Tag",
-        factory: entities.tagFactory
-    }
-};
-
-const tags2Pages: EntityPluginType = {
-    name: "entity-cms-tags-2-pages",
-    type: "entity",
-    namespace: "cms",
-    entity: {
-        name: "Tags2Pages",
-        factory: entities.tags2PagesFactory
-    }
-};
-
-export default [category, element, menu, page, tag, tags2Pages];
+export default [category, element, menu, page];

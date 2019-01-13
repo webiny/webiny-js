@@ -4,7 +4,7 @@ import { compose } from "recompose";
 import { withCms } from "webiny-app-cms/context";
 import { DelayedOnChange } from "webiny-app-cms/editor/components/DelayedOnChange";
 import { Grid, Cell } from "webiny-ui/Grid";
-import { TagsMultiAutoComplete } from "webiny-app-cms/admin/components/TagsMultiAutoComplete";
+import { TagsMultiAutoComplete } from "webiny-app-cms/admin/components";
 import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
 import PageImage from "./PageImage";

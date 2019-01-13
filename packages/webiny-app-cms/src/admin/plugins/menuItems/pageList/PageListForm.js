@@ -7,10 +7,7 @@ import { Typography } from "webiny-ui/Typography";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ButtonSecondary, ButtonPrimary } from "webiny-ui/Button";
 import { Select } from "webiny-ui/Select";
-import {
-    SimpleTagsMultiAutoComplete,
-    CategoriesAutoComplete
-} from "webiny-app-cms/admin/components";
+import { TagsMultiAutoComplete, CategoriesAutoComplete } from "webiny-app-cms/admin/components";
 import { Elevation } from "webiny-ui/Elevation";
 
 const LinkForm = ({ data, onSubmit, onCancel }: Object) => {
@@ -65,7 +62,7 @@ const LinkForm = ({ data, onSubmit, onCancel }: Object) => {
                         <Grid>
                             <Cell span={12}>
                                 <Bind name="tags">
-                                    <SimpleTagsMultiAutoComplete />
+                                    <TagsMultiAutoComplete />
                                 </Bind>
                             </Cell>
                         </Grid>

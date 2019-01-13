@@ -5,10 +5,7 @@ import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
 import { withCms } from "webiny-app-cms/context";
 import PagesList from "./PagesList";
-import {
-    SimpleTagsMultiAutoComplete,
-    CategoriesAutoComplete
-} from "webiny-app-cms/admin/components";
+import { TagsMultiAutoComplete, CategoriesAutoComplete } from "webiny-app-cms/admin/components";
 
 const PagesListSettings = ({ cms: { theme }, Bind }: Object) => {
     return (
@@ -47,7 +44,7 @@ const PagesListSettings = ({ cms: { theme }, Bind }: Object) => {
             <Grid>
                 <Cell span={6}>
                     <Bind name="data.tags">
-                        <SimpleTagsMultiAutoComplete
+                        <TagsMultiAutoComplete
                             label="Filter by tags"
                             description="Enter tags to filter pages"
                         />

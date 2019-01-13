@@ -1,7 +1,6 @@
 // @flow
 import { type InstallPluginType } from "webiny-install/types";
 import { general, seo, social } from "webiny-api-cms/plugins/pageSettings";
-import createMySQLTables from "./createMySQLTables";
 import importData from "./importData";
 
 const plugin: InstallPluginType = {
@@ -12,7 +11,6 @@ const plugin: InstallPluginType = {
         description: "Webiny CMS is a powerful content management system (CMS)."
     },
     install: async context => {
-        await createMySQLTables();
         await importData(context);
     }
 };

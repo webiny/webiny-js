@@ -56,9 +56,10 @@ const createBind = (form: Form) => {
 
         // If Form has a `disabled` prop we must evaluate it to see if form input needs to be disabled
         if (form.props.disabled) {
-            const inputDisabledByForm = isFunction(form.props.disabled)
-                ? form.props.disabled({ data: { ...form.state.data } })
-                : form.props.disabled;
+            const inputDisabledByForm =
+                typeof form.props.disabled === "function"
+                    ? form.props.disabled({ data: { ...form.state.data } })
+                    : form.props.disabled;
             // Only override the input prop if the entire Form is disabled
             if (inputDisabledByForm) {
                 newProps["disabled"] = true;

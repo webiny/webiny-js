@@ -1,2 +1,2 @@
 // @flow
-export { MySQLTable, createHandler } from "./src";
+export { createHandler } from "./src";

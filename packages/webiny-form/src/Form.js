@@ -10,8 +10,9 @@ import type { Props as BindProps } from "./Bind";
 type Props = {
     invalidFields?: Object,
     data?: Object,
-    disabled?: boolean,
+    disabled?: boolean | Function,
     validateOnFirstSubmit?: boolean,
+    submitOnEnter?: boolean,
     onSubmit?: (data: Object, form: Form) => void,
     onInvalid?: () => void,
     onChange?: (data: Object, form: Form) => void,
@@ -50,6 +51,7 @@ class Form extends React.Component<Props, State> {
     lastRender = [];
     validateFns = {};
     onChangeFns = {};
+    // $FlowFixMe
     Bind = createBind(this);
 
     static getDerivedStateFromProps({ data, invalidFields = {} }: Props, state: State) {
@@ -62,13 +64,14 @@ class Form extends React.Component<Props, State> {
         let validation = _.cloneDeep(state.validation);
         if (_.isPlainObject(invalidFields) && Object.keys(invalidFields).length) {
             _.each(invalidFields, (message, name) => {
-                validation = {
-                    ...validation,
-                    [name]: {
+                validation = set(
+                    name,
+                    {
                         isValid: false,
                         message
-                    }
-                };
+                    },
+                    validation
+                );
             });
         }
 
@@ -173,22 +176,24 @@ class Form extends React.Component<Props, State> {
             data: { ...this.state.data }
         };
 
+        this.setState(state => {
+            return set(`validation.${name}.isValidating`, true, state);
+        });
+
         return Promise.resolve(validation.validate(value, validators, formData))
             .then(validationResults => {
                 const isValid = hasValidators ? (value === null ? null : true) : null;
 
                 this.setState(state => {
-                    return {
-                        ...state,
-                        validation: {
-                            ...state.validation,
-                            [name]: {
-                                isValid,
-                                message: null,
-                                results: validationResults
-                            }
-                        }
-                    };
+                    return set(
+                        `validation.${name}`,
+                        {
+                            isValid,
+                            message: null,
+                            results: validationResults
+                        },
+                        state
+                    );
                 });
 
                 return validationResults;
@@ -202,17 +207,15 @@ class Form extends React.Component<Props, State> {
 
                 // Set component state to reflect validation error
                 this.setState(state => {
-                    return {
-                        ...state,
-                        validation: {
-                            ...state.validation,
-                            [name]: {
-                                isValid: false,
-                                message: validationError.getMessage(),
-                                results: false
-                            }
-                        }
-                    };
+                    return set(
+                        `validation.${name}`,
+                        {
+                            isValid: false,
+                            message: validationError.getMessage(),
+                            results: false
+                        },
+                        state
+                    );
                 });
 
                 return false;
@@ -265,9 +268,10 @@ class Form extends React.Component<Props, State> {
     };
 
     __onKeyDown = (e: SyntheticKeyboardEvent<*>) => {
+        const { submitOnEnter = false } = this.props;
         if (
-            (e.metaKey || e.ctrlKey) &&
-            ["s", "Enter"].indexOf(e.key) > -1 &&
+            (submitOnEnter || e.metaKey || e.ctrlKey) &&
+            e.key === "Enter" &&
             !e.isDefaultPrevented()
         ) {
             // Need to blur current target in case of input fields to trigger validation
@@ -275,7 +279,9 @@ class Form extends React.Component<Props, State> {
             e.target && e.target.blur();
             e.preventDefault();
             e.stopPropagation();
-            this.submit();
+            // Fire submit with a small delay to allow input validation to complete.
+            // Not an ideal solution but works fine at this point. Will revisit this later.
+            setTimeout(() => this.submit(), 100);
         }
     };
 

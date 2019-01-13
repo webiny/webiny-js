@@ -30,7 +30,11 @@ const getElementActions = (plugin: Object) => {
         return null;
     });
 
-    return [...actions, { plugin: getPlugin("cms-element-settings-save") }].filter(pl => pl);
+    return [
+        ...actions,
+        { plugin: getPlugin("cms-element-settings-advanced") },
+        { plugin: getPlugin("cms-element-settings-save") }
+    ].filter(pl => pl);
 };
 
 const ElementSettingsBar = pure(({ elementType, deactivateElement }) => {

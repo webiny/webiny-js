@@ -13,7 +13,9 @@ const pageInnerWrapper = css({
     height: "calc(100vh - 230px)",
     position: "relative",
     ".webiny-cms-page-document": {
-        transform: "scale(var(--webiny-cms-page-preview-scale))"
+        transform: "scale(var(--webiny-cms-page-preview-scale))",
+        transition: "transform 0.5s ease-in-out",
+        transformOrigin: "top center"
     }
 });
 

@@ -13,38 +13,73 @@ export default (entityFetcher: EntityFetcher) => async (
     const entityClass = entityFetcher(context);
 
     const { page = 1, perPage = 10, sort = null, search = null, parent = null } = args;
-    const variables = [];
 
-    let where = "WHERE 1=1";
+    const pipeline = [
+        {
+            $sort: {
+                version: -1
+            }
+        },
+        {
+            $group: {
+                _id: "$parent",
+                maxVersion: {
+                    $max: "version"
+                },
+                doc: {
+                    $first: "$$ROOT"
+                }
+            }
+        },
+
+        { $replaceRoot: { newRoot: "$doc" } }
+    ];
+
     if (parent) {
-        where += ` AND parent = ?`;
-        variables.push(parent);
+        pipeline.push({
+            $match: {
+                parent
+            }
+        });
     }
 
     if (search) {
-        where += ` AND MATCH (title) AGAINST (? IN BOOLEAN MODE)`;
-        variables.push(search);
+        pipeline.push({
+            $match: {
+                title: { $regex: `.*${search}.*`, $options: "i" }
+            }
+        });
     }
 
-    let orderBy = "";
     if (sort) {
-        orderBy =
-            "ORDER BY " +
-            Object.keys(sort)
-                .map(key => `${key} ${sort[key] > 0 ? "ASC" : "DESC"}`)
-                .join(", ");
+        pipeline.push({
+            $sort: sort
+        });
     }
 
-    const sql = {
-        query: `SELECT SQL_CALC_FOUND_ROWS * FROM (
-          SELECT * FROM ${
-              entityClass.storageClassId
-          } WHERE deleted = 0 ORDER BY published DESC, version DESC
-        ) as p ${where} GROUP BY parent ${orderBy} LIMIT ? OFFSET ?`,
-        values: [...variables, perPage, (page - 1) * perPage]
-    };
+    pipeline.push({
+        $facet: {
+            results: [{ $skip: (page - 1) * perPage }, { $limit: perPage }],
+            totalCount: [
+                {
+                    $count: "count"
+                }
+            ]
+        }
+    });
 
-    const pages: EntityCollection<Entity> = await entityClass.find({ sql });
+    const pages: EntityCollection<Entity> = await entityClass.find({
+        aggregation: async ({ aggregate, QueryResult }) => {
+            const results = await aggregate(pipeline);
+            const meta = createPaginationMeta({
+                totalCount: results.totalCount[0].count,
+                page,
+                perPage
+            });
+            return new QueryResult(results.results, meta);
+        }
+    });
+
     return new ListResponse(
         pages,
         createPaginationMeta({

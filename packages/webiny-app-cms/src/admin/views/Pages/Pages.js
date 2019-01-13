@@ -27,12 +27,16 @@ class Pages extends React.Component<Props, State> {
     };
 
     onSelect = category => {
-        this.closeDialog();
+        this.hideCategoriesDialog();
         this.props.createPage(category.id);
     };
 
-    closeDialog = () => {
+    showCategoriesDialog = () => {
         this.setState({ showCategoriesDialog: true });
+    };
+
+    hideCategoriesDialog = () => {
+        this.setState({ showCategoriesDialog: false });
     };
 
     render() {
@@ -52,7 +56,7 @@ class Pages extends React.Component<Props, State> {
                         <PageDetails refreshPages={dataList.refresh} />
                     </RightPanel>
                 </CompactView>
-                <FloatingActionButton onClick={this.closeDialog} />
+                <FloatingActionButton onClick={this.showCategoriesDialog} />
             </React.Fragment>
         );
     }
