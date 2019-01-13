@@ -38,6 +38,7 @@ module.exports = (pluginConfig = {}) => {
 
             const commits = await getCommits(lastRelease.gitHead, config.branch, logger);
             let relevantCommits = commits;
+
             if (typeof pluginConfig.isRelevant === "function") {
                 relevantCommits = commits.filter(commit => pluginConfig.isRelevant(pkg, commit));
             }
