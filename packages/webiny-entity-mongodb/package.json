@@ -22,7 +22,8 @@
     "sinon": "^4.2.0"
   },
   "scripts": {
-    "build": "babel src -d lib --source-maps --copy-files",
-    "build:watch": "babel src -d lib --source-maps --copy-files --watch"
+    "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
+    "flow-copy-source": "flow-copy-source src ${DEST:-build}",
+    "postbuild": "yarn flow-copy-source"
   }
 }
