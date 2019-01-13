@@ -15,6 +15,7 @@ import getPublishedPage from "./pageResolvers/getPublishedPage";
 import getHomePage from "./pageResolvers/getHomePage";
 import getNotFoundPage from "./pageResolvers/getNotFoundPage";
 import getErrorPage from "./pageResolvers/getErrorPage";
+import searchTags from "./pageResolvers/searchTags";
 import oembed from "./pageResolvers/oembed";
 import resolveUser from "./typeResolvers/resolveUser";
 
@@ -24,7 +25,7 @@ const elementFetcher = ctx => ctx.cms.entities.Element;
 export default {
     typeDefs: () => [
         UserType.typeDefs,
-        `type Page {
+        /* GraphQL*/ `type Page {
             id: ID
             createdBy: User
             updatedBy: User
@@ -106,6 +107,10 @@ export default {
             meta: ListMeta
         }
         
+        type SearchTagsResponse {
+            data: [String] 
+        }
+        
         type OembedResponse {
             data: JSON
             error: Error
@@ -163,6 +168,9 @@ export default {
             ): PageListResponse
             
             listElements(perPage: Int): ElementListResponse
+            
+            # Returns existing tags based on given search term.        
+            searchTags(query: String!): SearchTagsResponse
             
             oembedData(
                 url: String! 
@@ -231,6 +239,7 @@ export default {
             getNotFoundPage,
             getErrorPage,
             listElements: resolveList(elementFetcher),
+            searchTags: searchTags,
             oembedData: oembed
         },
         CmsMutation: {

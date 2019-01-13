@@ -1,6 +1,5 @@
 // @flow
 import { Entity } from "webiny-entity";
-import createMySQLTables from "./createMySQLTables";
 import importData from "./importData";
 import { type InstallPluginType } from "webiny-install/types";
 
@@ -20,7 +19,6 @@ const plugin: InstallPluginType = {
             Entity.crud = config.entity.crud;
         }
 
-        await createMySQLTables(config);
         await importData(context);
     }
 };

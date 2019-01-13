@@ -1,28 +1,32 @@
 // @flow
-import mysql from "serverless-mysql";
 import addDays from "date-fns/add_days";
-import { MySQLDriver } from "webiny-entity-mysql";
+import MongoDbDriver from "webiny-entity-mongodb";
+import { MongoClient } from "mongodb";
 
 // Configure default storage
-const connection = mysql({
-    config: {
-        host: "localhost",
-        port: 32768,
-        user: "root",
-        password: "dev",
-        database: "webiny",
-        timezone: "Z",
-        connectionLimit: 100
-    }
-});
 
-export default {
+let database = null;
+function init() {
+    if (database && database.serverConfig.isConnected()) {
+        return Promise.resolve(database);
+    }
+
+    const dbName = "webinyjs";
+    return MongoClient.connect(
+        "mongodb://localhost:8014",
+        { useNewUrlParser: true }
+    ).then(client => {
+        return client.db(dbName);
+    });
+}
+
+export default async () => ({
     database: {
-        connection
+        mongodb: database
     },
     entity: {
         // Instantiate entity driver with DB connection
-        driver: new MySQLDriver({ connection }),
+        driver: new MongoDbDriver({ database: await init() }),
         crud: {
             logs: true,
             read: {
@@ -34,10 +38,10 @@ export default {
         }
     },
     security: {
-        enabled: true,
+        enabled: false,
         token: {
             secret: process.env.JWT_SECRET || "MyS3cr3tK3Y",
             expiresOn: (args: Object) => addDays(new Date(), args.remember ? 30 : 1)
         }
     }
-};
+});

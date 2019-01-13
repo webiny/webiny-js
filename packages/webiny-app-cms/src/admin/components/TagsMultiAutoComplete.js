@@ -6,31 +6,20 @@ import { compose } from "recompose";
 import gql from "graphql-tag";
 import { get } from "lodash";
 
-const listTags = gql`
-    query ListTags($search: SearchInput) {
+const searchTags = gql`
+    query SearchTags($search: String!) {
         cms {
-            tags: listTags(search: $search) {
-                data {
-                    id
-                    name
-                }
+            tags: searchTags(query: $search) {
+                data
             }
         }
     }
 `;
 
-export const SimpleTagsMultiAutoComplete = compose(
+export default compose(
     withAutoComplete({
-        response: data => ({ data: get(data, "cms.tags.data", []).map(item => item.name) }),
-        search: query => ({ query, fields: ["name"] }),
-        query: listTags
+        response: data => ({ data: get(data, "cms.tags.data", []) }),
+        search: query => query,
+        query: searchTags
     })
 )(props => <UiMultiAutoComplete label="Tags" useSimpleValues allowFreeInput {...props} />);
-
-export const TagsMultiAutoComplete = compose(
-    withAutoComplete({
-        response: data => get(data, "cms.tags"),
-        search: query => ({ query, fields: ["name"] }),
-        query: listTags
-    })
-)(props => <UiMultiAutoComplete label="Tags" allowFreeInput {...props} />);

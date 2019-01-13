@@ -11,6 +11,7 @@
   "dependencies": {
     "@babel/runtime": "^7.0.0",
     "graphql-iso-date": "^3.5.0",
+    "lodash": "^4.17.11",
     "mdbid": "^1.0.0",
     "node-fetch": "2.1.2",
     "webiny-api": "0.0.0",

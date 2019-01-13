@@ -1,6 +1,6 @@
 // @flow
 import { Response, ErrorResponse } from "webiny-api/graphql/responses";
-import listPublishedPagesSql from "./listPublishedPages.sql";
+import { listPublishedPages } from "./listPublishedPages";
 
 export default async (root: any, args: Object, context: Object) => {
     if (!args.parent && !args.url) {
@@ -11,9 +11,8 @@ export default async (root: any, args: Object, context: Object) => {
     }
 
     // We utilize the same query used for listing published pages (single source of truth = less maintenance).
-    const sql = listPublishedPagesSql({ ...args, perPage: 1 }, context);
-    const { Page } = context.cms.entities;
-    const [page] = await Page.find({ sql });
+    const { Page, Category } = context.cms.entities;
+    const [page] = await listPublishedPages({ Page, Category, args: { ...args, perPage: 1 } });
 
     if (!page) {
         return new ErrorResponse({

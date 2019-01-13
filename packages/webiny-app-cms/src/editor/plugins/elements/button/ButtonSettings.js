@@ -114,11 +114,7 @@ export default compose(
                 let newElement = set(element, attrKey, value);
                 if (name.startsWith("icon")) {
                     const { id, width, color } = get(newElement, "data.icon");
-                    newElement = set(
-                        newElement,
-                        "data.icon.svg",
-                        getSvg(id, { width, color })
-                    );
+                    newElement = set(newElement, "data.icon.svg", getSvg(id, { width, color }));
                 }
 
                 if (!history) {

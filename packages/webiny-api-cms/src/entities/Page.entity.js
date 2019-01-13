@@ -169,7 +169,7 @@ export const pageFactory = (context: Object): Class<IPage> => {
 
         async getNextVersion() {
             const revision: null | Page = await Page.findOne({
-                query: { parent: this.parent, deleted: [true, false] },
+                query: { parent: this.parent, deleted: { $in: [true, false] } },
                 sort: { version: -1 }
             });
 

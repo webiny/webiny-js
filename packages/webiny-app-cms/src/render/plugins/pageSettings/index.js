@@ -10,10 +10,7 @@ export default ([
                 image {
                     src
                 }
-                tags {
-                    id 
-                    name
-                }
+                tags
                 layout
             }
     `
