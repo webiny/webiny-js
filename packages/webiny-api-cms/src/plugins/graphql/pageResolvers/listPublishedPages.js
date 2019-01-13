@@ -15,7 +15,7 @@ export const listPublishedPages = async ({ args, Page, Category }: Object) => {
         tagsRule = null
     } = args;
 
-    const baseFilters = [{ deleted: false }];
+    const baseFilters = [{ published: true, deleted: false }];
 
     if (parent) {
         if (Array.isArray(parent)) {
@@ -75,8 +75,6 @@ export const listPublishedPages = async ({ args, Page, Category }: Object) => {
             ]
         }
     });
-
-    console.log("--->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify(pipeline));
 
     return Page.find({
         aggregation: async ({ aggregate, QueryResult }) => {
