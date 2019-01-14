@@ -34,9 +34,11 @@ const createApolloHandler = async (config: Object) => {
     }
 
     addSchemaLevelResolveFunction(schema, async (root, args, context) => {
-        getPlugins("graphql-context").forEach(plugin => {
-            plugin.apply(context);
-        });
+        const ctxPlugins = getPlugins("graphql-context");
+        for (let i = 0; i < ctxPlugins.length; i++) {
+            const ctxPlugin = ctxPlugins[i];
+            await ctxPlugin.apply(context);
+        }
     });
 
     const apollo = new ApolloServer({
