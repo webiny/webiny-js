@@ -21,28 +21,32 @@ function init() {
     });
 }
 
-export default async () => ({
-    database: {
-        mongodb: database
-    },
-    entity: {
-        // Instantiate entity driver with DB connection
-        driver: new MongoDbDriver({ database: await init() }),
-        crud: {
-            logs: true,
-            read: {
-                maxPerPage: 1000
-            },
-            delete: {
-                soft: true
+export default async () => {
+    database = await init();
+
+    return {
+        database: {
+            mongodb: database
+        },
+        entity: {
+            // Instantiate entity driver with DB connection
+            driver: new MongoDbDriver({ database }),
+            crud: {
+                logs: true,
+                read: {
+                    maxPerPage: 1000
+                },
+                delete: {
+                    soft: true
+                }
+            }
+        },
+        security: {
+            enabled: false,
+            token: {
+                secret: process.env.WEBINY_JWT_SECRET,
+                expiresOn: () => addDays(new Date(), 30)
             }
         }
-    },
-    security: {
-        enabled: true,
-        token: {
-            secret: process.env.WEBINY_JWT_SECRET,
-            expiresOn: (args: Object) => addDays(new Date(), args.remember ? 30 : 1)
-        }
-    }
-});
+    };
+};
