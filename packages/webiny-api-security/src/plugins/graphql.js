@@ -9,7 +9,7 @@ import { getRegisteredScopes, hasScope } from "webiny-api-security";
 export default ([
     {
         type: "graphql",
-        name: "graphql-security",
+        name: "graphql-security-schema",
         namespace: "security",
         typeDefs: () => [
             user.typeDefs,
