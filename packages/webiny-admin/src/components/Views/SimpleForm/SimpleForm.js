@@ -5,7 +5,7 @@ import { Typography } from "webiny-ui/Typography";
 import { Elevation } from "webiny-ui/Elevation";
 import styled from "react-emotion";
 import { css } from "emotion";
-import { Icon } from "webiny-ui/src/Icon";
+import { Icon } from "webiny-ui/Icon";
 
 const SimpleFormContainer = styled("div")({
     position: "relative",

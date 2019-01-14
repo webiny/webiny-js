@@ -2,8 +2,8 @@
 import * as React from "react";
 import { css } from "emotion";
 import styled from "react-emotion";
-import { Typography } from "webiny-ui/src/Typography";
-import { Select } from "webiny-ui/src/Select";
+import { Typography } from "webiny-ui/Typography";
+import { Select } from "webiny-ui/Select";
 import RenderElement from "webiny-app-cms/render/components/Element";
 import Zoom from "./Zoom";
 

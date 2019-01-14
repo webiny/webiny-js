@@ -1,6 +1,6 @@
 //@flow
 import * as React from "react";
-import { Menu } from "webiny-app-cms/src/render/components";
+import { Menu } from "webiny-app-cms/render/components";
 import HamburgerMenu from "react-hamburger-menu";
 import classNames from "classnames";
 import { get } from "lodash";
