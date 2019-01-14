@@ -5,6 +5,7 @@
  */
 const gitLogParser = require("git-log-parser");
 const getStream = require("get-stream");
+const execa = require("execa");
 
 /**
  * Retrieve the list of commits since the commit sha associated with the last release, or all the commits of the current branch if there is no last released version.
@@ -29,13 +30,23 @@ module.exports = async (gitHead, branch, logger) => {
         committerDate: { key: "ci", type: Date }
     });
 
-    const commits = (await getStream.array(
-        gitLogParser.parse({ _: `${gitHead ? gitHead + ".." : ""}HEAD` })
-    )).map(commit => {
-        commit.message = commit.message.trim();
-        commit.gitTags = commit.gitTags.trim();
-        return commit;
-    });
+    const commits = await Promise.all(
+        (await getStream.array(gitLogParser.parse({ _: `${gitHead ? gitHead + ".." : ""}HEAD` })))
+            .filter(commit => commit.tree.long)
+            .map(async commit => {
+                const files = await execa.stdout("git", [
+                    "diff-tree",
+                    "--no-commit-id",
+                    "--name-only",
+                    "-r",
+                    commit.commit.long
+                ]);
+                commit.files = files.split("\n");
+                commit.message = commit.message.trim();
+                commit.gitTags = commit.gitTags.trim();
+                return commit;
+            })
+    );
     logger.log("Found %s commits since last release", commits.length);
     return commits;
 };

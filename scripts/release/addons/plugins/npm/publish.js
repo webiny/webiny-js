@@ -7,7 +7,7 @@ module.exports = () => {
         const { registryUrl = "https://registry.npmjs.org", tag } = config;
         for (let i = 0; i < packages.length; i++) {
             const pkg = packages[i];
-            if (!pkg.isAddon) {
+            if (!pkg.isAddon || !pkg.nextRelease) {
                 continue;
             }
 
