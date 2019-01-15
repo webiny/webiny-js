@@ -7,15 +7,15 @@ const _ = require("lodash");
  * @param packages
  * @param version
  */
-function updateDeps(deps, packages, version) {
+function updateDeps(deps, packages) {
     const lib = {};
     _.each(packages, pkg => {
-        lib[pkg.name] = version;
+        lib[pkg.name] = _.get(pkg, "nextRelease.version", _.get(pkg, "lastRelease.version"));
     });
 
-    _.each(deps, (v, dep) => {
+    _.each(deps, (version, dep) => {
         if (dep in lib) {
-            deps[dep] = "^" + version;
+            deps[dep] = "^" + lib[dep];
         }
     });
 }
@@ -31,8 +31,13 @@ module.exports = () => {
 
             // Update package.json data
             pkg.package.version = pkg.nextRelease.version;
-            updateDeps(pkg.package.dependencies, packages, pkg.nextRelease.version);
-            updateDeps(pkg.package.devDependencies, packages, pkg.nextRelease.version);
+            updateDeps(pkg.package.dependencies, packages);
+            if (pkg.package.devDependencies) {
+                updateDeps(pkg.package.devDependencies, packages);
+            }
+            if (pkg.package.peerDependencies) {
+                updateDeps(pkg.package.peerDependencies, packages);
+            }
         }
 
         next();
