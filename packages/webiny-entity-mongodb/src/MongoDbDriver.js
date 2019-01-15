@@ -1,3 +1,4 @@
+// @flow
 import merge from "lodash/merge";
 import clone from "lodash/clone";
 import mdbid from "mdbid";
@@ -32,6 +33,21 @@ class MongoDbDriver extends Driver {
 
     getModelClass() {
         return this.model;
+    }
+
+    /**
+     * Note: collection name must be passed because entity from which it's called cannot be determined.
+     * @returns {Promise<*>}
+     * @param collection
+     * @param pipeline
+     */
+    async aggregate(collection, pipeline) {
+        const arrayResults = await this.getDatabase()
+            .collection(collection)
+            .aggregate(pipeline)
+            .toArray();
+
+        return arrayResults;
     }
 
     // eslint-disable-next-line

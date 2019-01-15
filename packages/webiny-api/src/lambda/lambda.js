@@ -76,7 +76,9 @@ let handler = null;
 
 export const createHandler = (config: () => Promise<Object>) => {
     return async (event: Object, context: Object) => {
-        config = await config();
+        if (typeof config === "function") {
+            config = await config();
+        }
 
         return await new Promise(async (resolve, reject) => {
             if (!handler) {
@@ -99,6 +101,11 @@ export const createHandler = (config: () => Promise<Object>) => {
                     data.body = JSON.stringify(JSON.parse(data.body), null, 2);
                 }
 
+                data.headers = {
+                    ...data.headers,
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Credentials": true
+                };
                 resolve(data);
             });
         });

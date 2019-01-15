@@ -1,5 +1,5 @@
 // @flow
-import type { Entity, EntityCollection } from "webiny-entity";
+import type { Entity } from "webiny-entity";
 import { createPaginationMeta } from "webiny-entity";
 import { ListResponse } from "webiny-api/graphql/responses";
 
@@ -14,7 +14,8 @@ export default (entityFetcher: EntityFetcher) => async (
 
     const { page = 1, perPage = 10, sort = null, search = null, parent = null } = args;
 
-    const pipeline = [
+    const pipeline: Array<Object> = [
+        { $match: { deleted: false } },
         {
             $sort: {
                 version: -1
@@ -23,32 +24,22 @@ export default (entityFetcher: EntityFetcher) => async (
         {
             $group: {
                 _id: "$parent",
-                maxVersion: {
-                    $max: "version"
+                parent: {
+                    $first: "$parent"
                 },
-                doc: {
-                    $first: "$$ROOT"
+                title: {
+                    $first: "$title"
                 }
             }
-        },
-
-        { $replaceRoot: { newRoot: "$doc" } }
+        }
     ];
 
     if (parent) {
-        pipeline.push({
-            $match: {
-                parent
-            }
-        });
+        pipeline[0].$match.parent = parent;
     }
 
     if (search) {
-        pipeline.push({
-            $match: {
-                title: { $regex: `.*${search}.*`, $options: "i" }
-            }
-        });
+        pipeline[0].$match.title = { $regex: `.*${search}.*`, $options: "i" };
     }
 
     if (sort) {
@@ -57,35 +48,29 @@ export default (entityFetcher: EntityFetcher) => async (
         });
     }
 
-    pipeline.push({
-        $facet: {
-            results: [{ $skip: (page - 1) * perPage }, { $limit: perPage }],
-            totalCount: [
-                {
-                    $count: "count"
-                }
-            ]
-        }
-    });
+    const collection = entityClass.getDriver().getCollectionName(entityClass);
+    const ids = await entityClass
+        .getDriver()
+        .aggregate(collection, [
+            ...pipeline,
+            { $project: { _id: -1, id: 1 } },
+            { $skip: (page - 1) * perPage },
+            { $limit: perPage }
+        ]);
 
-    const pages: EntityCollection<Entity> = await entityClass.find({
-        aggregation: async ({ aggregate, QueryResult }) => {
-            const results = await aggregate(pipeline);
-            const meta = createPaginationMeta({
-                totalCount: results.totalCount[0].count,
-                page,
-                perPage
-            });
-            return new QueryResult(results.results, meta);
+    const [totalCount] = await entityClass.getDriver().aggregate(collection, [
+        ...pipeline,
+        {
+            $count: "totalCount"
         }
-    });
+    ]);
 
     return new ListResponse(
-        pages,
+        await entityClass.find({ id: { $in: ids.map(item => item._id) } }),
         createPaginationMeta({
             page,
             perPage,
-            totalCount: pages.getMeta().totalCount
+            totalCount: totalCount ? totalCount.totalCount : 0
         })
     );
 };

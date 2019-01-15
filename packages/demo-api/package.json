@@ -42,6 +42,7 @@
     "babel-loader": "^8.0.0",
     "cross-env": "^5.1.5",
     "del-cli": "^1.1.0",
+    "raw-loader": "^1.0.0",
     "serverless": "^1.27.2",
     "serverless-offline": "^3.20.3",
     "serverless-webpack": "^5.2.0",

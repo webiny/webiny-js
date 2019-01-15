@@ -2,8 +2,7 @@
 import addDays from "date-fns/add_days";
 import MongoDbDriver from "webiny-entity-mongodb";
 import { MongoClient } from "mongodb";
-
-// Configure default storage
+import caBundle from "raw-loader!./rds-combined-ca-bundle.pem";
 
 let database = null;
 function init() {
@@ -13,9 +12,10 @@ function init() {
 
     const server = process.env.MONGODB_SERVER;
     const databaseName = process.env.MONGODB_DB_NAME;
+
     return MongoClient.connect(
         server,
-        { useNewUrlParser: true }
+        { useNewUrlParser: true, sslCA: caBundle }
     ).then(client => {
         return client.db(databaseName);
     });

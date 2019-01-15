@@ -4,11 +4,10 @@ export default async (root: any, args: Object, context: Object) => {
     const { query } = args;
     const pipeline = [
         { $match: { deleted: false } },
-        { $replaceRoot: { newRoot: "$settings.general" } },
-        { $project: { tags: 1 } },
-        { $unwind: "$tags" },
-        { $match: { tags: { $regex: `.*${query}.*`, $options: "i" } } },
-        { $group: { _id: "$tags" } }
+        { $project: { "settings.general.tags": 1 } },
+        { $unwind: "$settings.general.tags" },
+        { $match: { "settings.general.tags": { $regex: `.*${query}.*`, $options: "i" } } },
+        { $group: { _id: "$settings.general.tags" } }
     ];
 
     const results = await Page.getDriver()
