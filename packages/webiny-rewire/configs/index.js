@@ -25,7 +25,7 @@ module.exports = {
         return config;
     },
     devServer: config => {
-        set(config, "proxy./files", "http://localhost:9000");
+        set(config, "proxy./files", process.env.REACT_APP_API_HOST);
         return config;
     }
 };

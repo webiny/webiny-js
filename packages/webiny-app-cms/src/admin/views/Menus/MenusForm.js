@@ -1,6 +1,5 @@
 // @flow
 import * as React from "react";
-import { i18n } from "webiny-app/i18n";
 import { Form } from "webiny-form";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
@@ -12,7 +11,6 @@ import {
     SimpleFormFooter,
     SimpleFormContent
 } from "webiny-admin/components/Views/SimpleForm";
-const t = i18n.namespace("Cms.MenusForm");
 
 type Props = WithCrudFormProps;
 type State = {
@@ -33,17 +31,17 @@ class MenusForm extends React.Component<Props, State> {
                             <Grid>
                                 <Cell span={6}>
                                     <Bind name="title" validators={["required"]}>
-                                        <Input label={t`Name`} />
+                                        <Input label={"Name"} />
                                     </Bind>
                                 </Cell>
                                 <Cell span={6}>
                                     <Bind name="slug" validators={["required"]}>
-                                        <Input disabled={data.id} label={t`Slug`} />
+                                        <Input disabled={data.id} label={"Slug"} />
                                     </Bind>
                                 </Cell>
                                 <Cell span={12}>
                                     <Bind name="description">
-                                        <Input rows={5} label={t`Description`} />
+                                        <Input rows={5} label={"Description"} />
                                     </Bind>
                                 </Cell>
                             </Grid>
@@ -53,7 +51,7 @@ class MenusForm extends React.Component<Props, State> {
                         </SimpleFormContent>
                         <SimpleFormFooter>
                             <ButtonPrimary type="primary" onClick={form.submit} align="right">
-                                {t`Save menu`}
+                                {"Save menu"}
                             </ButtonPrimary>
                         </SimpleFormFooter>
                     </SimpleForm>

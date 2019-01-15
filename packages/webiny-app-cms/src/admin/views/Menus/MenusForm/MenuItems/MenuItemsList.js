@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import SortableTree from "react-sortable-tree/dist/index.cjs";
+import SortableTree from "react-sortable-tree";
 import { getPlugin } from "webiny-plugins";
 import MenuItemRenderer from "./MenuItemRenderer";
 import { Typography } from "webiny-ui/Typography";
