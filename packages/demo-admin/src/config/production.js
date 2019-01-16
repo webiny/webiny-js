@@ -1,4 +1,4 @@
-// @flow
+// @flowIgnore
 import { renderMiddleware } from "webiny-app/router";
 import ApolloClient from "apollo-client";
 import { ApolloLink } from "apollo-link";
@@ -17,9 +17,7 @@ export default {
         link: ApolloLink.from([
             createOmitTypenameLink(),
             createAuthLink(),
-            new BatchHttpLink({
-                uri: "https://z5pex02t4m.execute-api.us-east-2.amazonaws.com/dev/graphql"
-            })
+            new BatchHttpLink({ uri: process.env.REACT_APP_API_HOST + "/graphql" })
         ]),
         cache: new InMemoryCache({
             addTypename: true,
