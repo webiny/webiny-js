@@ -1,4 +1,4 @@
-// @flow
+// @flowIgnore
 import { renderMiddleware } from "webiny-app/router";
 import ApolloClient from "apollo-client";
 import { ApolloLink } from "apollo-link";
