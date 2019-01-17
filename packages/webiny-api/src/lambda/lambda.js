@@ -68,17 +68,19 @@ function getErrorResponse(error: Error & Object) {
             errors: [{ code: error.code, message: error.message }]
         }),
         statusCode: 200,
-        headers: { "Content-Type": "application/json" }
+        headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Credentials": true
+        }
     };
 }
 
 let handler = null;
 
-export const createHandler = (config: () => Promise<Object>) => {
+export const createHandler = (configObject: () => Promise<Object>) => {
     return async (event: Object, context: Object) => {
-        if (typeof config === "function") {
-            config = await config();
-        }
+        const config = await configObject();
 
         return await new Promise(async (resolve, reject) => {
             if (!handler) {
