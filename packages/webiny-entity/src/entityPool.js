@@ -27,7 +27,7 @@ class EntityPool {
             return false;
         }
 
-        const entityId = entity instanceof Entity ? entity.id : id;
+        const entityId = Entity.isEntityInstance(entity) ? entity.id : id;
         return typeof this.getPool()[entityClass][entityId] !== "undefined";
     }
 
@@ -46,7 +46,7 @@ class EntityPool {
             return undefined;
         }
 
-        const entityId = entity instanceof Entity ? entity.id : id;
+        const entityId = Entity.isEntityInstance(entity) ? entity.id : id;
         const poolEntry: EntityPoolEntry = this.getPool()[entityClass][entityId];
         if (poolEntry) {
             return poolEntry.getEntity();
