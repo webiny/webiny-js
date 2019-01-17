@@ -80,6 +80,8 @@ describe("entity attribute test", () => {
             }
         }
 
+        Primary.classId = "Primary";
+
         class Secondary extends Entity {
             constructor() {
                 super();
@@ -88,6 +90,8 @@ describe("entity attribute test", () => {
                     .setValidators("required");
             }
         }
+
+        Secondary.classId = "Secondary";
 
         const secondary1 = new Secondary();
         secondary1.name = "secondary1";
@@ -144,6 +148,8 @@ describe("entity attribute test", () => {
             }
         }
 
+        Primary.classId = "Primary";
+
         class Secondary extends Entity {
             constructor() {
                 super();
@@ -152,6 +158,8 @@ describe("entity attribute test", () => {
                     .setValidators("required");
             }
         }
+
+        Secondary.classId = "secondary";
 
         const secondary1 = new Secondary();
         secondary1.name = "secondary1";

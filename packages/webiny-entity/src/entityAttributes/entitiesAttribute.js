@@ -142,7 +142,7 @@ class EntitiesAttribute extends Attribute {
                     class: this.getUsingClass() || this.getEntitiesClass()
                 };
                 for (let i = 0; i < entities.current.length; i++) {
-                    if (entities.current[i] instanceof entities.class) {
+                    if (Entity.isInstanceOf(entities.current[i], entities.class)) {
                         await entities.current[i].emit("delete");
                     }
                 }
@@ -164,7 +164,7 @@ class EntitiesAttribute extends Attribute {
                 };
 
                 for (let i = 0; i < entities.current.length; i++) {
-                    if (entities.current[i] instanceof entities.class) {
+                    if (Entity.isInstanceOf(entities.current[i], entities.class)) {
                         await entities.current[i].delete({ events: { delete: false } });
                     }
                 }
@@ -320,7 +320,7 @@ class EntitiesAttribute extends Attribute {
 
         for (let i = 0; i < value.length; i++) {
             const currentEntity = value[i];
-            if (!(currentEntity instanceof correctClass)) {
+            if (!(Entity.isInstanceOf(currentEntity, correctClass))) {
                 errors.push({
                     code: ModelError.INVALID_ATTRIBUTE,
                     data: {
@@ -393,7 +393,7 @@ class EntitiesAttribute extends Attribute {
             let current = entities[i];
 
             // "Instance of Entity" check is enough at this point.
-            if (current instanceof Entity) {
+            if (Entity.isEntityInstance(current)) {
                 continue;
             }
 

@@ -68,7 +68,10 @@ class EntityAttributeValue extends AttributeValue {
 
         // Initial value will always be an existing (already saved) Entity instance.
         const initial = this.getInitial();
-        if (initial instanceof Entity && _.get(initial, "id") !== _.get(this.getCurrent(), "id")) {
+        if (
+            Entity.isEntityInstance(initial) &&
+            _.get(initial, "id") !== _.get(this.getCurrent(), "id")
+        ) {
             await initial.delete(options);
         }
     }
@@ -88,14 +91,14 @@ class EntityAttributeValue extends AttributeValue {
 
     hasInitial() {
         const attribute: EntityAttribute = (this.attribute: any);
-        return this.initial instanceof attribute.getEntityClass();
+        return Entity.isInstanceOf(this.initial, attribute.getEntityClass());
     }
 
     isDirty(): boolean {
         if (super.isDirty()) {
             return true;
         }
-        return this.current instanceof Entity && this.current.isDirty();
+        return Entity.isEntityInstance(this.current) && this.current.isDirty();
     }
 
     isClean(): boolean {
@@ -117,7 +120,7 @@ class EntityAttributeValue extends AttributeValue {
     isDifferentFrom(value: mixed): boolean {
         const currentId = _.get(this.current, "id", this.current);
 
-        if (value instanceof Entity) {
+        if (Entity.isEntityInstance(value)) {
             return !value.id || value.id !== currentId;
         }
 
