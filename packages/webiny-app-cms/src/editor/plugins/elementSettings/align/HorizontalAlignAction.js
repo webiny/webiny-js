@@ -47,7 +47,9 @@ export default compose(
             options: { alignments } = defaultOptions
         }) => {
             return () => {
-                const types = Object.keys(icons).filter(key => alignments.includes(key));
+                const types = Object.keys(icons).filter(key =>
+                    alignments ? alignments.includes(key) : true
+                );
 
                 const nextAlign = types[types.indexOf(align) + 1] || "left";
 
