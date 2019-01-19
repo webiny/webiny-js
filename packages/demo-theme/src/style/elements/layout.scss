@@ -30,7 +30,8 @@
 
   @include mobile{
     max-width: 100% !important;
-    width: 100% !important; // added for Content #6
+    //width: 100% !important; // added for Content #6
+    width: auto !important; // set to auto for CTA #9
     flex: 0 auto !important;
   }
 }
