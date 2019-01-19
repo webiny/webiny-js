@@ -32,7 +32,7 @@ class EntityCollection<T: $Subtype<Entity>> extends Array<T> {
 
     async toJSON(fields: ?string): Promise<Array<mixed>> {
         const collection = this.map(async (entity: mixed) => {
-            if (entity instanceof Entity) {
+            if (Entity.isEntityInstance(entity)) {
                 return await entity.toJSON(fields);
             }
             return entity;

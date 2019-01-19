@@ -149,6 +149,18 @@ class Entity {
         return this.constructor.pool;
     }
 
+    static isEntityInstance(value: any): boolean {
+        return !!_.get(value, "constructor.classId");
+    }
+
+    static isEntityClass(value: any): boolean {
+        return !!_.get(value, "classId");
+    }
+
+    static isInstanceOf(instance: ?any, instanceClass: ?Class<Entity>) {
+        return _.get(instance, "constructor.classId") === _.get(instanceClass, "classId");
+    }
+
     /**
      * Sets whether entity is existing or not.
      */

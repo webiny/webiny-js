@@ -65,7 +65,7 @@ class EntityAttribute extends Attribute {
                 // We don't need to validate here because validate method was called on the parent entity, which caused
                 // the validation of data to be executed recursively on all attribute values.
                 const current = this.value.getCurrent();
-                if (current instanceof Entity) {
+                if (Entity.isEntityInstance(current)) {
                     await current.save({ validation: false });
                 }
 
@@ -94,7 +94,7 @@ class EntityAttribute extends Attribute {
                 const value = ((this.value: any): EntityAttributeValue);
                 await value.load();
                 const entity = value.getInitial();
-                if (entity instanceof this.getEntityClass()) {
+                if (Entity.isInstanceOf(entity, this.getEntityClass())) {
                     await entity.emit("delete");
                 }
             }
@@ -105,7 +105,7 @@ class EntityAttribute extends Attribute {
                 const value = ((this.value: any): EntityAttributeValue);
                 await value.load();
                 const entity = value.getInitial();
-                if (entity instanceof this.getEntityClass()) {
+                if (Entity.isInstanceOf(entity, this.getEntityClass())) {
                     // We don't want to fire the "delete" event because its handlers were already executed by upper 'delete' listener.
                     // That listener ensured that all callbacks that might've had blocked the deleted process were executed.
                     await entity.delete({ validation: false, events: { delete: false } });
@@ -216,7 +216,7 @@ class EntityAttribute extends Attribute {
         // attribute specified by the "classIdAttribute" option (passed on attribute construction).
         const classIdAttribute = this.getClassIdAttribute();
         if (classIdAttribute && this.hasMultipleEntityClasses()) {
-            if (finalValue instanceof Entity) {
+            if (Entity.isEntityInstance(finalValue)) {
                 return classIdAttribute.setValue(finalValue.classId);
             }
             if (!finalValue) {
@@ -240,7 +240,7 @@ class EntityAttribute extends Attribute {
         }
 
         // "Instance of Entity" check is enough at this point.
-        if (this.value.getCurrent() instanceof Entity) {
+        if (Entity.isEntityInstance(this.value.getCurrent())) {
             return this.value.getCurrent();
         }
 
@@ -310,7 +310,7 @@ class EntityAttribute extends Attribute {
 
     async getJSONValue() {
         const value = await this.getValue();
-        if (value instanceof Entity) {
+        if (Entity.isEntityInstance(value)) {
             return await value.toJSON();
         }
         return value;
@@ -401,14 +401,15 @@ class EntityAttribute extends Attribute {
 
     async validateValue(value: mixed) {
         // This validates on the entity level.
-        value instanceof Entity && (await value.validate());
+        Entity.isEntityInstance(value) && (await value.validate());
     }
 
     isValidInstance(instance: ?Entity) {
         if (this.hasMultipleEntityClasses()) {
-            return instance instanceof Entity;
+            return Entity.isEntityInstance(instance);
         }
-        return instance instanceof this.getEntityClass();
+
+        return Entity.isInstanceOf(instance, this.getEntityClass());
     }
 }
 

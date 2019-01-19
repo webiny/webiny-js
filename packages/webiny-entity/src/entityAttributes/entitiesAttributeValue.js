@@ -124,7 +124,7 @@ class EntitiesAttributeValue extends AttributeValue {
 
         for (let i = 0; i < initial.length; i++) {
             const currentInitial: mixed = initial[i];
-            if (currentInitial instanceof Entity) {
+            if (Entity.isEntityInstance(currentInitial)) {
                 if (!currentEntitiesIds.includes(currentInitial.id)) {
                     await currentInitial.delete();
                 }
@@ -144,7 +144,7 @@ class EntitiesAttributeValue extends AttributeValue {
 
         for (let i = 0; i < current.length; i++) {
             const entity = current[i];
-            if (entity instanceof Entity) {
+            if (Entity.isEntityInstance(entity)) {
                 const attribute: EntitiesAttribute = (this.attribute: any);
                 const classes = attribute.classes;
 
@@ -206,7 +206,7 @@ class EntitiesAttributeValue extends AttributeValue {
             const initial = initialLinks[i];
             // $FlowFixMe
             if (!currentLinksIds.includes(initial.id)) {
-                initial instanceof Entity && (await initial.delete());
+                Entity.isEntityInstance(initial) && (await initial.delete());
             }
         }
     }
@@ -300,7 +300,7 @@ class EntitiesAttributeValue extends AttributeValue {
     clean(): EntitiesAttributeValue {
         const current = this.getCurrent();
         for (let i = 0; i < current.length; i++) {
-            if (current[i] instanceof Entity) {
+            if (Entity.isEntityInstance(current[i])) {
                 if (!current[i].id) {
                     return this;
                 }
@@ -317,7 +317,7 @@ class EntitiesAttributeValue extends AttributeValue {
         }
         if (Array.isArray(this.current)) {
             for (let i = 0; i < this.current.length; i++) {
-                if (this.current[i] instanceof Entity && this.current[i].isDirty()) {
+                if (Entity.isEntityInstance(this.current[i]) && this.current[i].isDirty()) {
                     return true;
                 }
             }

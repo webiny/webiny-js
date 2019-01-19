@@ -18,10 +18,7 @@ jobs:
       script: yarn build && yarn test:build
     - stage: release-core
       if: branch = "master" AND type = "push"
-      script: yarn build && yarn release
-    - stage: release-addons
-      if: branch = "master" AND type = "push"
-      script: yarn build && yarn release-addons
+      script: yarn build && yarn release && yarn release-addons
 notifications:
   slack:
     on_success: change

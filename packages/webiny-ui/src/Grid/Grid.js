@@ -21,6 +21,8 @@ export const GridInner = (props: GridInnerProps) => {
     return <RmwcGridInner {...props}>{props.children}</RmwcGridInner>;
 };
 
+GridInner.displayName = "GridInner";
+
 export type Props = {
     // One or more Cell components.
     children?: React.Node,

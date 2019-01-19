@@ -1,6 +1,7 @@
 // @flow
 import md5 from "md5";
 import bcrypt from "bcryptjs";
+import { get } from "lodash";
 import { Entity } from "webiny-entity";
 import type { Group } from "./Group.entity";
 import type { Role } from "./Role.entity";
@@ -29,7 +30,7 @@ export class User extends Entity {
 User.classId = "SecurityUser";
 User.storageClassId = "Security_Users";
 
-export function userFactory({ security: { entities } }: Object) {
+export function userFactory({ config, security: { entities } }: Object) {
     return class extends User {
         __access: ?AccessType;
         constructor() {
@@ -94,6 +95,14 @@ export function userFactory({ security: { entities } }: Object) {
             this.attr("access")
                 .object()
                 .setDynamic(async () => {
+                    if (get(config, "security.enabled") === false) {
+                        return {
+                            scopes: [],
+                            roles: [],
+                            fullAccess: true
+                        };
+                    }
+
                     if (this.__access) {
                         return this.__access;
                     }

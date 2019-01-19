@@ -3,10 +3,9 @@ import config from "./../configs";
 import { registerPlugins } from "webiny-plugins";
 import install from "webiny-install";
 
-import apiPlugins from "webiny-api/install/plugins";
 import securityPlugins from "webiny-api-security/install/plugins";
 import cmsPlugins from "webiny-api-cms/install/plugins";
 
-registerPlugins(apiPlugins, securityPlugins, cmsPlugins);
+registerPlugins(securityPlugins, cmsPlugins);
 
-export default async () => install({ config });
+export default async () => install({ config: await config() });

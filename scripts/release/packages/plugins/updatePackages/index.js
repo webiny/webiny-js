@@ -32,7 +32,12 @@ module.exports = () => {
             // Update package.json data
             pkg.package.version = nextRelease.version;
             updateDeps(pkg.package.dependencies, packages, nextRelease.version);
-            updateDeps(pkg.package.devDependencies, packages, nextRelease.version);
+            if (pkg.package.devDependencies) {
+                updateDeps(pkg.package.devDependencies, packages, nextRelease.version);
+            }
+            if (pkg.package.peerDependencies) {
+                updateDeps(pkg.package.peerDependencies, packages);
+            }
         }
 
         next();

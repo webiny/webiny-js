@@ -20,7 +20,7 @@ export default Entity;
 After the driver has been set, you can start defining your entities, for example:
 
 ```
-import Entity from "./mysqlEntity.js";
+import Entity from "./memoryEntity.js";
 
 class User extends Entity {
     constructor() {

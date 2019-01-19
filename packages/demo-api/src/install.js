@@ -1,3 +1,5 @@
+// @flowIgnore
+require("dotenv").config();
 const path = require("path");
 
 require("@babel/register")({

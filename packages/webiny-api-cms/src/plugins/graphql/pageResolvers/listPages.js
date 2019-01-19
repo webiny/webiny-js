@@ -1,5 +1,5 @@
 // @flow
-import type { Entity, EntityCollection } from "webiny-entity";
+import type { Entity } from "webiny-entity";
 import { createPaginationMeta } from "webiny-entity";
 import { ListResponse } from "webiny-api/graphql/responses";
 
@@ -13,44 +13,64 @@ export default (entityFetcher: EntityFetcher) => async (
     const entityClass = entityFetcher(context);
 
     const { page = 1, perPage = 10, sort = null, search = null, parent = null } = args;
-    const variables = [];
 
-    let where = "WHERE 1=1";
+    const pipeline: Array<Object> = [
+        { $match: { deleted: false } },
+        {
+            $sort: {
+                version: -1
+            }
+        },
+        {
+            $group: {
+                _id: "$parent",
+                parent: {
+                    $first: "$parent"
+                },
+                title: {
+                    $first: "$title"
+                }
+            }
+        }
+    ];
+
     if (parent) {
-        where += ` AND parent = ?`;
-        variables.push(parent);
+        pipeline[0].$match.parent = parent;
     }
 
     if (search) {
-        where += ` AND MATCH (title) AGAINST (? IN BOOLEAN MODE)`;
-        variables.push(search);
+        pipeline[0].$match.title = { $regex: `.*${search}.*`, $options: "i" };
     }
 
-    let orderBy = "";
     if (sort) {
-        orderBy =
-            "ORDER BY " +
-            Object.keys(sort)
-                .map(key => `${key} ${sort[key] > 0 ? "ASC" : "DESC"}`)
-                .join(", ");
+        pipeline.push({
+            $sort: sort
+        });
     }
 
-    const sql = {
-        query: `SELECT SQL_CALC_FOUND_ROWS * FROM (
-          SELECT * FROM ${
-              entityClass.storageClassId
-          } WHERE deleted = 0 ORDER BY published DESC, version DESC
-        ) as p ${where} GROUP BY parent ${orderBy} LIMIT ? OFFSET ?`,
-        values: [...variables, perPage, (page - 1) * perPage]
-    };
+    const collection = entityClass.getDriver().getCollectionName(entityClass);
+    const ids = await entityClass
+        .getDriver()
+        .aggregate(collection, [
+            ...pipeline,
+            { $project: { _id: -1, id: 1 } },
+            { $skip: (page - 1) * perPage },
+            { $limit: perPage }
+        ]);
 
-    const pages: EntityCollection<Entity> = await entityClass.find({ sql });
+    const [totalCount] = await entityClass.getDriver().aggregate(collection, [
+        ...pipeline,
+        {
+            $count: "totalCount"
+        }
+    ]);
+
     return new ListResponse(
-        pages,
+        await entityClass.find({ id: { $in: ids.map(item => item._id) } }),
         createPaginationMeta({
             page,
             perPage,
-            totalCount: pages.getMeta().totalCount
+            totalCount: totalCount ? totalCount.totalCount : 0
         })
     );
 };
