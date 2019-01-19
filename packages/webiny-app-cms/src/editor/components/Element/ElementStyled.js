@@ -86,10 +86,10 @@ export const ElementContainer = pure(
             "> .innerWrapper > .type": {
                 display: highlight ? "block" : "none",
                 width: !active ? "100%" : "100px",
-                height: !active ? "100%" : "25px",
+                height: !active ? "100%" : "18px",
                 [!active ? "left" : "right"]: !active ? 2 : -2,
                 position: "absolute",
-                top: -22, //0,
+                top: -19, //0,
                 zIndex: 10,
                 transition: "background-color 0.2s",
                 ".background": {
