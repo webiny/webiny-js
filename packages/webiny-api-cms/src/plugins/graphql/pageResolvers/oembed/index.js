@@ -1,6 +1,6 @@
 // @flow
-import fetch from "node-fetch";
-import providerList from "./providers.json";
+import request from "request";
+import providerList from "./providers";
 
 const getHostname = url => {
     let match = url.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
@@ -27,7 +27,7 @@ const providers = providerList
         return item.domain !== "";
     });
 
-export const findProvider = (url: string): Object => {
+export const findProvider = (url: string): ?Object => {
     let candidates = providers.filter(provider => {
         let { schemes, domain } = provider;
         if (!schemes.length) {
@@ -49,6 +49,18 @@ export const fetchEmbed = async (params: Object, provider: Object) => {
             .map(k => `${k}=${encodeURIComponent(params[k])}`)
             .join("&");
 
-    const res = await fetch(link);
-    return { ...(await res.json()), source: params };
+    return new Promise((resolve, reject) => {
+        request(
+            {
+                url: link,
+                json: true
+            },
+            (error, response, body) => {
+                if (!error && response.statusCode === 200) {
+                    return resolve({ ...body, source: params });
+                }
+                reject(error);
+            }
+        );
+    });
 };

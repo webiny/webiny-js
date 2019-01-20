@@ -13,7 +13,7 @@
     "graphql-iso-date": "^3.5.0",
     "lodash": "^4.17.11",
     "mdbid": "^1.0.0",
-    "node-fetch": "2.1.2",
+    "request": "^2.88.0",
     "webiny-api": "0.0.0",
     "webiny-plugins": "0.0.0"
   },
