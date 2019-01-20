@@ -63,7 +63,7 @@ export class ListResponse {
     meta: Object;
     error: null;
     constructor(data: EntityCollection<Entity> | Array<any>, meta: Object) {
-        this.data = data;
+        this.data = Array.isArray(data) ? data : [];
         this.meta = meta;
         this.error = null;
     }

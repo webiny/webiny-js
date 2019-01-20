@@ -5,19 +5,22 @@ const path = require("path");
 const getPackages = require("get-yarn-workspaces");
 const packages = getPackages(path.join(process.cwd(), "../../"));
 
+const isEnvDevelopment = process.env.NODE_ENV === "development";
+const isEnvProduction = process.env.NODE_ENV === "production";
+
 const aliases = packages.reduce((aliases, dir) => {
     const name = path.basename(dir);
     aliases[`^${name}/(?!src)(.+)$`] = `${name}/src/\\1`;
     return aliases;
 }, {});
 
-const config = {
-    entry: slsw.lib.entries,
+module.exports = {
+    entry: isEnvDevelopment ? slsw.lib.entries : "./src/handler.js",
     target: "node",
     // Generate sourcemaps for proper error messages
     devtool: "source-map",
     externals: ["aws-sdk", "vertx", "sharp"],
-    mode: slsw.lib.webpack.isLocal ? "development" : "production",
+    mode: isEnvDevelopment ? "development" : "production",
     optimization: {
         // We no not want to minimize our code.
         minimize: false
@@ -28,14 +31,12 @@ const config = {
     },
     // Run babel on all .js files and skip those in node_modules
     module: {
+        exprContextCritical: false,
         rules: [
-            {
-                test: /\.mjs$/,
-                type: "javascript/auto"
-            },
             {
                 test: /\.js$/,
                 loader: "babel-loader",
+                exclude: /node_modules/,
                 include: packages,
                 options: {
                     presets: [
@@ -50,12 +51,9 @@ const config = {
                         "@babel/preset-flow"
                     ],
                     plugins: [
-                        "@babel/plugin-transform-destructuring",
                         "@babel/plugin-proposal-class-properties",
                         "@babel/plugin-proposal-object-rest-spread",
                         "@babel/plugin-transform-runtime",
-                        "@babel/plugin-syntax-dynamic-import",
-                        "babel-plugin-dynamic-import-node",
                         ["babel-plugin-module-resolver", { alias: aliases }]
                     ]
                 }
@@ -63,5 +61,3 @@ const config = {
         ]
     }
 };
-
-module.exports = config;

@@ -34,7 +34,7 @@ functions:
   api:
     name: '${self:service}-${self:custom.stage}-api'
     handler: ${self:custom.api.source}/handler.api
-    events: [ { http: 'ANY /graphql' }, { http: 'ANY /graphql/{proxy+}' } ]
+    events: [ { http: 'ANY /function/api' }, { http: 'ANY /function/api/{proxy+}' } ]
   filesCreate:
     name: '${self:service}-${self:custom.stage}-files-create'
     handler: ${self:custom.api.source}/files.createFile
