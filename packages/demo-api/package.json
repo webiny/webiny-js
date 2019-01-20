@@ -12,20 +12,23 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.0.0",
+    "@babel/register": "^7.0.0",
     "@babel/runtime": "^7.0.0",
+    "babel-loader": "^8.0.0",
+    "bufferutil": "^4.0.1",
     "date-fns": "^1.29.0",
-    "dotenv": "^6.2.0",
     "fs-extra": "^7.0.0",
-    "graphql": "^0.13.2",
-    "graphql-iso-date": "^3.5.0",
     "mime-types": "^2.1.20",
+    "mongodb": "3.1.10",
+    "require_optional": "^1.0.1",
     "sanitize-filename": "^1.6.1",
     "serverless-apigw-binary": "^0.4.4",
     "serverless-apigwy-binary": "^0.1.0",
+    "serverless-mysql": "^1.1.0",
     "sharp": "^0.21.0",
-    "source-map-support": "^0.5.9",
     "uniqid": "^5.0.3",
-    "webiny-api": "0.0.0"
+    "utf-8-validate": "^5.0.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
