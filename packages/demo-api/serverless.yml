@@ -33,7 +33,7 @@ provider:
 functions:
   api:
     name: '${self:service}-${self:custom.stage}-api'
-    handler: ${self:custom.api.source}/handler.api
+    handler: ${self:custom.api.source}/handler.handler
     events: [ { http: 'ANY /function/api' }, { http: 'ANY /function/api/{proxy+}' } ]
   filesCreate:
     name: '${self:service}-${self:custom.stage}-files-create'

@@ -78,9 +78,9 @@ function getErrorResponse(error: Error & Object) {
 
 let handler = null;
 
-export const createHandler = (configObject: () => Promise<Object>) => {
+export const createHandler = (configFactory: (context: Object) => Promise<Object>) => {
     return async (event: Object, context: Object) => {
-        const config = await configObject();
+        const config = await configFactory(context);
 
         return await new Promise(async (resolve, reject) => {
             if (!handler) {

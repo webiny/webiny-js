@@ -9,4 +9,4 @@ import plugins from "./plugins";
 dotenv.config();
 
 registerPlugins(plugins);
-export const api = createHandler(config);
+export const handler = createHandler(config);
