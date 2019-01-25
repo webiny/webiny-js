@@ -8,10 +8,6 @@ class ObjectAttribute extends Attribute {
      * If value is assigned (checked in the parent validate call), it must by an instance of object.
      */
     async validateType(value: mixed) {
-        if (Array.isArray(value)) {
-            return;
-        }
-
         if (isPlainObject(value)) {
             return;
         }
