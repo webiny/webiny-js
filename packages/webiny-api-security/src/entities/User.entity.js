@@ -1,7 +1,7 @@
 // @flow
 import md5 from "md5";
 import bcrypt from "bcryptjs";
-import { get } from "lodash";
+import get from "lodash/get";
 import { Entity } from "webiny-entity";
 import type { Group } from "./Group.entity";
 import type { Role } from "./Role.entity";

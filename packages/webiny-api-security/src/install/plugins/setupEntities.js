@@ -7,7 +7,7 @@ import { roles2entitiesFactory } from "./../../entities/Roles2Entities.entity";
 import { userSettingsFactory } from "./../../entities/UserSettings.entity";
 
 export default (context: Object) => {
-    context.security = { entities: {} };
+    context.security = { ...context.security, entities: {} };
     context.security.entities.User = userFactory(context);
     context.security.entities.Group = groupFactory(context);
     context.security.entities.Role = roleFactory(context);
