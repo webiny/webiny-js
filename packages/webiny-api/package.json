@@ -15,22 +15,14 @@
   "dependencies": {
     "@babel/runtime": "^7.0.0",
     "apollo-server-lambda": "^2.1.0",
-    "bcryptjs": "^2.4.3",
-    "chalk": "^2.4.1",
-    "debug": "^3.1.0",
-    "file-type": "^7.6.0",
     "graphql": "^0.13.2",
     "graphql-iso-date": "^3.5.0",
     "graphql-middleware": "^1.7.6",
     "graphql-tools": "^4.0.0",
     "graphql-type-json": "^0.2.0",
-    "invariant": "^2.2.4",
-    "jsonwebtoken": "^8.2.2",
     "lodash": "^4.17.4",
-    "md5": "^2.2.1",
-    "webiny-compose": "0.0.0",
     "webiny-entity": "0.0.0",
-    "webiny-service-manager": "0.0.0",
+    "webiny-model": "0.0.0",
     "webiny-plugins": "0.0.0"
   },
   "devDependencies": {

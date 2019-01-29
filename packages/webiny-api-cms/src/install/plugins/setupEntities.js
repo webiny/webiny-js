@@ -6,7 +6,7 @@ import { elementFactory } from "./../../entities/Element.entity";
 import { cmsSettingsFactory } from "./../../entities/CmsSettings.entity";
 
 export default (context: Object) => {
-    context.cms = { entities: {} };
+    context.cms = { ...context.cms, entities: {} };
 
     context.cms.entities.Category = categoryFactory();
     context.cms.entities.Page = pageFactory(context);

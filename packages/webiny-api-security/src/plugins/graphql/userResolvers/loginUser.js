@@ -40,6 +40,7 @@ export default (entityFetcher: EntityFetcher) => async (
     }
 
     const jwt = new JwtToken({ secret: context.config.security.token.secret });
+    // $FlowFixMe
     const access = await user.access;
     const token = await jwt.encode(
         // $FlowFixMe - instance that will be validated will have "password" attribute.

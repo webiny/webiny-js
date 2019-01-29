@@ -1,6 +1,6 @@
 // @flow
 import { Entity } from "webiny-entity";
-import { cloneDeep } from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 
 import { listPublishedPages } from "webiny-api-cms/plugins/graphql/pageResolvers/listPublishedPages";
 

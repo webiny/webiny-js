@@ -1,13 +1,14 @@
 // @flow
-import _ from "lodash";
+import forOwn from "lodash/forOwn";
+import isObject from "lodash/isObject";
 
 const traverse = (obj: Object) => {
-    _.forOwn(obj, (val, key) => {
-        if (_.isArray(val)) {
+    forOwn(obj, (val, key) => {
+        if (Array.isArray(val)) {
             val.forEach(el => {
                 traverse(el);
             });
-        } else if (_.isObject(val)) {
+        } else if (isObject(val)) {
             traverse(val);
         } else {
             if (val === "true") {
