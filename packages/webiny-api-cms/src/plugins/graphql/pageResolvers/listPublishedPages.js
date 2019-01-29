@@ -1,7 +1,7 @@
 // @flow
 import { createPaginationMeta } from "webiny-entity";
 import { ListResponse } from "webiny-api/graphql/responses";
-import { get } from "lodash";
+import get from "lodash/get";
 export const listPublishedPages = async ({ args, Page, Category }: Object) => {
     const {
         page = 1,

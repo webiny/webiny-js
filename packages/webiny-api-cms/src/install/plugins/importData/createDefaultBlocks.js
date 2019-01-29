@@ -1,6 +1,7 @@
 // @flow
-import blocks from "./blocks";
+import get from "lodash/get";
 import fs from "fs-extra";
+import blocks from "./blocks";
 
 const createDefaultBlocks = async (context: Object) => {
     const { Element } = context.cms.entities;
@@ -13,8 +14,10 @@ const createDefaultBlocks = async (context: Object) => {
     }
 
     // Copy images.
-    const pwd: string = (process.cwd(): any);
-    await fs.copy(`${__dirname}/blocks/images`, pwd + "/static");
+    if (get(context, "cms.copyFiles", true) !== false) {
+        const pwd: string = (process.cwd(): any);
+        await fs.copy(`${__dirname}/blocks/images`, pwd + "/static");
+    }
 };
 
 export default createDefaultBlocks;

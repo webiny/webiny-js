@@ -10,8 +10,6 @@
     "plugins": [
         ["@babel/plugin-proposal-class-properties"],
         ["@babel/plugin-proposal-object-rest-spread", {"useBuiltIns": true}],
-        ["@babel/plugin-transform-runtime"],
-        ["@babel/plugin-syntax-dynamic-import"],
-        ["babel-plugin-dynamic-import-node"]
+        ["@babel/plugin-transform-runtime"]
     ]
 }

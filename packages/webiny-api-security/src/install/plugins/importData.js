@@ -1,4 +1,5 @@
 // @flow
+import get from "lodash/get";
 import setupEntities from "./setupEntities";
 import * as data from "./data";
 
@@ -11,7 +12,9 @@ export default async (context: Object) => {
     const fullAccess = new Role();
     await fullAccess.populate(data.fullAccessRole).save();
 
-    await user.populate({ ...data.superAdminUser, roles: [fullAccess] }).save();
+    const userData = get(context, "security.admin", data.superAdminUser);
+
+    await user.populate({ ...userData, roles: [fullAccess] }).save();
 
     context.user = user;
 
