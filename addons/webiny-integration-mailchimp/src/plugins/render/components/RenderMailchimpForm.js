@@ -4,6 +4,7 @@ import gql from "graphql-tag";
 import { Form } from "webiny-form";
 import { Mutation } from "react-apollo";
 import React from "react";
+import { getPlugins } from "webiny-plugins";
 
 const mutation = gql`
     mutation addToList($email: String!, $list: String!) {
@@ -18,9 +19,11 @@ const mutation = gql`
 `;
 
 const RenderMailchimpForm = (props: *) => {
-    const { element, theme } = props;
+    const { element } = props;
     const { component: selected } = element.settings;
-    const component = theme.elements.mailchimp.components.find(cmp => cmp.name === selected);
+    const component = getPlugins("cms-element-mailchimp-component").find(
+        cmp => cmp.name === selected
+    );
 
     if (component) {
         const Component = component.component;

@@ -7,8 +7,9 @@ import { AutoComplete } from "webiny-ui/AutoComplete";
 import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import { get } from "lodash";
+import { getPlugins } from "webiny-plugins";
 
-const MailchimpElementAdvancedSettings = ({ cms, Bind }: Object) => {
+const MailchimpElementAdvancedSettings = ({ Bind }: Object) => {
     return (
         <React.Fragment>
             <Grid>
@@ -30,11 +31,11 @@ const MailchimpElementAdvancedSettings = ({ cms, Bind }: Object) => {
                         {({ data }) => (
                             <Bind name={"settings.list"} validators={["required"]}>
                                 {({ value: id, onChange }) => {
-                                    const options = get(data, "mailchimp.listLists.data", []).map(
-                                        ({ id, name }) => {
-                                            return { id, name };
-                                        }
-                                    );
+                                    const options = (
+                                        get(data, "mailchimp.listLists.data") || []
+                                    ).map(({ id, name }) => {
+                                        return { id, name };
+                                    });
 
                                     const value = options.find(item => item.id === id);
 
@@ -53,9 +54,12 @@ const MailchimpElementAdvancedSettings = ({ cms, Bind }: Object) => {
 
                     <Bind name={"settings.component"} validators={["required"]}>
                         {({ onChange, value: name }) => {
-                            const options = cms.theme.elements.mailchimp.components.map(
+                            const options = getPlugins("cms-element-mailchimp-component").map(
                                 ({ name, title }) => {
-                                    return { name, title };
+                                    return {
+                                        name,
+                                        title
+                                    };
                                 }
                             );
 
