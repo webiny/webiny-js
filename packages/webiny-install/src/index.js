@@ -16,19 +16,16 @@ export default async (context: Object) => {
 
     log(chalk.cyan("\nInstalling..."));
 
-    setTimeout(async () => {
-        for (let i = 0; i < plugins.length; i++) {
-            let plugin = plugins[i];
-            try {
-                await plugin.install(context);
-            } catch (e) {
-                log(chalk.red(`An error occurred while installing ${plugin.meta.name}!`));
-                log(e);
-            }
+    for (let i = 0; i < plugins.length; i++) {
+        let plugin = plugins[i];
+        try {
+            await plugin.install(context);
+        } catch (e) {
+            log(chalk.red(`An error occurred while installing ${plugin.meta.name}!`));
+            log(e);
         }
+    }
 
-        const end = (+new Date() - start) / 1000;
-        log(chalk.green(`Installation completed in ${end}s.`));
-        process.exit(0);
-    }, 200);
+    const end = (+new Date() - start) / 1000;
+    log(chalk.green(`Installation completed in ${end}s.`));
 };

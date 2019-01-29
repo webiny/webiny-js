@@ -8,4 +8,11 @@ import cmsPlugins from "webiny-api-cms/install/plugins";
 
 registerPlugins(securityPlugins, cmsPlugins);
 
-export default async () => install({ config: await config() });
+export default async () => {
+    await install({
+        config: await config(),
+        cms: { copyFiles: false },
+        security: { admin: { email: "pavel@webiny.com", password: "87654321" } }
+    });
+    process.exit();
+};

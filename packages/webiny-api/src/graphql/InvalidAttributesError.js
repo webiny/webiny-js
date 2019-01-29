@@ -1,10 +1,11 @@
 // @flow
-import _ from "lodash";
+import each from "lodash/each";
+import get from "lodash/get";
 import { ModelError } from "webiny-model";
 
 function formatInvalidAttributes(invalidAttributes, prefix = "") {
     const formatted = {};
-    _.each(invalidAttributes, ({ code, data, message }, name) => {
+    each(invalidAttributes, ({ code, data, message }, name) => {
         if (code !== "INVALID_ATTRIBUTE") {
             return;
         }
@@ -12,7 +13,7 @@ function formatInvalidAttributes(invalidAttributes, prefix = "") {
         const path = prefix ? `${prefix}.${name}` : name;
 
         if (Array.isArray(data)) {
-            return _.each(data, (err, index) => {
+            return each(data, (err, index) => {
                 const {
                     data: { invalidAttributes },
                     message
@@ -29,7 +30,7 @@ function formatInvalidAttributes(invalidAttributes, prefix = "") {
             });
         }
 
-        formatted[path] = _.get(data, "message", message);
+        formatted[path] = get(data, "message", message);
     });
 
     return formatted;
@@ -41,7 +42,7 @@ class InvalidAttributesError extends ModelError {
 
         let data: Object = (error.data: any);
         data.invalidAttributes = formatInvalidAttributes(
-            _.get(error, "data.invalidAttributes", {})
+            get(error, "data.invalidAttributes", {})
         );
 
         return new InvalidAttributesError(message, code, data);

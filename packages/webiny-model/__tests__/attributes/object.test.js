@@ -42,6 +42,12 @@ describe("attribute models test", () => {
         await model.validate();
     });
 
+    test("should pass - empty arrays set", async () => {
+        model.attribute1 = [];
+        model.attribute2 = [];
+        await model.validate();
+    });
+
     test("should pass - valid data sent", async () => {
         model.attribute1 = {a: 1, b: 2};
         model.attribute2 = {c: 123, d: {e: 123, f: null, g: [1, 2, 3, 4, new Date()], h: new Date()}};
