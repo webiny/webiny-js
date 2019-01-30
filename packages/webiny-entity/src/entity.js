@@ -299,27 +299,25 @@ class Entity {
 
         this.processing = "save";
 
-        events.beforeSave !== false && (await this.emit("beforeSave", { params }));
-
         if (existing) {
             events.beforeUpdate !== false && (await this.emit("beforeUpdate", { params }));
         } else {
             events.beforeCreate !== false && (await this.emit("beforeCreate", { params }));
         }
 
+        events.beforeSave !== false && (await this.emit("beforeSave", { params }));
+
         const logs = _.get(this, "constructor.crud.logs");
 
         try {
-            events.save !== false && (await this.emit("__save", { params }));
             if (existing) {
                 events.update !== false && (await this.emit("__update", { params }));
             } else {
                 events.create !== false && (await this.emit("__create", { params }));
             }
+            events.save !== false && (await this.emit("__save", { params }));
 
             params.validation !== false && (await this.validate());
-
-            events.__beforeSave !== false && (await this.emit("__beforeSave", { params }));
 
             if (existing) {
                 events.__beforeUpdate !== false && (await this.emit("__beforeUpdate", { params }));
@@ -335,16 +333,18 @@ class Entity {
                 }
             }
 
+            events.__beforeSave !== false && (await this.emit("__beforeSave", { params }));
+
             if (this.isDirty()) {
                 await this.getDriver().save(this, params);
             }
 
-            events.__afterSave !== false && (await this.emit("__afterSave", { params }));
             if (existing) {
                 events.__afterUpdate !== false && (await this.emit("__afterUpdate", { params }));
             } else {
                 events.__afterCreate !== false && (await this.emit("__afterCreate", { params }));
             }
+            events.__afterSave !== false && (await this.emit("__afterSave", { params }));
 
             this.setExisting();
             this.getModel().clean();
@@ -356,12 +356,12 @@ class Entity {
             this.processing = null;
         }
 
-        events.afterSave !== false && (await this.emit("afterSave", { params }));
         if (existing) {
             events.afterUpdate !== false && (await this.emit("afterUpdate", { params }));
         } else {
             events.afterCreate !== false && (await this.emit("afterCreate", { params }));
         }
+        events.afterSave !== false && (await this.emit("afterSave", { params }));
     }
 
     /**
