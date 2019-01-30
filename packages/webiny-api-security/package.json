@@ -27,11 +27,9 @@
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
-    "@babel/plugin-syntax-dynamic-import": "^7.0.0",
     "@babel/plugin-transform-runtime": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
-    "@babel/preset-flow": "^7.0.0",
-    "babel-plugin-dynamic-import-node": "^2.0.0"
+    "@babel/preset-flow": "^7.0.0"
   },
   "optionalDependencies": {
     "fsevents": "^1.2.4"
