@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import { compose, withHandlers } from "recompose";
-import type { FileBrowserFile } from "webiny-ui/FileBrowser";
+import type { SelectedFile } from "react-butterfiles";
 import { withConfig } from "webiny-app/components";
 import { getPlugin } from "webiny-plugins";
 import invariant from "invariant";
@@ -14,18 +14,10 @@ type WithFileUploadOptions = {
 
 export type WithFileUploadPlugin = PluginType & {
     type: string,
-    upload: (file: FileBrowserFile, options: Object) => Promise<any>
+    upload: (file: SelectedFile, options: Object) => Promise<any>
 };
 
-export type FileUploadSuccess = FileBrowserFile & {
-    // Nothing for now, probably won't be anything here.
-};
-
-export type FileUploadError = {
-    // TODO - still no unified error messaging on the API side.
-};
-
-const mustUpload = (file: FileBrowserFile) => {
+const mustUpload = (file: SelectedFile) => {
     if (!file) {
         return false;
     }
