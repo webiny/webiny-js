@@ -23,7 +23,7 @@ const mutation = gql`
 
 const MailchimpElement = pure((props: Object) => {
     const { element } = props;
-    const selected = get(element, "settings.component", "");
+    let selected = get(element, "data.settings.component", get(element, "settings.component"));
     const component = getPlugins("cms-element-mailchimp-component").find(
         cmp => cmp.name === selected
     );

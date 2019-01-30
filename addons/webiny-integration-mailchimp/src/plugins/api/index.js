@@ -21,6 +21,7 @@ const Mailchimp = function({ apiKey }) {
         return got("https://us19.api.mailchimp.com/3.0" + path, {
             method,
             json: true,
+            body,
             headers: {
                 authorization: "apikey " + this.apiKey
             }
@@ -183,20 +184,30 @@ export default [
                         { mailchimp: { entities } }: Object
                     ) => {
                         const { MailchimpSettings } = entities;
+
                         const settings = await MailchimpSettings.load();
+                        const mailchimp = new Mailchimp({ apiKey: settings.data.apiKey });
 
                         try {
-                            const list = await mailchimp.get({
+                            const listResponse = await mailchimp.get({
                                 path: `/lists/${listId}`
                             });
 
-                            await mailchimp.post({
-                                path: `/lists/${listId}/members`,
-                                body: {
-                                    email_address: email,
-                                    status: list.double_optin ? "pending" : "subscribed"
-                                }
-                            });
+                            try {
+                                console.log("list");
+                                console.log("post");
+                                await mailchimp.post({
+                                    path: `/lists/${listId}/members`,
+                                    body: {
+                                        email_address: email,
+                                        status: listResponse.body.double_optin
+                                            ? "pending"
+                                            : "subscribed"
+                                    }
+                                });
+                            } catch (e) {
+                                console.log(e);
+                            }
 
                             return new Response();
                         } catch (e) {

@@ -20,14 +20,14 @@ const mutation = gql`
 
 const RenderMailchimpForm = (props: *) => {
     const { element } = props;
-    const { component: selected } = element.settings;
+    const { component: selected } = element.data.settings;
     const component = getPlugins("cms-element-mailchimp-component").find(
         cmp => cmp.name === selected
     );
 
     if (component) {
         const Component = component.component;
-        const style = { width: "100%", ...get(props, "element.settings.style") };
+        const style = { width: "100%", ...get(props, "element.data.settings.style") };
         return (
             <div style={style} className={"webiny-cms-element-mailchimp"}>
                 <Mutation mutation={mutation}>
@@ -52,7 +52,7 @@ const RenderMailchimpForm = (props: *) => {
                                             const response = await update({
                                                 variables: {
                                                     ...data,
-                                                    list: element.settings.list
+                                                    list: element.data.settings.list
                                                 }
                                             });
 
