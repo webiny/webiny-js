@@ -65,26 +65,25 @@ export const listPublishedPages = async ({ args, Page, Category }: Object) => {
         });
     }
 
-    pipeline.push({
-        $facet: {
-            results: [{ $skip: (page - 1) * perPage }, { $limit: perPage }],
-            totalCount: [
-                {
-                    $count: "count"
-                }
-            ]
-        }
-    });
-
     return Page.find({
         aggregation: async ({ aggregate, QueryResult }) => {
-            const results = await aggregate(pipeline);
+            const pipelines = {
+                results: pipeline.concat({ $skip: (page - 1) * perPage }, { $limit: perPage }),
+                totalCount: pipeline.concat({
+                    $count: "count"
+                })
+            };
+
+            const results = (await aggregate(pipelines.results)) || [];
+            const totalCount = get(await aggregate(pipelines.totalCount), "0.count") || 0;
+
             const meta = createPaginationMeta({
-                totalCount: get(results, "totalCount.0.count") || 0,
+                totalCount,
                 page,
                 perPage
             });
-            return new QueryResult(get(results, "results") || [], meta);
+
+            return new QueryResult(results, meta);
         }
     });
 };
