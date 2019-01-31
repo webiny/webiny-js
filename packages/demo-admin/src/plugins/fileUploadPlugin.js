@@ -6,11 +6,10 @@ const fileUploadPlugin: WithFileUploadPlugin = {
     type: "with-file-upload",
     name: "with-file-upload",
     upload: async (file: SelectedFile, config: { uri: string, s3: boolean }) => {
-        // const uri = config.uri || "/files";
-        /*       if (!config.s3) {
+       /* if (!config.webinyCloud) {
             return new Promise(resolve => {
                 const xhr = new window.XMLHttpRequest(); // eslint-disable-line
-                xhr.open("POST", uri, true);
+                xhr.open("POST", "/files", true);
                 xhr.setRequestHeader("Content-Type", "application/json");
                 xhr.send(JSON.stringify(file));
                 xhr.onload = function() {
@@ -19,20 +18,32 @@ const fileUploadPlugin: WithFileUploadPlugin = {
             });
         }*/
 
-        const rez = new Promise(resolve => {
+        const presignedPostPayload = await new Promise(resolve => {
             const xhr = new window.XMLHttpRequest(); // eslint-disable-line
             xhr.open("POST", "https://academy.z1.webiny.com/files", true);
             xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.send(JSON.stringify({
-                name: "lambdaLogo.png"
-            }));
+            xhr.send(JSON.stringify({ name: file.name }));
             xhr.onload = function() {
                 resolve(JSON.parse(this.responseText));
             };
         });
 
+        const s3Upload = await new Promise(resolve => {
+            const formData = new window.FormData();
+            Object.keys(presignedPostPayload.data.fields).forEach(key => {
+                formData.append(key, presignedPostPayload.data.fields[key]);
+            });
+            formData.append("file", window.fajler);
 
-        console.log(rez)
+            const xhr = new window.XMLHttpRequest(); // eslint-disable-line
+            xhr.open("POST", presignedPostPayload.data.url, true);
+            xhr.send(formData);
+            xhr.onload = function() {
+                resolve(this.responseText);
+            };
+        });
+
+        console.log('asad' , s3Upload)
 
     }
 };
