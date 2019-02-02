@@ -53,7 +53,6 @@ export default async () => {
                 copyImage(filename);
             }
 
-            data.preview = JSON.parse(data.preview);
             console.log(`> Copy preview: ${data.preview.src}`);
             const previewName = data.preview.src.match(/\/files\/(.*)/)[1];
             let targetName = previewName;
@@ -64,7 +63,6 @@ export default async () => {
             }
             copyImage(previewName, targetName);
 
-            data.content = JSON.parse(data.content);
             const filename = camelCase(data.name);
             writeDataToFile(filename, data);
 
