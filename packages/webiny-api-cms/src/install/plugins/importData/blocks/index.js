@@ -47,5 +47,15 @@ import header3 from "./header3";
 import header4 from "./header4";
 import header5 from "./header5";
 import header6 from "./header6";
+import team1 from "./team1";
+import team2 from "./team2";
+import team3 from "./team3";
+import team4 from "./team4";
+import team5 from "./team5";
+import testimonial1 from "./testimonial1";
+import testimonial2 from "./testimonial2";
+import testimonial3 from "./testimonial3";
+import testimonial4 from "./testimonial4";
+import testimonial5 from "./testimonial5";
 
-export default [callToAction1, callToAction2, callToAction3, callToAction4, callToAction5, callToAction11, callToAction6, callToAction7, callToAction8, callToAction9, callToAction10, content2, content3, content4, content5, content6, content7, content8, content9, content10, content1, content11, content12, content13, content14, content15, feature1, feature2, feature3, feature4, feature5, feature6, feature7, feature8, feature9, feature10, feature11, feature12, feature13, feature14, header1, header2, header3, header4, header5, header6];
+export default [callToAction1, callToAction2, callToAction3, callToAction4, callToAction5, callToAction11, callToAction6, callToAction7, callToAction8, callToAction9, callToAction10, content2, content3, content4, content5, content6, content7, content8, content9, content10, content1, content11, content12, content13, content14, content15, feature1, feature2, feature3, feature4, feature5, feature6, feature7, feature8, feature9, feature10, feature11, feature12, feature13, feature14, header1, header2, header3, header4, header5, header6, team1, team2, team3, team4, team5, testimonial1, testimonial2, testimonial3, testimonial4, testimonial5];

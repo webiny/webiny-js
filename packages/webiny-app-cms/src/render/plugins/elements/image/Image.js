@@ -33,12 +33,10 @@ const Image = (props: *) => {
     }
 
     return (
-        <ElementRoot element={props.element} style={{ textAlign: horizontalAlign }}>
-            <div className={"webiny-cms-base-element-style webiny-cms-element-image"}>
+        <ElementRoot element={props.element} style={{ textAlign: horizontalAlign }} className={"webiny-cms-base-element-style webiny-cms-element-image"}>
                 <Link link={link}>
                     <img title={title} alt={title} style={style} src={src} />
                 </Link>
-            </div>
         </ElementRoot>
     );
 };
