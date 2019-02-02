@@ -1,6 +1,7 @@
 // @flowIgnore
 import config from "../../src/configs";
 import fs from "fs-extra";
+import { blue, green } from "chalk";
 import { camelCase } from "lodash";
 
 const pwd: string = (process.cwd(): any);
@@ -9,7 +10,6 @@ const copyImage = (srcFilename, targetFilename = null) => {
     const src = `${pwd}/static/${srcFilename}`;
     const dest = `${pwd}/../webiny-api-cms/src/install/plugins/importData/blocks/images/${targetFilename ||
         srcFilename}`;
-    console.log(`> ${srcFilename} ---> ${dest}`);
     fs.copySync(src, dest);
 };
 
@@ -28,47 +28,51 @@ const writeIndexFile = content => {
 export default async () => {
     fs.emptyDirSync(`${pwd}/../webiny-api-cms/src/install/plugins/importData/blocks`);
     const { database } = await config();
-    
-    const blocks = await database.mongodb.collection("CmsElement").find({ deleted: false, type: "block" }).toArray();
+
+    const blocks = await database.mongodb
+        .collection("CmsElement")
+        .find({ deleted: false, type: "block" })
+        .toArray();
 
     const files = [];
 
-    await Promise.all(
-        blocks.map(async data => {
-            // Copy images.
-            const regex = /\/files\/(.*?)"/gm;
-            const str = data.content;
-            let m;
+    for (let i = 0; i < blocks.length; i++) {
+        const data = blocks[i];
+        // Copy images.
+        const regex = /\/files\/(.*?)"/gm;
+        const str = JSON.stringify(data.content);
+        let m;
 
-            console.log(`===========================\n> Block: ${data.name}`);
-            while ((m = regex.exec(str)) !== null) {
-                // This is necessary to avoid infinite loops with zero-width matches
-                if (m.index === regex.lastIndex) {
-                    regex.lastIndex++;
-                }
-
-                const filename = m[1];
-
-                console.log(`> Copy image: ${filename}`);
-                copyImage(filename);
+        console.log(`===========================\n> Block: ${data.name}`);
+        while ((m = regex.exec(str)) !== null) {
+            // This is necessary to avoid infinite loops with zero-width matches
+            if (m.index === regex.lastIndex) {
+                regex.lastIndex++;
             }
 
-            console.log(`> Copy preview: ${data.preview.src}`);
-            const previewName = data.preview.src.match(/\/files\/(.*)/)[1];
-            let targetName = previewName;
-            if (!targetName.startsWith("cms-element-")) {
-                targetName = `cms-element-${data.id}_${previewName}`;
-                data.preview.name = targetName;
-                data.preview.src = data.preview.src.replace(previewName, targetName);
-            }
-            copyImage(previewName, targetName);
+            const filename = m[1];
 
-            const filename = camelCase(data.name);
-            writeDataToFile(filename, data);
+            console.log(`${green("> Copy image:")} ${filename}`);
+            copyImage(filename);
+        }
 
-            files.push(filename);
-        })
-    );
+        console.log(`${blue("> Copy preview:")} ${data.preview.src}`);
+        const previewName = data.preview.src.match(/\/files\/(.*)/)[1];
+        let targetName = previewName;
+        if (!targetName.startsWith("cms-element-")) {
+            console.log(blue("Modifying file name"), previewName);
+            targetName = `cms-element-${data.id}_${previewName}`;
+            data.preview.name = targetName;
+            data.preview.src = data.preview.src.replace(previewName, targetName);
+        }
+        copyImage(previewName, targetName);
+
+        const filename = camelCase(data.name);
+        writeDataToFile(filename, data);
+
+        files.push(filename);
+        console.log(green(`Block ${data.name} exported!`));
+    }
 
     // Generate code to include blocks in the installation process
     const index = [
