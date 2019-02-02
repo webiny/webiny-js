@@ -36,7 +36,7 @@ export default async () => {
     await Promise.all(
         blocks.map(async data => {
             // Copy images.
-            const regex = /http:\/\/localhost.*\/files\/(.*?)"/gm;
+            const regex = /\/files\/(.*?)"/gm;
             const str = data.content;
             let m;
 
