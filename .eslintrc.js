@@ -1,7 +1,7 @@
 module.exports = {
     parser: "babel-eslint",
     extends: ["eslint:recommended", "plugin:jest/recommended", "plugin:react/recommended"],
-    plugins: ["flowtype", "jest", "webiny"],
+    plugins: ["flowtype", "jest"],
     env: {
         jest: true,
         commonjs: true,
@@ -14,8 +14,7 @@ module.exports = {
     },
     rules: {
         "flowtype/define-flow-type": 1,
-        "flowtype/use-flow-type": 1,
-        "webiny/flow-required": 2
+        "flowtype/use-flow-type": 1
     },
     settings: {
         flowtype: {

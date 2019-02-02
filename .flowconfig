@@ -52,10 +52,10 @@ module.name_mapper='^webiny-sql-table-sync/?\(.*\)$' -> '<PROJECT_ROOT>/packages
 module.name_mapper='^webiny-sql-table/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-sql-table/src/\1'
 module.name_mapper='^webiny-storybook-utils/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-storybook-utils/src/\1'
 module.name_mapper='^webiny-validation/?\(.*\)$' -> '<PROJECT_ROOT>/packages/webiny-validation/src/\1'
-module.name_mapper='^webiny-integration-cookie-policy/?\(.*\)$' -> '<PROJECT_ROOT>/addons/webiny-integration-cookie-policy/src/\1'
-module.name_mapper='^webiny-integration-google-tag-manager/?\(.*\)$' -> '<PROJECT_ROOT>/addons/webiny-integration-google-tag-manager/src/\1'
-module.name_mapper='^webiny-integration-mailchimp/?\(.*\)$' -> '<PROJECT_ROOT>/addons/webiny-integration-mailchimp/src/\1'
-module.name_mapper='^webiny-integration-typeform/?\(.*\)$' -> '<PROJECT_ROOT>/addons/webiny-integration-typeform/src/\1'
+module.name_mapper='^webiny-integration-cookie-policy/?\(.*\)$' -> '<PROJECT_ROOT>/independent/webiny-integration-cookie-policy/src/\1'
+module.name_mapper='^webiny-integration-google-tag-manager/?\(.*\)$' -> '<PROJECT_ROOT>/independent/webiny-integration-google-tag-manager/src/\1'
+module.name_mapper='^webiny-integration-mailchimp/?\(.*\)$' -> '<PROJECT_ROOT>/independent/webiny-integration-mailchimp/src/\1'
+module.name_mapper='^webiny-integration-typeform/?\(.*\)$' -> '<PROJECT_ROOT>/independent/webiny-integration-typeform/src/\1'
 
 [strict]
 

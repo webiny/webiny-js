@@ -1,6 +1,6 @@
 require("dotenv").config();
-const path = require("path");
 const hookStd = require("hook-std");
+const path = require("path");
 const { argv } = require("yargs");
 const getWorkspaces = require("get-yarn-workspaces");
 const buildParams = require("../utils/buildParams");
@@ -42,8 +42,16 @@ const independent = getWorkspaces()
     .filter(dir => dir.startsWith(process.cwd() + "/independent/"))
     .map(dir => path.basename(dir));
 
-// Only include non-independent packages
-const packages = getPackages("build/node_modules/*").filter(pkg => !independent.includes(pkg.name));
+// Mark independent packages with `isIndependent`
+const packages = getPackages("build/node_modules/*").map(pkg => {
+    if (independent.includes(pkg.name)) {
+        pkg.isIndependent = true;
+        pkg.tagFormat = `${pkg.name}@v<%= version %>`;
+    } else {
+        pkg.tagFormat = `v<%= version %>`;
+    }
+    return pkg;
+});
 
 release({
     ci: true,
@@ -54,7 +62,11 @@ release({
         verifyEnvironment(),
         githubVerify(),
         npmVerify(),
-        analyzeCommits(),
+        analyzeCommits({
+            isRelevant(pkg, commit) {
+                return commit.files.some(file => file.includes(`/${pkg.name}/`));
+            }
+        }),
         updatePackages(),
         npmPublish(),
         githubPublish()

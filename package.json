@@ -3,7 +3,7 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "addons/*"
+      "independent/*"
     ],
     "nohoist": [
       "**/inquirer/**"
@@ -102,8 +102,8 @@
     "prettier": "prettier --config .prettierrc.js --write",
     "release": "node scripts/release/packages",
     "release:dry": "node scripts/release/packages --preview",
-    "release-addons": "node scripts/release/addons",
-    "release-addons:dry": "node scripts/release/addons --preview",
+    "release-independent": "node scripts/release/independent",
+    "release-independent:dry": "node scripts/release/independent --preview",
     "webiny-ui-build-storybook": "cd packages/webiny-ui && cross-env OUT=../../netlify-static yarn build-storybook"
   },
   "pre-commit": [
