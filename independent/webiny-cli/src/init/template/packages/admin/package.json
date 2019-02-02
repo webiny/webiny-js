@@ -1,13 +1,19 @@
 {
-  "name": "site",
+  "name": "admin",
   "version": "1.0.0",
+  "homepage": "/admin",
   "dependencies": {
     "apollo-link-batch-http": "^1.2.3",
-    "invariant": "^2.2.4",
-    "react-helmet": "^5.2.0",
+    "react-apollo": "^2.2.4",
+    "webiny-admin": "^1",
     "webiny-app": "^1",
     "webiny-app-cms": "^1",
-    "webiny-plugins": "^1"
+    "webiny-integration-cookie-policy": "^1",
+    "webiny-integration-google-tag-manager": "^1",
+    "webiny-integration-mailchimp": "^1",
+    "webiny-integration-typeform": "^1",
+    "webiny-plugins": "^1",
+    "webiny-ui": "^1"
   },
   "devDependencies": {
     "node-sass": "^4.9.3",
@@ -18,8 +24,8 @@
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
-    "start": "PORT=3002 rescripts start",
-    "build": "rescripts build",
+    "start": "PORT=3001 rescripts start",
+    "build": "cross-env PUBLIC_URL=/admin rescripts build",
     "test": "rescripts test --env=jsdom",
     "eject": "react-scripts eject"
   },

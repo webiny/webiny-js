@@ -76,6 +76,7 @@
     "p-locate": "^3.0.0",
     "p-retry": "^2.0.0",
     "parse-github-url": "^1.0.2",
+    "pkgfiles": "^2.3.2",
     "pre-commit": "^1.2.2",
     "prettier": "^1.14.2",
     "random-color": "^1.0.1",

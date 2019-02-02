@@ -1,12 +1,12 @@
-const { homedir } = require("os");
-const path = require("path");
-const { blue } = require("chalk");
-const fs = require("fs-extra");
-const inquirer = require("inquirer");
-const WebinyCloudSDK = require("webiny-cloud-sdk");
-const archiver = require("archiver");
-const createLogger = require("../logger");
-const { spawnCommand } = require("../utils");
+import { homedir } from "os";
+import path from "path";
+import { blue } from "chalk";
+import fs from "fs-extra";
+import inquirer from "inquirer";
+import WebinyCloudSDK from "../sdk/client";
+import archiver from "archiver";
+import createLogger from "../logger";
+import { spawnCommand } from "../utils";
 
 const home = homedir();
 const webinyConfigPath = path.join(home, ".webiny", "config");
