@@ -27,11 +27,9 @@ const writeIndexFile = content => {
 
 export default async () => {
     fs.emptyDirSync(`${pwd}/../webiny-api-cms/src/install/plugins/importData/blocks`);
-
-    const blocks = await config.database.connection.query(
-        "SELECT id, name, type, content, preview, category FROM Cms_Elements WHERE deleted = ? AND type = ?",
-        [0, "block"]
-    );
+    const { database } = await config();
+    
+    const blocks = await database.mongodb.collection("CmsElement").find({ deleted: false, type: "block" }).toArray();
 
     const files = [];
 

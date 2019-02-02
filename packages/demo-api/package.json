@@ -12,7 +12,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.0.0",
     "@babel/register": "^7.0.0",
     "@babel/runtime": "^7.0.0",
     "babel-loader": "^8.0.0",
@@ -35,7 +34,6 @@
     "@babel/plugin-external-helpers": "^7.0.0",
     "@babel/plugin-proposal-class-properties": "^7.0.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
-    "@babel/plugin-syntax-dynamic-import": "^7.0.0",
     "@babel/plugin-transform-runtime": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-flow": "^7.0.0",
@@ -43,7 +41,6 @@
     "babel-eslint": "^9.0.0",
     "babel-loader": "^8.0.0",
     "cross-env": "^5.1.5",
-    "del-cli": "^1.1.0",
     "raw-loader": "^1.0.0",
     "serverless": "^1.27.2",
     "serverless-offline": "^3.20.3",
