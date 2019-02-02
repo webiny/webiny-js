@@ -1,0 +1,44 @@
+{
+  "name": "demo-site",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "apollo-link-batch-http": "^1.2.3",
+    "theme": "0.0.0",
+    "invariant": "^2.2.4",
+    "react-helmet": "^5.2.0",
+    "react-hot-loader": "^4.3.5",
+    "webiny-app": "^1",
+    "webiny-app-cms": "^1",
+    "webiny-plugins": "^1"
+  },
+  "devDependencies": {
+    "node-sass": "^4.9.3",
+    "react-scripts": "^2.0.5",
+    "source-map-explorer": "^1.6.0"
+  },
+  "scripts": {
+    "analyze": "source-map-explorer build/static/js/main.*",
+    "start": "PORT=3002 rescripts start",
+    "build": "rescripts build",
+    "test": "rescripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": {
+    "development": [
+      "last 2 chrome versions",
+      "last 2 firefox versions",
+      "last 2 edge versions"
+    ],
+    "production": [
+      ">0.25%",
+      "not op_mini all",
+      "ie 11"
+    ]
+  },
+  "svgo": {
+    "plugins": {
+      "removeViewBox": false
+    }
+  }
+}

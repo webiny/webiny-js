@@ -1,0 +1,24 @@
+{
+  "name": "webiny-cli",
+  "version": "0.0.0",
+  "main": "index.js",
+  "bin": {
+    "webiny": "./lib/index.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "archiver": "^3.0.0",
+    "chalk": "^2.4.1",
+    "cross-spawn": "^6.0.5",
+    "del": "^3.0.0",
+    "fs-extra": "^7.0.1",
+    "inquirer": "^6.2.1",
+    "read-pkg": "^4.0.1",
+    "write-pkg": "^3.2.0",
+    "yargs": "^12.0.5"
+  },
+  "scripts": {
+    "build": "babel src -d lib --source-maps --copy-files --ignore=src/init/template --include-dotfiles",
+    "build:watch": "babel src -d lib --source-maps --copy-files --ignore=src/init/template --watch -v --include-dotfiles"
+  }
+}

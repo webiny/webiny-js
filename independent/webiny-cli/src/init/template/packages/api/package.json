@@ -1,0 +1,61 @@
+{
+  "name": "api",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "cross-env NODE_ENV=production npx sls webpack",
+    "start": "cross-env NODE_ENV=development npx sls offline start --port=9100 --dontPrintOutput",
+    "setup": "node src/install.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.0.0",
+    "@babel/register": "^7.0.0",
+    "@babel/runtime": "^7.0.0",
+    "babel-loader": "^8.0.0",
+    "bufferutil": "^4.0.1",
+    "date-fns": "^1.29.0",
+    "fs-extra": "^7.0.0",
+    "mime-types": "^2.1.20",
+    "mongodb": "3.1.10",
+    "require_optional": "^1.0.1",
+    "sanitize-filename": "^1.6.1",
+    "serverless-apigw-binary": "^0.4.4",
+    "serverless-apigwy-binary": "^0.1.0",
+    "sharp": "^0.21.0",
+    "uniqid": "^5.0.3",
+    "utf-8-validate": "^5.0.2",
+    "webiny-api": "^1",
+    "webiny-api-cms": "^1",
+    "webiny-api-security": "^1",
+    "webiny-entity-mongodb": "^1",
+    "webiny-install": "^1",
+    "webiny-integration-cookie-policy": "^1",
+    "webiny-integration-google-tag-manager": "^1",
+    "webiny-integration-mailchimp": "^1",
+    "webiny-integration-typeform": "^1",
+    "webiny-plugins": "^1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-external-helpers": "^7.0.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/plugin-transform-runtime": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-flow": "^7.0.0",
+    "babel-eslint": "^9.0.0",
+    "cross-env": "^5.1.5",
+    "serverless": "^1.27.2",
+    "serverless-offline": "^3.20.3",
+    "serverless-webpack": "^5.2.0",
+    "webpack": "^4.27.1",
+    "webpack-cli": "^3.1.0",
+    "webpack-node-externals": "^1.7.2"
+  },
+  "peerDependencies": {
+    "mongodb": "3.1.10"
+  }
+}

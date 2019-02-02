@@ -1,0 +1,25 @@
+{
+  "name": "webiny-cloud-sdk",
+  "version": "1.0.0",
+  "main": "lib/index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/plugin-proposal-object-rest-spread": "^7.2.0",
+    "@babel/plugin-transform-runtime": "^7.2.0",
+    "apollo-link-context": "^1.0.12",
+    "apollo-link-error": "^1.1.5",
+    "apollo-link-http": "^1.5.9",
+    "apollo-upload-client": "^9.1.0",
+    "debug": "^4.1.0",
+    "fs-extra": "^6.0.1",
+    "glob": "^7.1.2",
+    "graphql-tag": "^2.9.2",
+    "mime-types": "^2.1.21",
+    "node-fetch": "^2.1.2",
+    "request": "^2.88.0"
+  },
+  "scripts": {
+    "build": "babel src -d lib --source-maps --copy-files",
+    "build:watch": "babel src -d lib --source-maps --copy-files --watch -v"
+  }
+}
