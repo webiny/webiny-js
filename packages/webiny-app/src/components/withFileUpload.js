@@ -1,15 +1,19 @@
 // @flow
 import * as React from "react";
 import { compose, withHandlers } from "recompose";
-import type { SelectedFile } from "react-butterfiles";
 import { withConfig } from "webiny-app/components";
 import { getPlugin } from "webiny-plugins";
 import invariant from "invariant";
 import type { PluginType } from "webiny-plugins/types";
-import _ from "lodash";
+import { withSnackbar } from "webiny-admin/components";
 
 type WithFileUploadOptions = {
     multiple?: boolean
+};
+
+type SelectedFile = Object & {
+    src: string | File,
+    name: string
 };
 
 export type WithFileUploadPlugin = PluginType & {
@@ -26,39 +30,30 @@ const mustUpload = (file: SelectedFile) => {
     return src.startsWith("data:");
 };
 
-const getFileUploader = props => {
-    const config = _.get(props, "config.components.withFileUpload");
-    invariant(config, "withFileUpload component's configuration not found.");
-
-    invariant(
-        config.plugin || !Array.isArray(config.plugin),
-        `"withFileUpload" component's plugin not set. 
-                            Please configure it properly via app config ("components.withFileUpload.plugin").`
-    );
-
-    const [plugin, params] = config.plugin;
-    const withFileUploadPlugin = getPlugin(plugin);
+const getFileUploader = () => {
+    const withFileUploadPlugin = getPlugin("with-file-upload-uploader");
 
     invariant(
         withFileUploadPlugin,
-        `"withFileUpload" component's plugin (set to "${plugin}") not found.`
+        `"withFileUpload" component's uploader plugin (type "webiny-file-upload-uploader") not found.`
     );
 
     return file => {
-        return withFileUploadPlugin.upload(file, params);
+        return withFileUploadPlugin.upload(file);
     };
 };
 
 export const withFileUpload = (options: WithFileUploadOptions = {}): Function => {
     return (BaseComponent: typeof React.Component) => {
         return compose(
+            withSnackbar(),
             withConfig(),
             withHandlers({
-                uploadFile: props => async file => {
-                    return getFileUploader(props)(file);
+                uploadFile: () => async file => {
+                    return getFileUploader()(file);
                 },
                 onChange: props => async file => {
-                    const upload = getFileUploader(props);
+                    const upload = getFileUploader();
 
                     const { onChange } = props;
                     onChange && (await onChange(file));
@@ -84,9 +79,14 @@ export const withFileUpload = (options: WithFileUploadOptions = {}): Function =>
                     if (mustUpload(file)) {
                         // Send file to server and get its path.
                         try {
-                            return upload(file).then(async uploadedFile => {
-                                onChange && (await onChange(uploadedFile));
-                            });
+                            return upload(file)
+                                .then(async uploadedFile => {
+                                    onChange && (await onChange(uploadedFile));
+                                })
+                                .catch(async () => {
+                                    props.showSnackbar("Ooops, something went wrong.");
+                                    onChange && (await onChange(null));
+                                });
                         } catch (e) {
                             // eslint-disable-next-line
                             console.warn(e);

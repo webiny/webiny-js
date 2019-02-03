@@ -40,9 +40,6 @@ export default {
                 avatar: { width: 128 }
             },
             plugin: "image-component"
-        },
-        withFileUpload: {
-            plugin: ["with-file-upload"]
         }
     }
 };

@@ -10,7 +10,10 @@ import typeformPlugins from "webiny-integration-typeform/plugins/admin";
 import mailchimpPlugins from "webiny-integration-mailchimp/plugins/admin";
 
 export default [
-    fileUploadPlugin,
+    fileUploadPlugin({
+        uri: "https://academy.z1.webiny.com/files",
+        webinyCloud: true
+    }),
     imagePlugin,
     adminPlugins,
     cmsPlugins,
