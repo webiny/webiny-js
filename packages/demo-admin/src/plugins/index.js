@@ -9,11 +9,7 @@ import googleTagManagerPlugins from "webiny-integration-google-tag-manager/plugi
 import typeformPlugins from "webiny-integration-typeform/plugins/admin";
 import mailchimpPlugins from "webiny-integration-mailchimp/plugins/admin";
 
-export default [
-    fileUploadPlugin({
-        uri: "https://academy.z1.webiny.com/files",
-        webinyCloud: true
-    }),
+const plugins = [
     imagePlugin,
     adminPlugins,
     cmsPlugins,
@@ -23,3 +19,15 @@ export default [
     typeformPlugins,
     mailchimpPlugins
 ];
+
+if (process.env.NODE_ENV !== "development") {
+    plugins.push(
+        fileUploadPlugin({
+            webinyCloud: true
+        })
+    );
+} else {
+    plugins.push(fileUploadPlugin({}));
+}
+
+export default plugins;

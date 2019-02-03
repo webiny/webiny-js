@@ -56,8 +56,6 @@ const fileUploadPlugin: WithFileUploadUploaderType = config => ({
             xhr.open("POST", presignedPostPayload.data.s3.url, true);
             xhr.send(formData);
             xhr.onload = function() {
-                presignedPostPayload.data.file.src =
-                    "https://academy.z1.webiny.com" + presignedPostPayload.data.file.src;
                 if (this.status === 204) {
                     resolve(presignedPostPayload.data.file);
                     return;
