@@ -86,7 +86,7 @@ const noImageEditingTypes = ["image/svg+xml", "image/gif"];
 
 export class SingleImageUpload extends React.Component<Props, State> {
     static defaultProps = {
-        maxSize: "5mb",
+        maxSize: "10mb",
         accept: ["image/jpeg", "image/png", "image/gif", "image/svg+xml"],
         imageEditor: true,
         showRemoveImageButton: true,
