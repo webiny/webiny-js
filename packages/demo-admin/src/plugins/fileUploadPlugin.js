@@ -4,20 +4,20 @@
 import type { WithFileUploadPlugin } from "webiny-app/types";
 import dataURLtoBlob from "dataurl-to-blob";
 
+// Note that file.src is always a base64 encoded dataURL.
 type SelectedFile = Object & {
-    src: string | File,
-    name: string
+    src: string,
+    name: string,
+    type: string
 };
 
 type WithFileUploadUploaderConfigType = { uri?: string, webinyCloud?: boolean };
 type WithFileUploadUploaderType = WithFileUploadUploaderConfigType => WithFileUploadPlugin;
 
-
 const fileUploadPlugin: WithFileUploadUploaderType = config => ({
     type: "with-file-upload-uploader",
     name: "with-file-upload-uploader",
     upload: async (file: SelectedFile) => {
-
         const uri = config.uri || "/files";
 
         // Note that file.src is always a base64 encoded dataURL
@@ -38,7 +38,7 @@ const fileUploadPlugin: WithFileUploadUploaderType = config => ({
             const xhr = new window.XMLHttpRequest();
             xhr.open("POST", uri, true);
             xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.send(JSON.stringify({ name: file.name }));
+            xhr.send(JSON.stringify({ name: file.name, type: file.type }));
             xhr.onload = function() {
                 resolve(JSON.parse(this.responseText));
             };
@@ -57,6 +57,8 @@ const fileUploadPlugin: WithFileUploadUploaderType = config => ({
             xhr.send(formData);
             xhr.onload = function() {
                 if (this.status === 204) {
+                    presignedPostPayload.data.file.src =
+                        uri + "/" + presignedPostPayload.data.file.name;
                     resolve(presignedPostPayload.data.file);
                     return;
                 }
