@@ -1,18 +1,8 @@
-// @flowIgnore
 const slsw = require("serverless-webpack");
-
 const path = require("path");
-const getPackages = require("get-yarn-workspaces");
-const packages = getPackages(path.join(__dirname, "../../"));
 
 const isEnvDevelopment = process.env.NODE_ENV === "development";
 const isEnvProduction = !isEnvDevelopment;
-
-const aliases = packages.reduce((aliases, dir) => {
-    const name = path.basename(dir);
-    aliases[`^${name}/(?!src)(.+)$`] = `${name}/src/\\1`;
-    return aliases;
-}, {});
 
 module.exports = {
     entry: isEnvDevelopment ? slsw.lib.entries : "./src/handler.js",
@@ -41,25 +31,8 @@ module.exports = {
                 test: /\.js$/,
                 loader: "babel-loader",
                 exclude: /node_modules/,
-                include: packages,
                 options: {
-                    presets: [
-                        [
-                            "@babel/preset-env",
-                            {
-                                targets: {
-                                    node: "8.10"
-                                }
-                            }
-                        ],
-                        "@babel/preset-flow"
-                    ],
-                    plugins: [
-                        "@babel/plugin-proposal-class-properties",
-                        "@babel/plugin-proposal-object-rest-spread",
-                        "@babel/plugin-transform-runtime",
-                        ["babel-plugin-module-resolver", { alias: aliases }]
-                    ]
+                    configFile: path.join(__dirname, "babel.config.js")
                 }
             }
         ]

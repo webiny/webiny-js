@@ -1,4 +1,3 @@
-// @flow
 import config from "./../configs";
 import { registerPlugins } from "webiny-plugins";
 import install from "webiny-install";

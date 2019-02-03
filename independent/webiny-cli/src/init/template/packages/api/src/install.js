@@ -1,10 +1,8 @@
-// @flowIgnore
 require("dotenv").config();
 const path = require("path");
 
 require("@babel/register")({
-    configFile: path.resolve(__dirname + "/../../../babel.config.js"),
-    only: [/packages/]
+    configFile: path.join(__dirname, "..", "babel.config.js"),
 });
 
 require("./install/install").default();

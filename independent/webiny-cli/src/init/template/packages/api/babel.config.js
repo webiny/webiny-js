@@ -1,4 +1,3 @@
-// NOTE: this file is required only for Webiny monorepo!! End-user will not need this file.
 module.exports = {
     presets: [
         [
@@ -12,11 +11,8 @@ module.exports = {
         "@babel/preset-flow"
     ],
     plugins: [
-        "@babel/plugin-transform-destructuring",
         "@babel/plugin-proposal-class-properties",
         "@babel/plugin-proposal-object-rest-spread",
-        "@babel/plugin-transform-runtime",
-        "@babel/plugin-syntax-dynamic-import",
-        "babel-plugin-dynamic-import-node"
+        "@babel/plugin-transform-runtime"
     ]
 };

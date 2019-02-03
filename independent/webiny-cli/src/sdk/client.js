@@ -8,7 +8,7 @@ import util from "util";
 import chalk from "chalk";
 import type ApolloClient from "apollo-client";
 import debug from "debug";
-import { get } from "lodash";
+import get from "lodash.get";
 import request from "request";
 import mime from "mime-types";
 import createApi from "./createApi";
