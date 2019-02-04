@@ -6,7 +6,8 @@
       "independent/*"
     ],
     "nohoist": [
-      "**/inquirer/**"
+      "**/inquirer/**",
+      "**/webiny-cli/**"
     ]
   },
   "contributors": [

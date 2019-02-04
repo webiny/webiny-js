@@ -2,6 +2,7 @@ import { homedir } from "os";
 import path from "path";
 import { blue } from "chalk";
 import fs from "fs-extra";
+import getPackages from "get-yarn-workspaces";
 import inquirer from "inquirer";
 import WebinyCloudSDK from "../sdk/client";
 import archiver from "archiver";
@@ -66,10 +67,55 @@ export default class Deploy {
             this.logger.success("Deploy completed!\n");
             this.logger.info(`Open ${blue(url)} to see your newly deployed app!`);
         } else {
-            // TODO: add multi-deploy
-            // Find all Webiny apps in the project
+            // Find all Webiny apps in the project (packages containing .webiny file)
+            const packages = getPackages(process.cwd())
+                .filter(pkg => fs.existsSync(pkg + "/.webiny"))
+                .map(pkg => pkg.replace(process.cwd() + "/", ""));
+
             // Create deploys for each app
-            // Activate all apps
+            const deploys = {};
+            for (let i = 0; i < packages.length; i++) {
+                const folder = packages[i];
+                console.log();
+                this.logger.log(`Deploying ${blue(folder)}...`);
+                const deploy = await this.deployFolder(folder, opts);
+                if (!deploy) {
+                    continue;
+                }
+
+                deploys[folder] = deploy;
+            }
+
+            if (!Object.keys(deploys).length) {
+                process.exit();
+            }
+
+            this.logger.success("Deploys created successfully!");
+
+            // Activate deploys
+            const folders = Object.keys(deploys);
+            for (let i = 0; i < folders.length; i++) {
+                const deploy = deploys[folders[i]];
+                this.logger.log(`Activating ${blue(folders[i])}...`);
+                await this.sdk.activateDeploy(deploy.id);
+                const url = await this.waitTillActive(deploy);
+                if (!url) {
+                    this.logger.error(
+                        `Deploy activation failed. Please retry your deploy one more time, then contact Webiny support.`
+                    );
+                    process.exit(1);
+                }
+
+                deploys[folders[i]].url = url;
+            }
+
+            this.logger.success("Deploy process completed!\n");
+            this.logger.info(`Your apps/functions were deployed to these URLs:`);
+            Object.values(deploys).forEach(deploy => {
+                this.logger.log(deploy.url);
+            });
+
+            process.exit();
         }
     }
 
@@ -95,7 +141,12 @@ export default class Deploy {
         try {
             const config = await fs.readJsonSync(adminConfigPath, { throws: true });
             // Ensure `build` folder exists
-            await this.ensureBuild(folder, build);
+            try {
+                await this.ensureBuild(folder, build);
+            } catch (err) {
+                this.logger.error(err);
+                process.exit(1);
+            }
 
             if (config.type === "app") {
                 return await this.deployApp(appPath, config);

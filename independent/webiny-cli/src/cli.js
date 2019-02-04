@@ -6,10 +6,10 @@ yargs.command("init", "Initialize a new Webiny project", argv => {
 });
 
 yargs.command(
-    "deploy <folder>",
+    "deploy",
     `Deploy an app or a function from the given folder.\nWARNING: Always run from the project root folder.`,
     yargs => {
-        yargs.positional("folder", {
+        yargs.option("folder", {
             describe: "Folder to deploy (relative to the project root)."
         });
         yargs.option("build", {

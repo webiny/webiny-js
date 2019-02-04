@@ -1,6 +1,6 @@
 {
   "name": "webiny-cli",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "main": "index.js",
   "bin": {
     "webiny": "./lib/index.js"
@@ -15,17 +15,18 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@babel/runtime": "^7.2.0",
+    "apollo-cache-inmemory": "^1.4.2",
     "apollo-client": "^2.4.12",
     "apollo-link": "^1.2.8",
     "apollo-link-context": "^1.0.12",
     "apollo-link-http": "^1.5.9",
-    "apollo-cache-inmemory": "^1.4.2",
     "archiver": "^3.0.0",
-    "@babel/runtime": "^7.2.0",
     "chalk": "^2.4.1",
     "cross-spawn": "^6.0.5",
     "debug": "^4.1.0",
     "fs-extra": "^7.0.1",
+    "get-yarn-workspaces": "^1.0.2",
     "glob": "^7.1.2",
     "graphql-tag": "^2.9.2",
     "inquirer": "^6.2.1",
@@ -36,9 +37,9 @@
     "yargs": "^12.0.5"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.2.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.2.0",
-    "@babel/plugin-transform-runtime": "^7.2.0",
-    "@babel/plugin-proposal-class-properties": "^7.2.0"
+    "@babel/plugin-transform-runtime": "^7.2.0"
   },
   "scripts": {
     "build": "rimraf ./lib && babel src -d lib --source-maps --copy-files --ignore=src/init/template --include-dotfiles",

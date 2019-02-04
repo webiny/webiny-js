@@ -1,5 +1,6 @@
 const path = require("path");
 const { green, blue } = require("chalk");
+const crypto = require("crypto");
 const fs = require("fs-extra");
 const glob = require("glob");
 const util = require("util");
@@ -14,11 +15,11 @@ module.exports = async () => {
     fs.ensureDirSync("packages");
 
     // Copy project files
-    const files = ["package.json", "README.md", ".gitignore", ".prettierrc.js", "babel.config.js"];
+    const files = ["package.json", "README.md", ".gitignore", ".prettierrc.js"];
     files.forEach(file => copyFile(`init/template/${file}`, file));
 
     await setupFolder("packages/admin");
-    await setupFolder("packages/api");
+    await setupApi();
     await setupFolder("packages/site");
     await setupFolder("packages/theme");
     await setupFolder("packages/webiny-rewire");
@@ -41,6 +42,22 @@ module.exports = async () => {
         `That's it! Now you have your API, admin and site apps up and running!\n   Happy coding :)`
     );
 };
+
+async function setupApi() {
+    const appFolder = "packages/api";
+    await setupFolder(appFolder);
+
+    const envFile = appFolder + "/.env";
+
+    const jwtSecret = crypto
+        .randomBytes(128)
+        .toString("base64")
+        .slice(0, 60);
+
+    let env = fs.readFileSync(envFile, "utf-8");
+    env = env.replace("MyS3cr3tK3Y", jwtSecret);
+    await fs.writeFile(envFile, env);
+}
 
 async function setupFolder(appFolder) {
     // copy custom files and override CRA config

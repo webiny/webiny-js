@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "cross-env NODE_ENV=production npx sls webpack",
-    "start": "cross-env NODE_ENV=development npx sls offline start --port=9100 --dontPrintOutput",
+    "build": "cross-env NODE_ENV=production yarn sls webpack",
+    "start": "cross-env NODE_ENV=development yarn sls offline start --port=9100 --dontPrintOutput",
     "setup": "node src/install.js"
   },
   "author": "",
