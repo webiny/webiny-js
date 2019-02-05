@@ -6,6 +6,8 @@ import { getPlugin } from "webiny-plugins";
 import invariant from "invariant";
 import type { PluginType } from "webiny-plugins/types";
 import { withSnackbar } from "webiny-admin/components";
+import { graphql } from "react-apollo";
+import gql from "graphql-tag";
 
 type WithFileUploadOptions = {
     multiple?: boolean
@@ -43,14 +45,30 @@ const getFileUploader = () => {
     };
 };
 
+const createFile = gql`
+    mutation CreateFile($data: FileInput!) {
+        files {
+            createFile(data: $data) {
+                data {
+                    name
+                }
+            }
+        }
+    }
+`;
+
 export const withFileUpload = (options: WithFileUploadOptions = {}): Function => {
     return (BaseComponent: typeof React.Component) => {
         return compose(
             withSnackbar(),
             withConfig(),
+            graphql(createFile, { name: "gqlCreateFile" }),
             withHandlers({
-                uploadFile: () => async file => {
-                    return getFileUploader()(file);
+                uploadFile: (props) => async file => {
+                    return getFileUploader()(file).then(uploadedFile => {
+                        props.gqlCreateFile({ variables: { data: uploadedFile } });
+                        return uploadedFile;
+                    });
                 },
                 onChange: props => async file => {
                     const upload = getFileUploader();

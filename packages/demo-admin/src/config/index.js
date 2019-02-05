@@ -33,13 +33,5 @@ export default {
                 errorPolicy: "all"
             }
         }
-    }),
-    components: {
-        Image: {
-            presets: {
-                avatar: { width: 128 }
-            },
-            plugin: "image-component"
-        }
-    }
+    })
 };

@@ -8,15 +8,15 @@ import { Tabs, Tab } from "webiny-ui/Tabs";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { getActiveElement } from "webiny-app-cms/editor/selectors";
 import Input from "webiny-app-cms/editor/plugins/elementSettings/components/Input";
+import Checkbox from "webiny-app-cms/editor/plugins/elementSettings/components/Checkbox";
 import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
 
 const ImageSettings = ({
     element,
     updateTitle,
-    updateAlt,
     updateWidth,
     updateHeight,
-    updateAlign
+    updateResponsive
 }: Object) => {
     const { image = {} } = get(element, "data", {});
 
@@ -44,6 +44,11 @@ const ImageSettings = ({
                     value={image.height || ""}
                     updateValue={updateHeight}
                     inputWidth={80}
+                />
+                <Checkbox
+                    label="Responsive"
+                    value={image.responsive || false}
+                    updateValue={updateResponsive}
                 />
             </Tab>
         </Tabs>
@@ -80,6 +85,7 @@ export default compose(
         updateAlt: ({ updateData }) => (value: string) => updateData("alt", value),
         updateWidth: ({ updateData }) => (value: string) => updateData("width", value),
         updateHeight: ({ updateData }) => (value: string) => updateData("height", value),
-        updateAlign: ({ updateData }) => (value: string) => updateData("align", value)
+        updateAlign: ({ updateData }) => (value: string) => updateData("align", value),
+        updateResponsive: ({ updateData }) => (value: string) => updateData("responsive", value)
     })
 )(ImageSettings);

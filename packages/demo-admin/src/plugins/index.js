@@ -1,6 +1,5 @@
 // @flow
-import fileUploadPlugin from "./fileUploadPlugin";
-import imagePlugin from "./imagePlugin";
+import { fileUploadPlugin, imagePlugin } from "webiny-app/plugins";
 import adminPlugins from "webiny-admin/plugins";
 import securityPlugins from "webiny-app-security/admin/plugins";
 import cmsPlugins from "webiny-app-cms/admin/plugins";
@@ -27,7 +26,10 @@ if (process.env.NODE_ENV !== "development") {
         })
     );
 } else {
-    plugins.push(fileUploadPlugin({}));
+    plugins.push(fileUploadPlugin({
+        webinyCloud: true,
+        uri: "https://academy.z1.webiny.com/files"
+    }));
 }
 
 export default plugins;

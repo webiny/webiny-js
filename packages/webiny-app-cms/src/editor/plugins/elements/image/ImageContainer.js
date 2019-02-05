@@ -5,8 +5,7 @@ import styled from "react-emotion";
 import isNumeric from "isnumeric";
 import { compose, withHandlers, pure } from "recompose";
 import { set, isEqual } from "lodash";
-import { withFileUpload } from "webiny-app/components";
-import { SingleImageUpload } from "webiny-ui/ImageUpload";
+import { withFileUpload, SingleImageUpload, Image } from "webiny-app/components";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { getElement } from "webiny-app-cms/editor/selectors";
 
@@ -19,7 +18,7 @@ const AlignImage = styled("div")(props => ({
 }));
 
 const ImageContainer = pure(({ image, horizontalAlign, onChange }) => {
-    const { width, height } = image;
+    const { width, height, responsive } = image;
 
     const imgStyle = {};
     if (width) {
@@ -32,9 +31,12 @@ const ImageContainer = pure(({ image, horizontalAlign, onChange }) => {
     return (
         <AlignImage align={horizontalAlign}>
             <SingleImageUpload
+                renderImagePreview={props => (
+                    <Image {...props} responsive={responsive} />
+                )}
                 onChange={onChange}
                 value={image}
-                img={{ style: imgStyle }}
+                imagePreviewProps={{ style: imgStyle }}
                 showRemoveImageButton={false}
             />
         </AlignImage>

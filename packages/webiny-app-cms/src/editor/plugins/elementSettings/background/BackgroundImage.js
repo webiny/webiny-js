@@ -1,7 +1,6 @@
 // @flow
 import * as React from "react";
-import { withFileUpload } from "webiny-app/components";
-import { SingleImageUpload } from "webiny-ui/ImageUpload";
+import { withFileUpload, SingleImageUpload } from "webiny-app/components";
 
 const BackgroundImage = props => {
     return <SingleImageUpload {...props} />;

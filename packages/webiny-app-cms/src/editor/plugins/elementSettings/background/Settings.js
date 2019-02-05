@@ -9,6 +9,7 @@ import { getActiveElement } from "webiny-app-cms/editor/selectors";
 import ColorPicker from "webiny-app-cms/editor/components/ColorPicker";
 import { Cell, Grid } from "webiny-ui/Grid";
 import Select from "webiny-app-cms/editor/plugins/elementSettings/components/Select";
+import Checkbox from "webiny-app-cms/editor/plugins/elementSettings/components/Checkbox";
 import BackgroundImage from "./BackgroundImage";
 import BackgroundPositionSelector from "./BackgroundPositionSelector";
 import { css } from "emotion";
@@ -47,6 +48,15 @@ class Settings extends React.Component<*> {
         });
     };
 
+    setResponsive = (responsive: boolean) => {
+        const { element, updateElement } = this.props;
+
+        updateElement({
+            element: set(element, `${root}.image.responsive`, !!responsive),
+            history: true
+        });
+    };
+
     setColor = (value, history) => {
         const { element, updateElement } = this.props;
         updateElement({
@@ -61,6 +71,7 @@ class Settings extends React.Component<*> {
         const bg = get(element, "data.settings.background");
         const hasImage = get(bg, "image.src");
 
+        console.log(bg)
         return (
             <React.Fragment>
                 <Tabs>
@@ -108,6 +119,12 @@ class Settings extends React.Component<*> {
                                     />
                                 </Cell>
                             </Grid>
+                            <Checkbox
+                                disabled={!hasImage}
+                                label="Responsive"
+                                value={get(bg, "image.responsive") || false}
+                                updateValue={this.setResponsive}
+                            />
                         </Tab>
                     )}
                 </Tabs>

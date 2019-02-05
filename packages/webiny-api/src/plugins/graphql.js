@@ -2,6 +2,8 @@
 import { dummyResolver } from "../graphql";
 import { getPlugins } from "webiny-plugins";
 import { type GraphQLSchemaPluginType } from "webiny-api/types";
+import { resolveCreate } from "webiny-api/graphql";
+const fileFetcher = ctx => ctx.api.entities.File;
 
 export default ({
     type: "graphql",
@@ -18,12 +20,22 @@ export default ({
                     _empty: String
                 }
 
+                type FileResponse {
+                    data: File
+                    error: Error
+                }
+
+                type FilesMutation {
+                    createFile(data: FileInput!): FileResponse
+                }
+
                 type Query {
                     settings: SettingsQuery
                 }
 
                 type Mutation {
                     settings: SettingsMutation
+                    files: FilesMutation
                 }
             `,
             ...getPlugins("schema-settings").map(pl => pl.typeDefs)
@@ -35,7 +47,12 @@ export default ({
                 settings: dummyResolver
             },
             Mutation: {
-                settings: dummyResolver
+                settings: dummyResolver,
+                files: dummyResolver
+            },
+            FilesMutation: {
+                createFile: resolveCreate(fileFetcher),
+
             }
         },
         ...getPlugins("schema-settings").map(plugin => {
