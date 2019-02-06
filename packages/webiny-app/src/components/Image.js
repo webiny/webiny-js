@@ -3,12 +3,10 @@ import * as React from "react";
 import invariant from "invariant";
 import { getPlugin } from "webiny-plugins";
 import type { PluginType } from "webiny-plugins/types";
-import _ from "lodash";
-import { withConfig } from "webiny-app/components";
+import { get } from "lodash";
 
 type ImageProps = Object & {
     src: string,
-    plugin?: string,
     preset?: string,
     transform?: Object
 };
@@ -19,25 +17,18 @@ export type ImagePlugin = PluginType & {
 };
 
 const Component = (props: ImageProps) => {
-    let { config, plugin: pluginName, preset: presetName, transform, ...rest } = props;
+    let { preset: presetName, ...rest } = props;
 
-    config = _.get(config, "components.Image");
-    invariant(config, "Image component's configuration not found.");
-
-    const plugin = {
-        instance: getPlugin(pluginName || config.plugin),
-        props: { ...rest, transform }
-    };
-
-    invariant(plugin.instance, "Image component plugin not defined.");
+    const plugin = { instance: getPlugin("image-component"), props: { ...rest } };
+    invariant(plugin.instance, `Image component plugin (type "image-component") not defined.`);
 
     if (presetName) {
-        const preset = _.get(config, `presets.${presetName}`);
-        invariant(preset, `Preset "${props.preset}" not found.`);
+        const preset = get(plugin.instance, `presets.${presetName}`);
+        invariant(preset, `Transform preset "${presetName}" not found.`);
         plugin.props.transform = preset;
     }
 
     return plugin.instance.render(plugin.props);
 };
 
-export const Image = withConfig()(Component);
+export const Image = Component;

@@ -15,9 +15,9 @@ const avatar = css({
     div: {
         textAlign: "center"
     },
-    'img':{
-        width: '100%',
-        height: 'auto'
+    img: {
+        width: "100%",
+        height: "auto"
     }
 });
 
@@ -34,6 +34,9 @@ type Props = {
     // Height.
     height?: number,
 
+    // Pass a custom image component to be rendered instead of a simple <img> element.
+    renderImage?: (props: Object) => React.Element<any>,
+
     // Text that will be shown when there is no image (usually user's initials).
     fallbackText: string
 } & Object;
@@ -45,7 +48,15 @@ type Props = {
  * @constructor
  */
 const Avatar = (props: Props) => {
-    const { className, width, height, src, alt, fallbackText, ...rest } = props;
+    const { className, width, height, src, alt, fallbackText, renderImage, ...rest } = props;
+
+    let renderedImage = null;
+    const imageProps = { src, alt };
+    if (typeof renderImage === "function") {
+        renderedImage = renderImage(imageProps);
+    } else {
+        renderedImage = <img {...imageProps} />;
+    }
 
     return (
         <div
@@ -54,7 +65,7 @@ const Avatar = (props: Props) => {
             style={{ ...props.style, width, height }}
         >
             {props.src ? (
-                <img src={src} alt={alt} />
+                renderedImage
             ) : (
                 <div>
                     {fallbackText

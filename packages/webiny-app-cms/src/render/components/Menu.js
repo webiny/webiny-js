@@ -22,11 +22,8 @@ export const getMenuBySlug = gql`
 
 type Props = { cms: WithCmsPropsType } & { slug: string, component: string };
 
-const Menu = ({ slug, component, cms }: Props) => {
-    const menu = get(cms, `theme.components.menu`, []).find(item => (item.name = component));
-    invariant(menu, `You must provide a valid Menu component name (via "component" prop).`);
-
-    const { component: Component } = menu;
+const Menu = ({ slug, component: Component }: Props) => {
+    invariant(Component, `You must provide a valid Menu component name (via "component" prop).`);
 
     return (
         <Query query={getMenuBySlug} variables={{ slug }}>

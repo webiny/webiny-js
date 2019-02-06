@@ -43,9 +43,11 @@ type Props = {
  * @returns {*}
  * @constructor
  */
-const List = (props: Props) => {
-    return <RmwcList {...props}>{props.children}</RmwcList>;
-};
+class List extends React.Component<Props> {
+    render() {
+        return <RmwcList {...this.props}>{this.props.children}</RmwcList>;
+    }
+}
 
 type ListItemTextProps = { children: React.Node, className?: string };
 

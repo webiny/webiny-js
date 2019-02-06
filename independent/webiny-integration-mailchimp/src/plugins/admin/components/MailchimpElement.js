@@ -6,6 +6,8 @@ import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 import { Form } from "webiny-form";
 import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
+import { get } from "lodash";
+import { getPlugins } from "webiny-plugins";
 
 const mutation = gql`
     mutation addToList($email: String!, $list: String!) {
@@ -20,9 +22,11 @@ const mutation = gql`
 `;
 
 const MailchimpElement = pure((props: Object) => {
-    const { element, cms } = props;
-    const { component: selected } = element.settings;
-    const component = cms.theme.elements.mailchimp.components.find(cmp => cmp.name === selected);
+    const { element } = props;
+    let selected = get(element, "data.settings.component", get(element, "settings.component"));
+    const component = getPlugins("cms-element-mailchimp-component").find(
+        cmp => cmp.name === selected
+    );
 
     let render = <span>Nothing selected.</span>;
     if (component) {

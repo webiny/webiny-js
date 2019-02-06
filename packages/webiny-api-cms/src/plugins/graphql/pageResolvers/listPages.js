@@ -65,8 +65,9 @@ export default (entityFetcher: EntityFetcher) => async (
         }
     ]);
 
+
     return new ListResponse(
-        await entityClass.find({ id: { $in: ids.map(item => item._id) } }),
+        await entityClass.find({query: { id: { $in: ids.map(item => item._id) } }}),
         createPaginationMeta({
             page,
             perPage,

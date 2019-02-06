@@ -4,9 +4,29 @@ import { settingsFactory } from "webiny-api/entities";
 import { dummyResolver } from "webiny-api/graphql";
 import { ListErrorResponse, ListResponse, Response, ErrorResponse } from "webiny-api/graphql";
 import { hasScope } from "webiny-api-security";
+import got from "got";
 
-const mailchimp = {
-    post: () => {}
+const Mailchimp = function({ apiKey }) {
+    this.apiKey = apiKey;
+
+    this.get = ({ path }) => {
+        return this.request({ path, method: "get" });
+    };
+
+    this.post = ({ path, body }) => {
+        return this.request({ path, body, method: "post" });
+    };
+
+    this.request = ({ path, method, body }) => {
+        return got("https://us19.api.mailchimp.com/3.0" + path, {
+            method,
+            json: true,
+            body,
+            headers: {
+                authorization: "apikey " + this.apiKey
+            }
+        });
+    };
 };
 
 class MailchimpSettingsModel extends Model {
@@ -139,13 +159,14 @@ export default [
                     ) => {
                         const { MailchimpSettings } = entities;
                         const settings = await MailchimpSettings.load();
+                        const mailchimp = new Mailchimp({ apiKey: settings.data.apiKey });
 
                         try {
-                            const { lists } = await mailchimp.get({
+                            const listsResponse = await mailchimp.get({
                                 path: `/lists/`
                             });
 
-                            const output = lists.map(item => ({
+                            const output = listsResponse.body.lists.map(item => ({
                                 id: item.id,
                                 name: item.name
                             }));
@@ -163,20 +184,30 @@ export default [
                         { mailchimp: { entities } }: Object
                     ) => {
                         const { MailchimpSettings } = entities;
+
                         const settings = await MailchimpSettings.load();
+                        const mailchimp = new Mailchimp({ apiKey: settings.data.apiKey });
 
                         try {
-                            const list = await mailchimp.get({
+                            const listResponse = await mailchimp.get({
                                 path: `/lists/${listId}`
                             });
 
-                            await mailchimp.post({
-                                path: `/lists/${listId}/members`,
-                                body: {
-                                    email_address: email,
-                                    status: list.double_optin ? "pending" : "subscribed"
-                                }
-                            });
+                            try {
+                                console.log("list");
+                                console.log("post");
+                                await mailchimp.post({
+                                    path: `/lists/${listId}/members`,
+                                    body: {
+                                        email_address: email,
+                                        status: listResponse.body.double_optin
+                                            ? "pending"
+                                            : "subscribed"
+                                    }
+                                });
+                            } catch (e) {
+                                console.log(e);
+                            }
 
                             return new Response();
                         } catch (e) {

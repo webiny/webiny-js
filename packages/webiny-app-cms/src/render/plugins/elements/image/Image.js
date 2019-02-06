@@ -2,6 +2,7 @@
 import React from "react";
 import { get } from "lodash";
 import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
+import { Image as WebinyImage } from "webiny-app/components";
 
 const Link = ({ link, children }: Object) => {
     if (link && link.href) {
@@ -16,7 +17,7 @@ const Link = ({ link, children }: Object) => {
 
 const Image = (props: *) => {
     const { image = {}, link = {}, settings = {} } = get(props, "element.data", {});
-    const { width, height, title, src } = image;
+    const { width, height, title, src, responsive } = image;
     const { horizontalAlign = "center" } = settings;
 
     const style = { width, height };
@@ -39,7 +40,7 @@ const Image = (props: *) => {
             className={"webiny-cms-base-element-style webiny-cms-element-image"}
         >
             <Link link={link}>
-                <img title={title} alt={title} style={style} src={src} />
+                <WebinyImage title={title} alt={title} style={style} src={src} />
             </Link>
         </ElementRoot>
     );

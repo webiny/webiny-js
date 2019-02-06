@@ -4,6 +4,7 @@ import { i18n } from "webiny-app/i18n";
 import { withSecurity, type WithSecurityPropsType } from "webiny-app-security/components";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import { Tooltip } from "webiny-ui/Tooltip";
+import { Image } from "webiny-app/components";
 import type { WithCrudListProps } from "webiny-admin/components";
 
 import {
@@ -54,6 +55,9 @@ const UsersDataList = ({ dataList, router, security, deleteRecord }: Props) => {
                         <ListItem key={item.id} selected={router.getQuery("id") === item.id}>
                             <ListItemGraphic>
                                 <Avatar
+                                    renderImage={props => (
+                                        <Image {...props} transform={{ width: 100 }} />
+                                    )}
                                     src={item.avatar && item.avatar.src}
                                     fallbackText={item.fullName}
                                     alt={t`User's avatar.`}

@@ -11,7 +11,7 @@
   "dependencies": {
     "@babel/runtime": "^7.0.0",
     "classnames": "^2.2.6",
-    "mailchimp-api-v3": "^1.12.1",
+    "got": "^9.6.0",
     "react-emotion": "^9.2.4"
   },
   "devDependencies": {

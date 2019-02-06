@@ -1,7 +1,8 @@
 // @flow
 import React from "react";
-import type { RenderElementPluginType } from "webiny-app-cms/types";
+import type { PluginType } from "webiny-plugins/types";
 import RenderMailchimpForm from "./components/RenderMailchimpForm";
+import MailchimpDefaultForm from "./components/MailchimpDefaultForm";
 
 export default ([
     {
@@ -11,5 +12,11 @@ export default ([
         render(props: *) {
             return <RenderMailchimpForm {...props} />;
         }
+    },
+    {
+        type: "cms-element-mailchimp-component",
+        name: "cms-element-mailchimp-component-default",
+        title: "Default newsletter form",
+        component: MailchimpDefaultForm
     }
-]: Array<RenderElementPluginType>);
+]: Array<PluginType>);

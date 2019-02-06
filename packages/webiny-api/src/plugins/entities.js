@@ -12,4 +12,14 @@ const settings: EntityPluginType = {
     }
 };
 
-export default [settings];
+const file: EntityPluginType = {
+    name: "entity-file",
+    type: "entity",
+    namespace: "api",
+    entity: {
+        name: "File",
+        factory: entities.fileFactory
+    }
+};
+
+export default [settings, file];

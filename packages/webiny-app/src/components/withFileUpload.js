@@ -1,31 +1,29 @@
 // @flow
 import * as React from "react";
 import { compose, withHandlers } from "recompose";
-import type { FileBrowserFile } from "webiny-ui/FileBrowser";
 import { withConfig } from "webiny-app/components";
 import { getPlugin } from "webiny-plugins";
 import invariant from "invariant";
 import type { PluginType } from "webiny-plugins/types";
-import _ from "lodash";
+import { withSnackbar } from "webiny-admin/components";
+import { graphql } from "react-apollo";
+import gql from "graphql-tag";
 
 type WithFileUploadOptions = {
     multiple?: boolean
 };
 
+type SelectedFile = Object & {
+    src: string | File,
+    name: string
+};
+
 export type WithFileUploadPlugin = PluginType & {
     type: string,
-    upload: (file: FileBrowserFile, options: Object) => Promise<any>
+    upload: (file: SelectedFile, options: Object) => Promise<any>
 };
 
-export type FileUploadSuccess = FileBrowserFile & {
-    // Nothing for now, probably won't be anything here.
-};
-
-export type FileUploadError = {
-    // TODO - still no unified error messaging on the API side.
-};
-
-const mustUpload = (file: FileBrowserFile) => {
+const mustUpload = (file: SelectedFile) => {
     if (!file) {
         return false;
     }
@@ -34,39 +32,46 @@ const mustUpload = (file: FileBrowserFile) => {
     return src.startsWith("data:");
 };
 
-const getFileUploader = props => {
-    const config = _.get(props, "config.components.withFileUpload");
-    invariant(config, "withFileUpload component's configuration not found.");
-
-    invariant(
-        config.plugin || !Array.isArray(config.plugin),
-        `"withFileUpload" component's plugin not set. 
-                            Please configure it properly via app config ("components.withFileUpload.plugin").`
-    );
-
-    const [plugin, params] = config.plugin;
-    const withFileUploadPlugin = getPlugin(plugin);
+const getFileUploader = () => {
+    const withFileUploadPlugin = getPlugin("with-file-upload-uploader");
 
     invariant(
         withFileUploadPlugin,
-        `"withFileUpload" component's plugin (set to "${plugin}") not found.`
+        `"withFileUpload" component's uploader plugin (type "webiny-file-upload-uploader") not found.`
     );
 
     return file => {
-        return withFileUploadPlugin.upload(file, params);
+        return withFileUploadPlugin.upload(file);
     };
 };
+
+const createFile = gql`
+    mutation CreateFile($data: FileInput!) {
+        files {
+            createFile(data: $data) {
+                data {
+                    name
+                }
+            }
+        }
+    }
+`;
 
 export const withFileUpload = (options: WithFileUploadOptions = {}): Function => {
     return (BaseComponent: typeof React.Component) => {
         return compose(
+            withSnackbar(),
             withConfig(),
+            graphql(createFile, { name: "gqlCreateFile" }),
             withHandlers({
-                uploadFile: props => async file => {
-                    return getFileUploader(props)(file);
+                uploadFile: (props) => async file => {
+                    return getFileUploader()(file).then(uploadedFile => {
+                        props.gqlCreateFile({ variables: { data: uploadedFile } });
+                        return uploadedFile;
+                    });
                 },
                 onChange: props => async file => {
-                    const upload = getFileUploader(props);
+                    const upload = getFileUploader();
 
                     const { onChange } = props;
                     onChange && (await onChange(file));
@@ -92,9 +97,16 @@ export const withFileUpload = (options: WithFileUploadOptions = {}): Function =>
                     if (mustUpload(file)) {
                         // Send file to server and get its path.
                         try {
-                            return upload(file).then(async uploadedFile => {
-                                onChange && (await onChange(uploadedFile));
-                            });
+                            return upload(file)
+                                .then(async uploadedFile => {
+                                    props.gqlCreateFile({ variables: { data: uploadedFile } });
+                                    props.showSnackbar("File uploaded successfully.");
+                                    onChange && (await onChange(uploadedFile));
+                                })
+                                .catch(async () => {
+                                    props.showSnackbar("Ooops, something went wrong.");
+                                    onChange && (await onChange(null));
+                                });
                         } catch (e) {
                             // eslint-disable-next-line
                             console.warn(e);

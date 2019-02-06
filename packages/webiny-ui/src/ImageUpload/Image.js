@@ -118,7 +118,7 @@ type Props = {
     disabled?: boolean,
     loading?: boolean,
     placeholder: string,
-    img?: Object
+    renderImagePreview?: Object => React.Element<any>
 };
 
 class Image extends React.Component<Props> {
@@ -145,26 +145,32 @@ class Image extends React.Component<Props> {
     }
 
     renderImg() {
-        const { removeImage, editImage, uploadImage, value, img } = this.props;
+        const { removeImage, editImage, uploadImage, value, renderImagePreview } = this.props;
 
-        const imgProps = {
+        const imagePreviewProps: Object = {
             src: value ? value.src : null,
-            onClick: () => uploadImage(),
-            ...img
+            onClick: () => uploadImage()
         };
 
-        if (!imgProps.style) {
-            imgProps.style = {};
+        if (!imagePreviewProps.style) {
+            imagePreviewProps.style = {};
         }
 
-        if (!imgProps.style.width && !imgProps.style.height) {
-            imgProps.style.width = "100%";
-            imgProps.style.height = "100%";
+        if (!imagePreviewProps.style.width && !imagePreviewProps.style.height) {
+            imagePreviewProps.style.width = "100%";
+            imagePreviewProps.style.height = "100%";
+        }
+
+        let imagePreview = null;
+        if (typeof renderImagePreview === "function") {
+            imagePreview = renderImagePreview(imagePreviewProps);
+        } else {
+            imagePreview = <img {...imagePreviewProps} />;
         }
 
         return (
             <ImagePreviewWrapper>
-                <img {...imgProps} />
+                {imagePreview}
 
                 {typeof removeImage === "function" && (
                     <RemoveImage onClick={() => removeImage(null)}>

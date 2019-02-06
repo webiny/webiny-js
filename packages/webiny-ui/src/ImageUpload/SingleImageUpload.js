@@ -45,14 +45,14 @@ type Props = FormComponentProps & {
     // Uses "bytes" (https://www.npmjs.com/package/bytes) library to convert string notation to actual number.
     maxSize: string,
 
-    // Preview <img> props (eg. width, height, alt, title ...).
-    img?: Object,
-
     // By default, the editor tool will be shown when an image is selected.
     // Set to false if there is no need for editor to be shown. Otherwise, set true (default value) or alternatively
     // an object containing all of the image editor related options (eg. "filter").
     // Please check the docs of ImageEditor component for the list of all available options.
     imageEditor?: boolean | Object,
+
+    // Custom image preview renderer. By default images are rendered via simple <img> element.
+    renderImagePreview?: () => React.Element<any>,
 
     // Should remove image button (top right ✕) be shown? Default is set to `true`.
     showRemoveImageButton?: boolean,
@@ -86,7 +86,7 @@ const noImageEditingTypes = ["image/svg+xml", "image/gif"];
 
 export class SingleImageUpload extends React.Component<Props, State> {
     static defaultProps = {
-        maxSize: "5mb",
+        maxSize: "10mb",
         accept: ["image/jpeg", "image/png", "image/gif", "image/svg+xml"],
         imageEditor: true,
         showRemoveImageButton: true,
@@ -137,12 +137,12 @@ export class SingleImageUpload extends React.Component<Props, State> {
             value,
             validation = { isValid: null },
             label,
-            img,
             description,
             accept,
             maxSize,
             onChange,
-            showRemoveImageButton
+            showRemoveImageButton,
+            renderImagePreview
         } = this.props;
 
         let imageEditorImageSrc = "";
@@ -193,7 +193,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
                     {({ browseFiles, getDropZoneProps }) => (
                         <div {...getDropZoneProps()}>
                             <Image
-                                img={img}
+                                renderImagePreview={renderImagePreview}
                                 loading={this.state.loading}
                                 value={value}
                                 removeImage={showRemoveImageButton ? onChange : null}

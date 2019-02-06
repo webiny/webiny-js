@@ -5,6 +5,7 @@
   "homepage": "/admin",
   "dependencies": {
     "apollo-link-batch-http": "^1.2.3",
+    "dataurl-to-blob": "^0.0.1",
     "demo-theme": "0.0.0",
     "react-apollo": "^2.2.4",
     "react-hot-loader": "^4.3.5",

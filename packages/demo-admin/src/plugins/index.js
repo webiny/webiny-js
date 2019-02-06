@@ -1,6 +1,5 @@
 // @flow
-import fileUploadPlugin from "./fileUploadPlugin";
-import imagePlugin from "./imagePlugin";
+import { fileUploadPlugin, imagePlugin } from "webiny-app/plugins";
 import adminPlugins from "webiny-admin/plugins";
 import securityPlugins from "webiny-app-security/admin/plugins";
 import cmsPlugins from "webiny-app-cms/admin/plugins";
@@ -9,8 +8,7 @@ import googleTagManagerPlugins from "webiny-integration-google-tag-manager/plugi
 import typeformPlugins from "webiny-integration-typeform/plugins/admin";
 import mailchimpPlugins from "webiny-integration-mailchimp/plugins/admin";
 
-export default [
-    fileUploadPlugin,
+const plugins = [
     imagePlugin,
     adminPlugins,
     cmsPlugins,
@@ -20,3 +18,15 @@ export default [
     typeformPlugins,
     mailchimpPlugins
 ];
+
+if (process.env.NODE_ENV !== "development") {
+    plugins.push(
+        fileUploadPlugin({
+            webinyCloud: true
+        })
+    );
+} else {
+    plugins.push(fileUploadPlugin({}));
+}
+
+export default plugins;

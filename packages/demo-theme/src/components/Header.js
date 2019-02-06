@@ -6,6 +6,7 @@ import classNames from "classnames";
 import { get } from "lodash";
 import { Query } from "react-apollo";
 import { getHeaderData } from "./graphql";
+import DefaultMenu from "./DefaultMenu";
 
 type State = {
     mobileMenuOpen: boolean
@@ -59,7 +60,7 @@ const DesktopHeader = ({ logo, name }: { logo: Object, name: string }) => {
                 </a>
             </div>
             <nav className={"webiny-cms-section-header__navigation"}>
-                <Menu slug={menuName} component={"default"} />
+                <Menu slug={menuName} component={DefaultMenu} />
             </nav>
         </div>
     );
@@ -91,7 +92,7 @@ const MobileHeader = ({
                     "webiny-cms-section-header__navigation--mobile-active": active
                 })}
             >
-                <Menu slug={menuName} component={"default"} />
+                <Menu slug={menuName} component={DefaultMenu} />
                 <div className={"webiny-cms-section-header__mobile-site-name"}>
                     <a href="/">{name}</a>
                 </div>
