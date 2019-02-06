@@ -6,7 +6,6 @@ const getPackages = require("get-yarn-workspaces");
 const packages = getPackages(path.join(process.cwd(), "../../"));
 
 const isEnvDevelopment = process.env.NODE_ENV === "development";
-const isEnvProduction = process.env.NODE_ENV === "production";
 
 const aliases = packages.reduce((aliases, dir) => {
     const name = path.basename(dir);

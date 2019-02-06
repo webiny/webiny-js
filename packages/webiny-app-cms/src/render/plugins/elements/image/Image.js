@@ -34,12 +34,14 @@ const Image = (props: *) => {
     }
 
     return (
-        <ElementRoot element={props.element} style={{ textAlign: horizontalAlign }}>
-            <div className={"webiny-cms-base-element-style webiny-cms-element-image"}>
-                <Link link={link}>
-                    <WebinyImage title={title} alt={title} style={style} src={src} responsive={responsive} />
-                </Link>
-            </div>
+        <ElementRoot
+            element={props.element}
+            style={{ textAlign: horizontalAlign }}
+            className={"webiny-cms-base-element-style webiny-cms-element-image"}
+        >
+            <Link link={link}>
+                <WebinyImage title={title} alt={title} style={style} src={src} />
+            </Link>
         </ElementRoot>
     );
 };

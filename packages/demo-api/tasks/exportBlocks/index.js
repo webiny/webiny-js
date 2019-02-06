@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // @flowIgnore
 // eslint-disable
+require("dotenv").config();
 const path = require("path");
 
 require("@babel/register")({

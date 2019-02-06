@@ -3,10 +3,11 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "addons/*"
+      "independent/*"
     ],
     "nohoist": [
-      "**/inquirer/**"
+      "**/inquirer/**",
+      "**/webiny-cli/**"
     ]
   },
   "contributors": [
@@ -49,7 +50,6 @@
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-react": "^7.7.0",
     "eslint-plugin-standard": "^3.0.1",
-    "eslint-plugin-webiny": "file:./eslint",
     "execa": "^1.0.0",
     "flatten": "^1.0.2",
     "flow-bin": "^0.80.0",
@@ -77,6 +77,7 @@
     "p-locate": "^3.0.0",
     "p-retry": "^2.0.0",
     "parse-github-url": "^1.0.2",
+    "pkgfiles": "^2.3.2",
     "pre-commit": "^1.2.2",
     "prettier": "^1.14.2",
     "random-color": "^1.0.1",
@@ -102,8 +103,8 @@
     "prettier": "prettier --config .prettierrc.js --write",
     "release": "node scripts/release/packages",
     "release:dry": "node scripts/release/packages --preview",
-    "release-addons": "node scripts/release/addons",
-    "release-addons:dry": "node scripts/release/addons --preview",
+    "release-independent": "node scripts/release/independent",
+    "release-independent:dry": "node scripts/release/independent --preview",
     "webiny-ui-build-storybook": "cd packages/webiny-ui && cross-env OUT=../../netlify-static yarn build-storybook"
   },
   "pre-commit": [

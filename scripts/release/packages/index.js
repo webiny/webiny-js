@@ -37,13 +37,13 @@ const release = async config => {
     unhook();
 };
 
-// Get `addons` packages
-const addons = getWorkspaces()
-    .filter(dir => dir.startsWith(process.cwd() + "/addons/"))
+// Get `independent` packages
+const independent = getWorkspaces()
+    .filter(dir => dir.startsWith(process.cwd() + "/independent/"))
     .map(dir => path.basename(dir));
 
-// Only include non-addons packages
-const packages = getPackages("build/node_modules/*").filter(pkg => !addons.includes(pkg.name));
+// Only include non-independent packages
+const packages = getPackages("build/node_modules/*").filter(pkg => !independent.includes(pkg.name));
 
 release({
     ci: true,

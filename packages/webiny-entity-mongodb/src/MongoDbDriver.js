@@ -42,12 +42,10 @@ class MongoDbDriver extends Driver {
      * @param pipeline
      */
     async aggregate(collection, pipeline) {
-        const arrayResults = await this.getDatabase()
+        return await this.getDatabase()
             .collection(collection)
             .aggregate(pipeline)
             .toArray();
-
-        return arrayResults;
     }
 
     // eslint-disable-next-line
@@ -93,12 +91,10 @@ class MongoDbDriver extends Driver {
             if (typeof options.aggregation === "function") {
                 return options.aggregation({
                     aggregate: async pipeline => {
-                        const arrayResults = await this.getDatabase()
+                        return await this.getDatabase()
                             .collection(this.getCollectionName(entity))
                             .aggregate(pipeline)
                             .toArray();
-
-                        return arrayResults[0];
                     },
                     QueryResult
                 });

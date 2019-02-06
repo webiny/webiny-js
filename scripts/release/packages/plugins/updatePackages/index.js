@@ -36,7 +36,7 @@ module.exports = () => {
                 updateDeps(pkg.package.devDependencies, packages, nextRelease.version);
             }
             if (pkg.package.peerDependencies) {
-                updateDeps(pkg.package.peerDependencies, packages);
+                updateDeps(pkg.package.peerDependencies, packages, nextRelease.version);
             }
         }
 
