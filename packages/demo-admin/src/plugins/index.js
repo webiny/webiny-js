@@ -28,7 +28,7 @@ if (process.env.NODE_ENV !== "development") {
 } else {
     plugins.push(fileUploadPlugin({
         webinyCloud: true,
-        uri: "https://academy.z1.webiny.com/files"
+        uri: "https://sven.z1.webiny.com/files"
     }));
 }
 

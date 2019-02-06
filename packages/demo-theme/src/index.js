@@ -2,9 +2,6 @@
 import "./style/theme.scss";
 import StaticLayout from "./layouts/static";
 import BlogLayout from "./layouts/blog";
-import PageList from "./components/PageList";
-import PageListv2 from "./components/PageListv2";
-import DefaultMenu from "./components/DefaultMenu";
 
 export default {
     layouts: [
@@ -31,14 +28,6 @@ export default {
         surface: "var(--webiny-cms-theme-surface)",
         textPrimary: "var(--webiny-cms-theme-text-primary)"
     },
-    components: {
-        menu: [
-            {
-                name: "default",
-                component: DefaultMenu
-            }
-        ]
-    },
     elements: {
         button: {
             types: [
@@ -48,20 +37,6 @@ export default {
                 { className: "outline-primary", label: "Outline Primary" },
                 { className: "outline-secondary", label: "Outline Secondary" },
                 { className: "simple", label: "Simple" }
-            ]
-        },
-        pagesList: {
-            components: [
-                {
-                    name: "default",
-                    title: "Default page list",
-                    component: PageList
-                },
-                {
-                    name: "custom",
-                    title: "Custom page list",
-                    component: PageListv2
-                }
             ]
         }
     },
