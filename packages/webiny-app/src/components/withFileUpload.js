@@ -99,6 +99,7 @@ export const withFileUpload = (options: WithFileUploadOptions = {}): Function =>
                         try {
                             return upload(file)
                                 .then(async uploadedFile => {
+                                    props.gqlCreateFile({ variables: { data: uploadedFile } });
                                     props.showSnackbar("File uploaded successfully.");
                                     onChange && (await onChange(uploadedFile));
                                 })

@@ -23,13 +23,18 @@ export const fileFactory = ({ user = {} }: Object) => {
 
             this.attr("src")
                 .char()
-                .setValidators("maxLength:100");
+                .setValidators("required,maxLength:200");
 
             this.attr("name")
                 .char()
                 .setValidators("maxLength:500");
 
             this.on("beforeCreate", async () => {
+                // TODO: improve this if needed in the future.
+                if (!this.src.startsWith("/") || this.src.startsWith("http")) {
+                    throw Error(`File "src" must be a relative path, starting with forward slash ("/").`);
+                }
+
                 if (await File.findOne({ query: { src: this.src } })) {
                     throw Error(`File "src" must be unique. `);
                 }

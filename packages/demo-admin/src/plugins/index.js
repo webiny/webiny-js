@@ -26,10 +26,7 @@ if (process.env.NODE_ENV !== "development") {
         })
     );
 } else {
-    plugins.push(fileUploadPlugin({
-        webinyCloud: true,
-        uri: "https://sven.z1.webiny.com/files"
-    }));
+    plugins.push(fileUploadPlugin({}));
 }
 
 export default plugins;
