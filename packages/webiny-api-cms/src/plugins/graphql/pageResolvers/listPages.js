@@ -66,7 +66,6 @@ export default (entityFetcher: EntityFetcher) => async (
     ]);
 
 
-    console.log('dobeo IDjeve', ids)
     return new ListResponse(
         await entityClass.find({query: { id: { $in: ids.map(item => item._id) } }}),
         createPaginationMeta({
