@@ -59,6 +59,9 @@ const imagePlugin: ImagePlugin = {
     },
     render(props) {
         let { src, transform, srcSet, responsive, ...rest } = props;
+        if (src.startsWith("data:")) {
+            return <Image src={src} {...rest} />;
+        }
 
         if (!srcSet && responsive) {
             srcSet = {
