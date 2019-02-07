@@ -6,6 +6,7 @@ import { ELEMENT_CREATED, activateElement, togglePlugin } from "webiny-app-cms/e
 import { ReactComponent as SettingsIcon } from "webiny-app-cms/editor/assets/icons/settings.svg";
 import AdvancedSettings from "./AdvancedSettings";
 import Action from "../components/Action";
+import AdvancedAction from "./AdvancedAction";
 
 export default [
     {
@@ -46,7 +47,13 @@ export default [
         type: "cms-element-settings",
         renderAction() {
             return (
-                <Action plugin={this.name} icon={<SettingsIcon />} tooltip={"Advanced settings"} />
+                <AdvancedAction>
+                    <Action
+                        plugin={this.name}
+                        icon={<SettingsIcon />}
+                        tooltip={"Advanced settings"}
+                    />
+                </AdvancedAction>
             );
         }
     }

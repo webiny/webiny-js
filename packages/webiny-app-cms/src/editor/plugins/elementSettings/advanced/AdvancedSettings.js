@@ -58,18 +58,6 @@ class AdvancedSettings extends React.Component<Props> {
                                         { Bind },
                                         { wrapper: false, filter: pl => pl.element === type }
                                     )}
-                                    <Tab icon={<SettingsIcon />} label="Style">
-                                        <Grid>
-                                            <Cell span={12}>
-                                                <Bind name={"settings.className"}>
-                                                    <Input
-                                                        label={"CSS class"}
-                                                        description={"Custom CSS class names"}
-                                                    />
-                                                </Bind>
-                                            </Cell>
-                                        </Grid>
-                                    </Tab>
                                 </Tabs>
                             </DialogBody>
                             <DialogFooter>
