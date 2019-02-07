@@ -153,11 +153,40 @@ Fix the width of input components when inside grids
 // dialog
 .mdc-dialog{
   .mdc-dialog__surface{
-    .mdc-dialog__header, .mdc-dialog__body{
+    .mdc-dialog__header{
+      background-color: $mdc-theme-secondary;
+      padding-bottom: 24px;
+      font-size: 1.4rem;
+      .mdc-dialog__header__title{
+        font-weight: 600;
+        color: $mdc-theme-on-secondary;
+      }
+    }
+    .mdc-dialog__body{
       color: $mdc-theme-text-primary-on-background;
+
+      // add options for when tabs are inside the body
+      >.mdc-tab-bar{
+        margin-top: -24px;
+        .mdc-tab{
+          @include mdc-tab-text-label-color($mdc-theme-on-secondary);
+          @include mdc-tab-icon-color($mdc-theme-on-secondary);
+          font-weight: 600;
+        }
+        .mdc-tab-indicator{
+          padding-bottom: 5px;
+          margin-top: -1px;
+          @include mdc-tab-indicator-underline-color($mdc-theme-on-secondary);
+          background-color: $mdc-theme-secondary;
+        }
+      }
+
     }
     .mdc-dialog__footer{
       border-top: 1px solid $mdc-theme-on-background;
+      background-color: $mdc-theme-surface;
+      padding-top: 24px;
+      padding-bottom: 24px;
     }
   }
   &.mdc-dialog--open .mdc-dialog__backdrop{
@@ -166,7 +195,10 @@ Fix the width of input components when inside grids
   }
   .mdc-dialog__body{
     max-height: 70vh;
-    overflow: scroll;
+    overflow: auto;
+    margin-top: 0;
+    padding-top: 24px;
+    background-color: $mdc-theme-surface;
   }
 }
 

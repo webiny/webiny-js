@@ -9,13 +9,18 @@ import { renderPlugins } from "webiny-app/plugins";
 import { isPluginActive } from "webiny-app-cms/editor/selectors";
 import { withActiveElement, withKeyHandler } from "webiny-app-cms/editor/components";
 import { css } from "emotion";
-import { Dialog, DialogBody, DialogFooter, DialogAccept, DialogCancel } from "webiny-ui/Dialog";
-import { Input } from "webiny-ui/Input";
-import { Grid, Cell } from "webiny-ui/Grid";
+import {
+    Dialog,
+    DialogBody,
+    DialogFooter,
+    DialogAccept,
+    DialogCancel,
+    DialogHeader,
+    DialogHeaderTitle
+} from "webiny-ui/Dialog";
 import { Form } from "webiny-form";
-import { Tabs, Tab } from "webiny-ui/Tabs";
+import { Tabs } from "webiny-ui/Tabs";
 import { updateElement, deactivatePlugin } from "webiny-app-cms/editor/actions";
-import { ReactComponent as SettingsIcon } from "webiny-app-cms/editor/assets/icons/settings.svg";
 
 type Props = Object & {
     open: boolean,
@@ -29,7 +34,7 @@ const emptyElement = { data: {}, type: null };
 const dialogBody = css({
     "&.mdc-dialog__body": {
         marginTop: 0,
-        padding: 0
+        padding: "24px 0 0 0"
     }
 });
 
@@ -48,6 +53,9 @@ class AdvancedSettings extends React.Component<Props> {
         const { data, type } = element || cloneDeep(emptyElement);
         return (
             <Dialog open={open} onClose={onClose}>
+                <DialogHeader>
+                    <DialogHeaderTitle>Settings</DialogHeaderTitle>
+                </DialogHeader>
                 <Form key={element && element.id} data={data} onSubmit={onSubmit}>
                     {({ submit, Bind }) => (
                         <React.Fragment>
