@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "cross-env NODE_ENV=production npx sls webpack --out build",
-    "start": "cross-env NODE_ENV=development npx sls offline start --port=9000 --dontPrintOutput --useSeparateProcesses",
+    "start": "cross-env NODE_ENV=development npx sls offline start --port=9000 --dontPrintOutput",
     "setup": "node src/install.js",
     "export-blocks": "node tasks/exportBlocks/index"
   },
