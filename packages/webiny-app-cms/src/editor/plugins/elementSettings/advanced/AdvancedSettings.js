@@ -49,13 +49,13 @@ class AdvancedSettings extends React.Component<Props> {
         return (
             <Dialog open={open} onClose={onClose}>
                 <Form key={element && element.id} data={data} onSubmit={onSubmit}>
-                    {({ submit, Bind }) => (
+                    {({ submit, Bind, data }) => (
                         <React.Fragment>
                             <DialogBody className={dialogBody}>
                                 <Tabs>
                                     {renderPlugins(
                                         "cms-element-advanced-settings",
-                                        { Bind },
+                                        { Bind, data },
                                         { wrapper: false, filter: pl => pl.element === type }
                                     )}
                                     <Tab icon={<SettingsIcon />} label="Style">

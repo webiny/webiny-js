@@ -2,11 +2,12 @@
 import React from "react";
 import type { ElementPluginType } from "webiny-app-cms/types";
 import { Tab } from "webiny-ui/Tabs";
-import { ReactComponent as ListIcon } from "./round-list-24px.svg";
+import { ReactComponent as DesignIcon } from "./icons/round-style-24px.svg";
+import { ReactComponent as FilterIcon } from "./icons/round-filter_list-24px.svg";
+import { ReactComponent as PageListIcon } from "./page-list-icon.svg";
 import PagesList from "./PagesList";
 import PagesListSettings from "./PagesListSettings";
 import styled from "react-emotion";
-import { ReactComponent as PageListIcon } from "./page-list-icon.svg";
 
 export default () => {
     const PreviewBox = styled("div")({
@@ -61,13 +62,25 @@ export default () => {
             }
         }: ElementPluginType),
         {
-            name: "cms-element-advanced-settings-pages-list",
+            name: "cms-element-advanced-settings-pages-list-filter",
             type: "cms-element-advanced-settings",
             element: "cms-element-pages-list",
             render(props: Object) {
                 return (
-                    <Tab icon={<ListIcon />} label="Pages List">
-                        <PagesListSettings {...props} />
+                    <Tab icon={<FilterIcon />} label="Filter">
+                        <PagesListSettings {...props} filter />
+                    </Tab>
+                );
+            }
+        },
+        {
+            name: "cms-element-advanced-settings-pages-list-design",
+            type: "cms-element-advanced-settings",
+            element: "cms-element-pages-list",
+            render(props: Object) {
+                return (
+                    <Tab icon={<DesignIcon />} label="Design">
+                        <PagesListSettings {...props} design />
                     </Tab>
                 );
             }
