@@ -1,6 +1,6 @@
 // @flow
 import _ from "lodash";
-import type { ExtractionOptions, ExtractedData, ExtractionParams } from "./../types";
+import type { ExtractionOptions, ExtractedData, ExtractionParams } from "./types";
 
 /**
  * Data extractor class.
