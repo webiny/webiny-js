@@ -14,14 +14,14 @@ const GeneralSettings = ({ Bind, cms: { theme } }: Object) => {
         <React.Fragment>
             <Grid>
                 <Cell span={12}>
-                    <Bind name={"title"}>
+                    <Bind name={"title"} validators={["required"]}>
                         <DelayedOnChange>
                             <Input label="Title" description="Page title" />
                         </DelayedOnChange>
                     </Bind>
                 </Cell>
                 <Cell span={12}>
-                    <Bind name={"url"}>
+                    <Bind name={"url"} validators={["required"]}>
                         <DelayedOnChange>
                             <Input label="URL" description="Page URL" />
                         </DelayedOnChange>

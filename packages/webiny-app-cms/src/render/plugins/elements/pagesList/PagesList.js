@@ -4,10 +4,12 @@ import warning from "warning";
 import { pure } from "recompose";
 import { Query } from "react-apollo";
 import { loadPages } from "./graphql";
+import { getPlugins } from "webiny-plugins";
 
-const PagesList = pure(({ settings = {}, theme }: Object = {}) => {
-    const { component, ...vars } = settings;
-    const pageList = theme.elements.pagesList.components.find(cmp => cmp.name === component);
+const PagesList = pure((props: Object = {}) => {
+    const { data = {}, theme } = props;
+    const { component, ...vars } = data;
+    const pageList = getPlugins("cms-pages-list-component").find(cmp => cmp.name === component);
     if (!pageList) {
         warning(false, `Pages list component "${component}" is missing!`);
         return null;

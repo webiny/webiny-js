@@ -4,7 +4,7 @@ import hash from "short-hash";
 import fecha from "fecha";
 import accounting from "accounting";
 
-import type { Modifier, Processor } from "./../types";
+import type { Modifier, Processor } from "./types";
 
 /**
  * Main class used for all I18n needs.

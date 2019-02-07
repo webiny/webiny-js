@@ -4,10 +4,12 @@ import { pure } from "recompose";
 import { Query } from "react-apollo";
 import { withCms } from "webiny-app-cms/context";
 import { loadPages } from "./graphql";
+import { getPlugins } from "webiny-plugins";
 
 const PagesList = pure(({ data = {}, cms: { theme } }: Object = {}) => {
     const { component, ...vars } = data;
-    const pageList = theme.elements.pagesList.components.find(cmp => cmp.name === component);
+    const components = getPlugins("cms-pages-list-component");
+    const pageList = components.find(cmp => cmp.name === component);
 
     if (!pageList) {
         return "Selected page list component not found!";

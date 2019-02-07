@@ -50,7 +50,7 @@ export const listPublishedPages = async ({ args, Page, Category }: Object) => {
         }
     }
 
-    if (Array.isArray(tags)) {
+    if (Array.isArray(tags) && tags.length) {
         if (tagsRule === "ALL") {
             baseFilters.push({ "settings.general.tags": { $all: tags } });
         } else {
