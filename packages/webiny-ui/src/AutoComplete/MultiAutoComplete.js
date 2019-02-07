@@ -47,6 +47,11 @@ export class MultiAutoComplete extends React.Component<Props, State> {
      */
     downshift: any = React.createRef();
 
+    assignedValueAfterClearing = {
+        set: false,
+        selection: null
+    };
+
     getOptions() {
         const { unique, value, allowFreeInput, useSimpleValues, options } = this.props;
 
@@ -224,17 +229,24 @@ export class MultiAutoComplete extends React.Component<Props, State> {
                     itemToString={item => item && getOptionText(item, props)}
                     ref={this.downshift}
                     onChange={selection => {
-                        if (!selection || !onChange) {
+                        if (!this.assignedValueAfterClearing.set) {
+                            this.assignedValueAfterClearing = {
+                                set: true,
+                                selection
+                            };
+                            this.downshift.current.clearSelection();
                             return;
                         }
 
-                        if (Array.isArray(value)) {
-                            onChange([...value, selection]);
-                        } else {
-                            onChange([selection]);
+                        if (this.assignedValueAfterClearing.set) {
+                            this.assignedValueAfterClearing.set = false;
+                            if (Array.isArray(value)) {
+                                onChange &&
+                                    onChange([...value, this.assignedValueAfterClearing.selection]);
+                            } else {
+                                onChange && onChange([this.assignedValueAfterClearing.selection]);
+                            }
                         }
-
-                        this.downshift.current.clearSelection();
                     }}
                 >
                     {/* "getInputProps" and "openMenu" are not needed in renderOptions method. */}
@@ -248,16 +260,9 @@ export class MultiAutoComplete extends React.Component<Props, State> {
                                     onChange: e => e,
                                     onBlur: e => e,
                                     onKeyUp: e => {
-                                        const keyCode = keycode(e);
                                         const inputValue = e.target.value || "";
 
-                                        // If user pressed enter and free input is allowed, select typed value.
-                                        if (keyCode === "enter") {
-                                            if (this.state.inputValue && options.length) {
-                                                rest.selectItem(options[0]);
-                                            }
-                                        }
-
+                                        // Set current input value into state and trigger onInput if different.
                                         if (inputValue !== this.state.inputValue) {
                                             this.setState({ inputValue }, () => {
                                                 onInput && onInput(inputValue);
