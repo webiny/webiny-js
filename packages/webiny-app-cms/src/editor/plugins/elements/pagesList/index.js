@@ -6,7 +6,8 @@ import { ReactComponent as DesignIcon } from "./icons/round-style-24px.svg";
 import { ReactComponent as FilterIcon } from "./icons/round-filter_list-24px.svg";
 import { ReactComponent as PageListIcon } from "./page-list-icon.svg";
 import PagesList from "./PagesList";
-import PagesListSettings from "./PagesListSettings";
+import PagesListFilterSettings from "./PagesListFilterSettings";
+import PagesListDesignSettings from "./PagesListDesignSettings";
 import styled from "react-emotion";
 
 export default () => {
@@ -68,7 +69,7 @@ export default () => {
             render(props: Object) {
                 return (
                     <Tab icon={<FilterIcon />} label="Filter">
-                        <PagesListSettings {...props} filter />
+                        <PagesListFilterSettings {...props} filter />
                     </Tab>
                 );
             }
@@ -80,7 +81,7 @@ export default () => {
             render(props: Object) {
                 return (
                     <Tab icon={<DesignIcon />} label="Design">
-                        <PagesListSettings {...props} design />
+                        <PagesListDesignSettings {...props} design />
                     </Tab>
                 );
             }
