@@ -32,21 +32,5 @@
     "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
     "flow-copy-source": "flow-copy-source src ${DEST:-build}",
     "postbuild": "yarn flow-copy-source"
-  },
-  "depCheck": {
-    "ignore": {
-      "dependencies": [
-        "@babel/runtime"
-      ],
-      "devDependencies": [
-        "@babel/cli",
-        "@babel/core",
-        "@babel/plugin-proposal-object-rest-spread",
-        "@babel/plugin-transform-runtime",
-        "@babel/preset-env",
-        "@babel/preset-flow",
-        "babel-plugin-lodash"
-      ]
-    }
   }
 }

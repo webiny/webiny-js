@@ -5,20 +5,29 @@
   "homepage": "/admin",
   "dependencies": {
     "apollo-link-batch-http": "^1.2.3",
-    "dataurl-to-blob": "^0.0.1",
     "demo-theme": "0.0.0",
-    "react-apollo": "^2.2.4",
     "react-hot-loader": "^4.3.5",
     "webiny-admin": "0.0.0",
     "webiny-app": "0.0.0",
     "webiny-app-cms": "0.0.0",
     "webiny-plugins": "0.0.0",
-    "webiny-ui": "0.0.0"
+    "webiny-app-security": "0.0.0",
+    "apollo-cache-inmemory": "^1.1.12",
+    "apollo-client": "^2.2.8",
+    "apollo-link": "^1.2.1",
+    "webiny-integration-cookie-policy": "0.0.0",
+    "webiny-integration-google-tag-manager": "0.0.0",
+    "webiny-integration-typeform": "0.0.0",
+    "webiny-integration-mailchimp": "0.0.0"
   },
   "devDependencies": {
     "@rescripts/cli": "^0.0.7",
     "node-sass": "^4.9.3",
     "source-map-explorer": "^1.6.0"
+  },
+  "peerDependencies": {
+    "react": "^16.4.0",
+    "react-dom": "^16.6.0"
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",

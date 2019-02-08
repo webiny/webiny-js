@@ -94,13 +94,13 @@
     "yargs": "^12.0.1"
   },
   "scripts": {
-    "depcheck": "node scripts/depCheck.js",
+    "checkdep": "node scripts/checkDep.js --config ./scripts/checkdep/config.base.js",
     "build": "node scripts/build-tool/build.js --out=build/node_modules",
     "test": "jest --config ./scripts/jest/config.src.js",
     "test:build": "jest --config ./scripts/jest/config.build.js",
     "commit": "node ./scripts/commitizen.js",
     "commit:skip": "yarn commit --no-verify",
-    "commit:check": "yarn lint-staged",
+    "commit:check": "yarn checkdep && yarn lint-staged",
     "lint-staged": "lint-staged",
     "prettier": "prettier --config .prettierrc.js --write",
     "release": "node scripts/release/packages",
