@@ -3,8 +3,8 @@ import React from "react";
 
 export default () => {
     return {
-        name: "italic",
-        type: "cms-slate-editor",
+        name: "cms-render-slate-editor-italic",
+        type: "cms-render-slate-editor",
         slate: {
             renderMark(props: Object, next: Function) {
                 if (props.mark.type === "italic") {

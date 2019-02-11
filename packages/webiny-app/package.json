@@ -22,6 +22,7 @@
     "apollo-link-http": "^1.5.3",
     "classnames": "^2.2.5",
     "console-polyfill": "^0.3.0",
+    "dataurl-to-blob": "^0.0.1",
     "dot-prop-immutable": "^1.4.0",
     "graphql": "^0.13.2",
     "graphql-tag": "^2.8.0",
