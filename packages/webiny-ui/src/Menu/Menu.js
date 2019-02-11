@@ -44,6 +44,9 @@ const getElement = () => {
     if (!el) {
         el = document.createElement("div");
         el.id = "menu-container";
+        el.style.position = "fixed";
+        el.style.top = "0";
+        el.style.zIndex = "10";
         // $FlowFixMe
         document.body.appendChild(el);
     }
