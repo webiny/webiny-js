@@ -8,6 +8,19 @@ const listWidth = 800;
 
 class BlocksList extends React.Component<*, *> {
     state = { listHeight: 0 };
+    rightPanelElement: ?HTMLElement;
+
+    componentDidUpdate() {
+        if (this.rightPanelElement) {
+            if (this.rightPanelElement.scrollTop === 0) {
+                // $FlowFixMe
+                this.rightPanelElement.scroll(0, 1);
+                return;
+            }
+            // $FlowFixMe
+            this.rightPanelElement.scroll(0, 0);
+        }
+    }
 
     getRowHeight = ({ index }: Object) => {
         let height = get(this.props.blocks[index], "image.meta.height", 50);
@@ -42,13 +55,13 @@ class BlocksList extends React.Component<*, *> {
     render() {
         const { blocks } = this.props;
 
-        const rightPanelElement = document.getElementById("webiny-secondary-view-right-panel");
-        if (!rightPanelElement) {
+        this.rightPanelElement = document.getElementById("webiny-secondary-view-right-panel");
+        if (!this.rightPanelElement) {
             return null;
         }
 
         return (
-            <WindowScroller scrollElement={rightPanelElement}>
+            <WindowScroller scrollElement={this.rightPanelElement}>
                 {({ isScrolling, registerChild, onChildScroll, scrollTop }) => (
                     <div style={{ flex: "1 1 auto" }}>
                         <div style={{ width: "800px", margin: "0 auto" }} ref={registerChild}>

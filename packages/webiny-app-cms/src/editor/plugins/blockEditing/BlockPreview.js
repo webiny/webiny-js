@@ -22,8 +22,7 @@ class BlockPreview extends React.Component<*> {
             addBlockToContent,
             deactivatePlugin,
             onEdit,
-            onDelete,
-            loadImage
+            onDelete
         } = this.props;
 
         return (
