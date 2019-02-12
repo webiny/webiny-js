@@ -4,21 +4,22 @@
   "private": true,
   "homepage": "/admin",
   "dependencies": {
+    "apollo-cache-inmemory": "^1.1.12",
+    "apollo-client": "^2.2.8",
+    "apollo-link": "^1.2.1",
     "apollo-link-batch-http": "^1.2.3",
     "demo-theme": "0.0.0",
     "react-hot-loader": "^4.3.5",
     "webiny-admin": "0.0.0",
     "webiny-app": "0.0.0",
     "webiny-app-cms": "0.0.0",
-    "webiny-plugins": "0.0.0",
     "webiny-app-security": "0.0.0",
-    "apollo-cache-inmemory": "^1.1.12",
-    "apollo-client": "^2.2.8",
-    "apollo-link": "^1.2.1",
     "webiny-integration-cookie-policy": "0.0.0",
     "webiny-integration-google-tag-manager": "0.0.0",
+    "webiny-integration-mailchimp": "0.0.0",
     "webiny-integration-typeform": "0.0.0",
-    "webiny-integration-mailchimp": "0.0.0"
+    "webiny-plugins": "0.0.0",
+    "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
     "@rescripts/cli": "^0.0.7",

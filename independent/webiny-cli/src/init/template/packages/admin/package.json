@@ -14,7 +14,8 @@
     "webiny-integration-mailchimp": "^1",
     "webiny-integration-typeform": "^1",
     "webiny-plugins": "^1",
-    "webiny-ui": "^1"
+    "webiny-ui": "^1",
+    "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
     "node-sass": "^4.9.3",
