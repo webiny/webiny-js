@@ -95,6 +95,11 @@ class ImageEditor extends React.Component<Props, State> {
         }
     }
 
+    resetCanvas = () => {
+        this.deactivateTool();
+        this.updateCanvas();
+    };
+
     updateCanvas = () => {
         const { src } = this.props;
         this.image = new window.Image();
