@@ -6,7 +6,7 @@ import query from "./graphql";
 class GoogleTagManager extends React.Component<*> {
     componentDidMount() {
         const { settings } = this.props;
-        if (settings && settings.enabled !== true) {
+        if (!settings || settings.enabled !== true) {
             return;
         }
 
@@ -43,8 +43,8 @@ class GoogleTagManager extends React.Component<*> {
 
 export default [
     {
-        type: "module-render",
-        name: "module-render-google-tag-manager",
+        type: "addon-render",
+        name: "addon-render-google-tag-manager",
         component: (
             <Query query={query}>
                 {({ data, loading }) => {
