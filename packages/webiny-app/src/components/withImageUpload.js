@@ -36,7 +36,10 @@ export const withImageUpload = (options: WithImageUploadOptions = {}): Function 
                             if (Array.isArray(file)) {
                                 for (let index = 0; index < file.length; index++) {
                                     let current = file[index];
-                                    current.src.startsWith("http") && (await fetchImage(current));
+                                    current &&
+                                        typeof current.src === "string" &&
+                                        current.src.startsWith("http") &&
+                                        (await fetchImage(current));
                                 }
                                 await onChange(file);
                             }
@@ -44,7 +47,7 @@ export const withImageUpload = (options: WithImageUploadOptions = {}): Function 
                         }
 
                         // Single image.
-                        if (file && file.src.startsWith("http")) {
+                        if (file && typeof file.src === "string" && file.src.startsWith("http")) {
                             await fetchImage(file);
                         }
                         await onChange(file);
