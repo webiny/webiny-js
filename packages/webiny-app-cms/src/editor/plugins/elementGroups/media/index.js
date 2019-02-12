@@ -7,7 +7,6 @@ export default ({
     name: "cms-element-group-media",
     type: "cms-element-group",
     group: {
-        name: "media",
         title: "Media",
         icon: <MediaIcon />
     }

@@ -7,7 +7,6 @@ export default ({
     type: "cms-element-group",
     name: "cms-element-group-form",
     group: {
-        name: "form",
         title: "Form",
         icon: <FormIcon />
     }

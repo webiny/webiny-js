@@ -7,7 +7,6 @@ const layoutGroup: ElementGroupPluginType = {
     name: "cms-element-group-layout",
     type: "cms-element-group",
     group: {
-        name: "layout",
         title: "Layout",
         icon: <LayoutIcon/>
     }

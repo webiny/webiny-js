@@ -28,8 +28,6 @@ export type CmsThemeType = {
 
 export type ElementGroupPluginType = PluginType & {
     group: {
-        // Group name used by element plugins.
-        name: string,
         // Title rendered in the toolbar.
         title: string,
         // Icon rendered in the toolbar.

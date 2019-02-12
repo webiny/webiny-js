@@ -7,7 +7,6 @@ const basicGroup: ElementGroupPluginType = {
     name: "cms-element-group-basic",
     type: "cms-element-group",
     group: {
-        name: "text",
         title: "Basic",
         icon: <TextIcon />
     }

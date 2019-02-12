@@ -7,7 +7,6 @@ export default ({
     name: "cms-element-group-saved",
     type: "cms-element-group",
     group: {
-        name: "saved",
         title: "Saved",
         icon: <SavedIcon />
     }

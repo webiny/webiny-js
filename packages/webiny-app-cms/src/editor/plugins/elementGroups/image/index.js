@@ -7,7 +7,6 @@ const imageGroup: ElementGroupPluginType = {
     name: "cms-element-group-image",
     type: "cms-element-group",
     group: {
-        name: "image",
         title: "Image",
         icon: <ImageGroupIcon/>
     }

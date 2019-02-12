@@ -7,7 +7,6 @@ export default ({
     name: "cms-element-group-social",
     type: "cms-element-group",
     group: {
-        name: "social",
         title: "Social",
         icon: <SocialIcon />
     }
