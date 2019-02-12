@@ -39,7 +39,7 @@ export default [
                 {({ data: response }) => {
                     const { favicon } = get(response, "settings.cms") || {};
 
-                    // Manually added "?width=100" to the favicon URL. In the future, fix this.
+                    // Manually added "?width=128" to the favicon URL. In the future, fix this.
                     // See "packages/webiny-app/src/plugins/imagePlugin.js:54"
                     if (favicon && favicon.src) {
                         return (
@@ -47,7 +47,7 @@ export default [
                                 <link
                                     rel="icon"
                                     type="image/png"
-                                    href={favicon.src + "?width=100"}
+                                    href={favicon.src + "?width=128"}
                                     sizes="16x16"
                                 />
                             </Helmet>
