@@ -21,8 +21,8 @@ class CookiePolicy extends React.Component<*> {
 
 export default [
     {
-        type: "module-render",
-        name: "module-render-cookie-policy",
+        type: "addon-render",
+        name: "addon-render-cookie-policy",
         component: (
             <Query query={query}>
                 {({ data, loading }) => {

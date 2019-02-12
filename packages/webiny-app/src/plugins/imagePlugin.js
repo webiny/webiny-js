@@ -51,6 +51,13 @@ const buildFullSrc = (src, transform) => {
     return src + "?" + params;
 };
 
+/**
+ * TODO:
+ * In the future, it would be nice if plugin was structured in a way we could extract only props that we need.
+ * We needed this eg. when we wanted to set 100x100 favicon, we had the URL, but could properly
+ * set ?width=200. It works for now, but eg. cloudinary doesn't use query params and this solution wouldn't work there.
+ * See "packages/webiny-app-cms/src/site/plugins/index.js:48".
+ */
 const imagePlugin: ImagePlugin = {
     name: "image-component",
     type: "image-component",

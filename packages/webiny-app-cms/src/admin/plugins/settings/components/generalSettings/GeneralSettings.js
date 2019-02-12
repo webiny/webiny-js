@@ -50,7 +50,10 @@ const GeneralSettings = ({ showSnackbar }) => {
                                                     </Cell>
                                                     <Cell span={6}>
                                                         <Bind name={"cms.favicon"}>
-                                                            <Image label="Favicon" />
+                                                            <Image
+                                                                label="Favicon"
+                                                                accept={["image/png"]}
+                                                            />
                                                         </Bind>
                                                     </Cell>
                                                     <Cell span={6}>

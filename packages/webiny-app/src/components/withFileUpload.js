@@ -24,12 +24,12 @@ export type WithFileUploadPlugin = PluginType & {
 };
 
 const mustUpload = (file: SelectedFile) => {
-    if (!file) {
-        return false;
+    if (file && typeof file.src === "string") {
+        const src: string = (file.src: any);
+        return src.startsWith("data:");
     }
 
-    const src: string = (file.src: any);
-    return src.startsWith("data:");
+    return false;
 };
 
 const getFileUploader = () => {
@@ -64,7 +64,7 @@ export const withFileUpload = (options: WithFileUploadOptions = {}): Function =>
             withConfig(),
             graphql(createFile, { name: "gqlCreateFile" }),
             withHandlers({
-                uploadFile: (props) => async file => {
+                uploadFile: props => async file => {
                     return getFileUploader()(file).then(uploadedFile => {
                         props.gqlCreateFile({ variables: { data: uploadedFile } });
                         return uploadedFile;
