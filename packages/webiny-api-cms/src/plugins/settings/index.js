@@ -16,6 +16,7 @@ export default [
             type CmsSettings {
                 name: String
                 favicon: File
+                defaultOgImage: File
                 logo: File
                 domain: String
                 social: CmsSocialMedia
@@ -48,6 +49,7 @@ export default [
             input CmsSettingsInput {
                 name: String
                 favicon: FileInput
+                defaultOgImage: FileInput
                 logo: FileInput
                 social: CmsSocialMediaInput
                 pages: CmsSettingsPagesInput

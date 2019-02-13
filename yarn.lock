@@ -17299,6 +17299,13 @@ react-sortable-tree@^2.3.0, react-sortable-tree@^2.6.0:
     react-lifecycles-compat "^3.0.4"
     react-virtualized "^9.19.1"
 
+react-spinner-material@^1.0.19:
+  version "1.0.19"
+  resolved "https://registry.yarnpkg.com/react-spinner-material/-/react-spinner-material-1.0.19.tgz#312a7e2bfc3f8b07f00fce35f083ec514c9a9da5"
+  integrity sha512-NYV6sD54E1xIeEKig7zlHlLdTxv5OERB+/YEuGM49RXYVt6HjpERcfkdUIJLopFW88+XlgyrYW+wK7I3m79pfA==
+  dependencies:
+    prop-types "^15.5.10"
+
 react-split-pane@^0.1.84:
   version "0.1.85"
   resolved "https://registry.yarnpkg.com/react-split-pane/-/react-split-pane-0.1.85.tgz#64819946a99b617ffa2d20f6f45a0056b6ee4faa"

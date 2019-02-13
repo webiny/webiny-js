@@ -30,6 +30,7 @@ const cmsSettingsModelFactory = () => {
             this.attr("name").char();
             this.attr("domain").char();
             this.attr("favicon").model(FileModel);
+            this.attr("defaultOgImage").model(FileModel);
             this.attr("logo").model(FileModel);
             this.attr("social").model(SocialMedia);
         }
