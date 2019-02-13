@@ -11,6 +11,7 @@ import { withSnackbar } from "webiny-admin/components";
 import { RadioGroup, Radio } from "webiny-ui/Radio";
 import graphql from "./graphql";
 import showCookiePolicy from "./../../utils/showCookiePolicy";
+import { CircularProgress } from "webiny-ui/Progress";
 
 import {
     SimpleForm,
@@ -29,9 +30,9 @@ const positionOptions = [
 const CookiePolicySettings = ({ showSnackbar }) => {
     return (
         <Query query={graphql.query}>
-            {({ data }) => (
+            {({ data, loading: queryInProgress }) => (
                 <Mutation mutation={graphql.mutation}>
-                    {update => (
+                    {(update, { loading: mutationInProgress }) => (
                         <Form
                             data={data.settings}
                             onSubmit={async data => {
@@ -45,6 +46,9 @@ const CookiePolicySettings = ({ showSnackbar }) => {
                         >
                             {({ Bind, form, data }) => (
                                 <SimpleForm>
+                                    {(queryInProgress || mutationInProgress) && (
+                                        <CircularProgress />
+                                    )}
                                     <SimpleFormHeader title="Cookie Policy Settings">
                                         <Bind
                                             name={"cookiePolicy.enabled"}

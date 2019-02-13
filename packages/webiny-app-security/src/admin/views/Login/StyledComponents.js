@@ -26,7 +26,8 @@ export const LoginContent = styled("div")({
 });
 
 export const InnerContent = styled("div")({
-    padding: 25
+    padding: 25,
+    position: "relative"
 });
 
 export const Footer = styled("div")({

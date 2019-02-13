@@ -7,6 +7,7 @@ import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
 import RolesAutoComplete from "./../Components/RolesAutoComplete";
 import type { WithCrudFormProps } from "webiny-admin/components";
+import { CircularProgress } from "webiny-ui/Progress";
 
 import {
     SimpleForm,
@@ -19,6 +20,7 @@ const t = i18n.namespace("Security.GroupsForm");
 
 const GroupForm = ({
     onSubmit,
+    loading,
     data,
     invalidFields
 }: WithCrudFormProps & { scopes: Array<string> }) => {
@@ -26,6 +28,7 @@ const GroupForm = ({
         <Form invalidFields={invalidFields} data={data} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (
                 <SimpleForm>
+                    {loading && <CircularProgress />}
                     <SimpleFormHeader title={data.name ? data.name : "Untitled"} />
                     <SimpleFormContent>
                         <Grid>
