@@ -20,6 +20,7 @@ type RenderPropArgs = {
 type Props = {
     src: string,
     tools: Array<ToolbarTool>,
+    options: ?Object,
     onToolActivate?: Function,
     onToolDeactivate?: Function,
     children?: RenderPropArgs => React.Node
@@ -167,7 +168,7 @@ class ImageEditor extends React.Component<Props, State> {
     };
 
     render() {
-        const { src, tools, children } = this.props;
+        const { src, tools, children, options } = this.props;
         const { tool } = this.state;
         const editor = (
             <React.Fragment>
@@ -181,6 +182,7 @@ class ImageEditor extends React.Component<Props, State> {
                         return (
                             <div key={key} className={classNames({ disabled: this.state.tool })}>
                                 {tool.icon({
+                                    options,
                                     canvas: this.canvas,
                                     activateTool: () => this.activateTool(tool)
                                 })}
@@ -194,6 +196,7 @@ class ImageEditor extends React.Component<Props, State> {
                         <>
                             {typeof tool.renderForm === "function" &&
                                 tool.renderForm({
+                                    options,
                                     image: this.image,
                                     canvas: this.canvas
                                 })}

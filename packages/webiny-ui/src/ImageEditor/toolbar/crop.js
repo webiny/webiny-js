@@ -20,12 +20,13 @@ const renderForm = () => {
 const tool: ImageEditorTool = {
     name: "crop",
     icon(props) {
+        const options = props.options && props.options.cropper ? props.options.cropper : {};
         return (
             <Tooltip placement={"bottom"} content={"Crop"}>
                 <IconButton
                     icon={<CropIcon />}
                     onClick={() => {
-                        cropper = new Cropper(props.canvas.current);
+                        cropper = new Cropper(props.canvas.current, options);
                         props.activateTool();
                     }}
                 />

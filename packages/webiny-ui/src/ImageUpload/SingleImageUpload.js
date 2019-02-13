@@ -45,11 +45,9 @@ type Props = FormComponentProps & {
     // Uses "bytes" (https://www.npmjs.com/package/bytes) library to convert string notation to actual number.
     maxSize: string,
 
-    // By default, the editor tool will be shown when an image is selected.
-    // Set to false if there is no need for editor to be shown. Otherwise, set true (default value) or alternatively
-    // an object containing all of the image editor related options (eg. "filter").
+    // Image editor options.
     // Please check the docs of ImageEditor component for the list of all available options.
-    imageEditor?: boolean | Object,
+    imageEditor?: Object,
 
     // Custom image preview renderer. By default images are rendered via simple <img> element.
     renderImagePreview?: () => React.Element<any>,
@@ -87,8 +85,8 @@ const noImageEditingTypes = ["image/svg+xml", "image/gif"];
 export class SingleImageUpload extends React.Component<Props, State> {
     static defaultProps = {
         maxSize: "10mb",
+        imageEditor: {},
         accept: ["image/jpeg", "image/png", "image/gif", "image/svg+xml"],
-        imageEditor: true,
         showRemoveImageButton: true,
         errorMessages: {
             maxSizeExceeded: "Max size exceeded.",
@@ -132,6 +130,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
     };
 
     render() {
+
         const {
             className,
             value,
@@ -141,6 +140,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
             accept,
             maxSize,
             onChange,
+            imageEditor,
             showRemoveImageButton,
             renderImagePreview
         } = this.props;
@@ -161,6 +161,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
                 )}
 
                 <ImageEditorDialog
+                    options={imageEditor}
                     open={this.state.imageEditor.open}
                     src={imageEditorImageSrc}
                     onClose={() => {

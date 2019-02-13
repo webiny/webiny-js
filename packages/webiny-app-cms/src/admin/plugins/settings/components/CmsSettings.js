@@ -81,6 +81,11 @@ class CmsSettings extends React.Component<Object, Object> {
                                                         <Cell span={12}>
                                                             <Bind name={"cms.social.image"}>
                                                                 <Image
+                                                                    imageEditor={{
+                                                                        cropper: {
+                                                                            aspectRatio: 1596 / 545
+                                                                        }
+                                                                    }}
                                                                     label="Default Open Graph image"
                                                                     description={`Any CMS page that doesn't have an Open Graph image set, will use this one.`}
                                                                 />

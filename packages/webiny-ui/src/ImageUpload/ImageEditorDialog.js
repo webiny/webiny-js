@@ -3,7 +3,7 @@ import * as React from "react";
 import { ImageEditor } from "webiny-ui/ImageEditor";
 import { Dialog, DialogAccept, DialogCancel, DialogFooter, DialogBody } from "webiny-ui/Dialog";
 
-type Props = Object & { src: ?string };
+type Props = Object & { options?: Object, src: ?string };
 
 class ImageEditorDialog extends React.Component<Props> {
     imageEditor = React.createRef();
@@ -18,10 +18,10 @@ class ImageEditorDialog extends React.Component<Props> {
     }
 
     render() {
-        const { src, onAccept, ...dialogProps } = this.props;
+        const { src, options, onAccept, ...dialogProps } = this.props;
         return (
             <Dialog {...dialogProps}>
-                <ImageEditor src={src} ref={this.imageEditor}>
+                <ImageEditor src={src} ref={this.imageEditor} options={options}>
                     {({ render, getCanvasDataUrl, activeTool, applyActiveTool }) => (
                         <>
                             <DialogBody>{render()}</DialogBody>

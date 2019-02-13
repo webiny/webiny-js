@@ -7,10 +7,12 @@ export type ImageEditorTool = {
     cancel?: Function,
     icon: ({
         canvas: any,
-        activateTool: Function
+        activateTool: Function,
+        options?: Object
     }) => React.Element<any>,
     renderForm?: ({
         canvas: any,
-        renderApplyCancel: Function
+        renderApplyCancel: Function,
+        options?: Object
     }) => React.Node
 };
