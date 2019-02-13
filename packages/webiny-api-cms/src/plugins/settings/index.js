@@ -11,12 +11,12 @@ export default [
                 facebook: String
                 twitter: String
                 instagram: String
+                image: File
             }
 
             type CmsSettings {
                 name: String
                 favicon: File
-                defaultOgImage: File
                 logo: File
                 domain: String
                 social: CmsSocialMedia
@@ -39,6 +39,7 @@ export default [
                 facebook: String
                 twitter: String
                 instagram: String
+                image: FileInput
             }
 
             input CmsDefaultPageInput {
@@ -49,7 +50,6 @@ export default [
             input CmsSettingsInput {
                 name: String
                 favicon: FileInput
-                defaultOgImage: FileInput
                 logo: FileInput
                 social: CmsSocialMediaInput
                 pages: CmsSettingsPagesInput

@@ -79,7 +79,7 @@ class CmsSettings extends React.Component<Object, Object> {
                                                 <Cell span={6}>
                                                     <Grid>
                                                         <Cell span={12}>
-                                                            <Bind name={"cms.defaultOgImage"}>
+                                                            <Bind name={"cms.social.image"}>
                                                                 <Image
                                                                     label="Default Open Graph image"
                                                                     description={`Any CMS page that doesn't have an Open Graph image set, will use this one.`}

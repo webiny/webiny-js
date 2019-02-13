@@ -1,5 +1,5 @@
 // @flow
-import getSettingsFields from "./getSettingsFields";
+import getPageSettingsFields from "./getPageSettingsFields";
 
 const getDataFields = () => {
     return /* GraphQL */ `
@@ -17,7 +17,7 @@ const getDataFields = () => {
             }
             settings {
                 _empty
-                ${getSettingsFields()}
+                ${getPageSettingsFields()}
             }
             category {
                 id

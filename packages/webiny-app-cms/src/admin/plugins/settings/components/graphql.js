@@ -8,8 +8,10 @@ const fields = /* GraphQL */ `
             notFound
             error
         }
-        defaultOgImage {
-            src
+        social {
+            image {
+                src
+            }
         }
     }
 `;
