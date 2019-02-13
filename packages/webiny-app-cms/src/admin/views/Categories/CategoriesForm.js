@@ -14,6 +14,7 @@ import {
     SimpleFormContent
 } from "webiny-admin/components/Views/SimpleForm";
 import { categoryUrlValidator } from "./validators";
+import { CircularProgress } from "webiny-ui/Progress";
 
 const t = i18n.namespace("Cms.CategoriesForm");
 
@@ -21,12 +22,14 @@ const CategoriesForm = ({
     data,
     invalidFields,
     onSubmit,
+    loading,
     cms: { theme }
 }: WithCrudFormProps & { cms: WithCmsPropsType }) => {
     return (
         <Form data={data || {}} invalidFields={invalidFields} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (
                 <SimpleForm>
+                    {loading && <CircularProgress />}
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={6}>

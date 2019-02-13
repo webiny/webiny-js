@@ -8,6 +8,7 @@ import { ButtonPrimary } from "webiny-ui/Button";
 import { Query, Mutation } from "react-apollo";
 import { withSnackbar } from "webiny-admin/components";
 import graphql from "./graphql";
+import { CircularProgress } from "webiny-ui/Progress";
 
 import {
     SimpleForm,
@@ -19,9 +20,9 @@ import {
 const MailchimpSettings = ({ showSnackbar }) => {
     return (
         <Query query={graphql.query}>
-            {({ data }) => (
+            {({ data, loading: queryInProgress }) => (
                 <Mutation mutation={graphql.mutation}>
-                    {update => (
+                    {(update, { loading: mutationInProgress }) => (
                         <Form
                             data={data.settings}
                             onSubmit={async data => {
@@ -35,6 +36,9 @@ const MailchimpSettings = ({ showSnackbar }) => {
                         >
                             {({ Bind, form, data }) => (
                                 <SimpleForm>
+                                    {(queryInProgress || mutationInProgress) && (
+                                        <CircularProgress />
+                                    )}
                                     <SimpleFormHeader title="Mailchimp Settings">
                                         <Bind
                                             name={"mailchimp.enabled"}

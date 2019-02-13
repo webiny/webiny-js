@@ -4,6 +4,7 @@ import { i18n } from "webiny-app/i18n";
 import { Form } from "webiny-form";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
+import { CircularProgress } from "webiny-ui/Progress";
 import { ButtonPrimary } from "webiny-ui/Button";
 import GroupsAutoComplete from "./../Components/GroupsAutoComplete";
 import RolesAutoComplete from "./../Components/RolesAutoComplete";
@@ -20,11 +21,12 @@ import type { WithCrudFormProps } from "webiny-admin/components";
 
 const t = i18n.namespace("Security.UsersForm");
 
-const UsersForm = ({ onSubmit, data, invalidFields }: WithCrudFormProps) => {
+const UsersForm = ({ onSubmit, data, invalidFields, loading }: WithCrudFormProps) => {
     return (
         <Form invalidFields={invalidFields} data={data} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (
                 <SimpleForm>
+                    {loading && <CircularProgress />}
                     <SimpleFormHeader title={data.fullName || "N/A"} />
                     <SimpleFormContent>
                         <Grid>
