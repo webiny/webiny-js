@@ -14,7 +14,7 @@ class Content extends React.Component<Props> {
             src = get(settings, "social.image.src");
         }
 
-        return src ? <meta property="og:image" content={src} /> : null;
+        return src ? <meta property="og:image" content={src + "?width=1596"} /> : null;
     }
 
     render() {

@@ -82,7 +82,8 @@ class CmsSettings extends React.Component<Object, Object> {
                                                             <Bind name={"cms.social.image"}>
                                                                 <Image
                                                                     imageEditor={{
-                                                                        cropper: {
+                                                                        crop: {
+                                                                            autoEnable: true,
                                                                             aspectRatio: 1596 / 545
                                                                         }
                                                                     }}
