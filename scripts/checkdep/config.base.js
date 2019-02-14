@@ -10,12 +10,14 @@ module.exports = {
         "independent/webiny-integration-google-tag-manager",
         "independent/webiny-integration-mailchimp",
         "independent/webiny-integration-typeform",
-
         "packages/demo-admin",
         "packages/demo-api",
         "packages/demo-site",
         "packages/webiny-data-extractor",
-        "packages/webiny-validation"
+        "packages/webiny-validation",
+        "packages/webiny-entity",
+        "packages/webiny-entity-memory",
+        "packages/webiny-entity-mongodb"
     ],
     ignoredDirs: ["/node_modules/"]
 };

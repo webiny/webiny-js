@@ -8,6 +8,11 @@ const fields = /* GraphQL */ `
             notFound
             error
         }
+        social {
+            image {
+                src
+            }
+        }
     }
 `;
 

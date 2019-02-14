@@ -71,14 +71,14 @@ const withSaveHandler = ({ create, update, response, variables, snackbar }): Fun
         return compose(
             setDisplayName("saveHandler"),
             withState("invalidFields", "setInvalidFields", {}),
-            withState("formLoading", "setFormLoading", false),
+            withState("mutationInProgress", "setMutationInProgress", false),
             graphql(create, { name: "createRecord" }),
             graphql(update, { name: "updateRecord" }),
             withHandlers({
                 saveRecord: ({
                     createRecord,
                     updateRecord,
-                    setFormLoading,
+                    setMutationInProgress,
                     setInvalidFields,
                     showSnackbar,
                     showDialog,
@@ -86,7 +86,7 @@ const withSaveHandler = ({ create, update, response, variables, snackbar }): Fun
                     dataList,
                     id
                 }: Object) => {
-                    setFormLoading(true);
+                    setMutationInProgress(true);
                     return async (formData: Object) => {
                         // Reset errors
                         setInvalidFields(null);
@@ -115,7 +115,7 @@ const withSaveHandler = ({ create, update, response, variables, snackbar }): Fun
                                 !id && dataList.refresh();
                             })
                             .then(res => {
-                                setFormLoading(false);
+                                setMutationInProgress(false);
                                 return res;
                             });
                     };
@@ -172,7 +172,7 @@ export const withCrud = ({ list, form }: Object): Function => {
                         dataList,
                         saveRecord,
                         formData,
-                        formLoading,
+                        mutationInProgress,
                         invalidFields,
                         showSnackbar,
                         showDialog,
@@ -194,7 +194,7 @@ export const withCrud = ({ list, form }: Object): Function => {
                             ...formData,
                             invalidFields,
                             onSubmit: saveRecord,
-                            loading: formLoading,
+                            loading: formData && formData.loading || mutationInProgress,
                             router,
                             showSnackbar,
                             showDialog

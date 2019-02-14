@@ -3,12 +3,13 @@ import { settingsFactory } from "webiny-api/entities";
 import { Model } from "webiny-model";
 import FileModel from "./File.model";
 
-class SocialMedia extends Model {
+class SocialMediaModel extends Model {
     constructor() {
         super();
         this.attr("facebook").char();
         this.attr("twitter").char();
         this.attr("instagram").char();
+        this.attr("image").model(FileModel);
     }
 }
 
@@ -31,7 +32,7 @@ const cmsSettingsModelFactory = () => {
             this.attr("domain").char();
             this.attr("favicon").model(FileModel);
             this.attr("logo").model(FileModel);
-            this.attr("social").model(SocialMedia);
+            this.attr("social").model(SocialMediaModel);
         }
     };
 };

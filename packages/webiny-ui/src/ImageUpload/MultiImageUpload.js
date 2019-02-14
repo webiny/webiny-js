@@ -53,11 +53,9 @@ type Props = FormComponentProps & {
     // Uses "bytes" (https://www.npmjs.com/package/bytes) library to convert string notation to actual number.
     maxSize: string,
 
-    // By default, the editor tool will be shown when an image is selected.
-    // Set to false if there is no need for editor to be shown. Otherwise, set true (default value) or alternatively
-    // an object containing all of the image editor related options (eg. "filter").
+    // Image editor options.
     // Please check the docs of ImageEditor component for the list of all available options.
-    editor?: boolean | Object,
+    imageEditor?: Object,
 
     // Use these to customize error messages (eg. if i18n supported is needed).
     errorMessages: {
@@ -82,7 +80,7 @@ class MultiImageUpload extends React.Component<Props, State> {
     static defaultProps = {
         accept: ["image/jpeg", "image/png", "image/gif", "image/svg+xml"],
         maxSize: "5mb",
-        editor: false,
+        imageEditor: {},
         errorMessages: {
             maxSizeExceeded: "Max size exceeded.",
             unsupportedFileType: "Unsupported file type.",
@@ -158,6 +156,7 @@ class MultiImageUpload extends React.Component<Props, State> {
             label,
             description,
             disabled,
+            imageEditor,
             accept,
             maxSize,
             className
@@ -177,6 +176,7 @@ class MultiImageUpload extends React.Component<Props, State> {
                 )}
 
                 <ImageEditorDialog
+                    options={imageEditor}
                     open={this.state.imageEditor.open}
                     src={imageEditorImageSrc}
                     onClose={() => {

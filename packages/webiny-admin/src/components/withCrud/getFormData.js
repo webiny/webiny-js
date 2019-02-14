@@ -31,6 +31,7 @@ const process = ({ data, form }: Object) => {
 const getFormData = ({ data, form }: Object) => {
     const formData = process({ data, form });
     return {
+        loading: get(data, "loading") || false,
         data: get(formData, "data") || {},
         error: get(formData, "error") || null
     };

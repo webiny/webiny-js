@@ -19,20 +19,17 @@ const renderForm = () => {
 
 const tool: ImageEditorTool = {
     name: "crop",
-    icon(props) {
+    icon({ activateTool }) {
         return (
             <Tooltip placement={"bottom"} content={"Crop"}>
-                <IconButton
-                    icon={<CropIcon />}
-                    onClick={() => {
-                        cropper = new Cropper(props.canvas.current);
-                        props.activateTool();
-                    }}
-                />
+                <IconButton icon={<CropIcon />} onClick={activateTool} />
             </Tooltip>
         );
     },
     renderForm,
+    onActivate: ({ canvas, options }) => {
+        cropper = new Cropper(canvas.current, options);
+    },
     cancel: () => cropper && cropper.destroy(),
     apply: ({ canvas }) => {
         return new Promise(resolve => {
@@ -58,6 +55,7 @@ const tool: ImageEditorTool = {
             }
 
             cropper.destroy();
+            cropper = null;
         });
     }
 };

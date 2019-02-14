@@ -11,6 +11,7 @@ export default [
                 facebook: String
                 twitter: String
                 instagram: String
+                image: File
             }
 
             type CmsSettings {
@@ -38,6 +39,7 @@ export default [
                 facebook: String
                 twitter: String
                 instagram: String
+                image: FileInput
             }
 
             input CmsDefaultPageInput {
