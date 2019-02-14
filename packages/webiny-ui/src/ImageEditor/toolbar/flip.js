@@ -45,28 +45,25 @@ const renderForm = () => {
 
 const tool: ImageEditorTool = {
     name: "flip",
-    icon({ canvas, activateTool }) {
+    icon({ activateTool }) {
         return (
             <Tooltip placement={"bottom"} content={"Flip"}>
-                <IconButton
-                    icon={<FlipIcon />}
-                    onClick={() => {
-                        cropper = new Cropper(canvas.current, {
-                            background: false,
-                            modal: false,
-                            guides: false,
-                            dragMode: "none",
-                            highlight: false,
-                            autoCrop: false
-                        });
-                        activateTool();
-                    }}
-                />
+                <IconButton icon={<FlipIcon />} onClick={activateTool} />
             </Tooltip>
         );
     },
     renderForm,
     cancel: () => cropper && cropper.destroy(),
+    onActivate: ({ canvas }) => {
+        cropper = new Cropper(canvas.current, {
+            background: false,
+            modal: false,
+            guides: false,
+            dragMode: "none",
+            highlight: false,
+            autoCrop: false
+        });
+    },
     apply: ({ canvas }) => {
         return new Promise(resolve => {
             if (!cropper) {

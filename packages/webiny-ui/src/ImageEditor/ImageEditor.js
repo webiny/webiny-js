@@ -86,20 +86,22 @@ class ImageEditor extends React.Component<Props, State> {
     image = null;
 
     componentDidMount() {
-        initScripts().then(this.updateCanvas);
-    }
-
-    componentDidUpdate(previousProps: Object) {
-        if (previousProps.src !== this.props.src) {
-            this.deactivateTool();
+        initScripts().then(() => {
             this.updateCanvas();
-        }
+            setTimeout(() => {
+                const { options } = this.props;
+                if (typeof options === "object" && options) {
+                    for (let key in options) {
+                        if (options[key].autoEnable === true) {
+                            const tool: ?ImageEditorTool = toolbar[key];
+                            tool && this.activateTool(tool);
+                            break;
+                        }
+                    }
+                }
+            }, 250);
+        });
     }
-
-    resetCanvas = () => {
-        this.deactivateTool();
-        this.updateCanvas();
-    };
 
     updateCanvas = () => {
         const { src } = this.props;
@@ -119,8 +121,15 @@ class ImageEditor extends React.Component<Props, State> {
         }
     };
 
-    activateTool = (tool: ImageEditorTool) => {
-        this.setState({ tool });
+    activateTool = (tool: string | ImageEditorTool) => {
+        if (typeof tool === "string") {
+            tool = toolbar[tool];
+        }
+
+        this.setState({ tool }, () => {
+            typeof tool.onActivate === "function" &&
+                tool.onActivate({ canvas: this.canvas, options: this.getToolOptions(tool) });
+        });
     };
 
     deactivateTool = () => {
@@ -167,6 +176,15 @@ class ImageEditor extends React.Component<Props, State> {
         this.deactivateTool();
     };
 
+    getToolOptions = (tool: ImageEditorTool) => {
+        const { options } = this.props;
+        if (!options || typeof options !== "object") {
+            return {};
+        }
+
+        return options[tool.name] || {};
+    };
+
     render() {
         const { src, tools, children, options } = this.props;
         const { tool } = this.state;
@@ -182,8 +200,6 @@ class ImageEditor extends React.Component<Props, State> {
                         return (
                             <div key={key} className={classNames({ disabled: this.state.tool })}>
                                 {tool.icon({
-                                    options,
-                                    canvas: this.canvas,
                                     activateTool: () => this.activateTool(tool)
                                 })}
                             </div>
@@ -196,7 +212,7 @@ class ImageEditor extends React.Component<Props, State> {
                         <>
                             {typeof tool.renderForm === "function" &&
                                 tool.renderForm({
-                                    options,
+                                    options: this.getToolOptions({ options, tool }),
                                     image: this.image,
                                     canvas: this.canvas
                                 })}

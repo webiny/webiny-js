@@ -42,28 +42,28 @@ class RenderForm extends React.Component<*, { rangeInput: 0 }> {
 
 const tool: ImageEditorTool = {
     name: "rotate",
-    icon({ canvas, activateTool }) {
+    icon({ activateTool }) {
         return (
             <Tooltip placement={"bottom"} content={"Rotate"}>
                 <IconButton
                     icon={<RotateRight />}
-                    onClick={() => {
-                        cropper = new Cropper(canvas.current, {
-                            background: false,
-                            modal: false,
-                            guides: false,
-                            dragMode: "none",
-                            highlight: false,
-                            autoCrop: false
-                        });
-                        activateTool();
-                    }}
+                    onClick={activateTool}
                 />
             </Tooltip>
         );
     },
     renderForm(props) {
         return <RenderForm {...props} />;
+    },
+    onActivate: ({ canvas }) => {
+        cropper = new Cropper(canvas.current, {
+            background: false,
+            modal: false,
+            guides: false,
+            dragMode: "none",
+            highlight: false,
+            autoCrop: false
+        });
     },
     cancel: () => cropper && cropper.destroy(),
     apply: ({ canvas }) => {
