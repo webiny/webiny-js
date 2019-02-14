@@ -3,7 +3,7 @@ import setupEntities from "./setupEntities";
 import createDefaultPages from "./importData/createDefaultPages";
 import createDefaultBlocks from "./importData/createDefaultBlocks";
 import * as data from "./data";
-
+import {get} from "lodash";
 export default async (context: Object) => {
     setupEntities(context);
     const { Category, Menu, CmsSettings } = context.cms.entities;
@@ -65,7 +65,7 @@ export default async (context: Object) => {
     // Settings init.
     const cmsSettings = new CmsSettings();
     await createDefaultPages(context, { categories, cmsSettings });
-    cmsSettings.data.domain = "http://localhost:3002";
+    cmsSettings.data.domain = get(context, "cms.siteUrl");
 
     await cmsSettings.save();
 };
