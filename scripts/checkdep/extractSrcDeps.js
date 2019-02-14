@@ -2,27 +2,23 @@ const glob = require("glob");
 const fs = require("fs");
 
 const parseImports = source => {
-    let regex = /import.*from.*['"]([a-zA-Z0-9-_@\.]*).*['"]/g;
-    let m;
+    const regexes = [
+        /import.+from[ ]+['"]([a-zA-Z0-9-_@\.]*).*['"]/g,
+        / require\(['"]([a-zA-Z0-9-_@\.]*)['"]/g,
+        /import[ ]+['"]([a-zA-Z0-9-_@\.]*)['"]/g
+    ];
 
     const results = [];
+    regexes.forEach(regex => {
+        let m;
+        while ((m = regex.exec(source)) !== null) {
+            if (m.index === regex.lastIndex) {
+                regex.lastIndex++;
+            }
 
-    while ((m = regex.exec(source)) !== null) {
-        if (m.index === regex.lastIndex) {
-            regex.lastIndex++;
+            results.push(m[1]);
         }
-
-        results.push(m[1]);
-    }
-
-    regex = / require\(['"]([a-zA-Z0-9-_@\.]*)['"]/g;
-    while ((m = regex.exec(source)) !== null) {
-        if (m.index === regex.lastIndex) {
-            regex.lastIndex++;
-        }
-
-        results.push(m[1]);
-    }
+    });
 
     return results;
 };

@@ -21,10 +21,12 @@ import {
 } from "./Login/StyledComponents";
 import logoOrange from "./../assets/images/logo_orange.png";
 import { loginMutation } from "./Login/graphql";
+import { CircularProgress } from "webiny-ui/Progress";
 
 const t = i18n.namespace("Webiny.Admin.Login");
 
-const Login = ({ login, error }: { login: Function, error?: Object }) => {
+const Login = (props: Object) => {
+    const { login, error, loading }: { loading: boolean, login: Function, error?: Object } = props;
     return (
         <Wrapper>
             <Logo src={logoOrange} />
@@ -34,6 +36,7 @@ const Login = ({ login, error }: { login: Function, error?: Object }) => {
                         <LoginContent>
                             <Elevation z={2}>
                                 <InnerContent>
+                                    {loading && <CircularProgress />}
                                     <Title>
                                         <h1>
                                             <Typography use="headline4">{t`Sign In`}</Typography>
@@ -103,14 +106,17 @@ const Login = ({ login, error }: { login: Function, error?: Object }) => {
 export default compose(
     graphql(loginMutation, { name: "doLogin" }),
     withState("error", "setError", null),
+    withState("loading", "setLoading", null),
     withHandlers({
-        login: ({ doLogin, setError, onToken }) => {
+        login: ({ doLogin, setError, onToken, setLoading }) => {
+            setLoading(true);
             return async formData => {
                 // Reset error
                 setError(null);
                 // Perform login
                 const res = await doLogin({ variables: formData });
                 const { data, error } = res.data.security.loginUser;
+                setLoading(false);
                 if (error) {
                     return setError(error);
                 }

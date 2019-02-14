@@ -37,7 +37,15 @@ const SocialSettings = ({ Bind }: Object) => {
             <Grid>
                 <Cell span={12}>
                     <Bind name={"settings.social.image"}>
-                        <PageImage label="Social Image" />
+                        <PageImage
+                            label="Social Image"
+                            imageEditor={{
+                                crop: {
+                                    autoEnable: true,
+                                    aspectRatio: 1596 / 545
+                                }
+                            }}
+                        />
                     </Bind>
                 </Cell>
             </Grid>

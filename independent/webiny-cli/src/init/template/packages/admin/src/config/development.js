@@ -33,16 +33,5 @@ export default {
                 errorPolicy: "all"
             }
         }
-    }),
-    components: {
-        Image: {
-            presets: {
-                avatar: { width: 128 }
-            },
-            plugin: "image-component"
-        },
-        withFileUpload: {
-            plugin: ["with-file-upload", { uri: "/files" }]
-        }
-    }
+    })
 };

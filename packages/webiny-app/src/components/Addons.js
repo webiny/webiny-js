@@ -13,11 +13,19 @@ export default class Addons extends React.Component<Props, State> {
         ready: false
     };
 
-    constructor() {
-        super();
+    componentMounted = false;
+
+    componentDidMount() {
+        this.componentMounted = true;
         this.init().then(() => {
-            this.setState({ ready: true });
+            if (this.componentMounted) {
+                this.setState({ ready: true });
+            }
         });
+    }
+
+    componentWillUnmount() {
+        this.componentMounted = false;
     }
 
     async init() {

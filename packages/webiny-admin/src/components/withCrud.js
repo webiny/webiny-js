@@ -21,6 +21,7 @@ export type WithCrudListProps = WithCrudBaseProps & {
 
 export type WithCrudFormProps = WithCrudBaseProps & {
     invalidFields: Object,
+    loading: boolean,
     onSubmit: (data: Object) => void,
     data: Object,
     error: Object | null
@@ -70,12 +71,14 @@ const withSaveHandler = ({ create, update, response, variables, snackbar }): Fun
         return compose(
             setDisplayName("saveHandler"),
             withState("invalidFields", "setInvalidFields", {}),
+            withState("mutationInProgress", "setMutationInProgress", false),
             graphql(create, { name: "createRecord" }),
             graphql(update, { name: "updateRecord" }),
             withHandlers({
                 saveRecord: ({
                     createRecord,
                     updateRecord,
+                    setMutationInProgress,
                     setInvalidFields,
                     showSnackbar,
                     showDialog,
@@ -83,6 +86,7 @@ const withSaveHandler = ({ create, update, response, variables, snackbar }): Fun
                     dataList,
                     id
                 }: Object) => {
+                    setMutationInProgress(true);
                     return async (formData: Object) => {
                         // Reset errors
                         setInvalidFields(null);
@@ -91,24 +95,29 @@ const withSaveHandler = ({ create, update, response, variables, snackbar }): Fun
                         const operation = id
                             ? updateRecord({ variables: { id, ...gqlVariables } })
                             : createRecord({ variables: gqlVariables });
-                        return operation.then(res => {
-                            const { data, error } = response(res.data);
-                            if (error) {
-                                if (error.code === "INVALID_ATTRIBUTES") {
-                                    showSnackbar("Some of your form input is incorrect!");
-                                    setInvalidFields(error.data.invalidAttributes);
-                                    return;
-                                } else {
-                                    showDialog(error.message, {
-                                        title: "Something unexpected happened"
-                                    });
-                                    return;
+                        return operation
+                            .then(res => {
+                                const { data, error } = response(res.data);
+                                if (error) {
+                                    if (error.code === "INVALID_ATTRIBUTES") {
+                                        showSnackbar("Some of your form input is incorrect!");
+                                        setInvalidFields(error.data.invalidAttributes);
+                                        return;
+                                    } else {
+                                        showDialog(error.message, {
+                                            title: "Something unexpected happened"
+                                        });
+                                        return;
+                                    }
                                 }
-                            }
-                            showSnackbar(snackbar(data));
-                            router.goToRoute({ params: { id: data.id }, merge: true });
-                            !id && dataList.refresh();
-                        });
+                                showSnackbar(snackbar(data));
+                                router.goToRoute({ params: { id: data.id }, merge: true });
+                                !id && dataList.refresh();
+                            })
+                            .then(res => {
+                                setMutationInProgress(false);
+                                return res;
+                            });
                     };
                 }
             })
@@ -163,6 +172,7 @@ export const withCrud = ({ list, form }: Object): Function => {
                         dataList,
                         saveRecord,
                         formData,
+                        mutationInProgress,
                         invalidFields,
                         showSnackbar,
                         showDialog,
@@ -184,6 +194,7 @@ export const withCrud = ({ list, form }: Object): Function => {
                             ...formData,
                             invalidFields,
                             onSubmit: saveRecord,
+                            loading: formData && formData.loading || mutationInProgress,
                             router,
                             showSnackbar,
                             showDialog

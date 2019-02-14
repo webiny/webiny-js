@@ -11,8 +11,9 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
 import { withSnackbar } from "webiny-admin/components";
-import { compose, withHandlers } from "recompose";
+import { compose, withHandlers, withState } from "recompose";
 import AvatarImage from "./Users/AvatarImage";
+import { CircularProgress } from "webiny-ui/Progress";
 
 import {
     SimpleForm,
@@ -23,10 +24,11 @@ import {
 
 const t = i18n.namespace("Security.UsersForm");
 
-const UsersForm = ({ onSubmit, user }: Object) => (
+const UsersForm = ({ onSubmit, user, loading }: Object) => (
     <Form data={user.data} onSubmit={onSubmit}>
         {({ data, form, Bind }) => (
             <SimpleForm>
+                {loading && <CircularProgress />}
                 <SimpleFormHeader title={"Account"} />
                 <SimpleFormContent>
                     <Grid>
@@ -116,6 +118,7 @@ const updateCurrentUser = gql`
 export default compose(
     withSnackbar(),
     withSecurity(),
+    withState("loading", "setLoading", null),
     graphql(getCurrentUser, {
         props: ({ data }) => ({
             user: get(data, "security.getCurrentUser") || { data: {} }
@@ -123,11 +126,13 @@ export default compose(
     }),
     graphql(updateCurrentUser, { name: "updateCurrentUser" }),
     withHandlers({
-        onSubmit: ({ updateCurrentUser, showSnackbar }) => async formData => {
+        onSubmit: ({ setLoading, updateCurrentUser, showSnackbar }) => async formData => {
+            setLoading(true);
             const { data: response } = await updateCurrentUser({
                 variables: { data: pick(formData, ["email", "firstName", "lastName", "avatar"]) }
             });
             const { error } = response.security.updateCurrentUser;
+            setLoading(false);
             if (error) {
                 return showSnackbar(error.message, {
                     actionText: "Close"
