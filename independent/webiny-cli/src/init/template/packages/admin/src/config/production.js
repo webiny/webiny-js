@@ -23,16 +23,5 @@ export default {
             addTypename: true,
             dataIdFromObject: obj => obj.id || null
         })
-    }),
-    components: {
-        Image: {
-            presets: {
-                avatar: { width: 128 }
-            },
-            plugin: "image-component"
-        },
-        withFileUpload: {
-            plugin: ["with-file-upload", { uri: "/files" }]
-        }
-    }
+    })
 };
