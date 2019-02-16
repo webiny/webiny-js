@@ -9,7 +9,9 @@ import { getPlugins } from "webiny-plugins";
 const PagesList = pure((props: Object = {}) => {
     const { data = {}, theme } = props;
     const { component, ...vars } = data;
-    const pageList = getPlugins("cms-pages-list-component").find(cmp => cmp.name === component);
+    const pageList = getPlugins("cms-element-pages-list-component").find(
+        cmp => cmp.name === component
+    );
     if (!pageList) {
         warning(false, `Pages list component "${component}" is missing!`);
         return null;

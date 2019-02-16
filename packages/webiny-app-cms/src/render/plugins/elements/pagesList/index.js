@@ -14,14 +14,14 @@ export default ([
         }
     },
     {
-        name: "cms-pages-list-component-default",
-        type: "cms-pages-list-component",
+        name: "cms-element-pages-list-component-default",
+        type: "cms-element-pages-list-component",
         title: "Default page list",
         component: DefaultPageList
     },
     {
-        name: "cms-pages-list-component-default-2",
-        type: "cms-pages-list-component",
+        name: "cms-element-pages-list-component-default-2",
+        type: "cms-element-pages-list-component",
         title: "Default page list-2",
         component: DefaultPageList
     }
