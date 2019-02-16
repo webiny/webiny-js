@@ -63,6 +63,7 @@ const create = async (options: Object) => {
     name += name ? "_" : "";
     name += `${uniqueId()}.${extension}`;
     name = sanitizeFilename(name);
+    name = name.replace(/\s/g,'');
 
     await fs.writeFile(paths.folder + name, buffer);
 

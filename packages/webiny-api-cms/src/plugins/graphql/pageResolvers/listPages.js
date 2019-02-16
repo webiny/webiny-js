@@ -27,6 +27,9 @@ export default (entityFetcher: EntityFetcher) => async (
                 parent: {
                     $first: "$parent"
                 },
+                id: {
+                    $first: "$id"
+                },
                 title: {
                     $first: "$title"
                 }
@@ -65,9 +68,8 @@ export default (entityFetcher: EntityFetcher) => async (
         }
     ]);
 
-
     return new ListResponse(
-        await entityClass.find({query: { id: { $in: ids.map(item => item._id) } }}),
+        await entityClass.find({ query: { id: { $in: ids.map(item => item.id) } } }),
         createPaginationMeta({
             page,
             perPage,
