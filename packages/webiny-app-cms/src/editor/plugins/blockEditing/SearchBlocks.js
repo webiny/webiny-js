@@ -8,7 +8,7 @@ import { getContent } from "webiny-app-cms/editor/selectors";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
 import { getPlugins, unregisterPlugin } from "webiny-plugins";
 import { createElement } from "webiny-app-cms/editor/utils";
-import { SecondaryLayout } from "webiny-admin/components/Views/SecondaryLayout";
+import { OverlayLayout } from "webiny-admin/components/OverlayLayout";
 import { ReactComponent as SearchIcon } from "webiny-app-cms/editor/assets/icons/search.svg";
 import * as Styled from "./StyledComponents";
 import { listItem, ListItemTitle, listStyle, TitleContent } from "./SearchBlocksStyled";
@@ -19,8 +19,8 @@ import {
     SimpleForm,
     SimpleFormContent,
     SimpleFormHeader
-} from "webiny-admin/components/Views/SimpleForm";
-import { CompactView, LeftPanel, RightPanel } from "webiny-admin/components/Views/CompactView";
+} from "webiny-admin/components/SimpleForm";
+import { CompactView, LeftPanel, RightPanel } from "webiny-admin/components/CompactView";
 import { Icon } from "webiny-ui/Icon";
 import { List, ListItem, ListItemGraphic } from "webiny-ui/List";
 import { Typography } from "webiny-ui/Typography";
@@ -232,7 +232,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         const blocksList = this.getBlocksList(plugins);
 
         return (
-            <SecondaryLayout
+            <OverlayLayout
                 barMiddle={this.renderSearchInput()}
                 onExited={() => this.props.deactivatePlugin({ name: "cms-search-blocks-bar" })}
             >
@@ -283,7 +283,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                         </Mutation>
                     </RightPanel>
                 </CompactView>
-            </SecondaryLayout>
+            </OverlayLayout>
         );
     }
 }

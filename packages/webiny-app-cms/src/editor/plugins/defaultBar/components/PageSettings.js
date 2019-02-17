@@ -8,8 +8,8 @@ import { deactivatePlugin, updateRevision } from "webiny-app-cms/editor/actions"
 import { getPage } from "webiny-app-cms/editor/selectors";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
 import { withSnackbar } from "webiny-admin/components";
-import { SecondaryLayout } from "webiny-admin/components/Views/SecondaryLayout";
-import { CompactView, LeftPanel, RightPanel } from "webiny-admin/components/Views/CompactView";
+import { OverlayLayout } from "webiny-admin/components/OverlayLayout";
+import { CompactView, LeftPanel, RightPanel } from "webiny-admin/components/CompactView";
 import { Typography } from "webiny-ui/Typography";
 import { Form } from "webiny-form";
 import { Icon } from "webiny-ui/Icon";
@@ -20,7 +20,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent,
     SimpleFormHeader
-} from "webiny-admin/components/Views/SimpleForm";
+} from "webiny-admin/components/SimpleForm";
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./PageSettingsStyled";
 import type { CmsPageSettingsPluginType } from "webiny-app-cms/types";
 
@@ -41,7 +41,7 @@ const PageSettings = ({ deactivatePlugin, page, savePage, active, setActive }: P
     }
 
     return (
-        <SecondaryLayout
+        <OverlayLayout
             barMiddle={Title}
             onExited={() => deactivatePlugin({ name: "cms-page-settings-bar" })}
         >
@@ -83,7 +83,7 @@ const PageSettings = ({ deactivatePlugin, page, savePage, active, setActive }: P
                     </Form>
                 </RightPanel>
             </CompactView>
-        </SecondaryLayout>
+        </OverlayLayout>
     );
 };
 

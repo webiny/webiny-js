@@ -3,7 +3,7 @@ import * as React from "react";
 import { get } from "dot-prop-immutable";
 import { pick } from "lodash";
 import { i18n } from "webiny-app/i18n";
-import { CompactView, LeftPanel, RightPanel } from "webiny-admin/components/Views/CompactView";
+import { CompactView, LeftPanel, RightPanel } from "webiny-admin/components/CompactView";
 import FloatingActionButton from "webiny-admin/components/FloatingActionButton";
 import { withCrud, type WithCrudProps } from "webiny-admin/components";
 import UsersDataList from "./Users/UsersDataList";
