@@ -1,6 +1,6 @@
 // @flow
 import React from "react";
-import AdminLayout from "webiny-admin/components/AdminLayout";
+import { AdminLayout } from "webiny-admin/components/AdminLayout";
 import Categories from "webiny-app-cms/admin/views/Categories/Categories";
 import Menus from "webiny-app-cms/admin/views/Menus/Menus";
 import Pages from "webiny-app-cms/admin/views/Pages/Pages";
