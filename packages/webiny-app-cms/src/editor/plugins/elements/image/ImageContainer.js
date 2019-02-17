@@ -32,11 +32,10 @@ const ImageContainer = pure(({ image, horizontalAlign, onChange }) => {
         <AlignImage align={horizontalAlign}>
             <SingleImageUpload
                 renderImagePreview={props => (
-                    <Image {...props} responsive={responsive} />
+                    <Image {...props} responsive={responsive} style={imgStyle} />
                 )}
                 onChange={onChange}
                 value={image}
-                imagePreviewProps={{ style: imgStyle }}
                 showRemoveImageButton={false}
             />
         </AlignImage>
