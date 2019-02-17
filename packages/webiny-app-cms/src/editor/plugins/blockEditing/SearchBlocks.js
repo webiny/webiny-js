@@ -20,7 +20,7 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "webiny-admin/components/SimpleForm";
-import { CompactView, LeftPanel, RightPanel } from "webiny-admin/components/CompactView";
+import { SplitView, LeftPanel, RightPanel } from "webiny-admin/components/SplitView";
 import { Icon } from "webiny-ui/Icon";
 import { List, ListItem, ListItemGraphic } from "webiny-ui/List";
 import { Typography } from "webiny-ui/Typography";
@@ -236,7 +236,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                 barMiddle={this.renderSearchInput()}
                 onExited={() => this.props.deactivatePlugin({ name: "cms-search-blocks-bar" })}
             >
-                <CompactView>
+                <SplitView>
                     <LeftPanel span={3}>
                         <List twoLine className={listStyle}>
                             {plugins.categories.list.map(p => (
@@ -282,7 +282,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                             )}
                         </Mutation>
                     </RightPanel>
-                </CompactView>
+                </SplitView>
             </OverlayLayout>
         );
     }

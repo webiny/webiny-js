@@ -18,7 +18,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent,
     SimpleFormHeader
-} from "webiny-admin/components/Views/SimpleForm";
+} from "webiny-admin/components/SimpleForm";
 
 const positionOptions = [
     { id: "bottom", name: "Bottom" },
