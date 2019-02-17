@@ -5,6 +5,7 @@ import GraphQLJSON from "graphql-type-json";
 import { GraphQLDateTime } from "graphql-iso-date";
 import { genericTypes } from "./genericTypes";
 import { getPlugins } from "webiny-plugins";
+import GraphQLLong from 'graphql-type-long';
 
 /**
  * Maps data sources and returns array of executable schema
@@ -35,13 +36,15 @@ const mapSourcesToExecutableSchemas = (sources: Array<Object>) => {
 
         schemas[namespace] = makeExecutableSchema({
             typeDefs: [
-                `scalar JSON
+                `scalar Long
+                 scalar JSON
                  scalar DateTime`,
                 genericTypes,
                 ...typeDefs
             ],
             resolvers: [
                 {
+                    Long: GraphQLLong,
                     JSON: GraphQLJSON,
                     DateTime: GraphQLDateTime
                 },

@@ -20,6 +20,7 @@
     "graphql-middleware": "^1.7.6",
     "graphql-tools": "^4.0.0",
     "graphql-type-json": "^0.2.0",
+    "graphql-type-long": "^0.1.1",
     "lodash": "^4.17.4",
     "webiny-entity": "0.0.0",
     "webiny-model": "0.0.0",
