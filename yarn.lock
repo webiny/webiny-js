@@ -10013,6 +10013,11 @@ graphql-type-json@^0.2.0:
   resolved "https://registry.yarnpkg.com/graphql-type-json/-/graphql-type-json-0.2.1.tgz#d2c177e2f1b17d87f81072cd05311c0754baa420"
   integrity sha1-0sF34vGxfYf4EHLNBTEcB1S6pCA=
 
+graphql-type-long@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/graphql-type-long/-/graphql-type-long-0.1.1.tgz#c1b1323f7b3bb3fe48f05502b883145f90adbfd6"
+  integrity sha512-pIp/F3LR0qqfbF4TX3CwBwPskA7850KG6/DnzaYJtdgxxzw20dcKfutLbyk8okBGg8iHbFoXgnZWHgfwNmxSZw==
+
 graphql-upload@^8.0.2:
   version "8.0.4"
   resolved "https://registry.yarnpkg.com/graphql-upload/-/graphql-upload-8.0.4.tgz#ed7cbde883b5cca493de77e39f95cddf40dfd514"
@@ -12656,6 +12661,11 @@ jsonpath-plus@^0.16.0:
   resolved "https://registry.yarnpkg.com/jsonpath-plus/-/jsonpath-plus-0.16.0.tgz#fe441b23f03ec6979a5603513988cd3edb7db5dc"
   integrity sha1-/kQbI/A+xpeaVgNROYjNPtt9tdw=
 
+jsonschema@^1.2.4:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/jsonschema/-/jsonschema-1.2.4.tgz#a46bac5d3506a254465bc548876e267c6d0d6464"
+  integrity sha512-lz1nOH69GbsVHeVgEdvyavc/33oymY1AZwtePMiMj4HZPMbP5OIKK3zT9INMWjwua/V4Z4yq7wSlBbSG+g4AEw==
+
 jsonwebtoken@^8.2.2, jsonwebtoken@^8.3.0:
   version "8.4.0"
   resolved "https://registry.yarnpkg.com/jsonwebtoken/-/jsonwebtoken-8.4.0.tgz#8757f7b4cb7440d86d5e2f3becefa70536c8e46a"
@@ -14038,10 +14048,10 @@ moment@^2.13.0:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
   integrity sha512-bV7f+6l2QigeBBZSM/6yTNq4P2fNpSWj/0e7jQcy87A8e7o2nAfP/34/2ky5Vw4B9S446EtIhodAzkFCcR4dQg==
 
-mongodb-core@3.1.9:
-  version "3.1.9"
-  resolved "https://registry.yarnpkg.com/mongodb-core/-/mongodb-core-3.1.9.tgz#c31ee407bf932b0149eaed775c17ee09974e4ca3"
-  integrity sha512-MJpciDABXMchrZphh3vMcqu8hkNf/Mi+Gk6btOimVg1XMxLXh87j6FAvRm+KmwD1A9fpu3qRQYcbQe4egj23og==
+mongodb-core@3.1.11:
+  version "3.1.11"
+  resolved "https://registry.yarnpkg.com/mongodb-core/-/mongodb-core-3.1.11.tgz#b253038dbb4d7329f3d1c2ee5400bb0c9221fde5"
+  integrity sha512-rD2US2s5qk/ckbiiGFHeu+yKYDXdJ1G87F6CG3YdaZpzdOm5zpoAZd/EKbPmFO6cQZ+XVXBXBJ660sSI0gc6qg==
   dependencies:
     bson "^1.1.0"
     require_optional "^1.0.1"
@@ -14049,12 +14059,12 @@ mongodb-core@3.1.9:
   optionalDependencies:
     saslprep "^1.0.0"
 
-mongodb@3.1.10:
-  version "3.1.10"
-  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-3.1.10.tgz#45ad9b74ea376f4122d0881b75e5489b9e504ed7"
-  integrity sha512-Uml42GeFxhTGQVml1XQ4cD0o/rp7J2ROy0fdYUcVitoE7vFqEhKH4TYVqRDpQr/bXtCJVxJdNQC1ntRxNREkPQ==
+mongodb@^3.1.13:
+  version "3.1.13"
+  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-3.1.13.tgz#f8cdcbb36ad7a08b570bd1271c8525753f75f9f4"
+  integrity sha512-sz2dhvBZQWf3LRNDhbd30KHVzdjZx9IKC0L+kSZ/gzYquCF5zPOgGqRz6sSCqYZtKP2ekB4nfLxhGtzGHnIKxA==
   dependencies:
-    mongodb-core "3.1.9"
+    mongodb-core "3.1.11"
     safe-buffer "^5.1.2"
 
 move-concurrently@^1.0.1:
@@ -18306,13 +18316,11 @@ serverless-apigwy-binary@^0.1.0:
   dependencies:
     bluebird "^3.5.0"
 
-serverless-offline@^3.20.3:
-  version "3.33.0"
-  resolved "https://registry.yarnpkg.com/serverless-offline/-/serverless-offline-3.33.0.tgz#bd2cd8eaebec467e8691f597053c3d9ee9844a62"
-  integrity sha512-S4Bl6bdY0BU5cIy5COt3lRBK7LQXNoAgouA7gLvj2spmGbpkmHiNAGDPLWbOIbdjFqtb1mnD+3stxoVkKdVaUw==
+serverless-offline@^4:
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/serverless-offline/-/serverless-offline-4.4.2.tgz#3dd4baf76826ed3dfe60b8a0393b57cfeb201440"
+  integrity sha512-lDRETGRmwbmNMH1+MYnP+NIsVUFKjE1gov1q5m+csPsxeYg0DvCJrjemvMSfNDJTowodFIHU8ODMaWIhxHu0yQ==
   dependencies:
-    "@babel/core" "^7.0.0"
-    "@babel/register" "^7.0.0"
     boom "^7.3.0"
     cryptiles "^4.1.2"
     h2o2 "^6.1.0"
@@ -18320,8 +18328,9 @@ serverless-offline@^3.20.3:
     hapi-cors-headers "^1.0.3"
     js-string-escape "^1.0.1"
     jsonpath-plus "^0.16.0"
+    jsonschema "^1.2.4"
     jsonwebtoken "^8.3.0"
-    uuid "^3.3.2"
+    trim-newlines "^2.0.0"
     velocityjs "^1.1.2"
 
 serverless-webpack@^5.2.0:
