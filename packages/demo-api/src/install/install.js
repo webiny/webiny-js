@@ -12,7 +12,7 @@ export default async () => {
     await install({
         config: await config(),
         cms: { copyFiles: false },
-        security: { admin: { email: "pavel@webiny.com", password: "87654321" } }
+        security: { admin: { email: "admin@webiny.com", password: "12345678" } }
     });
     process.exit();
 };
