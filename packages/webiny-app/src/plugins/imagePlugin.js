@@ -1,7 +1,7 @@
 // @flow
 import React from "react"; // eslint-disable-line
 import { Image } from "webiny-ui/Image"; // eslint-disable-line
-import type { ImagePlugin } from "webiny-app/types";
+import type { ImageComponentPluginType } from "webiny-app/types";
 
 const SUPPORTED_IMAGE_RESIZE_WIDTHS = [100, 300, 500, 750, 1000, 1500, 2500];
 
@@ -45,46 +45,51 @@ const convertTransformToQueryParams = (transform: Object): string => {
         .join("&");
 };
 
-const buildFullSrc = (src, transform) => {
-    let params = sanitizeTransformArgs(transform);
-    params = convertTransformToQueryParams(params);
-    return src + "?" + params;
-};
-
-/**
- * TODO:
- * In the future, it would be nice if plugin was structured in a way we could extract only props that we need.
- * We needed this eg. when we wanted to set 100x100 favicon, we had the URL, but could properly
- * set ?width=200. It works for now, but eg. cloudinary doesn't use query params and this solution wouldn't work there.
- * See "packages/webiny-app-cms/src/site/plugins/index.js:48".
- */
-const imagePlugin: ImagePlugin = {
+const imagePlugin: ImageComponentPluginType = {
     name: "image-component",
     type: "image-component",
     presets: {
         avatar: { width: 300 }
     },
-    render(props) {
-        let { src, transform, srcSet, responsive, ...rest } = props;
-        if (src.startsWith("data:")) {
-            return <Image src={src} {...rest} />;
+    getImageSrc: props => {
+        if (!props) {
+            return "";
         }
 
-        if (!srcSet && responsive) {
+        const { src, transform } = props;
+        if (!transform) {
+            return src;
+        }
+
+        if (!src || src.startsWith("data:")) {
+            return src;
+        }
+
+        let params = sanitizeTransformArgs(transform);
+        params = convertTransformToQueryParams(params);
+        return src + "?" + params;
+    },
+    render(props) {
+        let { transform, srcSet, ...imageProps } = props;
+
+        const src = imageProps.src;
+        if (srcSet && srcSet === "auto") {
             srcSet = {
-                "2500w": buildFullSrc(src, { ...transform, width: 2500 }),
-                "1500w": buildFullSrc(src, { ...transform, width: 1500 }),
-                "750w": buildFullSrc(src, { ...transform, width: 750 }),
-                "500w": buildFullSrc(src, { ...transform, width: 500 }),
-                "300w": buildFullSrc(src, { ...transform, width: 300 })
+                "2500w": imagePlugin.getImageSrc({ src, transform: { ...transform, width: 2500 } }),
+                "1500w": imagePlugin.getImageSrc({ src, transform: { ...transform, width: 1500 } }),
+                "750w": imagePlugin.getImageSrc({ src, transform: { ...transform, width: 750 } }),
+                "500w": imagePlugin.getImageSrc({ src, transform: { ...transform, width: 500 } }),
+                "300w": imagePlugin.getImageSrc({ src, transform: { ...transform, width: 300 } })
             };
         }
 
-        if (transform) {
-            src = buildFullSrc(src, transform);
-        }
-
-        return <Image src={src} srcSet={srcSet} {...rest} />;
+        return (
+            <Image
+                {...imageProps}
+                srcSet={srcSet}
+                src={imagePlugin.getImageSrc({ src, transform })}
+            />
+        );
     }
 };
 

@@ -9,7 +9,7 @@ export default ({ imagePreviewProps, ...singleImageUploadProps }: Props) => {
     return (
         <SingleImageUpload
             renderImagePreview={(renderImageProps: Object) => (
-                <Image {...imagePreviewProps} {...renderImageProps} />
+                <Image {...renderImageProps} {...imagePreviewProps}/>
             )}
             {...singleImageUploadProps}
         />

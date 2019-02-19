@@ -19,7 +19,7 @@ class LinkSettings extends React.Component<*> {
 
     updateSettings = data => {
         const { element, updateElement } = this.props;
-        const attrKey = `data.settings.link`;
+        const attrKey = `data.link`;
 
         const newElement = merge(element, attrKey, data);
 
@@ -33,7 +33,7 @@ class LinkSettings extends React.Component<*> {
 
     render() {
         const { element } = this.props;
-        const { href, newTab } = get(element, "data.settings.link") || {};
+        const { href, newTab } = get(element, "data.link") || {};
 
         return (
             <Tabs>

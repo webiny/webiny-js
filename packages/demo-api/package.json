@@ -12,30 +12,26 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "lodash": "^4.17.11",
     "@babel/runtime": "^7.0.0",
     "date-fns": "^1.29.0",
-    "mongodb": "3.1.10",
+    "dotenv": "^5.0.1",
+    "lodash": "^4.17.11",
     "mime-types": "^2.1.20",
+    "mongodb": "^3.1.13",
     "sanitize-filename": "^1.6.1",
     "sharp": "^0.21.0",
     "uniqid": "^5.0.3",
-    "webiny-entity-mongodb": "0.0.0",
-    "webiny-plugins": "0.0.0",
     "webiny-api": "0.0.0",
-    "webiny-install": "0.0.0",
-    "webiny-api-security": "0.0.0",
     "webiny-api-cms": "0.0.0",
+    "webiny-api-security": "0.0.0",
+    "webiny-entity-mongodb": "0.0.0",
+    "webiny-install": "0.0.0",
     "webiny-integration-cookie-policy": "0.0.0",
     "webiny-integration-google-tag-manager": "0.0.0",
     "webiny-integration-mailchimp": "0.0.0",
-    "dotenv": "^5.0.1"
+    "webiny-plugins": "0.0.0"
   },
   "devDependencies": {
-    "get-yarn-workspaces": "^1.0.2",
-    "fs-extra": "^7.0.0",
-    "serverless-apigw-binary": "^0.4.4",
-    "serverless-apigwy-binary": "^0.1.0",
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
     "@babel/plugin-external-helpers": "^7.0.0",
@@ -47,18 +43,22 @@
     "@babel/register": "^7.0.0",
     "babel-eslint": "^9.0.0",
     "babel-loader": "^8.0.0",
+    "chalk": "^2.4.1",
     "cross-env": "^5.1.5",
+    "fs-extra": "^7.0.0",
+    "get-yarn-workspaces": "^1.0.2",
     "raw-loader": "^1.0.0",
     "serverless": "^1.27.2",
-    "serverless-offline": "^3.20.3",
+    "serverless-apigw-binary": "^0.4.4",
+    "serverless-apigwy-binary": "^0.1.0",
+    "serverless-offline": "^4",
     "serverless-webpack": "^5.2.0",
     "slugify": "^1.3.4",
     "webpack-cli": "^3.1.0",
     "webpack-node-externals": "^1.7.2",
-    "yargs": "^12.0.5",
-    "chalk": "^2.4.1"
+    "yargs": "^12.0.5"
   },
   "peerDependencies": {
-    "mongodb": "3.1.10"
+    "mongodb": "^3.1.13"
   }
 }

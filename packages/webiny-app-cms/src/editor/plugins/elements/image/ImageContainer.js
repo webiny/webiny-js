@@ -8,6 +8,8 @@ import { set, isEqual } from "lodash";
 import { withFileUpload, SingleImageUpload, Image } from "webiny-app/components";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { getElement } from "webiny-app-cms/editor/selectors";
+import { getPlugin } from "webiny-plugins";
+import type { ImageComponentPluginType } from "webiny-app/types";
 
 const position = { left: "flex-start", center: "center", right: "flex-end" };
 
@@ -17,26 +19,38 @@ const AlignImage = styled("div")(props => ({
     }
 }));
 
-const ImageContainer = pure(({ image, horizontalAlign, onChange }) => {
-    const { width, height, responsive } = image;
+const ImageContainer = pure(props => {
+    const { horizontalAlign, onChange } = props;
+    const image = { ...props.image };
 
     const imgStyle = {};
-    if (width) {
+    if (image.width) {
+        const { width } = image;
         imgStyle.width = isNumeric(width) ? parseInt(width) : width;
     }
-    if (height) {
+    if (image.height) {
+        const { height } = image;
         imgStyle.height = isNumeric(height) ? parseInt(height) : height;
+    }
+
+    if (image.width) {
+        const imagePlugin: ?ImageComponentPluginType = getPlugin("image-component");
+        if (imagePlugin) {
+            image.src = imagePlugin.getImageSrc({
+                src: image.src,
+                transform: { width: image.width }
+            });
+        }
     }
 
     return (
         <AlignImage align={horizontalAlign}>
             <SingleImageUpload
                 renderImagePreview={props => (
-                    <Image {...props} responsive={responsive} />
+                    <Image {...props} style={imgStyle} srcSet={image.width ? undefined : "auto"} />
                 )}
                 onChange={onChange}
                 value={image}
-                imagePreviewProps={{ style: imgStyle }}
                 showRemoveImageButton={false}
             />
         </AlignImage>
