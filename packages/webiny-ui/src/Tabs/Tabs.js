@@ -14,6 +14,11 @@ type State = {
 
 const Tab = () => {};
 
+const disabledStyles = {
+    opacity: 0.5,
+    pointerEvents: "none"
+};
+
 /**
  * Use Tabs component to display a list of choices, once the handler is triggered.
  */
@@ -29,7 +34,9 @@ class Tabs extends React.Component<Props, State> {
                 return {
                     label: child.props.label,
                     children: child.props.children,
-                    icon: child.props.icon
+                    icon: child.props.icon,
+                    disabled: child.props.disabled,
+                    style: child.props.style
                 };
             });
 
@@ -39,9 +46,15 @@ class Tabs extends React.Component<Props, State> {
                 onActivate={evt => this.setState({ activeTabIndex: evt.detail.index })}
             >
                 {tabs.map(item => {
+                    const style = item.style || {};
+                    if (item.disabled) {
+                        Object.assign(style, disabledStyles);
+                    }
+
                     return (
                         <RmwcTab
                             tag={"div"}
+                            style={style}
                             key={item.label}
                             {...(item.icon ? { icon: item.icon } : {})}
                             {...(item.label ? { label: item.label } : {})}

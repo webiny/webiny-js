@@ -6,6 +6,7 @@ import { Tab } from "webiny-ui/Tabs";
 import styled from "react-emotion";
 import { Elevation } from "webiny-ui/Elevation";
 import PagePreview from "./PagePreview";
+import { CircularProgress } from "webiny-ui/Progress";
 
 const RenderBlock = styled("div")({
     position: "relative",
@@ -20,14 +21,17 @@ export default ([
     {
         name: "cms-page-details-revision-content-preview",
         type: "cms-page-details-revision-content",
-        render({ pageDetails }: WithPageDetailsProps) {
+        render({ pageDetails, loading }: WithPageDetailsProps) {
             return (
-                <Tab label={"Page preview"}>
+                <Tab label={"Page preview"} disabled={loading}>
                     <RenderBlock>
                         <Elevation z={2}>
-                            {renderPlugins("cms-page-details-revision-content-preview", {
-                                pageDetails
-                            })}
+                            <div style={{ position: "relative" }}>
+                                {loading && <CircularProgress />}
+                                {renderPlugins("cms-page-details-revision-content-preview", {
+                                    pageDetails
+                                })}
+                            </div>
                         </Elevation>
                     </RenderBlock>
                 </Tab>

@@ -1,12 +1,12 @@
 // @flow
 import * as React from "react";
 import { Query } from "react-apollo";
-import Loader from "./Loader";
 import { Content, buildQueryProps, getSettings } from "./Page/index";
 import { withCms } from "webiny-app-cms/context";
 import type { WithCmsPropsType } from "webiny-app-cms/context";
 import { get } from "lodash";
 import invariant from "invariant";
+import { CircularProgress } from "webiny-ui/Progress";
 
 const defaultPages = {
     error: null,
@@ -23,11 +23,11 @@ const NO_ERROR_PAGE_DEFAULT =
 const Page = ({ cms, match: { url, query } }: Props) => {
     return (
         <Query query={getSettings}>
-            {({ data: settings }) => (
+            {({ data: settings, loading: settingsLoading }) => (
                 <Query {...buildQueryProps({ url, query, defaultPages })}>
-                    {({ data, error: gqlError, loading }) => {
-                        if (loading) {
-                            return <Loader />;
+                    {({ data, error: gqlError, loading: pageLoading }) => {
+                        if (settingsLoading || pageLoading) {
+                            return <CircularProgress />;
                         }
 
                         if (gqlError) {

@@ -12,11 +12,14 @@ import { createRevisionFrom } from "webiny-app-cms/admin/graphql/pages";
 import { graphql } from "react-apollo";
 import { withSnackbar, type WithSnackbarProps } from "webiny-admin/components";
 import { ReactComponent as CreateRevision } from "./icons/round-add-24px.svg";
-
+import { get } from "lodash";
 type Props = WithPageDetailsProps & WithRouterProps & { gqlCreate: Function } & WithSnackbarProps;
 
 const EditRevision = ({ pageDetails: { page }, router, gqlCreate, showSnackbar }: Props) => {
-    const unpublishedRevision = page.revisions.find(item => !item.published && !item.locked);
+    const unpublishedRevision = (get(page, "revisions") || []).find(
+        item => !item.published && !item.locked
+    );
+
     if (unpublishedRevision) {
         return (
             <Tooltip content={"Edit"} placement={"top"}>
