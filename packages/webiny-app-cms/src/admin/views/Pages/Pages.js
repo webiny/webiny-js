@@ -3,7 +3,7 @@ import * as React from "react";
 import { compose, withHandlers } from "recompose";
 import { graphql } from "react-apollo";
 import { SplitView, LeftPanel, RightPanel } from "webiny-admin/components/SplitView";
-import FloatingActionButton from "webiny-admin/components/FloatingActionButton";
+import { FloatingActionButton } from "webiny-admin/components/FloatingActionButton";
 import { withRouter, withDataList, type WithRouterProps } from "webiny-app/components";
 import { withSnackbar, type WithSnackbarProps } from "webiny-admin/components";
 import PagesDataList from "./PagesDataList";

@@ -5,7 +5,7 @@ import { pick } from "lodash";
 import { i18n } from "webiny-app/i18n";
 import { withCrud, type WithCrudProps } from "webiny-admin/components";
 import { SplitView, LeftPanel, RightPanel } from "webiny-admin/components/SplitView";
-import FloatingActionButton from "webiny-admin/components/FloatingActionButton";
+import { FloatingActionButton } from "webiny-admin/components/FloatingActionButton";
 import MenusDataList from "./MenusDataList";
 import MenusForm from "./MenusForm";
 
