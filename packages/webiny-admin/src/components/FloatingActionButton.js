@@ -18,4 +18,4 @@ const FloatingActionButton = (props: Object) => {
     );
 };
 
-export default FloatingActionButton;
+export { FloatingActionButton };

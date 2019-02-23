@@ -4,7 +4,7 @@ import { pick } from "lodash";
 import { get } from "dot-prop-immutable";
 import { compose } from "recompose";
 import { SplitView, LeftPanel, RightPanel } from "webiny-admin/components/SplitView";
-import FloatingActionButton from "webiny-admin/components/FloatingActionButton";
+import { FloatingActionButton } from "webiny-admin/components/FloatingActionButton";
 import { withCrud, type WithCrudProps } from "webiny-admin/components";
 import { i18n } from "webiny-app/i18n";
 

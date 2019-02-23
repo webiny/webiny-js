@@ -6,20 +6,21 @@ import { MongoClient } from "mongodb";
 // Configure default storage
 
 let database = null;
-function init() {
+async function init() {
     if (database && database.serverConfig.isConnected()) {
-        return Promise.resolve(database);
+        return database;
     }
 
     const server = process.env.MONGODB_SERVER;
     const databaseName = process.env.MONGODB_DB_NAME;
-    return MongoClient.connect(
+    const client = await MongoClient.connect(
         server,
         { useNewUrlParser: true }
-    ).then(client => {
-        return client.db(databaseName);
-    });
+    );
+
+    return client.db(databaseName);
 }
+
 
 export default async () => {
     database = await init();
