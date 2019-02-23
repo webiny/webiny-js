@@ -3,7 +3,7 @@ import * as React from "react";
 import { pick } from "lodash";
 import { get } from "dot-prop-immutable";
 import { compose } from "recompose";
-import { CompactView, LeftPanel, RightPanel } from "webiny-admin/components/Views/CompactView";
+import { SplitView, LeftPanel, RightPanel } from "webiny-admin/components/SplitView";
 import FloatingActionButton from "webiny-admin/components/FloatingActionButton";
 import { withCrud, type WithCrudProps } from "webiny-admin/components";
 import { i18n } from "webiny-app/i18n";
@@ -22,14 +22,14 @@ const Groups = ({
 }: WithCrudProps & { scopes: Array<string> }) => {
     return (
         <React.Fragment>
-            <CompactView>
+            <SplitView>
                 <LeftPanel>
                     <GroupsDataList {...listProps} />
                 </LeftPanel>
                 <RightPanel>
                     <GroupsForm scopes={scopes} {...formProps} />
                 </RightPanel>
-            </CompactView>
+            </SplitView>
             <FloatingActionButton
                 onClick={() =>
                     router.goToRoute({

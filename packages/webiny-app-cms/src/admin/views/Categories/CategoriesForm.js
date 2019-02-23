@@ -12,7 +12,7 @@ import {
     SimpleForm,
     SimpleFormFooter,
     SimpleFormContent
-} from "webiny-admin/components/Views/SimpleForm";
+} from "webiny-admin/components/SimpleForm";
 import { categoryUrlValidator } from "./validators";
 import { CircularProgress } from "webiny-ui/Progress";
 

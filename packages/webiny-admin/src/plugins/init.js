@@ -3,7 +3,7 @@ import React from "react";
 import { i18n } from "webiny-app/i18n";
 import { registerPlugins, getPlugins } from "webiny-plugins";
 import { ReactComponent as SettingsIcon } from "webiny-admin/assets/icons/round-settings-24px.svg";
-import AdminLayout from "webiny-admin/components/Layouts/AdminLayout";
+import { AdminLayout } from "webiny-admin/components/AdminLayout";
 import type { SettingsPluginType } from "webiny-admin/types";
 
 const t = i18n.namespace("Webiny.Admin.Menus");

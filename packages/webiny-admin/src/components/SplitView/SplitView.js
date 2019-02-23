@@ -44,7 +44,7 @@ const leftPanel = css({
     }
 });
 
-const CompactView = (props: { children: React.ChildrenArray<React.Element<any>> }) => {
+const SplitView = (props: { children: React.ChildrenArray<React.Element<any>> }) => {
     return (
         <Grid className={grid}>
             <GridInner className={gridInner}>{props.children}</GridInner>
@@ -71,4 +71,4 @@ const RightPanel = (props: Props) => {
     );
 };
 
-export { CompactView, LeftPanel, RightPanel };
+export { SplitView, LeftPanel, RightPanel };

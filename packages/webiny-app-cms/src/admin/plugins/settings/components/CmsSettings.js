@@ -15,7 +15,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent,
     SimpleFormHeader
-} from "webiny-admin/components/Views/SimpleForm";
+} from "webiny-admin/components/SimpleForm";
 
 class CmsSettings extends React.Component<Object, Object> {
     render() {

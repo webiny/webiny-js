@@ -3,7 +3,7 @@ import * as React from "react";
 import { get } from "dot-prop-immutable";
 import { pick } from "lodash";
 import { i18n } from "webiny-app/i18n";
-import { CompactView, LeftPanel, RightPanel } from "webiny-admin/components/Views/CompactView";
+import { SplitView, LeftPanel, RightPanel } from "webiny-admin/components/SplitView";
 import FloatingActionButton from "webiny-admin/components/FloatingActionButton";
 import { withCrud, type WithCrudProps } from "webiny-admin/components";
 import UsersDataList from "./Users/UsersDataList";
@@ -14,7 +14,7 @@ const t = i18n.namespace("Security.Users");
 
 const Users = ({ formProps, listProps, router }: WithCrudProps) => {
     return (
-        <CompactView>
+        <SplitView>
             <LeftPanel>
                 <UsersDataList {...listProps} />
             </LeftPanel>
@@ -30,7 +30,7 @@ const Users = ({ formProps, listProps, router }: WithCrudProps) => {
                     })
                 }
             />
-        </CompactView>
+        </SplitView>
     );
 };
 
