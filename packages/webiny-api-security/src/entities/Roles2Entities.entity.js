@@ -1,20 +1,28 @@
 // @flow
 import { Entity } from "webiny-entity";
-import { Role } from "./Role.entity";
+import type { IRole } from "./Role.entity";
 
-export class Roles2Entities extends Entity {
+export interface IRoles2Entities extends Entity {
     entity: Entity;
     entityClassId: string;
-    policy: Role;
+    role: IRole;
 }
 
-Roles2Entities.classId = "SecurityRoles2Entities";
-Roles2Entities.storageClassId = "Security_Roles2Entities";
+export function roles2entitiesFactory(context: Object): Class<IRoles2Entities> {
+    return class Roles2Entities extends Entity {
+        static classId = "SecurityRoles2Entities";
 
-export function roles2entitiesFactory({ security: { entities } }: Object) {
-    return class extends Roles2Entities {
+        entity: Entity;
+        entityClassId: string;
+        role: IRole;
+
         constructor() {
             super();
+
+            const {
+                security: { entities }
+            } = context;
+
             this.attr("entity").entity([], { classIdAttribute: "entityClassId" });
             this.attr("entityClassId").char();
             this.attr("role").entity(entities.Role);

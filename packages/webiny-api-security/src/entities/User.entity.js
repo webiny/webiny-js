@@ -3,8 +3,8 @@ import md5 from "md5";
 import bcrypt from "bcryptjs";
 import get from "lodash/get";
 import { Entity } from "webiny-entity";
-import type { Group } from "./Group.entity";
-import type { Role } from "./Role.entity";
+import type { IGroup } from "./Group.entity";
+import type { IRole } from "./Role.entity";
 import FileModel from "./File.model";
 
 type AccessType = {
@@ -21,8 +21,8 @@ export interface IUser extends Entity {
     gravatar: string;
     avatar: Object;
     enabled: boolean;
-    groups: Promise<Array<Group>>;
-    roles: Promise<Array<Role>>;
+    groups: Promise<Array<IGroup>>;
+    roles: Promise<Array<IRole>>;
     scopes: Promise<Array<string>>;
     access: Promise<AccessType>;
 }
@@ -39,8 +39,8 @@ export function userFactory({ config, security: { entities } }: Object): Class<I
         gravatar: string;
         avatar: Object;
         enabled: boolean;
-        groups: Promise<Array<Group>>;
-        roles: Promise<Array<Role>>;
+        groups: Promise<Array<IGroup>>;
+        roles: Promise<Array<IRole>>;
         scopes: Promise<Array<string>>;
         access: Promise<AccessType>;
 

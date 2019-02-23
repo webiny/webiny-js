@@ -1,22 +1,30 @@
 // @flow
 import { Entity } from "webiny-entity";
-import type { Role } from "./Role.entity";
+import type { IRole } from "./Role.entity";
 
-export class Group extends Entity {
+export interface IGroup extends Entity {
     name: string;
     slug: string;
     description: string;
     system: boolean;
-    roles: Promise<Array<Role>>;
+    roles: Promise<Array<IRole>>;
 }
 
-Group.classId = "SecurityGroup";
-Group.storageClassId = "Security_Groups";
+export function groupFactory(context: Object): Class<IGroup> {
+    return class Group extends Entity {
+        static classId = "SecurityGroup";
 
-export function groupFactory({ user = {}, security: { entities } }: Object) {
-    return class extends Group {
+        name: string;
+        slug: string;
+        description: string;
+        system: boolean;
+        roles: Promise<Array<IRole>>;
+
         constructor() {
             super();
+
+            const { user = {}, security: { entities } } = context;
+
             this.attr("createdBy")
                 .char()
                 .setDefaultValue(user.id);

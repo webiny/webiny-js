@@ -15,7 +15,6 @@ export interface IElement extends Entity {
 export function elementFactory(): Class<IElement> {
     return class Element extends Entity {
         static classId = "CmsElement";
-        static storageClassId = "Cms_Elements";
 
         name: string;
         content: Object;
