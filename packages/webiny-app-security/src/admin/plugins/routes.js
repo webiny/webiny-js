@@ -1,5 +1,5 @@
 // @flow
-import AdminLayout from "webiny-admin/components/AdminLayout";
+import { AdminLayout } from "webiny-admin/components/AdminLayout";
 import React from "react";
 import Roles from "webiny-app-security/admin/views/Roles";
 import Groups from "webiny-app-security/admin/views/Groups";

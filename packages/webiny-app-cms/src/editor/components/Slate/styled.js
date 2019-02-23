@@ -35,6 +35,7 @@ export const hoverMenuStyle = css({
 export const defaultStyle = {
     transform: "translateY(-20px)",
     opacity: 0,
+    pointerEvents: "all",
     transitionProperty: "transform, opacity",
     transitionTimingFunction: "ease-in-out",
     transitionDuration: "100ms",

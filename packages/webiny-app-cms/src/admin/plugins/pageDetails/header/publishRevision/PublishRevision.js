@@ -7,7 +7,7 @@ import { type WithPageDetailsProps } from "webiny-app-cms/admin/components";
 import { IconButton } from "webiny-ui/Button";
 import { Tooltip } from "webiny-ui/Tooltip";
 import { ReactComponent as PublishIcon } from "webiny-app-cms/admin/assets/round-publish-24px.svg";
-
+import { get } from "lodash";
 function getPublishSuggestion(page, revisions) {
     if (!page.published) {
         return page.id;
@@ -21,9 +21,11 @@ function getPublishSuggestion(page, revisions) {
 }
 
 function getPublishableRevisions(revisions) {
-    return revisions.filter(r => !r.published).sort((a, b) => {
-        return new Date(b.savedOn) - new Date(a.savedOn);
-    });
+    return revisions
+        .filter(r => !r.published)
+        .sort((a, b) => {
+            return new Date(b.savedOn) - new Date(a.savedOn);
+        });
 }
 
 type Props = WithPageDetailsProps;
@@ -54,7 +56,7 @@ const PublishRevision = ({
 
 export default compose(
     withProps(({ pageDetails: { page } }) => {
-        const publishableRevisions = getPublishableRevisions(page.revisions);
+        const publishableRevisions = getPublishableRevisions(get(page, "revisions") || []);
         return {
             publishableRevisions,
             publishSuggestion: getPublishSuggestion(page, publishableRevisions)

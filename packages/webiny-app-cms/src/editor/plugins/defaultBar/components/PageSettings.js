@@ -9,7 +9,7 @@ import { getPage } from "webiny-app-cms/editor/selectors";
 import { withKeyHandler } from "webiny-app-cms/editor/components";
 import { withSnackbar } from "webiny-admin/components";
 import { OverlayLayout } from "webiny-admin/components/OverlayLayout";
-import { CompactView, LeftPanel, RightPanel } from "webiny-admin/components/CompactView";
+import { SplitView, LeftPanel, RightPanel } from "webiny-admin/components/SplitView";
 import { Typography } from "webiny-ui/Typography";
 import { Form } from "webiny-form";
 import { Icon } from "webiny-ui/Icon";
@@ -45,7 +45,7 @@ const PageSettings = ({ deactivatePlugin, page, savePage, active, setActive }: P
             barMiddle={Title}
             onExited={() => deactivatePlugin({ name: "cms-page-settings-bar" })}
         >
-            <CompactView>
+            <SplitView>
                 <LeftPanel span={5}>
                     <List twoLine className={listStyle}>
                         {plugins.map(pl => (
@@ -82,7 +82,7 @@ const PageSettings = ({ deactivatePlugin, page, savePage, active, setActive }: P
                         )}
                     </Form>
                 </RightPanel>
-            </CompactView>
+            </SplitView>
         </OverlayLayout>
     );
 };

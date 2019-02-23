@@ -14,18 +14,20 @@ const menuDialog = css({
 
 const UserMenu = () => {
     return (
-        <TopAppBarActionItem>
-            <Menu
-                className={menuDialog}
-                anchor={"topEnd"}
-                handle={<menu-handle>{renderPlugin("user-menu-handle")}</menu-handle>}
-            >
-                <List>
-                    {renderPlugin("header-user-menu-user-info")}
-                    {renderPlugins("header-user-menu")}
-                </List>
-            </Menu>
-        </TopAppBarActionItem>
+        <TopAppBarActionItem
+            icon={
+                <Menu
+                    className={menuDialog}
+                    anchor={"topEnd"}
+                    handle={<menu-handle>{renderPlugin("user-menu-handle")}</menu-handle>}
+                >
+                    <List>
+                        {renderPlugin("header-user-menu-user-info")}
+                        {renderPlugins("header-user-menu")}
+                    </List>
+                </Menu>
+            }
+        />
     );
 };
 

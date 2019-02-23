@@ -2,8 +2,8 @@
 import * as React from "react";
 import { compose, withHandlers } from "recompose";
 import { graphql } from "react-apollo";
-import { CompactView, LeftPanel, RightPanel } from "webiny-admin/components/CompactView";
-import FloatingActionButton from "webiny-admin/components/FloatingActionButton";
+import { SplitView, LeftPanel, RightPanel } from "webiny-admin/components/SplitView";
+import { FloatingActionButton } from "webiny-admin/components/FloatingActionButton";
 import { withRouter, withDataList, type WithRouterProps } from "webiny-app/components";
 import { withSnackbar, type WithSnackbarProps } from "webiny-admin/components";
 import PagesDataList from "./PagesDataList";
@@ -48,14 +48,14 @@ class Pages extends React.Component<Props, State> {
                     onClose={() => this.setState({ showCategoriesDialog: false })}
                     onSelect={this.onSelect}
                 />
-                <CompactView>
+                <SplitView>
                     <LeftPanel span={4}>
                         <PagesDataList dataList={dataList} />
                     </LeftPanel>
                     <RightPanel span={8}>
                         <PageDetails refreshPages={dataList.refresh} />
                     </RightPanel>
-                </CompactView>
+                </SplitView>
                 <FloatingActionButton onClick={this.showCategoriesDialog} />
             </React.Fragment>
         );

@@ -9,7 +9,7 @@ import { ReactComponent as DownButton } from "webiny-app-cms/admin/assets/round-
 import { MenuItem } from "@rmwc/menu";
 import { Typography } from "webiny-ui/Typography";
 import { Menu } from "webiny-ui/Menu";
-
+import { get } from "lodash";
 const buttonStyle = css({
     "&.mdc-button": {
         color: "var(--mdc-theme-text-primary-on-background) !important"
@@ -43,7 +43,7 @@ const RevisionSelector = ({ router, pageDetails: { page } }: Props) => {
                 </ButtonDefault>
             }
         >
-            {page.revisions.map(rev => {
+            {(get("page.revisions") || []).map(rev => {
                 let status = "draft";
                 if (rev.published) status = "published";
                 if (rev.locked && !rev.published) status = "locked";

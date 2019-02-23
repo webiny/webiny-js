@@ -4,8 +4,8 @@ import { get } from "dot-prop-immutable";
 import { pick } from "lodash";
 import { i18n } from "webiny-app/i18n";
 import { withCrud, type WithCrudProps } from "webiny-admin/components";
-import { CompactView, LeftPanel, RightPanel } from "webiny-admin/components/CompactView";
-import FloatingActionButton from "webiny-admin/components/FloatingActionButton";
+import { SplitView, LeftPanel, RightPanel } from "webiny-admin/components/SplitView";
+import { FloatingActionButton } from "webiny-admin/components/FloatingActionButton";
 import MenusDataList from "./MenusDataList";
 import MenusForm from "./MenusForm";
 
@@ -16,14 +16,14 @@ const t = i18n.namespace("Cms.Menus");
 const Menus = ({ router, formProps, listProps }: WithCrudProps) => {
     return (
         <React.Fragment>
-            <CompactView>
+            <SplitView>
                 <LeftPanel span={4}>
                     <MenusDataList {...listProps} />
                 </LeftPanel>
                 <RightPanel span={8}>
                     <MenusForm {...formProps} />
                 </RightPanel>
-            </CompactView>
+            </SplitView>
             <FloatingActionButton
                 onClick={() =>
                     router.goToRoute({
