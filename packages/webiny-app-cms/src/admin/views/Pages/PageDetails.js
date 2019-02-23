@@ -7,10 +7,7 @@ import { withRouter } from "webiny-app/components";
 import type { WithRouterProps } from "webiny-app/components";
 import styled from "react-emotion";
 import { Elevation } from "webiny-ui/Elevation";
-import { Typography } from "webiny-ui/Typography";
 import { getPage } from "webiny-app-cms/admin/graphql/pages";
-import editorMock from "webiny-app-cms/admin/assets/editor-mock.png";
-import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";
 import { PageDetailsProvider, PageDetailsConsumer } from "../../components/PageDetailsContext";
 import { ElementAnimation } from "webiny-app-cms/render/components";
 import { withSnackbar, type WithSnackbarProps } from "webiny-admin/components";
@@ -79,26 +76,7 @@ const PageDetails = ({ pageId, router, showSnackbar }: Props) => {
             }}
         >
             {({ data, loading }) => {
-                if (loading) {
-                    return (
-                        <LoadingEditor>
-                            <img src={editorMock} />
-                            <LoadingTitle>
-                                <Typography tag={"div"} use={"headline6"}>
-                                    Loading page...<span>.</span>
-                                    <span>.</span>
-                                    <span>.</span>
-                                </Typography>
-                            </LoadingTitle>
-                        </LoadingEditor>
-                    );
-                }
-
-                const details = { page: loading ? {} : data.cms.page.data, loading };
-                if (!details.page) {
-                    return <EmptyPageDetails />;
-                }
-
+                const details = { page: get(data, "cms.page.data") || {}, loading };
                 return (
                     <ElementAnimation>
                         {({ refresh }) => (
@@ -107,7 +85,10 @@ const PageDetails = ({ pageId, router, showSnackbar }: Props) => {
                                     <PageDetailsConsumer>
                                         {pageDetails => (
                                             <React.Fragment>
-                                                {renderPlugins("cms-page-details", { pageDetails })}
+                                                {renderPlugins("cms-page-details", {
+                                                    pageDetails,
+                                                    loading
+                                                })}
                                             </React.Fragment>
                                         )}
                                     </PageDetailsConsumer>

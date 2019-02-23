@@ -1,6 +1,5 @@
 // @flow
 import type { PluginType } from "webiny-plugins/types";
-import warning from "warning";
 
 const __plugins = {};
 
@@ -16,8 +15,6 @@ const _register = plugins => {
         if (!name) {
             throw Error(`Plugin must have a "name" or "_name" key.`);
         }
-
-        warning(!__plugins[name], `Overriding an existing plugin "${name}".`);
 
         __plugins[name] = plugin;
         plugin.init && plugin.init();

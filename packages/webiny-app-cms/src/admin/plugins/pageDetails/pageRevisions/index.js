@@ -7,10 +7,10 @@ import RevisionsList from "./RevisionsList";
 export default ({
     name: "cms-page-details-revision-content-revisions",
     type: "cms-page-details-revision-content",
-    render({ pageDetails }: WithPageDetailsProps) {
+    render({ pageDetails, loading }: WithPageDetailsProps) {
         return (
-            <Tab label={"Revisions"}>
-                <RevisionsList pageDetails={pageDetails}/>
+            <Tab label={"Revisions"} disabled={loading}>
+                <RevisionsList pageDetails={pageDetails} loading={loading} />
             </Tab>
         );
     }

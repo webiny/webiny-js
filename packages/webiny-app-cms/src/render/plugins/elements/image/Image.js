@@ -3,6 +3,8 @@ import React from "react";
 import { get } from "lodash";
 import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 import { Image as WebinyImage } from "webiny-app/components";
+import { getPlugin } from "webiny-plugins";
+import type { ImageComponentPluginType } from "webiny-app/types";
 
 const Link = ({ link, children }: Object) => {
     if (link && link.href) {
@@ -17,7 +19,7 @@ const Link = ({ link, children }: Object) => {
 
 const Image = (props: *) => {
     const { image = {}, link = {}, settings = {} } = get(props, "element.data", {});
-    const { width, height, title, src, responsive } = image;
+    const { width, height, title } = image;
     const { horizontalAlign = "center" } = settings;
 
     const style = { width, height };
@@ -33,6 +35,17 @@ const Image = (props: *) => {
         style.height += style.height.endsWith("px") ? "" : "px";
     }
 
+    let src = image.src;
+    if (image.width) {
+        const imagePlugin: ?ImageComponentPluginType = getPlugin("image-component");
+        if (imagePlugin) {
+            src = imagePlugin.getImageSrc({
+                src,
+                transform: { width: image.width }
+            });
+        }
+    }
+
     return (
         <ElementRoot
             element={props.element}
@@ -40,7 +53,13 @@ const Image = (props: *) => {
             className={"webiny-cms-base-element-style webiny-cms-element-image"}
         >
             <Link link={link}>
-                <WebinyImage title={title} alt={title} style={style} src={src} />
+                <WebinyImage
+                    title={title}
+                    alt={title}
+                    style={style}
+                    src={src}
+                    srcSet={image.width ? undefined : "auto"}
+                />
             </Link>
         </ElementRoot>
     );

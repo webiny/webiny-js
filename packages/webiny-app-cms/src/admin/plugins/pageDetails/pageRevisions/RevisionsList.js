@@ -5,6 +5,7 @@ import type { WithPageDetailsProps } from "webiny-app-cms/admin/components";
 import Revision from "./Revision";
 import { Elevation } from "webiny-ui/Elevation";
 import { css } from "emotion";
+import { CircularProgress } from "webiny-ui/Progress";
 
 type RevisionsProps = WithPageDetailsProps;
 
@@ -22,14 +23,17 @@ const listWrapper = css({
     }
 });
 
-const RevisionsList = ({ pageDetails: { page } }: RevisionsProps) => {
+const RevisionsList = ({ pageDetails: { page }, loading }: RevisionsProps) => {
     return (
         <Elevation className={listWrapper} z={2}>
-            <List nonInteractive twoLine>
-                {page.revisions.map(rev => (
-                    <Revision rev={rev} key={rev.id} />
-                ))}
-            </List>
+            <div style={{ position: "relative" }}>
+                {loading && <CircularProgress />}
+                <List nonInteractive twoLine>
+                    {page.revisions.map(rev => (
+                        <Revision rev={rev} key={rev.id} />
+                    ))}
+                </List>
+            </div>
         </Elevation>
     );
 };

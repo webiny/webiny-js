@@ -2,15 +2,15 @@
 import * as React from "react";
 import { PageDetailsConsumer } from "./PageDetailsContext";
 
-export type WithPageDetailsProps = {
+export type WithPageDetailsProps = Object & {
     pageDetails: {
         page: Object
     }
 };
 
-export const withPageDetails = (): Function => {
+export function withPageDetails() {
     return (Component: typeof React.Component) => {
-        return props => {
+        return function withPageDetailsRender(props: Object) {
             return (
                 <PageDetailsConsumer>
                     <Component {...props} />
@@ -18,4 +18,4 @@ export const withPageDetails = (): Function => {
             );
         };
     };
-};
+}

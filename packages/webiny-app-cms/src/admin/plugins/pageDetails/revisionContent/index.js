@@ -7,12 +7,12 @@ import { Tabs } from "webiny-ui/Tabs";
 export default ({
     name: "cms-page-details-revision-content",
     type: "cms-page-details",
-    render({ pageDetails }: WithPageDetailsProps) {
+    render({ pageDetails, ...rest }: WithPageDetailsProps) {
         return (
             <Tabs>
                 {renderPlugins(
                     "cms-page-details-revision-content",
-                    { pageDetails },
+                    { pageDetails, ...rest },
                     { wrapper: false }
                 )}
             </Tabs>
