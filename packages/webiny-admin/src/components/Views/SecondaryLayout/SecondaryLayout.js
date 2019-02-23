@@ -2,6 +2,7 @@
 import * as React from "react";
 import { Transition } from "react-transition-group";
 import styled from "react-emotion";
+import { css } from "emotion";
 import { TopAppBarSecondary, TopAppBarSection } from "webiny-ui/TopAppBar";
 import { IconButton } from "webiny-ui/Button";
 
@@ -14,6 +15,11 @@ const SecondaryLayoutWrapper = styled("div")({
     backgroundColor: "var(--mdc-theme-background)",
     zIndex: 4,
     paddingTop: 65
+});
+
+const noScroll = css({
+    overflow: "hidden",
+    height: "100vh"
 });
 
 const defaultStyle = {
@@ -42,6 +48,11 @@ type State = {
 };
 
 class SecondaryLayout extends React.Component<Props, State> {
+    constructor(props: Props) {
+        super(props);
+        document.body.classList.add(noScroll);
+    }
+
     static defaultProps = {
         onExited: () => {}
     };
@@ -50,6 +61,7 @@ class SecondaryLayout extends React.Component<Props, State> {
 
     hideComponent = () => {
         this.setState({ isVisible: false });
+        document.body.classList.remove(noScroll);
     };
 
     render() {
