@@ -58,7 +58,7 @@ export const ElementContainer = pure(
                     content: "none"
                 }
             },
-            "> .elementBorder": {
+            "&::after": {
                 content: "''",
                 position: "absolute",
                 zIndex: -1, // previously it was set to -1, but then background images and other elements would be displayed above
@@ -68,12 +68,12 @@ export const ElementContainer = pure(
                 width: "100%",
                 height: "100%",
                 boxShadow: highlight
-                    ? "inset 0px 0px 0px 1px " + color + ", 0px 0px 0px 1px " + color
+                    ? "0px 0px 0px 1px " + color + ", inset 0px 0px 0px 1px " + color
                     : "none",
                 transition: "all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)",
                 opacity: highlight ? 1 : 0
             },
-            "> .elementBorder:hover": {
+            "&::after:hover": {
                 opacity: 1
             },
             "&:hover": {
