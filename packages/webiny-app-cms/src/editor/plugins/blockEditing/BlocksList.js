@@ -10,8 +10,9 @@ class BlocksList extends React.Component<*, *> {
     state = { listHeight: 0 };
     rightPanelElement: ?HTMLElement;
 
-    componentDidUpdate() {
-        if (this.rightPanelElement) {
+    componentDidUpdate(prevProps: Object) {
+        // Scroll only if the active block category has changed
+        if (this.rightPanelElement && prevProps.category !== this.props.category) {
             if (this.rightPanelElement.scrollTop === 0) {
                 // $FlowFixMe
                 this.rightPanelElement.scroll(0, 1);
@@ -67,7 +68,7 @@ class BlocksList extends React.Component<*, *> {
                         <div style={{ width: "800px", margin: "0 auto" }} ref={registerChild}>
                             <List
                                 autoHeight
-                                height={window.innerHeight - 70} /* TODO: @sven */
+                                height={window.innerHeight - 70}
                                 isScrolling={isScrolling}
                                 onScroll={onChildScroll}
                                 rowCount={blocks.length}

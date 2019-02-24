@@ -169,7 +169,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         }, 300);
     };
 
-    renderBlocksList({ plugins, deleteElement, updateElement, blocksList }) {
+    renderBlocksList({ plugins, category, deleteElement, updateElement, blocksList }) {
         return (
             <SimpleForm>
                 <SimpleFormHeader
@@ -179,6 +179,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                 <SimpleFormContent>
                     <Styled.BlockList>
                         <BlocksList
+                            category={category}
                             addBlock={this.addBlockToContent}
                             deactivatePlugin={this.props.deactivatePlugin}
                             blocks={blocksList}
@@ -273,6 +274,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                                         plugins.categories.active &&
                                         this.renderBlocksList({
                                             plugins,
+                                            category: active,
                                             deleteElement,
                                             updateElement,
                                             blocksList
