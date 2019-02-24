@@ -10,7 +10,6 @@ export interface IMenu extends Entity {
 export function menuFactory(): Class<IMenu> {
     return class Menu extends Entity {
         static classId = "CmsMenu";
-        static storageClassId = "Cms_Menus";
 
         name: string;
         slug: string;

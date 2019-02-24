@@ -2,7 +2,7 @@
 import React from "react";
 import type { PluginType } from "webiny-plugins/types";
 import PagesList from "./PagesList";
-import DefaultPageList from "./components/DefaultPagesList";
+import GridPageList from "./components/GridPageList";
 
 export default ([
     {
@@ -14,15 +14,9 @@ export default ([
         }
     },
     {
-        name: "cms-pages-list-component-default",
-        type: "cms-pages-list-component",
-        title: "Default page list",
-        component: DefaultPageList
-    },
-    {
-        name: "cms-pages-list-component-default-2",
-        type: "cms-pages-list-component",
-        title: "Default page list-2",
-        component: DefaultPageList
+        name: "cms-element-pages-list-component-default",
+        type: "cms-element-pages-list-component",
+        title: "Grid list",
+        component: GridPageList
     }
 ]: Array<PluginType>);

@@ -1,7 +1,7 @@
 // @flow
 import { Entity } from "webiny-entity";
 
-export class Role extends Entity {
+export interface IRole extends Entity {
     createdBy: ?string;
     name: string;
     slug: string;
@@ -10,13 +10,22 @@ export class Role extends Entity {
     scopes: Array<string>;
 }
 
-Role.classId = "SecurityRole";
-Role.storageClassId = "Security_Roles";
+export function roleFactory(context: Object): Class<IRole> {
+    return class Role extends Entity {
+        static classId = "SecurityRole";
 
-export function roleFactory({ user = {} }: Object) {
-    return class extends Role {
+        createdBy: ?string;
+        name: string;
+        slug: string;
+        system: string;
+        description: string;
+        scopes: Array<string>;
+
         constructor() {
             super();
+
+            const { user = {} } = context;
+
             this.attr("createdBy").char();
             this.attr("name")
                 .char()

@@ -23,8 +23,6 @@ const PagesListFilterSettings = ({ Bind }: Object) => {
                         />
                     </Bind>
                 </Cell>
-            </Grid>
-            <Grid>
                 <Cell span={6}>
                     <Bind name={"sortBy"} defaultValue={"publishedOn"}>
                         <Select label={"Sort by"}>
@@ -41,9 +39,6 @@ const PagesListFilterSettings = ({ Bind }: Object) => {
                         </Select>
                     </Bind>
                 </Cell>
-            </Grid>
-
-            <Grid>
                 <Cell span={6}>
                     <Bind name="tags">
                         <TagsMultiAutoComplete

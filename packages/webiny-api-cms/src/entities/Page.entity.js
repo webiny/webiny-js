@@ -23,7 +23,6 @@ export interface IPage extends Entity {
 export const pageFactory = (context: Object): Class<IPage> => {
     return class Page extends Entity {
         static classId = "CmsPage";
-        static storageClassId = "Cms_Pages";
 
         createdBy: Entity;
         updatedBy: Entity;

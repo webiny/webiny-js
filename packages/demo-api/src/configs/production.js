@@ -23,7 +23,7 @@ export default async (context: Object) => {
         security: {
             enabled: false,
             token: {
-                secret: process.env.WEBINY_JWT_SECRET,
+                secret: context.jwtSecret,
                 expiresOn: () => addDays(new Date(), 30)
             }
         }

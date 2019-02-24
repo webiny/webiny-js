@@ -2,18 +2,24 @@
 import * as React from "react";
 import { Transition } from "react-transition-group";
 import styled from "react-emotion";
+import { css } from "emotion";
 import { TopAppBarSecondary, TopAppBarSection } from "webiny-ui/TopAppBar";
 import { IconButton } from "webiny-ui/Button";
 
 import { ReactComponent as CloseIcon } from "./icons/close.svg";
 
-const SecondaryLayoutWrapper = styled("div")({
+const OverlayLayoutWrapper = styled("div")({
     position: "fixed",
     width: "100%",
     height: "100vh",
     backgroundColor: "var(--mdc-theme-background)",
     zIndex: 4,
     paddingTop: 65
+});
+
+const noScroll = css({
+    overflow: "hidden",
+    height: "100vh"
 });
 
 const defaultStyle = {
@@ -41,7 +47,13 @@ type State = {
     isVisible: boolean
 };
 
-class SecondaryLayout extends React.Component<Props, State> {
+class OverlayLayout extends React.Component<Props, State> {
+    constructor(props: Props) {
+        super(props);
+        // $FlowFixMe
+        document.body.classList.add(noScroll);
+    }
+
     static defaultProps = {
         onExited: () => {}
     };
@@ -50,8 +62,15 @@ class SecondaryLayout extends React.Component<Props, State> {
 
     hideComponent = () => {
         this.setState({ isVisible: false });
+        // $FlowFixMe
+        document.body.classList.remove(noScroll);
     };
 
+    componentWillUnmount() {
+        // $FlowFixMe
+        document.body.classList.remove(noScroll);
+    }
+    
     render() {
         return (
             <Transition
@@ -61,7 +80,7 @@ class SecondaryLayout extends React.Component<Props, State> {
                 onExited={this.props.onExited}
             >
                 {state => (
-                    <SecondaryLayoutWrapper style={{ ...defaultStyle, ...transitionStyles[state] }}>
+                    <OverlayLayoutWrapper style={{ ...defaultStyle, ...transitionStyles[state] }}>
                         <TopAppBarSecondary fixed style={{ top: 0 }}>
                             <TopAppBarSection style={{ width: "33%" }} alignStart>
                                 {this.props.barLeft}
@@ -81,11 +100,11 @@ class SecondaryLayout extends React.Component<Props, State> {
                         </TopAppBarSecondary>
 
                         {this.props.children}
-                    </SecondaryLayoutWrapper>
+                    </OverlayLayoutWrapper>
                 )}
             </Transition>
         );
     }
 }
 
-export default SecondaryLayout;
+export default OverlayLayout;

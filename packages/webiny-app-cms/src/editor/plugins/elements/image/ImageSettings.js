@@ -10,12 +10,7 @@ import { getActiveElement } from "webiny-app-cms/editor/selectors";
 import Input from "webiny-app-cms/editor/plugins/elementSettings/components/Input";
 import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
 
-const ImageSettings = ({
-    element,
-    updateTitle,
-    updateWidth,
-    updateHeight,
-}: Object) => {
+const ImageSettings = ({ element, updateTitle, updateWidth, updateHeight }: Object) => {
     const { image = {} } = get(element, "data", {});
 
     return (
@@ -78,6 +73,6 @@ export default compose(
         updateAlt: ({ updateData }) => (value: string) => updateData("alt", value),
         updateWidth: ({ updateData }) => (value: string) => updateData("width", value),
         updateHeight: ({ updateData }) => (value: string) => updateData("height", value),
-        updateAlign: ({ updateData }) => (value: string) => updateData("align", value),
+        updateAlign: ({ updateData }) => (value: string) => updateData("align", value)
     })
 )(ImageSettings);

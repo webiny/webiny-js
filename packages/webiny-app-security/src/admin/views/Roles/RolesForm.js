@@ -14,7 +14,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent,
     SimpleFormHeader
-} from "webiny-admin/components/Views/SimpleForm";
+} from "webiny-admin/components/SimpleForm";
 
 const t = i18n.namespace("Security.RolesForm");
 

@@ -52,7 +52,7 @@ class Menu extends React.Component<*, *> {
         visible: false
     };
 
-    static getDerivedStateFromProps(props, state) {
+    static getDerivedStateFromProps(props: Object, state: Object) {
         if (!state.activePlugin || !props.value.selection) {
             return null;
         }
@@ -89,7 +89,7 @@ class Menu extends React.Component<*, *> {
         menu.style.left = `${menuLeft}px`;
     }
 
-    activatePlugin = plugin => {
+    activatePlugin = (plugin: string) => {
         const { value } = this.props;
         const jsonValue = {
             selection: value.selection.toJSON(),
@@ -106,7 +106,7 @@ class Menu extends React.Component<*, *> {
                     lastSelectionWasFocused: true,
                     activePlugin: { plugin, value: jsonValue }
                 });
-            }, 100);
+            }, 200);
         });
 
         Menu.menus.push(() => {
@@ -123,8 +123,12 @@ class Menu extends React.Component<*, *> {
     };
 
     renderActivePlugin = () => {
-        const { plugin, value } = this.state.activePlugin;
+        const { plugin, value } = this.state.activePlugin || {};
         const menuPlugin = getPlugin(plugin);
+
+        if (!menuPlugin) {
+            return null;
+        }
 
         return (
             <Transition in={this.state.visible} timeout={100} appear={true} mountOnEnter={true}>
@@ -152,7 +156,7 @@ class Menu extends React.Component<*, *> {
         );
     };
 
-    renderPlugins = type => {
+    renderPlugins = (type: string) => {
         const { value, onChange, editor, exclude } = this.props;
         return getPlugins(type)
             .filter(pl => !exclude.includes(pl.name))
@@ -188,7 +192,7 @@ class Menu extends React.Component<*, *> {
         }
 
         return (
-            <Transition in={Boolean(this.menu)} timeout={100} appear={true}>
+            <Transition in={Boolean(this.menu)} timeout={200} appear={true}>
                 {state => (
                     <React.Fragment>
                         <Elevation

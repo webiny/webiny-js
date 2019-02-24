@@ -11,8 +11,8 @@ import mailchimpPlugins from "webiny-integration-mailchimp/plugins/admin";
 const plugins = [
     imagePlugin,
     adminPlugins,
-    cmsPlugins,
     securityPlugins,
+    cmsPlugins,
     cookiePolicyPlugins,
     googleTagManagerPlugins,
     typeformPlugins,
