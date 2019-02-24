@@ -1,6 +1,7 @@
 //@flow
 import React from "react";
 import { compose, withState, withProps, withHandlers, pure } from "recompose";
+import slugify from "slugify";
 import { connect } from "webiny-app-cms/editor/redux";
 import { Input } from "webiny-ui/Input";
 import { updateRevision } from "webiny-app-cms/editor/actions";
@@ -74,6 +75,21 @@ const Title = pure(
     }
 );
 
+const getRevData = ({ title, pageTitle, pageCategoryUrl }) => {
+    const newData: Object = { title };
+    if (pageTitle === "Untitled") {
+        newData.url =
+            pageCategoryUrl +
+            slugify(title, {
+                replacement: "-",
+                lower: true,
+                remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g
+            });
+    }
+
+    return newData;
+};
+
 export default compose(
     connect(
         state => {
@@ -82,7 +98,8 @@ export default compose(
                 pageTitle: title,
                 pageVersion: version,
                 pageLocked: locked,
-                pageCategory: category.name
+                pageCategory: category.name,
+                pageCategoryUrl: category.url
             };
         },
         { updateRevision }
@@ -94,15 +111,22 @@ export default compose(
     })),
     withHandlers({
         enableEdit: ({ setEdit }) => () => setEdit(true),
-        onBlur: ({ title, setEdit, setTitle, updateRevision }) => () => {
+        onBlur: ({
+            title,
+            pageTitle,
+            pageCategoryUrl,
+            setEdit,
+            setTitle,
+            updateRevision
+        }) => () => {
             if (title === "") {
                 title = "Untitled";
                 setTitle(title);
             }
             setEdit(false);
-            updateRevision({ title });
+            updateRevision(getRevData({ title, pageTitle, pageCategoryUrl }));
         },
-        onKeyDown: ({ title, setTitle, setEdit, pageTitle, updateRevision }) => (
+        onKeyDown: ({ title, setTitle, setEdit, pageTitle, pageCategoryUrl, updateRevision }) => (
             e: SyntheticKeyboardEvent<HTMLInputElement>
         ) => {
             switch (e.key) {
@@ -119,7 +143,8 @@ export default compose(
 
                     e.preventDefault();
                     setEdit(false);
-                    updateRevision({ title });
+
+                    updateRevision(getRevData({ title, pageTitle, pageCategoryUrl }));
                     break;
                 default:
                     return;

@@ -77,6 +77,7 @@ export const getPage = () => gql`
                     category {
                         id
                         name
+                        url
                     }
                     revisions {
                         ${sharedFields}

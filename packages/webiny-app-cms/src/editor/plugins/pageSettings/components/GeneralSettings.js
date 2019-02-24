@@ -1,13 +1,17 @@
 // @flow
 import * as React from "react";
 import { compose } from "recompose";
+import slugify from "slugify";
 import { withCms } from "webiny-app-cms/context";
-import { DelayedOnChange } from "webiny-app-cms/editor/components/DelayedOnChange";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { TagsMultiAutoComplete } from "webiny-app-cms/admin/components";
 import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
 import PageImage from "./PageImage";
+
+const toSlug = (value, cb) => {
+    cb(slugify(value, { replacement: "-", lower: true, remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g }));
+};
 
 const GeneralSettings = ({ Bind, cms: { theme } }: Object) => {
     return (
@@ -15,23 +19,17 @@ const GeneralSettings = ({ Bind, cms: { theme } }: Object) => {
             <Grid>
                 <Cell span={12}>
                     <Bind name={"title"} validators={["required"]}>
-                        <DelayedOnChange>
-                            <Input label="Title" description="Page title" />
-                        </DelayedOnChange>
+                        <Input label="Title" description="Page title" />
                     </Bind>
                 </Cell>
                 <Cell span={12}>
-                    <Bind name={"url"} validators={["required"]}>
-                        <DelayedOnChange>
-                            <Input label="URL" description="Page URL" />
-                        </DelayedOnChange>
+                    <Bind name={"url"} validators={["required"]} beforeChange={toSlug}>
+                        <Input label="URL" description="Page URL" />
                     </Bind>
                 </Cell>
                 <Cell span={12}>
                     <Bind name={"snippet"}>
-                        <DelayedOnChange>
-                            <Input rows={4} label="Snippet" description="Page snippet" />
-                        </DelayedOnChange>
+                        <Input rows={4} label="Snippet" description="Page snippet" />
                     </Bind>
                 </Cell>
                 <Cell span={12}>
