@@ -74,6 +74,7 @@ const Element = pure(
                             </Draggable>
                             {plugin.render({ element })}
                         </div>
+                        <div className={"elementBorder"} />
                     </ElementContainer>
                 )}
             </Transition>
