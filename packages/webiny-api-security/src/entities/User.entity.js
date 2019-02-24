@@ -3,8 +3,8 @@ import md5 from "md5";
 import bcrypt from "bcryptjs";
 import get from "lodash/get";
 import { Entity } from "webiny-entity";
-import type { Group } from "./Group.entity";
-import type { Role } from "./Role.entity";
+import type { IGroup } from "./Group.entity";
+import type { IRole } from "./Role.entity";
 import FileModel from "./File.model";
 
 type AccessType = {
@@ -13,7 +13,7 @@ type AccessType = {
     fullAccess: boolean
 };
 
-export class User extends Entity {
+export interface IUser extends Entity {
     email: string;
     password: string;
     firstName: string;
@@ -21,18 +21,29 @@ export class User extends Entity {
     gravatar: string;
     avatar: Object;
     enabled: boolean;
-    groups: Promise<Array<Group>>;
-    roles: Promise<Array<Role>>;
+    groups: Promise<Array<IGroup>>;
+    roles: Promise<Array<IRole>>;
     scopes: Promise<Array<string>>;
     access: Promise<AccessType>;
 }
 
-User.classId = "SecurityUser";
-User.storageClassId = "Security_Users";
-
-export function userFactory({ config, security: { entities } }: Object) {
-    return class extends User {
+export function userFactory({ config, security: { entities } }: Object): Class<IUser> {
+    return class User extends Entity {
+        static classId = "SecurityUser";
         __access: ?AccessType;
+
+        email: string;
+        password: string;
+        firstName: string;
+        lastName: string;
+        gravatar: string;
+        avatar: Object;
+        enabled: boolean;
+        groups: Promise<Array<IGroup>>;
+        roles: Promise<Array<IRole>>;
+        scopes: Promise<Array<string>>;
+        access: Promise<AccessType>;
+
         constructor() {
             super();
             // Once we load access attribute, we cache it here.

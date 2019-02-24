@@ -1,20 +1,24 @@
 // @flow
 import { Entity } from "webiny-entity";
-import { Group } from "./Group.entity";
+import type { IGroup } from "./Group.entity";
 
-export class Groups2Entities extends Entity {
+export interface Groups2Entities extends Entity {
     entity: Entity;
     entityClassId: string;
-    group: Group;
+    group: IGroup;
 }
 
-Groups2Entities.classId = "SecurityGroups2Entities";
-Groups2Entities.storageClassId = "Security_Groups2Entities";
+export function groups2entitiesFactory(context: Object) {
+    return class Groups2Entities extends Entity {
+        static classId = "SecurityGroups2Entities";
 
-export function groups2entitiesFactory({ security: { entities } }: Object) {
-    return class extends Groups2Entities {
         constructor() {
             super();
+
+            const {
+                security: { entities }
+            } = context;
+
             this.attr("entity").entity([], { classIdAttribute: "entityClassId" });
             this.attr("entityClassId").char();
             this.attr("group").entity(entities.Group);

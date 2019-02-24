@@ -1,5 +1,5 @@
 module.exports = {
     printWidth: 100,
-    parser: "babylon",
+    parser: "babel",
     tabWidth: 4
 };

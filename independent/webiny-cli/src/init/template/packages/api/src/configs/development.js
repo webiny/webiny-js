@@ -13,10 +13,7 @@ function init() {
 
     const server = process.env.MONGODB_SERVER;
     const databaseName = process.env.MONGODB_DB_NAME;
-    return MongoClient.connect(
-        server,
-        { useNewUrlParser: true }
-    ).then(client => {
+    return MongoClient.connect(server, { useNewUrlParser: true }).then(client => {
         return client.db(databaseName);
     });
 }
@@ -42,7 +39,7 @@ export default async () => {
             }
         },
         security: {
-            enabled: false,
+            enabled: true,
             token: {
                 secret: process.env.WEBINY_JWT_SECRET,
                 expiresOn: () => addDays(new Date(), 30)

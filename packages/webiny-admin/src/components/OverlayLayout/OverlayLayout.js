@@ -8,7 +8,7 @@ import { IconButton } from "webiny-ui/Button";
 
 import { ReactComponent as CloseIcon } from "./icons/close.svg";
 
-const SecondaryLayoutWrapper = styled("div")({
+const OverlayLayoutWrapper = styled("div")({
     position: "fixed",
     width: "100%",
     height: "100vh",
@@ -47,7 +47,7 @@ type State = {
     isVisible: boolean
 };
 
-class SecondaryLayout extends React.Component<Props, State> {
+class OverlayLayout extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         document.body.classList.add(noScroll);
@@ -73,7 +73,7 @@ class SecondaryLayout extends React.Component<Props, State> {
                 onExited={this.props.onExited}
             >
                 {state => (
-                    <SecondaryLayoutWrapper style={{ ...defaultStyle, ...transitionStyles[state] }}>
+                    <OverlayLayoutWrapper style={{ ...defaultStyle, ...transitionStyles[state] }}>
                         <TopAppBarSecondary fixed style={{ top: 0 }}>
                             <TopAppBarSection style={{ width: "33%" }} alignStart>
                                 {this.props.barLeft}
@@ -93,11 +93,11 @@ class SecondaryLayout extends React.Component<Props, State> {
                         </TopAppBarSecondary>
 
                         {this.props.children}
-                    </SecondaryLayoutWrapper>
+                    </OverlayLayoutWrapper>
                 )}
             </Transition>
         );
     }
 }
 
-export default SecondaryLayout;
+export default OverlayLayout;

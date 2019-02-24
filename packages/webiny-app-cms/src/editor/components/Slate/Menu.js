@@ -106,7 +106,7 @@ class Menu extends React.Component<*, *> {
                     lastSelectionWasFocused: true,
                     activePlugin: { plugin, value: jsonValue }
                 });
-            }, 100);
+            }, 200);
         });
 
         Menu.menus.push(() => {

@@ -46,7 +46,7 @@ export const cmsSettingsFactory = (...args: Array<*>) => {
 
         constructor() {
             super();
-            this.attr("data").model(cmsSettingsModelFactory(this, ...args));
+            this.attr("data").model(cmsSettingsModelFactory());
         }
     };
 };

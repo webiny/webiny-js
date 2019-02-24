@@ -15,7 +15,7 @@ import {
     SimpleFormHeader,
     SimpleFormFooter,
     SimpleFormContent
-} from "webiny-admin/components/Views/SimpleForm";
+} from "webiny-admin/components/SimpleForm";
 
 import type { WithCrudFormProps } from "webiny-admin/components";
 

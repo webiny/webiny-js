@@ -12,7 +12,7 @@ import {
     SimpleForm,
     SimpleFormFooter,
     SimpleFormContent
-} from "webiny-admin/components/Views/SimpleForm";
+} from "webiny-admin/components/SimpleForm";
 
 type Props = WithCrudFormProps;
 type State = {
