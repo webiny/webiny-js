@@ -67,11 +67,13 @@ const PageSettings = ({ deactivatePlugin, page, savePage, active, setActive }: P
                 </LeftPanel>
                 <RightPanel span={7}>
                     <Form data={page} onSubmit={savePage}>
-                        {({ Bind, submit }) => (
+                        {({ Bind, submit, form, data }) => (
                             <SimpleForm>
                                 <SimpleFormHeader title={activePlugin.title} />
                                 <SimpleFormContent>
-                                    {activePlugin ? activePlugin.render({ Bind }) : null}
+                                    {activePlugin
+                                        ? activePlugin.render({ Bind, form, data })
+                                        : null}
                                 </SimpleFormContent>
                                 <SimpleFormFooter>
                                     <ButtonPrimary type="primary" onClick={submit} align="right">

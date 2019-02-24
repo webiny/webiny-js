@@ -8,6 +8,13 @@ import { get } from "lodash";
 type Props = { settings: Object, page: Object };
 
 class Content extends React.Component<Props> {
+    getPageTitle({ page, settings }: Object): string {
+        let output = [];
+        page.title && output.push(page.title);
+        settings.name && output.push(settings.name);
+        return output.join(" | ");
+    }
+
     renderOgImageMeta({ page, settings }: Object) {
         let src = get(page, "social.image.src");
         if (!src) {
@@ -22,6 +29,7 @@ class Content extends React.Component<Props> {
 
         const meta = {
             page: {
+                title: page.title,
                 seo: {
                     title: "",
                     description: "",
@@ -36,6 +44,7 @@ class Content extends React.Component<Props> {
                 }
             },
             settings: {
+                name: get(settings, "cms.name") || "",
                 social: {
                     image: null,
                     ...get(settings, "cms.social")
@@ -47,7 +56,7 @@ class Content extends React.Component<Props> {
             <div className="webiny-cms-page">
                 <Helmet>
                     <meta charSet="utf-8" />
-                    {page.title && <title>{page.title}</title>}
+                    <title>{this.getPageTitle(meta)}</title>
                     {meta.page.seo.title && <meta name="title" content={meta.page.seo.title} />}
                     {meta.page.seo.description && (
                         <meta name="description" content={meta.page.seo.description} />
