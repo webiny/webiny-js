@@ -168,9 +168,13 @@ Fix the width of input components when inside grids
       // add options for when tabs are inside the body
       >.mdc-tab-bar{
         margin-top: -24px;
+        @include mdc-tab-bar-width(100%);
+        background-color: $mdc-theme-secondary;
         .mdc-tab{
           @include mdc-tab-text-label-color($mdc-theme-on-secondary);
           @include mdc-tab-icon-color($mdc-theme-on-secondary);
+          @include mdc-tab-fixed-width(100px);
+          justify-content: flex-start;
           font-weight: 600;
         }
         .mdc-tab-indicator{

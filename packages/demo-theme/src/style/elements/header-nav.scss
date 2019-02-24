@@ -29,6 +29,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 35px;
   }
 }
 
@@ -101,10 +102,6 @@
 // mobile header
 @include mobile{
   .webiny-cms-section-header {
-    &__wrapper{
-      height: 30px;
-    }
-
     &__mobile-icon{
       position: fixed;
       top: 18px;

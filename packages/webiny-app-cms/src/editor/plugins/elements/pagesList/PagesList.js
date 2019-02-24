@@ -8,7 +8,7 @@ import { getPlugins } from "webiny-plugins";
 
 const PagesList = pure(({ data = {}, cms: { theme } }: Object = {}) => {
     const { component, ...vars } = data;
-    const components = getPlugins("cms-pages-list-component");
+    const components = getPlugins("cms-element-pages-list-component");
     const pageList = components.find(cmp => cmp.name === component);
 
     if (!pageList) {

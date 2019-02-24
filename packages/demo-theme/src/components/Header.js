@@ -11,7 +11,7 @@ import DefaultMenu from "./DefaultMenu";
 type State = {
     mobileMenuOpen: boolean
 };
-const menuName = "demo-menu";
+const menuName = "main-menu";
 
 class Header extends React.Component<{}, State> {
     state = { mobileMenuOpen: false };

@@ -23,7 +23,10 @@ export function groupFactory(context: Object): Class<IGroup> {
         constructor() {
             super();
 
-            const { user = {}, security: { entities } } = context;
+            const {
+                user = {},
+                security: { entities }
+            } = context;
 
             this.attr("createdBy")
                 .char()

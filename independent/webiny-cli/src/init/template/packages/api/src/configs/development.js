@@ -13,10 +13,7 @@ function init() {
 
     const server = process.env.MONGODB_SERVER;
     const databaseName = process.env.MONGODB_DB_NAME;
-    return MongoClient.connect(
-        server,
-        { useNewUrlParser: true }
-    ).then(client => {
+    return MongoClient.connect(server, { useNewUrlParser: true }).then(client => {
         return client.db(databaseName);
     });
 }

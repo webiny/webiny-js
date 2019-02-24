@@ -192,7 +192,7 @@ class Menu extends React.Component<*, *> {
         }
 
         return (
-            <Transition in={Boolean(this.menu)} timeout={100} appear={true}>
+            <Transition in={Boolean(this.menu)} timeout={200} appear={true}>
                 {state => (
                     <React.Fragment>
                         <Elevation

@@ -40,7 +40,7 @@ const LinkMenu = ({ linkData, updateLink, closeMenu, removeLink }) => {
                         </Cell>
                         <Cell span={9}>
                             <InputContainer>
-                                <Bind name={"href"} validators={["required", "url"]}>
+                                <Bind name={"href"} validators={["required"]}>
                                     <Input
                                         placeholder={"Enter URL"}
                                         onKeyPress={e => {

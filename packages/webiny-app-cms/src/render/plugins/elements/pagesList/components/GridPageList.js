@@ -60,7 +60,7 @@ const pageItem = css({
     padding: 20
 });
 
-const DefaultPagesList = ({ data, nextPage, prevPage }: Object) => {
+const GridPageList = ({ data, nextPage, prevPage }: Object) => {
     return (
         <div className={defaultPageList}>
             {data.map(page => (
@@ -72,4 +72,4 @@ const DefaultPagesList = ({ data, nextPage, prevPage }: Object) => {
     );
 };
 
-export default DefaultPagesList;
+export default GridPageList;
