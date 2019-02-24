@@ -5,6 +5,7 @@ export default gql`
     {
         settings {
             cms {
+                name
                 social {
                     image {
                         src
