@@ -50,6 +50,7 @@ type State = {
 class OverlayLayout extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
+        // $FlowFixMe
         document.body.classList.add(noScroll);
     }
 
@@ -61,9 +62,15 @@ class OverlayLayout extends React.Component<Props, State> {
 
     hideComponent = () => {
         this.setState({ isVisible: false });
+        // $FlowFixMe
         document.body.classList.remove(noScroll);
     };
 
+    componentWillUnmount() {
+        // $FlowFixMe
+        document.body.classList.remove(noScroll);
+    }
+    
     render() {
         return (
             <Transition
