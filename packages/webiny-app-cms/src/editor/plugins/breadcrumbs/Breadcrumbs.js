@@ -8,7 +8,7 @@ import { activateElement, highlightElement } from "webiny-app-cms/editor/actions
 
 const breadcrumbs = css({
     display: "flex",
-    zIndex: 1,
+    zIndex: 20,
     flexDirection: "row",
     padding: 0,
     position: "fixed",
