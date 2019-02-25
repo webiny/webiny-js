@@ -9,34 +9,51 @@ const SUPPORTED_IMAGE_RESIZE_WIDTHS = [100, 300, 500, 750, 1000, 1500, 2500];
  * Width of the image should not be just any random number. For optimization reasons,
  * we only allow the ones listed in SUPPORTED_IMAGE_RESIZE_WIDTHS list (Webiny Cloud supports only these).
  */
+const getSupportedImageResizeWidth = width => {
+    let output = SUPPORTED_IMAGE_RESIZE_WIDTHS[0];
+    let i = SUPPORTED_IMAGE_RESIZE_WIDTHS.length;
+    while (i >= 0) {
+        if (width === SUPPORTED_IMAGE_RESIZE_WIDTHS[i]) {
+            output = SUPPORTED_IMAGE_RESIZE_WIDTHS[i];
+            break;
+        }
+
+        if (width > SUPPORTED_IMAGE_RESIZE_WIDTHS[i]) {
+            // Use next larger width. If there isn't any, use current.
+            output = SUPPORTED_IMAGE_RESIZE_WIDTHS[i + 1];
+            if (!output) {
+                output = SUPPORTED_IMAGE_RESIZE_WIDTHS[i];
+            }
+            break;
+        }
+
+        i--;
+    }
+
+    return output;
+};
+
+/**
+ * Currently we only allow "width" as a transform option.
+ * @param args
+ */
 const sanitizeTransformArgs = (args: ?Object): Object => {
     const output = {};
     if (args) {
         let width = parseInt(args.width);
         if (width > 0) {
-            output.width = SUPPORTED_IMAGE_RESIZE_WIDTHS[0];
-            let i = SUPPORTED_IMAGE_RESIZE_WIDTHS.length;
-            while (i >= 0) {
-                if (width === SUPPORTED_IMAGE_RESIZE_WIDTHS[i]) {
-                    output.width = SUPPORTED_IMAGE_RESIZE_WIDTHS[i];
-                    break;
-                }
-
-                if (width > SUPPORTED_IMAGE_RESIZE_WIDTHS[i]) {
-                    // Use next larger width. If there isn't any, use current.
-                    output.width = SUPPORTED_IMAGE_RESIZE_WIDTHS[i + 1];
-                    if (!output.width) {
-                        output.width = SUPPORTED_IMAGE_RESIZE_WIDTHS[i];
-                    }
-                    break;
-                }
-
-                i--;
-            }
+            output.width = getSupportedImageResizeWidth(width);
         }
     }
 
     return output;
+};
+
+const getSrcSetAutoSizes = (max: ?number) => {
+    const maxWidth = max ? getSupportedImageResizeWidth(max) : 2500;
+    return SUPPORTED_IMAGE_RESIZE_WIDTHS.filter((supportedWidth: number) => {
+        return supportedWidth <= maxWidth;
+    });
 };
 
 const convertTransformToQueryParams = (transform: Object): string => {
@@ -61,7 +78,7 @@ const imagePlugin: ImageComponentPluginType = {
             return src;
         }
 
-        if (!src || src.startsWith("data:")) {
+        if (!src || src.startsWith("data:") || src.endsWith("svg")) {
             return src;
         }
 
@@ -74,13 +91,21 @@ const imagePlugin: ImageComponentPluginType = {
 
         const src = imageProps.src;
         if (srcSet && srcSet === "auto") {
-            srcSet = {
-                "2500w": imagePlugin.getImageSrc({ src, transform: { ...transform, width: 2500 } }),
-                "1500w": imagePlugin.getImageSrc({ src, transform: { ...transform, width: 1500 } }),
-                "750w": imagePlugin.getImageSrc({ src, transform: { ...transform, width: 750 } }),
-                "500w": imagePlugin.getImageSrc({ src, transform: { ...transform, width: 500 } }),
-                "300w": imagePlugin.getImageSrc({ src, transform: { ...transform, width: 300 } })
-            };
+            srcSet = {};
+
+            // Check if image width was forced, and additionally if width was set as pixels, with "px" in the value.
+            let forcedWidth = props.width || (props.style && props.style.width);
+            if (typeof forcedWidth === "string" && forcedWidth.endsWith("px")) {
+                forcedWidth = parseInt(forcedWidth);
+            }
+
+            const srcSetAutoWidths = getSrcSetAutoSizes(forcedWidth);
+            srcSetAutoWidths.forEach(width => {
+                srcSet[width + "w"] = imagePlugin.getImageSrc({
+                    src,
+                    transform: { ...transform, width }
+                });
+            });
         }
 
         return (
