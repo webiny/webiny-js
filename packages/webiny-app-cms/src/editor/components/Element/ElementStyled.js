@@ -51,6 +51,7 @@ export const ElementContainer = pure(
             opacity: dragged ? 0.3 : 1,
             borderRadius: 2,
             boxSizing: "border-box",
+            zIndex: 10,
             transition: "all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)",
             "&.no-highlight": {
                 "::after": {
@@ -60,17 +61,19 @@ export const ElementContainer = pure(
             "&::after": {
                 content: "''",
                 position: "absolute",
-                zIndex: -1,
-                padding: 2,
-                top: -2,
-                left: -2,
+                zIndex: -1, // previously it was set to -1, but then background images and other elements would be displayed above
+                padding: 0,
+                top: 0,
+                left: 0,
                 width: "100%",
                 height: "100%",
-                boxShadow: highlight ? "inset 0px 0px 0px 2px " + color : "none",
+                boxShadow: highlight
+                    ? "0px 0px 0px 1px " + color + ", inset 0px 0px 0px 1px " + color
+                    : "none",
                 transition: "all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)",
                 opacity: highlight ? 1 : 0
             },
-            "&:hover::after": {
+            "&::after:hover": {
                 opacity: 1
             },
             "&:hover": {
@@ -87,9 +90,9 @@ export const ElementContainer = pure(
                 display: highlight ? "block" : "none",
                 width: !active ? "100%" : "100px",
                 height: !active ? "100%" : "18px",
-                [!active ? "left" : "right"]: !active ? 2 : -2,
+                [!active ? "left" : "right"]: !active ? 0 : -1,
                 position: "absolute",
-                top: -19, //0,
+                top: -17, //0,
                 zIndex: 10,
                 transition: "background-color 0.2s",
                 ".background": {
@@ -100,7 +103,7 @@ export const ElementContainer = pure(
                     width: "100%",
                     height: "100%",
                     cursor: "pointer",
-                    top: 22,
+                    top: 17,
                     left: 0,
                     transition: "background-color 0.2s"
                 },

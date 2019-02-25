@@ -326,7 +326,7 @@ function newUtil() {
     }
 
     function mimeType(url) {
-        const extension = parseExtension(url).toLowerCase();
+        const extension = parseExtension(url).toLowerCase().split("?")[0];
         return mimes()[extension] || "";
     }
 
@@ -507,8 +507,8 @@ function newInliner() {
     const URL_REGEX = /url\(['"]?([^'"]+?)['"]?\)/g;
 
     return {
-        inlineAll: inlineAll,
-        shouldProcess: shouldProcess,
+        inlineAll,
+        shouldProcess,
         impl: { readUrls, inline }
     };
 
@@ -640,9 +640,7 @@ function newFontFaces() {
 function newImages() {
     return {
         inlineAll: inlineAll,
-        impl: {
-            newImage: newImage
-        }
+        impl: { newImage }
     };
 
     function newImage(element) {
@@ -659,6 +657,8 @@ function newImages() {
                     return util.dataAsUrl(data, util.mimeType(element.src));
                 })
                 .then(function(dataUrl) {
+                    element.removeAttribute("srcset");
+
                     return new Promise(function(resolve, reject) {
                         element.onload = resolve;
                         element.onerror = reject;
