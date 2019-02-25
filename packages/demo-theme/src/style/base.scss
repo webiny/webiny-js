@@ -1,15 +1,3 @@
-html{
-  font-size: 14px;
-  font-family: unquote($webiny-cms-theme-typography-secondary-font-family);
-
-  @include tablet{
-    font-size: 14px;
-  }
-  @include desktop{
-    font-size: 16px;
-  }
-}
-
 .webiny-cms-page-document{
   background-color: var(--webiny-cms-theme-surface);
   min-height: calc(100vh - 205px);

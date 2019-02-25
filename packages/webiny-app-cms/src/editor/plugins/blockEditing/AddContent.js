@@ -23,15 +23,16 @@ const pulse = keyframes`
 
 const AddBlockContainer = styled("div")({
     position: "fixed",
-    zIndex: 5,
-    top: 0,
-    left: 0,
+    zIndex: 11,
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%,-50%)",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    width: "100%",
-    height: "100%",
+    width: "150px",
+    height: "100px",
     borderRadius: 2,
     color: "var(--mdc-theme-on-surface)",
     marginLeft: 54

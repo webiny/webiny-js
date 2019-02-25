@@ -8,7 +8,7 @@ import { ReactComponent as AddIcon } from "webiny-app-cms/editor/assets/icons/ad
 
 const BottomRight = styled("div")({
     position: "fixed",
-    zIndex: 6,
+    zIndex: 25,
     bottom: 20,
     right: 20
 });
