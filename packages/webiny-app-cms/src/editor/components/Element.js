@@ -63,6 +63,7 @@ const Element = pure(
                         highlight={highlight}
                         active={active}
                         style={{ ...defaultStyle, ...transitionStyles[state] }}
+                        className={"webiny-cms-element-container"}
                     >
                         <div className={["innerWrapper", className].filter(c => c).join(" ")}>
                             <Draggable
