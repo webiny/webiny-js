@@ -8,8 +8,6 @@ import { set, isEqual } from "lodash";
 import { withFileUpload, SingleImageUpload, Image } from "webiny-app/components";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { getElement } from "webiny-app-cms/editor/selectors";
-import { getPlugin } from "webiny-plugins";
-import type { ImageComponentPluginType } from "webiny-app/types";
 
 const position = { left: "flex-start", center: "center", right: "flex-end" };
 
@@ -33,22 +31,10 @@ const ImageContainer = pure(props => {
         imgStyle.height = isNumeric(height) ? parseInt(height) : height;
     }
 
-    if (image.width) {
-        const imagePlugin: ?ImageComponentPluginType = getPlugin("image-component");
-        if (imagePlugin) {
-            image.src = imagePlugin.getImageSrc({
-                src: image.src,
-                transform: { width: image.width }
-            });
-        }
-    }
-
     return (
         <AlignImage align={horizontalAlign}>
             <SingleImageUpload
-                renderImagePreview={props => (
-                    <Image {...props} style={imgStyle} srcSet={image.width ? undefined : "auto"} />
-                )}
+                renderImagePreview={props => <Image {...props} style={imgStyle} srcSet="auto" />}
                 onChange={onChange}
                 value={image}
                 showRemoveImageButton={false}
