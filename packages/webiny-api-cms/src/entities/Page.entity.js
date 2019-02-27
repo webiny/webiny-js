@@ -122,11 +122,12 @@ export const pageFactory = (context: Object): Class<IPage> => {
                 });
 
             this.on("beforeCreate", async () => {
-                const newId = mdbid();
-                this.id = newId;
+                if (!this.id) {
+                    this.id = mdbid();
+                }
 
                 if (!this.parent) {
-                    this.parent = newId;
+                    this.parent = this.id;
                 }
 
                 this.createdBy = user.id;

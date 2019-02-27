@@ -1,8 +1,10 @@
 // @flow
-import { notFound, homepage, error } from "./staticPages";
+import get from "lodash/get";
+import fs from "fs-extra";
+import { categories, pages } from "./pages";
 
-const createDefaultPage = async ({ page, data, category }) => {
-    page.populate({ ...data, category });
+const createDefaultPage = async ({ page, data }) => {
+    page.populate({ ...data });
     await page.save();
 
     page.published = true;
@@ -11,40 +13,60 @@ const createDefaultPage = async ({ page, data, category }) => {
     return page;
 };
 
-const createDefaultPages = async (context: Object, { categories, cmsSettings }: Object) => {
-    const { Page } = context.cms.entities;
+const createDefaultPages = async (context: Object, { cmsSettings }: Object) => {
+    const { Page, Category } = context.cms.entities;
 
-    // Create default pages - demo blog, error, not found and homepage and also assign to settings.
-    const demoBlogPage = new Page();
-    demoBlogPage.populate({
-        title: "Demo blog post",
-        category: categories.blog,
-        tags: ["page", "demo"]
-    });
-    await demoBlogPage.save();
+    for (let i = 0; i < categories.length; i++) {
+        const category = categories[i];
+        const cat = new Category();
+        cat.populate(category);
+        await cat.save();
+    }
+
+    const homePageIndex = pages.findIndex(
+        p => p.settings.general.tags && p.settings.general.tags.includes("homepage")
+    );
+    const homePage = pages.splice(homePageIndex, 1)[0];
+
+    const errorPageIndex = pages.findIndex(
+        p => p.settings.general.tags && p.settings.general.tags.includes("error")
+    );
+    const errorPage = pages.splice(errorPageIndex, 1)[0];
+
+    const notFoundPageIndex = pages.findIndex(
+        p => p.settings.general.tags && p.settings.general.tags.includes("404")
+    );
+    const notFoundPage = pages.splice(notFoundPageIndex, 1)[0];
+
+    for (let i = 0; i < pages.length; i++) {
+        await createDefaultPage({
+            page: new Page(),
+            data: pages[i]
+        });
+    }
 
     cmsSettings.data = {
         pages: {
             home: (await createDefaultPage({
                 page: new Page(),
-                data: homepage,
-                category: categories.static,
-                tags: ["page", "homepage"]
+                data: homePage
             })).id,
             error: (await createDefaultPage({
                 page: new Page(),
-                data: error,
-                category: categories.static,
-                tags: ["page", "error"]
+                data: errorPage
             })).id,
             notFound: (await createDefaultPage({
                 page: new Page(),
-                data: notFound,
-                category: categories.static,
-                tags: ["page", "not-found", "404"]
+                data: notFoundPage
             })).id
         }
     };
+
+    // Copy images.
+    if (get(context, "cms.copyFiles", true) !== false) {
+        const pwd: string = (process.cwd(): any);
+        await fs.copy(`${__dirname}/pages/images`, pwd + "/static");
+    }
 };
 
 export default createDefaultPages;
