@@ -43,7 +43,7 @@ const RevisionSelector = ({ router, pageDetails: { page } }: Props) => {
                 </ButtonDefault>
             }
         >
-            {(get("page.revisions") || []).map(rev => {
+            {(get(page, "revisions") || []).map(rev => {
                 let status = "draft";
                 if (rev.published) status = "published";
                 if (rev.locked && !rev.published) status = "locked";
