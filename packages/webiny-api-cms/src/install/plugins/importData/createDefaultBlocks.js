@@ -1,7 +1,7 @@
 // @flow
 import get from "lodash/get";
 import fs from "fs-extra";
-import blocks from "./blocks";
+import { blocks } from "./blocks";
 
 const createDefaultBlocks = async (context: Object) => {
     const { Element } = context.cms.entities;

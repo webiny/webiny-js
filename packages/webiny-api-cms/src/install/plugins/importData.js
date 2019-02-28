@@ -3,10 +3,10 @@ import setupEntities from "./setupEntities";
 import createDefaultPages from "./importData/createDefaultPages";
 import createDefaultBlocks from "./importData/createDefaultBlocks";
 import * as data from "./data";
-import {get} from "lodash";
+import { get } from "lodash";
 export default async (context: Object) => {
     setupEntities(context);
-    const { Category, Menu, CmsSettings } = context.cms.entities;
+    const { Menu, CmsSettings } = context.cms.entities;
 
     const { Group } = context.security.entities;
 
@@ -37,34 +37,11 @@ export default async (context: Object) => {
 
     await menu.save();
 
-    const categories = {
-        blog: new Category(),
-        static: new Category()
-    };
-
-    await categories.blog
-        .populate({
-            name: "Blog",
-            slug: "blog",
-            url: "/blog/",
-            layout: "blog"
-        })
-        .save();
-
-    await categories.static
-        .populate({
-            name: "Static",
-            slug: "static",
-            url: "/",
-            layout: "static"
-        })
-        .save();
-
     await createDefaultBlocks(context);
 
     // Settings init.
     const cmsSettings = new CmsSettings();
-    await createDefaultPages(context, { categories, cmsSettings });
+    await createDefaultPages(context, { cmsSettings });
     cmsSettings.data.domain = get(context, "cms.siteUrl");
 
     await cmsSettings.save();

@@ -13,12 +13,6 @@ const copyImage = (srcFilename, targetFilename = null) => {
     fs.copySync(src, dest);
 };
 
-const writeDataToFile = (filename, data) => {
-    const dest = `${pwd}/../webiny-api-cms/src/install/plugins/importData/blocks/${filename.toLowerCase()}.js`;
-
-    fs.writeFileSync(dest, `export default ${JSON.stringify(data)}`);
-};
-
 const writeIndexFile = content => {
     const dest = `${pwd}/../webiny-api-cms/src/install/plugins/importData/blocks/index.js`;
 
@@ -34,7 +28,7 @@ export default async () => {
         .find({ deleted: false, type: "block" })
         .toArray();
 
-    const files = [];
+    const exportedBlocks = [];
 
     for (let i = 0; i < blocks.length; i++) {
         const data = blocks[i];
@@ -67,24 +61,18 @@ export default async () => {
         }
         copyImage(previewName, targetName);
 
-        const filename = camelCase(data.name);
-        writeDataToFile(filename, data);
-
-        files.push(filename);
-        console.log(green(`Block ${data.name} exported!`));
+        exportedBlocks.push(data);
     }
 
     // Generate code to include blocks in the installation process
     const index = [
-        "// @flowIgnore",
         "// NOTE: THIS FILE IS AUTO-GENERATED. MANUAL CHANGES OF THIS FILE WILL BE LOST!\n",
-        ...files.map(filename => `import ${filename} from "./${filename}";`),
         "",
-        `export default [${files.join(", ")}];`
+        `export const blocks = [${exportedBlocks.map(b => JSON.stringify(b)).join(",\n")}];`
     ].join("\n");
 
     console.log("\n> Writing index file...");
     writeIndexFile(index);
 
-    console.log(`\nDone! Successfully exported ${files.length} blocks!`);
+    console.log(`\nDone! Successfully exported ${exportedBlocks.length} blocks!`);
 };

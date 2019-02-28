@@ -52,34 +52,27 @@ export default class ElementPreview extends React.Component<*> {
         return doc;
     }
 
-    generateImage() {
+    async generateImage() {
         const { element } = this.props;
-        setTimeout(async () => {
-            const node = document.getElementById(element.id);
-            if (!node) {
-                return null;
-            }
+        const node = document.getElementById(element.id);
+        if (!node) {
+            return null;
+        }
 
-            node.classList.add("no-highlight");
-            const typeNode = node.querySelector(".type");
-            let typeDisplay = "none";
-            if (typeNode) {
-                typeDisplay = typeNode.style.display;
-                typeNode.style.display = "none";
-            }
+        const editor = document.querySelector(".cms-editor");
+        // Hide element highlight while creating the image
+        // $FlowFixMe
+        editor.classList.add("cms-editor-no-highlight");
 
-            const dataUrl = await domToImage.toPng(node, {
-                onDocument: doc => this.replaceContent(element, doc),
-                width: 1000
-            });
+        const dataUrl = await domToImage.toPng(node, {
+            onDocument: doc => this.replaceContent(element, doc),
+            width: 1000
+        });
 
-            node.classList.remove("no-highlight");
-            if (typeNode) {
-                typeNode.style.display = typeDisplay;
-            }
+        // $FlowFixMe
+        editor.classList.remove("cms-editor-no-highlight");
 
-            this.props.onChange(dataUrl);
-        }, 200);
+        this.props.onChange(dataUrl);
     }
 
     render() {

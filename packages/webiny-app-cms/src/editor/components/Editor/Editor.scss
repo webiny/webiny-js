@@ -45,3 +45,14 @@
     }
   }
 }
+
+.cms-editor {
+  &.cms-editor-no-highlight {
+    .type {
+      display: none !important;
+    }
+    .webiny-cms-element-container::after {
+      content: none;
+    }
+  }
+}
