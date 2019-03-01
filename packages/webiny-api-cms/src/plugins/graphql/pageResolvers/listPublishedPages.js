@@ -5,6 +5,7 @@ import get from "lodash/get";
 export const listPublishedPages = async ({ args, Page, Category }: Object) => {
     const {
         page = 1,
+        search,
         perPage = 10,
         category = null,
         parent = null,
@@ -39,6 +40,10 @@ export const listPublishedPages = async ({ args, Page, Category }: Object) => {
         } else {
             baseFilters.push({ url });
         }
+    }
+
+    if (search) {
+        baseFilters.push({ title: { $regex: `.*${search}.*`, $options: "i" } });
     }
 
     if (category) {

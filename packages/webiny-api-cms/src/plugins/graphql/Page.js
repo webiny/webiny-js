@@ -6,7 +6,6 @@ import {
     resolveGet,
     resolveList
 } from "webiny-api/graphql";
-import { Response } from "webiny-api/graphql/responses";
 import UserType from "webiny-api-security/plugins/graphql/User";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
 import listPages from "./pageResolvers/listPages";
@@ -138,7 +137,7 @@ export default {
                 sort: String
             ): PageResponse
             
-            getPublishedPage(id: String, url: String): PageResponse
+            getPublishedPage(id: String, url: String, parent: String): PageResponse
             
             # Returns page set as home page (managed in CMS settings).
             getHomePage: PageResponse
@@ -158,7 +157,9 @@ export default {
             ): PageListResponse
             
             listPublishedPages(
+                search: String
                 category: String
+                parent: String
                 tags: [String]
                 tagsRule: TagsRule
                 sort: PageSortInput

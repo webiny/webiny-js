@@ -9,9 +9,9 @@ import { Query } from "react-apollo";
 
 // We utilize the same "listPages" GraphQL field.
 const getPage = gql`
-    query listPages($parent: String) {
+    query getPublishedPage($parent: String) {
         cms {
-            pages: listPages(parent: $parent) {
+            page: getPublishedPage(parent: $parent) {
                 data {
                     parent
                     published
@@ -23,9 +23,9 @@ const getPage = gql`
 `;
 
 const listPages = gql`
-    query listPages($search: String) {
+    query listPublishedPages($search: String) {
         cms {
-            pages: listPages(search: $search) {
+            pages: listPublishedPages(search: $search) {
                 data {
                     parent
                     published
@@ -39,15 +39,9 @@ const listPages = gql`
 const PagesAutoComplete = props => (
     <Query skip={!props.value} variables={{ parent: props.value }} query={getPage}>
         {({ data }) => {
-            const value = get(data, "cms.pages.data.0");
+            const value = get(data, "cms.page.data");
             return (
-                <AutoComplete
-                    {...props}
-                    description={value && !value.published && "Warning: page is not published."}
-                    valueProp={"parent"}
-                    textProp={"title"}
-                    value={value}
-                />
+                <AutoComplete {...props} valueProp={"parent"} textProp={"title"} value={value} />
             );
         }}
     </Query>

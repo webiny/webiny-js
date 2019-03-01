@@ -6,7 +6,7 @@ import { ButtonPrimary } from "webiny-ui/Button";
 import { Query, Mutation } from "react-apollo";
 import { withSnackbar } from "webiny-admin/components";
 import graphql from "./graphql";
-import PagesAutoComplete from "./PagesAutoComplete";
+import PagesAutoComplete from "webiny-app-cms/admin/components/PagesAutoComplete";
 import { CircularProgress } from "webiny-ui/Progress";
 import Image from "./Image";
 
