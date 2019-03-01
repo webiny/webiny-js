@@ -38,6 +38,10 @@ const PublishRevision = ({
     publishableRevisions,
     publishSuggestion
 }: Props) => {
+    if (!publishableRevisions.length) {
+        return null;
+    }
+
     return (
         <React.Fragment>
             <Tooltip content={"Publish"} placement={"top"}>
