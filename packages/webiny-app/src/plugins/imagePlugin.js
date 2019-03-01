@@ -50,7 +50,8 @@ const sanitizeTransformArgs = (args: ?Object): Object => {
 };
 
 const getSrcSetAutoSizes = (max: ?number) => {
-    const maxWidth = max ? getSupportedImageResizeWidth(max) : 2500;
+    max = isFixedImageWidth(max) ? parseInt(max) : 2500;
+    const maxWidth = getSupportedImageResizeWidth(max);
     return SUPPORTED_IMAGE_RESIZE_WIDTHS.filter((supportedWidth: number) => {
         return supportedWidth <= maxWidth;
     });
@@ -60,6 +61,17 @@ const convertTransformToQueryParams = (transform: Object): string => {
     return Object.keys(transform)
         .map(key => `${key}=${transform[key]}`)
         .join("&");
+};
+
+const isFixedImageWidth = width => {
+    if (Number.isFinite(width)) {
+        return true;
+    }
+
+    if (typeof width === "string" && width.endsWith("px")) {
+        return true;
+    }
+    return false;
 };
 
 const imagePlugin: ImageComponentPluginType = {
@@ -95,10 +107,6 @@ const imagePlugin: ImageComponentPluginType = {
 
             // Check if image width was forced, and additionally if width was set as pixels, with "px" in the value.
             let forcedWidth = props.width || (props.style && props.style.width);
-            if (typeof forcedWidth === "string" && forcedWidth.endsWith("px")) {
-                forcedWidth = parseInt(forcedWidth);
-            }
-
             const srcSetAutoWidths = getSrcSetAutoSizes(forcedWidth);
             srcSetAutoWidths.forEach(width => {
                 srcSet[width + "w"] = imagePlugin.getImageSrc({

@@ -67,7 +67,7 @@ class ModelAttribute extends Attribute {
             for (let name in value.getAttributes()) {
                 const attribute = value.getAttribute(name);
                 // $FlowFixMe - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
-                if (attribute.getToStorage()) {
+                if (attribute.getToStorage() && !attribute.getDynamic()) {
                     // $FlowFixMe - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
                     json[name] = await attribute.getStorageValue();
                 }

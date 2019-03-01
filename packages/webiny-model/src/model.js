@@ -252,7 +252,7 @@ class Model {
         for (let name in this.getAttributes()) {
             const attribute = this.getAttribute(name);
             // $FlowFixMe - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
-            if (attribute.getToStorage() && attribute.value.isDirty()) {
+            if (attribute.getToStorage() && attribute.value.isDirty() && !attribute.getDynamic()) {
                 // $FlowFixMe - we can be sure we have attribute because it's pulled from list of attributes, using getAttributes() method.
                 json[name] = await attribute.getStorageValue();
             }

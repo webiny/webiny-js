@@ -1,6 +1,6 @@
 import User from "./entities/user";
 import { Entity, Driver, EntityModel, EntityAttributesContainer } from "webiny-entity";
-import { BooleanAttribute } from "webiny-model";
+import { Model, BooleanAttribute } from "webiny-model";
 
 describe("toStorage test", () => {
     test("should return the same values, except dynamic attribute", async () => {
@@ -20,6 +20,107 @@ describe("toStorage test", () => {
         expect(data["lastName"]).toBe("B");
         expect(data["age"]).toBe(10);
         expect(data["enabled"]).toBe(true);
+    });
+
+    test("should return the same values, except dynamic attribute (including nested models)", async () => {
+        class C extends Model {
+            constructor() {
+                super();
+                this.attr("attr1").char();
+                this.attr("attr2").char();
+                this.attr("attr3")
+                    .integer()
+                    .setDynamic(() => {
+                        return "attr3DynValue";
+                    });
+            }
+        }
+
+        class B extends Model {
+            constructor() {
+                super();
+                this.attr("attr1").char();
+                this.attr("attr2").char();
+                this.attr("attr3")
+                    .integer()
+                    .setDynamic(() => {
+                        return "attr3DynValue";
+                    });
+
+                this.attr("attr4").model(C);
+                this.attr("attr5").models(C);
+                this.attr("attr6")
+                    .model(C)
+                    .setDynamic(() => {
+                        return "attr6DynValue";
+                    });
+                this.attr("attr7")
+                    .models(C)
+                    .setDynamic(() => {
+                        return "attr7DynValue";
+                    });
+            }
+        }
+
+        class A extends Entity {
+            constructor() {
+                super();
+                this.attr("attr1").char();
+                this.attr("attr2").char();
+                this.attr("attr3")
+                    .integer()
+                    .setDynamic(() => {
+                        return "attr3DynValue";
+                    });
+
+                this.attr("attr4").model(B);
+            }
+        }
+
+        const a = new A();
+        a.populate({
+            attr1: "attr1",
+            attr2: "attr2",
+            attr3: 333,
+            attr4: {
+                attr1: "attr1",
+                attr2: "attr2",
+                attr3: 333,
+                attr4: {
+                    attr1: "attr1",
+                    attr2: "attr2",
+                    attr3: 333
+                },
+                attr5: [
+                    { attr1: "0.attr1", attr2: "0.attr2", attr3: 333 },
+                    { attr1: "1.attr1", attr2: "1.attr2", attr3: 333 }
+                ],
+                attr6: {
+                    attr1: "attr1",
+                    attr2: "attr2",
+                    attr3: 333
+                },
+                attr7: [
+                    { attr1: "0.attr1", attr2: "0.attr2", attr3: 333 },
+                    { attr1: "1.attr1", attr2: "1.attr2", attr3: 333 }
+                ]
+            }
+        });
+
+        const data = await a.toStorage();
+        expect(data).toEqual({
+            attr1: "attr1",
+            attr2: "attr2",
+            attr4: {
+                attr1: "attr1",
+                attr2: "attr2",
+                attr4: { attr1: "attr1", attr2: "attr2" },
+                attr5: [
+                    { attr1: "0.attr1", attr2: "0.attr2" },
+                    { attr1: "1.attr1", attr2: "1.attr2" }
+                ]
+            }
+        });
     });
 
     test("should return 1 or 0 instead true or false respectively", async () => {
