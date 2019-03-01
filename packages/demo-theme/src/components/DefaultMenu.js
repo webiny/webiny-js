@@ -2,6 +2,10 @@
 import React from "react";
 
 const DefaultMenu = ({ data }: Object) => {
+    if (!data) {
+        return null;
+    }
+
     return (
         <ul>
             {data.items.map(item => {
