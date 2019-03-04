@@ -33,7 +33,12 @@ const createApolloHandler = async (config: Object) => {
         schema = applyMiddleware(schema, ...registeredMiddleware);
     }
 
-    addSchemaLevelResolveFunction(schema, async (root, args, context) => {
+    addSchemaLevelResolveFunction(schema, async (root, args, context, info) => {
+        // Make sure we do not block this resolver from processing subsequent requests!
+        // This is something that is baked into the graphql-tools and cannot be avoided another way.
+        delete info.operation['__runAtMostOnce'];
+
+        // Process `graphql-context` plugins
         const ctxPlugins = getPlugins("graphql-context");
         for (let i = 0; i < ctxPlugins.length; i++) {
             const ctxPlugin = ctxPlugins[i];
