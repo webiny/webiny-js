@@ -142,13 +142,18 @@ class MongoDbDriver extends Driver {
 
     async findOne(entity, options) {
         const clonedOptions = clone(options);
+        MongoDbDriver.__preparePerPageOption(clonedOptions);
+        MongoDbDriver.__preparePageOption(clonedOptions);
         MongoDbDriver.__prepareSearchOption(clonedOptions);
 
-        const result = await this.getDatabase()
+        const results = await this.getDatabase()
             .collection(this.getCollectionName(entity))
-            .findOne(clonedOptions.query);
+            .find(clonedOptions.query)
+            .limit(1)
+            .sort(clonedOptions.sort)
+            .toArray();
 
-        return new QueryResult(result);
+        return new QueryResult(results[0]);
     }
 
     async count(entity, options) {
