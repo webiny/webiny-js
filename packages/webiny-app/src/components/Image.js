@@ -41,7 +41,7 @@ const Component = (props: ImageProps) => {
     }
 
     if (plugin.props.transform) {
-        plugin.props.src = plugin.instance.getSrc(plugin.props);
+        plugin.props.src = plugin.instance.getImageSrc(plugin.props);
     }
 
     return plugin.instance.render(plugin.props);
