@@ -11,7 +11,7 @@ const Handle = pure(
         height: "80%",
         minHeight: 25,
         translate: "width 0.5s",
-        zIndex: 3,
+        zIndex: 30,
         width: 10,
         borderRadius: 10,
         cursor: "col-resize",

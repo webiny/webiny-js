@@ -65,7 +65,7 @@ export const ElementContainer = pure(
                 boxShadow: highlight
                     ? "0px 0px 0px 1px " + color + ", inset 0px 0px 0px 1px " + color
                     : "none",
-                transition: "all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)",
+                //transition: "all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)",
                 opacity: highlight ? 1 : 0
             },
             "&::after:hover": {
