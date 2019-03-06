@@ -11,6 +11,7 @@ import {
 import { css } from "emotion";
 import { get } from "lodash";
 import { Typography } from "@rmwc/typography";
+import { FullName } from "webiny-ui/FullName";
 
 const PageItem = ({ data, className }: Object) => {
     return (
@@ -35,7 +36,7 @@ const PageItem = ({ data, className }: Object) => {
                         theme="text-secondary-on-background"
                         style={{ marginTop: "-1rem" }}
                     >
-                        by {data.createdBy.firstName} {data.createdBy.lastName[0]}.
+                        <FullName data={data.createdBy} />
                     </Typography>
                     <Typography use="body1" tag="div" theme="text-secondary-on-background">
                         Page ID: {data.id} - Snippet text (TODO)
@@ -44,7 +45,7 @@ const PageItem = ({ data, className }: Object) => {
             </CardPrimaryAction>
             <CardActions>
                 <CardActionButtons>
-                    <CardAction>Read ({data.slug})</CardAction>
+                    <CardAction>Read</CardAction>
                 </CardActionButtons>
             </CardActions>
         </Card>
