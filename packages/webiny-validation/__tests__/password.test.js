@@ -7,10 +7,16 @@ describe("password test", () => {
     });
 
     it("should fail - values are too short", () => {
-        return validation.validate("12312", "password").should.be.rejected;
+        return Promise.all([
+            validation.validate("12312", "password").should.be.rejected,
+            validation.validate("123123", "password:10").should.be.rejected
+        ]);
     });
 
     it("should pass - value is long enough", () => {
-        return validation.validate("123123", "password").should.become(true);
+        return Promise.all([
+            validation.validate("123123", "password").should.become(true),
+            validation.validate("123", "password:3").should.become(true)
+        ]);
     });
 });
