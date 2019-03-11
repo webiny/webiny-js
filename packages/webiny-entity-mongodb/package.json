@@ -19,7 +19,7 @@
     "webiny-entity": "0.0.0"
   },
   "peerDependencies": {
-    "mongodb": "^3.0.6"
+    "mongodb": "^3.1.13"
   },
   "devDependencies": {
     "chai": "^3.5.0",

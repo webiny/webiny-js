@@ -53,14 +53,11 @@ class Validation {
                 this.parseArgs(args, formData.inputs);
             }
 
-            args.unshift(value);
-            args.push(formData);
-
             let validator = null;
             try {
                 validator = funcValidator
-                    ? funcValidator(...args)
-                    : this.getValidator(name)(args.splice(0, 1)[0], args);
+                    ? funcValidator(value, formData)
+                    : this.getValidator(name)(value, args, formData);
             } catch (e) {
                 throw new ValidationError(e.message, name, value);
             }
