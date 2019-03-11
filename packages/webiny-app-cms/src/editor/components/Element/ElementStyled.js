@@ -91,7 +91,7 @@ export const ElementContainer = pure(
                 height: !active ? "100%" : "18px",
                 [!active ? "left" : "right"]: !active ? 0 : 0,
                 position: "absolute",
-                top: -17, //0,
+                top: -18, //0,
                 zIndex: 10,
                 transition: "background-color 0.2s",
                 ".background": {
