@@ -56,16 +56,20 @@ export const ElementContainer = pure(
             "&::after": {
                 content: "''",
                 position: "absolute",
-                zIndex: -1, // previously it was set to -1, but then background images and other elements would be displayed above
-                padding: 0,
+                zIndex: 0, // previously it was set to -1, but then background images and other elements would be displayed above
+                //padding: 0,
                 top: 0,
                 left: 0,
-                width: "100%",
-                height: "100%",
-                boxShadow: highlight
-                    ? "0px 0px 0px 1px " + color + ", inset 0px 0px 0px 1px " + color
-                    : "none",
-                //transition: "all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1)",
+                width: "calc(100% + 2px)",
+                height: "calc(100% + 2px)",
+                pointerEvents: "none",
+                margin: highlight ? "-2px 0 -2px -2px" : 0,
+                //padding: highlight ? '0 3px 3px 0px' : 0,
+                //boxShadow: highlight
+                //    ? "0px 0px 0px 1px " + color + ", inset 0px 0px 0px 1px " + color
+                //   : "none",
+                boxShadow: highlight ? "inset 0px 0px 0px 2px " + color : "none",
+                transition: "all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1)",
                 opacity: highlight ? 1 : 0
             },
             "&::after:hover": {
@@ -85,7 +89,7 @@ export const ElementContainer = pure(
                 display: highlight ? "block" : "none",
                 width: !active ? "100%" : "100px",
                 height: !active ? "100%" : "18px",
-                [!active ? "left" : "right"]: !active ? 0 : -1,
+                [!active ? "left" : "right"]: !active ? 0 : 0,
                 position: "absolute",
                 top: -17, //0,
                 zIndex: 10,
