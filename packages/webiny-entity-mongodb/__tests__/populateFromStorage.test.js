@@ -14,18 +14,21 @@ describe("populateFromStorage test", function() {
     beforeEach(() => ComplexEntity.getEntityPool().flush());
 
     it("should populate entity correctly with data received from MongoDb", async () => {
-        let findOneStub = sandbox.stub(collection, "findOne").callsFake(() => {
-            return {
-                firstName: "test",
-                lastName: "tester",
-                verification: { verified: true, documentType: "driversLicense" },
-                tags: [
-                    { slug: "no-name", label: "No Name" },
-                    { slug: "adult-user", label: "Adult User" }
-                ],
-                simpleEntity: "01234567890123456789adee",
-                simpleEntities: [22, 33, 44]
-            };
+        let findOneStub = sandbox.stub(collection, "find").callsFake(() => {
+            findCursor.data = [
+                {
+                    firstName: "test",
+                    lastName: "tester",
+                    verification: { verified: true, documentType: "driversLicense" },
+                    tags: [
+                        { slug: "no-name", label: "No Name" },
+                        { slug: "adult-user", label: "Adult User" }
+                    ],
+                    simpleEntity: "01234567890123456789adee",
+                    simpleEntities: [22, 33, 44]
+                }
+            ];
+            return findCursor;
         });
 
         let user = new ComplexEntity();
@@ -53,8 +56,9 @@ describe("populateFromStorage test", function() {
             "01234567890123456789adee"
         );
 
-        findOneStub = sandbox.stub(collection, "findOne").callsFake(() => {
-            return { id: "01234567890123456789adee", name: "Test-1" };
+        findOneStub = sandbox.stub(collection, "find").callsFake(() => {
+            findCursor.data = [{ id: "01234567890123456789adee", name: "Test-1" }];
+            return findCursor;
         });
 
         const simpleEntity = await user.simpleEntity;

@@ -7,7 +7,7 @@ describe("findByIds error test", function() {
     afterEach(() => sandbox.restore());
 
     it("findByIds - should throw an error", async () => {
-        const findOneStub = sandbox.stub(collection, "findOne").callsFake(() => {
+        const findOneStub = sandbox.stub(collection, "find").callsFake(() => {
             throw Error("This is an error.");
         });
 

@@ -1,16 +1,20 @@
 import { assert } from "chai";
 import sinon from "sinon";
 import SimpleEntity from "./entities/simpleEntity";
-import { database, collection } from "./database";
+import { database, collection, findCursor } from "./database";
 
 const sandbox = sinon.sandbox.create();
 
 describe("findOne test", function() {
-    afterEach(() => sandbox.restore());
+    afterEach(() => {
+        sandbox.restore();
+        findCursor.data = [];
+    });
 
+    beforeEach(() => SimpleEntity.getEntityPool().flush());
     it("findOne - must generate correct query", async () => {
         const collectionSpy = sandbox.spy(database, "collection");
-        const findOneSpy = sandbox.spy(collection, "findOne");
+        const findOneSpy = sandbox.spy(collection, "find");
 
         await SimpleEntity.findOne();
 
@@ -25,13 +29,16 @@ describe("findOne test", function() {
     });
 
     it("findOne - should find previously inserted entity", async () => {
-        const findOneStub = sandbox.stub(collection, "findOne").callsFake(() => {
-            return {
-                id: 1,
-                name: "This is a test",
-                slug: "thisIsATest",
-                enabled: true
-            };
+        const findOneStub = sandbox.stub(collection, "find").callsFake(() => {
+            findCursor.data = [
+                {
+                    id: 1,
+                    name: "This is a test",
+                    slug: "thisIsATest",
+                    enabled: true
+                }
+            ];
+            return findCursor;
         });
 
         const simpleEntity = await SimpleEntity.findOne({ query: { id: 1 } });
@@ -44,7 +51,7 @@ describe("findOne test", function() {
     });
 
     it("findOne - should include search query if passed", async () => {
-        const findOneSpy = sandbox.spy(collection, "findOne");
+        const findOneSpy = sandbox.spy(collection, "find");
 
         await SimpleEntity.findOne({
             query: {
@@ -57,20 +64,20 @@ describe("findOne test", function() {
         });
 
         assert.deepEqual(findOneSpy.getCall(0).args[0], {
-            "$and": [
+            $and: [
                 {
-                    "$or": [
+                    $or: [
                         {
-                            "name": {
-                                "$regex": ".*this is.*",
-                                "$options": "i"
+                            name: {
+                                $regex: ".*this is.*",
+                                $options: "i"
                             }
                         }
                     ]
                 },
                 {
-                    "age": {
-                        "$gt": 30
+                    age: {
+                        $gt: 30
                     }
                 }
             ]

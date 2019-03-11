@@ -13,7 +13,7 @@ describe("findByIds test", function() {
     beforeEach(() => SimpleEntity.getEntityPool().flush());
 
     it("must generate correct query", async () => {
-        const findOneSpy = sandbox.spy(collection, "findOne");
+        const findOneSpy = sandbox.spy(collection, "find");
         const countSpy = sandbox.spy(collection, "countDocuments");
         await SimpleEntity.findByIds(["a", "b", "c"]);
 
@@ -36,24 +36,31 @@ describe("findByIds test", function() {
 
     it("findByIds - should find previously inserted entities", async () => {
         const findOneSpy = sandbox
-            .stub(collection, "findOne")
+            .stub(collection, "find")
             .onCall(0)
             .callsFake(() => {
-                return {
-                    id: "57eb6814c4ddf57b1c6697a9",
-                    name: "This is a test",
-                    slug: "thisIsATest",
-                    enabled: true
-                };
+                findCursor.data = [
+                    {
+                        id: "57eb6814c4ddf57b1c6697a9",
+                        name: "This is a test",
+                        slug: "thisIsATest",
+                        enabled: true
+                    }
+                ];
+
+                return findCursor;
             })
             .onCall(1)
             .callsFake(() => {
-                return {
-                    id: "57eb6814c4ddf57b1c6697aa",
-                    name: "This is a test 222",
-                    slug: "thisIsATest222",
-                    enabled: false
-                };
+                findCursor.data = [
+                    {
+                        id: "57eb6814c4ddf57b1c6697aa",
+                        name: "This is a test 222",
+                        slug: "thisIsATest222",
+                        enabled: false
+                    }
+                ];
+                return findCursor;
             });
 
         const simpleEntities = await SimpleEntity.findByIds([
