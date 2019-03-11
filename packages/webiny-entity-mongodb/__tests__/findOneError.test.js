@@ -7,8 +7,7 @@ describe("findOne error test", function() {
     afterEach(() => sandbox.restore());
 
     it("findOne - should find previously inserted entity", async () => {
-
-        const findOneStub = sandbox.stub(collection, "findOne").callsFake(() => {
+        const findOneStub = sandbox.stub(collection, "find").callsFake(() => {
             throw Error("This is an error.");
         });
 
