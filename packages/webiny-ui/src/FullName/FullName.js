@@ -19,7 +19,7 @@ const FullName = (props: Props) => {
     }
 
     if (data.lastName) {
-        output += data.lastName;
+        output += " " + data.lastName;
     }
 
     return output;
