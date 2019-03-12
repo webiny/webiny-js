@@ -33,6 +33,7 @@ const Droppable = pure(
             return null;
         }
 
+        // $FlowFixMe
         return connectDropTarget(children({ isDragging, isOver, isDroppable: isDroppable(item) }));
     }
 );
