@@ -48,7 +48,7 @@ export default compose(
         }) => () => {
             showConfirmation(async () => {
                 const { data: res } = await deletePage({
-                    variables: { id: page.id },
+                    variables: { id: page.parent },
                     refetchQueries: ["CmsListPages"]
                 });
                 const { error } = dot.get(res, "cms.deletePage");
