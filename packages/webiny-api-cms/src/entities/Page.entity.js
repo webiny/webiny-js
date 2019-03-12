@@ -142,11 +142,13 @@ export const pageFactory = (context: Object): Class<IPage> => {
 
                 this.version = await this.getNextVersion();
 
-                this.settings = {
-                    general: {
-                        layout: (await this.category).layout
-                    }
-                };
+                if (!this.settings) {
+                    this.settings = {
+                        general: {
+                            layout: (await this.category).layout
+                        }
+                    };
+                }
             });
 
             this.on("beforeUpdate", () => {

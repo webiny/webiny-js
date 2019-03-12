@@ -200,7 +200,7 @@ class ModelsAttribute extends Attribute {
 
             for (let key in objectValue) {
                 const current = objectValue[key];
-                if (!(current instanceof this.getModelClass())) {
+                if (!Model.isInstanceOf(current, this.getModelClass())) {
                     errors.push({
                         code: ModelError.INVALID_ATTRIBUTE,
                         data: {
@@ -231,7 +231,7 @@ class ModelsAttribute extends Attribute {
 
             for (let i = 0; i < arrayValue.length; i++) {
                 const current = arrayValue[i];
-                if (!(current instanceof this.getModelClass())) {
+                if (!Model.isInstanceOf(current, this.getModelClass())) {
                     errors.push({
                         code: ModelError.INVALID_ATTRIBUTE,
                         data: {

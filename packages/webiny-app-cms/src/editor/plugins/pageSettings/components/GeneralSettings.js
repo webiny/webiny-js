@@ -11,7 +11,7 @@ import PageImage from "./PageImage";
 import { set, get } from "lodash";
 
 const toSlug = (value, cb) => {
-    cb(slugify(value, { replacement: "-", lower: true, remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g }));
+    cb(slugify(value, { replacement: "-", lower: true, remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g })); // eslint-disable-line
 };
 
 const GeneralSettings = ({ Bind, onAfterChangeImage, cms: { theme } }: Object) => {
@@ -65,7 +65,10 @@ const GeneralSettings = ({ Bind, onAfterChangeImage, cms: { theme } }: Object) =
 export default compose(
     withCms(),
     withHandlers({
-        hasOgImage: ({ data }) => () => !!get(data, "settings.social.image.src")
+        hasOgImage: ({ data }) => () => {
+            const src = get(data, "settings.social.image.src");
+            return typeof src === "string" && !src.startsWith("data:");
+        }
     }),
     withHandlers({
         onAfterChangeImage: ({ hasOgImage, form }) => selectedImage => {

@@ -88,7 +88,7 @@ class ModelAttribute extends Attribute {
      * If value is assigned (checked in the parent validate call), it must by an instance of Model.
      */
     async validateType(value: mixed) {
-        if (value instanceof this.getModelClass()) {
+        if (Model.isInstanceOf(value, this.getModelClass())) {
             return;
         }
         this.expected("instance of Model class", typeof value);
