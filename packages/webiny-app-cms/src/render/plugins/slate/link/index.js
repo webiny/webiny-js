@@ -12,8 +12,14 @@ export default () => {
                     const { data } = node;
                     const href = data.get("href");
                     const noFollow = data.get("noFollow");
+                    const newTab = data.get("newTab");
+
                     return (
-                        <a {...attributes} {...{ href, rel: noFollow ? "nofollow" : null }}>
+                        <a
+                            {...attributes}
+                            {...{ href, rel: noFollow ? "nofollow" : null }}
+                            target={newTab ? "_blank" : "_self"}
+                        >
                             {children}
                         </a>
                     );
