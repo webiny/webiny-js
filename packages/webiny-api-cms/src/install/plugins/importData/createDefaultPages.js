@@ -1,7 +1,7 @@
 // @flow
 import get from "lodash/get";
 import fs from "fs-extra";
-import { categories, pages } from "./pages";
+import { categories, pages, menus } from "./pages";
 
 const createDefaultPage = async ({ page, data }) => {
     page.populate({ ...data });
@@ -14,13 +14,20 @@ const createDefaultPage = async ({ page, data }) => {
 };
 
 const createDefaultPages = async (context: Object, { cmsSettings }: Object) => {
-    const { Page, Category } = context.cms.entities;
+    const { Page, Category, Menu } = context.cms.entities;
 
+    // Insert categories
     for (let i = 0; i < categories.length; i++) {
-        const category = categories[i];
-        const cat = new Category();
-        cat.populate(category);
-        await cat.save();
+        const category = new Category();
+        category.populate(categories[i]);
+        await category.save();
+    }
+
+    // Insert menus
+    for (let i = 0; i < menus.length; i++) {
+        const menu = new Menu();
+        menu.populate(menus[i]);
+        await menu.save();
     }
 
     const homePageIndex = pages.findIndex(

@@ -63,12 +63,16 @@ export default async () => {
     pages = pages.filter(p => answers.pages.includes(p.id)).map(omitAttributes);
 
     // Get categories
-    let categories = await database.mongodb
+    const categories = (await database.mongodb
         .collection("CmsCategory")
         .find()
-        .toArray();
+        .toArray()).map(omitAttributes);
 
-    categories = categories.map(omitAttributes);
+    // Get menus
+    const menus = (await database.mongodb
+        .collection("CmsMenu")
+        .find()
+        .toArray()).map(omitAttributes);
 
     // Copy page files
     for (let i = 0; i < pages.length; i++) {
@@ -84,8 +88,19 @@ export default async () => {
                 regex.lastIndex++;
             }
 
-            const filename = m[1];
-            copyImage(filename);
+            copyImage(m[1]);
+        }
+
+        // Copy page image from settings
+        if (data.settings.general.image && data.settings.general.image.src) {
+            const pageImage = data.settings.general.image.src.replace("/files/", "");
+            copyImage(pageImage);
+        }
+
+        // Copy social image from settings
+        if (data.settings.social.image && data.settings.social.image.src) {
+            const socialImage = data.settings.social.image.src.replace("/files/", "");
+            copyImage(socialImage);
         }
     }
 
@@ -94,7 +109,8 @@ export default async () => {
         "// NOTE: THIS FILE IS AUTO-GENERATED. MANUAL CHANGES OF THIS FILE WILL BE LOST!\n",
         "",
         `export const categories = [${categories.map(c => JSON.stringify(c)).join(", ")}];`,
-        `export const pages = [${pages.map(p => JSON.stringify(p)).join(", ")}];`
+        `export const pages = [${pages.map(p => JSON.stringify(p)).join(", ")}];`,
+        `export const menus = [${menus.map(m => JSON.stringify(m)).join(", ")}];`
     ].join("\n");
 
     console.log("\n> Writing index file...");
