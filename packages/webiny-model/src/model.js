@@ -285,6 +285,18 @@ class Model {
 
         return this;
     }
+
+    static isModelInstance(value: any): boolean {
+        return !!_.get(value, "constructor.classId");
+    }
+
+    static isModelClass(value: any): boolean {
+        return !!_.get(value, "classId");
+    }
+
+    static isInstanceOf(instance: ?any, instanceClass: ?Class<Model>) {
+        return _.get(instance, "constructor.classId") === _.get(instanceClass, "classId");
+    }
 }
 
 Model.classId = "";

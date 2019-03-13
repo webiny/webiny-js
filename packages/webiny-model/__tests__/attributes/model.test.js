@@ -25,8 +25,10 @@ describe("attribute model test", () => {
 
     describe("accepting correct Model classes test", () => {
         class Model1 extends Model {}
+        Model1.classId = "Model1";
 
         class Model2 extends Model {}
+        Model2.classId = "Model2";
 
         const model = new Model(function() {
             this.attr("attribute1").model(Model1);
