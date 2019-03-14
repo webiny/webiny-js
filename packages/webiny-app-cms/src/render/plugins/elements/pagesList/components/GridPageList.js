@@ -1,60 +1,87 @@
 // @flow
 import * as React from "react";
-import {
-    Card,
-    CardPrimaryAction,
-    CardMedia,
-    CardAction,
-    CardActions,
-    CardActionButtons
-} from "@rmwc/card";
 import { css } from "emotion";
+import styled from "react-emotion";
 import { get } from "lodash";
-import { Typography } from "@rmwc/typography";
-import { FullName } from "webiny-ui/FullName";
+
+const PageListItem = styled("a")({
+    width: 280,
+    flex: "0 0 280px",
+    marginBottom: 35,
+    "&:hover": {
+        textDecoration: "none"
+    }
+});
+
+const PageListMedia = styled("div")({
+    width: "100%",
+    height: 180,
+    backgroundSize: "cover"
+});
+
+const PageListContent = styled("div")({});
+
+const PageListTitle = styled("h3")({
+    "&:hover": {
+        textDecoration: "underline"
+    }
+});
+
+const PageListSnippet = styled("p")({
+    marginTop: 0
+});
+
+const PageListDate = styled("div")({});
+
+function formatDate(postDate) {
+    let date = new Date(postDate);
+    let year = date.getFullYear();
+    let month = date.getMonth();
+    let day = date.getDate();
+
+    const monthNames = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+    ];
+
+    return monthNames[month] + " " + day + ", " + year;
+}
 
 const PageItem = ({ data, className }: Object) => {
     return (
-        <Card className={className} style={{ width: "21rem" }}>
-            <CardPrimaryAction>
-                {get(data, "settings.general.image.src") && (
-                    <CardMedia
-                        sixteenByNine
-                        style={{
-                            backgroundImage: `url("${get(data, "settings.general.image.src")}")`
-                        }}
-                    />
-                )}
-
-                <div style={{ padding: "0 1rem 1rem 1rem" }}>
-                    <Typography use="headline6" tag="h2">
-                        {data.title}
-                    </Typography>
-                    <Typography
-                        use="subtitle2"
-                        tag="h3"
-                        theme="text-secondary-on-background"
-                        style={{ marginTop: "-1rem" }}
-                    >
-                        <FullName data={data.createdBy} />
-                    </Typography>
-                    <Typography use="body1" tag="div" theme="text-secondary-on-background">
-                        Page ID: {data.id} - Snippet text (TODO)
-                    </Typography>
-                </div>
-            </CardPrimaryAction>
-            <CardActions>
-                <CardActionButtons>
-                    <CardAction>Read</CardAction>
-                </CardActionButtons>
-            </CardActions>
-        </Card>
+        <PageListItem href={data.url} className={className}>
+            <PageListMedia
+                style={{
+                    backgroundImage: `url("${get(data, "settings.general.image.src")}")`
+                }}
+            />
+            <PageListContent>
+                <PageListTitle className={"webiny-cms-typography-h3"}>{data.title}</PageListTitle>
+                <PageListSnippet className={"webiny-cms-typography-description"}>
+                    {data.snippet}
+                </PageListSnippet>
+                <PageListDate className={"webiny-cms-typography-description"}>
+                    {formatDate(data.publishedOn)}
+                </PageListDate>
+            </PageListContent>
+        </PageListItem>
     );
 };
 
 const defaultPageList = css({
     display: "flex",
-    justifyContent: "center"
+    justifyContent: "space-between",
+    flexWrap: "wrap"
 });
 
 const pageItem = css({
