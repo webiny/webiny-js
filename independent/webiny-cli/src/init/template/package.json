@@ -6,10 +6,16 @@
     ]
   },
   "dependencies": {
-    "@svgr/webpack": "^4.1.0"
+    "@svgr/webpack": "^4.1.0",
+    "react-sortable-tree": "^2.6.0"
   },
   "devDependencies": {
     "cross-env": "^5.2.0",
-    "prettier": "^1.15.3"
+    "prettier": "^1.15.3",
+    "flow-bin": "^0.94.0"
+  },
+  "resolutions": {
+    "react-sortable-tree/**/react-dnd": "7.0.2",
+    "react-sortable-tree/**/react-dnd-html5-backend": "7.0.2"
   }
 }

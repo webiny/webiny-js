@@ -22,7 +22,7 @@ const EmptyTree = styled("div")({
 class MenuItemsList extends React.Component<*> {
     static canHaveChildren(node: Object) {
         const plugin = getPlugin(node.type);
-        return plugin ? MenuItemsList.canHaveChildren : false;
+        return plugin ? plugin.canHaveChildren : false;
     }
 
     render() {
