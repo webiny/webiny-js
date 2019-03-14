@@ -1,6 +1,6 @@
 // @flow
 import { compose, withHandlers } from "recompose";
-import { omitBy, isNull } from "lodash";
+import { omit, omitBy, isNull } from "lodash";
 import { getPlugin } from "webiny-plugins";
 import findObject from "./findObject";
 import uniqid from "uniqid";
@@ -15,11 +15,15 @@ const MenuItemForm = ({ onSubmit, onCancel, currentMenuItem }: Object) => {
 
 export default compose(
     withHandlers({
-        onCancel: ({ editItem }) => () => {
-            editItem(null);
+        onCancel: ({ editItem, currentMenuItem, deleteItem }) => () => {
+            if (currentMenuItem.__new) {
+                deleteItem(currentMenuItem);
+            } else {
+                editItem(null);
+            }
         },
         onSubmit: ({ items, onChange, editItem }) => data => {
-            const item = omitBy(data, isNull);
+            const item = omit(omitBy(data, isNull), ["__new"]);
             if (item.id) {
                 const target = findObject(items, item.id);
                 if (target) {

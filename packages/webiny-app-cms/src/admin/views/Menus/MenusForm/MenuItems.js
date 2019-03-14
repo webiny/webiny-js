@@ -54,7 +54,7 @@ class MenuItems extends React.Component<Props, State> {
 
     addItem = (plugin: CmsMenuItemPluginType) => {
         const { onChange, value } = this.props;
-        const newItem = { type: plugin.name, id: uniqid() };
+        const newItem = { type: plugin.name, id: uniqid(), __new: true };
         onChange([...value, newItem]);
         this.editItem(newItem);
     };
@@ -125,6 +125,7 @@ class MenuItems extends React.Component<Props, State> {
                             <MenuItemForm
                                 currentMenuItem={currentMenuItem}
                                 editItem={this.editItem}
+                                deleteItem={this.deleteItem}
                                 items={items}
                                 onChange={onChange}
                             />
