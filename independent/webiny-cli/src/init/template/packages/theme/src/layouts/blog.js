@@ -1,21 +1,8 @@
 // @flow
 import * as React from "react";
-import styled from "react-emotion";
-//import { Menu } from "components/Menu";
-
-const Content = styled("div")({
-    padding: "0 50px"
-});
-
-const Banner100 = styled("div")({
-    backgroundColor: "#bb3825",
-    width: "100%",
-    height: 100
-});
-
-/*const Menu = () => {
-    return null;
-};*/
+import { Header } from "../components/Header";
+import { Footer } from "../components/Footer";
+import { Addons } from "webiny-app/components";
 
 type Props = {
     children: React.Node
@@ -23,18 +10,12 @@ type Props = {
 
 const Blog = ({ children }: Props) => {
     return (
-        <div className={"blog-page-container"}>
-            {/*<Menu name={"main"}>
-                {({ items }) => (
-                    <ul>
-                        {data.map(item => <li key={item.id}>{item.title}</li>)}
-                    </ul>
-                )}
-            </Menu>*/}
-            <Banner100 />
-            <Content>{children}</Content>
-            <Banner100 />
-        </div>
+        <React.Fragment>
+            <Addons />
+            <Header />
+            {children}
+            <Footer />
+        </React.Fragment>
     );
 };
 
