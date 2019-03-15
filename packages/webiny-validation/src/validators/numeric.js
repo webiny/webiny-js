@@ -9,10 +9,8 @@ import isNumeric from "isnumeric";
  * @return {boolean}
  */
 export default (value: any) => {
-    if (!value) {
-        if (!isNaN(value)) {
-            return;
-        }
+    if (!value || !isNaN(value)) {
+        return;
     }
 
     if (isNumeric(value)) {
