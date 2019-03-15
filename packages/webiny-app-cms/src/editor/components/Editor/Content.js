@@ -52,7 +52,9 @@ const Content = ({ rootElement, cms: { theme }, renderLayout, layout }) => {
         <Elevation className={contentContainerWrapper} z={2}>
             <ContentContainer theme={theme}>
                 {plugins.map(plugin => React.cloneElement(plugin.render(), { key: plugin.name }))}
-                <BaseContainer>{content}</BaseContainer>
+                <BaseContainer className={"webiny-cms-editor-content-preview"}>
+                    {content}
+                </BaseContainer>
             </ContentContainer>
         </Elevation>
     );
