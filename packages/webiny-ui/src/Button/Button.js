@@ -37,7 +37,13 @@ export const ButtonDefault = (props: Props) => {
     const { disabled, onClick, children, small, ripple = true, className = "" } = props;
 
     return (
-        <R.Button disabled={disabled} dense={small} onClick={onClick} ripple={ripple} className={className}>
+        <R.Button
+            disabled={disabled}
+            dense={small}
+            onClick={onClick}
+            ripple={ripple}
+            className={className}
+        >
             {children}
         </R.Button>
     );
@@ -50,7 +56,16 @@ export const ButtonDefault = (props: Props) => {
  * @constructor
  */
 export const ButtonPrimary = (props: Props) => {
-    const { disabled, onClick, children, small = false, flat = false, ripple = true, style = null } = props;
+    const {
+        disabled,
+        onClick,
+        children,
+        small = false,
+        flat = false,
+        ripple = true,
+        style = null,
+        className = null
+    } = props;
     return (
         <R.Button
             raised={!flat}
@@ -60,6 +75,7 @@ export const ButtonPrimary = (props: Props) => {
             ripple={ripple}
             onClick={onClick}
             style={style}
+            className={className}
         >
             {children}
         </R.Button>
@@ -73,10 +89,26 @@ export const ButtonPrimary = (props: Props) => {
  * @constructor
  */
 export const ButtonSecondary = (props: Props) => {
-    const { disabled, onClick, children, small = false, ripple = true } = props;
+    const {
+        disabled,
+        onClick,
+        children,
+        small = false,
+        ripple = true,
+        className = null,
+        style = null
+    } = props;
 
     return (
-        <R.Button disabled={disabled} outlined dense={small} ripple={ripple} onClick={onClick}>
+        <R.Button
+            disabled={disabled}
+            outlined
+            dense={small}
+            ripple={ripple}
+            onClick={onClick}
+            style={style}
+            className={className}
+        >
             {children}
         </R.Button>
     );
@@ -96,7 +128,15 @@ type ButtonFloatingProps = Props & {
 export const ButtonFloating = (props: ButtonFloatingProps) => {
     const { disabled, icon, onClick, small = false, label = false, ripple = true, ...rest } = props;
     return (
-        <Fab disabled={disabled} mini={small} onClick={onClick} label={label} ripple={ripple} icon={icon} {...rest} />
+        <Fab
+            disabled={disabled}
+            mini={small}
+            onClick={onClick}
+            label={label}
+            ripple={ripple}
+            icon={icon}
+            {...rest}
+        />
     );
 };
 
