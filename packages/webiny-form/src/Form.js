@@ -161,7 +161,15 @@ class Form extends React.Component<Props, State> {
         return allIsValid;
     };
 
-    validateInput = (name: string) => {
+    validateInput = async (name: string) => {
+        // Want to know why this nonsense is here?
+        // When you have a <Tabs> component which has an <Input>, and you try to switch tabs
+        // while your input is focused, Tabs end up in an eternal switching loop.
+        // I know this is a `webiny-form` package and has nothing to do with
+        // who uses it from the outside, but there is no time to come up with a better solution :(
+        await new Promise(res => setTimeout(res, 10));
+
+        // Proceed with validation...
         if ((this.props.validateOnFirstSubmit && !this.state.wasSubmitted) || !this.inputs[name]) {
             return Promise.resolve(null);
         }
