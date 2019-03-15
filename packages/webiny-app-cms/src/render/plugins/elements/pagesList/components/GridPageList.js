@@ -1,43 +1,15 @@
 // @flow
 import * as React from "react";
-import { css } from "emotion";
-import styled from "react-emotion";
 import { get } from "lodash";
 
-const PageListItem = styled("a")({
-    width: 280,
-    flex: "0 0 280px",
-    marginBottom: 35,
-    "&:hover": {
-        textDecoration: "none"
-    }
-});
+import { ReactComponent as PrevIcon } from "./icons/round-navigate_before-24px.svg";
+import { ReactComponent as NextIcon } from "./icons/round-navigate_next-24px.svg";
 
-const PageListMedia = styled("div")({
-    width: "100%",
-    height: 180,
-    backgroundSize: "cover"
-});
-
-const PageListContent = styled("div")({});
-
-const PageListTitle = styled("h3")({
-    "&:hover": {
-        textDecoration: "underline"
-    }
-});
-
-const PageListSnippet = styled("p")({
-    marginTop: 0
-});
-
-const PageListDate = styled("div")({});
-
-function formatDate(postDate) {
-    let date = new Date(postDate);
-    let year = date.getFullYear();
-    let month = date.getMonth();
-    let day = date.getDate();
+const formatDate = date => {
+    let d = new Date(date);
+    let year = d.getFullYear();
+    let month = d.getMonth();
+    let day = d.getDate();
 
     const monthNames = [
         "Jan",
@@ -55,47 +27,60 @@ function formatDate(postDate) {
     ];
 
     return monthNames[month] + " " + day + ", " + year;
-}
+};
 
 const PageItem = ({ data, className }: Object) => {
     return (
-        <PageListItem href={data.url} className={className}>
-            <PageListMedia
+        <a href={data.url} className={"webiny-cms-element-page-list__item " + className}>
+            <div
+                className={"webiny-cms-element-page-list__media"}
                 style={{
                     backgroundImage: `url("${get(data, "settings.general.image.src")}")`
                 }}
             />
-            <PageListContent>
-                <PageListTitle className={"webiny-cms-typography-h3"}>{data.title}</PageListTitle>
-                <PageListSnippet className={"webiny-cms-typography-description"}>
+            <div className={"webiny-cms-element-page-list__content"}>
+                <h3 className={"webiny-cms-element-page-list__title webiny-cms-typography-h3"}>
+                    {data.title}
+                </h3>
+                <p
+                    className={
+                        "webiny-cms-element-page-list__snippet webiny-cms-typography-description"
+                    }
+                >
                     {data.snippet}
-                </PageListSnippet>
-                <PageListDate className={"webiny-cms-typography-description"}>
+                </p>
+                <div
+                    className={
+                        "webiny-cms-element-page-list__date webiny-cms-typography-description"
+                    }
+                >
                     {formatDate(data.publishedOn)}
-                </PageListDate>
-            </PageListContent>
-        </PageListItem>
+                </div>
+            </div>
+        </a>
     );
 };
 
-const defaultPageList = css({
-    display: "flex",
-    justifyContent: "space-between",
-    flexWrap: "wrap"
-});
-
-const pageItem = css({
-    padding: 20
-});
-
 const GridPageList = ({ data, nextPage, prevPage }: Object) => {
     return (
-        <div className={defaultPageList}>
-            {data.map(page => (
-                <PageItem className={pageItem} key={page.id} data={page} />
-            ))}
-            {prevPage && <button onClick={prevPage}>Prev</button>}
-            {nextPage && <button onClick={nextPage}>Next</button>}
+        <div className={"webiny-cms-element-page-list webiny-cms-element-page-list--grid"}>
+            <div className={"webiny-cms-element-page-list__items"}>
+                {data.map(page => (
+                    <PageItem key={page.id} data={page} />
+                ))}
+            </div>
+            <div className={"webiny-cms-element-page-list__navigation"}>
+                {prevPage && (
+                    <a onClick={prevPage}>
+                        <PrevIcon /> Prev page
+                    </a>
+                )}
+                {nextPage && (
+                    <a onClick={nextPage}>
+                        Next page <NextIcon />
+                    </a>
+                )}
+            </div>
         </div>
     );
 };
