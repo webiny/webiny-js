@@ -9,7 +9,12 @@ import isNumeric from "isnumeric";
  * @return {boolean}
  */
 export default (value: any) => {
-    if (!value || !isNaN(value)) {
+    // Eliminate edge cases
+    if (typeof value === "undefined" || value === 0 || value === "0") {
+        return;
+    }
+
+    if (!value && !isNaN(value)) {
         return;
     }
 

@@ -18,6 +18,7 @@ describe("numeric test", () => {
 
     it("should pass - valid numerics given", () => {
         return Promise.all([
+            validation.validate(0, "numeric").should.become(true),
             validation.validate(11, "numeric").should.become(true),
             validation.validate(11.434242, "numeric").should.become(true)
         ]);
