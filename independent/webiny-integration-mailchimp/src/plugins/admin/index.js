@@ -1,13 +1,24 @@
 // @flow
 import React from "react";
+import styled from "react-emotion";
 import { Tab } from "webiny-ui/Tabs";
 import MailchimpSettings from "./components/MailchimpSettings";
 import MailchimpElementAdvancedSettings from "./components/MailchimpElementAdvancedSettings";
 import MailchimpElement from "./components/MailchimpElement";
 import { hasRoles } from "webiny-app-security";
 import { SecureRoute } from "webiny-app-security/components";
+import { ReactComponent as MailchimpLogo } from "./mailchimp-logo.svg";
 
 import render from "./../render";
+
+const PreviewBox = styled("div")({
+    textAlign: "center",
+    height: 80,
+    svg: {
+        height: 80,
+        width: "auto"
+    }
+});
 
 const roles = ["cms-settings"];
 
@@ -20,7 +31,11 @@ export default [
             title: "Mailchimp",
             group: "cms-element-group-form",
             preview() {
-                return <span>A Mailchimp sample</span>;
+                return (
+                    <PreviewBox>
+                        <MailchimpLogo />
+                    </PreviewBox>
+                );
             }
         },
         settings: ["cms-element-settings-delete", "", "cms-element-settings-height"],

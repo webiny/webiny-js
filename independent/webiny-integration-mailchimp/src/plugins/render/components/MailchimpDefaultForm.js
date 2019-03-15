@@ -3,11 +3,16 @@ import * as React from "react";
 import { Input } from "webiny-ui/Input";
 import { ButtonPrimary } from "webiny-ui/Button";
 import { css } from "react-emotion";
-import classnames from "classnames";
 
-const wrapper = css({
-    display: "flex",
-    justifyContent: "space-between"
+const style = css({
+    ".webiny-cms-element-mailchimp-form__wrapper": {
+        position: "relative",
+        ".webiny-cms-element-mailchimp-form__subscribe_btn": {
+            position: "absolute",
+            top: 10,
+            right: 10
+        }
+    }
 });
 
 class MailchimpDefaultForm extends React.Component<
@@ -22,12 +27,16 @@ class MailchimpDefaultForm extends React.Component<
     render() {
         const { Bind, submit } = this.props;
         return (
-            <div className={"mailchimp-default"}>
-                <div className={classnames(wrapper)}>
+            <div className={"webiny-cms-element-mailchimp-form " + style}>
+                <div className={"webiny-cms-element-mailchimp-form__wrapper"}>
                     <Bind name={"email"} validators={["required", "email"]}>
-                        <Input label={"Your e-mail"} />
+                        <Input
+                            className={"webiny-cms-element-mailchimp-form__subscribe_input"}
+                            label={"Your e-mail"}
+                        />
                     </Bind>
                     <ButtonPrimary
+                        className={"webiny-cms-element-mailchimp-form__subscribe_btn"}
                         disabled={this.state.processing}
                         onClick={async () => {
                             this.setState({ processing: true });
@@ -45,10 +54,14 @@ class MailchimpDefaultForm extends React.Component<
                             this.setState({ processing: false });
                         }}
                     >
-                        Submit
+                        Subscribe
                     </ButtonPrimary>
                 </div>
-                {this.state.message && <div>{this.state.message}</div>}
+                {this.state.message && (
+                    <div className={"webiny-cms-element-mailchimp-form__msg"}>
+                        {this.state.message}
+                    </div>
+                )}
             </div>
         );
     }

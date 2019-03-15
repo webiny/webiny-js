@@ -1,13 +1,21 @@
 // @flow
 import * as React from "react";
 import { Grid, Cell } from "webiny-ui/Grid";
+import { Typography } from "webiny-ui/Typography";
 import { withCms } from "webiny-app-cms/context";
 import MailchimpElement from "./MailchimpElement";
 import { AutoComplete } from "webiny-ui/AutoComplete";
 import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import { get } from "lodash";
+import { css } from "emotion";
 import { getPlugins } from "webiny-plugins";
+
+const formPreview = css({
+    padding: 25,
+    border: "1px solid var(--mdc-theme-background)",
+    overflow: "scroll"
+});
 
 const MailchimpElementAdvancedSettings = ({ Bind }: Object) => {
     return (
@@ -51,7 +59,8 @@ const MailchimpElementAdvancedSettings = ({ Bind }: Object) => {
                             </Bind>
                         )}
                     </Query>
-
+                </Cell>
+                <Cell span={12}>
                     <Bind name={"settings.component"} validators={["required"]}>
                         {({ onChange, value: name }) => {
                             const options = getPlugins("cms-element-mailchimp-component").map(
@@ -81,7 +90,10 @@ const MailchimpElementAdvancedSettings = ({ Bind }: Object) => {
                 </Cell>
             </Grid>
             <Grid>
-                <Cell span={12} style={{ overflowY: "scroll" }}>
+                <Cell span={12} className={formPreview}>
+                    <span>
+                        <Typography use={"overline"}>Form preview</Typography>
+                    </span>
                     <Bind name={"settings"}>
                         {({ value }) => (
                             <div>
