@@ -1,12 +1,23 @@
 // @flow
 import React from "react";
+import styled from "react-emotion";
 import { Tab } from "webiny-ui/Tabs";
 import { Input } from "webiny-ui/Input";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ReactComponent as CodeIcon } from "./round-text_format-24px.svg";
+import { ReactComponent as TypeformLogo } from "./typeform-logo.svg";
 import { ElementRoot } from "webiny-app-cms/render/components/ElementRoot";
 import TypeFormEmbed from "./TypeFormEmbed";
 import render from "./../render";
+
+const PreviewBox = styled("div")({
+    textAlign: "center",
+    height: 150,
+    svg: {
+        height: 150,
+        width: 150
+    }
+});
 
 export default [
     ...render,
@@ -17,7 +28,11 @@ export default [
             title: "Typeform",
             group: "cms-element-group-form",
             preview() {
-                return <span>A Typeform sample</span>;
+                return (
+                    <PreviewBox>
+                        <TypeformLogo />
+                    </PreviewBox>
+                );
             }
         },
         settings: ["cms-element-settings-delete", "", "cms-element-settings-height"],
@@ -25,10 +40,7 @@ export default [
         onCreate: "open-settings",
         render({ element }: Object) {
             return (
-                <ElementRoot
-                    element={element}
-                    className={"webiny-cms-element-typeform"}
-                >
+                <ElementRoot element={element} className={"webiny-cms-element-typeform"}>
                     <TypeFormEmbed elementId={element.id} />
                 </ElementRoot>
             );
