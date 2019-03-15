@@ -31,7 +31,8 @@ const PagesList = pure(({ data = {}, cms: { theme } }: Object = {}) => {
         sort,
         tags: vars.tags,
         tagsRule: vars.tagsRule,
-        perPage: vars.limit,
+        perPage: parseInt(vars.resultsPerPage),
+        pagesLimit: parseInt(vars.pagesLimit),
         page: 1
     };
 
@@ -55,7 +56,9 @@ const PagesList = pure(({ data = {}, cms: { theme } }: Object = {}) => {
 
                 let nextPage = null;
                 if (pages.meta.nextPage !== null) {
-                    nextPage = () => refetch({ ...variables, page: pages.meta.nextPage });
+                    if (!variables.pagesLimit || variables.pagesLimit >= pages.meta.nextPage) {
+                        nextPage = () => refetch({ ...variables, page: pages.meta.nextPage });
+                    }
                 }
 
                 return (
