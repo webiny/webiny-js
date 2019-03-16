@@ -15,52 +15,50 @@ const style = css({
     }
 });
 
-class MailchimpDefaultForm extends React.Component<
-    *,
-    { processing: boolean, message: React.Node }
-> {
+class MailchimpDefaultForm extends React.Component<*, { success: boolean, error: ?string }> {
     state = {
-        processing: false,
-        message: null
+        error: null,
+        success: false
     };
 
     render() {
-        const { Bind, submit } = this.props;
+        const { Bind, submit, processing } = this.props;
         return (
             <div className={"webiny-cms-element-mailchimp-form " + style}>
                 <div className={"webiny-cms-element-mailchimp-form__wrapper"}>
                     <Bind name={"email"} validators={["required", "email"]}>
                         <Input
+                            disabled={processing}
                             className={"webiny-cms-element-mailchimp-form__subscribe_input"}
                             label={"Your e-mail"}
                         />
                     </Bind>
                     <ButtonPrimary
                         className={"webiny-cms-element-mailchimp-form__subscribe_btn"}
-                        disabled={this.state.processing}
+                        disabled={processing}
                         onClick={async () => {
-                            this.setState({ processing: true });
+                            this.setState({ success: false, error: null });
 
                             await submit({
                                 onSuccess: () => {
-                                    this.setState({ processing: false });
+                                    this.setState({ success: true });
                                 },
-                                onError: err => {
-                                    this.setState({ processing: false });
-                                    this.setState({ message: err });
+                                onError: error => {
+                                    this.setState({ error });
                                 }
                             });
-
-                            this.setState({ processing: false });
                         }}
                     >
                         Subscribe
                     </ButtonPrimary>
                 </div>
-                {this.state.message && (
+                {this.state.error && (
                     <div className={"webiny-cms-element-mailchimp-form__msg"}>
-                        {this.state.message}
+                        Error: {this.state.error}
                     </div>
+                )}
+                {this.state.success && (
+                    <div className={"webiny-cms-element-mailchimp-form__msg"}>Thank you!</div>
                 )}
             </div>
         );
