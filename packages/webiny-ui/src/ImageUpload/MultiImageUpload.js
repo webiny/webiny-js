@@ -215,7 +215,7 @@ class MultiImageUpload extends React.Component<Props, State> {
                     onSuccess={files => {
                         this.handleSelectedImages(files, Array.isArray(value) ? value.length : 0);
                     }}
-                    onErrors={errors => this.handleErrors(errors)}
+                    onError={errors => this.handleErrors(errors)}
                 >
                     {({ browseFiles, getDropZoneProps }) => {
                         const images = Array.isArray(value) ? [...value] : [];

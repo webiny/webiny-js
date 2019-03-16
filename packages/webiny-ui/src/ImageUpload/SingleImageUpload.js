@@ -130,7 +130,6 @@ export class SingleImageUpload extends React.Component<Props, State> {
     };
 
     render() {
-
         const {
             className,
             value,
@@ -189,7 +188,7 @@ export class SingleImageUpload extends React.Component<Props, State> {
                     maxSize={maxSize}
                     convertToBase64
                     onSuccess={this.handleFiles}
-                    onErrors={this.handleErrors}
+                    onError={this.handleErrors}
                 >
                     {({ browseFiles, getDropZoneProps }) => (
                         <div {...getDropZoneProps()}>
