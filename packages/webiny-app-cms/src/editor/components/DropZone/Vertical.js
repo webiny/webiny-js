@@ -55,7 +55,7 @@ const Vertical = pure(({ last, onDrop, isVisible, type }: Props) => {
                         position: "absolute",
                         top: 0,
                         [last ? "right" : "left"]: 0,
-                        zIndex: 10
+                        zIndex: 1000
                     }}
                 >
                     <OuterDivVertical isOver={isOver} last={last}>
