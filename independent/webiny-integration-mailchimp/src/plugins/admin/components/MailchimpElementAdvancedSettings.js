@@ -8,7 +8,7 @@ import { AutoComplete } from "webiny-ui/AutoComplete";
 import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import { get } from "lodash";
-import { css } from "emotion";
+import { css } from "react-emotion";
 import { getPlugins } from "webiny-plugins";
 
 const formPreview = css({

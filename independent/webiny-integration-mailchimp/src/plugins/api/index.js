@@ -2,7 +2,7 @@
 import { Model } from "webiny-model";
 import { settingsFactory } from "webiny-api/entities";
 import { dummyResolver } from "webiny-api/graphql";
-import { ListErrorResponse, ListResponse, Response, ErrorResponse } from "webiny-api/graphql";
+import { ListErrorResponse, ListResponse, ErrorResponse } from "webiny-api/graphql";
 import { hasScope } from "webiny-api-security";
 import got from "got";
 
@@ -193,31 +193,29 @@ export default [
                                 path: `/lists/${listId}`
                             });
 
-                            try {
-                                console.log("list");
-                                console.log("post");
-                                await mailchimp.post({
-                                    path: `/lists/${listId}/members`,
-                                    body: {
-                                        email_address: email,
-                                        status: listResponse.body.double_optin
-                                            ? "pending"
-                                            : "subscribed"
+                            await mailchimp.post({
+                                path: `/lists/${listId}/members`,
+                                body: {
+                                    email_address: email,
+                                    status: listResponse.body.double_optin
+                                        ? "pending"
+                                        : "subscribed"
+                                }
+                            });
+                        } catch (e) {
+                            if (e.body) {
+                                return new ErrorResponse({
+                                    message: e.body.title,
+                                    data: {
+                                        code: e.body.status,
+                                        detail: e.body.detail,
+                                        type: e.body.type
                                     }
                                 });
-                            } catch (e) {
-                                console.log(e);
                             }
 
-                            return new Response();
-                        } catch (e) {
                             return new ErrorResponse({
-                                code: e.status,
-                                message: e.title,
-                                data: {
-                                    detail: e.detail,
-                                    type: e.type
-                                }
+                                message: e.message
                             });
                         }
                     }

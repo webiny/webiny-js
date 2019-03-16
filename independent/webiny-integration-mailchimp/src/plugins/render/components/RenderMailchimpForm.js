@@ -18,66 +18,79 @@ const mutation = gql`
     }
 `;
 
-const RenderMailchimpForm = (props: *) => {
-    const { element } = props;
-    const { component: selected } = element.data.settings;
-    const component = getPlugins("cms-element-mailchimp-component").find(
-        cmp => cmp.name === selected
-    );
+class RenderMailchimpForm extends React.Component<*, { processing: boolean }> {
+    state = { processing: false };
 
-    if (component) {
-        const Component = component.component;
-        const style = { width: "100%", ...get(props, "element.data.settings.style") };
-        return (
-            <div style={style} className={"webiny-cms-element-mailchimp"}>
-                <Mutation mutation={mutation}>
-                    {update => (
-                        <Form key={component.name}>
-                            {({ form, data }) => {
-                                return (
-                                    <Component
-                                        {...form}
-                                        submit={async ({
-                                            onError,
-                                            onSuccess
-                                        }: {
-                                            onError?: (error: string) => void,
-                                            onSuccess?: () => void
-                                        }) => {
-                                            const isValid = await form.validate();
-                                            if (!isValid) {
-                                                return;
-                                            }
-
-                                            const response = await update({
-                                                variables: {
-                                                    ...data,
-                                                    list: element.data.settings.list
-                                                }
-                                            });
-
-                                            const error = get(
-                                                response,
-                                                "data.mailchimp.addToList.error"
-                                            );
-
-                                            if (error) {
-                                                onError && onError(error.message);
-                                            } else {
-                                                onSuccess && onSuccess();
-                                            }
-                                        }}
-                                    />
-                                );
-                            }}
-                        </Form>
-                    )}
-                </Mutation>
-            </div>
+    render() {
+        const { props } = this;
+        const { element } = props;
+        const { component: selected } = element.data.settings;
+        const component = getPlugins("cms-element-mailchimp-component").find(
+            cmp => cmp.name === selected
         );
-    }
 
-    return null;
-};
+        if (component) {
+            const Component = component.component;
+            const style = { width: "100%", ...get(props, "element.data.settings.style") };
+            return (
+                <div style={style} className={"webiny-cms-element-mailchimp"}>
+                    <Mutation mutation={mutation}>
+                        {update => (
+                            <Form key={component.name}>
+                                {({ form, data }) => {
+                                    return (
+                                        <Component
+                                            {...form}
+                                            processing={this.state.processing}
+                                            submit={async ({
+                                                onError,
+                                                onSuccess
+                                            }: {
+                                                onError?: (error: string) => void,
+                                                onSuccess?: () => void
+                                            }) => {
+                                                const isValid = await form.validate();
+                                                if (!isValid) {
+                                                    return;
+                                                }
+
+                                                this.setState({ processing: true });
+                                                const response = await update({
+                                                    variables: {
+                                                        ...data,
+                                                        list: element.data.settings.list
+                                                    }
+                                                });
+
+                                                this.setState({ processing: false }, () => {
+                                                    const error = get(
+                                                        response,
+                                                        "data.mailchimp.addToList.error"
+                                                    );
+
+                                                    if (error) {
+                                                        onError && onError(error.message);
+                                                    } else {
+                                                        form.setState(state => {
+                                                            state.data.email = "";
+                                                            return state;
+                                                        });
+                                                        onSuccess && onSuccess();
+                                                    }
+                                                });
+                                            }}
+                                        />
+                                    );
+                                }}
+                            </Form>
+                        )}
+                    </Mutation>
+                </div>
+            );
+        }
+
+        return null;
+    }
+}
 
 export default RenderMailchimpForm;
