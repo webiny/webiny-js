@@ -23,13 +23,17 @@ const fileUploadPlugin: WithFileUploadUploaderType = config => ({
         // Note that file.src is always a base64 encoded dataURL
         if (!config.webinyCloud) {
             // Frontend solution works with JSON content type / file represented as data URI.
-            return new Promise(resolve => {
+            return new Promise((resolve, reject) => {
                 const xhr = new window.XMLHttpRequest();
                 xhr.open("POST", uri, true);
                 xhr.setRequestHeader("Content-Type", "application/json");
                 xhr.send(JSON.stringify(file));
                 xhr.onload = function() {
-                    resolve(JSON.parse(this.responseText));
+                    if (this.status !== 200) {
+                        reject(JSON.parse(this.responseText));
+                    } else {
+                        resolve(JSON.parse(this.responseText));
+                    }
                 };
             });
         }

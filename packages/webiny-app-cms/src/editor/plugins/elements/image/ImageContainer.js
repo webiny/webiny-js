@@ -8,6 +8,7 @@ import { set, isEqual } from "lodash";
 import { withFileUpload, SingleImageUpload, Image } from "webiny-app/components";
 import { updateElement } from "webiny-app-cms/editor/actions";
 import { getElement } from "webiny-app-cms/editor/selectors";
+import { withSnackbar } from "webiny-admin/components";
 
 const position = { left: "flex-start", center: "center", right: "flex-end" };
 
@@ -60,10 +61,16 @@ export default compose(
         { areStatePropsEqual: isEqual }
     ),
     withFileUpload(),
+    withSnackbar(),
     withHandlers({
-        onChange: ({ uploadFile, updateElement, element }) => async data => {
-            const response = await uploadFile(data);
-            updateElement({ element: set(element, "data.image", response), merge: true });
+        onChange: ({ uploadFile, updateElement, element, showSnackbar }) => async data => {
+            try {
+                const response = await uploadFile(data);
+                updateElement({ element: set(element, "data.image", response), merge: true });
+                showSnackbar("File uploaded successfully.");
+            } catch (e) {
+                showSnackbar("Ooops, something went wrong.");
+            }
         }
     })
 )(ImageContainer);
