@@ -79,9 +79,6 @@ export default {
                 updateElement: hasScope("cms:element:crud"),
                 deleteElement: hasScope("cms:element:crud")
             },
-            SettingsQuery: {
-                cms: hasScope("cms:settings")
-            },
             SettingsMutation: {
                 cms: hasScope("cms:settings")
             }

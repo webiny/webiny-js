@@ -1,0 +1,55 @@
+Index: packages/webiny-app-cms/src/editor/components/Element.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- packages/webiny-app-cms/src/editor/components/Element.js	(revision bad3c4cbdfdb295d048c67b7370fe8f7e8b9c0d6)
++++ packages/webiny-app-cms/src/editor/components/Element.js	(revision 0e2c33e57a38eba37bdf270b828c647453f1288a)
+@@ -75,6 +75,8 @@
+                             </Draggable>
+                             {plugin.render({ element })}
+                         </div>
++                        <div className="add-element add-element--above">+</div>
++                        <div className="add-element add-element--below">+</div>
+                     </ElementContainer>
+                 )}
+             </Transition>
+Index: packages/webiny-app-cms/src/editor/components/Element/ElementStyled.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- packages/webiny-app-cms/src/editor/components/Element/ElementStyled.js	(revision bad3c4cbdfdb295d048c67b7370fe8f7e8b9c0d6)
++++ packages/webiny-app-cms/src/editor/components/Element/ElementStyled.js	(revision 0e2c33e57a38eba37bdf270b828c647453f1288a)
+@@ -111,6 +111,31 @@
+                         backgroundColor: color
+                     }
+                 }
++            },
++            ">.add-element": {
++                position: "absolute",
++                left: "50%",
++                backgroundColor: color,
++                color: "white",
++                width: "22px",
++                height: "22px",
++                borderRadius: "50%",
++                display: active || highlight ? "flex" : "none",
++                justifyContent: "center",
++                alignItems: "center",
++                transform: "scale(0.5)",
++                cursor: "pointer",
++                zIndex: 15,
++                transition: "transform 0.2s",
++                "&--above": {
++                    top: -12
++                },
++                "&--below": {
++                    bottom: -10
++                },
++                "&:hover": {
++                    transform: "scale(1)"
++                }
+             }
+         };
+     })

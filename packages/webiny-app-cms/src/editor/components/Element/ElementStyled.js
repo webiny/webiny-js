@@ -111,31 +111,6 @@ export const ElementContainer = pure(
                         backgroundColor: color
                     }
                 }
-            },
-            ">.add-element": {
-                position: "absolute",
-                left: "50%",
-                backgroundColor: color,
-                color: "white",
-                width: "22px",
-                height: "22px",
-                borderRadius: "50%",
-                display: active || highlight ? "flex" : "none",
-                justifyContent: "center",
-                alignItems: "center",
-                transform: "scale(0.5)",
-                cursor: "pointer",
-                zIndex: 15,
-                transition: "transform 0.2s",
-                "&--above": {
-                    top: -12
-                },
-                "&--below": {
-                    bottom: -10
-                },
-                "&:hover": {
-                    transform: "scale(1)"
-                }
             }
         };
     })
