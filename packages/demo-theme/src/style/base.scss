@@ -1,3 +1,11 @@
+.webiny-cms-page{
+  min-height: 100vh;
+  position: relative;
+  @include mobile{
+    padding-bottom: 100px;
+  }
+}
+
 .webiny-cms-page-document{
   background-color: var(--webiny-cms-theme-surface);
   min-height: calc(100vh - 205px);
