@@ -4,9 +4,32 @@ const crypto = require("crypto");
 const fs = require("fs-extra");
 const glob = require("glob");
 const util = require("util");
+const merge = require("lodash.merge");
+const loadJsonFile = require("load-json-file");
+const writeJsonFile = require("write-json-file");
 const globFiles = util.promisify(glob);
 const { copyFile, spawnCommand } = require("../utils");
 const logger = require("../logger")();
+
+const tplJson = {
+    private: true,
+    workspaces: {
+        packages: ["packages/*"]
+    },
+    dependencies: {
+        "@svgr/webpack": "^4.1.0",
+        "react-sortable-tree": "^2.6.0"
+    },
+    devDependencies: {
+        "cross-env": "^5.2.0",
+        prettier: "^1.15.3",
+        "flow-bin": "^0.94.0"
+    },
+    resolutions: {
+        "react-sortable-tree/**/react-dnd": "7.0.2",
+        "react-sortable-tree/**/react-dnd-html5-backend": "7.0.2"
+    }
+};
 
 module.exports = async () => {
     const root = process.cwd();
@@ -15,9 +38,16 @@ module.exports = async () => {
     fs.ensureDirSync("packages");
 
     // Copy project files
-    const files = ["package.json", "README.md", ".gitignore", ".prettierrc.js"];
+    const files = ["README.md", ".gitignore", ".prettierrc.js"];
     files.forEach(file => copyFile(`init/template/${file}`, file));
 
+    // Merge package.json
+    const pkgJsonPath = path.join(root, "package.json");
+    const pkgJson = await loadJsonFile(pkgJsonPath);
+    merge(pkgJson, tplJson);
+    await writeJsonFile(pkgJsonPath, pkgJson);
+
+    // Setup monorepo packages
     await setupFolder("packages/admin");
     await setupApi();
     await setupFolder("packages/site");

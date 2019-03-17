@@ -191,3 +191,13 @@
 
   }
 }
+
+// adjust some styles in case when we render the full layout inside the page editor
+.webiny-cms-editor-content-preview{
+  .webiny-cms-section-header {
+    position: absolute;
+    padding: 0 10px;
+    box-sizing: border-box;
+    z-index: 0;
+  }
+}

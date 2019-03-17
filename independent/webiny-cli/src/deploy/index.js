@@ -412,6 +412,9 @@ export default class Deploy {
                 name: "accessToken",
                 message: `Personal Access Token:`,
                 validate: async accessToken => {
+                    if (!accessToken.trim()) {
+                        return "Please enter your token!";
+                    }
                     this.instantiateSDK(accessToken);
                     ui.updateBottomBar("Verifying token...");
                     const user = await this.sdk.whoami();

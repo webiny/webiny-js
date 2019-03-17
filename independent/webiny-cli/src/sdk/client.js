@@ -70,7 +70,7 @@ export default class Client {
     async sites() {
         const query = gql`
             {
-                sites {
+                sites (perPage: 100) {
                     data {
                         id
                         name
@@ -164,7 +164,7 @@ export default class Client {
         site: string,
         type: string,
         path: string,
-        files: Array<{ key: string, hash: string }>,
+        files: Array<{ key: string, hash: string , type: string}>,
         meta: ?Object = {}
     ) {
         log(`Creating ${chalk.blue(type)} deploy for path ${chalk.blue(path)}`);
@@ -221,7 +221,7 @@ export default class Client {
         const mutation = gql`
             mutation ActivateDeploy($deploy: ID!) {
                 activateDeploy(id: $deploy) {
-                    data 
+                    data
                     error {
                         code
                         message
