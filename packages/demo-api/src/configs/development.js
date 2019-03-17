@@ -39,7 +39,7 @@ export default async () => {
             }
         },
         security: {
-            enabled: false,
+            enabled: true,
             token: {
                 secret: process.env.WEBINY_JWT_SECRET,
                 expiresOn: () => addDays(new Date(), 30)

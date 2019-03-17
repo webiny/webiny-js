@@ -19,9 +19,6 @@ export default [
         resolvers: {},
         security: {
             shield: {
-                SettingsQuery: {
-                    googleTagManager: hasScope("cms:settings")
-                },
                 SettingsMutation: {
                     googleTagManager: hasScope("cms:settings")
                 }

@@ -102,9 +102,6 @@ export default [
                 },
                 MailchimpQuery: {
                     listLists: hasScope("cms:editor")
-                },
-                MailchimpMutation: {
-                    addToList: hasScope("cms:editor")
                 }
             }
         },
