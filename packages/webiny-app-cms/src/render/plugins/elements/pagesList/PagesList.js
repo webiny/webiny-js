@@ -26,6 +26,7 @@ const PagesList = pure((props: Object = {}) => {
 
     let sort = null;
     if (vars.sortBy) {
+        // $FlowFixMe
         sort = { [vars.sortBy]: vars.sortDirection || -1 };
     }
 

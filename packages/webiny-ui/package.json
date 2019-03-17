@@ -59,8 +59,6 @@
     "react-spinner-material": "^1.0.19",
     "react-transition-group": "^2.5.1",
     "react-visibility-sensor": "^5.0.2",
-    "webiny-form": "0.0.0",
-    "webiny-storybook-utils": "0.0.0",
     "withinviewport": "^2.1.0"
   },
   "devDependencies": {
@@ -80,7 +78,9 @@
     "babel-plugin-emotion": "^9.2.8",
     "node-sass": "^4.9.3",
     "raw-loader": "^0.5.1",
-    "sass-loader": "^7.1.0"
+    "sass-loader": "^7.1.0",
+    "webiny-form": "0.0.0",
+    "webiny-storybook-utils": "0.0.0"
   },
   "peerDependencies": {
     "react": "^16.4.0",
