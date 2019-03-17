@@ -42,8 +42,8 @@ const MailchimpSettings = ({ showSnackbar }) => {
                                     <SimpleFormHeader title="Mailchimp Settings">
                                         <Bind
                                             name={"mailchimp.enabled"}
-                                            afterChange={aaa => {
-                                                if (!aaa) {
+                                            afterChange={enabled => {
+                                                if (!enabled) {
                                                     form.submit();
                                                 }
                                             }}
@@ -58,7 +58,10 @@ const MailchimpSettings = ({ showSnackbar }) => {
                                                     <Cell span={12}>
                                                         <Grid>
                                                             <Cell span={6}>
-                                                                <Bind name={"mailchimp.apiKey"}>
+                                                                <Bind
+                                                                    name={"mailchimp.apiKey"}
+                                                                    validators={["required"]}
+                                                                >
                                                                     <Input label="API key" />
                                                                 </Bind>
                                                             </Cell>
