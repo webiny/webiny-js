@@ -1,6 +1,9 @@
 .webiny-cms-section-footer {
   background-color: $webiny-cms-theme-background;
   height: 100px;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
   &__wrapper{
     margin: 0 auto;
     max-width: 1200px;
@@ -67,5 +70,6 @@
   .webiny-cms-section-footer {
     padding: 0 10px;
     box-sizing: border-box;
+    position: relative;
   }
 }
