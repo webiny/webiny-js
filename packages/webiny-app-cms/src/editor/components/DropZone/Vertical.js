@@ -51,6 +51,7 @@ const Vertical = pure(({ last, onDrop, isVisible, type }: Props) => {
                 <div
                     style={{
                         width: "30%",
+                        maxWidth: "100px",
                         height: "100%",
                         position: "absolute",
                         top: 0,
