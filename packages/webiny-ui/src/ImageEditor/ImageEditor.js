@@ -36,7 +36,7 @@ const Toolbar = styled("div")({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "var(--mdc-theme-secondary)",
-    margin: "-20px -24px 0px -24px",
+    margin: "-24px -24px 0px -24px",
     padding: 2,
     position: "absolute",
     width: "100%",
