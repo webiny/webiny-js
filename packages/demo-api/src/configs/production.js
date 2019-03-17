@@ -21,7 +21,7 @@ export default async (context: Object) => {
             }
         },
         security: {
-            enabled: false,
+            enabled: true,
             token: {
                 secret: context.jwtSecret,
                 expiresOn: () => addDays(new Date(), 30)

@@ -75,6 +75,10 @@ const Element = pure(
                             </Draggable>
                             {plugin.render({ element })}
                         </div>
+                        {/*
+                        <div className="add-element add-element--above">+</div>
+                        <div className="add-element add-element--below">+</div>
+                        */}
                     </ElementContainer>
                 )}
             </Transition>
