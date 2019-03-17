@@ -30,44 +30,32 @@ const createDefaultPages = async (context: Object, { cmsSettings }: Object) => {
         await menu.save();
     }
 
-    const homePageIndex = pages.findIndex(
-        p => p.settings.general.tags && p.settings.general.tags.includes("homepage")
-    );
-    const homePage = pages.splice(homePageIndex, 1)[0];
-
-    const errorPageIndex = pages.findIndex(
-        p => p.settings.general.tags && p.settings.general.tags.includes("error")
-    );
-    const errorPage = pages.splice(errorPageIndex, 1)[0];
-
-    const notFoundPageIndex = pages.findIndex(
-        p => p.settings.general.tags && p.settings.general.tags.includes("404")
-    );
-    const notFoundPage = pages.splice(notFoundPageIndex, 1)[0];
+    cmsSettings.data = {
+        pages: {}
+    };
 
     for (let i = 0; i < pages.length; i++) {
-        await createDefaultPage({
-            page: new Page(),
-            data: pages[i]
-        });
-    }
-
-    cmsSettings.data = {
-        pages: {
-            home: (await createDefaultPage({
-                page: new Page(),
-                data: homePage
-            })).id,
-            error: (await createDefaultPage({
-                page: new Page(),
-                data: errorPage
-            })).id,
-            notFound: (await createDefaultPage({
-                page: new Page(),
-                data: notFoundPage
-            })).id
+        const data = pages[i];
+        if (data.settings.general.tags && data.settings.general.tags.includes("homepage")) {
+            const page = await createDefaultPage({ page: new Page(), data });
+            cmsSettings.data.pages.home = page.id;
+            continue;
         }
-    };
+
+        if (data.settings.general.tags && data.settings.general.tags.includes("error")) {
+            const page = await createDefaultPage({ page: new Page(), data });
+            cmsSettings.data.pages.error = page.id;
+            continue;
+        }
+
+        if (data.settings.general.tags && data.settings.general.tags.includes("404")) {
+            const page = await createDefaultPage({ page: new Page(), data });
+            cmsSettings.data.pages.notFound = page.id;
+            continue;
+        }
+
+        await createDefaultPage({ page: new Page(), data });
+    }
 
     // Copy images.
     if (get(context, "cms.copyFiles", true) !== false) {

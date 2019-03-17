@@ -44,7 +44,9 @@
     "react": "^16.4.0"
   },
   "scripts": {
-    "build": "babel src -d ${DEST:-build} --source-maps --copy-files",
+    "build": "yarn build:client && yarn build:api",
+    "build:client": "babel src -d ${DEST:-build} --source-maps --copy-files --config-file ./.babelrc.client",
+    "build:api": "babel src/plugins/api -d ${DEST:-build}/plugins/api --source-maps --copy-files --config-file ./.babelrc.api",
     "flow-copy-source": "flow-copy-source src ${DEST:-build}",
     "postbuild": "yarn flow-copy-source"
   }
