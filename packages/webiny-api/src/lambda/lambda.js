@@ -36,7 +36,7 @@ const createApolloHandler = async (config: Object) => {
     addSchemaLevelResolveFunction(schema, async (root, args, context, info) => {
         // Make sure we do not block this resolver from processing subsequent requests!
         // This is something that is baked into the graphql-tools and cannot be avoided another way.
-        delete info.operation['__runAtMostOnce'];
+        delete info.operation["__runAtMostOnce"];
 
         // Process `graphql-context` plugins
         const ctxPlugins = getPlugins("graphql-context");
@@ -45,8 +45,11 @@ const createApolloHandler = async (config: Object) => {
             await ctxPlugin.apply(context);
         }
     });
+    
+    console.log(config.apollo);
 
     const apollo = new ApolloServer({
+        ...(config.apollo || {}),
         schema,
         cors: {
             origin: "*",
@@ -81,16 +84,18 @@ function getErrorResponse(error: Error & Object) {
     };
 }
 
-let handler = null;
+let handler = {};
 
 export const createHandler = (configFactory: (context: Object) => Promise<Object>) => {
     return async (event: Object, context: Object) => {
         const config = await configFactory(context);
+        await setup(config);
 
         return await new Promise(async (resolve, reject) => {
-            if (!handler) {
+            const cacheKey = (config.handler && config.handler.cacheKey) ? config.handler.cacheKey :  "default";
+            if (!handler[cacheKey]) {
                 try {
-                    handler = await createApolloHandler(config);
+                    handler[cacheKey] = await createApolloHandler(config);
                 } catch (e) {
                     if (process.env.NODE_ENV === "development") {
                         console.log(e); // eslint-disable-line
@@ -99,7 +104,7 @@ export const createHandler = (configFactory: (context: Object) => Promise<Object
                 }
             }
 
-            handler(event, context, (error, data) => {
+            handler[cacheKey](event, context, (error, data) => {
                 if (error) {
                     return reject(error);
                 }
