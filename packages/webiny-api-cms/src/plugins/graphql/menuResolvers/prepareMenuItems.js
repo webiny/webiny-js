@@ -101,7 +101,8 @@ export default async ({ entity: menu, context: graphqlContext }: Object) => {
 
                         const page = context.distinctParents.data[item.page];
                         if (page) {
-                            Object.assign(item, page);
+                            // First try to use the title set on the menu item. If none, use page title.
+                            Object.assign(item, page, { title: item.title || page.title });
                         } else {
                             item.__cleanup__ = true;
                         }

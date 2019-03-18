@@ -8,15 +8,15 @@ const DefaultMenu = ({ data }: Object) => {
 
     return (
         <ul>
-            {data.items.map(item => {
+            {data.items.map((item, index) => {
                 if (Array.isArray(item.children)) {
                     return (
-                        <li key={item.id}>
+                        <li key={item.id + index}>
                             {item.title}
                             <ul>
-                                {item.children.map(item => {
+                                {item.children.map((item, index) => {
                                     return (
-                                        <li key={item.id}>
+                                        <li key={item.id + index}>
                                             <a href={item.url}>{item.title}</a>
                                         </li>
                                     );
@@ -27,7 +27,7 @@ const DefaultMenu = ({ data }: Object) => {
                 }
 
                 return (
-                    <li key={item.id}>
+                    <li key={item.id + index}>
                         <a href={item.url}>{item.title}</a>
                     </li>
                 );

@@ -166,7 +166,7 @@ export class AutoComplete extends React.Component<Props, State> {
                 if (!selection || !onChange) {
                     return;
                 }
-                onChange(getOptionValue(selection, this.props));
+                onChange(getOptionValue(selection, this.props), selection);
             }
         };
 
