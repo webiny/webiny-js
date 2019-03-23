@@ -46,7 +46,7 @@ const PublishPageButton = ({ page, showSnackbar, router }) => {
                                 });
                             }}
                         >
-                            Publish
+                            {page.version > 1 ? "Publish changes" : "Publish"}
                         </ButtonPrimary>
                     )}
                 </Mutation>
