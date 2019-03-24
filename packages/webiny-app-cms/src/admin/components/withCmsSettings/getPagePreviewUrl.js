@@ -2,11 +2,15 @@
 import { trimEnd } from "lodash";
 
 export default ({ page: { url, id }, domain }: Object) => {
+    let previewUrl = "";
+
     if (!domain) {
-        return url;
+        previewUrl += url;
+        previewUrl += "?preview=" + id;
+        return previewUrl;
     }
 
-    let previewUrl = "//";
+    previewUrl = "//";
 
     // Removes protocol from the beggining of the URL.
     previewUrl += domain.replace(/(^\w+:|^)\/\//, "");

@@ -1,5 +1,5 @@
 // @flow
-import { ErrorResponse, Response, NotFoundErrorResponse } from "webiny-api/graphql";
+import { ErrorResponse, Response, NotFoundResponse } from "webiny-api/graphql";
 
 export default async (root: any, args: Object, context: Object) => {
     const { CmsSettings, Page } = context.cms.entities;
@@ -8,7 +8,7 @@ export default async (root: any, args: Object, context: Object) => {
     const newHomePage = await Page.findById(id);
 
     if (!newHomePage) {
-        return new NotFoundErrorResponse(id);
+        return new NotFoundResponse(id);
     }
 
     const settings = await CmsSettings.load();

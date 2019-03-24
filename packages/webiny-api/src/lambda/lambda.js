@@ -45,8 +45,6 @@ const createApolloHandler = async (config: Object) => {
             await ctxPlugin.apply(context);
         }
     });
-    
-    console.log(config.apollo);
 
     const apollo = new ApolloServer({
         ...(config.apollo || {}),
@@ -92,7 +90,8 @@ export const createHandler = (configFactory: (context: Object) => Promise<Object
         await setup(config);
 
         return await new Promise(async (resolve, reject) => {
-            const cacheKey = (config.handler && config.handler.cacheKey) ? config.handler.cacheKey :  "default";
+            const cacheKey =
+                config.handler && config.handler.cacheKey ? config.handler.cacheKey : "default";
             if (!handler[cacheKey]) {
                 try {
                     handler[cacheKey] = await createApolloHandler(config);

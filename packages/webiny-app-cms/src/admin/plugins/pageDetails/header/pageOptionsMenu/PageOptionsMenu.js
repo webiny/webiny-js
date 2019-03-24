@@ -7,7 +7,6 @@ import { ReactComponent as MoreVerticalIcon } from "webiny-app-cms/admin/assets/
 import { ReactComponent as PreviewIcon } from "webiny-app-cms/admin/assets/visibility.svg";
 import { ReactComponent as HomeIcon } from "webiny-app-cms/admin/assets/round-home-24px.svg";
 import { ListItemGraphic } from "webiny-ui/List";
-
 import { MenuItem, Menu } from "webiny-ui/Menu";
 import { withConfirmation, type WithConfirmationProps } from "webiny-ui/ConfirmationDialog";
 import { compose } from "recompose";
@@ -18,7 +17,7 @@ import { Mutation } from "react-apollo";
 import { withSnackbar, type WithSnackbarProps } from "webiny-admin/components";
 import classNames from "classnames";
 
-const revisionsMenu = css({
+const menuStyles = css({
     width: 250,
     right: -105,
     left: "auto !important",
@@ -40,7 +39,7 @@ const PageOptionsMenu = (props: Props) => {
 
     return (
         <Menu
-            className={revisionsMenu}
+            className={menuStyles}
             handle={<IconButton icon={<MoreVerticalIcon />} />}
             openSide={"left"}
         >
@@ -97,7 +96,8 @@ export default compose(
         return {
             message: (
                 <span>
-                    Are you sure you want to set the <strong>{page.title}</strong> page as homepage?{" "}
+                    You&#39;re about to set the <strong>{page.title}</strong> page as your new
+                    homepage, are you sure you want to continue?{" "}
                     {!page.published && "Note that your page will be automatically published."}
                 </span>
             )

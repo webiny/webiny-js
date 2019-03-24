@@ -1,8 +1,6 @@
 // @flow
 const packages = require("./../utils/listPackages")([
     // Append untested libraries to the blacklist - they are all work in progress.
-    "webiny-api*",
-    "webiny-app*",
     "webiny-ui",
     "webiny-form",
     "webiny-i18n-react",
