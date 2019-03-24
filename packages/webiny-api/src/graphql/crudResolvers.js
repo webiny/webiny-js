@@ -3,15 +3,13 @@ import { ModelError } from "webiny-model";
 import type { Entity, EntityCollection } from "webiny-entity";
 import parseBoolean from "./parseBoolean";
 import InvalidAttributesError from "./InvalidAttributesError";
-import { ListResponse, ErrorResponse, Response } from "./responses";
+import { ListResponse, ErrorResponse, NotFoundResponse, Response } from "./responses";
 
 type EntityFetcher = (context: Object) => Class<Entity>;
 
-const notFound = (id?: string) =>
-    new ErrorResponse({
-        code: "NOT_FOUND",
-        message: id ? `Record "${id}" not found!` : "Record not found!"
-    });
+const notFound = (id?: string) => {
+    return new NotFoundResponse(id ? `Record "${id}" not found!` : "Record not found!");
+};
 
 export const resolveGet = (entityFetcher: EntityFetcher) => async (
     root: any,
