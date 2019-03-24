@@ -1,5 +1,5 @@
 // @flow
-import { Response, ErrorResponse } from "webiny-api/graphql";
+import { Response, NotFoundResponse, ErrorResponse } from "webiny-api/graphql";
 import type { Entity } from "webiny-entity";
 type EntityFetcher = (context: Object) => Class<Entity>;
 
@@ -27,8 +27,5 @@ export default (entityFetcher: EntityFetcher) => async (
         }
     }
 
-    return new ErrorResponse({
-        code: "NOT_FOUND",
-        message: "User not found!"
-    });
+    return new NotFoundResponse("User not found!");
 };
