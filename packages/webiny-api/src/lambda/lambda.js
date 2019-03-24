@@ -108,7 +108,10 @@ export const createHandler = (configFactory: (context: Object) => Promise<Object
                     return reject(error);
                 }
 
-                if (process.env.NODE_ENV === "development") {
+                if (
+                    process.env.NODE_ENV === "development" &&
+                    data.headers["Content-Type"] === "application/json"
+                ) {
                     data.body = JSON.stringify(JSON.parse(data.body), null, 2);
                 }
 
