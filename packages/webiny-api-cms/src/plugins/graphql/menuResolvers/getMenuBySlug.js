@@ -1,6 +1,6 @@
 // @flow
 import { Entity } from "webiny-entity";
-import { Response, ErrorResponse } from "webiny-api/graphql/responses";
+import { Response, NotFoundResponse } from "webiny-api/graphql/responses";
 import prepareMenuItems from "./prepareMenuItems";
 
 type EntityFetcher = (context: Object) => Class<Entity>;
@@ -15,10 +15,7 @@ export default (entityFetcher: EntityFetcher) => async (
 
     const entity = await entityClass.findOne({ query: { slug } });
     if (!entity) {
-        return new ErrorResponse({
-            code: "NOT_FOUND",
-            message: "Menu not found."
-        });
+        return new NotFoundResponse("Menu not found.");
     }
 
     return new Response({

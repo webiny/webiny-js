@@ -1,15 +1,9 @@
 // @flow
 import type { Entity } from "webiny-entity";
 import type { IPage } from "../../../entities/Page.entity";
-import { ErrorResponse, Response } from "webiny-api/graphql";
+import { ErrorResponse, NotFoundResponse, Response } from "webiny-api/graphql";
 
 type EntityFetcher = (context: Object) => Class<Entity>;
-
-const notFound = (id: string) =>
-    new ErrorResponse({
-        code: "NOT_FOUND",
-        message: `Revision with id "${id}" was not found!`
-    });
 
 export default (entityFetcher: EntityFetcher) => async (
     root: any,
@@ -20,7 +14,7 @@ export default (entityFetcher: EntityFetcher) => async (
 
     const sourceRev: IPage = (await pageClass.findById(args.revision): any);
     if (!sourceRev) {
-        return notFound(args.revision);
+        return new NotFoundResponse(`Revision with id "${args.revision}" was not found!`);
     }
 
     const newRevision: IPage = (new pageClass(): any);

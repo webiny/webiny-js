@@ -1,5 +1,5 @@
 // @flow
-import { Response, ErrorResponse } from "webiny-api/graphql";
+import { Response, NotFoundResponse } from "webiny-api/graphql";
 import type { Entity } from "webiny-entity";
 type EntityFetcher = (context: Object) => Class<Entity>;
 
@@ -15,10 +15,7 @@ export default (entityFetcher: EntityFetcher) => async (
     if (user) {
         const instance = await User.findById(user.id);
         if (!instance) {
-            return new ErrorResponse({
-                code: "NOT_FOUND",
-                message: `User with ID ${user.id} was not found!`
-            });
+            return new NotFoundResponse(`User with ID ${user.id} was not found!`);
         }
 
         return new Response(instance);

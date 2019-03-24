@@ -30,6 +30,15 @@ export class ErrorResponse {
     }
 }
 
+export class NotFoundResponse extends ErrorResponse {
+    constructor(message) {
+        super({
+            code: "NOT_FOUND",
+            message
+        });
+    }
+}
+
 export class ListErrorResponse {
     data: null;
     meta: null;
