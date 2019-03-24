@@ -16,6 +16,9 @@ const sharedFields = `
     version
     parent
     published
+    isHomePage
+    isErrorPage
+    isNotFoundPage
     locked
     savedOn
 `;

@@ -12,6 +12,7 @@ import listPages from "./pageResolvers/listPages";
 import listPublishedPages from "./pageResolvers/listPublishedPages";
 import getPublishedPage from "./pageResolvers/getPublishedPage";
 import getHomePage from "./pageResolvers/getHomePage";
+import setHomePage from "./pageResolvers/setHomePage";
 import getNotFoundPage from "./pageResolvers/getNotFoundPage";
 import getErrorPage from "./pageResolvers/getErrorPage";
 import searchTags from "./pageResolvers/searchTags";
@@ -37,6 +38,9 @@ export default {
             settings: PageSettings
             content: JSON
             published: Boolean
+            isHomePage: Boolean
+            isErrorPage: Boolean
+            isNotFoundPage: Boolean
             locked: Boolean
             parent: ID
             revisions: [Page]
@@ -184,6 +188,9 @@ export default {
                 data: CreatePageInput!
             ): PageResponse
             
+            # Sets given page as new homepage.
+            setHomePage(id: ID!): PageResponse
+            
             # Create a new revision from an existing revision
             createRevisionFrom(
                 revision: ID!
@@ -247,6 +254,8 @@ export default {
             createPage: resolveCreate(pageFetcher),
             // Deletes the entire page
             deletePage: resolveDelete(pageFetcher),
+            // Sets given page as home page.
+            setHomePage,
             // Creates a revision from the given revision
             createRevisionFrom: createRevisionFrom(pageFetcher),
             // Updates revision

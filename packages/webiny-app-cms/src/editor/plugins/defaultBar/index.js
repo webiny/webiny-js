@@ -5,6 +5,7 @@ import PageSettings from "./components/PageSettings";
 import PageSettingsButton from "./components/PageSettingsButton";
 import PublishPageButton from "./components/PublishPageButton";
 import PreviewPageButton from "./components/PreviewPageButton";
+import SetAsHomepageButton from "./components/SetAsHomepageButton";
 import PageOptionsMenu from "./components/PageOptionsMenu";
 import Divider from "./components/Divider";
 import Title from "./components/Title";
@@ -57,6 +58,13 @@ export default [
             type: "cms-default-bar-right-page-options-option",
             render() {
                 return <PreviewPageButton />;
+            }
+        },
+        {
+            name: "cms-default-bar-right-page-options-set-as-homepage",
+            type: "cms-default-bar-right-page-options-option",
+            render() {
+                return <SetAsHomepageButton />;
             }
         }
     ],
