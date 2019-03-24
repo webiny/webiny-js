@@ -34,7 +34,12 @@ const headerActions = css({
 
 type Props = WithPageDetailsProps;
 
-const PageActions = ({ pageDetails, pageDetails: { page } }: Props) => {
+const Header = (props: Props) => {
+    const {
+        pageDetails,
+        pageDetails: { page },
+        refreshPages
+    } = props;
     return (
         <React.Fragment>
             <Grid className={headerTitle}>
@@ -42,12 +47,12 @@ const PageActions = ({ pageDetails, pageDetails: { page } }: Props) => {
                     <Typography use="headline5">{page.title}</Typography>
                 </Cell>
                 <Cell span={4} className={headerActions}>
-                    {renderPlugins("cms-page-details-header-left", { pageDetails })}
-                    {renderPlugins("cms-page-details-header-right", { pageDetails })}
+                    {renderPlugins("cms-page-details-header-left", { pageDetails, refreshPages })}
+                    {renderPlugins("cms-page-details-header-right", { pageDetails, refreshPages })}
                 </Cell>
             </Grid>
         </React.Fragment>
     );
 };
 
-export default PageActions;
+export default Header;

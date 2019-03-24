@@ -87,6 +87,27 @@ export const pageFactory = (context: Object): Class<IPage> => {
 
             this.attr("parent").char();
 
+            this.attr("isHomePage")
+                .boolean()
+                .setDynamic(async () => {
+                    const settings = await context.cms.entities.CmsSettings.load();
+                    return settings.data.pages.home === this.parent;
+                });
+
+            this.attr("isErrorPage")
+                .boolean()
+                .setDynamic(async () => {
+                    const settings = await context.cms.entities.CmsSettings.load();
+                    return settings.data.pages.error === this.parent;
+                });
+
+            this.attr("isNotFoundPage")
+                .boolean()
+                .setDynamic(async () => {
+                    const settings = await context.cms.entities.CmsSettings.load();
+                    return settings.data.pages.notFound === this.parent;
+                });
+
             this.attr("revisions")
                 .entities(Page)
                 .setDynamic(() => {

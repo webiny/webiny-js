@@ -21,7 +21,7 @@ export default ([
     {
         name: "cms-page-details-revision-content-preview",
         type: "cms-page-details-revision-content",
-        render({ pageDetails, loading }: WithPageDetailsProps) {
+        render({ pageDetails, loading, refreshPages }: WithPageDetailsProps) {
             return (
                 <Tab label={"Page preview"} disabled={loading}>
                     <RenderBlock>
@@ -29,7 +29,8 @@ export default ([
                             <div style={{ position: "relative" }}>
                                 {loading && <CircularProgress />}
                                 {renderPlugins("cms-page-details-revision-content-preview", {
-                                    pageDetails
+                                    pageDetails,
+                                    refreshPages
                                 })}
                             </div>
                         </Elevation>

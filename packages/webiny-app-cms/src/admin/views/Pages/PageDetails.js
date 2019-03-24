@@ -15,6 +15,7 @@ import { get } from "lodash";
 
 type Props = WithRouterProps &
     WithSnackbarProps & {
+        refreshPages: Function,
         pageId: string,
         page: Object,
         loading: boolean
@@ -55,7 +56,7 @@ const EmptyPageDetails = () => {
     );
 };
 
-const PageDetails = ({ pageId, router, showSnackbar }: Props) => {
+const PageDetails = ({ pageId, router, showSnackbar, refreshPages }: Props) => {
     if (!pageId) {
         return <EmptyPageDetails />;
     }
@@ -86,6 +87,7 @@ const PageDetails = ({ pageId, router, showSnackbar }: Props) => {
                                         {pageDetails => (
                                             <React.Fragment>
                                                 {renderPlugins("cms-page-details", {
+                                                    refreshPages,
                                                     pageDetails,
                                                     loading
                                                 })}

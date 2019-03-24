@@ -6,6 +6,7 @@ import RevisionSelector from "./revisionSelector/RevisionSelector";
 import PublishRevision from "./publishRevision/PublishRevision";
 import EditRevision from "./editRevision/EditRevision";
 import DeletePage from "./deletePage/DeletePage";
+import PageOptionsMenu from "./pageOptionsMenu/PageOptionsMenu";
 
 export default ([
     {
@@ -41,6 +42,13 @@ export default ([
         type: "cms-page-details-header-right",
         render(props: WithPageDetailsProps) {
             return <DeletePage {...props} />;
+        }
+    },
+    {
+        name: "cms-page-details-header-options-menu",
+        type: "cms-page-details-header-right",
+        render(props: WithPageDetailsProps) {
+            return <PageOptionsMenu {...props} />;
         }
     }
 ]: Array<CmsPageDetailsPluginType>);
