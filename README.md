@@ -6,7 +6,7 @@
 </p>
 <p align="center">
   <a href="https://www.webiny.com">Official Website</a> |
-  <a href="documentation/packages.md">Packages</a> 
+  <a href="https://docs.webiny.com/docs/developer-tutorials/local-setup">Docs</a> 
 </p>
 
 #
