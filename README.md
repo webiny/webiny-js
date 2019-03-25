@@ -2,7 +2,7 @@
 <p align="center">
   <img src="https://s3.amazonaws.com/owler-image/logo/webiny_owler_20160228_232453_original.png" width="400" />
   <br/>
-  <strong>Web development made easy.</strong>
+  <strong>Developer-friendly Serverless CMS powered by GraphQL and React</strong>
 </p>
 <p align="center">
   <a href="https://www.webiny.com">Official Website</a> |
@@ -13,9 +13,11 @@
 <p align="center">
 
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io)
-[![Discord](https://user-images.githubusercontent.com/7288322/34429152-141689f8-ecb9-11e7-8003-b5a10a5fcb29.png)](https://discord.gg/ZuZVyc) 
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/webiny/webiny-js/blob/master/LICENSE)
 [![SemVer](http://img.shields.io/:semver-2.0.0-brightgreen.svg)](http://semver.org)
+![](https://img.shields.io/npm/types/react-butterfiles.svg)
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 | Branch | Build |
 | :--- | :---: |
@@ -26,7 +28,6 @@
 Webiny is an open-source platform created for building modern web apps.
 
 ## Install
-More on the `installation` process soon...
 
 ## About
 Webiny consists of two layers that work closely together.
