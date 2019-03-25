@@ -49,11 +49,6 @@ The entire admin app is based on plugins and you can customize everything. Each 
 ## Project organization
 We have decided to use a `monorepo` organization and have fixed publishing (so when we publish a change, all the packages will be published using that same version).
 
-## FAQ
-### Why not microservices ?
-We are planning on going the microservices way but at this point it really is not necessary.
-The local data-sources approach is already a good separation of business logic which will make migration to microservices much easier later on.
-
 ## Contributing
 Please see our [Contributing Guideline](/CONTRIBUTING.md) which explains repo organization, linting, testing, and other steps.
 
