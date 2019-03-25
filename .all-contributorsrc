@@ -21,6 +21,25 @@
         "test",
         "tool"
       ]
+    },
+    {
+      "login": "Pavel910",
+      "name": "Pavel Denisjuk",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/3920893?v=4",
+      "profile": "http://webiny.com/",
+      "contributions": [
+        "question",
+        "code",
+        "doc",
+        "example",
+        "ideas",
+        "infra",
+        "maintenance",
+        "platform",
+        "plugin",
+        "projectManagement",
+        "tool"
+      ]
     }
   ],
   "contributorsPerLine": 7
