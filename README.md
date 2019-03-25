@@ -28,6 +28,7 @@
 Webiny is an open-source platform created for building modern web apps.
 
 ## Install
+Click [here](https://docs.webiny.com/docs/developer-tutorials/local-setup) for the instructions on how to set up a new Webiny project.
 
 ## About
 Webiny consists of two layers that work closely together.
