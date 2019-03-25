@@ -25,9 +25,7 @@
 | development (active development) | [![Build Status](https://travis-ci.org/Webiny/webiny-js.svg?branch=development)](https://travis-ci.org/Webiny/webiny-js) |
 </p>
 
-Webiny is an open-source platform created for building modern web apps.
-
-## Install
+## Installation
 Installation instructions can be found in the official [docs](https://docs.webiny.com/docs/developer-tutorials/local-setup) .
 
 ## About
