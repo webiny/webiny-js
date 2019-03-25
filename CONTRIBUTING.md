@@ -26,7 +26,7 @@ multiple packages at once.
  one ready on your system. The easiest way to get it up and running is
  via [Docker](https://docs.docker.com/samples/library/mongo/).
  
-## Setup the project locally
+## Local setup
 1. Fork and clone the repo
 
 2. Install all dependencies:   
