@@ -1,0 +1,24 @@
+{
+    "presets": [
+        ["@babel/preset-env", {
+            "targets": {
+                "browsers": ["last 2 versions", "safari >= 7"]
+            }
+        }],
+        "@babel/preset-react",
+        "@babel/preset-flow"
+    ],
+    "plugins": [
+        ["babel-plugin-emotion", { "autoLabel": true }],
+        ["@babel/plugin-proposal-object-rest-spread", {"useBuiltIns": true}],
+        ["@babel/plugin-transform-runtime"],
+        ["@babel/plugin-proposal-class-properties"],
+        ["babel-plugin-named-asset-import", {
+            "loaderMap": {
+                "svg": {
+                    "ReactComponent": "@svgr/webpack![path]"
+                }
+            }
+        }]
+    ]
+}
