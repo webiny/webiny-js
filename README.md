@@ -38,7 +38,7 @@ API layer works as a Lambda function with Apollo-Server handling all the GraphQL
 In addition to that we created a simple `data-sources` wrapper inspired by GrAMPS (and later Apollo data-sources). It helps you develop separate modules (packages) and stitch them together to build one big GraphQL service.
 
 ### Client layer (SPA)
-Our client (SPA) layer is based on `create-react-app` v2 and Apollo Client. If you ever developed using those tools - you already know Webiny :)
+Our client (SPA) layer is based on `create-react-app` v2 and Apollo Client. If you ever developed using those tools - you already know Webiny 🙂
 As our UI library we are using Material Components, and a very promising project [RMWC](https://jamesmfriedman.github.io/rmwc/) to get going with Material faster.
 You can see all the currently available components in our [storybook](https://webiny-material-storybook.netlify.com/).
 
