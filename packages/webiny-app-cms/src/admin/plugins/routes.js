@@ -1,12 +1,30 @@
 // @flow
 import React from "react";
-import { AdminLayout } from "webiny-admin/components/AdminLayout";
-import Categories from "webiny-app-cms/admin/views/Categories/Categories";
-import Menus from "webiny-app-cms/admin/views/Menus/Menus";
-import Pages from "webiny-app-cms/admin/views/Pages/Pages";
-import Editor from "webiny-app-cms/admin/views/Pages/Editor";
-import { SecureRoute } from "webiny-app-security/components";
 import Helmet from "react-helmet";
+import Loadable from "react-loadable";
+import { AdminLayout } from "webiny-admin/components/AdminLayout";
+import { SecureRoute } from "webiny-app-security/components";
+import { CircularProgress } from "webiny-ui/Progress";
+
+const Categories = Loadable({
+    loader: () => import("webiny-app-cms/admin/views/Categories/Categories"),
+    loading: CircularProgress
+});
+
+const Menus = Loadable({
+    loader: () => import("webiny-app-cms/admin/views/Menus/Menus"),
+    loading: CircularProgress
+});
+
+const Pages = Loadable({
+    loader: () => import("webiny-app-cms/admin/views/Pages/Pages"),
+    loading: CircularProgress
+});
+
+const Editor = Loadable({
+    loader: () => import("webiny-app-cms/admin/views/Pages/Editor"),
+    loading: CircularProgress
+});
 
 export default [
     {

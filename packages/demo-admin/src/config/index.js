@@ -5,12 +5,13 @@ import { BatchHttpLink } from "apollo-link-batch-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { createAuthLink } from "webiny-app-security/components";
 import { createOmitTypenameLink } from "webiny-app/graphql";
+import { lazyLoadMiddleware } from "webiny-app-cms/admin";
 
 export default {
     router: {
         basename: "/admin",
         defaultRoute: "Cms.Pages",
-        middleware: [renderMiddleware()]
+        middleware: [lazyLoadMiddleware(), renderMiddleware()]
     },
     apolloClient: new ApolloClient({
         link: ApolloLink.from([
