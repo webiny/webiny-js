@@ -2,6 +2,7 @@
 import contentBackground from "./../plugins/background";
 import blockEditing from "./../plugins/blockEditing";
 import elements from "./../plugins/elements";
+import icons from "./../plugins/icons";
 import elementActions from "./../plugins/elementActions";
 import elementGroups from "./../plugins/elementGroups";
 import blocks from "./../plugins/blocks";
@@ -16,15 +17,16 @@ import breadcrumbs from "./../plugins/breadcrumbs";
 export default [
     contentBackground,
     breadcrumbs,
-    ...elementActions,
-    ...elementGroups,
-    ...blockEditing,
-    ...elements,
-    ...blocks,
-    ...blocksCategories,
-    ...toolbar,
-    ...elementSettings,
-    ...defaultBarPlugins,
-    ...slateEditorPlugins,
-    ...pageSettingsPlugins
+    elementActions,
+    elementGroups,
+    blockEditing,
+    elements,
+    blocks,
+    blocksCategories,
+    toolbar,
+    elementSettings,
+    defaultBarPlugins,
+    slateEditorPlugins,
+    pageSettingsPlugins,
+    icons
 ];
