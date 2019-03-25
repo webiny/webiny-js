@@ -1,6 +1,7 @@
 # CONTRIBUTING
 
-This small guide is intended for anyone contributing code to this project.   
+This small guide is intended for anyone that wants to contribute 
+to the Webiny project.   
 
 ## Introduction
 Once you clone the repo to your local filesystem, you will receive
