@@ -8,8 +8,8 @@ Once you clone the repo to your local filesystem, you will receive
 a monorepo which consists of a bunch of different packages, located
 in `/packages` directory. Some of these are smaller utility packages, 
 but there are also larger and more important ones. 
-For example, `webiny-api` is the core package that powers all Webiny 
-sites.
+For example, `webiny-api` is the core package that provides a GraphQL
+API and powers all Webiny sites.
 
 Although it's preferred that the code changes are introduced one 
 package per issue or feature, sometimes it'll be necessary to change
