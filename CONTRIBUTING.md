@@ -15,6 +15,17 @@ Although it's preferred that the code changes are introduced one
 package per issue or feature, sometimes it'll be necessary to change
 multiple packages at once.
 
+## Prerequisites
+1. Node 8.10 or higher
+
+2. yarn 1.0 or higher (because our project setup uses workspaces).
+   If you don't have yarn already installed, visit 
+   [yarnpkg.com](https://yarnpkg.com/en/docs/install) to install it. 
+
+3. Webiny uses MongoDB as its go-to database, so you'll need to have 
+ one ready on your system. The easiest way to get it up and running is
+ via [Docker](https://docs.docker.com/samples/library/mongo/).
+ 
 ## Setup the project locally
 1. Fork and clone the repo
 
