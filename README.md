@@ -57,4 +57,4 @@ The local data-sources approach is already a good separation of business logic w
 Please see our [Contributing Guideline](/CONTRIBUTING.md) which explains repo organization, linting, testing, and other steps.
 
 ## License
-This project is licensed under the terms of the [MIT license](/LICENSE.md).
+This project is licensed under the terms of the [MIT license](/LICENSE).
