@@ -1,4 +1,5 @@
 <br/>
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors)
 <p align="center">
   <img src="https://s3.amazonaws.com/owler-image/logo/webiny_owler_20160228_232453_original.png" width="400" />
   <br/>
@@ -58,3 +59,15 @@ Please see our [Contributing Guideline](/CONTRIBUTING.md) which explains repo or
 
 ## License
 This project is licensed under the terms of the [MIT license](/LICENSE).
+
+## Contributors
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore -->
+<table><tr><td align="center"><a href="https://www.webiny.com"><img src="https://avatars0.githubusercontent.com/u/5121148?v=4" width="100px;" alt="Adrian Smijulj"/><br /><sub><b>Adrian Smijulj</b></sub></a><br /><a href="#question-doitadrian" title="Answering Questions">💬</a> <a href="https://github.com/Webiny/webiny-js/commits?author=doitadrian" title="Code">💻</a> <a href="#maintenance-doitadrian" title="Maintenance">🚧</a> <a href="https://github.com/Webiny/webiny-js/commits?author=doitadrian" title="Tests">⚠️</a> <a href="#tool-doitadrian" title="Tools">🔧</a></td></tr></table>
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
