@@ -48,20 +48,33 @@ export default compose(
     }),
     lifecycle({
         componentDidMount() {
-            const { addKeyHandler, onClick, shortcut } = this.props;
-            addKeyHandler(shortcut, e => {
-                const { slateFocused, settingsActive } = this.props;
-                if (slateFocused || settingsActive) {
-                    return;
-                }
+            let { addKeyHandler, onClick, shortcut = [] } = this.props;
+            if (typeof shortcut === "string") {
+                shortcut = [shortcut];
+            }
 
-                e.preventDefault();
-                onClick();
+            shortcut.map(short => {
+                addKeyHandler(short, e => {
+                    const { slateFocused, settingsActive } = this.props;
+                    if (slateFocused || settingsActive) {
+                        return;
+                    }
+
+                    e.preventDefault();
+                    onClick();
+                });
             });
         },
         componentWillUnmount() {
-            const { removeKeyHandler, shortcut } = this.props;
-            removeKeyHandler(shortcut);
+            let { removeKeyHandler, shortcut = [] } = this.props;
+
+            if (typeof shortcut === "string") {
+                shortcut = [shortcut];
+            }
+
+            shortcut.map(short => {
+                removeKeyHandler(short);
+            });
         }
     })
 )(Action);
