@@ -1,3 +1,11 @@
+const path = require("path");
+
+const includePaths = [
+    path.join(__dirname, "../node_modules"),
+    path.join(__dirname, "../../../node_modules"),
+    path.join(__dirname, "../../../node_modules/material-components-web/node_modules")
+];
+
 module.exports = ({ config }) => {
     config.module.rules[0].include = [__dirname + "/../src", /webiny-/];
     config.module.rules[0].exclude = /node_modules/;
@@ -20,9 +28,7 @@ module.exports = ({ config }) => {
             "css-loader",
             {
                 loader: "sass-loader",
-                options: {
-                    includePaths: ["node_modules", "../../node_modules"]
-                }
+                options: { includePaths }
             }
         ]
     });
