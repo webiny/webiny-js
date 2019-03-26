@@ -66,9 +66,11 @@ const GeneralSettings = ({ Bind, onAfterChangeImage, cms: { theme } }: Object) =
 export default compose(
     withCms(),
     withHandlers({
-        hasOgImage: ({ data }) => () => {
-            const src = get(data, "settings.social.image.src");
-            return typeof src === "string" && !src.startsWith("data:");
+        hasOgImage: ({ form }) => () => {
+            // const src = get(data, "settings.social.image.src"); // Doesn't work.
+            const src = get(form.state, "data.settings.social.image.src"); // Works.
+
+            return typeof src === "string" && src && !src.startsWith("data:");
         }
     }),
     withHandlers({

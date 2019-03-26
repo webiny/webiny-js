@@ -6,7 +6,7 @@ export default async ({ form, value }) => {
             const next = { ...state };
             // Remove previously set og:image:width / og:image:height.
             next.data.settings.social.meta = next.data.settings.social.meta.filter(item => {
-                return !OG_IMAGE_DIMENSIONS_PROPERTIES.includes(item.property);
+                return item.property && !OG_IMAGE_DIMENSIONS_PROPERTIES.includes(item.property);
             });
             return next;
         });
@@ -32,11 +32,11 @@ export default async ({ form, value }) => {
         next.data.settings.social.meta.push(
             {
                 property: "og:image:width",
-                content: image.width
+                content: String(image.width)
             },
             {
                 property: "og:image:height",
-                content: image.height
+                content: String(image.height)
             }
         );
 
