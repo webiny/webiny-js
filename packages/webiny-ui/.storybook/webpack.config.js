@@ -5,12 +5,11 @@ module.exports = ({ config }) => {
     config.module.rules[1].include = [__dirname + "/../src", /webiny-/];
     config.module.rules.unshift({
         test: /\.svg$/,
-        exclude: /node_modules/,
+        issuer: {
+            test: /.jsx?$/
+        },
         use: ["@svgr/webpack"]
     });
-    // Remove last 2 rules related to `scss` files
-    config.module.rules.pop();
-    config.module.rules.pop();
 
     // Add our own scss rule
     config.module.rules.push({
