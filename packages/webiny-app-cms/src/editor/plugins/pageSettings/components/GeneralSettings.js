@@ -9,6 +9,7 @@ import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
 import PageImage from "./PageImage";
 import { set, get } from "lodash";
+import appendOgImageDimensions from "./appendOgImageDimensions";
 
 const toSlug = (value, cb) => {
     cb(slugify(value, { replacement: "-", lower: true, remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g })); // eslint-disable-line
@@ -65,9 +66,11 @@ const GeneralSettings = ({ Bind, onAfterChangeImage, cms: { theme } }: Object) =
 export default compose(
     withCms(),
     withHandlers({
-        hasOgImage: ({ data }) => () => {
-            const src = get(data, "settings.social.image.src");
-            return typeof src === "string" && !src.startsWith("data:");
+        hasOgImage: ({ form }) => () => {
+            // const src = get(data, "settings.social.image.src"); // Doesn't work.
+            const src = get(form.state, "data.settings.social.image.src"); // Works.
+
+            return typeof src === "string" && src && !src.startsWith("data:");
         }
     }),
     withHandlers({
@@ -78,6 +81,7 @@ export default compose(
                     set(state, "data.settings.social.image", selectedImage);
                     return state;
                 });
+                appendOgImageDimensions({ form, value: selectedImage });
             }
         }
     })
