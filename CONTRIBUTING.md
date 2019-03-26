@@ -45,7 +45,7 @@ multiple packages at once.
 
 4. Run the setup script:
     ```
-    cd packages/webiny-api && yarn setup
+    cd packages/demo-api && yarn setup
     ```
     This will create necessary initial data in your MongoDB database.
     
@@ -57,7 +57,11 @@ following directories:
     packages/demo-api
     packages/demo-admin
     packages/demo-site
-    ``` 
+    packages/demo-theme
+    ```
+
+These are the demo apps that imitate the actual project you get when you setup the local
+project using `webiny-cli`.
 
 ## Commits
 - We are using `commitizen` to keep commit messages as consistent as possible.
@@ -83,6 +87,7 @@ of the package, to run only tests in a single package, for example
 
 IMPORTANT:
 - the only commit message that matters is the PR merge commit
+- all PRs `must` be against `development` branch
 - PRs are merged using Squash Merge to only create 1 commit in the base branch
 - a PR reference in the commit message is mandatory (important for changelog)
 - add Github labels to PR stating what kind of change it is 
