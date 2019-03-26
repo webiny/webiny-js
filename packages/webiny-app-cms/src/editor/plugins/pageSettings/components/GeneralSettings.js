@@ -9,6 +9,7 @@ import { Input } from "webiny-ui/Input";
 import { Select } from "webiny-ui/Select";
 import PageImage from "./PageImage";
 import { set, get } from "lodash";
+import appendOgImageDimensions from "./appendOgImageDimensions";
 
 const toSlug = (value, cb) => {
     cb(slugify(value, { replacement: "-", lower: true, remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g })); // eslint-disable-line
@@ -78,6 +79,7 @@ export default compose(
                     set(state, "data.settings.social.image", selectedImage);
                     return state;
                 });
+                appendOgImageDimensions({ form, value: selectedImage });
             }
         }
     })
