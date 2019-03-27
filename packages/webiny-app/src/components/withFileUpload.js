@@ -96,6 +96,7 @@ export const withFileUpload = (options: WithFileUploadOptions = {}): Function =>
 
                     if (mustUpload(file)) {
                         // Send file to server and get its path.
+                        props.showSnackbar("Uploading...");
                         try {
                             return upload(file)
                                 .then(async uploadedFile => {
