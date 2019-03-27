@@ -22,7 +22,7 @@ type Props = FormComponentProps & {
     disabled?: boolean,
 
     // Description beneath the input.
-    description?: React.Element<any>,
+    description?: React.Node,
 
     // Placeholder is used with `fullwidth` prop instead of a `label`. `label` and `placeholder` are always mutually exclusive.
     placeholder?: string,
