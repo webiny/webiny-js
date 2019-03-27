@@ -25,8 +25,8 @@ story.add("usage", () => {
     return (
         <Story>
             <StoryReadme>{readme}</StoryReadme>
-            <StoryProps title="`Accordion` props">{PropsType}</StoryProps>
-            <StoryProps title="`AccordionItem` props">{ItemProps}</StoryProps>
+            <StoryProps title="Accordion props">{PropsType}</StoryProps>
+            <StoryProps title="AccordionItem props">{ItemProps}</StoryProps>
 
             <StorySandbox title={"Accordion"}>
                 <StorySandboxExample>

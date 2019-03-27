@@ -1,19 +1,26 @@
-module.exports = (config, env, defaultConfig) => {
-    defaultConfig.module.rules[0].include = [__dirname + "/../src", /webiny-/];
-    defaultConfig.module.rules[0].exclude = /node_modules/;
-    defaultConfig.module.rules[1].use = [{ loader: "raw-loader" }];
-    defaultConfig.module.rules[1].include = [__dirname + "/../src", /webiny-/];
-    defaultConfig.module.rules.unshift({
+const path = require("path");
+
+const includePaths = [
+    path.join(__dirname, "../node_modules"),
+    path.join(__dirname, "../../../node_modules"),
+    path.join(__dirname, "../../../node_modules/material-components-web/node_modules")
+];
+
+module.exports = ({ config }) => {
+    config.module.rules[0].include = [__dirname + "/../src", /webiny-/];
+    config.module.rules[0].exclude = /node_modules/;
+    config.module.rules[1].use = [{ loader: "raw-loader" }];
+    config.module.rules[1].include = [__dirname + "/../src", /webiny-/];
+    config.module.rules.unshift({
         test: /\.svg$/,
-        exclude: /node_modules/,
+        issuer: {
+            test: /.jsx?$/
+        },
         use: ["@svgr/webpack"]
     });
-    // Remove last 2 rules related to `scss` files
-    defaultConfig.module.rules.pop();
-    defaultConfig.module.rules.pop();
 
     // Add our own scss rule
-    defaultConfig.module.rules.push({
+    config.module.rules.push({
         test: /\.scss$/,
         include: [__dirname + "/../src", /webiny-/],
         loaders: [
@@ -21,12 +28,10 @@ module.exports = (config, env, defaultConfig) => {
             "css-loader",
             {
                 loader: "sass-loader",
-                options: {
-                    includePaths: ["node_modules", "../../node_modules"]
-                }
+                options: { includePaths }
             }
         ]
     });
 
-    return defaultConfig;
+    return config;
 };
