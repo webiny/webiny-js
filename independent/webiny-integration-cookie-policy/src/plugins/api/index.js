@@ -49,9 +49,6 @@ export default [
         resolvers: {},
         security: {
             shield: {
-                SettingsQuery: {
-                    cookiePolicy: hasScope("cms:settings")
-                },
                 SettingsMutation: {
                     cookiePolicy: hasScope("cms:settings")
                 }
