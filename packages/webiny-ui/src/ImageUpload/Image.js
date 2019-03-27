@@ -6,6 +6,7 @@ import { ReactComponent as AddImageIcon } from "./icons/round-add_photo_alternat
 import { ReactComponent as RemoveImageIcon } from "./icons/round-close-24px.svg";
 import { ReactComponent as EditImageIcon } from "./icons/round-edit-24px.svg";
 import { Typography } from "webiny-ui/Typography";
+import { CircularProgress } from "webiny-ui/Progress";
 
 const AddImageIconWrapper = styled("div")({
     color: "var(--mdc-theme-text-secondary-on-background)",
@@ -201,17 +202,12 @@ class Image extends React.Component<Props> {
 
     render() {
         const { value, disabled } = this.props;
-
-        const image = (
+        return (
             <div className={classNames({ disabled })} style={{ height: "100%" }}>
+                {this.props.loading && <CircularProgress />}
                 {value && value.src ? this.renderImg() : this.renderBlank()}
             </div>
         );
-
-        if (this.props.loading) {
-            return <div style={{ opacity: 0.75, pointerEvents: "none" }}>{image}</div>;
-        }
-        return image;
     }
 }
 

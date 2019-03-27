@@ -5,8 +5,9 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { Input } from "webiny-ui/Input";
 import OpenGraphTags from "./OpenGraphTags";
 import PageImage from "./PageImage";
+import appendOgImageDimensions from "./appendOgImageDimensions";
 
-const SocialSettings = ({ Bind }: Object) => {
+const SocialSettings = ({ Bind, form }: Object) => {
     return (
         <React.Fragment>
             <Grid>
@@ -36,7 +37,10 @@ const SocialSettings = ({ Bind }: Object) => {
 
             <Grid>
                 <Cell span={12}>
-                    <Bind name={"settings.social.image"}>
+                    <Bind
+                        name={"settings.social.image"}
+                        afterChange={value => appendOgImageDimensions({ value, form })}
+                    >
                         <PageImage
                             label="Social Image"
                             imageEditor={{
