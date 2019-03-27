@@ -1,6 +1,6 @@
 // @flow
 export { default as createAuthLink } from "./createAuthLink";
-export { default as defaultAuthQuery } from "./defaultAuthQuery";
+export { getCurrentUser } from "./graphql";
 export { default as Security, SecurityConsumer } from "./Security";
 export { withSecurity } from "./withSecurity";
 export { default as Secure } from "./Secure";

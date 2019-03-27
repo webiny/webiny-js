@@ -3,8 +3,10 @@ import * as React from "react";
 import { compose } from "recompose";
 import { withApollo, type WithApolloClient } from "react-apollo";
 import localStorage from "store";
+import qs from "query-string";
 import observe from "store/plugins/observe";
-import authQuery from "./defaultAuthQuery";
+import { withSnackbar } from "webiny-admin/components";
+import { getCurrentUser, loginUsingToken } from "./graphql";
 import { setIdentity } from "webiny-app-security";
 const { Provider, Consumer } = React.createContext();
 
@@ -39,6 +41,39 @@ class Security extends React.Component<Props, State> {
         loading: false
     };
 
+    componentDidMount() {
+        localStorage.observe(AUTH_TOKEN, async (token: any) => {
+            if (!token) {
+                this.checkLoginToken();
+                return this.setState({ user: null }, () => setIdentity(null));
+            }
+            const user = await this.getUser();
+
+            this.setState({ user, firstLoad: false }, () => setIdentity(user));
+        });
+    }
+
+    checkLoginToken = async () => {
+        const { loginToken } = qs.parse(window.location.search);
+        if (loginToken && !this.state.user) {
+            this.setState({ loading: true });
+            const res = await this.props.client.mutate({
+                mutation: loginUsingToken,
+                variables: { token: loginToken }
+            });
+
+            this.setState({ loading: false });
+
+            const { data, error } = res.data.security.loginUsingToken;
+            if (error) {
+                this.props.showSnackbar(error.message);
+                return;
+            }
+
+            this.onToken(data.token);
+        }
+    };
+
     getToken = () => {
         if (this.props.getToken) {
             return this.props.getToken();
@@ -65,21 +100,10 @@ class Security extends React.Component<Props, State> {
         }
 
         // Get user using default authentication query
-        const { data } = await this.props.client.query({ query: authQuery });
+        const { data } = await this.props.client.query({ query: getCurrentUser });
         this.setState({ loading: false });
         return data.security.getCurrentUser.data;
     };
-
-    componentDidMount() {
-        localStorage.observe(AUTH_TOKEN, async (token: any) => {
-            if (!token) {
-                return this.setState({ user: null }, () => setIdentity(null));
-            }
-            const user = await this.getUser();
-
-            this.setState({ user, firstLoad: false }, () => setIdentity(user));
-        });
-    }
 
     onToken = async (token: string) => {
         this.setToken(token);
@@ -128,4 +152,7 @@ class Security extends React.Component<Props, State> {
     }
 }
 
-export default compose(withApollo)(Security);
+export default compose(
+    withApollo,
+    withSnackbar()
+)(Security);

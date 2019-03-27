@@ -8,6 +8,7 @@ import {
 } from "webiny-api/graphql";
 
 import resolveLoginUser from "./userResolvers/loginUser";
+import resolveLoginUsingToken from "./userResolvers/loginUsingToken";
 import resolveGetCurrentUser from "./userResolvers/getCurrentUser";
 import resolveUpdateCurrentUser from "./userResolvers/updateCurrentUser";
 import resolveGetCurrentUserSettings from "./userResolvers/getCurrentUserSettings";
@@ -136,6 +137,11 @@ export default {
                 remember: Boolean
             ): UserLoginResponse
             
+            "Login user using token"
+            loginUsingToken(
+                token: String! 
+            ): UserLoginResponse
+            
             "Update current user"
             updateCurrentUser(
                 data: CurrentUserInput!
@@ -170,6 +176,7 @@ export default {
         },
         SecurityMutation: {
             loginUser: resolveLoginUser(userFetcher),
+            loginUsingToken: resolveLoginUsingToken(userFetcher),
             updateCurrentUser: resolveUpdateCurrentUser(userFetcher),
             updateCurrentUserSettings: resolveUpdateCurrentUserSettings(userSettingsFetcher),
             createUser: resolveCreate(userFetcher),
