@@ -116,8 +116,9 @@ class Form extends React.Component<Props, State> {
                 // Make sure all current inputs have a value in the model (defaultValues do not exist in form data)
                 const inputNames = Object.keys(this.inputs);
                 inputNames.forEach(name => {
-                    if (!_.get(data, name)) {
-                        data = set(name, this.inputs[name].defaultValue, data);
+                    const defaultValue = this.inputs[name].defaultValue;
+                    if (!_.has(data, name) && typeof defaultValue !== 'undefined') {
+                        data = set(name, defaultValue, data);
                     }
                 });
 
@@ -237,10 +238,10 @@ class Form extends React.Component<Props, State> {
     };
 
     getOnChangeFn = ({
-        name,
-        beforeChange,
-        afterChange
-    }: {
+                         name,
+                         beforeChange,
+                         afterChange
+                     }: {
         name: string,
         beforeChange: any,
         afterChange: any
