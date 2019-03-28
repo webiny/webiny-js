@@ -8,6 +8,14 @@ const prepareParams = (params: Object) => {
         prepared.showLink = false;
     }
 
+    if (!prepared.content.dismiss) {
+        delete prepared.content.dismiss;
+    }
+
+    if (!prepared.content.message) {
+        delete prepared.content.message;
+    }
+
     return prepared;
 };
 

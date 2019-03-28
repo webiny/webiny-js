@@ -7,11 +7,10 @@ import showCookiePolicy from "./../utils/showCookiePolicy";
 class CookiePolicy extends React.Component<*> {
     componentDidMount() {
         const { settings } = this.props;
-        if (settings && settings.enabled !== true) {
-            return;
+        if (settings && settings.enabled === true) {
+            showCookiePolicy(settings);
         }
 
-        showCookiePolicy(settings);
     }
 
     render() {
