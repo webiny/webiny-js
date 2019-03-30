@@ -1,3 +1,4 @@
+/* eslint-disable */
 // @flowIgnore
 import config from "../../src/configs";
 import fs from "fs-extra";

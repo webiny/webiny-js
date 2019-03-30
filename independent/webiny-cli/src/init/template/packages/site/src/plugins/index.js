@@ -7,7 +7,7 @@ import mailchimpPlugins from "webiny-integration-mailchimp/plugins/render";
 import gtmPlugins from "webiny-integration-google-tag-manager/plugins/render";
 
 const plugins = [
-    fileUploadPlugin,
+    fileUploadPlugin(),
     imagePlugin,
     cmsPlugins,
     cookiePolicyPlugins,
@@ -15,15 +15,5 @@ const plugins = [
     mailchimpPlugins,
     gtmPlugins
 ];
-
-if (process.env.NODE_ENV !== "development") {
-    plugins.push(
-        fileUploadPlugin({
-            webinyCloud: true
-        })
-    );
-} else {
-    plugins.push(fileUploadPlugin({}));
-}
 
 export default plugins;

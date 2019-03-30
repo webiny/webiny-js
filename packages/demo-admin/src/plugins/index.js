@@ -9,6 +9,7 @@ import typeformPlugins from "webiny-integration-typeform/plugins/admin";
 import mailchimpPlugins from "webiny-integration-mailchimp/plugins/admin";
 
 const plugins = [
+    fileUploadPlugin(),
     imagePlugin,
     adminPlugins,
     securityPlugins,
@@ -18,15 +19,5 @@ const plugins = [
     typeformPlugins,
     mailchimpPlugins
 ];
-
-if (process.env.NODE_ENV !== "development") {
-    plugins.push(
-        fileUploadPlugin({
-            webinyCloud: true
-        })
-    );
-} else {
-    plugins.push(fileUploadPlugin({}));
-}
 
 export default plugins;

@@ -1,0 +1,11 @@
+{
+  "name": "demo-files-upload-request",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "mime-types": "^2.1.22",
+    "sanitize-filename": "^1.6.1",
+    "uniqid": "^5.0.3"
+  }
+}

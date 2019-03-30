@@ -1,5 +1,4 @@
 // @flowIgnore
-const slsw = require("serverless-webpack");
 
 const path = require("path");
 const getPackages = require("get-yarn-workspaces");
@@ -14,11 +13,11 @@ const aliases = packages.reduce((aliases, dir) => {
 }, {});
 
 module.exports = {
-    entry: isEnvDevelopment ? slsw.lib.entries : "./src/handler.js",
+    // entry: isEnvDevelopment ? slsw.lib.entries : "./src/handler.js",
     target: "node",
     // Generate sourcemaps for proper error messages
     devtool: "source-map",
-    externals: ["aws-sdk", "vertx", "sharp", "mongodb"],
+    externals: ["aws-sdk", "vertx", "mongodb"],
     mode: isEnvDevelopment ? "development" : "production",
     optimization: {
         // We no not want to minimize our code.

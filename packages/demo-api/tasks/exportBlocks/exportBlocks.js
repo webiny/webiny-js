@@ -1,8 +1,8 @@
+/* eslint-disable */
 // @flowIgnore
 import config from "../../src/configs";
 import fs from "fs-extra";
 import { blue, green } from "chalk";
-import { camelCase } from "lodash";
 
 const pwd: string = (process.cwd(): any);
 

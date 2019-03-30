@@ -1,0 +1,11 @@
+{
+  "name": "demo-files-download",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "fs-extra": "^7.0.1",
+    "mime-types": "^2.1.22",
+    "sharp": "^0.22.0"
+  }
+}

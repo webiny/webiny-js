@@ -6,7 +6,7 @@ import { createHandler } from "webiny-api";
 import config from "./configs";
 import plugins from "./plugins";
 
-dotenv.config();
+dotenv.config({ path: __dirname + "/../.env" });
 
 registerPlugins(plugins);
 export const handler = createHandler(config);

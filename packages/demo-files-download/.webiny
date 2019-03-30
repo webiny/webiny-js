@@ -1,0 +1,1 @@
+{ "type": "function", "path": "/files/:key", "method" : "GET" }

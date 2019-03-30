@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @flowIgnore
-// eslint-disable
+/* eslint-disable */
 require("dotenv").config();
 const path = require("path");
 
