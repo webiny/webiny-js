@@ -40,5 +40,5 @@ listFunctions().forEach(fn => {
 
 const port = argv.port || 9000;
 app.listen(port, () => {
-    console.log(chalk.cyan(`🚀 Functions running on (port ${port}).`));
+    console.log(chalk.cyan(`🚀 Functions running on port ${port}.`));
 });
