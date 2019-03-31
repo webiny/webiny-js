@@ -45,8 +45,8 @@
   },
   "scripts": {
     "build": "yarn build:client && yarn build:api",
-    "build:client": "babel src -d ${DEST:-build} --source-maps --copy-files --config-file ./.babelrc.client",
-    "build:api": "babel src/plugins/api -d ${DEST:-build}/plugins/api --source-maps --copy-files --config-file ./.babelrc.api",
+    "build:client": "babel src -d ${DEST:-build} --source-maps --copy-files --config-file ./.babelrc.client.js",
+    "build:api": "babel src/plugins/api -d ${DEST:-build}/plugins/api --source-maps --copy-files --config-file ./.babelrc.api.js",
     "flow-copy-source": "flow-copy-source src ${DEST:-build}",
     "postbuild": "yarn flow-copy-source"
   }
