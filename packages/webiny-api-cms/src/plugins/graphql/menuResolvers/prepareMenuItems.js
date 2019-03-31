@@ -119,11 +119,7 @@ export default async ({ entity: menu, context: graphqlContext }: Object) => {
                             Category
                         });
 
-                        item.children = item.children.map(entity => ({
-                            id: entity.id,
-                            title: entity.title,
-                            url: entity.url
-                        }));
+                        item.children = await item.children.toJSON("id,title,url");
 
                         break;
                     }
