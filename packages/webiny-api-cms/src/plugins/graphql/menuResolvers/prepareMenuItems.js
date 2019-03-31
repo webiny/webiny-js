@@ -114,10 +114,12 @@ export default async ({ entity: menu, context: graphqlContext }: Object) => {
 
                         const { Page, Category } = graphqlContext.cms.entities;
                         item.children = await listPublishedPages({
-                            args: { category, sort: { [sortBy]: sortDir } },
+                            args: { category, sort: { [sortBy]: parseInt(sortDir) } },
                             Page,
                             Category
                         });
+
+                        item.children = await item.children.toJSON("id,title,url");
 
                         break;
                     }
