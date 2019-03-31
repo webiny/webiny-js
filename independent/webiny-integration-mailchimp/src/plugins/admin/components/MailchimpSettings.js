@@ -62,7 +62,25 @@ const MailchimpSettings = ({ showSnackbar }) => {
                                                                     name={"mailchimp.apiKey"}
                                                                     validators={["required"]}
                                                                 >
-                                                                    <Input label="API key" />
+                                                                    <Input
+                                                                        label="API key"
+                                                                        description={
+                                                                            <>
+                                                                                Click{" "}
+                                                                                <a
+                                                                                    target={
+                                                                                        "_blank"
+                                                                                    }
+                                                                                    href="https://mailchimp.com/help/about-api-keys/"
+                                                                                >
+                                                                                    here
+                                                                                </a>{" "}
+                                                                                for more information
+                                                                                about Mailchimp API
+                                                                                keys.
+                                                                            </>
+                                                                        }
+                                                                    />
                                                                 </Bind>
                                                             </Cell>
                                                         </Grid>
