@@ -1,7 +1,5 @@
 // @flow
 import * as React from "react";
-import { Input } from "webiny-ui/Input";
-import { ButtonPrimary } from "webiny-ui/Button";
 import { css } from "react-emotion";
 
 const style = css({
@@ -9,8 +7,11 @@ const style = css({
         position: "relative",
         ".webiny-cms-element-mailchimp-form__subscribe_btn": {
             position: "absolute",
-            top: 10,
-            right: 10
+            top: 5,
+            right: 5
+        },
+        ".webiny-cms-element-mailchimp-form__subscribe_input": {
+            padding: 15
         }
     }
 });
@@ -26,15 +27,51 @@ class MailchimpDefaultForm extends React.Component<*, { success: boolean, error:
         return (
             <div className={"webiny-cms-element-mailchimp-form " + style}>
                 <div className={"webiny-cms-element-mailchimp-form__wrapper"}>
-                    <Bind name={"email"} validators={["required", "email"]}>
-                        <Input
-                            disabled={processing}
-                            className={"webiny-cms-element-mailchimp-form__subscribe_input"}
-                            label={"Your e-mail"}
-                        />
+                    <Bind
+                        name={"email"}
+                        validators={["required", "email"]}
+                        validationMessages={{ email: "Please enter a valid email address." }}
+                    >
+                        {({ value, onChange, validation }) => (
+                            <div className="webiny-cms-element-input">
+                                <input
+                                    onChange={e => onChange(e.target.value)}
+                                    disabled={processing}
+                                    className={
+                                        "webiny-cms-element-mailchimp-form__subscribe_input webiny-cms-element-input__field"
+                                    }
+                                    value={value}
+                                    placeholder={"Your e-mail"}
+                                />
+                                <div className="webiny-cms-element-mailchimp-form__msg webiny-cms-element-input__helper-text">
+                                    {validation.isValid === false && validation.message}
+                                </div>
+
+                                {this.state.error && (
+                                    <div
+                                        className={
+                                            "webiny-cms-element-mailchimp-form__msg webiny-cms-element-input__helper-text"
+                                        }
+                                    >
+                                        Error: {this.state.error}
+                                    </div>
+                                )}
+                                {this.state.success && (
+                                    <div
+                                        className={
+                                            "webiny-cms-element-mailchimp-form__msg webiny-cms-element-input__helper-text"
+                                        }
+                                    >
+                                        You are on the list. Thank you!
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </Bind>
-                    <ButtonPrimary
-                        className={"webiny-cms-element-mailchimp-form__subscribe_btn"}
+                    <button
+                        className={
+                            "webiny-cms-element-mailchimp-form__subscribe_btn webiny-cms-element-button webiny-cms-element-button--primary"
+                        }
                         disabled={processing}
                         onClick={async () => {
                             this.setState({ success: false, error: null });
@@ -50,16 +87,8 @@ class MailchimpDefaultForm extends React.Component<*, { success: boolean, error:
                         }}
                     >
                         Subscribe
-                    </ButtonPrimary>
+                    </button>
                 </div>
-                {this.state.error && (
-                    <div className={"webiny-cms-element-mailchimp-form__msg"}>
-                        Error: {this.state.error}
-                    </div>
-                )}
-                {this.state.success && (
-                    <div className={"webiny-cms-element-mailchimp-form__msg"}>Thank you!</div>
-                )}
             </div>
         );
     }

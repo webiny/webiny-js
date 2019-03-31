@@ -1,7 +1,5 @@
 // @flow
 import * as React from "react";
-import { Input } from "webiny-ui/Input";
-import { ButtonPrimary } from "webiny-ui/Button";
 import { css } from "react-emotion";
 import classnames from "classnames";
 
@@ -25,9 +23,9 @@ class MailchimpDefaultForm extends React.Component<
             <div className={"mailchimp-default"}>
                 <div className={classnames(wrapper)}>
                     <Bind name={"email"} validators={["required", "email"]}>
-                        <Input label={"Your e-mail"} />
+                        <input placeholder={"Your e-mail"} />
                     </Bind>
-                    <ButtonPrimary
+                    <button
                         disabled={this.state.processing}
                         onClick={async () => {
                             this.setState({ processing: true });
@@ -46,7 +44,7 @@ class MailchimpDefaultForm extends React.Component<
                         }}
                     >
                         Submit
-                    </ButtonPrimary>
+                    </button>
                 </div>
                 {this.state.message && <div>{this.state.message}</div>}
             </div>
