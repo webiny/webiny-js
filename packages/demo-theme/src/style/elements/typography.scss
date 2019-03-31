@@ -9,7 +9,7 @@ $leading:$baseLineHeight * 1rem !default;
 $scale:1.414 !default;
 
 
-.webiny-cms-page-document{
+body, .webiny-cms-page-document{
   /* Change default typefaces here */
   font-family: unquote($webiny-cms-theme-typography-secondary-font-family);
   font-size: $baseFontSize / 16 * 100%;
