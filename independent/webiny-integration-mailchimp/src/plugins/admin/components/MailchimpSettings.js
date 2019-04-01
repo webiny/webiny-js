@@ -70,10 +70,7 @@ const MailchimpSettings = ({ showSnackbar }) => {
                                                         <Cell span={12}>
                                                             <Grid>
                                                                 <Cell span={6}>
-                                                                    <Bind
-                                                                        name={"apiKey"}
-                                                                        validators={["required"]}
-                                                                    >
+                                                                    <Bind name={"apiKey"}>
                                                                         <Input
                                                                             label="API key"
                                                                             description={
