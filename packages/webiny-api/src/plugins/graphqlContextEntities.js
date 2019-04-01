@@ -1,6 +1,7 @@
 // @flow
 import type { GraphQLContextPluginType, EntityPluginType } from "webiny-api/types";
 import { getPlugins } from "webiny-plugins";
+import { EntityPool } from "webiny-entity";
 
 const graphqlContextEntities: GraphQLContextPluginType = {
     name: "graphql-context-entities",
@@ -15,6 +16,7 @@ const graphqlContextEntities: GraphQLContextPluginType = {
 
             const { name, factory } = plugin.entity;
             context[plugin.namespace].entities[name] = factory(context);
+            context[plugin.namespace].entities[name].pool = new EntityPool();
         });
     }
 };

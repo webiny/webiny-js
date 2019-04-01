@@ -1,5 +1,5 @@
 // @flow
-import { Model } from "webiny-model";
+import { EntityModel } from "webiny-entity";
 import { settingsFactory } from "webiny-api/entities";
 import { dummyResolver } from "webiny-api/graphql";
 import { ListErrorResponse, ListResponse, ErrorResponse } from "webiny-api/graphql";
@@ -8,6 +8,17 @@ import got from "got";
 
 const Mailchimp = function({ apiKey }) {
     this.apiKey = apiKey;
+
+    this.isValidApiKey = async () => {
+        try {
+            await this.get({
+                path: `/lists/`
+            });
+            return true;
+        } catch (e) {
+            return false;
+        }
+    };
 
     this.get = ({ path }) => {
         return this.request({ path, method: "get" });
@@ -29,13 +40,31 @@ const Mailchimp = function({ apiKey }) {
     };
 };
 
-class MailchimpSettingsModel extends Model {
-    constructor() {
-        super();
-        this.attr("enabled").boolean();
-        this.attr("apiKey").char();
-    }
-}
+const mailchimpSettingsModelFactory = parent => {
+    return class MailchimpSettingsModel extends EntityModel {
+        constructor() {
+            super();
+            this.setParentEntity(parent);
+            this.attr("enabled").boolean();
+            this.attr("apiKey")
+                .char()
+                .onSet(value => {
+                    if (value && value !== this.apiKey) {
+                        this.getParentEntity()
+                            .on("beforeSave", async () => {
+                                const mailchimp = new Mailchimp({ apiKey: value });
+                                const valid = await mailchimp.isValidApiKey();
+                                if (!valid) {
+                                    throw Error("API key invalid.");
+                                }
+                            })
+                            .setOnce();
+                    }
+                    return value;
+                });
+        }
+    };
+};
 
 export default [
     {
@@ -48,17 +77,22 @@ export default [
                 apiKey: String
             }
 
+            type MailchimpSettingsResponse {
+                data: MailchimpSettings
+                error: Error
+            }
+
             input MailchimpSettingsInput {
                 enabled: Boolean
                 apiKey: String
             }
 
             extend type SettingsQuery {
-                mailchimp: MailchimpSettings
+                mailchimp: MailchimpSettingsResponse
             }
 
             extend type SettingsMutation {
-                mailchimp(data: MailchimpSettingsInput): MailchimpSettings
+                mailchimp(data: MailchimpSettingsInput): MailchimpSettingsResponse
             }
         `,
         entity: ({
@@ -82,7 +116,7 @@ export default [
 
                     constructor() {
                         super();
-                        this.attr("data").model(MailchimpSettingsModel);
+                        this.attr("data").model(mailchimpSettingsModelFactory(this));
                     }
                 };
             }
@@ -156,6 +190,10 @@ export default [
                     ) => {
                         const { MailchimpSettings } = entities;
                         const settings = await MailchimpSettings.load();
+                        if (!settings || !(await settings.get("data.apiKey"))) {
+                            throw Error("Mailchimp API key not set.");
+                        }
+
                         const mailchimp = new Mailchimp({ apiKey: settings.data.apiKey });
 
                         try {
@@ -183,6 +221,10 @@ export default [
                         const { MailchimpSettings } = entities;
 
                         const settings = await MailchimpSettings.load();
+                        if (!settings || !(await settings.get("data.apiKey"))) {
+                            throw Error("Mailchimp API key not set.");
+                        }
+
                         const mailchimp = new Mailchimp({ apiKey: settings.data.apiKey });
 
                         try {

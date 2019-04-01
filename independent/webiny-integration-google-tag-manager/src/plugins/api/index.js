@@ -35,17 +35,24 @@ export default [
                 code: String
             }
 
+            type GoogleTagManagerSettingsResponse {
+                data: GoogleTagManagerSettings
+                error: Error
+            }
+
             input GoogleTagManagerSettingsInput {
                 enabled: Boolean
                 code: String
             }
 
             extend type SettingsQuery {
-                googleTagManager: GoogleTagManagerSettings
+                googleTagManager: GoogleTagManagerSettingsResponse
             }
 
             extend type SettingsMutation {
-                googleTagManager(data: GoogleTagManagerSettingsInput): GoogleTagManagerSettings
+                googleTagManager(
+                    data: GoogleTagManagerSettingsInput
+                ): GoogleTagManagerSettingsResponse
             }
         `,
         entity: ({

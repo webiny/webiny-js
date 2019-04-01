@@ -13,6 +13,7 @@ import graphql from "./graphql";
 import showCookiePolicy from "./../../utils/showCookiePolicy";
 import getDefaultCookiePolicySettings from "./getDefaultCookiePolicySettings";
 import { CircularProgress } from "webiny-ui/Progress";
+import get from "lodash.get";
 
 import {
     SimpleForm,
@@ -30,25 +31,20 @@ const positionOptions = [
 
 const getFormData = settings => {
     const defaults = getDefaultCookiePolicySettings();
-    if (!settings || !settings.cookiePolicy) {
-        return { cookiePolicy: defaults };
+    const data = { ...settings };
+    if (!data.palette) {
+        data.palette = defaults.palette;
     }
 
-    const cookiePolicy = { ...settings.cookiePolicy };
-
-    if (!cookiePolicy.palette) {
-        cookiePolicy.palette = defaults.palette;
+    if (!data.content) {
+        data.content = defaults.content;
     }
 
-    if (!cookiePolicy.content) {
-        cookiePolicy.content = defaults.content;
+    if (!data.position) {
+        data.position = defaults.position;
     }
 
-    if (!cookiePolicy.position) {
-        cookiePolicy.position = defaults.position;
-    }
-
-    return { cookiePolicy };
+    return data;
 };
 
 const CookiePolicySettings = ({ showSnackbar }) => {
@@ -57,13 +53,15 @@ const CookiePolicySettings = ({ showSnackbar }) => {
             {({ data, loading: queryInProgress }) => (
                 <Mutation mutation={graphql.mutation}>
                     {(update, { loading: mutationInProgress }) => {
+                        const settings = get(data, "settings.cookiePolicy.data") || {};
+
                         return (
                             <Form
-                                data={getFormData(data.settings)}
+                                data={getFormData(settings)}
                                 onSubmit={async data => {
                                     await update({
                                         variables: {
-                                            data: data.cookiePolicy
+                                            data
                                         }
                                     });
                                     showSnackbar("Settings updated successfully.");
@@ -76,9 +74,9 @@ const CookiePolicySettings = ({ showSnackbar }) => {
                                         )}
                                         <SimpleFormHeader title="Cookie Policy Settings">
                                             <Bind
-                                                name={"cookiePolicy.enabled"}
-                                                afterChange={aaa => {
-                                                    if (!aaa) {
+                                                name={"enabled"}
+                                                afterChange={enabled => {
+                                                    if (!enabled) {
                                                         form.submit();
                                                     }
                                                 }}
@@ -86,7 +84,7 @@ const CookiePolicySettings = ({ showSnackbar }) => {
                                                 <Switch label="Enabled" />
                                             </Bind>
                                         </SimpleFormHeader>
-                                        {data.cookiePolicy && data.cookiePolicy.enabled ? (
+                                        {data.enabled ? (
                                             <>
                                                 <SimpleFormContent>
                                                     <Grid>
@@ -95,7 +93,7 @@ const CookiePolicySettings = ({ showSnackbar }) => {
                                                                 <Cell span={3}>
                                                                     <Bind
                                                                         name={
-                                                                            "cookiePolicy.palette.popup.background"
+                                                                            "palette.popup.background"
                                                                         }
                                                                     >
                                                                         <ColorPicker label="Banner background color" />
@@ -103,9 +101,7 @@ const CookiePolicySettings = ({ showSnackbar }) => {
                                                                 </Cell>
                                                                 <Cell span={3}>
                                                                     <Bind
-                                                                        name={
-                                                                            "cookiePolicy.palette.popup.text"
-                                                                        }
+                                                                        name={"palette.popup.text"}
                                                                     >
                                                                         <ColorPicker label="Banner text color" />
                                                                     </Bind>
@@ -113,7 +109,7 @@ const CookiePolicySettings = ({ showSnackbar }) => {
                                                                 <Cell span={3}>
                                                                     <Bind
                                                                         name={
-                                                                            "cookiePolicy.palette.button.background"
+                                                                            "palette.button.background"
                                                                         }
                                                                     >
                                                                         <ColorPicker label="Button background color" />
@@ -121,9 +117,7 @@ const CookiePolicySettings = ({ showSnackbar }) => {
                                                                 </Cell>
                                                                 <Cell span={3}>
                                                                     <Bind
-                                                                        name={
-                                                                            "cookiePolicy.palette.button.text"
-                                                                        }
+                                                                        name={"palette.button.text"}
                                                                     >
                                                                         <ColorPicker label="Button text color" />
                                                                     </Bind>
@@ -135,11 +129,7 @@ const CookiePolicySettings = ({ showSnackbar }) => {
                                                         <Cell span={12}>
                                                             <Grid>
                                                                 <Cell span={12}>
-                                                                    <Bind
-                                                                        name={
-                                                                            "cookiePolicy.position"
-                                                                        }
-                                                                    >
+                                                                    <Bind name={"position"}>
                                                                         <RadioGroup label="Position">
                                                                             {({
                                                                                 onChange,
@@ -174,11 +164,7 @@ const CookiePolicySettings = ({ showSnackbar }) => {
                                                                 </Cell>
 
                                                                 <Cell span={12}>
-                                                                    <Bind
-                                                                        name={
-                                                                            "cookiePolicy.content.message"
-                                                                        }
-                                                                    >
+                                                                    <Bind name={"content.message"}>
                                                                         <Input
                                                                             label="Message"
                                                                             desciption={
@@ -189,11 +175,7 @@ const CookiePolicySettings = ({ showSnackbar }) => {
                                                                 </Cell>
 
                                                                 <Cell span={12}>
-                                                                    <Bind
-                                                                        name={
-                                                                            "cookiePolicy.content.dismiss"
-                                                                        }
-                                                                    >
+                                                                    <Bind name={"content.dismiss"}>
                                                                         <Input
                                                                             label="Dismiss button text"
                                                                             desciption={
@@ -203,35 +185,18 @@ const CookiePolicySettings = ({ showSnackbar }) => {
                                                                     </Bind>
                                                                 </Cell>
 
-                                                                <Cell span={12}>
+                                                                <Cell span={6}>
                                                                     <Bind
-                                                                        name={
-                                                                            "cookiePolicy.content.href"
-                                                                        }
+                                                                        name={"content.href"}
+                                                                        validators={["url"]}
                                                                     >
-                                                                        <Input
-                                                                            validators={["url"]}
-                                                                            label="Policy link"
-                                                                            desciption={
-                                                                                "Link to your own policy\n"
-                                                                            }
-                                                                        />
+                                                                        <Input label="Policy link" />
                                                                     </Bind>
                                                                 </Cell>
 
-                                                                <Cell span={12}>
-                                                                    <Bind
-                                                                        name={
-                                                                            "cookiePolicy.content.link"
-                                                                        }
-                                                                    >
-                                                                        <Input
-                                                                            validators={["url"]}
-                                                                            label="Policy link"
-                                                                            desciption={
-                                                                                "Link to your own policy\n"
-                                                                            }
-                                                                        />
+                                                                <Cell span={6}>
+                                                                    <Bind name={"content.link"}>
+                                                                        <Input label="Policy link title" />
                                                                     </Bind>
                                                                 </Cell>
                                                             </Grid>
@@ -244,7 +209,7 @@ const CookiePolicySettings = ({ showSnackbar }) => {
                                                         align="right"
                                                         onClick={() => {
                                                             showCookiePolicy({
-                                                                ...data.cookiePolicy,
+                                                                ...data,
                                                                 // Official bug fix.
                                                                 messagelink:
                                                                     '<span id="cookieconsent:desc" class="cc-message">{{message}} <a aria-label="learn more about cookies" tabindex="0" class="cc-link" href="{{href}}" target="_blank">{{link}}</a></span>',

@@ -24,7 +24,7 @@ class RenderMailchimpForm extends React.Component<*, { processing: boolean }> {
     render() {
         const { props } = this;
         const { element } = props;
-        const { component: selected } = element.data.settings;
+        const selected = get(element, "data.settings.component") || "";
         const component = getPlugins("cms-element-mailchimp-component").find(
             cmp => cmp.name === selected
         );

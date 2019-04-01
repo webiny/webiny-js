@@ -5,10 +5,12 @@ export default gql`
     {
         settings {
             cms {
-                name
-                social {
-                    image {
-                        src
+                data {
+                    name
+                    social {
+                        image {
+                            src
+                        }
                     }
                 }
             }

@@ -9,6 +9,7 @@ import graphql from "./graphql";
 import PagesAutoComplete from "webiny-app-cms/admin/components/PagesAutoComplete";
 import { CircularProgress } from "webiny-ui/Progress";
 import Image from "./Image";
+import { get } from "lodash";
 
 import {
     SimpleForm,
@@ -22,95 +23,102 @@ class CmsSettings extends React.Component<Object, Object> {
         const { showSnackbar } = this.props;
         return (
             <Query query={graphql.query}>
-                {({ data, loading: queryInProgress }) => (
-                    <Mutation mutation={graphql.mutation}>
-                        {(update, { loading: mutationInProgress }) => (
-                            <Form
-                                data={data.settings}
-                                onSubmit={async data => {
-                                    this.setState({ loading: true });
-                                    await update({
-                                        variables: {
-                                            data: data.cms
-                                        }
-                                    });
-                                    this.setState({ loading: false });
+                {({ data, loading: queryInProgress }) => {
+                    const settings = get(data, "settings.cms.data") || {};
 
-                                    showSnackbar("Settings updated successfully.");
-                                }}
-                            >
-                                {({ Bind, form }) => (
-                                    <SimpleForm>
-                                        {(queryInProgress || mutationInProgress) && (
-                                            <CircularProgress />
-                                        )}
-                                        <SimpleFormHeader title="CMS Settings" />
-                                        <SimpleFormContent>
-                                            <Grid>
-                                                <Cell span={6}>
-                                                    <Grid>
-                                                        <Cell span={12}>
-                                                            <Bind name={"cms.pages.home"}>
-                                                                <PagesAutoComplete
-                                                                    label={"Homepage"}
-                                                                    description={`This is the homepage of your website.`}
-                                                                />
-                                                            </Bind>
-                                                        </Cell>
-                                                        <Cell span={12}>
-                                                            <Bind name={"cms.pages.error"}>
-                                                                <PagesAutoComplete
-                                                                    label={"Error page"}
-                                                                    description={`Shown when an error occurs during a page load.`}
-                                                                />
-                                                            </Bind>
-                                                        </Cell>
-                                                        <Cell span={12}>
-                                                            <Bind name={"cms.pages.notFound"}>
-                                                                <PagesAutoComplete
-                                                                    label={"Not found (404) page"}
-                                                                    description={`Shown when the requested page is not found.`}
-                                                                />
-                                                            </Bind>
-                                                        </Cell>
-                                                    </Grid>
-                                                </Cell>
+                    return (
+                        <Mutation mutation={graphql.mutation}>
+                            {(update, { loading: mutationInProgress }) => (
+                                <Form
+                                    data={settings}
+                                    onSubmit={async data => {
+                                        this.setState({ loading: true });
+                                        await update({
+                                            variables: {
+                                                data
+                                            }
+                                        });
+                                        this.setState({ loading: false });
 
-                                                <Cell span={6}>
-                                                    <Grid>
-                                                        <Cell span={12}>
-                                                            <Bind name={"cms.social.image"}>
-                                                                <Image
-                                                                    imageEditor={{
-                                                                        crop: {
-                                                                            autoEnable: true,
-                                                                            aspectRatio: 1596 / 545
+                                        showSnackbar("Settings updated successfully.");
+                                    }}
+                                >
+                                    {({ Bind, form }) => (
+                                        <SimpleForm>
+                                            {(queryInProgress || mutationInProgress) && (
+                                                <CircularProgress />
+                                            )}
+                                            <SimpleFormHeader title="CMS Settings" />
+                                            <SimpleFormContent>
+                                                <Grid>
+                                                    <Cell span={6}>
+                                                        <Grid>
+                                                            <Cell span={12}>
+                                                                <Bind name={"pages.home"}>
+                                                                    <PagesAutoComplete
+                                                                        label={"Homepage"}
+                                                                        description={`This is the homepage of your website.`}
+                                                                    />
+                                                                </Bind>
+                                                            </Cell>
+                                                            <Cell span={12}>
+                                                                <Bind name={"pages.error"}>
+                                                                    <PagesAutoComplete
+                                                                        label={"Error page"}
+                                                                        description={`Shown when an error occurs during a page load.`}
+                                                                    />
+                                                                </Bind>
+                                                            </Cell>
+                                                            <Cell span={12}>
+                                                                <Bind name={"pages.notFound"}>
+                                                                    <PagesAutoComplete
+                                                                        label={
+                                                                            "Not found (404) page"
                                                                         }
-                                                                    }}
-                                                                    label="Default Open Graph image"
-                                                                    description={`Any CMS page that doesn't have an Open Graph image set, will use this one.`}
-                                                                />
-                                                            </Bind>
-                                                        </Cell>
-                                                    </Grid>
-                                                </Cell>
-                                            </Grid>
-                                        </SimpleFormContent>
-                                        <SimpleFormFooter>
-                                            <ButtonPrimary
-                                                type="primary"
-                                                onClick={form.submit}
-                                                align="right"
-                                            >
-                                                Save
-                                            </ButtonPrimary>
-                                        </SimpleFormFooter>
-                                    </SimpleForm>
-                                )}
-                            </Form>
-                        )}
-                    </Mutation>
-                )}
+                                                                        description={`Shown when the requested page is not found.`}
+                                                                    />
+                                                                </Bind>
+                                                            </Cell>
+                                                        </Grid>
+                                                    </Cell>
+
+                                                    <Cell span={6}>
+                                                        <Grid>
+                                                            <Cell span={12}>
+                                                                <Bind name={"social.image"}>
+                                                                    <Image
+                                                                        imageEditor={{
+                                                                            crop: {
+                                                                                autoEnable: true,
+                                                                                aspectRatio:
+                                                                                    1596 / 545
+                                                                            }
+                                                                        }}
+                                                                        label="Default Open Graph image"
+                                                                        description={`Any CMS page that doesn't have an Open Graph image set, will use this one.`}
+                                                                    />
+                                                                </Bind>
+                                                            </Cell>
+                                                        </Grid>
+                                                    </Cell>
+                                                </Grid>
+                                            </SimpleFormContent>
+                                            <SimpleFormFooter>
+                                                <ButtonPrimary
+                                                    type="primary"
+                                                    onClick={form.submit}
+                                                    align="right"
+                                                >
+                                                    Save
+                                                </ButtonPrimary>
+                                            </SimpleFormFooter>
+                                        </SimpleForm>
+                                    )}
+                                </Form>
+                            )}
+                        </Mutation>
+                    );
+                }}
             </Query>
         );
     }
