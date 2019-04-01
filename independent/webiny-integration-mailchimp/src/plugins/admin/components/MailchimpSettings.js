@@ -9,7 +9,7 @@ import { Query, Mutation } from "react-apollo";
 import { withSnackbar } from "webiny-admin/components";
 import graphql from "./graphql";
 import { CircularProgress } from "webiny-ui/Progress";
-import get from "lodash.get";
+import { get } from "lodash";
 
 import {
     SimpleForm,

@@ -27,7 +27,8 @@ const formPreview = css({
 });
 
 const saveApiKeyButtonWrapper = css({
-    textAlign: "right"
+    textAlign: "right",
+    marginTop: 10
 });
 
 const enableMailchimpLink = css({
