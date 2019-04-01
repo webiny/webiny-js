@@ -10,7 +10,6 @@ class CookiePolicy extends React.Component<*> {
         if (settings && settings.enabled === true) {
             showCookiePolicy(settings);
         }
-
     }
 
     render() {
@@ -29,7 +28,7 @@ export default [
                         return null;
                     }
 
-                    return <CookiePolicy settings={data.settings.cookiePolicy} />;
+                    return <CookiePolicy settings={data.settings.cookiePolicy.data} />;
                 }}
             </Query>
         )

@@ -3,8 +3,10 @@ import gql from "graphql-tag";
 
 const fields = /* GraphQL */ `
     {
-        enabled
-        code
+        data {
+            enabled
+            code
+        }
     }
 `;
 

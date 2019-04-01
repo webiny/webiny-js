@@ -68,6 +68,11 @@ export default [
                 content: CookiePolicySettingsContent
             }
 
+            type CookiePolicySettingsResponse {
+                error: Error
+                data: CookiePolicySettings
+            }
+
             type CookiePolicySettingsContent {
                 href: String
                 message: String
@@ -110,11 +115,11 @@ export default [
             }
 
             extend type SettingsQuery {
-                cookiePolicy: CookiePolicySettings
+                cookiePolicy: CookiePolicySettingsResponse
             }
 
             extend type SettingsMutation {
-                cookiePolicy(data: CookiePolicySettingsInput): CookiePolicySettings
+                cookiePolicy(data: CookiePolicySettingsInput): CookiePolicySettingsResponse
             }
         `,
         entity: ({

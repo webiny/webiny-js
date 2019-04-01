@@ -5,22 +5,24 @@ const graphql = gql`
     query getSettings {
         settings {
             cookiePolicy {
-                content {
-                    href
-                    message
-                    dismiss
-                    link
-                }
-                enabled
-                position
-                palette {
-                    popup {
-                        background
-                        text
+                data {
+                    content {
+                        href
+                        message
+                        dismiss
+                        link
                     }
-                    button {
-                        background
-                        text
+                    enabled
+                    position
+                    palette {
+                        popup {
+                            background
+                            text
+                        }
+                        button {
+                            background
+                            text
+                        }
                     }
                 }
             }

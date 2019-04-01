@@ -9,6 +9,7 @@ import { withSnackbar } from "webiny-admin/components";
 import { Input } from "webiny-ui/Input";
 import graphql from "./graphql";
 import { CircularProgress } from "webiny-ui/Progress";
+import get from "lodash.get";
 
 import {
     SimpleForm,
@@ -22,72 +23,74 @@ const GoogleTagManagerSettings = ({ showSnackbar }) => {
         <Query query={graphql.query}>
             {({ data, loading: queryInProgress }) => (
                 <Mutation mutation={graphql.mutation}>
-                    {(update, { loading: mutationInProgress }) => (
-                        <Form
-                            data={data.settings}
-                            onSubmit={async data => {
-                                await update({
-                                    variables: {
-                                        data: data.googleTagManager
-                                    }
-                                });
-                                showSnackbar("Settings updated successfully.");
-                            }}
-                        >
-                            {({ Bind, form, data }) => (
-                                <SimpleForm>
-                                    {(queryInProgress || mutationInProgress) && (
-                                        <CircularProgress />
-                                    )}
-                                    <SimpleFormHeader title="Google Tag Manager Settings">
-                                        <Bind
-                                            name={"googleTagManager.enabled"}
-                                            afterChange={aaa => {
-                                                if (!aaa) {
-                                                    form.submit();
-                                                }
-                                            }}
-                                        >
-                                            <Switch label="Enabled" />
-                                        </Bind>
-                                    </SimpleFormHeader>
-                                    {data.googleTagManager && data.googleTagManager.enabled ? (
-                                        <>
-                                            <SimpleFormContent>
-                                                <Grid>
-                                                    <Cell span={12}>
-                                                        <Grid>
-                                                            <Cell span={6}>
-                                                                <Bind
-                                                                    name={"googleTagManager.code"}
-                                                                >
-                                                                    <Input
-                                                                        label="Container ID"
-                                                                        description={
-                                                                            'Formatted as "GTM-XXXXXX".'
-                                                                        }
-                                                                    />
-                                                                </Bind>
-                                                            </Cell>
-                                                        </Grid>
-                                                    </Cell>
-                                                </Grid>
-                                            </SimpleFormContent>
-                                            <SimpleFormFooter>
-                                                <ButtonPrimary
-                                                    type="primary"
-                                                    onClick={form.submit}
-                                                    align="right"
-                                                >
-                                                    Save
-                                                </ButtonPrimary>
-                                            </SimpleFormFooter>
-                                        </>
-                                    ) : null}
-                                </SimpleForm>
-                            )}
-                        </Form>
-                    )}
+                    {(update, { loading: mutationInProgress }) => {
+                        const settings = get(data, "settings.googleTagManager.data") || {};
+
+                        return (
+                            <Form
+                                data={settings}
+                                onSubmit={async data => {
+                                    await update({
+                                        variables: {
+                                            data: data
+                                        }
+                                    });
+                                    showSnackbar("Settings updated successfully.");
+                                }}
+                            >
+                                {({ Bind, form, data }) => (
+                                    <SimpleForm>
+                                        {(queryInProgress || mutationInProgress) && (
+                                            <CircularProgress />
+                                        )}
+                                        <SimpleFormHeader title="Google Tag Manager Settings">
+                                            <Bind
+                                                name={"enabled"}
+                                                afterChange={enabled => {
+                                                    if (!enabled) {
+                                                        form.submit();
+                                                    }
+                                                }}
+                                            >
+                                                <Switch label="Enabled" />
+                                            </Bind>
+                                        </SimpleFormHeader>
+                                        {data.enabled ? (
+                                            <>
+                                                <SimpleFormContent>
+                                                    <Grid>
+                                                        <Cell span={12}>
+                                                            <Grid>
+                                                                <Cell span={6}>
+                                                                    <Bind name={"code"}>
+                                                                        <Input
+                                                                            label="Container ID"
+                                                                            description={
+                                                                                'Formatted as "GTM-XXXXXX".'
+                                                                            }
+                                                                        />
+                                                                    </Bind>
+                                                                </Cell>
+                                                            </Grid>
+                                                        </Cell>
+                                                    </Grid>
+                                                </SimpleFormContent>
+                                                <SimpleFormFooter>
+                                                    <ButtonPrimary
+                                                        type="primary"
+                                                        onClick={form.submit}
+                                                        align="right"
+                                                    >
+                                                        Save
+                                                    </ButtonPrimary>
+                                                </SimpleFormFooter>
+                                            </>
+                                        ) : null}
+                                    </SimpleForm>
+                                )}
+                            </Form>
+                        );
+                    }}
                 </Mutation>
             )}
         </Query>

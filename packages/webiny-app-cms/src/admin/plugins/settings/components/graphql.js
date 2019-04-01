@@ -3,15 +3,20 @@ import gql from "graphql-tag";
 
 const fields = /* GraphQL */ `
     {
-        pages {
-            home
-            notFound
-            error
-        }
-        social {
-            image {
-                src
+        data {
+            pages {
+                home
+                notFound
+                error
             }
+            social {
+                image {
+                    src
+                }
+            }
+        }
+        error {
+            message
         }
     }
 `;

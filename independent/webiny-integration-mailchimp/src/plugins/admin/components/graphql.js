@@ -3,8 +3,13 @@ import gql from "graphql-tag";
 
 const fields = /* GraphQL */ `
     {
-        enabled
-        apiKey
+        data {
+            enabled
+            apiKey
+        }
+        error {
+            message
+        }
     }
 `;
 

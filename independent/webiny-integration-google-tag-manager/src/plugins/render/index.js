@@ -52,7 +52,7 @@ export default [
                         return null;
                     }
 
-                    return <GoogleTagManager settings={data.settings.googleTagManager} />;
+                    return <GoogleTagManager settings={data.settings.googleTagManager.data} />;
                 }}
             </Query>
         )

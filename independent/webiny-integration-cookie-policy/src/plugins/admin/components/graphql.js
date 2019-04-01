@@ -3,22 +3,24 @@ import gql from "graphql-tag";
 
 const fields = /* GraphQL */ `
     {
-        enabled
-        position
-        content {
-            href
-            message
-            dismiss
-            link
-        }
-        palette {
-            popup {
-                background
-                text
+        data {
+            enabled
+            position
+            content {
+                href
+                message
+                dismiss
+                link
             }
-            button {
-                background
-                text
+            palette {
+                popup {
+                    background
+                    text
+                }
+                button {
+                    background
+                    text
+                }
             }
         }
     }

@@ -28,8 +28,10 @@ export default [
                     query {
                         settings {
                             cms {
-                                favicon {
-                                    src
+                                data {
+                                    favicon {
+                                        src
+                                    }
                                 }
                             }
                         }
@@ -37,7 +39,7 @@ export default [
                 `}
             >
                 {({ data: response }) => {
-                    const { favicon } = get(response, "settings.cms") || {};
+                    const { favicon } = get(response, "settings.cms.data") || {};
 
                     // Manually added "?width=128" to the favicon URL. In the future, fix this.
                     // See "packages/webiny-app/src/plugins/imagePlugin.js:54"

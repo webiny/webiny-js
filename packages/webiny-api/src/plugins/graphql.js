@@ -4,6 +4,7 @@ import { getPlugins } from "webiny-plugins";
 import { type GraphQLSchemaPluginType } from "webiny-api/types";
 import { resolveCreate } from "webiny-api/graphql";
 const fileFetcher = ctx => ctx.api.entities.File;
+import { ErrorResponse } from "webiny-api/graphql";
 
 export default ({
     type: "graphql",
@@ -51,8 +52,7 @@ export default ({
                 files: dummyResolver
             },
             FilesMutation: {
-                createFile: resolveCreate(fileFetcher),
-
+                createFile: resolveCreate(fileFetcher)
             }
         },
         ...getPlugins("schema-settings").map(plugin => {
@@ -66,7 +66,7 @@ export default ({
                             await settings.save();
                         }
 
-                        return settings.data;
+                        return settings;
                     }
                 },
                 SettingsMutation: {
@@ -82,10 +82,13 @@ export default ({
                             settings.data = {};
                         }
 
-                        settings.data.populate(data);
-                        await settings.save();
-
-                        return settings.data;
+                        try {
+                            settings.data.populate(data);
+                            await settings.save();
+                            return settings;
+                        } catch (e) {
+                            return new ErrorResponse(e);
+                        }
                     }
                 }
             };

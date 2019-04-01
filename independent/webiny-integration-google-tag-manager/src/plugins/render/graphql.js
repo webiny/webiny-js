@@ -5,8 +5,10 @@ const graphql = gql`
     query getSettings {
         settings {
             googleTagManager {
-                enabled
-                code
+                data {
+                    enabled
+                    code
+                }
             }
         }
     }

@@ -23,6 +23,11 @@ export default [
                 pages: CmsSettingsPages
             }
 
+            type CmsSettingsResponse {
+                error: Error
+                data: CmsSettings
+            }
+
             type CmsSettingsPages {
                 home: ID
                 notFound: ID
@@ -62,11 +67,11 @@ export default [
             }
 
             extend type SettingsQuery {
-                cms: CmsSettings
+                cms: CmsSettingsResponse
             }
 
             extend type SettingsMutation {
-                cms(data: CmsSettingsInput): CmsSettings
+                cms(data: CmsSettingsInput): CmsSettingsResponse
             }
         `,
         entity: ({
