@@ -12,10 +12,13 @@ System.config({
         "webiny-ui/*": "./packages/webiny-ui/src/*",
         "webiny-plugins/*": "./packages/webiny-plugins/src/*",
         "webiny-react-router/*": "./packages/webiny-react-router/src/*",
-        "webiny-integration-cookie-policy/*": "./independent/webiny-integration-cookie-policy/src/*",
-        "webiny-integration-google-tag-manager/*":
-            "./independent/webiny-integration-google-tag-manager/src/*",
-        "webiny-integration-mailchimp/*": "./independent/webiny-integration-mailchimp/src/*",
-        "webiny-integration-typeform/*": "./independent/webiny-integration-typeform/src/*"
+        "webiny-app-cookie-policy/*": "./independent/webiny-app-cookie-policy/src/*",
+        "webiny-app-google-tag-manager/*": "./independent/webiny-app-google-tag-manager/src/*",
+        "webiny-app-mailchimp/*": "./independent/webiny-app-mailchimp/src/*",
+        "webiny-app-typeform/*": "./independent/webiny-app-typeform/src/*",
+        "webiny-api-cookie-policy/*": "./independent/webiny-api-cookie-policy/src/*",
+        "webiny-api-google-tag-manager/*": "./independent/webiny-api-google-tag-manager/src/*",
+        "webiny-api-mailchimp/*": "./independent/webiny-api-mailchimp/src/*",
+        "webiny-api-typeform/*": "./independent/webiny-api-typeform/src/*"
     }
 });

@@ -27,10 +27,13 @@
     "webiny-api-security": "^1",
     "webiny-entity-mongodb": "^1",
     "webiny-install": "^1",
-    "webiny-integration-cookie-policy": "^1",
-    "webiny-integration-google-tag-manager": "^1",
-    "webiny-integration-mailchimp": "^1",
-    "webiny-integration-typeform": "^1",
+    "webiny-api-cookie-policy": "^1",
+    "webiny-api-google-tag-manager": "^1",
+    "webiny-api-mailchimp": "^1",
+    "webiny-app-cookie-policy": "^1",
+    "webiny-app-google-tag-manager": "^1",
+    "webiny-app-mailchimp": "^1",
+    "webiny-app-typeform": "^1",
     "webiny-plugins": "^1"
   },
   "devDependencies": {
