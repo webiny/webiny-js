@@ -10,17 +10,14 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "got": "^9.6.0",
     "lodash": "^4.17.11",
     "react-emotion": "^9.2.4",
     "recompose": "^0.27.1",
     "webiny-admin": "0.0.0",
-    "webiny-api": "0.0.0",
-    "webiny-api-security": "0.0.0",
+    "webiny-app": "0.0.0",
     "webiny-app-cms": "0.0.0",
     "webiny-app-security": "0.0.0",
     "webiny-form": "0.0.0",
-    "webiny-entity": "0.0.0",
     "webiny-plugins": "0.0.0",
     "webiny-ui": "0.0.0"
   },
