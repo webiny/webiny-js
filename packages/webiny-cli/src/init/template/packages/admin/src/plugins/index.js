@@ -9,7 +9,7 @@ import typeformPlugins from "webiny-app-typeform/admin";
 import mailchimpPlugins from "webiny-app-mailchimp/admin";
 
 const plugins = [
-    fileUploadPlugin({}),
+    fileUploadPlugin(),
     imagePlugin,
     adminPlugins,
     securityPlugins,

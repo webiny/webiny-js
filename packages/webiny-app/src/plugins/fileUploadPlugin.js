@@ -12,9 +12,8 @@ type SelectedFile = Object & {
 };
 
 type WithFileUploadUploaderConfigType = { uri?: string };
-type WithFileUploadUploaderType = WithFileUploadUploaderConfigType => WithFileUploadPlugin;
 
-const fileUploadPlugin: WithFileUploadUploaderType = (config = {}) => ({
+export default (config: WithFileUploadUploaderConfigType = {}): WithFileUploadPlugin => ({
     type: "with-file-upload-uploader",
     name: "with-file-upload-uploader",
     upload: async (file: SelectedFile) => {
@@ -52,5 +51,3 @@ const fileUploadPlugin: WithFileUploadUploaderType = (config = {}) => ({
         });
     }
 });
-
-export default fileUploadPlugin;
