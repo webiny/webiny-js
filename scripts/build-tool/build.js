@@ -2,8 +2,8 @@
 const args = require("yargs").argv;
 const { unlinkSync, existsSync } = require("fs");
 const chalk = require("chalk");
-const readPkg = require("read-pkg");
 const path = require("path");
+const fs = require("fs-extra");
 const minimatch = require("minimatch");
 const execa = require("execa");
 const getPackages = require("get-yarn-workspaces");
@@ -15,19 +15,11 @@ const {
     asyncRimRaf
 } = require("./utils/packaging");
 
-const blacklist = [
-    "webiny-cli",
-    "webiny-cloud*",
-    "webiny-cra-utils",
-    "webiny-ui_LEGACY",
-    "demo-*"
-];
 const destination = args.out ? path.resolve(args.out) : null;
 const scope = args.scope ? (Array.isArray(args.scope) ? args.scope : [args.scope]) : ["**"];
 
-function hasCommand(packagePath) {
-    const pkg = readPkg.sync({ cwd: packagePath });
-    return pkg.scripts && pkg.scripts.hasOwnProperty("build");
+function hasReleaseConfig(packagePath) {
+    return fs.existsSync(path.join(packagePath, ".releaserc.js"));
 }
 
 async function buildEverything() {
@@ -49,9 +41,8 @@ async function buildEverything() {
 
     // Build all packages, one by one.
     const packages = getPackages(process.cwd())
-        .filter(p => !blacklist.some(s => minimatch(path.basename(p), s)))
-        .filter(p => scope.some(s => minimatch(path.basename(p), s)))
-        .filter(hasCommand);
+        .filter(hasReleaseConfig)
+        .filter(p => scope.some(s => minimatch(path.basename(p), s)));
 
     await Promise.all(
         packages.map(dir => {
