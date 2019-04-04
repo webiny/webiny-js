@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "webiny-storybook-utils",
   "version": "0.0.0",
   "repository": {

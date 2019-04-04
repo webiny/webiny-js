@@ -3,9 +3,9 @@ import apiPlugins from "webiny-api/plugins";
 import filesPlugins from "webiny-api-files/plugins";
 import securityPlugins from "webiny-api-security/plugins";
 import cmsPlugins from "webiny-api-cms/plugins";
-import cookiePolicyPlugins from "webiny-integration-cookie-policy/plugins/api";
-import gtmPlugins from "webiny-integration-google-tag-manager/plugins/api";
-import mailchimpPlugins from "webiny-integration-mailchimp/plugins/api";
+import cookiePolicyPlugins from "webiny-api-cookie-policy";
+import gtmPlugins from "webiny-api-google-tag-manager";
+import mailchimpPlugins from "webiny-api-mailchimp";
 
 export default [
     apiPlugins,

@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "webiny-file-storage-s3",
   "description": "AWS S3 file-system storage driver for webiny-file-storage library",
   "version": "0.0.0",
