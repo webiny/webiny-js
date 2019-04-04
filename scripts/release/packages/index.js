@@ -39,7 +39,15 @@ const release = async config => {
 
 // Get `independent` packages
 const independent = getWorkspaces()
-    .filter(dir => dir.startsWith(process.cwd() + "/independent/"))
+    .filter(dir => {
+        const configPath = path.join(dir, ".releaserc.js");
+        try {
+            return require(configPath).type === "independent";
+        } catch (e) {
+            console.log(e);
+            return false;
+        }
+    })
     .map(dir => path.basename(dir));
 
 // Only include non-independent packages

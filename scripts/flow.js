@@ -15,7 +15,7 @@ const blacklist = [
 ];
 
 /**
- * Get a list of packages in form: `packages/webiny-ui` and `independent/webiny-integration-....`
+ * Get a list of packages in form: `packages/webiny-ui` and `independent/webiny-app-....`
  * @returns Array<String>
  */
 function listPackages() {

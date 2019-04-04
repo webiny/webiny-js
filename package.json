@@ -2,8 +2,7 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "packages/*",
-      "independent/*"
+      "packages/*"
     ],
     "nohoist": [
       "**/inquirer/**",
