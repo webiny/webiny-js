@@ -23,9 +23,9 @@
     "webiny-api-security": "0.0.0",
     "webiny-entity-mongodb": "0.0.0",
     "webiny-install": "0.0.0",
-    "webiny-integration-cookie-policy": "0.0.0",
-    "webiny-integration-google-tag-manager": "0.0.0",
-    "webiny-integration-mailchimp": "0.0.0",
+    "webiny-api-cookie-policy": "0.0.0",
+    "webiny-api-google-tag-manager": "0.0.0",
+    "webiny-api-mailchimp": "0.0.0",
     "webiny-plugins": "0.0.0"
   },
   "devDependencies": {

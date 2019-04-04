@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "webiny-service-manager",
   "version": "0.0.0",
   "main": "index.js",
