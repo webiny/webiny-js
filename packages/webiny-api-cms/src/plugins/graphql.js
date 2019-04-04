@@ -2,6 +2,7 @@
 import { getPlugins } from "webiny-plugins";
 import { dummyResolver } from "webiny-api/graphql";
 import { hasScope } from "webiny-api-security";
+import { FileType, FileInputType } from "webiny-api-files/graphql";
 
 import page from "./graphql/Page";
 import category from "./graphql/Category";
@@ -12,6 +13,8 @@ export default {
     name: "graphql-cms",
     namespace: "cms",
     typeDefs: () => [
+        FileType,
+        FileInputType,
         `
             type CmsQuery {
                 _empty: String

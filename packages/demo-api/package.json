@@ -20,6 +20,7 @@
     "mongodb": "^3.1.13",
     "webiny-api": "0.0.0",
     "webiny-api-cms": "0.0.0",
+    "webiny-api-files": "0.0.0",
     "webiny-api-security": "0.0.0",
     "webiny-entity-mongodb": "0.0.0",
     "webiny-install": "0.0.0",

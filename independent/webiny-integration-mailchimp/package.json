@@ -17,6 +17,7 @@
     "webiny-admin": "0.0.0",
     "webiny-api": "0.0.0",
     "webiny-api-security": "0.0.0",
+    "webiny-app": "0.0.0",
     "webiny-app-cms": "0.0.0",
     "webiny-app-security": "0.0.0",
     "webiny-form": "0.0.0",

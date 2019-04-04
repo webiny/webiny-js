@@ -22,7 +22,8 @@
     "@svgr/webpack": "^4.1.0",
     "webiny-app": "0.0.0",
     "webiny-plugins": "0.0.0",
-    "webiny-ui": "0.0.0"
+    "webiny-ui": "0.0.0",
+    "react-butterfiles": "^1.1.5"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

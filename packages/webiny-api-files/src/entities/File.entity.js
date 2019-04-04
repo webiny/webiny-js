@@ -1,7 +1,14 @@
 // @flow
 import { Entity } from "webiny-entity";
 
-export const fileFactory = ({ user = {} }: Object) => {
+export interface IFile extends Entity {
+    size: number;
+    type: string;
+    src: string;
+    name: string;
+}
+
+export const fileFactory = ({ user = {} }: IFile) => {
     class File extends Entity {
         createdBy: Entity;
         size: number;
@@ -32,7 +39,9 @@ export const fileFactory = ({ user = {} }: Object) => {
             this.on("beforeCreate", async () => {
                 // TODO: improve this if needed in the future.
                 if (!this.src.startsWith("/") || this.src.startsWith("http")) {
-                    throw Error(`File "src" must be a relative path, starting with forward slash ("/").`);
+                    throw Error(
+                        `File "src" must be a relative path, starting with forward slash ("/").`
+                    );
                 }
 
                 if (await File.findOne({ query: { src: this.src } })) {
