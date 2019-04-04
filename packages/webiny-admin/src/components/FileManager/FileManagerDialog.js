@@ -4,24 +4,13 @@ import React, { useReducer } from "react";
 import Files from "react-butterfiles";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ButtonPrimary } from "webiny-ui/Button";
+import { Tags } from "webiny-ui/Tags";
 import { Query } from "react-apollo";
 import type { FilesRules } from "react-butterfiles";
 import { css } from "emotion";
 import { listFiles } from "./graphql";
 import get from "lodash.get";
 import { File, ImageFile } from "./Files";
-
-const initialState = { onAccept: null, show: false };
-function fileManagerReducer(state, action) {
-    switch (action.type) {
-        case "show": {
-            const { onAccept } = action;
-            return { ...state, show: true, onAccept: onAccept };
-        }
-        case "decrement":
-            return { ...state, show: false, onAccept: null };
-    }
-}
 
 const fileManagerDialog = css({
     ".mdc-dialog__surface": {
@@ -54,12 +43,27 @@ const components = {
     "image/png": ImageFile
 };
 
-function renderFile(file) {
-    let Component = components[file.type] || File;
-    return <Component key={file.src} file={file} />;
+const initialState = { selected: [] };
+function fileManagerReducer(state, action) {
+    switch (action.type) {
+        case "toggleSelected": {
+            const next = { ...state };
+            const existingIndex = state.selected.findIndex(item => item.src === action.file.src);
+            if (existingIndex < 0) {
+                next.selected.push(action.file);
+            } else {
+                next.selected.splice(existingIndex);
+            }
+
+            console.log(next);
+            return next;
+        }
+    }
 }
 
 export function FileManagerDialog({ open, files }: Props) {
+    const [state, dispatch] = useReducer(fileManagerReducer, initialState);
+
     return (
         <Dialog open={open} className={fileManagerDialog}>
             <DialogHeader>
@@ -70,13 +74,14 @@ export function FileManagerDialog({ open, files }: Props) {
                     {({ getDropZoneProps, browseFiles }) => (
                         <Query query={listFiles}>
                             {({ data }) => {
-                                const files = get(data, "files.listFiles.data") || [];
+                                const list = get(data, "files.listFiles.data") || [];
                                 return (
                                     <>
                                         <Grid>
-                                            <Cell span={6}>left</Cell>
                                             <Cell span={6}>
-                                                right
+                                                <Tags label={"Tags"}/>
+                                            </Cell>
+                                            <Cell span={6}>
                                                 <ButtonPrimary onClick={browseFiles}>
                                                     Upload...
                                                 </ButtonPrimary>
@@ -85,8 +90,28 @@ export function FileManagerDialog({ open, files }: Props) {
 
                                         <Grid>
                                             <Cell span={12}>
-                                                <div {...getDropZoneProps()} className={dropZone} />
-                                                {files.map(renderFile)}
+                                                <div {...getDropZoneProps()} className={dropZone}>
+                                                    {list.map(file => {
+                                                        let Component =
+                                                            components[file.type] || File;
+                                                        return (
+                                                            <Component
+                                                                key={file.src}
+                                                                file={file}
+                                                                selected={state.selected.find(
+                                                                    current =>
+                                                                        current.src === file.src
+                                                                )}
+                                                                onClick={() =>
+                                                                    dispatch({
+                                                                        type: "toggleSelected",
+                                                                        file
+                                                                    })
+                                                                }
+                                                            />
+                                                        );
+                                                    })}
+                                                </div>
                                             </Cell>
                                         </Grid>
                                     </>

@@ -2,7 +2,7 @@ require("dotenv").config();
 const path = require("path");
 
 require("@babel/register")({
-    configFile: path.join(__dirname, "..", "babel.config.js"),
+    configFile: path.join(__dirname, "..", "babel.config.js")
 });
 
 require("./install/install").default();
