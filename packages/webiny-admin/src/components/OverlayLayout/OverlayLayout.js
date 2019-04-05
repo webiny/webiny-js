@@ -14,7 +14,9 @@ const OverlayLayoutWrapper = styled("div")({
     height: "100vh",
     backgroundColor: "var(--mdc-theme-background)",
     zIndex: 4,
-    paddingTop: 65
+    paddingTop: 65,
+    top: 0,
+    left: 0
 });
 
 const noScroll = css({
@@ -39,6 +41,7 @@ const transitionStyles = {
 type Props = {
     barMiddle?: React.Node,
     barLeft?: React.Node,
+    barRight?: React.Node,
     children: React.Node,
     onExited?: Function
 };
@@ -70,7 +73,7 @@ class OverlayLayout extends React.Component<Props, State> {
         // $FlowFixMe
         document.body.classList.remove(noScroll);
     }
-    
+
     render() {
         return (
             <Transition
@@ -89,6 +92,7 @@ class OverlayLayout extends React.Component<Props, State> {
                                 {this.props.barMiddle}
                             </TopAppBarSection>
                             <TopAppBarSection style={{ width: "33%" }} alignEnd>
+                                {this.props.barRight}
                                 <IconButton
                                     ripple={false}
                                     onClick={() => {

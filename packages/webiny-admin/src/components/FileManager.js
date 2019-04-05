@@ -20,7 +20,7 @@ function FileManager(props: FilesRules) {
 
     return (
         <>
-            <FileManagerDialog open={show} files={props} />
+            {show && <FileManagerDialog files={props} />}
             {props.children({
                 hideFileManager: () => dispatch({ type: "hide" }),
                 showFileManager: onAccept => dispatch({ type: "show", onAccept })
