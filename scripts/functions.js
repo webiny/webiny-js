@@ -33,7 +33,7 @@ if (options.script["--also-watch"]) {
     watch.push(path.join(process.cwd(), options.script["--also-watch"]));
 }
 
-command.push(`-w ${watch.join(",")} ${command}`);
+watch.forEach(item => command.unshift(`-w ${item}`));
 
 // "--port" argument:
 command.push(`--port=${options.script["--port"]}`);
