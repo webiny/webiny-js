@@ -112,8 +112,8 @@
     "release-independent:dry": "node scripts/release/independent --preview",
     "webiny-ui-build-storybook": "cd packages/webiny-ui && cross-env OUT=../../netlify-static yarn build-storybook",
     "functions:list": "node scripts/functions-list.js",
-    "functions": "yarn functions:list && cross-env BUILD_TYPE=api nodemon scripts/functions.js",
-    "functions:inspect": "yarn functions:list && cross-env BUILD_TYPE=api nodemon --inspect=9001 scripts/functions.js"
+    "functions": "node scripts/functions.js --also-watch=packages/webiny-api*/**/*.*",
+    "functions:inspect": "yarn functions --inspect=9001"
   },
   "pre-commit": [
     "lint-staged"
