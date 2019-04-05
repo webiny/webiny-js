@@ -69,23 +69,21 @@ function FileManagerDialog({ files, showSnackbar }: Props) {
                     <Form onChange={formOnChange}>
                         {({ Bind }) => (
                             <OverlayLayout
-                                barMiddle={() => {}}
+                                barLeft={
+                                    <Bind name={"search"}>
+                                        <Input label={"Search by filename or tags"} />
+                                    </Bind>
+                                }
                                 onExited={() => {}}
                                 barRight={
                                     <ButtonPrimary onClick={browseFiles}>Upload...</ButtonPrimary>
                                 }
                             >
                                 <Query query={listFiles} variables={queryParams}>
-                                    {({ data, loading }) => {
+                                    {({ data }) => {
                                         const list = get(data, "files.listFiles.data") || [];
                                         return (
                                             <>
-                                                <Bind name={"search"}>
-                                                    <Input
-                                                        disabled={loading}
-                                                        label={"Search by filename or tags"}
-                                                    />
-                                                </Bind>
                                                 <Grid>
                                                     <Cell span={12}>
                                                         {list.map(file => {
