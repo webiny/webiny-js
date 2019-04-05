@@ -12,6 +12,7 @@ import { listFiles } from "./graphql";
 import { get, debounce } from "lodash";
 import { File, ImageFile } from "./Files";
 import { OverlayLayout } from "webiny-admin/components/OverlayLayout";
+import { withSnackbar } from "webiny-admin/components";
 
 type Props = {
     open: boolean,
@@ -47,7 +48,7 @@ function fileManagerReducer(state, action) {
     return next;
 }
 
-export function FileManagerDialog({ files }: Props) {
+function FileManagerDialog({ files, showSnackbar }: Props) {
     const [{ selected, queryParams }, dispatch] = useReducer(fileManagerReducer, initialState);
 
     const formOnChange = debounce(queryParams => {
@@ -58,7 +59,9 @@ export function FileManagerDialog({ files }: Props) {
         <Files
             {...files}
             onSuccess={file => {
-                console.log("asd", file);
+                // TODO: snackbar se ne vidi (z-index issue)
+                showSnackbar("File upload started...");
+                console.log("File:", file);
             }}
         >
             {({ getDropZoneProps, browseFiles }) => (
@@ -68,20 +71,21 @@ export function FileManagerDialog({ files }: Props) {
                             <OverlayLayout
                                 barMiddle={() => {}}
                                 onExited={() => {}}
-                                barLeft={
-                                    <Bind name={"search"}>
-                                        <Input label={"Search"} />
-                                    </Bind>
-                                }
                                 barRight={
                                     <ButtonPrimary onClick={browseFiles}>Upload...</ButtonPrimary>
                                 }
                             >
                                 <Query query={listFiles} variables={queryParams}>
-                                    {({ data }) => {
+                                    {({ data, loading }) => {
                                         const list = get(data, "files.listFiles.data") || [];
                                         return (
                                             <>
+                                                <Bind name={"search"}>
+                                                    <Input
+                                                        disabled={loading}
+                                                        label={"Search by filename or tags"}
+                                                    />
+                                                </Bind>
                                                 <Grid>
                                                     <Cell span={12}>
                                                         {list.map(file => {
@@ -119,3 +123,5 @@ export function FileManagerDialog({ files }: Props) {
         </Files>
     );
 }
+
+export default withSnackbar()(FileManagerDialog);

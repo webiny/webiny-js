@@ -1,7 +1,7 @@
 // @flow
 import React, { useReducer } from "react";
 import type { FilesRules } from "react-butterfiles";
-import { FileManagerDialog } from "./FileManager/FileManagerDialog";
+import FileManagerDialog from "./FileManager/FileManagerDialog";
 
 const initialState = { onAccept: null, show: false };
 function fileManagerReducer(state, action) {

@@ -10,17 +10,13 @@ export default (entityFetcher: EntityFetcher) => async (
     context: Object
 ) => {
     const entityClass = entityFetcher(context);
-    const { page = 1, perPage = 10, sort = null, search = null } = args;
+    const { page = 1, perPage = 10, sort = null, search = "" } = args;
     const findArgs = { page, perPage, sort };
     if (search) {
         findArgs.query = {
             $or: [
-                { $regex: `.*${search}.*`, $options: "i" },
-                {
-                    $elemMatch: {
-                        tags: search
-                    }
-                }
+                { name: { $regex: `.*${search}.*`, $options: "i" } },
+                { tags: { $in: search.split(" ") } }
             ]
         };
     }
