@@ -36,21 +36,21 @@ const UsersForm = ({ onSubmit, user, loading }: Object) => (
                         <Cell span={3}>
                             <Grid>
                                 <Cell span={12}>
-                                    <FileManager accept={["image/jpeg", "image/jpg"]}>
-                                        {({ showFileManager }) => (
-                                            <Bind name="avatar">
-                                                {({ onChange }) => (
+                                    <Bind name="avatar">
+                                        {({ onChange, value }) => (
+                                            <FileManager
+                                                onChange={onChange}
+                                                selection={{ accept: ["image/jpeg", "image/jpg"] }}
+                                            >
+                                                {({ showFileManager }) => (
                                                     <Image
-                                                        uploadImage={() => {
-                                                            showFileManager(files => {
-                                                                onChange(files);
-                                                            });
-                                                        }}
+                                                        value={value}
+                                                        uploadImage={showFileManager}
                                                     />
                                                 )}
-                                            </Bind>
+                                            </FileManager>
                                         )}
-                                    </FileManager>
+                                    </Bind>
                                 </Cell>
                             </Grid>
                         </Cell>

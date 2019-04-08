@@ -24,7 +24,7 @@ export default {
             listFiles(
                 page: Int
                 perPage: Int
-                where: JSON
+                types: [String]
                 sort: JSON
                 search: String
             ): FileListResponse

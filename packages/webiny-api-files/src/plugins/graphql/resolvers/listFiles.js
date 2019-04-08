@@ -10,8 +10,8 @@ export default (entityFetcher: EntityFetcher) => async (
     context: Object
 ) => {
     const entityClass = entityFetcher(context);
-    const { page = 1, perPage = 10, sort = null, search = "" } = args;
-    const findArgs = { page, perPage, sort };
+    const { page = 1, perPage = 10, sort = null, search = "", types = [] } = args;
+    const findArgs = { page, perPage, sort, query: { type: { $in: types } } };
     if (search) {
         findArgs.query = {
             $or: [
