@@ -1,29 +1,28 @@
 // @flow
-import React, { useReducer } from "react";
+import React, { useState } from "react";
 import type { FilesRules } from "react-butterfiles";
 import FileManagerDialog from "./FileManager/FileManagerDialog";
 
-const initialState = { onAccept: null, show: false };
-function fileManagerReducer(state, action) {
-    switch (action.type) {
-        case "show": {
-            const { onAccept } = action;
-            return { ...state, show: true, onAccept: onAccept };
-        }
-        case "decrement":
-            return { ...state, show: false, onAccept: null };
-    }
-}
+type Props = {
+    onChange: Function,
+    selection: FilesRules,
+    children: ({ showFileManger: Function }) => React.Node
+};
 
-function FileManager(props: FilesRules) {
-    const [{ show }, dispatch] = useReducer(fileManagerReducer, initialState);
+function FileManager({ onChange, selection, children }: Props) {
+    const [show, setShow] = useState(false);
 
     return (
         <>
-            {show && <FileManagerDialog files={props} />}
-            {props.children({
-                hideFileManager: () => dispatch({ type: "hide" }),
-                showFileManager: onAccept => dispatch({ type: "show", onAccept })
+            {show && (
+                <FileManagerDialog
+                    onChange={onChange}
+                    selection={selection}
+                    onClose={() => setShow(false)}
+                />
+            )}
+            {children({
+                showFileManager: () => setShow(true)
             })}
         </>
     );

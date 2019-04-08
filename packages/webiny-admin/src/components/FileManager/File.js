@@ -3,6 +3,7 @@ import React from "react";
 import { css } from "emotion";
 import { ReactComponent as Checked } from "./icons/round-check_box-24px.svg";
 import { ReactComponent as NotChecked } from "./icons/round-check_box_outline_blank-24px.svg";
+import classNames from "classnames";
 
 const styles = css({
     display: "inline-block",
@@ -20,12 +21,6 @@ const styles = css({
             position: "absolute",
             top: 0,
             left: 0
-        },
-        // Custom:
-        ".filePreview": {
-            img: {
-                width: "100%"
-            }
         }
     }
 });
@@ -37,17 +32,14 @@ type Props = {
 };
 
 export default function File(props: Props) {
-    const { file, selected, onClick } = props;
+    const { file, selected, onClick, children, className } = props;
 
     return (
-        <div className={styles} onClick={onClick}>
+        <div className={classNames(styles, className)} onClick={onClick}>
             <div>
                 <div className={"checkedIcon"}>{selected ? <Checked /> : <NotChecked />}</div>
-                <div className={"filePreview"}>
-                    <img src={file.src} alt="" />
-                </div>
+                <div className={"filePreview"}>{children}</div>
             </div>
-
             {file.name}
         </div>
     );

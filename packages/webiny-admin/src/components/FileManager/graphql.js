@@ -1,12 +1,12 @@
 import gql from "graphql-tag";
 
 export const listFiles = gql`
-    query ListFiles($where: JSON, $sort: JSON, $page: Int, $perPage: Int, $search: String) {
+    query ListFiles($types: [String], $sort: JSON, $page: Int, $perPage: Int, $search: String) {
         files {
-            listFiles(where: $where, sort: $sort, page: $page, perPage: $perPage, search: $search) {
+            listFiles(types: $types, sort: $sort, page: $page, perPage: $perPage, search: $search) {
                 data {
-                    id
                     src
+                    size
                     name
                     type
                 }
@@ -16,6 +16,18 @@ export const listFiles = gql`
                     from
                     nextPage
                     previousPage
+                }
+            }
+        }
+    }
+`;
+
+export const createFile = gql`
+    mutation CreateFile($data: FileInput!) {
+        files {
+            createFile(data: $data) {
+                data {
+                    name
                 }
             }
         }
