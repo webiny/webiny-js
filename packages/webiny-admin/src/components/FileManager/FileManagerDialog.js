@@ -49,7 +49,11 @@ function fileManagerReducer(state, action) {
             break;
         }
         case "queryParams": {
-            next.queryParams = { types: state.queryParams.types, ...action.queryParams };
+            next.selected = [];
+            next.queryParams = {
+                types: state.queryParams.types,
+                ...action.queryParams
+            };
             break;
         }
     }

@@ -3,7 +3,8 @@ import React from "react";
 import { css } from "emotion";
 
 const styles = css({
-    width: "100%"
+    height: 200,
+    width: "auto"
 });
 
 export default [

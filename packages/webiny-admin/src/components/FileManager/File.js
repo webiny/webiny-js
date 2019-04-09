@@ -11,17 +11,29 @@ const styles = css({
     position: "relative",
     margin: 10,
     cursor: "pointer",
-    "> div": {
-        border: "1px solid gray",
-        width: 240,
-        height: 240,
+    width: 200,
+    "> .body": {
+        border: "1px solid #cccccc",
+        width: 200,
+        height: 200,
         overflow: "hidden",
         ".checkedIcon": {
             color: "var(--mdc-theme-secondary, #00ccb0)",
             position: "absolute",
-            top: 0,
-            left: 0
+            top: 4,
+            left: 4,
+            zIndex: 10
+        },
+        ".filePreview": {
+            textAlign: "center",
+            position: "relative"
         }
+    },
+    "> .label": {
+        padding: "7px 0px",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis"
     }
 });
 
@@ -36,11 +48,11 @@ export default function File(props: Props) {
 
     return (
         <div className={classNames(styles, className)} onClick={onClick}>
-            <div>
+            <div className={"body"}>
                 <div className={"checkedIcon"}>{selected ? <Checked /> : <NotChecked />}</div>
                 <div className={"filePreview"}>{children}</div>
             </div>
-            {file.name}
+            <div className={"label"}>{file.name}</div>
         </div>
     );
 }

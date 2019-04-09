@@ -40,7 +40,14 @@ const UsersForm = ({ onSubmit, user, loading }: Object) => (
                                         {({ onChange, value }) => (
                                             <FileManager
                                                 onChange={onChange}
-                                                selection={{ accept: ["image/jpeg", "image/jpg"] }}
+                                                selection={{
+                                                    accept: [
+                                                        "image/jpeg",
+                                                        "image/jpg",
+                                                        "image/png",
+                                                        "image/gif"
+                                                    ]
+                                                }}
                                             >
                                                 {({ showFileManager }) => (
                                                     <Image

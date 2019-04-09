@@ -13,28 +13,39 @@ const respond = body => {
     };
 };
 
+const respondWithError = message => {
+    return respond({
+        code: "FILE_UPLOAD_FAILED",
+        data: {
+            message
+        }
+    });
+};
+
 export const handler = async (event: Object) => {
     const options = JSON.parse(event.body);
 
-    const { name } = options;
+    const { name, type, size } = options;
 
     if (!name) {
-        return respond({
-            code: "FILE_UPLOAD_FAILED",
-            data: {
-                message: `File "name" missing.`
-            }
-        });
+        return respondWithError(`File "name" missing.`);
+    }
+
+    if (!size) {
+        return respondWithError(`File "size" missing.`);
+    }
+
+    if (!type) {
+        return respondWithError(`File "type" missing.`);
     }
 
     const contentType = mime.lookup(name);
     if (!contentType) {
-        return respond({
-            code: "FILE_UPLOAD_FAILED",
-            data: {
-                message: `File's content type could not be resolved.`
-            }
-        });
+        return respondWithError(`File's content type could not be resolved.`);
+    }
+
+    if (contentType !== type) {
+        return respondWithError(`Detected and received file types don't match.`);
     }
 
     let key = sanitizeFilename(name);
@@ -50,11 +61,14 @@ export const handler = async (event: Object) => {
         data: {
             file: {
                 name,
-                src: "/files/" + key
+                src: "/files/" + key,
+                type: contentType,
+                size
             },
             s3: {
                 url: "/files/upload",
                 fields: {
+                    "Content-Length": size,
                     "Content-Type": contentType,
                     key
                 }
