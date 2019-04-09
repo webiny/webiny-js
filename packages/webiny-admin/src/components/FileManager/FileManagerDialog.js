@@ -12,6 +12,7 @@ import { listFiles, createFile } from "./graphql";
 import renderFile from "./renderFile";
 import { get, debounce } from "lodash";
 import getFileUploader from "./getFileUploader";
+import outputFileSelectionError from "./outputFileSelectionError";
 import DropFilesHere from "./DropFilesHere";
 import { OverlayLayout } from "webiny-admin/components/OverlayLayout";
 import { withSnackbar } from "webiny-admin/components";
@@ -61,13 +62,13 @@ function fileManagerReducer(state, action) {
     return next;
 }
 
+const formOnChange = debounce(queryParams => {
+    dispatch({ type: "queryParams", queryParams });
+}, 500);
+
 function FileManagerDialog(props: Props) {
     const { onClose, onChange, selection, gqlCreateFile, showSnackbar } = props;
     const [{ selected, queryParams }, dispatch] = useReducer(fileManagerReducer, props, init);
-
-    const formOnChange = debounce(queryParams => {
-        dispatch({ type: "queryParams", queryParams });
-    }, 500);
 
     return (
         <Query query={listFiles} variables={queryParams}>
@@ -76,6 +77,11 @@ function FileManagerDialog(props: Props) {
                 return (
                     <Files
                         {...selection}
+                        onError={errors => {
+                            const message = outputFileSelectionError(errors);
+                            showSnackbar(message);
+                            console.log(message);
+                        }}
                         onSuccess={async files => {
                             // TODO: snackbar se ne vidi (z-index issue?)
                             showSnackbar("File upload started...");
@@ -83,7 +89,7 @@ function FileManagerDialog(props: Props) {
                             const uploadFile = getFileUploader();
                             await Promise.all(
                                 files.map(async file => {
-                                    const response = await uploadFile(file);
+                                    const response = await uploadFile(file.src.file);
                                     await gqlCreateFile({ variables: { data: response } });
                                 })
                             );
