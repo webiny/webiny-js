@@ -28,11 +28,12 @@ args.forEach(arg => {
 const command = [...options.nodemon, "scripts/functions/runFunctions.js"];
 
 // "--also-watch" argument:
-let watch = listFunctions().map(fn => fn.root + "/**/*.*");
+let watch = listFunctions().map(fn => fn.root + "/**/*.js");
 if (options.script["--also-watch"]) {
     watch.push(path.join(process.cwd(), options.script["--also-watch"]));
 }
 
+console.log(watch);
 watch.forEach(item => command.unshift(`-w ${item}`));
 
 // "--port" argument:
