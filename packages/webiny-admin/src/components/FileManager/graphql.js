@@ -5,6 +5,7 @@ export const listFiles = gql`
         files {
             listFiles(types: $types, sort: $sort, page: $page, perPage: $perPage, search: $search) {
                 data {
+                    tags
                     src
                     size
                     name
@@ -26,8 +27,8 @@ export const createFile = gql`
     mutation CreateFile($data: FileInput!) {
         files {
             createFile(data: $data) {
-                data {
-                    name
+                error {
+                    message
                 }
             }
         }

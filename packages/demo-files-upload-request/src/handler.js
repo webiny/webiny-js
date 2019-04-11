@@ -60,7 +60,7 @@ export const handler = async (event: Object) => {
         code: "FILE_UPLOAD_SUCCESS",
         data: {
             file: {
-                name,
+                name: key,
                 src: "/files/" + key,
                 type: contentType,
                 size

@@ -4,5 +4,6 @@ export default /* GraphQL */ `
         size: Int
         type: String
         src: String
+        tags: [String]
     }
 `;

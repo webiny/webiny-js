@@ -1,7 +1,7 @@
 // @flow
 import React, { useState } from "react";
 import type { FilesRules } from "react-butterfiles";
-import FileManagerDialog from "./FileManager/FileManagerDialog";
+import FileManagerView from "./FileManager/FileManagerView";
 
 type Props = {
     onChange: Function,
@@ -15,7 +15,7 @@ function FileManager({ onChange, selection, children }: Props) {
     return (
         <>
             {show && (
-                <FileManagerDialog
+                <FileManagerView
                     onChange={onChange}
                     selection={selection}
                     onClose={() => setShow(false)}

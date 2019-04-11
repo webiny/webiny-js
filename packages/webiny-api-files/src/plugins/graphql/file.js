@@ -1,7 +1,8 @@
 // @flow
-import { resolveCreate, resolveDelete, resolveGet, resolveUpdate } from "webiny-api/graphql";
+import { resolveCreate, resolveDelete, resolveGet } from "webiny-api/graphql";
 
 import listFiles from "./resolvers/listFiles";
+import updateFileBySrc from "./resolvers/updateFileBySrc";
 
 const fileFetcher = ctx => ctx.files.entities.File;
 import {
@@ -35,8 +36,8 @@ export default {
                 data: FileInput!
             ): FileResponse
             
-            updateFile(
-                id: ID!
+            updateFileBySrc(
+                src: String!
                 data: FileInput!
             ): FileResponse
         
@@ -52,7 +53,7 @@ export default {
         },
         FilesMutation: {
             createFile: resolveCreate(fileFetcher),
-            updateFile: resolveUpdate(fileFetcher),
+            updateFileBySrc: updateFileBySrc(fileFetcher),
             deleteFile: resolveDelete(fileFetcher)
         }
     }

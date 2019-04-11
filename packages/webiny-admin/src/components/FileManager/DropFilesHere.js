@@ -17,11 +17,9 @@ const styles = css({
     }
 });
 
-export default function DropFilesHere(props: Props) {
-    const { onClick } = props;
-
+export default function DropFilesHere() {
     return (
-        <div className={styles} onClick={onClick}>
+        <div className={styles}>
             <div>
                 <div>Drop files here</div>
                 <span>or use the Upload button</span>

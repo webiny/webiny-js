@@ -14,6 +14,7 @@ import { get, debounce } from "lodash";
 import getFileUploader from "./getFileUploader";
 import outputFileSelectionError from "./outputFileSelectionError";
 import DropFilesHere from "./DropFilesHere";
+import FileDetails from "./FileDetails";
 import { OverlayLayout } from "webiny-admin/components/OverlayLayout";
 import { withSnackbar } from "webiny-admin/components";
 import { compose } from "recompose";
@@ -57,45 +58,58 @@ function fileManagerReducer(state, action) {
             };
             break;
         }
+        case "showDetails": {
+            next.showDetails = action.file;
+            break;
+        }
+        case "hideDetails": {
+            next.showDetails = null;
+            break;
+        }
     }
 
     return next;
 }
 
-const formOnChange = debounce(queryParams => {
-    dispatch({ type: "queryParams", queryParams });
-}, 500);
-
-function FileManagerDialog(props: Props) {
+function FileManagerView(props: Props) {
     const { onClose, onChange, selection, gqlCreateFile, showSnackbar } = props;
-    const [{ selected, queryParams }, dispatch] = useReducer(fileManagerReducer, props, init);
+    const [{ showDetails, selected, queryParams }, dispatch] = useReducer(
+        fileManagerReducer,
+        props,
+        init
+    );
+
+    const formOnChange = debounce(queryParams => {
+        dispatch({ type: "queryParams", queryParams });
+    }, 500);
 
     return (
         <Query query={listFiles} variables={queryParams}>
             {({ data, refetch }) => {
                 const list = get(data, "files.listFiles.data") || [];
+                const uploadFile = async files => {
+                    // TODO: snackbar se ne vidi (z-index issue?)
+                    showSnackbar("File upload started...");
+
+                    const list = Array.isArray(files) ? files : [files];
+                    await Promise.all(
+                        list.map(async file => {
+                            const response = await getFileUploader()(file);
+                            await gqlCreateFile({ variables: { data: response } });
+                        })
+                    );
+
+                    refetch();
+                    showSnackbar("File upload completed.");
+                };
+
                 return (
                     <Files
                         {...selection}
+                        onSuccess={files => uploadFile(files.map(file => file.src.file))}
                         onError={errors => {
                             const message = outputFileSelectionError(errors);
                             showSnackbar(message);
-                            console.log(message);
-                        }}
-                        onSuccess={async files => {
-                            // TODO: snackbar se ne vidi (z-index issue?)
-                            showSnackbar("File upload started...");
-
-                            const uploadFile = getFileUploader();
-                            await Promise.all(
-                                files.map(async file => {
-                                    const response = await uploadFile(file.src.file);
-                                    await gqlCreateFile({ variables: { data: response } });
-                                })
-                            );
-
-                            refetch();
-                            showSnackbar("File upload completed.");
                         }}
                     >
                         {({ getDropZoneProps, browseFiles }) => (
@@ -113,7 +127,6 @@ function FileManagerDialog(props: Props) {
                                                 selected.length > 0 ? (
                                                     <ButtonPrimary
                                                         onClick={async () => {
-                                                            console.log(selected[0]);
                                                             await onChange(
                                                                 selection.multiple
                                                                     ? selected
@@ -133,23 +146,40 @@ function FileManagerDialog(props: Props) {
                                             }
                                         >
                                             <>
+                                                <FileDetails
+                                                    refreshFileList={refetch}
+                                                    file={showDetails}
+                                                    onClose={() =>
+                                                        dispatch({ type: "hideDetails" })
+                                                    }
+                                                />
+
                                                 <Grid>
                                                     <Cell span={12}>
-                                                        {list.length === 0 && <DropFilesHere />}
-                                                        {list.map(file =>
-                                                            renderFile({
-                                                                file,
-                                                                selected: selected.find(
-                                                                    current =>
-                                                                        current.src === file.src
-                                                                ),
-                                                                onClick: () =>
-                                                                    dispatch({
-                                                                        selection,
-                                                                        type: "toggleSelected",
-                                                                        file
-                                                                    })
-                                                            })
+                                                        {list.length ? (
+                                                            list.map(file =>
+                                                                renderFile({
+                                                                    uploadFile,
+                                                                    file,
+                                                                    onClick: () =>
+                                                                        dispatch({
+                                                                            type: "showDetails",
+                                                                            file
+                                                                        }),
+                                                                    selected: selected.find(
+                                                                        current =>
+                                                                            current.src === file.src
+                                                                    ),
+                                                                    onSelect: () =>
+                                                                        dispatch({
+                                                                            selection,
+                                                                            type: "toggleSelected",
+                                                                            file
+                                                                        })
+                                                                })
+                                                            )
+                                                        ) : (
+                                                            <DropFilesHere />
                                                         )}
                                                     </Cell>
                                                 </Grid>
@@ -169,4 +199,4 @@ function FileManagerDialog(props: Props) {
 export default compose(
     graphql(createFile, { name: "gqlCreateFile" }),
     withSnackbar()
-)(FileManagerDialog);
+)(FileManagerView);

@@ -3,28 +3,26 @@ import File from "./File";
 import { getPlugins, getPlugin } from "webiny-plugins";
 import invariant from "invariant";
 
-export default function renderFile({ file, selected, onClick }) {
+export default function renderFile(props) {
+    const { file } = props;
     const plugins = getPlugins("file-manager-file-type");
 
-    let render = null;
+    let plugin = null;
     for (let i = 0; i < plugins.length; i++) {
-        let plugin = plugins[i];
-        if (Array.isArray(plugin.types) && plugin.types.includes(file.type)) {
-            render = plugin.render;
+        let current = plugins[i];
+        if (Array.isArray(current.types) && current.types.includes(file.type)) {
+            plugin = current;
         }
     }
 
-    if (!render) {
-        render = getPlugin("file-manager-file-type-default");
-        invariant(render, `Missing default "file-manager-file-type" plugin.`);
-        if (render) {
-            render = render.render;
-        }
+    if (!plugin) {
+        plugin = getPlugin("file-manager-file-type-default");
+        invariant(plugin, `Missing default "file-manager-file-type" plugin.`);
     }
 
     return (
-        <File key={file.src} file={file} selected={selected} onClick={onClick}>
-            {render(file)}
+        <File {...props} key={file.src} options={plugin.options}>
+            {plugin.render(file)}
         </File>
     );
 }

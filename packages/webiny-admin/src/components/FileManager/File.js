@@ -3,7 +3,8 @@ import React from "react";
 import { css } from "emotion";
 import { ReactComponent as Checked } from "./icons/round-check_box-24px.svg";
 import { ReactComponent as NotChecked } from "./icons/round-check_box_outline_blank-24px.svg";
-import classNames from "classnames";
+import { ReactComponent as More } from "./icons/round-more_vert-24px.svg";
+import { Menu, MenuItem } from "webiny-ui/Menu";
 
 const styles = css({
     display: "inline-block",
@@ -18,15 +19,29 @@ const styles = css({
         height: 200,
         overflow: "hidden",
         ".checkedIcon": {
-            color: "var(--mdc-theme-secondary, #00ccb0)",
+            color: "var(--mdc-theme-primary, #00ccb0)",
             position: "absolute",
             top: 4,
             left: 4,
             zIndex: 10
         },
+        ".optionsIcon": {
+            color: "var(--mdc-theme-primary, #00ccb0)",
+            position: "absolute",
+            top: 4,
+            right: 4,
+            zIndex: 10
+        },
         ".filePreview": {
             textAlign: "center",
-            position: "relative"
+            position: "relative",
+            ".clickableArea": {
+                position: "absolute",
+                top: 30,
+                left: 0,
+                width: "100%",
+                height: 170
+            }
         }
     },
     "> .label": {
@@ -40,17 +55,40 @@ const styles = css({
 type Props = {
     file: Object,
     selected: boolean,
-    onClick: Function
+    uploadFile: Function,
+    onSelect: Function,
+    onClick: Function,
+    options: ?Array<{ label: string, onClick: (file: Object) => void }>
 };
 
 export default function File(props: Props) {
-    const { file, selected, onClick, children, className } = props;
+    const { file, selected, onSelect, children, uploadFile, onClick, options = [] } = props;
 
     return (
-        <div className={classNames(styles, className)} onClick={onClick}>
+        <div className={styles}>
             <div className={"body"}>
-                <div className={"checkedIcon"}>{selected ? <Checked /> : <NotChecked />}</div>
-                <div className={"filePreview"}>{children}</div>
+                <div
+                    className={"checkedIcon"}
+                    onClick={e => {
+                        e.stopPropagation();
+                        onSelect();
+                    }}
+                >
+                    {selected ? <Checked /> : <NotChecked />}
+                </div>
+                <div className={"optionsIcon"}>
+                    <Menu handle={<More />}>
+                        {options.map((item, index) => (
+                            <React.Fragment key={index}>
+                                {item({ file, MenuItem, uploadFile })}
+                            </React.Fragment>
+                        ))}
+                    </Menu>
+                </div>
+                <div className={"filePreview"}>
+                    <div className="clickableArea" onClick={onClick} />
+                    {children}
+                </div>
             </div>
             <div className={"label"}>{file.name}</div>
         </div>

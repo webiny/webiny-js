@@ -20,21 +20,48 @@ export const fileFactory = ({ user = {} }: IFile) => {
             super();
             this.attr("createdBy")
                 .char()
-                .setDefaultValue(user.id);
+                .setDefaultValue(user.id)
+                .setOnce();
 
-            this.attr("size").integer();
+            this.attr("size")
+                .integer()
+                .setValidators("required")
+                .setOnce();
 
             this.attr("type")
                 .char()
-                .setValidators("maxLength:50");
+                .setValidators("required,maxLength:50")
+                .setOnce();
 
             this.attr("src")
                 .char()
-                .setValidators("required,maxLength:200");
+                .setValidators("required,maxLength:200")
+                .setOnce();
 
             this.attr("name")
                 .char()
-                .setValidators("maxLength:500");
+                .setValidators("required,maxLength:100");
+
+            this.attr("tags")
+                .array()
+                .setValidators(function(tags) {
+                    if (Array.isArray(tags)) {
+                        if (tags.length > 15) {
+                            throw Error("You cannot set more than 15 tags.");
+                        }
+
+                        for (let i = 0; i < tags.length; i++) {
+                            let tag = tags[i];
+                            if (typeof tag !== "string") {
+                                throw Error("Tag must be typeof string.");
+                            }
+
+                            if (tag.length > 50) {
+                                throw Error(`Tag ${tag} is more than 50 characters long.`);
+                            }
+                        }
+                    }
+                });
 
             this.on("beforeCreate", async () => {
                 // TODO: improve this if needed in the future.
