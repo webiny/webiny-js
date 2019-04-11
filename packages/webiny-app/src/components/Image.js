@@ -15,7 +15,7 @@ type ImageProps = Object & {
 };
 
 /**
- * "buildSrc" has to be defined as a separate property, so its functionality can be reused outside of
+ * "getImageSrc" has to be defined as a separate property, so its functionality can be reused outside of
  * the Image component. This is ideal in cases where manual creation of image src is needed.
  */
 export type ImageComponentPluginType = PluginType & {

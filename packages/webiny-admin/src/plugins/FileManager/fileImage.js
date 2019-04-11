@@ -3,6 +3,7 @@ import React, { useReducer } from "react";
 import { css } from "emotion";
 import { ImageEditorDialog } from "webiny-ui/ImageUpload";
 import dataURLtoBlob from "dataurl-to-blob";
+import { Image } from "webiny-app/components";
 
 const styles = css({
     height: 200,
@@ -77,6 +78,8 @@ export default {
     types: ["image/jpeg", "image/jpg", "image/gif", "image/png"],
     options: [renderEdit],
     render(file) {
-        return <img className={styles} src={file.src} alt={file.name} />;
+        return (
+            <Image className={styles} src={file.src} alt={file.name} transform={{ width: 300 }} />
+        );
     }
 };

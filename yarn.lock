@@ -13413,6 +13413,11 @@ mem@^4.0.0:
     mimic-fn "^2.0.0"
     p-is-promise "^2.0.0"
 
+"memoize-one@>=3.1.1 <6":
+  version "5.0.4"
+  resolved "https://registry.npmjs.org/memoize-one/-/memoize-one-5.0.4.tgz#005928aced5c43d890a4dfab18ca908b0ec92cbc"
+  integrity sha512-P0z5IeAH6qHHGkJIXWw0xC2HNEgkx/9uWWBQw64FJj3/ol14VYdfVGWWr0fXfjhhv3TKVIqUq65os6O4GUNksA==
+
 memoize-one@^4.0.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/memoize-one/-/memoize-one-4.1.0.tgz#a2387c58c03fff27ca390c31b764a79addf3f906"
@@ -16952,6 +16957,14 @@ react-visibility-sensor@^5.0.2:
   integrity sha512-7+1lr7oQOO2vKr5u/uxoDGFWAAy7lsDy2aJU3Zy1/OymI+TRqOBk8m2L8YE1B0UyfCDWxVAWO+aifVGqNOvqeQ==
   dependencies:
     prop-types "^15.6.2"
+
+react-window@^1.7.2:
+  version "1.7.2"
+  resolved "https://registry.npmjs.org/react-window/-/react-window-1.7.2.tgz#2e1528d5b9991e863302bfe74cb52d0ff7082e78"
+  integrity sha512-GK1gxSeGPLBDSQhPmYhCYrtf5MkGK8rwVjeyPgxZLvLRw0wvyzKZPMc/jfemiGNGfuJyW3kx1z6QR9uK7r2XdA==
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    memoize-one ">=3.1.1 <6"
 
 react@^16.3.0, react@^16.4.0, react@^16.6.0, react@^16.8.1:
   version "16.8.6"

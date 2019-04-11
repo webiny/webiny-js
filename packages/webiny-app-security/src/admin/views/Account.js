@@ -41,6 +41,7 @@ const UsersForm = ({ onSubmit, user, loading }: Object) => (
                                             <FileManager
                                                 onChange={onChange}
                                                 selection={{
+                                                    multiple: true,
                                                     accept: [
                                                         "image/jpeg",
                                                         "image/jpg",
