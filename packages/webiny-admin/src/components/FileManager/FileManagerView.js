@@ -30,7 +30,8 @@ function init(props) {
     return {
         selected: [],
         queryParams: {
-            types: props.selection.accept
+            types: props.selection.accept,
+            perPage: 40
         }
     };
 }
@@ -53,8 +54,9 @@ function fileManagerReducer(state, action) {
         case "queryParams": {
             next.selected = [];
             next.queryParams = {
+                ...action.queryParams,
                 types: state.queryParams.types,
-                ...action.queryParams
+                perPage: 40
             };
             break;
         }
@@ -99,8 +101,8 @@ function FileManagerView(props: Props) {
                         })
                     );
 
-                    refetch();
                     showSnackbar("File upload completed.");
+                    await refetch();
                 };
 
                 return (
