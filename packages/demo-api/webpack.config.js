@@ -13,10 +13,10 @@ const aliases = packages.reduce((aliases, dir) => {
 }, {});
 
 module.exports = {
-    // entry: isEnvDevelopment ? slsw.lib.entries : "./src/handler.js",
+    entry: "./src/handler.js",
     target: "node",
     // Generate sourcemaps for proper error messages
-    devtool: "source-map",
+    devtool: isEnvDevelopment ? "source-map" : false,
     externals: ["aws-sdk", "vertx", "mongodb"],
     mode: isEnvDevelopment ? "development" : "production",
     optimization: {

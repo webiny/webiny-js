@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "cross-env NODE_ENV=production npx sls webpack --out build",
-    "start": "cross-env NODE_ENV=development npx sls offline start --port=9000 --dontPrintOutput",
+    "build": "cross-env NODE_ENV=production npx webpack --out build",
     "setup": "node src/install.js",
     "export-blocks": "node tasks/exportBlocks/index",
     "export-pages": "node tasks/exportPages/index"
