@@ -38,7 +38,7 @@ const UsersForm = ({ onSubmit, user, loading }: Object) => (
                                 <Cell span={12}>
                                     <Bind name="avatar">
                                         {({ onChange, value }) => (
-                                            <FileManager onChange={onChange}>
+                                            <FileManager onChange={onChange} images>
                                                 {({ showFileManager }) => (
                                                     <Image
                                                         value={value}
