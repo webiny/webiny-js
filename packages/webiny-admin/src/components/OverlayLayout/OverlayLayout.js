@@ -75,35 +75,33 @@ class OverlayLayout extends React.Component<Props, State> {
     }
 
     render() {
+        const { onExited, barLeft, barMiddle, barRight, children, style, ...rest } = this.props;
+
         return (
-            <Transition
-                in={this.state.isVisible}
-                timeout={100}
-                appear={true}
-                onExited={this.props.onExited}
-            >
+            <Transition in={this.state.isVisible} timeout={100} appear onExited={onExited}>
                 {state => (
-                    <OverlayLayoutWrapper style={{ ...defaultStyle, ...transitionStyles[state] }}>
+                    <OverlayLayoutWrapper
+                        {...rest}
+                        style={{ ...defaultStyle, ...style, ...transitionStyles[state] }}
+                    >
                         <TopAppBarSecondary fixed style={{ top: 0 }}>
                             <TopAppBarSection style={{ width: "33%" }} alignStart>
-                                {this.props.barLeft}
+                                {barLeft}
                             </TopAppBarSection>
                             <TopAppBarSection style={{ width: "33%" }}>
-                                {this.props.barMiddle}
+                                {barMiddle}
                             </TopAppBarSection>
                             <TopAppBarSection style={{ width: "33%" }} alignEnd>
-                                {this.props.barRight}
+                                {barRight}
                                 <IconButton
                                     ripple={false}
-                                    onClick={() => {
-                                        this.hideComponent();
-                                    }}
+                                    onClick={this.hideComponent}
                                     icon={<CloseIcon style={{ width: 24, height: 24 }} />}
                                 />
                             </TopAppBarSection>
                         </TopAppBarSecondary>
 
-                        {this.props.children}
+                        {children}
                     </OverlayLayoutWrapper>
                 )}
             </Transition>

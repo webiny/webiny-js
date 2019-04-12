@@ -8,10 +8,11 @@ import { Form } from "webiny-form";
 import { ReactComponent as EditIcon } from "./../icons/round-edit-24px.svg";
 import { Link } from "webiny-app/router";
 import { css } from "emotion";
-import { updateFileBySrc } from "./graphql";
+import { updateFileBySrc, listFiles } from "./../graphql";
 import { compose } from "recompose";
 import { withSnackbar } from "webiny-admin/components";
 import { graphql } from "react-apollo";
+import { get } from "lodash";
 
 const style = {
     editTag: css({
@@ -20,7 +21,7 @@ const style = {
     })
 };
 
-function Tags({ refreshFileList, gqlUpdateFileBySrc, showSnackbar, file }) {
+function Tags({ state: parentState, refreshFileList, gqlUpdateFileBySrc, showSnackbar, file }) {
     const [editing, setEdit] = useState(false);
     const tags = file.tags || [];
 
@@ -36,16 +37,35 @@ function Tags({ refreshFileList, gqlUpdateFileBySrc, showSnackbar, file }) {
                         variables: {
                             src: file.src,
                             data: { tags }
+                        },
+                        update: (cache, updated) => {
+                            const newFileData = get(updated, "data.files.updateFileBySrc.data");
+                            const data = cache.readQuery({
+                                query: listFiles,
+                                variables: parentState.queryParams
+                            });
+
+                            data.files.listFiles.data.forEach(item => {
+                                if (item.src === newFileData.src) {
+                                    item.tags = newFileData.tags;
+                                }
+                            });
+
+                            cache.writeQuery({
+                                query: listFiles,
+                                variables: parentState.queryParams,
+                                data
+                            });
                         }
                     });
-                    await refreshFileList();
+
                     showSnackbar("Tags successfully updated.");
                 }}
             >
                 {({ Bind, submit }) => (
                     <>
                         <Bind name={"tags"}>
-                            <TagsComponent />
+                            <TagsComponent autoFocus />
                         </Bind>
                         <ButtonSecondary small onClick={() => setEdit(false)}>
                             Cancel

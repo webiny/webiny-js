@@ -6,7 +6,7 @@ import { Grid, Cell } from "webiny-ui/Grid";
 import { ButtonPrimary } from "webiny-ui/Button";
 import { Input } from "webiny-ui/Input";
 import { Form } from "webiny-form";
-import { Query } from "react-apollo";
+import { Query, Mutation } from "react-apollo";
 import type { FilesRules } from "react-butterfiles";
 import { listFiles, createFile } from "./graphql";
 import renderFile from "./renderFile";
@@ -18,8 +18,21 @@ import FileDetails from "./FileDetails";
 import { OverlayLayout } from "webiny-admin/components/OverlayLayout";
 import { withSnackbar } from "webiny-admin/components";
 import { compose } from "recompose";
-import { graphql } from "react-apollo";
 import { Scrollbar } from "webiny-ui/Scrollbar";
+import { css } from "emotion";
+
+const style = {
+    draggingFeedback: css({
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        opacity: 0.5,
+        background: "white",
+        zIndex: 100
+    })
+};
 
 type Props = {
     onChange: Function,
@@ -32,7 +45,8 @@ function init(props) {
         selected: [],
         queryParams: {
             types: props.selection.accept,
-            perPage: 40
+            perPage: 40,
+            sort: { createdOn: -1 }
         }
     };
 }
@@ -55,10 +69,11 @@ function fileManagerReducer(state, action) {
         case "queryParams": {
             next.selected = [];
             next.queryParams = {
+                ...state.queryParams,
                 ...action.queryParams,
                 types: state.queryParams.types,
                 perPage: 40,
-                page: 1
+                sort: { createdOn: -1 }
             };
             break;
         }
@@ -70,18 +85,20 @@ function fileManagerReducer(state, action) {
             next.showDetails = null;
             break;
         }
+        case "dragging": {
+            next.dragging = action.state;
+            break;
+        }
     }
 
     return next;
 }
 
 function FileManagerView(props: Props) {
-    const { onClose, onChange, selection, gqlCreateFile, showSnackbar } = props;
-    const [{ showDetails, selected, queryParams }, dispatch] = useReducer(
-        fileManagerReducer,
-        props,
-        init
-    );
+    const { onClose, onChange, selection, showSnackbar } = props;
+    const [state, dispatch] = useReducer(fileManagerReducer, props, init);
+
+    const { showDetails, dragging, selected, queryParams } = state;
 
     const gqlQuery = useRef();
 
@@ -97,7 +114,6 @@ function FileManagerView(props: Props) {
                 fetchMore({
                     variables: { page: nextPage },
                     updateQuery: (prev, { fetchMoreResult }) => {
-                        console.log(prev);
                         if (!fetchMoreResult) {
                             return prev;
                         }
@@ -116,132 +132,171 @@ function FileManagerView(props: Props) {
     }, 500);
 
     return (
-        <Query query={listFiles} variables={queryParams} ref={gqlQuery}>
-            {({ data, refetch, fetchMore }) => {
-                const list = get(data, "files.listFiles.data") || [];
-                const uploadFile = async files => {
-                    // TODO: snackbar se ne vidi (z-index issue?)
-                    showSnackbar("File upload started...");
+        <Mutation
+            mutation={createFile}
+            update={(cache, newFile) => {
+                const newFileData = get(newFile, "data.files.createFile.data");
 
-                    const list = Array.isArray(files) ? files : [files];
-                    await Promise.all(
-                        list.map(async file => {
-                            const response = await getFileUploader()(file);
-                            await gqlCreateFile({ variables: { data: response } });
-                        })
-                    );
+                const data = cache.readQuery({ query: listFiles, variables: queryParams });
+                data.files.listFiles.data.unshift(newFileData);
 
-                    showSnackbar("File upload completed.");
-                    await refetch();
-                };
-
-                return (
-                    <Files
-                        {...selection}
-                        multipleMaxCount={10}
-                        onSuccess={files => uploadFile(files.map(file => file.src.file))}
-                        onError={errors => {
-                            const message = outputFileSelectionError(errors);
-                            console.log(message); // TODO: remove this once snackbars are visible
-                            showSnackbar(message);
-                        }}
-                    >
-                        {({ getDropZoneProps, browseFiles }) => (
-                            <div {...getDropZoneProps()}>
-                                <Form onChange={formOnChange}>
-                                    {({ Bind }) => (
-                                        <OverlayLayout
-                                            barLeft={
-                                                <Bind name={"search"}>
-                                                    <Input label={"Search by filename or tags"} />
-                                                </Bind>
-                                            }
-                                            onExited={onClose}
-                                            barRight={
-                                                selected.length > 0 ? (
-                                                    <ButtonPrimary
-                                                        onClick={async () => {
-                                                            await onChange(
-                                                                selection.multiple
-                                                                    ? selected
-                                                                    : selected[0]
-                                                            );
-
-                                                            onClose();
-                                                        }}
-                                                    >
-                                                        Select
-                                                    </ButtonPrimary>
-                                                ) : (
-                                                    <ButtonPrimary onClick={browseFiles}>
-                                                        Upload...
-                                                    </ButtonPrimary>
-                                                )
-                                            }
-                                        >
-                                            <>
-                                                <FileDetails
-                                                    refreshFileList={refetch}
-                                                    file={showDetails}
-                                                    onClose={() =>
-                                                        dispatch({ type: "hideDetails" })
-                                                    }
-                                                />
-
-                                                <Scrollbar
-                                                    onScrollFrame={scrollFrame =>
-                                                        refreshOnScroll({
-                                                            scrollFrame,
-                                                            fetchMore
-                                                        })
-                                                    }
-                                                >
-                                                    <Grid>
-                                                        <Cell span={12}>
-                                                            {list.length ? (
-                                                                list.map(file =>
-                                                                    renderFile({
-                                                                        uploadFile,
-                                                                        file,
-                                                                        onClick: () =>
-                                                                            dispatch({
-                                                                                type: "showDetails",
-                                                                                file
-                                                                            }),
-                                                                        selected: selected.find(
-                                                                            current =>
-                                                                                current.src ===
-                                                                                file.src
-                                                                        ),
-                                                                        onSelect: () =>
-                                                                            dispatch({
-                                                                                selection,
-                                                                                type:
-                                                                                    "toggleSelected",
-                                                                                file
-                                                                            })
-                                                                    })
-                                                                )
-                                                            ) : (
-                                                                <DropFilesHere />
-                                                            )}
-                                                        </Cell>
-                                                    </Grid>
-                                                </Scrollbar>
-                                            </>
-                                        </OverlayLayout>
-                                    )}
-                                </Form>
-                            </div>
-                        )}
-                    </Files>
-                );
+                cache.writeQuery({
+                    query: listFiles,
+                    variables: queryParams,
+                    data
+                });
             }}
-        </Query>
+        >
+            {createFile => (
+                <Query query={listFiles} variables={queryParams} ref={gqlQuery}>
+                    {({ data, refetch, fetchMore }) => {
+                        const list = get(data, "files.listFiles.data") || [];
+                        const uploadFile = async files => {
+                            // TODO: snackbar se ne vidi (z-index issue?)
+                            showSnackbar("File upload started...");
+
+                            const list = Array.isArray(files) ? files : [files];
+                            await Promise.all(
+                                list.map(async file => {
+                                    const response = await getFileUploader()(file);
+                                    await createFile({ variables: { data: response } });
+                                })
+                            );
+
+                            showSnackbar("File upload completed.");
+                        };
+
+                        return (
+                            <Files
+                                {...selection}
+                                multipleMaxCount={10}
+                                onSuccess={files => uploadFile(files.map(file => file.src.file))}
+                                onError={errors => {
+                                    const message = outputFileSelectionError(errors);
+                                    showSnackbar(message);
+                                }}
+                            >
+                                {({ getDropZoneProps, browseFiles }) => (
+                                    <Form onChange={formOnChange}>
+                                        {({ Bind }) => (
+                                            <OverlayLayout
+                                                {...getDropZoneProps({
+                                                    onDragEnter: () =>
+                                                        dispatch({
+                                                            type: "dragging",
+                                                            state: true
+                                                        })
+                                                })}
+                                                barLeft={
+                                                    <Bind name={"search"}>
+                                                        <Input
+                                                            label={"Search by filename or tags"}
+                                                        />
+                                                    </Bind>
+                                                }
+                                                onExited={onClose}
+                                                barRight={
+                                                    selected.length > 0 ? (
+                                                        <ButtonPrimary
+                                                            onClick={async () => {
+                                                                await onChange(
+                                                                    selection.multiple
+                                                                        ? selected
+                                                                        : selected[0]
+                                                                );
+
+                                                                onClose();
+                                                            }}
+                                                        >
+                                                            Select
+                                                        </ButtonPrimary>
+                                                    ) : (
+                                                        <ButtonPrimary onClick={browseFiles}>
+                                                            Upload...
+                                                        </ButtonPrimary>
+                                                    )
+                                                }
+                                            >
+                                                <>
+                                                    {dragging && (
+                                                        <div
+                                                            {...{
+                                                                onDragLeave: () => {
+                                                                    dispatch({
+                                                                        type: "dragging",
+                                                                        state: false
+                                                                    });
+                                                                },
+                                                                onDrop: () =>
+                                                                    dispatch({
+                                                                        type: "dragging",
+                                                                        state: false
+                                                                    })
+                                                            }}
+                                                            className={style.draggingFeedback}
+                                                        />
+                                                    )}
+                                                    <FileDetails
+                                                        state={state}
+                                                        file={showDetails}
+                                                        onClose={() =>
+                                                            dispatch({ type: "hideDetails" })
+                                                        }
+                                                    />
+
+                                                    <Scrollbar
+                                                        onScrollFrame={scrollFrame =>
+                                                            refreshOnScroll({
+                                                                scrollFrame,
+                                                                fetchMore
+                                                            })
+                                                        }
+                                                    >
+                                                        <Grid>
+                                                            <Cell span={12}>
+                                                                {list.length ? (
+                                                                    list.map(file =>
+                                                                        renderFile({
+                                                                            uploadFile,
+                                                                            file,
+                                                                            onClick: () =>
+                                                                                dispatch({
+                                                                                    type:
+                                                                                        "showDetails",
+                                                                                    file
+                                                                                }),
+                                                                            selected: selected.find(
+                                                                                current =>
+                                                                                    current.src ===
+                                                                                    file.src
+                                                                            ),
+                                                                            onSelect: () =>
+                                                                                dispatch({
+                                                                                    selection,
+                                                                                    type:
+                                                                                        "toggleSelected",
+                                                                                    file
+                                                                                })
+                                                                        })
+                                                                    )
+                                                                ) : (
+                                                                    <DropFilesHere />
+                                                                )}
+                                                            </Cell>
+                                                        </Grid>
+                                                    </Scrollbar>
+                                                </>
+                                            </OverlayLayout>
+                                        )}
+                                    </Form>
+                                )}
+                            </Files>
+                        );
+                    }}
+                </Query>
+            )}
+        </Mutation>
     );
 }
 
-export default compose(
-    graphql(createFile, { name: "gqlCreateFile" }),
-    withSnackbar()
-)(FileManagerView);
+export default compose(withSnackbar())(FileManagerView);
