@@ -9,17 +9,20 @@ import { Menu, MenuItem } from "webiny-ui/Menu";
 import { Ripple } from "webiny-ui/Ripple";
 import { ListItemGraphic } from "webiny-ui/List";
 
+const COMPONENT_WIDTH = 200;
+const COMPONENT_HEIGHT = 200;
+
 const styles = css({
     display: "inline-block",
     float: "left",
     position: "relative",
     margin: 10,
     cursor: "pointer",
-    width: 200,
+    width: COMPONENT_WIDTH,
     "> .body": {
         border: "1px solid #cccccc",
-        width: 200,
-        height: 200,
+        width: COMPONENT_WIDTH,
+        height: COMPONENT_HEIGHT,
         overflow: "hidden",
         ".checkedIcon": {
             color: "var(--mdc-theme-primary, #00ccb0)",
