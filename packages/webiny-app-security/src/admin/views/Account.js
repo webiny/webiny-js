@@ -38,17 +38,7 @@ const UsersForm = ({ onSubmit, user, loading }: Object) => (
                                 <Cell span={12}>
                                     <Bind name="avatar">
                                         {({ onChange, value }) => (
-                                            <FileManager
-                                                onChange={onChange}
-                                                selection={{
-                                                    accept: [
-                                                        "image/jpeg",
-                                                        "image/jpg",
-                                                        "image/png",
-                                                        "image/gif"
-                                                    ]
-                                                }}
-                                            >
+                                            <FileManager onChange={onChange}>
                                                 {({ showFileManager }) => (
                                                     <Image
                                                         value={value}

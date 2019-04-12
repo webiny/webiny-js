@@ -4,7 +4,10 @@ import { css } from "emotion";
 import { ReactComponent as Checked } from "./icons/round-check_box-24px.svg";
 import { ReactComponent as NotChecked } from "./icons/round-check_box_outline_blank-24px.svg";
 import { ReactComponent as More } from "./icons/round-more_vert-24px.svg";
+import { ReactComponent as Details } from "./icons/round-description-24px.svg";
 import { Menu, MenuItem } from "webiny-ui/Menu";
+import { Ripple } from "webiny-ui/Ripple";
+import { ListItemGraphic } from "webiny-ui/List";
 
 const styles = css({
     display: "inline-block",
@@ -61,34 +64,48 @@ type Props = {
     options: ?Array<{ label: string, onClick: (file: Object) => void }>
 };
 
-export default function File(props: Props) {
-    const { file, selected, onSelect, children, uploadFile, onClick, options = [] } = props;
+function renderViewDetails({ MenuItem, MenuItemIcon, showFileDetails }) {
+    return (
+        <MenuItem onClick={showFileDetails}>
+            <MenuItemIcon>
+                <Details />
+            </MenuItemIcon>
+            Details
+        </MenuItem>
+    );
+}
 
+export default function File(props: Props) {
+    const { file, selected, onSelect, children, uploadFile, showFileDetails, options = [] } = props;
+
+    const menu = [renderViewDetails, ...options];
     return (
         <div className={styles}>
             <div className={"body"}>
-                <div
-                    className={"checkedIcon"}
-                    onClick={e => {
-                        e.stopPropagation();
-                        onSelect();
-                    }}
-                >
+                <div className={"checkedIcon"} onClick={onSelect}>
                     {selected ? <Checked /> : <NotChecked />}
                 </div>
                 <div className={"optionsIcon"}>
                     <Menu handle={<More />}>
-                        {options.map((item, index) => (
+                        {menu.map((item, index) => (
                             <React.Fragment key={index}>
-                                {item({ file, MenuItem, uploadFile })}
+                                {item({
+                                    file,
+                                    MenuItem,
+                                    MenuItemIcon: ListItemGraphic,
+                                    uploadFile,
+                                    showFileDetails
+                                })}
                             </React.Fragment>
                         ))}
                     </Menu>
                 </div>
-                <div className={"filePreview"}>
-                    <div className="clickableArea" onClick={onClick} />
-                    {children}
-                </div>
+                <Ripple>
+                    <div className={"filePreview"}>
+                        <div className="clickableArea" onClick={onSelect} />
+                        {children}
+                    </div>
+                </Ripple>
             </div>
             <div className={"label"}>{file.name}</div>
         </div>

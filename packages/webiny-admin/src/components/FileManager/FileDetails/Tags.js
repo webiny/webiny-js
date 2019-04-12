@@ -21,7 +21,7 @@ const style = {
     })
 };
 
-function Tags({ state: parentState, refreshFileList, gqlUpdateFileBySrc, showSnackbar, file }) {
+function Tags({ state: parentState, gqlUpdateFileBySrc, showSnackbar, file }) {
     const [editing, setEdit] = useState(false);
     const tags = file.tags || [];
 

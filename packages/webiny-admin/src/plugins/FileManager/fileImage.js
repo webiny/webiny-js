@@ -4,6 +4,7 @@ import { css } from "emotion";
 import { ImageEditorDialog } from "webiny-ui/ImageUpload";
 import dataURLtoBlob from "dataurl-to-blob";
 import { Image } from "webiny-app/components";
+import { ReactComponent as EditIcon } from "./icons/edit.svg";
 
 const styles = css({
     height: 200,
@@ -44,7 +45,7 @@ const reducer = (state, action) => {
     return next;
 };
 
-function renderEdit({ MenuItem, file, uploadFile }) {
+function renderEdit({ MenuItem, MenuItemIcon, file, uploadFile }) {
     const [state, dispatch] = useReducer(reducer, initialState);
 
     return (
@@ -54,6 +55,9 @@ function renderEdit({ MenuItem, file, uploadFile }) {
                     dispatch({ type: "setDataUrl", dataUrl: await toDataUrl(file.src) })
                 }
             >
+                <MenuItemIcon>
+                    <EditIcon />
+                </MenuItemIcon>
                 Edit
             </MenuItem>
             <ImageEditorDialog

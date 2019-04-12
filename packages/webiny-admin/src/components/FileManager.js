@@ -5,21 +5,17 @@ import FileManagerView from "./FileManager/FileManagerView";
 
 type Props = {
     onChange: Function,
-    selection: FilesRules,
+    files: FilesRules,
     children: ({ showFileManger: Function }) => React.Node
 };
 
-function FileManager({ onChange, selection, children }: Props) {
+function FileManager({ onChange, files, children }: Props) {
     const [show, setShow] = useState(false);
 
     return (
         <>
             {show && (
-                <FileManagerView
-                    onChange={onChange}
-                    selection={selection}
-                    onClose={() => setShow(false)}
-                />
+                <FileManagerView onChange={onChange} files={files} onClose={() => setShow(false)} />
             )}
             {children({
                 showFileManager: () => setShow(true)
@@ -27,5 +23,9 @@ function FileManager({ onChange, selection, children }: Props) {
         </>
     );
 }
+
+FileManager.defaultProps = {
+    files: {}
+};
 
 export { FileManager };

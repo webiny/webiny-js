@@ -37,14 +37,14 @@ const style = {
 type Props = {
     onChange: Function,
     onClose: Function,
-    selection: FilesRules
+    files: FilesRules
 };
 
 function init(props) {
     return {
         selected: [],
         queryParams: {
-            types: props.selection.accept,
+            types: get(props, "files.accept"),
             perPage: 40,
             sort: { createdOn: -1 }
         }
@@ -55,7 +55,7 @@ function fileManagerReducer(state, action) {
     const next = { ...state };
     switch (action.type) {
         case "toggleSelected": {
-            if (!action.selection.multiple) {
+            if (!action.files.multiple) {
                 next.selected = [];
             }
             const existingIndex = state.selected.findIndex(item => item.src === action.file.src);
@@ -95,7 +95,7 @@ function fileManagerReducer(state, action) {
 }
 
 function FileManagerView(props: Props) {
-    const { onClose, onChange, selection, showSnackbar } = props;
+    const { onClose, onChange, files, showSnackbar } = props;
     const [state, dispatch] = useReducer(fileManagerReducer, props, init);
 
     const { showDetails, dragging, selected, queryParams } = state;
@@ -149,7 +149,7 @@ function FileManagerView(props: Props) {
         >
             {createFile => (
                 <Query query={listFiles} variables={queryParams} ref={gqlQuery}>
-                    {({ data, refetch, fetchMore }) => {
+                    {({ data, fetchMore }) => {
                         const list = get(data, "files.listFiles.data") || [];
                         const uploadFile = async files => {
                             // TODO: snackbar se ne vidi (z-index issue?)
@@ -168,7 +168,7 @@ function FileManagerView(props: Props) {
 
                         return (
                             <Files
-                                {...selection}
+                                {...files}
                                 multipleMaxCount={10}
                                 onSuccess={files => uploadFile(files.map(file => file.src.file))}
                                 onError={errors => {
@@ -200,7 +200,7 @@ function FileManagerView(props: Props) {
                                                         <ButtonPrimary
                                                             onClick={async () => {
                                                                 await onChange(
-                                                                    selection.multiple
+                                                                    files.multiple
                                                                         ? selected
                                                                         : selected[0]
                                                                 );
@@ -259,7 +259,7 @@ function FileManagerView(props: Props) {
                                                                         renderFile({
                                                                             uploadFile,
                                                                             file,
-                                                                            onClick: () =>
+                                                                            showFileDetails: () =>
                                                                                 dispatch({
                                                                                     type:
                                                                                         "showDetails",
@@ -272,7 +272,7 @@ function FileManagerView(props: Props) {
                                                                             ),
                                                                             onSelect: () =>
                                                                                 dispatch({
-                                                                                    selection,
+                                                                                    files,
                                                                                     type:
                                                                                         "toggleSelected",
                                                                                     file
