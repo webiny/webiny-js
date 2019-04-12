@@ -20,6 +20,7 @@
     "react-apollo": "^2.2.4",
     "react-butterfiles": "^1.1.5",
     "react-emotion": "^9.2.5",
+    "react-lazy-load": "^3.0.13",
     "react-transition-group": "^2.5.1",
     "react-window": "^1.7.2",
     "recompose": "^0.27.1",

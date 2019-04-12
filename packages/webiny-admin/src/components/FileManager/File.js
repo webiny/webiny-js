@@ -8,6 +8,7 @@ import { ReactComponent as Details } from "./icons/round-description-24px.svg";
 import { Menu, MenuItem } from "webiny-ui/Menu";
 import { Ripple } from "webiny-ui/Ripple";
 import { ListItemGraphic } from "webiny-ui/List";
+import LazyLoad from "react-lazy-load";
 
 const COMPONENT_WIDTH = 200;
 const COMPONENT_HEIGHT = 200;
@@ -103,12 +104,14 @@ export default function File(props: Props) {
                         ))}
                     </Menu>
                 </div>
-                <Ripple>
-                    <div className={"filePreview"}>
-                        <div className="clickableArea" onClick={onSelect} />
-                        {children}
-                    </div>
-                </Ripple>
+                <LazyLoad height={200} offsetVertical={300}>
+                    <Ripple>
+                        <div className={"filePreview"}>
+                            <div className="clickableArea" onClick={onSelect} />
+                            {children}
+                        </div>
+                    </Ripple>
+                </LazyLoad>
             </div>
             <div className={"label"}>{file.name}</div>
         </div>
