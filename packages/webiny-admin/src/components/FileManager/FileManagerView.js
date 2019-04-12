@@ -45,7 +45,7 @@ function init(props) {
         selected: [],
         queryParams: {
             types: get(props, "files.accept"),
-            perPage: 40,
+            perPage: 50,
             sort: { createdOn: -1 }
         }
     };
