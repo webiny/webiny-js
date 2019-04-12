@@ -79,41 +79,58 @@ function renderViewDetails({ MenuItem, MenuItemIcon, showFileDetails }) {
     );
 }
 
-export default function File(props: Props) {
-    const { file, selected, onSelect, children, uploadFile, showFileDetails, options = [] } = props;
+export default React.memo(
+    function File(props: Props) {
+        const {
+            file,
+            selected,
+            onSelect,
+            children,
+            uploadFile,
+            showFileDetails,
+            options = []
+        } = props;
 
-    const menu = [renderViewDetails, ...options];
-    return (
-        <div className={styles}>
-            <div className={"body"}>
-                <div className={"checkedIcon"} onClick={onSelect}>
-                    {selected ? <Checked /> : <NotChecked />}
+        const menu = [renderViewDetails, ...options];
+        return (
+            <div className={styles}>
+                <div className={"body"}>
+                    <div className={"checkedIcon"} onClick={onSelect}>
+                        {selected ? <Checked /> : <NotChecked />}
+                    </div>
+                    <div className={"optionsIcon"}>
+                        <Menu handle={<More />}>
+                            {menu.map((item, index) => (
+                                <React.Fragment key={index}>
+                                    {item({
+                                        file,
+                                        MenuItem,
+                                        MenuItemIcon: ListItemGraphic,
+                                        uploadFile,
+                                        showFileDetails
+                                    })}
+                                </React.Fragment>
+                            ))}
+                        </Menu>
+                    </div>
+                    <LazyLoad height={200} offsetVertical={300}>
+                        <Ripple>
+                            <div className={"filePreview"}>
+                                <div className="clickableArea" onClick={onSelect} />
+                                {children}
+                            </div>
+                        </Ripple>
+                    </LazyLoad>
                 </div>
-                <div className={"optionsIcon"}>
-                    <Menu handle={<More />}>
-                        {menu.map((item, index) => (
-                            <React.Fragment key={index}>
-                                {item({
-                                    file,
-                                    MenuItem,
-                                    MenuItemIcon: ListItemGraphic,
-                                    uploadFile,
-                                    showFileDetails
-                                })}
-                            </React.Fragment>
-                        ))}
-                    </Menu>
-                </div>
-                <LazyLoad height={200} offsetVertical={300}>
-                    <Ripple>
-                        <div className={"filePreview"}>
-                            <div className="clickableArea" onClick={onSelect} />
-                            {children}
-                        </div>
-                    </Ripple>
-                </LazyLoad>
+                <div className={"label"}>{file.name}</div>
             </div>
-            <div className={"label"}>{file.name}</div>
-        </div>
-    );
-}
+        );
+    },
+    (prev, next) => {
+        if (prev.selected !== next.selected) {
+            return false;
+        }
+
+        return true;
+    }
+);

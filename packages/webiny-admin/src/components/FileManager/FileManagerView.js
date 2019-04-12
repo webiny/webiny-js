@@ -1,6 +1,6 @@
 // @flow
 /* eslint-disable */
-import React, { useReducer, useRef } from "react";
+import React, { useReducer, useRef, useCallback } from "react";
 import Files from "react-butterfiles";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ButtonPrimary } from "webiny-ui/Button";
@@ -102,51 +102,56 @@ function FileManagerView(props: Props) {
 
     const gqlQuery = useRef();
 
-    const formOnChange = debounce(queryParams => {
-        dispatch({ type: "queryParams", queryParams });
-    }, 500);
+    const formOnChange = useCallback(
+        debounce(queryParams => {
+            dispatch({ type: "queryParams", queryParams });
+        }, 500),
+        []
+    );
 
-    const refreshOnScroll = debounce(({ scrollFrame, fetchMore }) => {
-        if (scrollFrame.top > 0.9) {
-            const { data } = gqlQuery.current.getQueryResult();
-            const nextPage = get(data, "files.listFiles.meta.nextPage");
-            nextPage &&
-                fetchMore({
-                    variables: { page: nextPage },
-                    updateQuery: (prev, { fetchMoreResult }) => {
-                        if (!fetchMoreResult) {
-                            return prev;
+    const refreshOnScroll = useCallback(
+        debounce(({ scrollFrame, fetchMore }) => {
+            if (scrollFrame.top > 0.9) {
+                const { data } = gqlQuery.current.getQueryResult();
+                const nextPage = get(data, "files.listFiles.meta.nextPage");
+                nextPage &&
+                    fetchMore({
+                        variables: { page: nextPage },
+                        updateQuery: (prev, { fetchMoreResult }) => {
+                            if (!fetchMoreResult) {
+                                return prev;
+                            }
+
+                            const next = { ...fetchMoreResult };
+
+                            next.files.listFiles.data = [
+                                ...prev.files.listFiles.data,
+                                ...fetchMoreResult.files.listFiles.data
+                            ];
+
+                            return next;
                         }
+                    });
+            }
+        }, 500),
+        []
+    );
 
-                        const next = { ...fetchMoreResult };
+    const updateCacheAfterCreateFile = useCallback((cache, newFile) => {
+        const newFileData = get(newFile, "data.files.createFile.data");
 
-                        next.files.listFiles.data = [
-                            ...prev.files.listFiles.data,
-                            ...fetchMoreResult.files.listFiles.data
-                        ];
+        const data = cache.readQuery({ query: listFiles, variables: queryParams });
+        data.files.listFiles.data.unshift(newFileData);
 
-                        return next;
-                    }
-                });
-        }
-    }, 500);
+        cache.writeQuery({
+            query: listFiles,
+            variables: queryParams,
+            data
+        });
+    }, []);
 
     return (
-        <Mutation
-            mutation={createFile}
-            update={(cache, newFile) => {
-                const newFileData = get(newFile, "data.files.createFile.data");
-
-                const data = cache.readQuery({ query: listFiles, variables: queryParams });
-                data.files.listFiles.data.unshift(newFileData);
-
-                cache.writeQuery({
-                    query: listFiles,
-                    variables: queryParams,
-                    data
-                });
-            }}
-        >
+        <Mutation mutation={createFile} update={updateCacheAfterCreateFile}>
             {createFile => (
                 <Query query={listFiles} variables={queryParams} ref={gqlQuery}>
                     {({ data, fetchMore }) => {
