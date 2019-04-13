@@ -3,7 +3,7 @@
 import React, { useReducer, useRef, useCallback } from "react";
 import Files from "react-butterfiles";
 import { Grid, Cell } from "webiny-ui/Grid";
-import { ButtonPrimary } from "webiny-ui/Button";
+import { ButtonPrimary, ButtonIcon } from "webiny-ui/Button";
 import { Icon } from "webiny-ui/Icon";
 import { Form } from "webiny-form";
 import { Query, Mutation } from "react-apollo";
@@ -23,6 +23,7 @@ import { css } from "emotion";
 import styled from "react-emotion";
 
 import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
+import { ReactComponent as UploadIcon } from "./icons/round-cloud_upload-24px.svg";
 
 const style = {
     draggingFeedback: css({
@@ -264,6 +265,7 @@ function FileManagerView(props: Props) {
                                                         </ButtonPrimary>
                                                     ) : (
                                                         <ButtonPrimary onClick={browseFiles}>
+                                                            <ButtonIcon icon={<UploadIcon />} />
                                                             Upload...
                                                         </ButtonPrimary>
                                                     )
