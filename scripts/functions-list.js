@@ -1,11 +1,1 @@
-const chalk = require("chalk");
-const listFunctions = require("./functions/listFunctions");
-
-const functions = listFunctions();
-
-console.log(chalk.cyan(`Following functions were detected:`));
-console.log(chalk.cyan(`===============================================`));
-functions.forEach((fn, index) => {
-    console.log(`${index + 1}. ${fn.package.name} ` + chalk.gray(`[${fn.method}] ${fn.path}`));
-});
-console.log(chalk.cyan(`===============================================`));
+require("./functions/logFunctions")();
