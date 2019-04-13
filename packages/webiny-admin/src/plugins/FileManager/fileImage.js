@@ -7,8 +7,13 @@ import { Image } from "webiny-app/components";
 import { ReactComponent as EditIcon } from "./icons/edit.svg";
 
 const styles = css({
-    height: 200,
-    width: "auto"
+    maxHeight: 200,
+    maxWidth: 200,
+    width: "auto",
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translateX(-50%) translateY(-50%)"
 });
 
 function toDataUrl(url) {

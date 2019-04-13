@@ -68,6 +68,13 @@ const searchIcon = css({
     }
 });
 
+const FileList = styled("div")({
+    width: "100%",
+    display: "grid",
+    /* define the number of grid columns */
+    gridTemplateColumns: "repeat( auto-fit, minmax(220px, 1fr) )"
+});
+
 type Props = {
     onChange: Function,
     onClose: Function,
@@ -306,38 +313,35 @@ function FileManagerView(props: Props) {
                                                             })
                                                         }
                                                     >
-                                                        <Grid>
-                                                            <Cell span={12}>
-                                                                {list.length ? (
-                                                                    list.map(file =>
-                                                                        renderFile({
-                                                                            uploadFile,
-                                                                            file,
-                                                                            showFileDetails: () =>
-                                                                                dispatch({
-                                                                                    type:
-                                                                                        "showDetails",
-                                                                                    file
-                                                                                }),
-                                                                            selected: selected.find(
-                                                                                current =>
-                                                                                    current.src ===
-                                                                                    file.src
-                                                                            ),
-                                                                            onSelect: () =>
-                                                                                dispatch({
-                                                                                    files,
-                                                                                    type:
-                                                                                        "toggleSelected",
-                                                                                    file
-                                                                                })
-                                                                        })
-                                                                    )
-                                                                ) : (
-                                                                    <DropFilesHere />
-                                                                )}
-                                                            </Cell>
-                                                        </Grid>
+                                                        <FileList>
+                                                            {list.length ? (
+                                                                list.map(file =>
+                                                                    renderFile({
+                                                                        uploadFile,
+                                                                        file,
+                                                                        showFileDetails: () =>
+                                                                            dispatch({
+                                                                                type: "showDetails",
+                                                                                file
+                                                                            }),
+                                                                        selected: selected.find(
+                                                                            current =>
+                                                                                current.src ===
+                                                                                file.src
+                                                                        ),
+                                                                        onSelect: () =>
+                                                                            dispatch({
+                                                                                files,
+                                                                                type:
+                                                                                    "toggleSelected",
+                                                                                file
+                                                                            })
+                                                                    })
+                                                                )
+                                                            ) : (
+                                                                <DropFilesHere />
+                                                            )}
+                                                        </FileList>
                                                     </Scrollbar>
                                                 </>
                                             </OverlayLayout>

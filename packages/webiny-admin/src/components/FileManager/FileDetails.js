@@ -16,15 +16,17 @@ const style = {
         textAlign: "center",
         fontSize: 18,
         padding: 10,
-        fontWeight: "bold"
+        fontWeight: "600",
+        color: "var(--mdc-theme-on-surface)"
     }),
     list: css({
         textAlign: "left",
+        color: "var(--mdc-theme-on-surface)",
         li: {
             padding: 10,
             lineHeight: "22px",
             "li-title": {
-                fontWeight: "bold",
+                fontWeight: "600",
                 display: "block"
             },
             "li-content": {

@@ -2,8 +2,8 @@
 import React from "react";
 import { css } from "emotion";
 import { ReactComponent as Checked } from "./icons/round-check_box-24px.svg";
-import { ReactComponent as NotChecked } from "./icons/round-check_box_outline_blank-24px.svg";
-import { ReactComponent as More } from "./icons/round-more_vert-24px.svg";
+
+import { ReactComponent as InfoIcon } from "./icons/round-info-24px.svg";
 import { ReactComponent as Details } from "./icons/round-description-24px.svg";
 import { Menu, MenuItem } from "webiny-ui/Menu";
 import { Ripple } from "webiny-ui/Ripple";
@@ -17,23 +17,30 @@ const styles = css({
     display: "inline-block",
     float: "left",
     position: "relative",
+    zIndex: 1,
     margin: 10,
     cursor: "pointer",
-    width: COMPONENT_WIDTH,
+    width: "100%",
+    maxWidth: COMPONENT_WIDTH,
+    border: "1px solid var(--mdc-theme-on-background)",
+    borderRadius: 2,
     "> .body": {
-        border: "1px solid #cccccc",
         width: COMPONENT_WIDTH,
         height: COMPONENT_HEIGHT,
         overflow: "hidden",
+        "--icon-color": "var(--mdc-theme-on-background)",
+        "&:hover": {
+            "--icon-color": "var(--mdc-theme-secondary)"
+        },
         ".checkedIcon": {
-            color: "var(--mdc-theme-primary, #00ccb0)",
+            color: "var(--mdc-theme-secondary)",
             position: "absolute",
             top: 4,
             left: 4,
-            zIndex: 10
+            zIndex: 11
         },
-        ".optionsIcon": {
-            color: "var(--mdc-theme-primary, #00ccb0)",
+        ".infoIcon": {
+            color: "var(--icon-color)",
             position: "absolute",
             top: 4,
             right: 4,
@@ -42,20 +49,27 @@ const styles = css({
         ".filePreview": {
             textAlign: "center",
             position: "relative",
+            backgroundColor: "#fff",
+            width: "100%",
+            height: "100%",
             ".clickableArea": {
                 position: "absolute",
                 top: 30,
                 left: 0,
                 width: "100%",
-                height: 170
+                height: 170,
+                zIndex: 2
             }
         }
     },
     "> .label": {
-        padding: "7px 0px",
+        padding: "15px 10px",
         whiteSpace: "nowrap",
         overflow: "hidden",
-        textOverflow: "ellipsis"
+        textOverflow: "ellipsis",
+        fontSize: "0.8rem",
+        color: "var(--mdc-theme-on-surface)",
+        backgroundColor: "var(--mdc-theme-on-background)"
     }
 });
 
@@ -96,10 +110,10 @@ export default React.memo(
             <div className={styles}>
                 <div className={"body"}>
                     <div className={"checkedIcon"} onClick={onSelect}>
-                        {selected ? <Checked /> : <NotChecked />}
+                        {selected ? <Checked /> : null}
                     </div>
-                    <div className={"optionsIcon"}>
-                        <Menu handle={<More />}>
+                    <div className={"infoIcon"}>
+                        <Menu handle={<InfoIcon />}>
                             {menu.map((item, index) => (
                                 <React.Fragment key={index}>
                                     {item({
