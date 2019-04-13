@@ -65,14 +65,16 @@ function Tags({ state: parentState, gqlUpdateFileBySrc, showSnackbar, file }) {
                 {({ Bind, submit }) => (
                     <>
                         <Bind name={"tags"}>
-                            <TagsComponent autoFocus />
+                            <TagsComponent autoFocus placeholder={"Enter a tag and press enter"} />
                         </Bind>
-                        <ButtonSecondary small onClick={() => setEdit(false)}>
-                            Cancel
-                        </ButtonSecondary>
-                        <ButtonPrimary small onClick={submit}>
-                            Submit
-                        </ButtonPrimary>
+                        <div style={{ marginTop: "10px" }}>
+                            <ButtonPrimary small onClick={submit}>
+                                Submit
+                            </ButtonPrimary>{" "}
+                            <ButtonSecondary small onClick={() => setEdit(false)}>
+                                Cancel
+                            </ButtonSecondary>
+                        </div>
                     </>
                 )}
             </Form>
@@ -94,7 +96,7 @@ function Tags({ state: parentState, gqlUpdateFileBySrc, showSnackbar, file }) {
             )}
             <div className={style.editTag}>
                 <Link onClick={() => setEdit(true)}>
-                    <EditIcon /> Edit
+                    <EditIcon /> Edit tags
                 </Link>
             </div>
         </>
