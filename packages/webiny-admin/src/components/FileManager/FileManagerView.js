@@ -4,7 +4,7 @@ import React, { useReducer, useRef, useCallback } from "react";
 import Files from "react-butterfiles";
 import { Grid, Cell } from "webiny-ui/Grid";
 import { ButtonPrimary } from "webiny-ui/Button";
-import { Input } from "webiny-ui/Input";
+import { Icon } from "webiny-ui/Icon";
 import { Form } from "webiny-form";
 import { Query, Mutation } from "react-apollo";
 import type { FilesRules } from "react-butterfiles";
@@ -20,6 +20,9 @@ import { withSnackbar } from "webiny-admin/components";
 import { compose } from "recompose";
 import { Scrollbar } from "webiny-ui/Scrollbar";
 import { css } from "emotion";
+import styled from "react-emotion";
+
+import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
 
 const style = {
     draggingFeedback: css({
@@ -33,6 +36,36 @@ const style = {
         zIndex: 100
     })
 };
+
+const InputSearch = styled("div")({
+    backgroundColor: "var(--mdc-theme-on-background)",
+    position: "relative",
+    height: 32,
+    padding: 3,
+    width: "100%",
+    borderRadius: 2,
+    "> input": {
+        border: "none",
+        fontSize: 14,
+        width: "calc(100% - 10px)",
+        height: "100%",
+        marginLeft: 50,
+        backgroundColor: "transparent",
+        outline: "none",
+        color: "var(--mdc-theme-text-primary-on-background)"
+    }
+});
+
+const searchIcon = css({
+    "&.mdc-button__icon": {
+        color: "var(--mdc-theme-text-secondary-on-background)",
+        position: "absolute",
+        width: 24,
+        height: 24,
+        left: 15,
+        top: 7
+    }
+});
 
 type Props = {
     onChange: Function,
@@ -194,9 +227,23 @@ function FileManagerView(props: Props) {
                                                 })}
                                                 barLeft={
                                                     <Bind name={"search"}>
-                                                        <Input
-                                                            label={"Search by filename or tags"}
-                                                        />
+                                                        {({ value, onChange }) => (
+                                                            <InputSearch>
+                                                                <Icon
+                                                                    className={searchIcon}
+                                                                    icon={<SearchIcon />}
+                                                                />
+                                                                <input
+                                                                    onChange={e =>
+                                                                        onChange(e.target.value)
+                                                                    }
+                                                                    value={value}
+                                                                    placeholder={
+                                                                        "Search by filename or tags"
+                                                                    }
+                                                                />
+                                                            </InputSearch>
+                                                        )}
                                                     </Bind>
                                                 }
                                                 onExited={onClose}
