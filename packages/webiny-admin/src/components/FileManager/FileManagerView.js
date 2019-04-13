@@ -72,7 +72,8 @@ const FileList = styled("div")({
     width: "100%",
     display: "grid",
     /* define the number of grid columns */
-    gridTemplateColumns: "repeat( auto-fit, minmax(220px, 1fr) )"
+    gridTemplateColumns: "repeat( auto-fit, minmax(220px, 1fr) )",
+    marginBottom: 75
 });
 
 type Props = {
