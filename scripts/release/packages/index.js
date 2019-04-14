@@ -44,7 +44,6 @@ const independent = getWorkspaces()
         try {
             return require(configPath).type === "independent";
         } catch (e) {
-            console.log(e);
             return false;
         }
     })
