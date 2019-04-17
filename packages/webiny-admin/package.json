@@ -32,6 +32,7 @@
     "webiny-form": "0.0.0",
     "webiny-plugins": "0.0.0",
     "webiny-react-router": "0.0.0",
+    "is-hotkey": "^0.1.4",
     "webiny-ui": "0.0.0"
   },
   "devDependencies": {

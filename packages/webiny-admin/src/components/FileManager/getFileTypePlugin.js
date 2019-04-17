@@ -1,10 +1,11 @@
-import React from "react";
-import File from "./File";
 import { getPlugins, getPlugin } from "webiny-plugins";
 import invariant from "invariant";
 
-export default function renderFile(props) {
-    const { file } = props;
+export default function getFileTypePlugin(file) {
+    if (!file) {
+        return null;
+    }
+
     const plugins = getPlugins("file-manager-file-type");
 
     let plugin = null;
@@ -20,9 +21,5 @@ export default function renderFile(props) {
         invariant(plugin, `Missing default "file-manager-file-type" plugin.`);
     }
 
-    return (
-        <File {...props} key={file.src} options={plugin.options}>
-            {plugin.render(file)}
-        </File>
-    );
+    return plugin;
 }

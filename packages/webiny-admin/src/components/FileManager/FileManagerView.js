@@ -2,18 +2,19 @@
 /* eslint-disable */
 import React, { useReducer, useRef, useCallback } from "react";
 import Files from "react-butterfiles";
-import { Grid, Cell } from "webiny-ui/Grid";
 import { ButtonPrimary, ButtonIcon } from "webiny-ui/Button";
 import { Icon } from "webiny-ui/Icon";
+import File from "./File";
 import { Form } from "webiny-form";
 import { Query, Mutation } from "react-apollo";
 import type { FilesRules } from "react-butterfiles";
 import { listFiles, createFile } from "./graphql";
-import renderFile from "./renderFile";
+import getFileTypePlugin from "./getFileTypePlugin";
 import { get, debounce } from "lodash";
 import getFileUploader from "./getFileUploader";
 import outputFileSelectionError from "./outputFileSelectionError";
 import DropFilesHere from "./DropFilesHere";
+import NoResults from "./NoResults";
 import FileDetails from "./FileDetails";
 import { OverlayLayout } from "webiny-admin/components/OverlayLayout";
 import { withSnackbar } from "webiny-admin/components";
@@ -21,6 +22,7 @@ import { compose } from "recompose";
 import { Scrollbar } from "webiny-ui/Scrollbar";
 import { css } from "emotion";
 import styled from "react-emotion";
+import { useKeys } from "./useKeys";
 
 import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
 import { ReactComponent as UploadIcon } from "./icons/round-cloud_upload-24px.svg";
@@ -136,10 +138,19 @@ function fileManagerReducer(state, action) {
     return next;
 }
 
+function renderFile(props) {
+    const { file } = props;
+    const plugin = getFileTypePlugin(file);
+    return (
+        <File {...props} key={file.src}>
+            {plugin.render({ file })}
+        </File>
+    );
+}
+
 function FileManagerView(props: Props) {
     const { onClose, onChange, files, showSnackbar } = props;
     const [state, dispatch] = useReducer(fileManagerReducer, props, init);
-
     const { showDetails, dragging, selected, queryParams } = state;
 
     const gqlQuery = useRef();
@@ -192,6 +203,13 @@ function FileManagerView(props: Props) {
         });
     }, []);
 
+    useKeys({
+        zIndex: 1,
+        keys: {
+            esc: onClose
+        }
+    });
+
     return (
         <Mutation mutation={createFile} update={updateCacheAfterCreateFile}>
             {createFile => (
@@ -224,8 +242,8 @@ function FileManagerView(props: Props) {
                                 }}
                             >
                                 {({ getDropZoneProps, browseFiles }) => (
-                                    <Form onChange={formOnChange}>
-                                        {({ Bind }) => (
+                                    <Form onChange={formOnChange} data={{ search: "" }}>
+                                        {({ data: formData, Bind }) => (
                                             <OverlayLayout
                                                 {...getDropZoneProps({
                                                     onDragEnter: () =>
@@ -269,7 +287,9 @@ function FileManagerView(props: Props) {
                                                                 onClose();
                                                             }}
                                                         >
-                                                            Select
+                                                            Select{" "}
+                                                            {files.multiple &&
+                                                                `(${selected.length})`}
                                                         </ButtonPrimary>
                                                     ) : (
                                                         <ButtonPrimary onClick={browseFiles}>
@@ -282,25 +302,25 @@ function FileManagerView(props: Props) {
                                                 <>
                                                     {dragging && (
                                                         <div
-                                                            {...{
-                                                                onDragLeave: () => {
-                                                                    dispatch({
-                                                                        type: "dragging",
-                                                                        state: false
-                                                                    });
-                                                                },
-                                                                onDrop: () =>
-                                                                    dispatch({
-                                                                        type: "dragging",
-                                                                        state: false
-                                                                    })
-                                                            }}
                                                             className={style.draggingFeedback}
+                                                            onDragLeave={() => {
+                                                                dispatch({
+                                                                    type: "dragging",
+                                                                    state: false
+                                                                });
+                                                            }}
+                                                            onDrop={() =>
+                                                                dispatch({
+                                                                    type: "dragging",
+                                                                    state: false
+                                                                })
+                                                            }
                                                         />
                                                     )}
                                                     <FileDetails
                                                         state={state}
                                                         file={showDetails}
+                                                        uploadFile={uploadFile}
                                                         onClose={() =>
                                                             dispatch({ type: "hideDetails" })
                                                         }
@@ -330,15 +350,23 @@ function FileManagerView(props: Props) {
                                                                                 current.src ===
                                                                                 file.src
                                                                         ),
-                                                                        onSelect: () =>
-                                                                            dispatch({
-                                                                                files,
-                                                                                type:
-                                                                                    "toggleSelected",
-                                                                                file
-                                                                            })
+                                                                        onSelect: async () => {
+                                                                            if (files.multiple) {
+                                                                                return dispatch({
+                                                                                    files,
+                                                                                    type:
+                                                                                        "toggleSelected",
+                                                                                    file
+                                                                                });
+                                                                            }
+
+                                                                            await onChange(file);
+                                                                            onClose();
+                                                                        }
                                                                     })
                                                                 )
+                                                            ) : formData.search ? (
+                                                                <NoResults />
                                                             ) : (
                                                                 <DropFilesHere />
                                                             )}

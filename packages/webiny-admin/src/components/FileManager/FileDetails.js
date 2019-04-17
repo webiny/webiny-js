@@ -5,14 +5,13 @@ import bytes from "bytes";
 import { css } from "emotion";
 import { Drawer, DrawerContent } from "webiny-ui/Drawer";
 import { IconButton } from "webiny-ui/Button";
-import { Link } from "webiny-app/router";
-import { Image } from "webiny-app/components";
+import getFileTypePlugin from "./getFileTypePlugin";
+import get from "lodash/get";
 import Tags from "./FileDetails/Tags";
 import { Tooltip } from "webiny-ui/Tooltip";
+import { useKeys } from "./useKeys";
 
 import { ReactComponent as DownloadIcon } from "./icons/round-cloud_download-24px.svg";
-
-import { ReactComponent as EditIcon } from "./icons/round-edit-24px.svg";
 
 const style = {
     wrapper: css({
@@ -72,16 +71,19 @@ const style = {
 };
 
 export default function FileDetails(props: *) {
-    const { file, onClose } = props;
+    const { file, uploadFile, onClose } = props;
+    const filePlugin = getFileTypePlugin(file);
+    const actions = get(filePlugin, "fileDetails.actions") || [];
+
+    useKeys({ zIndex: 2, disabled: !file });
+
     return (
         <Drawer dir="rtl" modal open={file} onClose={onClose}>
-            <div className={style.wrapper} dir="ltr">
-                <div className={style.header}>File details</div>
-                <div className={style.preview}>
-                    {file && <Image src={file.src} alt={file.name} transform={{ width: 300 }} />}
-                </div>
-                <div className={style.download}>
-                    {file && (
+            {file && (
+                <div className={style.wrapper} dir="ltr">
+                    <div className={style.header}>File details</div>
+                    <div className={style.preview}>{filePlugin.render({ file, uploadFile })}</div>
+                    <div className={style.download}>
                         <>
                             <Tooltip content={<span>Download file</span>} placement={"bottom"}>
                                 <IconButton
@@ -89,13 +91,12 @@ export default function FileDetails(props: *) {
                                     icon={<DownloadIcon style={{ margin: "0 8px 0 0" }} />}
                                 />
                             </Tooltip>
-                            <Tooltip content={<span>Edit image</span>} placement={"bottom"}>
-                                <IconButton icon={<EditIcon style={{ margin: "0 8px 0 0" }} />} />
-                            </Tooltip>
+
+                            {actions.map((Component, index) => (
+                                <Component key={index} {...props} />
+                            ))}
                         </>
-                    )}
-                </div>
-                {file && (
+                    </div>
                     <DrawerContent dir="ltr">
                         <ul className={style.list}>
                             <li>
@@ -116,8 +117,8 @@ export default function FileDetails(props: *) {
                             </li>
                         </ul>
                     </DrawerContent>
-                )}
-            </div>
+                </div>
+            )}
         </Drawer>
     );
 }

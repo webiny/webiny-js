@@ -2,12 +2,8 @@
 import React from "react";
 import { css } from "emotion";
 import { ReactComponent as Checked } from "./icons/round-check_box-24px.svg";
-
 import { ReactComponent as InfoIcon } from "./icons/round-info-24px.svg";
-import { ReactComponent as Details } from "./icons/round-description-24px.svg";
-import { Menu, MenuItem } from "webiny-ui/Menu";
 import { Ripple } from "webiny-ui/Ripple";
-import { ListItemGraphic } from "webiny-ui/List";
 import LazyLoad from "react-lazy-load";
 
 const COMPONENT_WIDTH = 200;
@@ -82,30 +78,10 @@ type Props = {
     options: ?Array<{ label: string, onClick: (file: Object) => void }>
 };
 
-function renderViewDetails({ MenuItem, MenuItemIcon, showFileDetails }) {
-    return (
-        <MenuItem onClick={showFileDetails}>
-            <MenuItemIcon>
-                <Details />
-            </MenuItemIcon>
-            Details
-        </MenuItem>
-    );
-}
-
 export default React.memo(
     function File(props: Props) {
-        const {
-            file,
-            selected,
-            onSelect,
-            children,
-            uploadFile,
-            showFileDetails,
-            options = []
-        } = props;
+        const { file, selected, onSelect, children, showFileDetails } = props;
 
-        const menu = [renderViewDetails, ...options];
         return (
             <div className={styles}>
                 <div className={"body"}>
@@ -113,19 +89,7 @@ export default React.memo(
                         {selected ? <Checked /> : null}
                     </div>
                     <div className={"infoIcon"}>
-                        <Menu handle={<InfoIcon />}>
-                            {menu.map((item, index) => (
-                                <React.Fragment key={index}>
-                                    {item({
-                                        file,
-                                        MenuItem,
-                                        MenuItemIcon: ListItemGraphic,
-                                        uploadFile,
-                                        showFileDetails
-                                    })}
-                                </React.Fragment>
-                            ))}
-                        </Menu>
+                        <InfoIcon onClick={showFileDetails} />
                     </div>
                     <LazyLoad height={200} offsetVertical={300}>
                         <Ripple>
@@ -140,11 +104,5 @@ export default React.memo(
             </div>
         );
     },
-    (prev, next) => {
-        if (prev.selected !== next.selected) {
-            return false;
-        }
-
-        return true;
-    }
+    (prev, next) => prev.selected === next.selected
 );

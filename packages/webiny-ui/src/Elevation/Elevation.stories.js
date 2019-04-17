@@ -10,7 +10,7 @@ import {
     StorySandboxExample
 } from "webiny-storybook-utils/Story";
 import readme from "./../Elevation/README.md";
-import { withKnobs, boolean, selectV2 } from "@storybook/addon-knobs";
+import { withKnobs, boolean, select } from "@storybook/addon-knobs";
 
 // $FlowFixMe
 import { Elevation, PropsType } from "./Elevation";
@@ -20,7 +20,7 @@ story.addDecorator(withKnobs);
 
 story.add("usage", () => {
     const transition = boolean("Transition", true);
-    const z = selectV2("Z (elevation height)", [...Array(25).keys()], 1);
+    const z = select("Z (elevation height)", [...Array(25).keys()], 1);
 
     const style = {
         padding: 20,

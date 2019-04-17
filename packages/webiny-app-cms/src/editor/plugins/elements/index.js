@@ -12,6 +12,7 @@ import media from "./media";
 import social from "./social";
 import code from "./code";
 import pagesList from "./pagesList";
+import imagesList from "./imagesList";
 
 export default [
     document(),
@@ -26,5 +27,6 @@ export default [
     ...media,
     ...social,
     ...code,
-    ...pagesList()
+    ...pagesList(),
+    ...imagesList()
 ];
