@@ -3,10 +3,10 @@ import React from "react";
 import type { ElementPluginType } from "webiny-app-cms/types";
 import { Tab } from "webiny-ui/Tabs";
 import { ReactComponent as DesignIcon } from "./icons/round-style-24px.svg";
-import { ReactComponent as FilterIcon } from "./icons/round-filter_list-24px.svg";
 import { ReactComponent as PageListIcon } from "./image-list-icon.svg";
+import { ReactComponent as ImagesIcon } from "webiny-app-cms/admin/assets/round-photo_library-24px.svg";
 import ImagesList from "./ImagesList";
-import ImagesListFilterSettings from "./ImagesListFilterSettings";
+import ImagesListImagesSettings from "./ImagesListImagesSettings";
 import ImagesListDesignSettings from "./ImagesListDesignSettings";
 import styled from "react-emotion";
 
@@ -68,8 +68,8 @@ export default () => {
             element: "cms-element-images-list",
             render(props: Object) {
                 return (
-                    <Tab icon={<FilterIcon />} label="Filter">
-                        <ImagesListFilterSettings {...props} filter />
+                    <Tab icon={<ImagesIcon />} label="Images">
+                        <ImagesListImagesSettings {...props} filter />
                     </Tab>
                 );
             }

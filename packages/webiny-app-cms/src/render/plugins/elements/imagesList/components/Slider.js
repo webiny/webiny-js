@@ -1,14 +1,17 @@
 // @flow
 import * as React from "react";
-// import { Carousel } from "webiny-ui/Carousel";
-import Carousel from "nuka-carousel";
+import { Carousel } from "webiny-ui/Carousel";
 const Slider = ({ data }: Object) => {
     if (Array.isArray(data)) {
         return (
-            <div style={{ width: "100%", height: "auto", minHeight: 200 }}>
-                <Carousel>
-                    {Array.isArray(data) && data.map(item => <img key={item.src} src={item.src} />)}
-                </Carousel>
+            <div className={"bajo"} style={{ height: 500 }}>
+                {Array.isArray(data) && (
+                    <Carousel>
+                        {data.map(item => (
+                            <img style={{ width: "100%" }} key={item.src} src={item.src} />
+                        ))}
+                    </Carousel>
+                )}
             </div>
         );
     }
