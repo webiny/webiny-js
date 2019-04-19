@@ -1,19 +1,22 @@
 // @flow
 import * as React from "react";
+import { Mosaic as UiMosaic } from "webiny-ui/Mosaic";
 
-const Mosaic = ({ data }: Object) => {
+export default function Mosaic(props) {
+    const { data } = props;
+
     if (Array.isArray(data)) {
         return (
-            <div id={"kobaja"}>
-                {data.map(item => (
-                    <div key={item.src} className="grid-item">
-                        <img src={item.src} />
-                    </div>
+            <UiMosaic>
+                {data.map((item, i) => (
+                    <img
+                        style={{ width: "100%", display: "block" }}
+                        key={i + item.src}
+                        src={item.src}
+                    />
                 ))}
-            </div>
+            </UiMosaic>
         );
     }
-    return <span>nema slika</span>;
-};
-
-export default Mosaic;
+    return <span>No images.</span>;
+}

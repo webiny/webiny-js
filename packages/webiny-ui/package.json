@@ -59,6 +59,7 @@
     "react-spinner-material": "^1.0.19",
     "react-transition-group": "^2.5.1",
     "react-visibility-sensor": "^5.0.2",
+    "lodash": "^4.17.11",
     "withinviewport": "^2.1.0"
   },
   "devDependencies": {

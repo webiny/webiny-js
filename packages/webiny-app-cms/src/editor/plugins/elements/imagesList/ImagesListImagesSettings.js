@@ -40,27 +40,28 @@ const ImagesListImagesSettings = (props: Object) => {
                                 {({ showFileManager }) => (
                                     <>
                                         <ul className="sortable-list">
-                                            {value.map((item, i) => (
-                                                <SortableItem
-                                                    key={i}
-                                                    onSortItems={onChange}
-                                                    items={value}
-                                                    sortId={i}
-                                                >
-                                                    <File
-                                                        file={item}
-                                                        onRemove={() =>
-                                                            form.setState(state => {
-                                                                const next = {
-                                                                    ...state
-                                                                };
-                                                                next.data.images.splice(i, 1);
-                                                                return next;
-                                                            })
-                                                        }
-                                                    />
-                                                </SortableItem>
-                                            ))}
+                                            {Array.isArray(value) &&
+                                                value.map((item, i) => (
+                                                    <SortableItem
+                                                        key={i}
+                                                        onSortItems={onChange}
+                                                        items={value}
+                                                        sortId={i}
+                                                    >
+                                                        <File
+                                                            file={item}
+                                                            onRemove={() =>
+                                                                form.setState(state => {
+                                                                    const next = {
+                                                                        ...state
+                                                                    };
+                                                                    next.data.images.splice(i, 1);
+                                                                    return next;
+                                                                })
+                                                            }
+                                                        />
+                                                    </SortableItem>
+                                                ))}
                                         </ul>
                                         <div className={style.addImagesButton}>
                                             <ButtonPrimary onClick={showFileManager}>
