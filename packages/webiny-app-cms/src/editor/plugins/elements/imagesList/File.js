@@ -4,8 +4,8 @@ import { css } from "emotion";
 import { Image } from "webiny-app/components";
 import { ReactComponent as RemoveIcon } from "webiny-app-cms/admin/assets/round-close-24px.svg";
 
-const COMPONENT_WIDTH = 180;
-const COMPONENT_HEIGHT = 180;
+const COMPONENT_WIDTH = 176;
+const COMPONENT_HEIGHT = 176;
 
 const styles = css({
     display: "inline-block",
@@ -60,6 +60,16 @@ const styles = css({
     }
 });
 
+const imageStyles = css({
+    maxHeight: COMPONENT_HEIGHT,
+    maxWidth: COMPONENT_WIDTH,
+    width: "auto",
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translateX(-50%) translateY(-50%)"
+});
+
 type Props = {
     file: Object,
     selected: boolean,
@@ -81,7 +91,7 @@ export default function File(props: Props) {
                 <div className={"filePreview"}>
                     <div className="clickableArea" onClick={onSelect} />
                     <Image
-                        className={styles}
+                        className={imageStyles}
                         src={file.src}
                         alt={file.name}
                         transform={{ width: 300 }}

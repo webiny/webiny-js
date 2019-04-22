@@ -85,8 +85,8 @@ function Tags({ state: parentState, gqlUpdateFileBySrc, showSnackbar, file }) {
         <>
             {tags.length > 0 ? (
                 <Chips>
-                    {tags.map(tag => (
-                        <Chip key={tag}>
+                    {tags.map((tag, index) => (
+                        <Chip key={tag + index}>
                             <ChipText>{tag}</ChipText>
                         </Chip>
                     ))}
