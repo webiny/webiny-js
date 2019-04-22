@@ -104,5 +104,15 @@ export default React.memo(
             </div>
         );
     },
-    (prev, next) => prev.selected === next.selected
+    (prev, next) => {
+        if (prev.selected !== next.selected) {
+            return false;
+        }
+
+        if (prev.file.name !== next.file.name) {
+            return false;
+        }
+
+        return true;
+    }
 );

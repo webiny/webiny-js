@@ -1,9 +1,8 @@
 // @flow
 /* eslint-disable */
 import React, { useState } from "react";
-import { Chips, Chip, ChipText } from "webiny-ui/Chips";
 import { ButtonSecondary, ButtonPrimary } from "webiny-ui/Button";
-import { Tags as TagsComponent } from "webiny-ui/Tags";
+import { Input } from "webiny-ui/Input";
 import { Form } from "webiny-form";
 import { ReactComponent as EditIcon } from "./../icons/round-edit-24px.svg";
 import { Link } from "webiny-app/router";
@@ -12,7 +11,7 @@ import { updateFileBySrc, listFiles } from "./../graphql";
 import { compose } from "recompose";
 import { withSnackbar } from "webiny-admin/components";
 import { graphql } from "react-apollo";
-import { get } from "lodash";
+import { get, cloneDeep } from "lodash";
 
 const style = {
     editTag: css({
@@ -21,51 +20,53 @@ const style = {
     })
 };
 
-function Tags({ state: parentState, gqlUpdateFileBySrc, showSnackbar, file }) {
+function Name({ state: parentState, gqlUpdateFileBySrc, showSnackbar, file }) {
     const [editing, setEdit] = useState(false);
-    const tags = file.tags || [];
+    const name = file.name || "";
 
     if (editing) {
         return (
             <Form
                 data={{
-                    tags
+                    name
                 }}
-                onSubmit={async ({ tags }) => {
+                onSubmit={async ({ name }) => {
                     setEdit(false);
                     await gqlUpdateFileBySrc({
                         variables: {
                             src: file.src,
-                            data: { tags }
+                            data: { name }
                         },
                         update: (cache, updated) => {
                             const newFileData = get(updated, "data.files.updateFileBySrc.data");
-                            const data = cache.readQuery({
-                                query: listFiles,
-                                variables: parentState.queryParams
-                            });
+                            const data = cloneDeep(
+                                cache.readQuery({
+                                    query: listFiles,
+                                    variables: parentState.queryParams
+                                })
+                            );
 
                             data.files.listFiles.data.forEach(item => {
                                 if (item.src === newFileData.src) {
-                                    item.tags = newFileData.tags;
+                                    item.name = newFileData.name;
                                 }
                             });
 
                             cache.writeQuery({
                                 query: listFiles,
                                 variables: parentState.queryParams,
-                                data
+                                data: data
                             });
                         }
                     });
 
-                    showSnackbar("Tags successfully updated.");
+                    showSnackbar("Name successfully updated.");
                 }}
             >
                 {({ Bind, submit }) => (
                     <>
-                        <Bind name={"tags"}>
-                            <TagsComponent autoFocus placeholder={"Enter a tag and press enter"} />
+                        <Bind name={"name"}>
+                            <Input autoFocus placeholder={"Enter name"} />
                         </Bind>
                         <div style={{ marginTop: "10px" }}>
                             <ButtonPrimary small onClick={submit}>
@@ -83,18 +84,9 @@ function Tags({ state: parentState, gqlUpdateFileBySrc, showSnackbar, file }) {
 
     return (
         <>
-            {tags.length > 0 ? (
-                <Chips>
-                    {tags.map((tag, index) => (
-                        <Chip key={tag + index}>
-                            <ChipText>{tag}</ChipText>
-                        </Chip>
-                    ))}
-                </Chips>
-            ) : (
-                <div>No tags assigned.</div>
-            )}
             <div className={style.editTag}>
+                {name}
+                <br />
                 <Link onClick={() => setEdit(true)}>
                     <EditIcon /> Edit
                 </Link>
@@ -106,4 +98,4 @@ function Tags({ state: parentState, gqlUpdateFileBySrc, showSnackbar, file }) {
 export default compose(
     graphql(updateFileBySrc, { name: "gqlUpdateFileBySrc" }),
     withSnackbar()
-)(Tags);
+)(Name);

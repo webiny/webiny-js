@@ -47,6 +47,7 @@ export const updateFileBySrc = gql`
             updateFileBySrc(src: $src, data: $data) {
                 data {
                     src
+                    name
                     tags
                 }
                 error {

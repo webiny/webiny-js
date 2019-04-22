@@ -8,6 +8,7 @@ import { IconButton } from "webiny-ui/Button";
 import getFileTypePlugin from "./getFileTypePlugin";
 import get from "lodash/get";
 import Tags from "./FileDetails/Tags";
+import Name from "./FileDetails/Name";
 import { Tooltip } from "webiny-ui/Tooltip";
 import { useHotkeys } from "react-hotkeyz";
 import { ReactComponent as DownloadIcon } from "./icons/round-cloud_download-24px.svg";
@@ -106,7 +107,7 @@ export default function FileDetails(props: *) {
                         <ul className={style.list}>
                             <li>
                                 <li-title>Name:</li-title>
-                                <li-content>{file.name}</li-content>
+                                <Name {...props} />
                             </li>
                             <li>
                                 <li-title>Size:</li-title>
