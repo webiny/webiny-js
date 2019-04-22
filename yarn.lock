@@ -16569,10 +16569,10 @@ react-color@^2.14.1, react-color@^2.17.0:
     reactcss "^1.2.0"
     tinycolor2 "^1.4.1"
 
-react-columned@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/react-columned/-/react-columned-1.0.0.tgz#2c1c5ba726e81f2593fa294b63ce85adfb89c120"
-  integrity sha512-B9viDVp96AaEIqtv+uV3fI2aAa918VI3TxROIStNMxopoOEdEo0SZwNEd6GeD+Y2rxOtwDb/spMwXpUUfkzyBg==
+react-columned@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.npmjs.org/react-columned/-/react-columned-1.1.1.tgz#d3cdd0ea3965216e7b79997767c377f338f6c29f"
+  integrity sha512-QmuireT7fWcqpsKPDRTZFirJobReIKvtuYheRSfWQqpPZlyk1aZii9yqrGAMATvITTD6/SAfg9czfg4eMtSApw==
   dependencies:
     "@babel/runtime" "^7.2.0"
     element-resize-detector "^1.1.15"
