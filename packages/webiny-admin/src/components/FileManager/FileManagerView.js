@@ -122,11 +122,11 @@ function fileManagerReducer(state, action) {
             break;
         }
         case "showDetails": {
-            next.showDetails = action.file;
+            next.showDetailsFileSrc = action.file;
             break;
         }
         case "hideDetails": {
-            next.showDetails = null;
+            next.showDetailsFileSrc = null;
             break;
         }
         case "dragging": {
@@ -151,7 +151,7 @@ function renderFile(props) {
 function FileManagerView(props: Props) {
     const { onClose, onChange, files, showSnackbar } = props;
     const [state, dispatch] = useReducer(fileManagerReducer, props, init);
-    const { showDetails, dragging, selected, queryParams } = state;
+    const { showDetailsFileSrc, dragging, selected, queryParams } = state;
 
     const gqlQuery = useRef();
 
@@ -201,6 +201,10 @@ function FileManagerView(props: Props) {
             variables: queryParams,
             data
         });
+    }, []);
+
+    const getFileDetailsFile = useCallback(function getFileDetailsFile({ src, list }) {
+        return list.find(item => item.src === src);
     }, []);
 
     useHotkeys({
@@ -319,7 +323,10 @@ function FileManagerView(props: Props) {
                                                     )}
                                                     <FileDetails
                                                         state={state}
-                                                        file={showDetails}
+                                                        file={getFileDetailsFile({
+                                                            list,
+                                                            src: showDetailsFileSrc
+                                                        })}
                                                         uploadFile={uploadFile}
                                                         onClose={() =>
                                                             dispatch({ type: "hideDetails" })
@@ -336,14 +343,14 @@ function FileManagerView(props: Props) {
                                                     >
                                                         <FileList>
                                                             {list.length ? (
-                                                                list.map(file =>
+                                                                list.map((file, index) =>
                                                                     renderFile({
                                                                         uploadFile,
                                                                         file,
                                                                         showFileDetails: () =>
                                                                             dispatch({
                                                                                 type: "showDetails",
-                                                                                file
+                                                                                file: file.src
                                                                             }),
                                                                         selected: selected.find(
                                                                             current =>
