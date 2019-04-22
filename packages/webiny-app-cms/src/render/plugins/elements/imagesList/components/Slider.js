@@ -1,16 +1,28 @@
 // @flow
 import * as React from "react";
-import { Carousel } from "webiny-ui/Carousel";
+import { default as SlickSlider } from "react-slick";
+import "./Slider.scss";
+
 const Slider = ({ data }: Object) => {
     if (Array.isArray(data)) {
+        const settings = {
+            dots: true,
+            infinite: true,
+            speed: 500,
+            slidesToShow: 1,
+            slidesToScroll: 1
+        };
+
         return (
-            <div className={"bajo"} style={{ height: 500 }}>
+            <div className={"bajo"} style={{ display: "block" }}>
                 {Array.isArray(data) && (
-                    <Carousel>
-                        {data.map(item => (
-                            <img style={{ width: "100%" }} key={item.src} src={item.src} />
+                    <SlickSlider {...settings}>
+                        {data.map((item, index) => (
+                            <div key={item.src + index}>
+                                <img style={{ width: "100%" }} src={item.src} />
+                            </div>
                         ))}
-                    </Carousel>
+                    </SlickSlider>
                 )}
             </div>
         );

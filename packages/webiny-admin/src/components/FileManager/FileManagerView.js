@@ -22,7 +22,7 @@ import { compose } from "recompose";
 import { Scrollbar } from "webiny-ui/Scrollbar";
 import { css } from "emotion";
 import styled from "react-emotion";
-import { useKeys } from "./useKeys";
+import { useHotkeys } from "react-hotkeyz";
 
 import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
 import { ReactComponent as UploadIcon } from "./icons/round-cloud_upload-24px.svg";
@@ -203,7 +203,7 @@ function FileManagerView(props: Props) {
         });
     }, []);
 
-    useKeys({
+    useHotkeys({
         zIndex: 1,
         keys: {
             esc: onClose

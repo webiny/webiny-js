@@ -7,7 +7,7 @@ import { Image } from "webiny-app/components";
 import { Tooltip } from "webiny-ui/Tooltip";
 import { IconButton } from "webiny-ui/Button";
 import { ReactComponent as EditIcon } from "./icons/edit.svg";
-import { Keys } from "webiny-admin/components/FileManager/useKeys";
+import { Hotkeys } from "react-hotkeyz";
 
 const styles = css({
     maxHeight: 200,
@@ -67,7 +67,7 @@ function EditAction(props) {
                     }}
                 />
             </Tooltip>
-            <Keys zIndex={3} enabled={state.dataUrl}>
+            <Hotkeys zIndex={3} disabled={!state.dataUrl}>
                 <ImageEditorDialog
                     open={state.showImageEditor}
                     src={state.dataUrl}
@@ -79,7 +79,7 @@ function EditAction(props) {
                         dispatch({ type: "hideImageEditor" });
                     }}
                 />
-            </Keys>
+            </Hotkeys>
         </>
     );
 }

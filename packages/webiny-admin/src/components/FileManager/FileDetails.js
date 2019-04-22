@@ -9,8 +9,7 @@ import getFileTypePlugin from "./getFileTypePlugin";
 import get from "lodash/get";
 import Tags from "./FileDetails/Tags";
 import { Tooltip } from "webiny-ui/Tooltip";
-import { useKeys } from "./useKeys";
-
+import { useHotkeys } from "react-hotkeyz";
 import { ReactComponent as DownloadIcon } from "./icons/round-cloud_download-24px.svg";
 
 const style = {
@@ -75,7 +74,13 @@ export default function FileDetails(props: *) {
     const filePlugin = getFileTypePlugin(file);
     const actions = get(filePlugin, "fileDetails.actions") || [];
 
-    useKeys({ zIndex: 2, disabled: !file });
+    useHotkeys({
+        zIndex: 2,
+        disabled: !file,
+        keys: {
+            esc: onClose
+        }
+    });
 
     return (
         <Drawer dir="rtl" modal open={file} onClose={onClose}>
