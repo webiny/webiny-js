@@ -23,6 +23,7 @@ import { Scrollbar } from "webiny-ui/Scrollbar";
 import { css } from "emotion";
 import styled from "react-emotion";
 import { useHotkeys } from "react-hotkeyz";
+import { Chip, ChipText, ChipIcon, Chips, PropsType } from "webiny-ui/Chips";
 
 import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
 import { ReactComponent as UploadIcon } from "./icons/round-cloud_upload-24px.svg";
@@ -37,7 +38,16 @@ const style = {
         opacity: 0.5,
         background: "white",
         zIndex: 100
-    })
+    }),
+    leftDrawer: {
+        header: css({
+            textAlign: "center",
+            fontSize: 18,
+            padding: 10,
+            fontWeight: "600",
+            color: "var(--mdc-theme-on-surface)"
+        })
+    }
 };
 
 const InputSearch = styled("div")({
@@ -332,52 +342,92 @@ function FileManagerView(props: Props) {
                                                         }
                                                     />
 
-                                                    <Scrollbar
-                                                        onScrollFrame={scrollFrame =>
-                                                            refreshOnScroll({
-                                                                scrollFrame,
-                                                                fetchMore
-                                                            })
-                                                        }
+                                                    <div
+                                                        className={"bajo1"}
+                                                        style={{
+                                                            float: "left",
+                                                            background: "white",
+                                                            display: "inline-block",
+                                                            width: 250,
+                                                            height: "100%"
+                                                        }}
                                                     >
-                                                        <FileList>
-                                                            {list.length ? (
-                                                                list.map((file, index) =>
-                                                                    renderFile({
-                                                                        uploadFile,
-                                                                        file,
-                                                                        showFileDetails: () =>
-                                                                            dispatch({
-                                                                                type: "showDetails",
-                                                                                file: file.src
-                                                                            }),
-                                                                        selected: selected.find(
-                                                                            current =>
-                                                                                current.src ===
-                                                                                file.src
-                                                                        ),
-                                                                        onSelect: async () => {
-                                                                            if (multiple) {
-                                                                                return dispatch({
-                                                                                    multiple,
+                                                        <div className={style.leftDrawer.header}>
+                                                            Tags
+                                                        </div>
+                                                        <Chips>
+                                                            <Chip>
+                                                                <ChipText>Cookies</ChipText>
+                                                            </Chip>
+                                                            <Chip>
+                                                                <ChipText>Pizza</ChipText>
+                                                            </Chip>
+                                                            <Chip>
+                                                                <ChipText>Icecream</ChipText>
+                                                            </Chip>
+                                                        </Chips>
+                                                    </div>
+                                                    <div
+                                                        className={"bajo2"}
+                                                        style={{
+                                                            float: "right",
+                                                            display: "inline-block",
+                                                            width: "calc(100vw - 250px)",
+                                                            height: "100%"
+                                                        }}
+                                                    >
+                                                        <Scrollbar
+                                                            onScrollFrame={scrollFrame =>
+                                                                refreshOnScroll({
+                                                                    scrollFrame,
+                                                                    fetchMore
+                                                                })
+                                                            }
+                                                        >
+                                                            <FileList>
+                                                                {list.length ? (
+                                                                    list.map((file, index) =>
+                                                                        renderFile({
+                                                                            uploadFile,
+                                                                            file,
+                                                                            showFileDetails: () =>
+                                                                                dispatch({
                                                                                     type:
-                                                                                        "toggleSelected",
-                                                                                    file
-                                                                                });
-                                                                            }
+                                                                                        "showDetails",
+                                                                                    file: file.src
+                                                                                }),
+                                                                            selected: selected.find(
+                                                                                current =>
+                                                                                    current.src ===
+                                                                                    file.src
+                                                                            ),
+                                                                            onSelect: async () => {
+                                                                                if (multiple) {
+                                                                                    return dispatch(
+                                                                                        {
+                                                                                            multiple,
+                                                                                            type:
+                                                                                                "toggleSelected",
+                                                                                            file
+                                                                                        }
+                                                                                    );
+                                                                                }
 
-                                                                            await onChange(file);
-                                                                            onClose();
-                                                                        }
-                                                                    })
-                                                                )
-                                                            ) : formData.search ? (
-                                                                <NoResults />
-                                                            ) : (
-                                                                <DropFilesHere />
-                                                            )}
-                                                        </FileList>
-                                                    </Scrollbar>
+                                                                                await onChange(
+                                                                                    file
+                                                                                );
+                                                                                onClose();
+                                                                            }
+                                                                        })
+                                                                    )
+                                                                ) : formData.search ? (
+                                                                    <NoResults />
+                                                                ) : (
+                                                                    <DropFilesHere />
+                                                                )}
+                                                            </FileList>
+                                                        </Scrollbar>
+                                                    </div>
                                                 </>
                                             </OverlayLayout>
                                         )}
