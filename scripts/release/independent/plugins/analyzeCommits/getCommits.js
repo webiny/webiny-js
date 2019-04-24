@@ -31,22 +31,23 @@ module.exports = async (gitHead, branch, logger) => {
     });
 
     const commits = await Promise.all(
-        (await getStream.array(gitLogParser.parse({ _: `${gitHead ? gitHead + ".." : ""}HEAD` })))
-            .filter(commit => commit.tree.long)
-            .map(async commit => {
-                const files = await execa.stdout("git", [
-                    "diff-tree",
-                    "--no-commit-id",
-                    "--name-only",
-                    "-r",
-                    commit.commit.long
-                ]);
-                commit.files = files.split("\n");
-                commit.message = commit.message.trim();
-                commit.gitTags = commit.gitTags.trim();
-                return commit;
-            })
+        (await getStream.array(
+            gitLogParser.parse({ _: `${gitHead ? gitHead + ".." : ""}HEAD` })
+        )).filter(commit => commit.tree.long)
     );
+
+    for (let i = 0; i < commits.length; i++) {
+        const files = await execa.stdout("git", [
+            "diff-tree",
+            "--no-commit-id",
+            "--name-only",
+            "-r",
+            commits[i].commit.long
+        ]);
+        commits[i].files = files.split("\n");
+        commits[i].message = commits[i].message.trim();
+        commits[i].gitTags = commits[i].gitTags.trim();
+    }
     logger.log("Found %s commits since last release", commits.length);
     return commits;
 };
