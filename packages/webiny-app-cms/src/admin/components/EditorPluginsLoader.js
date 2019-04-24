@@ -1,5 +1,6 @@
-import { useEffect, useReducer } from "react";
+import React, { useEffect, useReducer } from "react";
 import { registerPlugins } from "webiny-plugins";
+import { CircularProgress } from "webiny-ui/Progress";
 
 const globalState = { render: false, editor: false };
 
@@ -48,5 +49,5 @@ export default function EditorPluginsLoader({ children, location }) {
         return children;
     }
 
-    return null;
+    return <CircularProgress />;
 }
