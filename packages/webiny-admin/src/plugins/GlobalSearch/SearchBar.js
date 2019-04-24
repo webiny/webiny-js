@@ -74,13 +74,16 @@ class SearchBar extends React.Component<*, State> {
         );
 
         if (this.state.plugins.current) {
+            let search;
+            const query = new URLSearchParams(props.location.search);
             try {
-                const query = new URLSearchParams(props.location.search);
-                this.state.searchTerm.current = JSON.parse(query.get("search") || "").query;
-                this.state.searchTerm.previous = this.state.searchTerm.current;
+                search = JSON.parse(query.get("search") || "").query;
             } catch (e) {
-                // Do nothing.
+                search = query.get("search");
             }
+
+            this.state.searchTerm.current = search || "";
+            this.state.searchTerm.previous = this.state.searchTerm.current;
         }
     }
 
