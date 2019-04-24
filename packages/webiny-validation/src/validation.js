@@ -128,6 +128,14 @@ class Validation {
         return true;
     }
 
+    create(validators: string) {
+        return value => this.validate(value, validators);
+    }
+
+    createSync(validators: string) {
+        return value => this.validateSync(value, validators);
+    }
+
     /**
      * Parses a string of validators with parameters.
      * @param validators A list of comma-separated validators (eg. required,number,gt:20).
