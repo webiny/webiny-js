@@ -84,11 +84,11 @@ type Props = {
     files: FilesRules
 };
 
-function init(props) {
+function init({ accept }) {
     return {
         selected: [],
         queryParams: {
-            types: get(props, "files.accept"),
+            types: accept,
             perPage: 50,
             sort: { createdOn: -1 }
         }
@@ -99,7 +99,7 @@ function fileManagerReducer(state, action) {
     const next = { ...state };
     switch (action.type) {
         case "toggleSelected": {
-            if (!action.files.multiple) {
+            if (!action.multiple) {
                 next.selected = [];
             }
             const existingIndex = state.selected.findIndex(item => item.src === action.file.src);
@@ -149,7 +149,7 @@ function renderFile(props) {
 }
 
 function FileManagerView(props: Props) {
-    const { onClose, onChange, files, showSnackbar } = props;
+    const { onClose, onChange, multiple, accept, showSnackbar } = props;
     const [state, dispatch] = useReducer(fileManagerReducer, props, init);
     const { showDetailsFileSrc, dragging, selected, queryParams } = state;
 
@@ -221,7 +221,6 @@ function FileManagerView(props: Props) {
                     {({ data, fetchMore }) => {
                         const list = get(data, "files.listFiles.data") || [];
                         const uploadFile = async files => {
-                            // TODO: snackbar se ne vidi (z-index issue?)
                             showSnackbar("File upload started...");
 
                             const list = Array.isArray(files) ? files : [files];
@@ -237,7 +236,8 @@ function FileManagerView(props: Props) {
 
                         return (
                             <Files
-                                {...files}
+                                multiple
+                                accept={accept}
                                 multipleMaxCount={10}
                                 onSuccess={files => uploadFile(files.map(file => file.src.file))}
                                 onError={errors => {
@@ -283,7 +283,7 @@ function FileManagerView(props: Props) {
                                                         <ButtonPrimary
                                                             onClick={async () => {
                                                                 await onChange(
-                                                                    files.multiple
+                                                                    multiple
                                                                         ? selected
                                                                         : selected[0]
                                                                 );
@@ -292,8 +292,7 @@ function FileManagerView(props: Props) {
                                                             }}
                                                         >
                                                             Select{" "}
-                                                            {files.multiple &&
-                                                                `(${selected.length})`}
+                                                            {multiple && `(${selected.length})`}
                                                         </ButtonPrimary>
                                                     ) : (
                                                         <ButtonPrimary onClick={browseFiles}>
@@ -358,9 +357,9 @@ function FileManagerView(props: Props) {
                                                                                 file.src
                                                                         ),
                                                                         onSelect: async () => {
-                                                                            if (files.multiple) {
+                                                                            if (multiple) {
                                                                                 return dispatch({
-                                                                                    files,
+                                                                                    multiple,
                                                                                     type:
                                                                                         "toggleSelected",
                                                                                     file

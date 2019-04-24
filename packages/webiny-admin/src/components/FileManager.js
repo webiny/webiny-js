@@ -1,14 +1,13 @@
 // @flow
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
-import type { FilesRules } from "react-butterfiles";
 import FileManagerView from "./FileManager/FileManagerView";
-import get from "lodash/get";
 
 type Props = {
     onChange: Function,
-    files: FilesRules,
     images?: boolean,
+    multiple?: boolean,
+    accept?: Array<string>,
     children: ({ showFileManger: Function }) => React.Node
 };
 
@@ -27,19 +26,22 @@ class FileManagerPortal extends React.Component<> {
     }
 
     render() {
-        const { onChange, onClose, files, images } = this.props;
+        const { onChange, onClose, accept, multiple, images } = this.props;
         const container: Element = (this.container: any);
-        const accept = get(files, "selection.accept") || [];
+
+        const props = {
+            onChange,
+            onClose,
+            accept,
+            multiple
+        };
 
         if (images) {
-            accept.push("image/jpg", "image/jpeg", "image/gif", "image/png");
+            props.accept = ["image/jpg", "image/jpeg", "image/gif", "image/png", "image/svg+xml"];
         }
 
         // Let's pass "permanent" / "persistent" / "temporary" flags as "mode" prop instead.
-        return ReactDOM.createPortal(
-            <FileManagerView onChange={onChange} files={{ ...files, accept }} onClose={onClose} />,
-            container
-        );
+        return ReactDOM.createPortal(<FileManagerView {...props} />, container);
     }
 }
 
