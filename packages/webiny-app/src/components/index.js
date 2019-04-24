@@ -1,5 +1,4 @@
 // @flow
-export * from "./withRouter";
 export { withDataList } from "./withDataList";
 export { withFileUpload } from "./withFileUpload";
 export { withAutoComplete } from "./withAutoComplete";

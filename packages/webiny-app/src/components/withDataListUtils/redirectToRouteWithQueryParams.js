@@ -1,7 +1,4 @@
-// @flow
-import typeof { router as Router } from "webiny-app/router";
-
-export default (params: Object, router: Router) => {
+export default (params, { history, location }) => {
     const paramsClone = Object.assign({}, params);
 
     ["sort", "search", "where"].forEach(key => {
@@ -12,14 +9,12 @@ export default (params: Object, router: Router) => {
 
     const { perPage, page, where, search, sort } = paramsClone;
 
-    router.goToRoute({
-        merge: true,
-        params: {
-            perPage,
-            page,
-            where,
-            search,
-            sort
-        }
-    });
+    const query = new URLSearchParams(location.search);
+    query.set("perPage", perPage);
+    query.set("page", page);
+    query.set("where", where);
+    query.set("search", search);
+    query.set("sort", sort);
+
+    history.push({ search: query.toString() });
 };

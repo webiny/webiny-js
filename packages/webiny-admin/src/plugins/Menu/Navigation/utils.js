@@ -1,9 +1,19 @@
 // @flow
 import * as React from "react";
-import { router } from "webiny-app/router";
+import { Link } from "react-router-dom";
 import _ from "lodash";
 import type { Route } from "webiny-react-router/types";
-import { Link } from "webiny-app/router";
+
+const allowedProps = [
+    "className",
+    "style",
+    "target",
+    "href",
+    "onClick",
+    "title",
+    "tabIndex",
+    "disabled"
+];
 
 const utils = {
     /**
@@ -28,32 +38,22 @@ const utils = {
     },
 
     getLink(route: string, LinkComponent: typeof Link, linkProps: Object = {}) {
-        if (router.getRoute(route)) {
-            linkProps.route = route;
-        } else {
-            linkProps.url = route;
-        }
-
         if (!linkProps.children) {
             linkProps.children = linkProps.label;
         }
 
-        return <LinkComponent {...linkProps} />;
-    },
+        if (!route) {
+            const finalProps = {};
+            _.each(linkProps, (value, prop) => {
+                if (allowedProps.includes(prop) || prop.startsWith("data-")) {
+                    finalProps[prop] = value;
+                }
+            });
 
-    canAccess(/*menu*/) {
-        return true;
-        // TODO:
-        /*if (!menu.role || !menu.role.length) {
-            return true;
+            return <a {...finalProps}>{linkProps.children}</a>;
         }
 
-        const user = Webiny.Model.get('User');
-        const roles = _.isArray(menu.role) ? menu.role : menu.role.split(',');
-        if (!user || !Webiny.Auth.hasRole(roles)) {
-            return false;
-        }
-        return true;*/
+        return <LinkComponent to={route} {...linkProps} />;
     }
 };
 

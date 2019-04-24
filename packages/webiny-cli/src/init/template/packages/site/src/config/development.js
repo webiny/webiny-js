@@ -1,4 +1,3 @@
-import { renderMiddleware } from "webiny-app/router";
 import ApolloClient from "apollo-client";
 import { ApolloLink } from "apollo-link";
 import { BatchHttpLink } from "apollo-link-batch-http";
@@ -6,10 +5,6 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { createOmitTypenameLink } from "webiny-app/graphql";
 
 export default {
-    router: {
-        basename: "/",
-        middleware: [renderMiddleware()]
-    },
     apolloClient: new ApolloClient({
         link: ApolloLink.from([
             createOmitTypenameLink(),

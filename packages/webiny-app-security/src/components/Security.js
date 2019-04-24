@@ -45,11 +45,13 @@ class Security extends React.Component<Props, State> {
         localStorage.observe(AUTH_TOKEN, async (token: any) => {
             if (!token) {
                 this.checkLoginToken();
-                return this.setState({ user: null }, () => setIdentity(null));
+                setIdentity(null);
+                return this.setState({ user: null });
             }
             const user = await this.getUser();
 
-            this.setState({ user, firstLoad: false }, () => setIdentity(user));
+            setIdentity(user);
+            this.setState({ user, firstLoad: false });
         });
     }
 

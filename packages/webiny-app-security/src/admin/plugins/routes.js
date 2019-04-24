@@ -1,94 +1,79 @@
 // @flow
-import { AdminLayout } from "webiny-admin/components/AdminLayout";
 import React from "react";
+import Helmet from "react-helmet";
+import { Route } from "react-router-dom";
+import { AdminLayout } from "webiny-admin/components/AdminLayout";
 import Roles from "webiny-app-security/admin/views/Roles";
 import Groups from "webiny-app-security/admin/views/Groups";
 import Users from "webiny-app-security/admin/views/Users";
 import Account from "webiny-app-security/admin/views/Account";
 import { SecureRoute } from "webiny-app-security/components";
-import Helmet from "react-helmet";
 
 export default [
     {
         name: "route-roles",
         type: "route",
-        route: {
-            name: "Roles",
-            path: "/roles",
-            title: "Security - Roles",
-            render() {
-                return (
+        route: (
+            <Route
+                path={"/roles"}
+                render={() => (
                     <SecureRoute roles={["security-roles"]}>
                         <AdminLayout>
-                            <Helmet>
-                                <title>Security - Roles</title>
-                            </Helmet>
+                            <Helmet title={"Security - Roles"}/>
                             <Roles />
                         </AdminLayout>
                     </SecureRoute>
-                );
-            }
-        }
+                )}
+            />
+        )
     },
     {
         name: "route-groups",
         type: "route",
-        route: {
-            name: "Groups",
-            path: "/groups",
-            title: "Security - Groups",
-            render() {
-                return (
+        route: (
+            <Route
+                path={"/groups"}
+                render={() => (
                     <SecureRoute roles={["security-groups"]}>
                         <AdminLayout>
-                            <Helmet>
-                                <title>Security - Groups</title>
-                            </Helmet>
+                            <Helmet title={"Security - Groups"}/>
                             <Groups />
                         </AdminLayout>
                     </SecureRoute>
-                );
-            }
-        }
+                )}
+            />
+        )
     },
     {
         name: "route-users",
         type: "route",
-        route: {
-            name: "Users",
-            path: "/users",
-            title: "Security - Users",
-            render() {
-                return (
+        route: (
+            <Route
+                path={"/users"}
+                render={() => (
                     <SecureRoute roles={["security-users"]}>
                         <AdminLayout>
-                            <Helmet>
-                                <title>Security - Users</title>
-                            </Helmet>
+                            <Helmet title={"Security - Users"}/>
                             <Users />
                         </AdminLayout>
                     </SecureRoute>
-                );
-            }
-        }
+                )}
+            />
+        )
     },
     {
         name: "route-account",
         type: "route",
-        route: {
-            name: "Account",
-            path: "/account",
-            title: "Account",
-            render() {
-                return (
+        route: (
+            <Route
+                path={"/account"}
+                render={() => (
                     <AdminLayout>
-                        <Helmet>
-                            <title>User Account</title>
-                        </Helmet>
+                        <Helmet title={"User Account"}/>
                         <Account />
                     </AdminLayout>
-                );
-            }
-        }
+                )}
+            />
+        )
     }
 ];

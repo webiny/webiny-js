@@ -5,7 +5,7 @@ import type { GlobalSearch } from "webiny-admin/types";
 export const globalSearchUsers: GlobalSearch = {
     type: "global-search",
     name: "global-search-users",
-    route: "Users",
+    route: "/users",
     label: "Users",
     search: {
         fields: ["firstName", "lastName", "email"]

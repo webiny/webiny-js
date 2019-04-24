@@ -1,8 +1,11 @@
 // @flow
 import { hot } from "react-hot-loader";
 import React from "react";
-import { Webiny, Router } from "webiny-app";
-import { registerPlugins } from "webiny-plugins";
+import { BrowserRouter as Router } from "react-router-dom";
+import { ApolloProvider } from "react-apollo";
+import { UiProvider } from "webiny-app/context/ui";
+import { ConfigProvider } from "webiny-app/context/config";
+import { registerPlugins, getPlugins } from "webiny-plugins";
 import { Theme as AdminTheme } from "webiny-admin";
 import { CmsProvider } from "webiny-app-cms/context";
 import myTheme from "demo-theme";
@@ -14,24 +17,36 @@ import plugins from "./plugins";
 
 registerPlugins(plugins);
 
+// Execute `init` plugins, they may register more plugins dynamically
+getPlugins("webiny-init").forEach(plugin => plugin.callback());
+
+// Find all registered rout
+const routes = getPlugins("route").map((pl: Object) =>
+    React.cloneElement(pl.route, { key: pl.name, exact: true })
+);
+
 const App = () => {
     return (
-        <Webiny config={config}>
-            {({ router }) => (
-                <CmsProvider theme={myTheme} isEditor>
-                    <AdminTheme>
-                        <Security>
-                            {({ authenticated, notAuthenticated }) => (
-                                <React.Fragment>
-                                    {authenticated(<Router router={router} />)}
-                                    {notAuthenticated(<Login />)}
-                                </React.Fragment>
-                            )}
-                        </Security>
-                    </AdminTheme>
-                </CmsProvider>
-            )}
-        </Webiny>
+        <ApolloProvider client={config.apolloClient}>
+            <UiProvider>
+                <ConfigProvider config={config}>
+                    <CmsProvider theme={myTheme} isEditor>
+                        <AdminTheme>
+                            <Security>
+                                {({ authenticated, notAuthenticated }) => (
+                                    <React.Fragment>
+                                        {authenticated(
+                                            <Router basename={"/admin"}>{routes}</Router>
+                                        )}
+                                        {notAuthenticated(<Login />)}
+                                    </React.Fragment>
+                                )}
+                            </Security>
+                        </AdminTheme>
+                    </CmsProvider>
+                </ConfigProvider>
+            </UiProvider>
+        </ApolloProvider>
     );
 };
 

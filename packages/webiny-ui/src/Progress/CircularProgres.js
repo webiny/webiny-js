@@ -11,13 +11,6 @@ type Props = {
     visible: boolean
 };
 
-const defaultProps = {
-    size: 45,
-    spinnerColor: "#fa5723",
-    spinnerWidth: 4,
-    visible: true
-};
-
 const SpinnerWrapper = styled("div")({
     width: "100%",
     height: "100%",
@@ -35,14 +28,26 @@ const SpinnerWrapper = styled("div")({
     }
 });
 
-const CircularProgress = (props: Props) => {
+const CircularProgress = ({ size, spinnerWidth, spinnerColor, visible }: Props) => {
     return (
         <SpinnerWrapper>
             <div>
-                <Spinner {...defaultProps} {...props} />
+                <Spinner
+                    size={size}
+                    spinnerColor={spinnerColor}
+                    spinnerWidth={spinnerWidth}
+                    visible={visible}
+                />
             </div>
         </SpinnerWrapper>
     );
+};
+
+CircularProgress.defaultProps = {
+    size: 45,
+    spinnerColor: "#fa5723",
+    spinnerWidth: 4,
+    visible: true
 };
 
 export default CircularProgress;

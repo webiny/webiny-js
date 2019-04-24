@@ -1,5 +1,6 @@
 // @flow
 import * as React from "react";
+import { Route } from "react-router-dom";
 import renderPlugins from "webiny-app-cms/render/presets/default";
 import Page from "./../components/Page";
 import Helmet from "react-helmet";
@@ -11,13 +12,7 @@ export default [
     {
         name: "cms-route",
         type: "route",
-        route: {
-            name: "Cms.Page",
-            path: "*",
-            render({ match }) {
-                return <Page match={match} />;
-            }
-        }
+        route: <Route render={() => <Page />} />
     },
     {
         type: "addon-render",

@@ -1,6 +1,6 @@
 // @flow
 import * as React from "react";
-import { ConfigConsumer } from "./Webiny";
+import { ConfigConsumer } from "./../context/config";
 
 export const withConfig = (): Function => {
     return (Component: typeof React.Component) => {

@@ -1,4 +1,3 @@
-// @flow
 import React from "react";
 import { Provider } from "react-redux";
 import { compose, withHandlers } from "recompose";
@@ -6,7 +5,7 @@ import { Editor as CmsEditor } from "webiny-app-cms/editor";
 import { createElement } from "webiny-app-cms/editor/utils";
 import { redux } from "webiny-app-cms/editor/redux";
 import { SETUP_EDITOR } from "webiny-app-cms/editor/actions";
-import { withRouter } from "webiny-app/components";
+import { withRouter } from "react-router-dom";
 import { Query, withApollo } from "react-apollo";
 import { getPage } from "webiny-app-cms/admin/graphql/pages";
 import { withSavedElements } from "webiny-app-cms/admin/components";
@@ -17,6 +16,7 @@ import { Typography } from "webiny-ui/Typography";
 import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";
 import editorMock from "webiny-app-cms/admin/assets/editor-mock.png";
 import { get } from "lodash";
+
 const getEmptyData = (page = {}, revisions = []) => {
     return {
         ui: {
@@ -34,19 +34,15 @@ const getEmptyData = (page = {}, revisions = []) => {
 
 let pageSet = null;
 
-const Editor = ({ renderEditor, router, showSnackbar }: Object) => {
+const Editor = ({ renderEditor, match, history, showSnackbar }) => {
     return (
         <Query
             query={getPage()}
-            variables={{ id: router.getParams("id") }}
+            variables={{ id: match.params.id }}
             onCompleted={data => {
                 const error = get(data, "cms.page.error.message");
                 if (error) {
-                    router.goToRoute({
-                        name: "Cms.Pages",
-                        params: { id: null },
-                        merge: true
-                    });
+                    history.push(`/cms/pages`);
                     showSnackbar(error);
                 }
             }}
@@ -58,7 +54,7 @@ const Editor = ({ renderEditor, router, showSnackbar }: Object) => {
 
 export default compose(
     withApollo,
-    withRouter(),
+    withRouter,
     withSnackbar(),
     withSavedElements(),
     withHandlers({

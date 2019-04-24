@@ -1,4 +1,3 @@
-// @flow
 import React from "react";
 import shortid from "shortid";
 import isHotkey from "is-hotkey";

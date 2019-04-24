@@ -17,7 +17,7 @@
     "dot-prop-immutable": "^1.4.0",
     "graphql-tag": "^2.8.0",
     "lodash": "^4.17.11",
-    "react-apollo": "^2.2.4",
+    "react-apollo": "2.3.3",
     "react-helmet": "^5.2.0",
     "recompose": "^0.27.1",
     "webiny-app": "0.0.0",

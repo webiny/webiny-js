@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import TimeAgo from "timeago-react";
-import { withRouter } from "webiny-app/components";
+import { withRouter } from "react-router-dom";
 import { i18n } from "webiny-app/i18n";
 import { css } from "emotion";
 import { Typography } from "webiny-ui/Typography";
@@ -22,7 +22,8 @@ const rightAlign = css({
 });
 
 const PagesDataList = props => {
-    const { dataList, router } = props;
+    const { dataList, location, history } = props;
+    const query = new URLSearchParams(location.search);
 
     return (
         <DataList
@@ -52,12 +53,10 @@ const PagesDataList = props => {
                     {data.map(page => (
                         <ListItem key={page.id}>
                             <ListItemText
-                                onClick={() =>
-                                    router.goToRoute({
-                                        params: { id: page.id },
-                                        merge: true
-                                    })
-                                }
+                                onClick={() => {
+                                    query.set("id", page.id);
+                                    history.push({ search: query.toString() });
+                                }}
                             >
                                 {page.title}
                                 <ListTextOverline>{page.category.name}</ListTextOverline>
@@ -81,4 +80,4 @@ const PagesDataList = props => {
     );
 };
 
-export default withRouter()(PagesDataList);
+export default withRouter(PagesDataList);

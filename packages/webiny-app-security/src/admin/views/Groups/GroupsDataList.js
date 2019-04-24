@@ -1,6 +1,5 @@
-// @flow
-import * as React from "react";
-import type { WithCrudListProps } from "webiny-admin/components";
+import React from "react";
+import { withRouter } from "react-router-dom";
 import { i18n } from "webiny-app/i18n";
 import { ConfirmationDialog } from "webiny-ui/ConfirmationDialog";
 import {
@@ -19,7 +18,9 @@ import { Checkbox } from "webiny-ui/Checkbox";
 
 const t = i18n.namespace("Security.GroupsDataList");
 
-const GroupsDataList = ({ dataList, router, deleteRecord }: WithCrudListProps) => {
+const GroupsDataList = ({ dataList, location, history, deleteRecord }) => {
+    const query = new URLSearchParams(location.search);
+
     return (
         <DataList
             {...dataList}
@@ -46,20 +47,19 @@ const GroupsDataList = ({ dataList, router, deleteRecord }: WithCrudListProps) =
             {({ data, multiSelect, isMultiSelected }) => (
                 <ScrollList>
                     {data.map(item => (
-                        <ListItem key={item.id} selected={router.getQuery("id") === item.id}>
+                        <ListItem key={item.id} selected={query.get("id") === item.id}>
                             <ListItemGraphic>
                                 <Checkbox
                                     value={isMultiSelected(item)}
-                                    onClick={() => {
-                                        multiSelect(item);
-                                    }}
+                                    onClick={() => multiSelect(item)}
                                 />
                             </ListItemGraphic>
 
                             <ListItemText
-                                onClick={() =>
-                                    router.goToRoute({ params: { id: item.id }, merge: true })
-                                }
+                                onClick={() => {
+                                    query.set("id", item.id);
+                                    history.push({ search: query.toString() });
+                                }}
                             >
                                 {item.name}
                                 <ListItemTextSecondary>{item.description}</ListItemTextSecondary>
@@ -86,4 +86,4 @@ const GroupsDataList = ({ dataList, router, deleteRecord }: WithCrudListProps) =
     );
 };
 
-export default GroupsDataList;
+export default withRouter(GroupsDataList);

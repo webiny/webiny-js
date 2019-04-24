@@ -1,10 +1,12 @@
 // @flow
 import React from "react";
+import { Route } from "react-router-dom";
 import Helmet from "react-helmet";
 import Loadable from "react-loadable";
 import { AdminLayout } from "webiny-admin/components/AdminLayout";
 import { SecureRoute } from "webiny-app-security/components";
 import { CircularProgress } from "webiny-ui/Progress";
+import EditorPluginsLoader from "../components/EditorPluginsLoader";
 
 const Categories = Loadable({
     loader: () => import("webiny-app-cms/admin/views/Categories/Categories"),
@@ -30,80 +32,71 @@ export default [
     {
         name: "route-cms-categories",
         type: "route",
-        route: {
-            name: "Cms.Categories",
-            path: "/cms/categories",
-            render() {
-                return (
+        route: (
+            <Route
+                path="/cms/categories"
+                render={() => (
                     <SecureRoute roles={["cms-categories"]}>
-                        <Helmet>
-                            <title>CMS - Categories</title>
-                        </Helmet>
                         <AdminLayout>
+                            <Helmet title={"CMS - Categories"} />
                             <Categories />
                         </AdminLayout>
                     </SecureRoute>
-                );
-            }
-        }
+                )}
+            />
+        )
     },
     {
         name: "route-cms-menus",
         type: "route",
-        route: {
-            name: "Cms.Menus",
-            path: "/cms/menus",
-            exact: true,
-            render() {
-                return (
+        route: (
+            <Route
+                path="/cms/menus"
+                render={() => (
                     <SecureRoute roles={["cms-menus"]}>
-                        <Helmet>
-                            <title>CMS - Menus</title>
-                        </Helmet>
                         <AdminLayout>
+                            <Helmet title={"CMS - Menus"} />
                             <Menus />
                         </AdminLayout>
                     </SecureRoute>
-                );
-            }
-        }
+                )}
+            />
+        )
     },
     {
         name: "route-cms-pages",
         type: "route",
-        route: {
-            name: "Cms.Pages",
-            path: "/cms/pages",
-            render() {
-                return (
+        route: (
+            <Route
+                path="/cms/pages"
+                render={({ location }) => (
                     <SecureRoute roles={["cms-editor"]}>
-                        <Helmet>
-                            <title>CMS - Pages</title>
-                        </Helmet>
-                        <AdminLayout>
-                            <Pages />
-                        </AdminLayout>
+                        <EditorPluginsLoader location={location}>
+                            <AdminLayout>
+                                <Helmet title={"CMS - Pages"} />
+                                <Pages />
+                            </AdminLayout>
+                        </EditorPluginsLoader>
                     </SecureRoute>
-                );
-            }
-        }
+                )}
+            />
+        )
     },
     {
         name: "route-cms-editor",
         type: "route",
-        route: {
-            name: "Cms.Editor",
-            path: "/cms/editor/:id",
-            render() {
-                return (
+        route: (
+            <Route
+                path="/cms/editor/:id"
+                render={({ location }) => (
                     <SecureRoute roles={["cms-editor"]}>
-                        <Helmet>
-                            <title>CMS - Edit page</title>
-                        </Helmet>
-                        <Editor />
+                        <EditorPluginsLoader location={location}>
+                            <Helmet title={"CMS - Edit page"} />
+                            <Editor />
+                        </EditorPluginsLoader>
                     </SecureRoute>
-                );
-            }
-        }
+                )}
+            />
+        )
     }
 ];

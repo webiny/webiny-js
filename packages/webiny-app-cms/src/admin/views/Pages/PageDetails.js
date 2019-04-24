@@ -1,25 +1,15 @@
-// @flow
-import * as React from "react";
+import React from "react";
 import { compose, withProps } from "recompose";
 import { Query } from "react-apollo";
 import { renderPlugins } from "webiny-app/plugins";
-import { withRouter } from "webiny-app/components";
-import type { WithRouterProps } from "webiny-app/components";
+import { withRouter } from "react-router-dom";
 import styled from "react-emotion";
 import { Elevation } from "webiny-ui/Elevation";
 import { getPage } from "webiny-app-cms/admin/graphql/pages";
 import { PageDetailsProvider, PageDetailsConsumer } from "../../components/PageDetailsContext";
 import { ElementAnimation } from "webiny-app-cms/render/components";
-import { withSnackbar, type WithSnackbarProps } from "webiny-admin/components";
+import { withSnackbar } from "webiny-admin/components";
 import { get } from "lodash";
-
-type Props = WithRouterProps &
-    WithSnackbarProps & {
-        refreshPages: Function,
-        pageId: string,
-        page: Object,
-        loading: boolean
-    };
 
 const EmptySelect = styled("div")({
     width: "100%",
@@ -56,7 +46,7 @@ const EmptyPageDetails = () => {
     );
 };
 
-const PageDetails = ({ pageId, router, showSnackbar, refreshPages }: Props) => {
+const PageDetails = ({ pageId, history, query, showSnackbar, refreshPages }) => {
     if (!pageId) {
         return <EmptyPageDetails />;
     }
@@ -68,10 +58,8 @@ const PageDetails = ({ pageId, router, showSnackbar, refreshPages }: Props) => {
             onCompleted={data => {
                 const error = get(data, "cms.page.error.message");
                 if (error) {
-                    router.goToRoute({
-                        params: { id: null },
-                        merge: true
-                    });
+                    query.delete("id");
+                    history.push({ search: query.toString() });
                     showSnackbar(error);
                 }
             }}
@@ -105,9 +93,10 @@ const PageDetails = ({ pageId, router, showSnackbar, refreshPages }: Props) => {
 };
 
 export default compose(
-    withRouter(),
+    withRouter,
     withSnackbar(),
-    withProps(({ router }) => ({
-        pageId: router.getQuery("id")
-    }))
+    withProps(({ location }) => {
+        const query = new URLSearchParams(location.search);
+        return { pageId: query.get("id"), query };
+    })
 )(PageDetails);

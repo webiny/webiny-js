@@ -1,10 +1,11 @@
-// @flow
-import typeof { router as Router } from "webiny-app/router";
-
-export default (router: ?Router) => {
+export default location => {
     const params = {};
-    if (router) {
-        const { page, perPage } = router.match.query;
+    if (location) {
+        const query = new URLSearchParams(location.search);
+
+        const page = query.get("page");
+        const perPage = query.get("perPage");
+
         if (page) {
             params.page = page;
         }
@@ -14,15 +15,15 @@ export default (router: ?Router) => {
         }
 
         ["sort", "where", "search"].forEach(key => {
-            if (!router) {
+            if (!location) {
                 return;
             }
 
-            if (typeof router.match.query[key] === "string") {
+            if (typeof query.get(key) === "string") {
                 try {
-                    params[key] = JSON.parse(router.match.query[key]);
+                    params[key] = JSON.parse(query.get(key));
                 } catch (e) {
-                    params[key] = router.match.query[key];
+                    params[key] = query.get(key);
                 }
             }
         });
