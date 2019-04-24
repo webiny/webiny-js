@@ -20,7 +20,7 @@ registerPlugins(plugins);
 // Execute `init` plugins, they may register more plugins dynamically
 getPlugins("webiny-init").forEach(plugin => plugin.callback());
 
-// Find all registered rout
+// Find all registered routes
 const routes = getPlugins("route").map((pl: Object) =>
     React.cloneElement(pl.route, { key: pl.name, exact: true })
 );

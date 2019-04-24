@@ -7,14 +7,14 @@ export default (params, { history, location }) => {
         }
     });
 
-    const { perPage, page, where, search, sort } = paramsClone;
+    const keys = ["perPage", "page", "where", "search", "sort"];
 
     const query = new URLSearchParams(location.search);
-    query.set("perPage", perPage);
-    query.set("page", page);
-    query.set("where", where);
-    query.set("search", search);
-    query.set("sort", sort);
+    keys.forEach(key => {
+        if (typeof paramsClone[key] !== "undefined") {
+            query.set(key, paramsClone[key]);
+        }
+    });
 
     history.push({ search: query.toString() });
 };

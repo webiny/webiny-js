@@ -1,10 +1,12 @@
 // @flow
 import gql from "graphql-tag";
 import { getDataFields, getNotFoundPageFields, getErrorPageFields } from "./graphql";
+import type { Location } from "react-router-dom";
 
-type Props = { url: string, query: Object, defaultPages: Object };
+type Props = { location: Location, defaultPages: Object };
 
-export default ({ url, query, defaultPages }: Props) => {
+export default ({ location, defaultPages }: Props) => {
+    const query = new URLSearchParams(location.search);
     let defaultPagesFields = ``;
     if (!defaultPages.error) {
         defaultPagesFields += `${getErrorPageFields()}`;
@@ -15,7 +17,7 @@ export default ({ url, query, defaultPages }: Props) => {
     }
 
     // If a preview was requested (from admin):
-    if (query.preview) {
+    if (query.has("preview")) {
         return {
             query: gql`
                 query CmsGetPage($id: ID!) {
@@ -31,11 +33,11 @@ export default ({ url, query, defaultPages }: Props) => {
                     }
                 }
             `,
-            variables: { url, id: query.preview }
+            variables: { url: location.pathname, id: query.get("preview") }
         };
     }
 
-    if (url === "/") {
+    if (location.pathname === "/") {
         return {
             query: gql`
                 query getHomePage {
@@ -69,6 +71,6 @@ export default ({ url, query, defaultPages }: Props) => {
                     }
                 }
             `,
-        variables: { url }
+        variables: { url: location.pathname }
     };
 };

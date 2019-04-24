@@ -1,5 +1,6 @@
 // @flow
 import * as React from "react";
+import { Link } from "react-router-dom";
 import { get } from "lodash";
 
 import { ReactComponent as PrevIcon } from "./icons/round-navigate_before-24px.svg";
@@ -31,7 +32,7 @@ const formatDate = date => {
 
 const PageItem = ({ data, className }: Object) => {
     return (
-        <a href={data.url} className={"webiny-cms-element-page-list__item " + className}>
+        <Link to={data.url} className={"webiny-cms-element-page-list__item " + className}>
             <div
                 className={"webiny-cms-element-page-list__media"}
                 style={{
@@ -57,7 +58,7 @@ const PageItem = ({ data, className }: Object) => {
                     {formatDate(data.publishedOn)}
                 </div>
             </div>
-        </a>
+        </Link>
     );
 };
 

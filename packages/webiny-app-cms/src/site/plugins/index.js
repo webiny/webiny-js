@@ -12,7 +12,7 @@ export default [
     {
         name: "cms-route",
         type: "route",
-        route: <Route render={() => <Page />} />
+        route: <Route component={Page} />
     },
     {
         type: "addon-render",

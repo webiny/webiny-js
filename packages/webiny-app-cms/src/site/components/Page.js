@@ -1,5 +1,6 @@
 // @flow
 import * as React from "react";
+import type { Location } from "react-router-dom";
 import { Query } from "react-apollo";
 import { Content, buildQueryProps, getSettings } from "./Page/index";
 import { withCms } from "webiny-app-cms/context";
@@ -13,18 +14,18 @@ const defaultPages = {
     notFound: null
 };
 
-type Props = { match: Object, cms: WithCmsPropsType };
+type Props = { match: Object, location: Location, cms: WithCmsPropsType };
 
 const NO_404_PAGE_DEFAULT =
     "Could not fetch 404 (not found) page nor a default page was provided (set via CmsProvider).";
 const NO_ERROR_PAGE_DEFAULT =
     "Could not fetch error page nor a default page was provided (set via CmsProvider).";
 
-const Page = ({ cms, match: { url, query } }: Props) => {
+const Page = ({ cms, location }: Props) => {
     return (
         <Query query={getSettings}>
             {({ data: settings, loading: settingsLoading }) => (
-                <Query {...buildQueryProps({ url, query, defaultPages })}>
+                <Query {...buildQueryProps({ location, defaultPages })}>
                     {({ data, error: gqlError, loading: pageLoading }) => {
                         if (settingsLoading || pageLoading) {
                             return <CircularProgress />;

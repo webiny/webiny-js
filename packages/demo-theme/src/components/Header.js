@@ -1,5 +1,6 @@
 //@flow
 import * as React from "react";
+import { Link } from "react-router-dom";
 import { Menu } from "webiny-app-cms/render/components";
 import HamburgerMenu from "react-hamburger-menu";
 import classNames from "classnames";
@@ -52,12 +53,12 @@ const DesktopHeader = ({ logo, name }: { logo: Object, name: string }) => {
     return (
         <div className="webiny-cms-section-header__wrapper hide-on-mobile">
             <div className={"webiny-cms-section-header__logo"}>
-                <a href="/">
+                <Link to="/">
                     {logo && logo.src && <img src={logo.src} alt={name} />}{" "}
                     {(!logo || !logo.src) && (
                         <span className={"webiny-cms-section-header__site-name"}>{name}</span>
                     )}
-                </a>
+                </Link>
             </div>
             <nav className={"webiny-cms-section-header__navigation"}>
                 <Menu slug={menuName} component={DefaultMenu} />
@@ -80,12 +81,12 @@ const MobileHeader = ({
     return (
         <div className="webiny-cms-section-header__wrapper hide-on-desktop-and-tablet">
             <div className={"webiny-cms-section-header__logo"}>
-                <a href="/">
+                <Link to="/">
                     {logo && logo.src && <img src={logo.src} alt={name} />}{" "}
                     {(!logo || !logo.src) && (
                         <span className={"webiny-cms-section-header__site-name"}>{name}</span>
                     )}
-                </a>
+                </Link>
             </div>
             <nav
                 className={classNames("webiny-cms-section-header__navigation", {
