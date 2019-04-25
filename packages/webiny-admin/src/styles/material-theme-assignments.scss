@@ -233,6 +233,11 @@ Fix the width of input components when inside grids
   }
 }
 
+// snackbar
+.mdc-snackbar	{
+  z-index: 1000; // todo: replace this with mixin mdc-snackbar-z-index($z-index) once we update to latest version of MDC
+}
+
 // when grid is inside another grid cell, child grid should not have any padding
 .mdc-layout-grid{
   >.mdc-layout-grid__inner{

@@ -13,7 +13,7 @@ const OverlayLayoutWrapper = styled("div")({
     width: "100%",
     height: "100vh",
     backgroundColor: "var(--mdc-theme-background)",
-    zIndex: 4,
+    zIndex: 5,
     paddingTop: 65,
     top: 0,
     left: 0
