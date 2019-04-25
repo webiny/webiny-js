@@ -21,12 +21,12 @@ export default [
     column(),
     ...icon(),
     ...image(),
+    ...imagesList(),
     text(),
     spacer(),
     ...button(),
     ...media,
     ...social,
     ...code,
-    ...pagesList(),
-    ...imagesList()
+    ...pagesList()
 ];

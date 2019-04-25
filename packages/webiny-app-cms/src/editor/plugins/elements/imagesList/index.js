@@ -2,21 +2,22 @@
 import React from "react";
 import type { ElementPluginType } from "webiny-app-cms/types";
 import { Tab } from "webiny-ui/Tabs";
-import { ReactComponent as DesignIcon } from "./icons/round-style-24px.svg";
-import { ReactComponent as PageListIcon } from "./image-list-icon.svg";
-import { ReactComponent as ImagesIcon } from "webiny-app-cms/admin/assets/round-photo_library-24px.svg";
 import ImagesList from "./ImagesList";
 import ImagesListImagesSettings from "./ImagesListImagesSettings";
 import ImagesListDesignSettings from "./ImagesListDesignSettings";
 import styled from "react-emotion";
 
+import { ReactComponent as DesignIcon } from "./icons/round-style-24px.svg";
+import { ReactComponent as ImageGalleryIcon } from "./icons/round-photo_library-24px.svg";
+import { ReactComponent as ImagesIcon } from "webiny-app-cms/admin/assets/round-photo_library-24px.svg";
+
 export default () => {
     const PreviewBox = styled("div")({
         textAlign: "center",
         margin: "0 auto",
-        width: 100,
+        width: 50,
         svg: {
-            width: 100
+            width: 50
         }
     });
 
@@ -25,12 +26,12 @@ export default () => {
             name: "cms-element-images-list",
             type: "cms-element",
             toolbar: {
-                title: "List of pages",
+                title: "Image Gallery",
                 group: "cms-element-group-basic",
                 preview() {
                     return (
                         <PreviewBox>
-                            <PageListIcon />
+                            <ImageGalleryIcon />
                         </PreviewBox>
                     );
                 }
