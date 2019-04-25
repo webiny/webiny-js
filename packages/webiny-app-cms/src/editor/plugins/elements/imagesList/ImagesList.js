@@ -10,12 +10,12 @@ const ImagesList = pure(({ data = {}, cms: { theme } }: Object = {}) => {
     const imageList = components.find(cmp => cmp.name === component);
 
     if (!imageList) {
-        return "Selected page list component not found!";
+        return "Selected image gallery component not found!";
     }
 
     const { component: ListComponent } = imageList;
     if (!ListComponent) {
-        return "You must select a component to render your list!";
+        return "You must select a component to render your image gallery!";
     }
 
     return <ListComponent data={images} theme={theme} />;
