@@ -87,7 +87,7 @@ function EditAction(props) {
 export default {
     name: "file-manager-file-type-image",
     type: "file-manager-file-type",
-    types: ["image/jpeg", "image/jpg", "image/gif", "image/png"],
+    types: ["image/jpeg", "image/jpg", "image/gif", "image/png", "image/svg+xml"],
     render: function render({ file }) {
         return (
             <Image className={styles} src={file.src} alt={file.name} transform={{ width: 300 }} />
