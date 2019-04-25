@@ -43,8 +43,7 @@ export default () => {
                 return {
                     type: "cms-element-images-list",
                     data: {
-                        limit: 3,
-                        component: "default",
+                        component: "cms-element-images-list-component-mosaic",
                         settings: {
                             margin: {
                                 desktop: { all: 0 },
