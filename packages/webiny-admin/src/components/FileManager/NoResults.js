@@ -3,9 +3,10 @@ import React from "react";
 import { css } from "emotion";
 
 const styles = css({
-    padding: "100px",
+    padding: "100px 0px",
     textAlign: "center",
-    position: "relative"
+    position: "absolute",
+    width: "100%"
 });
 
 export default function DropFilesHere() {
