@@ -305,7 +305,7 @@ function FileManagerView(props: Props) {
                                             >
                                                 <>
                                                     {dragging && (
-                                                        <div
+                                                        <DropFilesHere
                                                             className={style.draggingFeedback}
                                                             onDragLeave={() => {
                                                                 dispatch({
