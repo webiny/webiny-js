@@ -385,45 +385,43 @@ function FileManagerView(props: Props) {
                                                                 >
                                                                     <FileList>
                                                                         {list.length ? (
-                                                                            list.map(
-                                                                                (file, index) =>
-                                                                                    renderFile({
-                                                                                        uploadFile,
-                                                                                        file,
-                                                                                        showFileDetails: () =>
+                                                                            list.map(file =>
+                                                                                renderFile({
+                                                                                    uploadFile,
+                                                                                    file,
+                                                                                    showFileDetails: () =>
+                                                                                        dispatch({
+                                                                                            type:
+                                                                                                "showDetails",
+                                                                                            file:
+                                                                                                file.src
+                                                                                        }),
+                                                                                    selected: selected.find(
+                                                                                        current =>
+                                                                                            current.src ===
+                                                                                            file.src
+                                                                                    ),
+                                                                                    onSelect: async () => {
+                                                                                        if (
+                                                                                            multiple
+                                                                                        ) {
                                                                                             dispatch(
                                                                                                 {
+                                                                                                    multiple,
                                                                                                     type:
-                                                                                                        "showDetails",
-                                                                                                    file:
-                                                                                                        file.src
+                                                                                                        "toggleSelected",
+                                                                                                    file
                                                                                                 }
-                                                                                            ),
-                                                                                        selected: selected.find(
-                                                                                            current =>
-                                                                                                current.src ===
-                                                                                                file.src
-                                                                                        ),
-                                                                                        onSelect: async () => {
-                                                                                            if (
-                                                                                                multiple
-                                                                                            ) {
-                                                                                                return dispatch(
-                                                                                                    {
-                                                                                                        multiple,
-                                                                                                        type:
-                                                                                                            "toggleSelected",
-                                                                                                        file
-                                                                                                    }
-                                                                                                );
-                                                                                            }
-
-                                                                                            await onChange(
-                                                                                                file
                                                                                             );
-                                                                                            onClose();
+                                                                                            return;
                                                                                         }
-                                                                                    })
+
+                                                                                        await onChange(
+                                                                                            file
+                                                                                        );
+                                                                                        onClose();
+                                                                                    }
+                                                                                })
                                                                             )
                                                                         ) : formData.search ? (
                                                                             <NoResults />

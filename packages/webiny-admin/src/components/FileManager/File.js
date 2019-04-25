@@ -100,7 +100,9 @@ export default React.memo(
                         </Ripple>
                     </LazyLoad>
                 </div>
-                <div className={"label"}>{file.name}</div>
+                <div className={"label"} onClick={onSelect}>
+                    {file.name}
+                </div>
             </div>
         );
     },

@@ -14,7 +14,7 @@ const Slider = ({ data }: Object) => {
         };
 
         return (
-            <div className={"bajo"} style={{ display: "block" }}>
+            <div>
                 {Array.isArray(data) && (
                     <SlickSlider {...settings}>
                         {data.map((item, index) => (
