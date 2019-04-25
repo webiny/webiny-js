@@ -5,6 +5,20 @@ import type { Location } from "react-router-dom";
 
 type Props = { location: Location, defaultPages: Object };
 
+const settingsFields = `
+settings {
+    cms {
+        data {
+            name
+            social {
+                image {
+                    src
+                }
+            }
+        }
+    }
+}`;
+
 export default ({ location, defaultPages }: Props) => {
     const query = new URLSearchParams(location.search);
     let defaultPagesFields = ``;
@@ -31,6 +45,7 @@ export default ({ location, defaultPages }: Props) => {
                         }
                         ${defaultPagesFields}
                     }
+                    ${settingsFields}
                 }
             `,
             variables: { url: location.pathname, id: query.get("preview") }
@@ -40,7 +55,7 @@ export default ({ location, defaultPages }: Props) => {
     if (location.pathname === "/") {
         return {
             query: gql`
-                query getHomePage {
+                {
                     cms {
                         page: getHomePage {
                             data ${getDataFields()}
@@ -51,6 +66,7 @@ export default ({ location, defaultPages }: Props) => {
                         }
                         ${defaultPagesFields}
                     }
+                    ${settingsFields}
                 }
             `
         };
@@ -69,6 +85,7 @@ export default ({ location, defaultPages }: Props) => {
                         }
                         ${defaultPagesFields}
                     }
+                    ${settingsFields}
                 }
             `,
         variables: { url: location.pathname }

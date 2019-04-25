@@ -41,7 +41,6 @@
     "webiny-compose": "0.0.0",
     "webiny-i18n": "0.0.0",
     "webiny-i18n-react": "0.0.0",
-    "webiny-react-router": "0.0.0",
     "webiny-plugins": "0.0.0"
   },
   "devDependencies": {

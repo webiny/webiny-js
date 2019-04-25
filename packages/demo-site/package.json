@@ -4,9 +4,12 @@
   "private": true,
   "dependencies": {
     "apollo-link-batch-http": "^1.2.3",
+    "cross-fetch": "^3.0.2",
     "demo-theme": "0.0.0",
+    "express": "^4.16.4",
     "react-helmet": "^5.2.0",
     "react-hot-loader": "^4.3.5",
+    "url-search-params-polyfill": "^5.1.0",
     "webiny-app": "0.0.0",
     "webiny-app-cms": "0.0.0",
     "webiny-app-cookie-policy": "0.0.0",
@@ -30,8 +33,10 @@
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
-    "start": "SKIP_PREFLIGHT_CHECK=true PORT=3002 rescripts start",
-    "build": "SKIP_PREFLIGHT_CHECK=true rescripts build",
+    "prebuild": "NODE_PATH=src SKIP_PREFLIGHT_CHECK=true INLINE_RUNTIME_CHUNK=false rescripts build",
+    "build": "REACT_APP_API_HOST=http://localhost:9000 REACT_APP_SSR=true NODE_ENV=development webpack --progress --mode development --config ./webpack.config.server.js",
+    "start": "node build/server.js",
+    "start:dev": "SKIP_PREFLIGHT_CHECK=true PORT=3002 rescripts start",
     "test": "rescripts test --env=jsdom",
     "eject": "react-scripts eject"
   },

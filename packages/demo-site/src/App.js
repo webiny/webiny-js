@@ -1,7 +1,8 @@
 // @flow
 import { hot } from "react-hot-loader";
 import React from "react";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
+import { StaticRouter } from "react-router-dom";
 import { ApolloProvider } from "react-apollo";
 import { registerPlugins, getPlugins } from "webiny-plugins";
 import { CmsProvider } from "webiny-app-cms/context";
@@ -9,17 +10,20 @@ import { UiProvider } from "webiny-app/context/ui";
 import { ConfigProvider } from "webiny-app/context/config";
 import plugins from "./plugins";
 import myTheme from "demo-theme";
-import config from "./config";
+import configFactory from "./config";
 import { GenericNotFoundPage, GenericErrorPage } from "./cms";
 
 registerPlugins(plugins);
-
 // Execute `init` plugins, they may register more plugins dynamically
 getPlugins("webiny-init").forEach(plugin => plugin.callback());
 
-const App = () => {
+const App = ({ url, client }) => {
+    const Router = url ? StaticRouter : BrowserRouter;
+    const routerProps = url ? { location: url, context: {} } : {};
+    const config = configFactory();
+
     return (
-        <ApolloProvider client={config.apolloClient}>
+        <ApolloProvider client={client || config.apolloClient}>
             <UiProvider>
                 <ConfigProvider config={config}>
                     <CmsProvider
@@ -31,7 +35,7 @@ const App = () => {
                             }
                         }}
                     >
-                        <Router basename={"/"}>
+                        <Router {...routerProps}>
                             {getPlugins("route").map((pl: Object) =>
                                 React.cloneElement(pl.route, { key: pl.name, exact: true })
                             )}

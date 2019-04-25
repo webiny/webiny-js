@@ -1,7 +1,7 @@
 // @flow
 import { hot } from "react-hot-loader";
 import React from "react";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
 import { ApolloProvider } from "react-apollo";
 import { UiProvider } from "webiny-app/context/ui";
 import { ConfigProvider } from "webiny-app/context/config";
@@ -38,6 +38,11 @@ const App = () => {
                                                         exact: true
                                                     })
                                                 )}
+                                                <Route
+                                                    exact
+                                                    path="/"
+                                                    render={() => <Redirect to="/cms/pages" />}
+                                                />
                                             </Router>
                                         )}
                                         {notAuthenticated(<Login />)}

@@ -2,7 +2,10 @@
 import * as React from "react";
 import styled from "react-emotion";
 
-import Spinner from "react-spinner-material";
+let Spinner;
+if (process.env.REACT_APP_SSR !== "true") {
+    Spinner = require("react-spinner-material").default;
+}
 
 type Props = {
     size: number,
@@ -32,12 +35,14 @@ const CircularProgress = ({ size, spinnerWidth, spinnerColor, visible }: Props) 
     return (
         <SpinnerWrapper>
             <div>
-                <Spinner
-                    size={size}
-                    spinnerColor={spinnerColor}
-                    spinnerWidth={spinnerWidth}
-                    visible={visible}
-                />
+                {process.env.REACT_APP_SSR === "true" ? null : (
+                    <Spinner
+                        size={size}
+                        spinnerColor={spinnerColor}
+                        spinnerWidth={spinnerWidth}
+                        visible={visible}
+                    />
+                )}
             </div>
         </SpinnerWrapper>
     );

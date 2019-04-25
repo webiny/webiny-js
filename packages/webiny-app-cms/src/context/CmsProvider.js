@@ -1,9 +1,13 @@
 // @flow
 import React from "react";
 import { compose, lifecycle } from "recompose";
-import WebFont from "webfontloader";
 import { CmsContextProvider } from "./CmsContext";
 import type { CmsProviderPropsType } from "webiny-app-cms/types";
+
+let WebFont;
+if (process.env.REACT_APP_SSR !== "true") {
+    WebFont = require("webfontloader");
+}
 
 const CmsProvider = ({ children, ...rest }: CmsProviderPropsType) => {
     return <CmsContextProvider {...rest}>{children}</CmsContextProvider>;
@@ -12,7 +16,9 @@ const CmsProvider = ({ children, ...rest }: CmsProviderPropsType) => {
 export default compose(
     lifecycle({
         componentDidMount() {
-            WebFont.load(this.props.theme.fonts);
+            if (process.env.REACT_APP_SSR !== "true") {
+                WebFont.load(this.props.theme.fonts);
+            }
         }
     })
 )(CmsProvider);

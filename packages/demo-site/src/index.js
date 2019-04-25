@@ -1,7 +1,8 @@
-import 'whatwg-fetch'
+import "whatwg-fetch";
 import React from "react";
 import ReactDOM from "react-dom";
-import config from "./config";
 import App from "./App";
 
-ReactDOM.render(<App config={config} />, document.getElementById("root"));
+const render = module.hot ? ReactDOM.render : ReactDOM.hydrate;
+
+render(<App />, document.getElementById("root"));
