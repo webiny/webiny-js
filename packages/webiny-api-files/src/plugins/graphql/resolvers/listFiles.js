@@ -1,15 +1,8 @@
 // @flow
-import type { Entity } from "webiny-entity";
 import { ListResponse } from "webiny-api/graphql/responses";
 
-type EntityFetcher = (context: Object) => Class<Entity>;
-
-export default (entityFetcher: EntityFetcher) => async (
-    root: any,
-    args: Object,
-    context: Object
-) => {
-    const entityClass = entityFetcher(context);
+export default modelFetcher => async (root: any, args: Object, context: Object) => {
+    const model = modelFetcher(context);
     const { page = 1, perPage = 10, sort = null, search = "", types = [] } = args;
     const findArgs = { page, perPage, sort };
 
@@ -31,6 +24,6 @@ export default (entityFetcher: EntityFetcher) => async (
         findArgs.query = { $and };
     }
 
-    const data = await entityClass.find(findArgs);
+    const data = await model.find(findArgs);
     return new ListResponse(data, data.getMeta());
 };

@@ -10,9 +10,9 @@ import mailchimpPlugins from "webiny-api-mailchimp";
 export default [
     apiPlugins,
     filesPlugins,
-    securityPlugins,
     cmsPlugins,
     cookiePolicyPlugins,
     gtmPlugins,
-    mailchimpPlugins
+    mailchimpPlugins,
+    securityPlugins,
 ];

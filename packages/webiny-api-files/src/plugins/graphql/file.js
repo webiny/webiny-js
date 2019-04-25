@@ -2,9 +2,11 @@
 import { resolveCreate, resolveDelete, resolveGet } from "webiny-api/graphql";
 
 import listFiles from "./resolvers/listFiles";
+import listTags from "./resolvers/listTags";
 import updateFileBySrc from "./resolvers/updateFileBySrc";
 
-const fileFetcher = ctx => ctx.files.entities.File;
+const fileFetcher = ctx => ctx.models.File;
+
 import {
     FileType,
     FileInputType,
@@ -29,6 +31,8 @@ export default {
                 sort: JSON
                 search: String
             ): FileListResponse
+               
+            listTags: [String]
         }
         
         extend type FilesMutation {
@@ -49,7 +53,8 @@ export default {
     resolvers: {
         FilesQuery: {
             getFile: resolveGet(fileFetcher),
-            listFiles: listFiles(fileFetcher)
+            listFiles: listFiles(fileFetcher),
+            listTags: listTags(fileFetcher)
         },
         FilesMutation: {
             createFile: resolveCreate(fileFetcher),

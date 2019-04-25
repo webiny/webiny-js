@@ -14,6 +14,12 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.0.0",
+    "@commodo/fields": "^0.0.5",
+    "@commodo/fields-storage": "^0.0.7",
+    "@commodo/fields-storage-mongodb": "^0.0.8",
+    "@commodo/fields-storage-ref": "^0.0.11",
+    "@commodo/hooks": "^0.0.5",
+    "@commodo/name": "^0.0.7",
     "apollo-server-lambda": "^2.1.0",
     "graphql": "^0.13.2",
     "graphql-iso-date": "^3.5.0",
@@ -22,6 +28,7 @@
     "graphql-type-json": "^0.2.0",
     "graphql-type-long": "^0.1.1",
     "lodash": "^4.17.4",
+    "repropose": "^1.0.0",
     "webiny-entity": "0.0.0",
     "webiny-model": "0.0.0",
     "webiny-plugins": "0.0.0"

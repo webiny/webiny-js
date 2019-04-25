@@ -3,19 +3,15 @@ import { ModelError } from "webiny-model";
 import { ErrorResponse, Response, NotFoundResponse } from "webiny-api/graphql/responses";
 import { InvalidAttributesError } from "webiny-api/graphql";
 
-export default (entityFetcher: EntityFetcher) => async (
-    root: any,
-    args: Object,
-    context: Object
-) => {
-    const entityClass = entityFetcher(context);
-    const entity = await entityClass.findOne({ query: { src: args.src } });
-    if (!entity) {
+export default (modelFetcher: Function) => async (root: any, args: Object, context: Object) => {
+    const modelClass = modelFetcher(context);
+    const model = await modelClass.findOne({ query: { src: args.src } });
+    if (!model) {
         return new NotFoundResponse();
     }
 
     try {
-        await entity.populate(args.data).save();
+        await model.populate(args.data).save();
     } catch (e) {
         if (e instanceof ModelError && e.code === ModelError.INVALID_ATTRIBUTES) {
             const attrError = InvalidAttributesError.from(e);
@@ -31,5 +27,5 @@ export default (entityFetcher: EntityFetcher) => async (
             data: e.data || null
         });
     }
-    return new Response(entity);
+    return new Response(model);
 };
