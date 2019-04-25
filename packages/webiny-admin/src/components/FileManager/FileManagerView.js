@@ -84,7 +84,7 @@ const FileList = styled("div")({
     width: "100%",
     display: "grid",
     /* define the number of grid columns */
-    gridTemplateColumns: "repeat( auto-fit, minmax(220px, 1fr) )",
+    gridTemplateColumns: "repeat( auto-fill, minmax(220px, 1fr) )",
     marginBottom: 75
 });
 
@@ -316,7 +316,7 @@ function FileManagerView(props: Props) {
                                             >
                                                 <>
                                                     {dragging && (
-                                                        <div
+                                                        <DropFilesHere
                                                             className={style.draggingFeedback}
                                                             onDragLeave={() => {
                                                                 dispatch({

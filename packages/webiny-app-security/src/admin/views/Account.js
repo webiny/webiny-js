@@ -41,6 +41,7 @@ const UsersForm = ({ onSubmit, user, loading }: Object) => (
                                             <FileManager onChange={onChange} images>
                                                 {({ showFileManager }) => (
                                                     <Image
+                                                        style={{ width: "100%", height: "auto" }}
                                                         value={value}
                                                         uploadImage={showFileManager}
                                                     />
