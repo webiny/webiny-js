@@ -71,6 +71,16 @@ const removeIdsAndPaths = el => {
     return el;
 };
 
+function getDataURLImageDimensions(dataURL) {
+    return new Promise(resolve => {
+        const image = new Image();
+        image.onload = function() {
+            resolve({ width: image.width, height: image.height });
+        };
+        image.src = dataURL;
+    });
+}
+
 export default compose(
     connect(state => ({ element: getElementWithChildren(state, getActiveElementId(state)) })),
     withState("isDialogOpened", "setOpenDialog", false),
@@ -95,10 +105,13 @@ export default compose(
             showSnackbar,
             uploadFile
         }) => async (formData: Object) => {
+            formData.content = removeIdsAndPaths(cloneDeep(element));
+
+            const meta = await getDataURLImageDimensions(formData.preview);
             const blob = dataURLtoBlob(formData.preview);
             blob.name = "cms-element-" + element.id + ".png";
             formData.preview = await uploadFile(blob);
-            formData.content = removeIdsAndPaths(cloneDeep(element));
+            formData.preview.meta = meta;
 
             let mutation = formData.overwrite ? updateElement : createElement;
             const { data: res } = await mutation({
