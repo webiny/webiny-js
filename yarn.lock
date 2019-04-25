@@ -989,10 +989,24 @@
   dependencies:
     repropose "^1.0.0"
 
+"@commodo/hooks@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.npmjs.org/@commodo/hooks/-/hooks-0.0.3.tgz#8a237d88dce9baf451a4afcb145556a32ef90283"
+  integrity sha512-m1I8uNVh/x78iAZnbFZvVqbnMc129SLgi8uzIZMix6+QximZFW3utq8wsbY6hg8I+LytRsOYPslB+84XtTPmBw==
+  dependencies:
+    repropose "^1.0.0"
+
 "@commodo/hooks@^0.0.4":
   version "0.0.3"
   resolved "https://registry.npmjs.org/@commodo/hooks/-/hooks-0.0.4.tgz#266b508c682bac4fe88c3c0feb65b4afd6489914"
   integrity sha512-uJ1Antz1/vnw8EnK+nIALdbKdnoVLlqFf0sxLbdSXl1E2cC8Pyew1Crzr+jBuXI6BT36wO7WgV1o92uuajbuTQ==
+  dependencies:
+    repropose "^1.0.0"
+
+"@commodo/hooks@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.npmjs.org/@commodo/hooks/-/hooks-0.0.5.tgz#ac377516faf938efeb70d8a338ae12ad9b1dafe3"
+  integrity sha512-PmCWY8JycVXPHn1lO60yCLUWtXudP+lf8DYJQsGumeKed1npZG32iOz26XrCl5FM3veGIbrJTVFDeY5oi4A7/g==
   dependencies:
     repropose "^1.0.0"
 
