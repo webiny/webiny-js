@@ -30,7 +30,7 @@ const ImagesListImagesSettings = (props: Object) => {
                         {({ onChange, value }) => (
                             <FileManager
                                 images
-                                files={{ multiple: true }}
+                                multiple
                                 onChange={files => {
                                     Array.isArray(value)
                                         ? onChange([...value, ...files])
