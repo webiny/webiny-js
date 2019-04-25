@@ -148,6 +148,7 @@ const elementFields = /*GraphQL*/ `
     content
     preview {
         src
+        meta
     }
 `;
 
