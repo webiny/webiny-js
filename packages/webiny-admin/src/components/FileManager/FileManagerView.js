@@ -80,6 +80,13 @@ const searchIcon = css({
     }
 });
 
+const FileListWrapper = styled("div")({
+    float: "right",
+    display: "inline-block",
+    width: "calc(100vw - 250px)",
+    height: "100%"
+});
+
 const FileList = styled("div")({
     width: "100%",
     display: "grid",
@@ -331,14 +338,15 @@ function FileManagerView(props: Props) {
                                                                             state: false
                                                                         });
                                                                     }}
-                                                                    onDrop={() =>
+                                                                    onDrop={() => {
                                                                         dispatch({
                                                                             type: "dragging",
                                                                             state: false
-                                                                        })
-                                                                    }
+                                                                        });
+                                                                    }}
                                                                 />
                                                             )}
+
                                                             <FileDetails
                                                                 state={state}
                                                                 file={getFileDetailsFile({
@@ -366,14 +374,7 @@ function FileManagerView(props: Props) {
                                                                 }}
                                                             />
 
-                                                            <div
-                                                                style={{
-                                                                    float: "right",
-                                                                    display: "inline-block",
-                                                                    width: "calc(100vw - 250px)",
-                                                                    height: "100%"
-                                                                }}
-                                                            >
+                                                            <FileListWrapper>
                                                                 <Scrollbar
                                                                     onScrollFrame={scrollFrame =>
                                                                         refreshOnScroll({
@@ -431,7 +432,7 @@ function FileManagerView(props: Props) {
                                                                         )}
                                                                     </FileList>
                                                                 </Scrollbar>
-                                                            </div>
+                                                            </FileListWrapper>
                                                         </>
                                                     </OverlayLayout>
                                                 )}

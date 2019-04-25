@@ -36,9 +36,14 @@ const styles = css({
     }
 });
 
-export default function DropFilesHere() {
+type Props = {
+    onDragLeave?: Function,
+    onDrop?: Function
+};
+
+export default function DropFilesHere({ onDrop, onDragLeave }: Props) {
     return (
-        <div className={styles}>
+        <div className={styles} onDrop={onDrop} onDragLeave={onDragLeave}>
             <div>
                 <div>
                     <Icon icon={<UploadIcon />} />
