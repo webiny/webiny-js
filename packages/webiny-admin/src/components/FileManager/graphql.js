@@ -28,6 +28,14 @@ export const listFiles = gql`
     }
 `;
 
+export const listTags = gql`
+    query ListTags {
+        files {
+            listTags
+        }
+    }
+`;
+
 export const createFile = gql`
     mutation CreateFile($data: FileInput!) {
         files {

@@ -16,6 +16,7 @@ import outputFileSelectionError from "./outputFileSelectionError";
 import DropFilesHere from "./DropFilesHere";
 import NoResults from "./NoResults";
 import FileDetails from "./FileDetails";
+import LeftSidebar from "./LeftSidebar";
 import { OverlayLayout } from "webiny-admin/components/OverlayLayout";
 import { withSnackbar } from "webiny-admin/components";
 import { compose } from "recompose";
@@ -23,7 +24,6 @@ import { Scrollbar } from "webiny-ui/Scrollbar";
 import { css } from "emotion";
 import styled from "react-emotion";
 import { useHotkeys } from "react-hotkeyz";
-import { Chip, ChipText, ChipIcon, Chips, PropsType } from "webiny-ui/Chips";
 
 import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
 import { ReactComponent as UploadIcon } from "./icons/round-cloud_upload-24px.svg";
@@ -224,6 +224,7 @@ function FileManagerView(props: Props) {
         }
     });
 
+    const searchInput = useRef();
     return (
         <Mutation mutation={createFile} update={updateCacheAfterCreateFile}>
             {createFile => (
@@ -257,7 +258,7 @@ function FileManagerView(props: Props) {
                             >
                                 {({ getDropZoneProps, browseFiles }) => (
                                     <Form onChange={formOnChange} data={{ search: "" }}>
-                                        {({ data: formData, Bind }) => (
+                                        {({ form, data: formData, Bind }) => (
                                             <OverlayLayout
                                                 {...getDropZoneProps({
                                                     onDragEnter: () =>
@@ -275,6 +276,7 @@ function FileManagerView(props: Props) {
                                                                     icon={<SearchIcon />}
                                                                 />
                                                                 <input
+                                                                    ref={searchInput}
                                                                     onChange={e =>
                                                                         onChange(e.target.value)
                                                                     }
@@ -342,31 +344,20 @@ function FileManagerView(props: Props) {
                                                         }
                                                     />
 
-                                                    <div
-                                                        className={"bajo1"}
-                                                        style={{
-                                                            float: "left",
-                                                            background: "white",
-                                                            display: "inline-block",
-                                                            width: 250,
-                                                            height: "100%"
+                                                    <LeftSidebar
+                                                        onTagClick={item => {
+                                                            const { current } = searchInput;
+                                                            if (current.value) {
+                                                                current.value += ` ${item}`;
+                                                            } else {
+                                                                current.value = item;
+                                                            }
+
+                                                            console.log(current)
+                                                            // formOnChange(formData);
                                                         }}
-                                                    >
-                                                        <div className={style.leftDrawer.header}>
-                                                            Tags
-                                                        </div>
-                                                        <Chips>
-                                                            <Chip>
-                                                                <ChipText>Cookies</ChipText>
-                                                            </Chip>
-                                                            <Chip>
-                                                                <ChipText>Pizza</ChipText>
-                                                            </Chip>
-                                                            <Chip>
-                                                                <ChipText>Icecream</ChipText>
-                                                            </Chip>
-                                                        </Chips>
-                                                    </div>
+                                                    />
+
                                                     <div
                                                         className={"bajo2"}
                                                         style={{
