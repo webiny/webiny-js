@@ -71,9 +71,9 @@ const removeIdsAndPaths = el => {
     return el;
 };
 
-function getDataURLImageDimensions(dataURL) {
+function getDataURLImageDimensions(dataURL: string) {
     return new Promise(resolve => {
-        const image = new Image();
+        const image = new window.Image();
         image.onload = function() {
             resolve({ width: image.width, height: image.height });
         };
