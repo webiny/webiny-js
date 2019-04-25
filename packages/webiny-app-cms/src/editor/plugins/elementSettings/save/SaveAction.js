@@ -12,6 +12,7 @@ import { getActiveElementId, getElementWithChildren } from "webiny-app-cms/edito
 import { createElementPlugin, createBlockPlugin } from "webiny-app-cms/admin/components";
 import { createElement, updateElement } from "webiny-app-cms/admin/graphql/pages";
 import { withFileUpload } from "webiny-app/components";
+import dataURLtoBlob from "dataurl-to-blob";
 
 type Props = {
     isDialogOpened: boolean,
@@ -94,10 +95,9 @@ export default compose(
             showSnackbar,
             uploadFile
         }) => async (formData: Object) => {
-            formData.preview = await uploadFile({
-                src: formData.preview,
-                name: "cms-element-" + element.source
-            });
+            const blob = dataURLtoBlob(formData.preview);
+            blob.name = "cms-element-" + element.id + ".png";
+            formData.preview = await uploadFile(blob);
             formData.content = removeIdsAndPaths(cloneDeep(element));
 
             let mutation = formData.overwrite ? updateElement : createElement;
