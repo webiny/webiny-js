@@ -17,7 +17,7 @@ export default (modelFetcher: ModelFetcher) => async (root: any, args: Object, c
             { $unwind: "$tags" },
             { $group: { _id: "$tags" } },
             { $sort: { _id: 1 } },
-            { $limit: 50 }
+            { $limit: 100 }
         ])
         .toArray();
 
