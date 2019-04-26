@@ -150,7 +150,7 @@ class Image extends React.Component<Props> {
 
         const imagePreviewProps: Object = {
             src: value ? value.src : null,
-            //style: this.props.style ? this.props.style : null,
+            style: this.props.style ? this.props.style : null,
             onClick: () => uploadImage()
         };
 
