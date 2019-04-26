@@ -3,6 +3,8 @@ import "url-search-params-polyfill";
 import path from "path";
 import express from "express";
 import React from "react";
+import { ApolloProvider } from "react-apollo";
+import { StaticRouter } from "react-router-dom";
 import ReactDOMServer from "react-dom/server";
 import Helmet from "react-helmet";
 import { getDataFromTree } from "react-apollo";
@@ -51,7 +53,13 @@ app.use(async (req, res) => {
 
     const client = createClient(req);
 
-    const app = <App url={req.url} client={client} />;
+    const app = (
+        <ApolloProvider client={client}>
+            <StaticRouter location={req.url} context={{}}>
+                <App />
+            </StaticRouter>
+        </ApolloProvider>
+    );
 
     // Executes all graphql queries for the current state of application
     await getDataFromTree(app);
@@ -62,7 +70,7 @@ app.use(async (req, res) => {
         <Html content={content} helmet={helmet} assets={assets} state={state} />
     );
     res.status(200);
-    res.send(`<!doctype html>${html}`);
+    res.send(`<!DOCTYPE html>${html}`);
     res.end();
 });
 

@@ -1,8 +1,18 @@
 import "whatwg-fetch";
 import React from "react";
 import ReactDOM from "react-dom";
+import { ApolloProvider } from "react-apollo";
+import { BrowserRouter } from "react-router-dom";
 import App from "./App";
+import apolloClient from "./config/apollo";
 
 const render = module.hot ? ReactDOM.render : ReactDOM.hydrate;
 
-render(<App />, document.getElementById("root"));
+render(
+    <ApolloProvider client={apolloClient}>
+        <BrowserRouter>
+            <App />
+        </BrowserRouter>
+    </ApolloProvider>,
+    document.getElementById("root")
+);

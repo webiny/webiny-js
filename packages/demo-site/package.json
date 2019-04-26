@@ -33,8 +33,8 @@
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
-    "prebuild": "NODE_PATH=src SKIP_PREFLIGHT_CHECK=true INLINE_RUNTIME_CHUNK=false rescripts build",
-    "build": "REACT_APP_API_HOST=http://localhost:9000 REACT_APP_SSR=true NODE_ENV=development webpack --progress --mode development --config ./webpack.config.server.js",
+    "noprebuild": "NODE_PATH=src SKIP_PREFLIGHT_CHECK=true INLINE_RUNTIME_CHUNK=false rescripts build",
+    "build": "REACT_APP_API_HOST=http://localhost:9000 REACT_APP_SSR=true NODE_ENV=production webpack --progress --mode production --config ./webpack.config.server.js",
     "start": "node build/server.js",
     "start:dev": "SKIP_PREFLIGHT_CHECK=true PORT=3002 rescripts start",
     "test": "rescripts test --env=jsdom",
