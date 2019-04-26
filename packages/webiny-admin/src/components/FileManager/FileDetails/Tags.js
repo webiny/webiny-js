@@ -8,11 +8,11 @@ import { Form } from "webiny-form";
 import { ReactComponent as EditIcon } from "./../icons/round-edit-24px.svg";
 import { Link } from "webiny-app/router";
 import { css } from "emotion";
-import { updateFileBySrc, listFiles } from "./../graphql";
+import { updateFileBySrc, listFiles, listTags } from "./../graphql";
 import { compose } from "recompose";
 import { withSnackbar } from "webiny-admin/components";
 import { graphql } from "react-apollo";
-import { get } from "lodash";
+import { get, cloneDeep } from "lodash";
 
 const style = {
     editTag: css({
@@ -23,14 +23,12 @@ const style = {
 
 function Tags({ state: parentState, gqlUpdateFileBySrc, showSnackbar, file }) {
     const [editing, setEdit] = useState(false);
-    const tags = file.tags || [];
+    const initialTags = Array.isArray(file.tags) ? [...file.tags] : [];
 
     if (editing) {
         return (
             <Form
-                data={{
-                    tags
-                }}
+                data={{ tags: [...initialTags] }}
                 onSubmit={async ({ tags }) => {
                     setEdit(false);
                     await gqlUpdateFileBySrc({
@@ -38,12 +36,17 @@ function Tags({ state: parentState, gqlUpdateFileBySrc, showSnackbar, file }) {
                             src: file.src,
                             data: { tags }
                         },
+                        refetchQueries: [{ query: listTags }],
                         update: (cache, updated) => {
                             const newFileData = get(updated, "data.files.updateFileBySrc.data");
-                            const data = cache.readQuery({
-                                query: listFiles,
-                                variables: parentState.queryParams
-                            });
+
+                            // 1. Update files list cache
+                            let data = cloneDeep(
+                                cache.readQuery({
+                                    query: listFiles,
+                                    variables: parentState.queryParams
+                                })
+                            );
 
                             data.files.listFiles.data.forEach(item => {
                                 if (item.src === newFileData.src) {
@@ -83,9 +86,9 @@ function Tags({ state: parentState, gqlUpdateFileBySrc, showSnackbar, file }) {
 
     return (
         <>
-            {tags.length > 0 ? (
+            {initialTags.length > 0 ? (
                 <Chips>
-                    {tags.map((tag, index) => (
+                    {initialTags.map((tag, index) => (
                         <Chip key={tag + index}>
                             <ChipText>{tag}</ChipText>
                         </Chip>
