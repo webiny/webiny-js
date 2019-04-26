@@ -8,8 +8,12 @@ module.exports = () =>
         .filter(pkg => fs.existsSync(pkg + "/.webiny"))
         .map(root => {
             const json = JSON.parse(fs.readFileSync(path.join(root, "/.webiny"), "utf8"));
+            if (json.type !== "function") {
+                return null;
+            }
             json.handler = "/src/handler.js";
             json.root = root;
             json.package = JSON.parse(fs.readFileSync(path.join(root, "/package.json"), "utf8"));
             return json;
-        });
+        })
+        .filter(Boolean);

@@ -1,7 +1,5 @@
 import "cross-fetch/polyfill";
 import "url-search-params-polyfill";
-import path from "path";
-import express from "express";
 import React from "react";
 import { ApolloProvider } from "react-apollo";
 import { StaticRouter } from "react-router-dom";
@@ -18,9 +16,7 @@ import Html from "./Html";
 import App from "../src/App";
 import assets from "./assets";
 
-const app = express();
-
-const createClient = req => {
+const createClient = ({ headers }) => {
     return new ApolloClient({
         ssrMode: true,
         link: ApolloLink.from([
@@ -28,9 +24,7 @@ const createClient = req => {
             createHttpLink({
                 uri: process.env.REACT_APP_API_HOST + "/function/api",
                 credentials: "same-origin",
-                headers: {
-                    cookie: req.header("Cookie")
-                }
+                headers
             })
         ]),
         cache: new InMemoryCache({
@@ -40,22 +34,13 @@ const createClient = req => {
     });
 };
 
-app.use("/files", express.static(path.resolve(__dirname, "../build"), { index: false }));
-app.use("/static", express.static(path.resolve(__dirname, "../build/static"), { index: false }));
-
-app.use(async (req, res) => {
-    if (req.url.includes(".")) {
-        res.status(200);
-        res.send(`NOT AN API`);
-        res.end();
-        return;
-    }
-
-    const client = createClient(req);
+export async function handler(event) {
+    const { path } = event;
+    const client = createClient(event);
 
     const app = (
         <ApolloProvider client={client}>
-            <StaticRouter location={req.url} context={{}}>
+            <StaticRouter location={path} context={{}}>
                 <App />
             </StaticRouter>
         </ApolloProvider>
@@ -69,13 +54,6 @@ app.use(async (req, res) => {
     const html = ReactDOMServer.renderToStaticMarkup(
         <Html content={content} helmet={helmet} assets={assets} state={state} />
     );
-    res.status(200);
-    res.send(`<!DOCTYPE html>${html}`);
-    res.end();
-});
 
-const port = process.env.PORT || 8888;
-
-app.listen(port, () => {
-    console.log(`Server listening on ${port} port`);
-});
+    return `<!DOCTYPE html>${html}`;
+}

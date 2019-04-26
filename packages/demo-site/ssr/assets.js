@@ -1,8 +1,4 @@
-import fs from "fs";
-
-const indexHtml = fs.readFileSync("build/index.html", {
-    encoding: "utf-8"
-});
+import indexHtml from "../build/index.html";
 
 const extract = (pattern, string) => {
     const matches = [];

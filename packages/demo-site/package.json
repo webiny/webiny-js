@@ -7,6 +7,7 @@
     "cross-fetch": "^3.0.2",
     "demo-theme": "0.0.0",
     "express": "^4.16.4",
+    "raw-loader": "^2.0.0",
     "react-helmet": "^5.2.0",
     "react-hot-loader": "^4.3.5",
     "url-search-params-polyfill": "^5.1.0",
@@ -33,10 +34,11 @@
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
-    "noprebuild": "NODE_PATH=src SKIP_PREFLIGHT_CHECK=true INLINE_RUNTIME_CHUNK=false rescripts build",
-    "build": "REACT_APP_API_HOST=http://localhost:9000 REACT_APP_SSR=true NODE_ENV=production webpack --progress --mode production --config ./webpack.config.server.js",
+    "build": "NODE_PATH=src SKIP_PREFLIGHT_CHECK=true INLINE_RUNTIME_CHUNK=false rescripts build",
+    "build:ssr": "REACT_APP_API_HOST=http://localhost:9000 REACT_APP_SSR=true NODE_ENV=production webpack --progress --mode production --config ./webpack.config.server.js",
     "start": "node build/server.js",
     "start:dev": "SKIP_PREFLIGHT_CHECK=true PORT=3002 rescripts start",
+    "start:ssr": "PORT=8888 node ssr/server.js",
     "test": "rescripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
