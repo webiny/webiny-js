@@ -6,7 +6,6 @@ import { get } from "lodash";
 import { css } from "emotion";
 import { Icon } from "webiny-ui/Icon";
 import styled from "react-emotion";
-
 import { ReactComponent as TagIcon } from "./icons/round-label-24px.svg";
 
 const style = {
@@ -45,8 +44,8 @@ const Tag = styled("div")({
     }
 });
 
-function LeftSidebar({ onTagClick, queryParams: { search } }) {
-    const searchWords = typeof search === "string" ? search.split(" ") : [];
+function LeftSidebar({ toggleTag, queryParams: { tags } }) {
+    const activeTags = Array.isArray(tags) ? tags : [];
 
     return (
         <div className={style.leftDrawer}>
@@ -62,27 +61,16 @@ function LeftSidebar({ onTagClick, queryParams: { search } }) {
                         );
                     }
 
-                    const availableTags = list.filter(item => !searchWords.includes(item));
-
-                    if (availableTags.length > 0) {
-                        return (
-                            <TagList>
-                                {availableTags.map(
-                                    (item, index) =>
-                                        !searchWords.includes(item) && (
-                                            <Tag
-                                                key={item + index}
-                                                onClick={() => onTagClick(item)}
-                                            >
-                                                <Icon icon={<TagIcon />} /> {item}
-                                            </Tag>
-                                        )
-                                )}
-                            </TagList>
-                        );
-                    }
-
-                    return <div className={style.noTagged}>No available tags.</div>;
+                    return (
+                        <TagList>
+                            {list.map((item, index) => (
+                                <Tag key={item + index} onClick={() => toggleTag(item)}>
+                                    <Icon icon={<TagIcon />} /> {item}
+                                    {activeTags.includes(item) && <Icon icon={<TagIcon />} />}
+                                </Tag>
+                            ))}
+                        </TagList>
+                    );
                 }}
             </Query>
         </div>

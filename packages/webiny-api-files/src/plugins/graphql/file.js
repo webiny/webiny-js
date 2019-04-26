@@ -28,6 +28,7 @@ export default {
                 page: Int
                 perPage: Int
                 types: [String]
+                tags: [String]
                 sort: JSON
                 search: String
             ): FileListResponse

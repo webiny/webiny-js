@@ -3,7 +3,7 @@ import { ListResponse } from "webiny-api/graphql/responses";
 
 export default modelFetcher => async (root: any, args: Object, context: Object) => {
     const model = modelFetcher(context);
-    const { page = 1, perPage = 10, sort = null, search = "", types = [] } = args;
+    const { page = 1, perPage = 10, sort = null, search = "", types = [], tags = [] } = args;
     const findArgs = { page, perPage, sort };
 
     const $and = [];
@@ -17,6 +17,12 @@ export default modelFetcher => async (root: any, args: Object, context: Object) 
                 { name: { $regex: `.*${search}.*`, $options: "i" } },
                 { tags: { $in: search.split(" ") } }
             ]
+        });
+    }
+
+    if (Array.isArray(tags) && tags.length > 0) {
+        $and.push({
+            tags: { $in: tags.map(tag => tag.toLowerCase()) }
         });
     }
 

@@ -68,7 +68,14 @@ function Tags({ state: parentState, gqlUpdateFileBySrc, showSnackbar, file }) {
                 {({ Bind, submit }) => (
                     <>
                         <Bind name={"tags"}>
-                            <TagsComponent autoFocus placeholder={"Enter a tag and press enter"} />
+                            {({ value, onChange }) => (
+                                <TagsComponent
+                                    value={value}
+                                    onChange={tags => onChange(tags.map(tag => tag.toLowerCase()))}
+                                    autoFocus
+                                    placeholder={"Enter a tag and press enter"}
+                                />
+                            )}
                         </Bind>
                         <div style={{ marginTop: "10px" }}>
                             <ButtonPrimary small onClick={submit}>

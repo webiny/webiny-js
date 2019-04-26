@@ -5,7 +5,6 @@ import Files from "react-butterfiles";
 import { ButtonPrimary, ButtonIcon } from "webiny-ui/Button";
 import { Icon } from "webiny-ui/Icon";
 import File from "./File";
-import { Form } from "webiny-form";
 import { Query, Mutation } from "react-apollo";
 import type { FilesRules } from "react-butterfiles";
 import { listFiles, createFile } from "./graphql";
@@ -172,9 +171,21 @@ function FileManagerView(props: Props) {
 
     const gqlQuery = useRef();
 
-    const searchOnChange = useCallback(debounce((onChange, value) => onChange(value), 500), []);
-    const formOnChange = useCallback(queryParams => {
-        dispatch({ type: "queryParams", queryParams });
+    const searchOnChange = useCallback(
+        debounce(search => dispatch({ type: "queryParams", queryParams: { search } }), 500),
+        []
+    );
+
+    const toggleTag = useCallback(async ({ tag, queryParams }) => {
+        const finalTags = Array.isArray(queryParams.tags) ? [...queryParams.tags] : [];
+
+        if (finalTags.includes(tag)) {
+            finalTags.splice(finalTags.indexOf(tag), 1);
+        } else {
+            finalTags.push(tag);
+        }
+
+        dispatch({ type: "queryParams", queryParams: { ...queryParams, tags: finalTags } });
     }, []);
 
     const refreshOnScroll = useCallback(
@@ -262,183 +273,137 @@ function FileManagerView(props: Props) {
                                 }}
                             >
                                 {({ getDropZoneProps, browseFiles }) => (
-                                    <Form onChange={formOnChange} data={{ search: "" }}>
-                                        {({ data: formData, Bind }) => (
-                                            <Bind name={"search"}>
-                                                {({ searchValue, onChange: setSearchValue }) => (
-                                                    <OverlayLayout
-                                                        {...getDropZoneProps({
-                                                            onDragEnter: () =>
-                                                                dispatch({
-                                                                    type: "dragging",
-                                                                    state: true
-                                                                })
-                                                        })}
-                                                        barLeft={
-                                                            <InputSearch>
-                                                                <Icon
-                                                                    className={searchIcon}
-                                                                    icon={<SearchIcon />}
-                                                                />
-                                                                <input
-                                                                    ref={searchInput}
-                                                                    onChange={e =>
-                                                                        searchOnChange(
-                                                                            setSearchValue,
-                                                                            e.target.value
-                                                                        )
-                                                                    }
-                                                                    value={searchValue}
-                                                                    placeholder={
-                                                                        "Search by filename or tags"
-                                                                    }
-                                                                />
-                                                            </InputSearch>
-                                                        }
-                                                        onExited={onClose}
-                                                        barRight={
-                                                            selected.length > 0 ? (
-                                                                <ButtonPrimary
-                                                                    onClick={async () => {
-                                                                        await onChange(
-                                                                            multiple
-                                                                                ? selected
-                                                                                : selected[0]
-                                                                        );
+                                    <OverlayLayout
+                                        {...getDropZoneProps({
+                                            onDragEnter: () =>
+                                                dispatch({
+                                                    type: "dragging",
+                                                    state: true
+                                                })
+                                        })}
+                                        barLeft={
+                                            <InputSearch>
+                                                <Icon
+                                                    className={searchIcon}
+                                                    icon={<SearchIcon />}
+                                                />
+                                                <input
+                                                    ref={searchInput}
+                                                    onChange={e => searchOnChange(e.target.value)}
+                                                    placeholder={"Search by filename or tags"}
+                                                />
+                                            </InputSearch>
+                                        }
+                                        onExited={onClose}
+                                        barRight={
+                                            selected.length > 0 ? (
+                                                <ButtonPrimary
+                                                    onClick={async () => {
+                                                        await onChange(
+                                                            multiple ? selected : selected[0]
+                                                        );
 
+                                                        onClose();
+                                                    }}
+                                                >
+                                                    Select {multiple && `(${selected.length})`}
+                                                </ButtonPrimary>
+                                            ) : (
+                                                <ButtonPrimary onClick={browseFiles}>
+                                                    <ButtonIcon icon={<UploadIcon />} />
+                                                    Upload...
+                                                </ButtonPrimary>
+                                            )
+                                        }
+                                    >
+                                        <>
+                                            {dragging && (
+                                                <DropFilesHere
+                                                    className={style.draggingFeedback}
+                                                    onDragLeave={() => {
+                                                        dispatch({
+                                                            type: "dragging",
+                                                            state: false
+                                                        });
+                                                    }}
+                                                    onDrop={() => {
+                                                        dispatch({
+                                                            type: "dragging",
+                                                            state: false
+                                                        });
+                                                    }}
+                                                />
+                                            )}
+
+                                            <FileDetails
+                                                state={state}
+                                                file={getFileDetailsFile({
+                                                    list,
+                                                    src: showDetailsFileSrc
+                                                })}
+                                                uploadFile={uploadFile}
+                                                onClose={() =>
+                                                    dispatch({
+                                                        type: "hideDetails"
+                                                    })
+                                                }
+                                            />
+
+                                            <LeftSidebar
+                                                queryParams={queryParams}
+                                                toggleTag={tag => toggleTag({ tag, queryParams })}
+                                            />
+
+                                            <FileListWrapper>
+                                                <Scrollbar
+                                                    onScrollFrame={scrollFrame =>
+                                                        refreshOnScroll({
+                                                            scrollFrame,
+                                                            fetchMore
+                                                        })
+                                                    }
+                                                >
+                                                    <FileList>
+                                                        {list.length ? (
+                                                            list.map(file =>
+                                                                renderFile({
+                                                                    uploadFile,
+                                                                    file,
+                                                                    showFileDetails: () =>
+                                                                        dispatch({
+                                                                            type: "showDetails",
+                                                                            file: file.src
+                                                                        }),
+                                                                    selected: selected.find(
+                                                                        current =>
+                                                                            current.src === file.src
+                                                                    ),
+                                                                    onSelect: async () => {
+                                                                        if (multiple) {
+                                                                            dispatch({
+                                                                                multiple,
+                                                                                type:
+                                                                                    "toggleSelected",
+                                                                                file
+                                                                            });
+                                                                            return;
+                                                                        }
+
+                                                                        await onChange(file);
                                                                         onClose();
-                                                                    }}
-                                                                >
-                                                                    Select{" "}
-                                                                    {multiple &&
-                                                                        `(${selected.length})`}
-                                                                </ButtonPrimary>
-                                                            ) : (
-                                                                <ButtonPrimary
-                                                                    onClick={browseFiles}
-                                                                >
-                                                                    <ButtonIcon
-                                                                        icon={<UploadIcon />}
-                                                                    />
-                                                                    Upload...
-                                                                </ButtonPrimary>
+                                                                    }
+                                                                })
                                                             )
-                                                        }
-                                                    >
-                                                        <>
-                                                            {dragging && (
-                                                                <DropFilesHere
-                                                                    className={
-                                                                        style.draggingFeedback
-                                                                    }
-                                                                    onDragLeave={() => {
-                                                                        dispatch({
-                                                                            type: "dragging",
-                                                                            state: false
-                                                                        });
-                                                                    }}
-                                                                    onDrop={() => {
-                                                                        dispatch({
-                                                                            type: "dragging",
-                                                                            state: false
-                                                                        });
-                                                                    }}
-                                                                />
-                                                            )}
-
-                                                            <FileDetails
-                                                                state={state}
-                                                                file={getFileDetailsFile({
-                                                                    list,
-                                                                    src: showDetailsFileSrc
-                                                                })}
-                                                                uploadFile={uploadFile}
-                                                                onClose={() =>
-                                                                    dispatch({
-                                                                        type: "hideDetails"
-                                                                    })
-                                                                }
-                                                            />
-
-                                                            <LeftSidebar
-                                                                queryParams={queryParams}
-                                                                onTagClick={async tag => {
-                                                                    let value = tag;
-                                                                    const { search } = formData;
-                                                                    if (search) {
-                                                                        value = `${search} ${value}`;
-                                                                    }
-
-                                                                    await setSearchValue(value);
-                                                                    searchInput.current.value = value;
-                                                                }}
-                                                            />
-
-                                                            <FileListWrapper>
-                                                                <Scrollbar
-                                                                    onScrollFrame={scrollFrame =>
-                                                                        refreshOnScroll({
-                                                                            scrollFrame,
-                                                                            fetchMore
-                                                                        })
-                                                                    }
-                                                                >
-                                                                    <FileList>
-                                                                        {list.length ? (
-                                                                            list.map(file =>
-                                                                                renderFile({
-                                                                                    uploadFile,
-                                                                                    file,
-                                                                                    showFileDetails: () =>
-                                                                                        dispatch({
-                                                                                            type:
-                                                                                                "showDetails",
-                                                                                            file:
-                                                                                                file.src
-                                                                                        }),
-                                                                                    selected: selected.find(
-                                                                                        current =>
-                                                                                            current.src ===
-                                                                                            file.src
-                                                                                    ),
-                                                                                    onSelect: async () => {
-                                                                                        if (
-                                                                                            multiple
-                                                                                        ) {
-                                                                                            dispatch(
-                                                                                                {
-                                                                                                    multiple,
-                                                                                                    type:
-                                                                                                        "toggleSelected",
-                                                                                                    file
-                                                                                                }
-                                                                                            );
-                                                                                            return;
-                                                                                        }
-
-                                                                                        await onChange(
-                                                                                            file
-                                                                                        );
-                                                                                        onClose();
-                                                                                    }
-                                                                                })
-                                                                            )
-                                                                        ) : formData.search ? (
-                                                                            <NoResults />
-                                                                        ) : (
-                                                                            <DropFilesHere
-                                                                                empty={true}
-                                                                            />
-                                                                        )}
-                                                                    </FileList>
-                                                                </Scrollbar>
-                                                            </FileListWrapper>
-                                                        </>
-                                                    </OverlayLayout>
-                                                )}
-                                            </Bind>
-                                        )}
-                                    </Form>
+                                                        ) : queryParams.search ? (
+                                                            <NoResults />
+                                                        ) : (
+                                                            <DropFilesHere empty={true} />
+                                                        )}
+                                                    </FileList>
+                                                </Scrollbar>
+                                            </FileListWrapper>
+                                        </>
+                                    </OverlayLayout>
                                 )}
                             </Files>
                         );

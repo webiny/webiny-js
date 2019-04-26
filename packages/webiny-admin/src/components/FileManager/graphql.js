@@ -12,9 +12,9 @@ const fileFields = /* GraphQL */ `
 `;
 
 export const listFiles = gql`
-    query ListFiles($types: [String], $sort: JSON, $page: Int, $perPage: Int, $search: String) {
+     query ListFiles($types: [String], $tags: [String], $sort: JSON, $page: Int, $perPage: Int, $search: String) {
         files {
-            listFiles(types: $types, sort: $sort, page: $page, perPage: $perPage, search: $search) {
+            listFiles(types: $types, sort: $sort, page: $page, perPage: $perPage, search: $search, tags: $tags) {
                 data ${fileFields}
                 meta {
                     totalCount

@@ -3,7 +3,7 @@ import compose from "lodash/fp/compose";
 import { validation } from "webiny-validation";
 import { withName } from "@commodo/name";
 import { withHooks } from "@commodo/hooks";
-import { withFields, number, string } from "@commodo/fields";
+import { withFields, onSet, number, string } from "@commodo/fields";
 
 const FileType = {
     size: number,
@@ -31,27 +31,35 @@ export const File: FileType = compose(
         type: string({ validation: validation.create("required,maxLength:50") }),
         src: string({ validation: validation.create("required,maxLength:200") }),
         name: string({ validation: validation.create("required,maxLength:100") }),
-        tags: string({
-            list: true,
-            validation: tags => {
-                if (Array.isArray(tags)) {
-                    if (tags.length > 15) {
-                        throw Error("You cannot set more than 15 tags.");
-                    }
+        tags: onSet(value => {
+            if (value) {
+                return value.map(item => item.toLowerCase());
+            }
 
-                    for (let i = 0; i < tags.length; i++) {
-                        let tag = tags[i];
-                        if (typeof tag !== "string") {
-                            throw Error("Tag must be typeof string.");
+            return value;
+        })(
+            string({
+                list: true,
+                validation: tags => {
+                    if (Array.isArray(tags)) {
+                        if (tags.length > 15) {
+                            throw Error("You cannot set more than 15 tags.");
                         }
 
-                        if (tag.length > 50) {
-                            throw Error(`Tag ${tag} is more than 50 characters long.`);
+                        for (let i = 0; i < tags.length; i++) {
+                            let tag = tags[i];
+                            if (typeof tag !== "string") {
+                                throw Error("Tag must be typeof string.");
+                            }
+
+                            if (tag.length > 50) {
+                                throw Error(`Tag ${tag} is more than 50 characters long.`);
+                            }
                         }
                     }
                 }
-            }
-        })
+            })
+        )
     }),
     withName("File")
 )(function() {});
