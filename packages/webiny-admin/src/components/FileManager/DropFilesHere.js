@@ -1,6 +1,7 @@
 // @flow
 import React from "react";
 import { css } from "emotion";
+import classNames from "classnames";
 import { Icon } from "webiny-ui/Icon";
 
 import { ReactComponent as UploadIcon } from "./icons/round-cloud_upload-24px.svg";
@@ -13,6 +14,12 @@ const styles = css({
     width: "100%",
     position: "absolute",
     backgroundColor: "var(--mdc-theme-text-hint-on-light)",
+    "&.empty": {
+        backgroundColor: "transparent",
+        "> div": {
+            backgroundColor: "var(--mdc-theme-surface)"
+        }
+    },
     "> div": {
         textAlign: "center",
         width: 300,
@@ -41,9 +48,13 @@ type Props = {
     onDrop?: Function
 };
 
-export default function DropFilesHere({ onDrop, onDragLeave }: Props) {
+export default function DropFilesHere({ onDrop, onDragLeave, empty }: Props) {
     return (
-        <div className={styles} onDrop={onDrop} onDragLeave={onDragLeave}>
+        <div
+            className={classNames(styles, { empty: empty })}
+            onDrop={onDrop}
+            onDragLeave={onDragLeave}
+        >
             <div>
                 <div>
                     <Icon icon={<UploadIcon />} />
