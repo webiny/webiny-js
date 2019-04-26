@@ -172,12 +172,10 @@ function FileManagerView(props: Props) {
 
     const gqlQuery = useRef();
 
-    const formOnChange = useCallback(
-        debounce(queryParams => {
-            dispatch({ type: "queryParams", queryParams });
-        }, 500),
-        []
-    );
+    const searchOnChange = useCallback(debounce((onChange, value) => onChange(value), 500), []);
+    const formOnChange = useCallback(queryParams => {
+        dispatch({ type: "queryParams", queryParams });
+    }, []);
 
     const refreshOnScroll = useCallback(
         debounce(({ scrollFrame, fetchMore }) => {
@@ -285,7 +283,8 @@ function FileManagerView(props: Props) {
                                                                 <input
                                                                     ref={searchInput}
                                                                     onChange={e =>
-                                                                        setSearchValue(
+                                                                        searchOnChange(
+                                                                            setSearchValue,
                                                                             e.target.value
                                                                         )
                                                                     }
@@ -362,6 +361,7 @@ function FileManagerView(props: Props) {
                                                             />
 
                                                             <LeftSidebar
+                                                                queryParams={queryParams}
                                                                 onTagClick={async tag => {
                                                                     let value = tag;
                                                                     const { search } = formData;

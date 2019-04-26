@@ -45,7 +45,9 @@ const Tag = styled("div")({
     }
 });
 
-function LeftSidebar({ onTagClick }) {
+function LeftSidebar({ onTagClick, queryParams: { search } }) {
+    const searchWords = typeof search === "string" ? search.split(" ") : [];
+
     return (
         <div className={style.leftDrawer}>
             <Query query={listTags}>
@@ -60,15 +62,27 @@ function LeftSidebar({ onTagClick }) {
                         );
                     }
 
-                    return (
-                        <TagList>
-                            {list.map((item, index) => (
-                                <Tag key={item + index} onClick={() => onTagClick(item)}>
-                                    <Icon icon={<TagIcon />} /> {item}
-                                </Tag>
-                            ))}
-                        </TagList>
-                    );
+                    const availableTags = list.filter(item => !searchWords.includes(item));
+
+                    if (availableTags.length > 0) {
+                        return (
+                            <TagList>
+                                {availableTags.map(
+                                    (item, index) =>
+                                        !searchWords.includes(item) && (
+                                            <Tag
+                                                key={item + index}
+                                                onClick={() => onTagClick(item)}
+                                            >
+                                                <Icon icon={<TagIcon />} /> {item}
+                                            </Tag>
+                                        )
+                                )}
+                            </TagList>
+                        );
+                    }
+
+                    return <div className={style.noTagged}>No available tags.</div>;
                 }}
             </Query>
         </div>
