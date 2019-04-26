@@ -83,7 +83,7 @@ const searchIcon = css({
 const FileListWrapper = styled("div")({
     float: "right",
     display: "inline-block",
-    width: "calc(100vw - 250px)",
+    width: "calc(100vw - 270px)",
     height: "100%"
 });
 
@@ -265,7 +265,7 @@ function FileManagerView(props: Props) {
                             >
                                 {({ getDropZoneProps, browseFiles }) => (
                                     <Form onChange={formOnChange} data={{ search: "" }}>
-                                        {({ form, data: formData, Bind }) => (
+                                        {({ data: formData, Bind }) => (
                                             <Bind name={"search"}>
                                                 {({ searchValue, onChange: setSearchValue }) => (
                                                     <OverlayLayout
