@@ -6,7 +6,8 @@
     ],
     "nohoist": [
       "**/inquirer/**",
-      "**/webiny-cli/**"
+      "**/webiny-cli/**",
+      "**/mime/**"
     ]
   },
   "contributors": [
